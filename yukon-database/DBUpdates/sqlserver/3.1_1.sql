@@ -13,13 +13,13 @@ delete from ECToGenericMapping where MappingCategory = 'YukonSelectionList' and 
 (select ListID from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000);
 delete from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000;
 
-insert into YukonListEntry values (1241,1049,1,'1 Day',1);
-insert into YukonListEntry values (1242,1049,2,'2 Days',2);
-insert into YukonListEntry values (1243,1049,3,'3 Days',3);
-insert into YukonListEntry values (1244,1049,4,'4 Days',4);
-insert into YukonListEntry values (1245,1049,5,'5 Days',5);
-insert into YukonListEntry values (1246,1049,6,'6 Days',6);
-insert into YukonListEntry values (1247,1049,7,'7 Days',7);
+insert into YukonListEntry values (1241,1049,1,'1 Day',24);
+insert into YukonListEntry values (1242,1049,2,'2 Days',48);
+insert into YukonListEntry values (1243,1049,3,'3 Days',72);
+insert into YukonListEntry values (1244,1049,4,'4 Days',96);
+insert into YukonListEntry values (1245,1049,5,'5 Days',120);
+insert into YukonListEntry values (1246,1049,6,'6 Days',144);
+insert into YukonListEntry values (1247,1049,7,'7 Days',168);
 
 insert into YukonRoleProperty values(-21002,-210,'Work Order Report','true','Controls whether to allow reporting on work orders');
 
