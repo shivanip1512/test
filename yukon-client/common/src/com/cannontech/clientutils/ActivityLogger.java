@@ -70,39 +70,41 @@ public class ActivityLogger {
 	public static void logEvent(int userID, int accountID, int energyCompanyID, 
 								int customerID, int paoID, String action, String description)
 	{
-		if(energyCompanyID == -1)
-		{	
-			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
-		
-			LiteEnergyCompany liteComp = EnergyCompanyFuncs.getEnergyCompany( liteUser );
-			if (liteComp != null)
-			{ 			
-				energyCompanyID = liteComp.getEnergyCompanyID();
+		if (userID != -1) {
+			if(energyCompanyID == -1)
+			{	
+				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+				
+				LiteEnergyCompany liteComp = EnergyCompanyFuncs.getEnergyCompany( liteUser );
+				if (liteComp != null)
+				{ 			
+					energyCompanyID = liteComp.getEnergyCompanyID();
+				}
 			}
-		}
-		
-		if(customerID == -1 || energyCompanyID == -1 || accountID == -1)
-		{		
-			LiteContact liteContact = YukonUserFuncs.getLiteContact( userID );
-			if (liteContact != null) {
-			LiteCustomer liteCust = ContactFuncs.getCustomer( liteContact.getContactID() );
 			
-				if (liteCust != null) {
-					if(customerID == -1)
-					{								
-						customerID = liteCust.getCustomerID();
-					}
+			if(customerID == -1 || energyCompanyID == -1 || accountID == -1)
+			{		
+				LiteContact liteContact = YukonUserFuncs.getLiteContact( userID );
+				if (liteContact != null) {
+					LiteCustomer liteCust = ContactFuncs.getCustomer( liteContact.getContactID() );
 					
-					java.util.Vector acctIDs = liteCust.getAccountIDs();
-					if (acctIDs.size() > 0) {
-						// This customer has residential information
-						if(energyCompanyID == -1)
-						{					
-							energyCompanyID = liteCust.getEnergyCompanyID();
+					if (liteCust != null) {
+						if(customerID == -1)
+						{								
+							customerID = liteCust.getCustomerID();
 						}
-						if(accountID == -1)
-						{					
-							accountID = ((Integer) acctIDs.get(0)).intValue();
+						
+						java.util.Vector acctIDs = liteCust.getAccountIDs();
+						if (acctIDs.size() > 0) {
+							// This customer has residential information
+							if(energyCompanyID == -1)
+							{					
+								energyCompanyID = liteCust.getEnergyCompanyID();
+							}
+							if(accountID == -1)
+							{					
+								accountID = ((Integer) acctIDs.get(0)).intValue();
+							}
 						}
 					}
 				}
