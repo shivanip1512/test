@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:16 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/01/07 17:48:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 
 #include "dbmemobject.h"
 #include "dbaccess.h"
-#include "porttypes.h"
 #include "resolvers.h"
 #include "yukon.h"
 
