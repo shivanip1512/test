@@ -9,8 +9,6 @@ package com.cannontech.clientutils;
 
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.*;
-import java.util.Enumeration;
-import com.cannontech.message.util.Message;
 
 public abstract class ClientBase implements Runnable, ClientBaseInterface
 {

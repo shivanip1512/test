@@ -11,7 +11,6 @@ package com.cannontech.common.gui.dnd;
 import java.awt.dnd.*;
 import java.awt.datatransfer.DataFlavor;
 import java.io.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd.DropTargetListener
 {

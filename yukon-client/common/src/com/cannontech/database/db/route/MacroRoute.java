@@ -5,8 +5,6 @@ package com.cannontech.database.db.route;
  */
 import java.sql.*;
 
-import com.cannontech.database.db.*;
-
 public class MacroRoute extends com.cannontech.database.db.DBPersistent 
 {	
 	private Integer RouteID = null;

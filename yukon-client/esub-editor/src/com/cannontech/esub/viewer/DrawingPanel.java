@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
 
-import com.cannontech.esub.editor.element.LinkedElement;
 import com.cannontech.esub.util.ClientSession;
 
 /**

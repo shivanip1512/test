@@ -1,7 +1,7 @@
 package com.cannontech.database.data.device;
 
 import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.port.*;
+
 /**
  * This type was created in VisualAge.
  */

@@ -4,7 +4,6 @@ import com.cannontech.common.gui.util.*;
 import com.cannontech.database.data.lite.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.tree.*;
 import java.awt.*;
 /**
  * Creation date: (12/18/2001 2:05:01 PM)

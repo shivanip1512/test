@@ -4,7 +4,6 @@ package com.cannontech.common.gui.util;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.util.MessageEvent;
-import com.cannontech.common.util.MessageEventListener;
 
 import javax.swing.*;
 import java.awt.*;

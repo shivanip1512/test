@@ -1,9 +1,6 @@
 package com.cannontech.database.data.device;
 
-import java.util.Vector;
-
 import com.cannontech.database.db.device.*;
-
 
 /**
  * This type was created in VisualAge.

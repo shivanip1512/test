@@ -5,9 +5,6 @@ package com.cannontech.clientutils;
  * Creation date: (2/11/00 1:18:48 PM)
  * @author: 
  */
-import com.cannontech.database.SqlStatement;
-import java.awt.Color;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 
 public final class CommonUtils 

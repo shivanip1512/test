@@ -2,9 +2,6 @@ package com.cannontech.esub.editor.element;
 
 import com.cannontech.common.gui.util.*;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import java.awt.Font;
 
 import javax.swing.JDialog;

@@ -6,7 +6,6 @@ package com.cannontech.common.gui.util;
 
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.Command;
 import com.cannontech.common.util.CommandExecutionException;

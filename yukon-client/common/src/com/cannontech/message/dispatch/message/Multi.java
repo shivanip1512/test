@@ -3,7 +3,6 @@ package com.cannontech.message.dispatch.message;
 /**
  * This type was created in VisualAge.
  */
-import com.roguewave.tools.v2_0.Slist;
 
 public class Multi extends com.cannontech.message.util.Message {
 	

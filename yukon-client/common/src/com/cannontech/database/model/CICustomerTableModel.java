@@ -4,7 +4,6 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.pao.CustomerTypes;
-import com.cannontech.database.data.lite.LiteCustomerContact;
 import com.cannontech.database.data.lite.LiteBase;
 
 

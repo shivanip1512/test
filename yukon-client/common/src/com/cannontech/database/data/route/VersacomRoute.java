@@ -3,8 +3,6 @@ package com.cannontech.database.data.route;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.route.*;
 
 public class VersacomRoute extends RouteBase {
 	private com.cannontech.database.db.route.VersacomRoute versacomRoute = null;

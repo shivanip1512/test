@@ -3,9 +3,6 @@ package com.cannontech.database.db.route;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
-
-import com.cannontech.database.db.*;
 
 public class Route extends com.cannontech.database.db.DBPersistent 
 {	

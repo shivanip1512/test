@@ -34,7 +34,6 @@ package com.cannontech.esub.util;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Enumeration;
-import javax.swing.*;
 
 /**
  * A convenience implementation of FileFilter that filters out

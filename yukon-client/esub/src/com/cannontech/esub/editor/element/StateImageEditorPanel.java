@@ -1,7 +1,6 @@
 package com.cannontech.esub.editor.element;
 
 import javax.swing.event.*;
-import javax.swing.tree.*;
 
 import com.cannontech.common.gui.util.*;
 

@@ -1,7 +1,5 @@
 package com.cannontech.database.data.device;
 
-import java.util.*;
-import com.cannontech.database.db.*;
 import com.cannontech.database.db.device.*;
 
 

@@ -2,7 +2,6 @@ package com.cannontech.esub.util;
 
 import java.util.HashMap;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import java.net.*;
 
 /**

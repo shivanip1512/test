@@ -3,7 +3,6 @@ package com.cannontech.database.db.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 public class CustomerContact extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {

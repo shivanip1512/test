@@ -1,7 +1,6 @@
 package com.cannontech.esub.editor;
 
 import java.awt.Font;
-import java.awt.Color;
 import javax.swing.*;
 /**
  * Creation date: (12/20/2001 5:40:03 PM)

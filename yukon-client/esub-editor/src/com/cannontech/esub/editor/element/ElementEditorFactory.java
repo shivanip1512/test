@@ -1,7 +1,5 @@
 package com.cannontech.esub.editor.element;
 
-
-import java.util.HashMap;
 import com.cannontech.common.editor.PropertyPanel;
 
 /**

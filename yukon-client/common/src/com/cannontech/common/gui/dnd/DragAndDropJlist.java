@@ -6,8 +6,6 @@ package com.cannontech.common.gui.dnd;
  * @author: 
  */
 import java.awt.dnd.*;
-import java.awt.datatransfer.DataFlavor;
-import java.io.*;
 
 public class DragAndDropJlist extends javax.swing.JList implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
 {

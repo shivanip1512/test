@@ -3,9 +3,6 @@ package com.cannontech.database.db.point.fdr;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
-
-import com.cannontech.database.db.*;
 
 public class FDRTranslation extends com.cannontech.database.db.DBPersistent {
 	private Integer pointID = null;

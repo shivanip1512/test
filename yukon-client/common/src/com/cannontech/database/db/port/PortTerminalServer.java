@@ -3,7 +3,7 @@ package com.cannontech.database.db.port;
 /**
  * This type was created in VisualAge.
  */
- import java.sql.*;
+
  import com.cannontech.database.db.*;
  
 public class PortTerminalServer extends DBPersistent {

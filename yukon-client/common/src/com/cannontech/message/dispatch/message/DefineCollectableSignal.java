@@ -6,7 +6,6 @@ package com.cannontech.message.dispatch.message;
  * @author: 
  */
 
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 

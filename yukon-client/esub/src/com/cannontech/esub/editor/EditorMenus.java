@@ -11,7 +11,6 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
 
 import com.loox.jloox.LxAbstractAction;
 

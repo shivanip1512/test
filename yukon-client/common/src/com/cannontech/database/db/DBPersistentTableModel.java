@@ -6,7 +6,6 @@ package com.cannontech.database.db;
 import java.util.Vector;
 import java.sql.*;
 
-import javax.swing.table.*;
 import javax.swing.event.*;
 
 public abstract class DBPersistentTableModel extends javax.swing.table.AbstractTableModel {

@@ -3,7 +3,6 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.device.*;
 
 public class LMGroupsModel extends DeviceTreeModel 
 {

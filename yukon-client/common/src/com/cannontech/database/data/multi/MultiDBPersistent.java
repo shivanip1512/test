@@ -3,7 +3,6 @@ package com.cannontech.database.data.multi;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.DBPersistent;
 
 public class MultiDBPersistent extends CommonMulti implements com.cannontech.database.db.CTIDbChange
 {

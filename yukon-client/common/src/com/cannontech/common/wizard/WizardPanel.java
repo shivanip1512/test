@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelEvent;
-import com.cannontech.common.gui.util.DataInputPanelListener;
 
 public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
 	//10 should be good enough...?

@@ -3,7 +3,6 @@ package com.cannontech.common.gui.util;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.table.*;
 
 /**
  * @version 1.0 11/09/98

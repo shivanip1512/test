@@ -3,7 +3,6 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import com.cannontech.database.data.lite.LiteBase;
 

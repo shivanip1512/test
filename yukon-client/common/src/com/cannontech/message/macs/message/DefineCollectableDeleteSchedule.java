@@ -8,7 +8,6 @@ package com.cannontech.message.macs.message;
 
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableDeleteSchedule extends com.cannontech.message.util.DefineCollectableMessage 
 {

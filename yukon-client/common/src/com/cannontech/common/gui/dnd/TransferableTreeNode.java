@@ -5,11 +5,8 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (2/23/00 12:55:23 PM)
  * @author: 
  */
-import java.awt.dnd.*;
 import java.awt.datatransfer.DataFlavor;
 import javax.swing.tree.DefaultMutableTreeNode;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LitePoint;
 
 public class TransferableTreeNode extends javax.swing.tree.DefaultMutableTreeNode implements java.awt.datatransfer.Transferable 
 {

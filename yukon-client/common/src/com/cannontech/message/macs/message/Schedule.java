@@ -3,10 +3,6 @@ package com.cannontech.message.macs.message;
 /**
  * This type was created in VisualAge.
  */
-import java.io.IOException;
-
-import com.roguewave.vsj.*;
-import com.roguewave.tools.v2_0.Comparator;
 
 public class Schedule extends com.cannontech.message.util.Message implements java.io.Serializable
 {

@@ -5,7 +5,6 @@ package com.cannontech.database.cache.functions;
  * Creation date: (3/26/2001 9:46:50 AM)
  * @author: 
  */
-import com.cannontech.database.data.lite.LiteStateGroup;
 
 public final class StateFuncs {
 /**

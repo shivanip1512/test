@@ -3,9 +3,6 @@ package com.cannontech.database.db.device;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
-
-import com.cannontech.database.db.*;
 
 public class DeviceRoutes extends com.cannontech.database.db.DBPersistent {
 	private Integer deviceID = null;

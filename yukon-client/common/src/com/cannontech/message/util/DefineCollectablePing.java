@@ -5,7 +5,6 @@ package com.cannontech.message.util;
  */
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectablePing extends DefineCollectableMessage {
 	private int classId = 140;

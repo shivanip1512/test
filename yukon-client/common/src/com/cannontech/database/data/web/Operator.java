@@ -4,7 +4,6 @@ package com.cannontech.database.data.web;
  * Creation date: (6/4/2001 1:55:07 PM)
  * @author: Aaron Lauinger
  */
-import java.util.Date;
 
 import com.cannontech.database.db.web.EnergyCompany;
 import com.cannontech.database.db.web.OperatorLogin;

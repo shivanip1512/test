@@ -3,7 +3,6 @@ package com.cannontech.database.db.graph;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 public class GraphCustomerList extends com.cannontech.database.db.DBPersistent
 {

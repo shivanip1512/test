@@ -5,8 +5,6 @@ package com.cannontech.database.data.pao;
  * Creation date: (9/12/2001 2:49:48 PM)
  * @author: 
  */
-import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.*;
 
 public final class PAOFactory 
 {

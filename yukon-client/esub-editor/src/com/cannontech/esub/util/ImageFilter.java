@@ -1,8 +1,6 @@
 package com.cannontech.esub.util;
 
 import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
 
 import com.cannontech.esub.util.Util;
 

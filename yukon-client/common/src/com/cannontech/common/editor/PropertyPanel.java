@@ -4,12 +4,10 @@ package com.cannontech.common.editor;
  * This type was created in VisualAge.
  */
 
-import java.util.EventObject;
 import java.util.Vector;
 
 import javax.swing.JTabbedPane;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.DataInputPanelEvent;
 
 public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener 

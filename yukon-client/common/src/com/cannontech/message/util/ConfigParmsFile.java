@@ -3,7 +3,6 @@ package com.cannontech.message.util;
 /**
  * ConfigParmsFile represents a configuration file.
  */
-import java.util.Hashtable;
 
 public class ConfigParmsFile extends java.io.File implements ConfigParms {
 

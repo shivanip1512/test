@@ -5,12 +5,10 @@ package com.cannontech.common.gui.util;
  */
 import java.util.Vector;
 import com.cannontech.database.data.lite.LiteBase;
-import java.awt.ItemSelectable;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
 
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeExpansionEvent;

@@ -1,6 +1,5 @@
 package com.cannontech.database.data.route;
 
-import com.cannontech.database.db.*;
 import com.cannontech.database.db.route.*;
 
 /**

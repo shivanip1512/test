@@ -6,7 +6,6 @@ package com.cannontech.message.dispatch.message;
 
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableMulti extends com.cannontech.message.util.DefineCollectableMessage implements com.roguewave.vsj.DefineCollectable {
 	private static final int classId = 1591;

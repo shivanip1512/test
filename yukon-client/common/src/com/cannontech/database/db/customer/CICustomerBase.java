@@ -3,7 +3,6 @@ package com.cannontech.database.db.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 public class CICustomerBase extends com.cannontech.database.db.DBPersistent 
 {

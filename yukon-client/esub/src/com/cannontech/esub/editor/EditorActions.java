@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;

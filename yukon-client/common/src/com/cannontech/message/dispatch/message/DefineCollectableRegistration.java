@@ -4,7 +4,6 @@ package com.cannontech.message.dispatch.message;
  * This type was created in VisualAge.
  */
 
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 

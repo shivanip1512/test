@@ -1,7 +1,5 @@
 package com.cannontech.database.db.device;
 
-import java.sql.*;
-import com.cannontech.database.db.*;
 /**
  * This type was created in VisualAge.
  */

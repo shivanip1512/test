@@ -9,7 +9,6 @@ package com.cannontech.database.db;
 import java.util.*;
 import java.sql.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.event.TableModelEvent;
 
 public class JDBCAdapter extends AbstractTableModel {
 	Connection          connection;

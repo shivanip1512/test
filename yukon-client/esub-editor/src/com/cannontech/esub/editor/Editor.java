@@ -1,15 +1,10 @@
 package com.cannontech.esub.editor;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
-import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 
 import java.awt.Cursor;
 
@@ -18,13 +13,10 @@ import javax.swing.*;
 import java.net.URL;
 import java.awt.Dimension;
 
-import com.loox.jloox.Lx;
 import com.loox.jloox.LxElement;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
-import com.loox.jloox.LxAbstractAction;
-import com.loox.jloox.LxAbstractText;
 
 import com.loox.jloox.LxMouseListener;
 import com.loox.jloox.LxMouseAdapter;

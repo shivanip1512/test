@@ -2,8 +2,7 @@ package com.cannontech.database.data.route;
 
 import com.cannontech.database.db.*;
 import com.cannontech.database.db.route.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.device.*;
+
 /**
  * This type was created in VisualAge.
  */

@@ -6,8 +6,6 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
-import java.util.Date;
-
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;

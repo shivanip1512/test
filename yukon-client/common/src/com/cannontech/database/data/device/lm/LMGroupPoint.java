@@ -3,8 +3,6 @@ package com.cannontech.database.data.device.lm;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.device.*;
-
 public class LMGroupPoint extends LMGroup
 {
 	private com.cannontech.database.db.device.lm.LMGroupPoint lmGroupPoint = null;

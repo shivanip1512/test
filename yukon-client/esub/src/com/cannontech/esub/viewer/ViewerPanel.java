@@ -6,7 +6,6 @@ import java.awt.event.MouseAdapter;
 
 import java.awt.CardLayout;
 
-import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import java.util.*;

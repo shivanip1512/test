@@ -3,7 +3,6 @@ package com.cannontech.message.util;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 import com.roguewave.vsj.VirtualOutputStream;
 import com.roguewave.vsj.CollectableStreamer;

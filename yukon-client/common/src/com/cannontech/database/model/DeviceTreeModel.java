@@ -4,11 +4,8 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.lite.LitePoint;
-import javax.swing.tree.TreeNode;
 import com.cannontech.database.data.lite.LiteBase;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
 
 public class DeviceTreeModel extends DBTreeModel 
 {

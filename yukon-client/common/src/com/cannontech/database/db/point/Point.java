@@ -5,8 +5,6 @@ package com.cannontech.database.db.point;
  */
 import java.sql.*;
 
-import com.cannontech.database.db.*;
-
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
 	public static final Character PSEUDOFLAG_PSEUDO = new Character('P');

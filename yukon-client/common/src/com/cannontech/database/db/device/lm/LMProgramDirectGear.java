@@ -3,7 +3,6 @@ package com.cannontech.database.db.device.lm;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 public abstract class LMProgramDirectGear extends com.cannontech.database.db.DBPersistent implements DeviceListItem, LMProgramDirectGearDefines
 {

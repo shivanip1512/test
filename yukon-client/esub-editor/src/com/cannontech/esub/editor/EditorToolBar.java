@@ -10,7 +10,6 @@ import javax.swing.JToolBar;
 import javax.swing.AbstractButton;
 
 import com.loox.jloox.LxAbstractAction;
-import com.loox.jloox.LxView;
 
 public class EditorToolBar {
 	

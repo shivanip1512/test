@@ -3,8 +3,6 @@ package com.cannontech.database;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.util.MessageEvent;
-import com.cannontech.common.util.MessageEventListener;
 
 public class Transaction extends com.cannontech.common.util.Command {
 	public static final int INSERT = 1;

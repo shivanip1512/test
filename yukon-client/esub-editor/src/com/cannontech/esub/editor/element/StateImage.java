@@ -4,8 +4,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import java.awt.Image;
-
 import com.loox.jloox.*;
 
 import com.cannontech.esub.util.ImageCache;

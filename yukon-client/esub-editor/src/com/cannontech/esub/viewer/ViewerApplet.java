@@ -1,9 +1,5 @@
 package com.cannontech.esub.viewer;
 
-import java.io.InputStream;
-
-import java.net.URL;
-
 import javax.swing.JApplet;
 
 /**

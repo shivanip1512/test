@@ -3,7 +3,6 @@ package com.cannontech.database.db.device.lm;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 public class LMGroup extends com.cannontech.database.db.DBPersistent 
 {

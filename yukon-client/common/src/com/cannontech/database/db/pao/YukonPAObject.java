@@ -2,7 +2,6 @@ package com.cannontech.database.db.pao;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
 
 public class YukonPAObject extends com.cannontech.database.db.DBPersistent
 {

@@ -5,8 +5,6 @@ package com.cannontech.database.db.macro;
  */
 import java.sql.*;
 
-import com.cannontech.database.db.*;
-
 public class GenericMacro extends com.cannontech.database.db.DBPersistent {
 	
 	private Integer ownerID = null;

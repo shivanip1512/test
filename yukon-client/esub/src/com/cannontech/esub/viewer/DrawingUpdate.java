@@ -1,8 +1,5 @@
 package com.cannontech.esub.viewer;
 
-import java.net.URL;
-import java.net.URLConnection;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 

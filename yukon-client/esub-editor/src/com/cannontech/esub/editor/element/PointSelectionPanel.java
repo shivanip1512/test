@@ -3,9 +3,7 @@ package com.cannontech.esub.editor.element;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.JScrollPane;
-import javax.swing.JFrame;
 
-import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import com.cannontech.database.data.lite.LitePoint;

@@ -3,7 +3,6 @@ package com.cannontech.database.data.device.lm;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.device.*;
 
 public class LMGroupRipple extends LMGroup
 {
