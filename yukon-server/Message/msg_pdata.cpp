@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/14 01:15:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,6 +97,15 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
 void CtiPointDataMsg::saveGuts(RWvostream &aStream) const
 {
     Inherited::saveGuts(aStream);
+
+    if(_isnan(_value) || !_finite(value))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
+        }
+        _value = 0.0;
+    }
     aStream << getId() << getType() << getQuality() << getTags() << getAttributes() << getLimit() << getValue() << isExemptable() << getString() << getTime() << getMillis();
 }
 
@@ -252,8 +261,9 @@ CtiPointDataMsg& CtiPointDataMsg::setMillis(unsigned millis)
 
     if( millis > 999 )
     {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       _millis = 0;
+       //CtiLockGuard<CtiLogger> doubt_guard(dout);
+       //dout << RWTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;

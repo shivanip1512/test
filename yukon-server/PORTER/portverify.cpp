@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/03/14 01:16:24 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -496,9 +496,17 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
     long transmitter_id = work.getTransmitterID();
     long sequence       = work.getSequence();
 
+    if( command.empty() )
+    {
+        command = "(empty)";
+    }
     if( code.empty() )
     {
         code = "(empty)";
+    }
+    if( code_status.empty() )
+    {
+        code_status = "(empty)";
     }
 
     inserter << logIDGen()
