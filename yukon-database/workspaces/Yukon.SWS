@@ -4,7 +4,7 @@
 
 <Workspace>
 	<Local Expanded="Yes">
-		<Model ID="{A20D2857-1CBD-4B04-978B-9224512A328D}" Name="YUKON2" Selected="Yes" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="../PhysicalModels/YUKON2.pdm"/>
-		<Model Expanded="Yes" ID="{CBB6DA75-9B74-413B-8761-4BB76895589A}" Name="STARS" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="../PhysicalModels/STARS.pdm"/>
+		<Model Expanded="Yes" ID="{A20D2857-1CBD-4B04-978B-9224512A328D}" Name="YUKON2" Selected="Yes" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="../PhysicalModels/YUKON2.pdm"/>
+		<Model Expanded="Yes" ID="{CBB6DA75-9B74-413B-8761-4BB76895589A}" Loaded="No" Name="STARS" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="../PhysicalModels/STARS.pdm"/>
 	</Local>
 </Workspace>

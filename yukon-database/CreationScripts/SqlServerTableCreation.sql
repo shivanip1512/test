@@ -4112,6 +4112,7 @@ insert into fdrinterface values (16,'LODESTAR_STD','Receive','f');
 insert into fdrinterface values (17,'LODESTAR_ENH','Receive','f');
 insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
 insert into FDRInterface values (19, 'XA21LM','Receive,Send', 't' );
+insert into fdrinterface values (20,'BEPC','Send','f');
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
@@ -4163,6 +4164,7 @@ insert into fdrinterfaceoption values(17, 'Filename',4,'Text','(none)');
 insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
 insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
+insert into fdrinterfaceoption values(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
 go
