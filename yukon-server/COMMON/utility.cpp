@@ -824,9 +824,6 @@ RWCString convertVersacomAddressToHumanForm(INT address)
 
 INT convertHumanFormAddressToVersacom(INT address)
 {
-    BOOL        foundFirst = FALSE;
-    CHAR        temp[20];
-    RWCString   rStr;
     INT num = 0;
 
     for(int i = 0; i < 16; i++)
