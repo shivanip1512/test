@@ -19,18 +19,19 @@ public class MCTConfig extends com.cannontech.database.db.DBPersistent
 	private String configName;
 	private Integer configType;
 	private String configMode;
-	private Integer mctWire1 = new Integer(-1);
+	private Integer mctWire1 = NONVALUE;
 	private Double ke1;
-	private Integer mctWire2 = new Integer(-1);
+	private Integer mctWire2 = NONVALUE;
 	private Double ke2 = new Double(-1);
-	private Integer mctWire3 = new Integer(-1);
+	private Integer mctWire3 = NONVALUE;
 	private Double ke3 = new Double(-1);
+	private Integer displayDigits = NONVALUE;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"CONFIGID", "CONFIGNAME", "CONFIGTYPE", 
 		"CONFIGMODE", "MCTWIRE1", "KE1", "MCTWIRE2",
-		"KE2", "MCTWIRE3", "KE3" 
+		"KE2", "MCTWIRE3", "KE3", "DISPLAYDIGITS"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "CONFIGID" };
@@ -60,7 +61,6 @@ public MCTConfig(Integer conID, String name, Integer type, String mode, Integer 
 	ke2 = KE2;
 	mctWire3 = wire3;
 	ke3 = KE3;
-	
 }
 
 
@@ -72,7 +72,8 @@ public void add() throws java.sql.SQLException
 		getConfigType(), getConfigMode(), 
 		getMCTWire1(), getKe1(), 
 		getMCTWire2(), getKe2(), 
-		getMCTWire3(), getKe3()
+		getMCTWire3(), getKe3(),
+		getDisplayDigits()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -123,7 +124,7 @@ public static synchronized Integer getNextConfigID( java.sql.Connection conn )
 	}
 
 
-public java.lang.Integer getConfigID() {
+public Integer getConfigID() {
 	return configID;
 	}
 
@@ -131,36 +132,40 @@ public String getConfigName() {
 	return configName;
 }
 
-public java.lang.Integer getConfigType() {
+public Integer getConfigType() {
 	return configType;
 }
 
-public java.lang.String getConfigMode() {
+public String getConfigMode() {
 	return configMode;
 }
 
-public java.lang.Integer getMCTWire1() {
+public Integer getMCTWire1() {
 	return mctWire1;
 }
 
-public java.lang.Double getKe1() {
+public Double getKe1() {
 	return ke1;
 }
 
-public java.lang.Integer getMCTWire2() {
+public Integer getMCTWire2() {
 	return mctWire2;
 }
 
-public java.lang.Double getKe2() {
+public Double getKe2() {
 	return ke2;
 }
 
-public java.lang.Integer getMCTWire3() {
+public Integer getMCTWire3() {
 	return mctWire3;
 }
 
-public java.lang.Double getKe3() {
+public Double getKe3() {
 	return ke3;
+}
+
+public Integer getDisplayDigits() {
+	return displayDigits;
 }
 
 public void retrieve() 
@@ -182,6 +187,7 @@ public void retrieve()
 			setKe2( (Double) results[7] );
 			setMCTWire3( (Integer) results[8] );
 			setKe3( (Double) results[9] );
+			setDisplayDigits( (Integer) results[10] );
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -232,6 +238,10 @@ public void setKe3(java.lang.Double newKE3Val) {
 	ke3 = newKE3Val;
 }
 
+public void setDisplayDigits(Integer digits) {
+	displayDigits = digits;
+}
+
 public void update() 
 {
 	Object setValues[] =
@@ -240,7 +250,8 @@ public void update()
 		getConfigType(), getConfigMode(), 
 		getMCTWire1(), getKe1(), 
 		getMCTWire2(), getKe2(), 
-		getMCTWire3(), getKe3()
+		getMCTWire3(), getKe3(),
+		getDisplayDigits()
 	};
 	
 	Object constraintValues[] = { getConfigID() };

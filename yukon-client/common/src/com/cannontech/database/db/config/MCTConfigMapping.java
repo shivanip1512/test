@@ -107,7 +107,7 @@ public void deleteAMapping(Integer mctID)
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	
 		deleteAMapping(mctID, conn);
-			
+		conn.commit();	
 		conn.close();
 	}
 	catch( java.sql.SQLException e2 )
