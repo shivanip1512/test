@@ -1,3 +1,4 @@
+
 #pragma title ( "PORTER -- Port Control Program" )
 #pragma warning( disable : 4786)
 
@@ -9,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 16:33:06 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/22 20:03:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,10 +111,11 @@ using namespace std;
 
 
 #ifdef HARDLOCK
-   // FIX FIX FIX #include "fastapi.h"
-   // FIX FIX FIX #include "Hlapi_c.h"
-   #define MOD_ADDR    16393
-   #include <time.h>  /* Used for the check of Hardlock only */
+
+// FIX FIX FIX #include "fastapi.h"
+// FIX FIX FIX #include "Hlapi_c.h"
+    #define MOD_ADDR    16393
+    #include <time.h>  /* Used for the check of Hardlock only */
 #endif
 
 #include "color.h"
@@ -211,761 +213,763 @@ static RWWinSockInfo  winsock;
 
 bool containsTAPDevice(CtiDeviceManager::val_pair pair, void *ptr)
 {
-   bool b = false;
-   LONG PortNumber = (LONG) ptr;
+    bool b = false;
+    LONG PortNumber = (LONG) ptr;
 
-   CtiDevice *Device = pair.second;
+    CtiDevice *Device = pair.second;
 
-   if( Device->getPortID() == PortNumber && Device->getType() == TYPE_TAPTERM )
-   {
-      b = true;
-   }
+    if( Device->getPortID() == PortNumber && Device->getType() == TYPE_TAPTERM )
+    {
+        b = true;
+    }
 
-   return b;
+    return b;
 }
 
 bool isTAPTermPort(LONG PortNumber)
 {
-   INT            i;
-   bool           result = false;
+    INT            i;
+    bool           result = false;
 
-   RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-   result = DeviceManager.getMap().contains(containsTAPDevice, (void*)PortNumber);
+    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+    result = DeviceManager.getMap().contains(containsTAPDevice, (void*)PortNumber);
 
-   return result;
+    return result;
 }
 
 void applyTAPPortStatus(const CtiHashKey *unusedKey, CtiPort *&Port, void *unusedPtr)
 {
-   /* Find out if we have a TAP terminal */
-   Port->setTAP( isTAPTermPort(Port->getPortID() ));
+    /* Find out if we have a TAP terminal */
+    Port->setTAP( isTAPTermPort(Port->getPortID() ));
 
 
-   if((PorterDebugLevel & 0x00000001) && Port->isTAP())
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " WARNING: " << Port->getName() << " has a TAP device on it." << endl;
-      dout << " This currently sets the port to 7E1 mode for ALL devices on the port" << endl;
-   }
+    if((PorterDebugLevel & 0x00000001) && Port->isTAP())
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " WARNING: " << Port->getName() << " has a TAP device on it." << endl;
+        dout << " This currently sets the port to 7E1 mode for ALL devices on the port" << endl;
+    }
 }
 
 void applyPortVerify(const CtiHashKey *unusedKey, CtiPort *&Port, void *unusedPtr)
 {
-   Port->verifyPortIsRunnable(PortThread, hPorterEvents[P_QUIT_EVENT]);
+    Port->verifyPortIsRunnable(PortThread, hPorterEvents[P_QUIT_EVENT]);
 }
 
 bool containsCCU711(CtiDeviceManager::val_pair a, void* ptr)
 {
-   bool bStatus = false;
+    bool bStatus = false;
 
-   CtiDevice *Dev = a.second;
+    CtiDevice *Dev = a.second;
 
-   if( Dev->getType() == TYPE_CCU711 )
-   {
-      bStatus = true;
-   }
-   return bStatus;
+    if( Dev->getType() == TYPE_CCU711 )
+    {
+        bStatus = true;
+    }
+    return bStatus;
 }
 
 INT PorterMainFunction (INT argc, CHAR **argv)
 {
-   /* Misc Definitions */
-   INT    i, j;
-   extern USHORT PrintLogEvent;
-   USHORT Spark;
-   ULONG  SparkCount;
+    /* Misc Definitions */
+    INT    i, j;
+    extern USHORT PrintLogEvent;
+    USHORT Spark;
+    ULONG  SparkCount;
 
-   BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-   BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
-   PSZ            Environment;
+    PSZ            Environment;
 
-   /* Definitions to access Btrieve files */
-   CtiPort        *PortRecord;
-   CtiDevice      *RemoteRecord;
+    /* Definitions to access Btrieve files */
+    CtiPort        *PortRecord;
+    CtiDevice      *RemoteRecord;
 
-   /* New stuff for YUKON kbd handling */
-   INPUT_RECORD      inRecord;
-   HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-   DWORD             Count;
-   CHAR              Char;
+    /* New stuff for YUKON kbd handling */
+    INPUT_RECORD      inRecord;
+    HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD             Count;
+    CHAR              Char;
 
 #ifdef PORTERMEMDEBUG
-   // Send all reports to STDOUT
-   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
-   _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
-   _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
 
-   // Get current flag
-   int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
+    // Send all reports to STDOUT
+    _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
+    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
 
-   // Turn on leak-checking bit, and always check on alloc/dealloc
-   // tmpFlag |= _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF;
-   tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
+    // Get current flag
+    int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
 
-   _CrtSetDbgFlag( tmpFlag );
+    // Turn on leak-checking bit, and always check on alloc/dealloc
+    // tmpFlag |= _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF;
+    tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
+
+    _CrtSetDbgFlag( tmpFlag );
 
 #endif
 
 
-   /* Print out the program name and revison */
-   identifyProject(CompileInfo);
+    /* Print out the program name and revison */
+    identifyProject(CompileInfo);
 
-   {
-      char tstr[256];
-      sprintf(tstr,"Port Control - YUKON (Build %d.%d.%d)", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
-      SetConsoleTitle( tstr );
-   }
+    {
+        char tstr[256];
+        sprintf(tstr,"Port Control - YUKON (Build %d.%d.%d)", CompileInfo.major, CompileInfo.minor, CompileInfo.build);
+        SetConsoleTitle( tstr );
+    }
 
-   /* check for various flags */
-   if(argc > 1)
-   {
-      for(i = 1; i < argc; i++)
-      {
-         if(!(stricmp (argv[i], "/D")))
-         {
-            Double = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/T")))
-         {
-            TraceFlag = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/E")))
-         {
-            TraceErrorsOnly = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/C")))
-         {
-            ResetAll711s = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/R")))
-         {
-            LoadRoutes = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/A")))
-         {
-            AutoDSTChange = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "-A")))
-         {
-            AutoDSTChange = FALSE;
-            continue;
-         }
+    /* check for various flags */
+    if(argc > 1)
+    {
+        for(i = 1; i < argc; i++)
+        {
+            if(!(stricmp (argv[i], "/D")))
+            {
+                Double = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/T")))
+            {
+                TraceFlag = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/E")))
+            {
+                TraceErrorsOnly = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/C")))
+            {
+                ResetAll711s = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/R")))
+            {
+                LoadRoutes = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/A")))
+            {
+                AutoDSTChange = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "-A")))
+            {
+                AutoDSTChange = FALSE;
+                continue;
+            }
 
-         if(!(stricmp (argv[i], "/N")))
-         {
-            NoQueing = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/W")))
-         {
-            VCUWait = TRUE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/F")))
-         {
-            AmpFailOver |= AMP_FAILOVER;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/S")))
-         {
-            AmpFailOver |= AMP_SWAPPING;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/L")))
-         {
-            PrintLogEvent = FALSE;
-            continue;
-         }
-         if(!(stricmp (argv[i], "/P")))
-         {
-            PackActins = TRUE;
-            continue;
-         }
-         if(!(strcmp (argv[i], "/?")))
-         {
-            cout << "/C       Reset (Cold Start) all 711's in system" << endl;
-            cout << "/D       Emetcon Double - CCU's Double feild transmissions" << endl;
-            cout << "/E       Trace Communication for failed communications (errors) only" << endl;
-            cout << "/L       Logging to printer on any event" << endl;
-            cout << "/N       No queueing to CCU 711's" << endl;
-            cout << "/R       Download emetcon routes" << endl;
-            cout << "/T       Trace Communication for all ports / remotes" << endl;
-            cout << "/W       VCU Wait - VCU transmissions on same port must wait for completion" << endl;
-            cout << endl;
-            exit(-1);
-         }
-      }
-   }
+            if(!(stricmp (argv[i], "/N")))
+            {
+                NoQueing = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/W")))
+            {
+                VCUWait = TRUE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/F")))
+            {
+                AmpFailOver |= AMP_FAILOVER;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/S")))
+            {
+                AmpFailOver |= AMP_SWAPPING;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/L")))
+            {
+                PrintLogEvent = FALSE;
+                continue;
+            }
+            if(!(stricmp (argv[i], "/P")))
+            {
+                PackActins = TRUE;
+                continue;
+            }
+            if(!(strcmp (argv[i], "/?")))
+            {
+                cout << "/C       Reset (Cold Start) all 711's in system" << endl;
+                cout << "/D       Emetcon Double - CCU's Double feild transmissions" << endl;
+                cout << "/E       Trace Communication for failed communications (errors) only" << endl;
+                cout << "/L       Logging to printer on any event" << endl;
+                cout << "/N       No queueing to CCU 711's" << endl;
+                cout << "/R       Download emetcon routes" << endl;
+                cout << "/T       Trace Communication for all ports / remotes" << endl;
+                cout << "/W       VCU Wait - VCU transmissions on same port must wait for completion" << endl;
+                cout << endl;
+                exit(-1);
+            }
+        }
+    }
 
-   /* Initialize the Spark interface */
-   Spark = SparkRegister ();
+    /* Initialize the Spark interface */
+    Spark = SparkRegister ();
 
-   /* Allow a shitload of files to be open */
-   CTISetMaxFH (200);
+    /* Allow a shitload of files to be open */
+    CTISetMaxFH (200);
 
-   /* make it clear who is just about the boss */
-   CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0);
+    /* make it clear who is just about the boss */
+    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0);
 
-   /* LOGON TO HARDLOCK */
+    /* LOGON TO HARDLOCK */
 #ifdef HARDLOCK
-   Result = HL_LOGIN (MOD_ADDR, LOCAL_DEVICE, RefKey, VerKey);
-   if(Result != STATUS_OK)
-   {
-      fprintf(stdout, "Required Hardlock Not Detected.\n");
-      CTIExit (EXIT_PROCESS, -1);
-   }
+    Result = HL_LOGIN (MOD_ADDR, LOCAL_DEVICE, RefKey, VerKey);
+    if(Result != STATUS_OK)
+    {
+        fprintf(stdout, "Required Hardlock Not Detected.\n");
+        CTIExit (EXIT_PROCESS, -1);
+    }
 #endif
 
-   /* Open the error message file */
-   if((i = InitError ()) != NORMAL)
-   {
-      PrintError ((USHORT)i);
-      CTIExit (EXIT_PROCESS, -1);
-   }
+    /* Open the error message file */
+    if((i = InitError ()) != NORMAL)
+    {
+        PrintError ((USHORT)i);
+        CTIExit (EXIT_PROCESS, -1);
+    }
 
-   /* Announce our presence to the world */
-   SendProcessStart ("CtiPort CONTROL");           // For elogger.
+    /* Announce our presence to the world */
+    SendProcessStart ("CtiPort CONTROL");           // For elogger.
 
-   /* null out the queue handles */
-   for(i = 0; i <= PORTMAX; i++)
-   {
-      PortStats[i]         = NULL;
-      PortFlags[i]         = 0;
-   }
+    /* null out the queue handles */
+    for(i = 0; i <= PORTMAX; i++)
+    {
+        PortStats[i]         = NULL;
+        PortFlags[i]         = 0;
+    }
 
-   if(RefreshPorterRTDB())             // Loads globals and the RTDB
-   {
-      return -1;
-   }
+    if(RefreshPorterRTDB())             // Loads globals and the RTDB
+    {
+        return -1;
+    }
 
-   #ifdef MONKEYS_FLY
-   /* Initialize DRP Connection for stats alarming */
-   if(xInitDRP ("PORTER    "))
-   {
-      fprintf(stdout, "Unable to Initialize DRP Interface\n");
-      CTIExit (EXIT_PROCESS, -1);
-   }
-   #endif
+#ifdef MONKEYS_FLY
+    /* Initialize DRP Connection for stats alarming */
+    if(xInitDRP ("PORTER    "))
+    {
+        fprintf(stdout, "Unable to Initialize DRP Interface\n");
+        CTIExit (EXIT_PROCESS, -1);
+    }
+#endif
 
-   /* A new guy with Yukon,  start a thread to handle GUI requests.  */
-   /* This is a future project as of 070799, allowing a GUI to interface with Porter
-    * to tweak parameters
-    */
-   if(DO_PORTERGUICONNECTIONTHREAD)
-   {
-      _guiThread = rwMakeThreadFunction( PorterGUIConnectionThread, (void*)NULL );
-      _guiThread.start();
-   }
+    /* A new guy with Yukon,  start a thread to handle GUI requests.  */
+    /* This is a future project as of 070799, allowing a GUI to interface with Porter
+     * to tweak parameters
+     */
+    if(DO_PORTERGUICONNECTIONTHREAD)
+    {
+        _guiThread = rwMakeThreadFunction( PorterGUIConnectionThread, (void*)NULL );
+        _guiThread.start();
+    }
 
-   /* Another new Yukon Thread:
-    * This thread manages connections to iMacs and other RWCollectable message senders
-    * This guy is the PIL
-    */
-   if(DO_PORTERINTERFACETHREAD)
-   {
-      _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
-      _pilThread.start();
-   }
+    /* Another new Yukon Thread:
+     * This thread manages connections to iMacs and other RWCollectable message senders
+     * This guy is the PIL
+     */
+    if(DO_PORTERINTERFACETHREAD)
+    {
+        _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
+        _pilThread.start();
+    }
 
-   if(DO_DISPATCHTHREAD)
-   {
-      _dispThread = rwMakeThreadFunction( DispatchMsgHandlerThread, (void*)NULL );
-      _dispThread.start();
-   }
+    if(DO_DISPATCHTHREAD)
+    {
+        _dispThread = rwMakeThreadFunction( DispatchMsgHandlerThread, (void*)NULL );
+        _dispThread.start();
+    }
 
-   /* Start the time sync thread */
-   if(DO_TIMESYNCTHREAD)
-   {
-      _tsyncThread = rwMakeThreadFunction( TimeSyncThread, (void*)NULL );
-      _tsyncThread.start();
-   }
+    /* Start the time sync thread */
+    if(DO_TIMESYNCTHREAD)
+    {
+        _tsyncThread = rwMakeThreadFunction( TimeSyncThread, (void*)NULL );
+        _tsyncThread.start();
+    }
 
-   /* Start the performance update thread */
-   if(DO_PERFUPDATETHREAD)
-   {
-      _perfuThread = rwMakeThreadFunction( PerfUpdateThread, (void*)NULL );
-      _perfuThread.start();
-   }
+    /* Start the performance update thread */
+    if(DO_PERFUPDATETHREAD)
+    {
+        _perfuThread = rwMakeThreadFunction( PerfUpdateThread, (void*)NULL );
+        _perfuThread.start();
+    }
 
-   /* Start the performance thread */
-   if(DO_PERFTHREAD)
-   {
-      _perfThread = rwMakeThreadFunction( PerfThread, (void*)NULL );
-      _perfThread.start();
-   }
+    /* Start the performance thread */
+    if(DO_PERFTHREAD)
+    {
+        _perfThread = rwMakeThreadFunction( PerfThread, (void*)NULL );
+        _perfThread.start();
+    }
 
-   /*
-    *  Now start up the ports' thread
-    */
-   {  // Add scope for the LockGuard.  Hopefully MSVC60 has the scoping crap done right!
+    /*
+     *  Now start up the ports' thread
+     */
+    {  // Add scope for the LockGuard.  Hopefully MSVC60 has the scoping crap done right!
 
-      RWRecursiveLock<RWMutexLock>::LockGuard guard(PortManager.getMux()); // Protect our iteration!
-      CtiRTDB<CtiPort>::CtiRTDBIterator itr(PortManager.getMap());
+        RWRecursiveLock<RWMutexLock>::LockGuard guard(PortManager.getMux()); // Protect our iteration!
+        CtiRTDB<CtiPort>::CtiRTDBIterator itr(PortManager.getMap());
 
-      for(; ++itr ;)
-      {
-         ((CtiPort*)itr.value())->verifyPortIsRunnable( PortThread , hPorterEvents[P_QUIT_EVENT]);   // Inits the queues and PortThread
-      }
-   }
+        for(; ++itr ;)
+        {
+            ((CtiPort*)itr.value())->verifyPortIsRunnable( PortThread , hPorterEvents[P_QUIT_EVENT]);   // Inits the queues and PortThread
+        }
+    }
 
-   if(DO_PORTSHARING)
-   {
-       RWRecursiveLock<RWMutexLock>::LockGuard guard(PortManager.getMux()); // Protect our iteration!
-       CtiRTDB<CtiPort>::CtiRTDBIterator itr(PortManager.getMap());
+    if(DO_PORTSHARING)
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard guard(PortManager.getMux()); // Protect our iteration!
+        CtiRTDB<CtiPort>::CtiRTDBIterator itr(PortManager.getMap());
 
-       CtiPortShare *tmpPortShare;
+        CtiPortShare *tmpPortShare;
 
-       for(; ++itr ;)
-       {
-           if( ((CtiPort*)itr.value())->getSharedPortType() == "acs" ||
-               ((CtiPort*)itr.value())->getSharedPortType() == "ilex" )
-           {
-               tmpPortShare = new CtiPortShareIP((CtiPort*)itr.value(),
-                                                 PORTSHARENEXUS + PortShareManager.size());
-               if( tmpPortShare != NULL )
-               {
-                   ((CtiPortShareIP *)tmpPortShare)->setIPPort(((CtiPort*)itr.value())->getSharedSocketNumber());
-                   tmpPortShare->start();
-                   PortShareManager.push_back(tmpPortShare);
-               }
-               else
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " Error initializing shared port for " << ((CtiPort*)itr.value())->getName() << endl;
-               }
-           }
-       }
-   }
-
-
-
-   /* all of the port threads are started so now start first socket connection handler */
-   if(DO_PORTERCONNECTIONTHREAD)
-   {
-      _connThread = rwMakeThreadFunction( PorterConnectionThread, (void*)NULL );
-      _connThread.start();
-   }
-
-   /* Check if we need to start the filler thread */
-   if(gConfigParms.isOpt("PORTER_START_FILLERTHREAD") && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_FILLERTHREAD").data())))
-   {
-      if(DO_FILLERTHREAD)  /* go ahead and start the thread passing the variable */
-      {
-         _fillerThread = rwMakeThreadFunction( FillerThread, (void*)NULL );
-         _fillerThread.start();
-      }
-   }
-
-   /* Check if we need to start the versacom config thread */
-   if( !((gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD")).isNull()) && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD").data())))
-   {
-      if(DO_VCONFIGTHREAD) /* go ahead and start the thread passing the variable */
-      {
-         _vconfThread = rwMakeThreadFunction( VConfigThread, (void*)NULL );
-         _vconfThread.start();
-      }
-   }
-
-
-   /* Let Spark know we are ready */
-   if(Spark)
-   {
-      ImOkay ();
-   }
-
-   if(gLogPorts)
-   {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Trace is now FORCED on by configuration entry YUKON_LOG_PORTS" << endl;
-      }
-      TraceFlag = TRUE;
-   }
-   else if(TraceFlag)
-   {
-      if(TraceErrorsOnly)
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Trace is now on for errors only" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Trace is now on for all messages" << endl;
-      }
-   }
-   else
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " Trace is now off for all messages" << endl;
-   }
-
-   /* Startup is done so main process becomes input thread */
-   for(;!PorterQuit;)
-   {
-      if(RunningInConsole == FALSE)
-      {
-         CTISleep (1000L);
-      }
-      else
-      {
-         #ifdef HARDLOCK
-         time(&timeStart);
-         #endif
-
-         while(
-              (PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))    &&
-              (inRecord.Event.KeyEvent.bKeyDown != TRUE)           &&
-              (inRecord.EventType != KEY_EVENT))
-         {
-            if(Spark)
+        for(; ++itr ;)
+        {
+            if( ((CtiPort*)itr.value())->getSharedPortType() == "acs" ||
+                ((CtiPort*)itr.value())->getSharedPortType() == "ilex" )
             {
-               if(++SparkCount >= 20)
-               {
-                  SparkCount = 0;
-                  ImOkay ();
-               }
+                tmpPortShare = new CtiPortShareIP((CtiPort*)itr.value(),
+                                                  PORTSHARENEXUS + PortShareManager.size());
+                if( tmpPortShare != NULL )
+                {
+                    ((CtiPortShareIP *)tmpPortShare)->setIPPort(((CtiPort*)itr.value())->getSharedSocketNumber());
+                    tmpPortShare->start();
+                    PortShareManager.push_back(tmpPortShare);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error initializing shared port for " << ((CtiPort*)itr.value())->getName() << endl;
+                }
             }
+        }
+    }
 
-            #ifdef HARDLOCK
-            /* HARDLOCK check once every 5 minutes */
-            time (&timeStop);
-            if(difftime(timeStop, timeStart) >= 300)
+
+
+    /* all of the port threads are started so now start first socket connection handler */
+    if(DO_PORTERCONNECTIONTHREAD)
+    {
+        _connThread = rwMakeThreadFunction( PorterConnectionThread, (void*)NULL );
+        _connThread.start();
+    }
+
+    /* Check if we need to start the filler thread */
+    if(gConfigParms.isOpt("PORTER_START_FILLERTHREAD") && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_FILLERTHREAD").data())))
+    {
+        if(DO_FILLERTHREAD)  /* go ahead and start the thread passing the variable */
+        {
+            _fillerThread = rwMakeThreadFunction( FillerThread, (void*)NULL );
+            _fillerThread.start();
+        }
+    }
+
+    /* Check if we need to start the versacom config thread */
+    if( !((gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD")).isNull()) && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD").data())))
+    {
+        if(DO_VCONFIGTHREAD) /* go ahead and start the thread passing the variable */
+        {
+            _vconfThread = rwMakeThreadFunction( VConfigThread, (void*)NULL );
+            _vconfThread.start();
+        }
+    }
+
+
+    /* Let Spark know we are ready */
+    if(Spark)
+    {
+        ImOkay ();
+    }
+
+    if(gLogPorts)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Trace is now FORCED on by configuration entry YUKON_LOG_PORTS" << endl;
+        }
+        TraceFlag = TRUE;
+    }
+    else if(TraceFlag)
+    {
+        if(TraceErrorsOnly)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Trace is now on for errors only" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Trace is now on for all messages" << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Trace is now off for all messages" << endl;
+    }
+
+    /* Startup is done so main process becomes input thread */
+    for(;!PorterQuit;)
+    {
+        if(RunningInConsole == FALSE)
+        {
+            CTISleep (1000L);
+        }
+        else
+        {
+#ifdef HARDLOCK
+            time(&timeStart);
+#endif
+
+            while(
+                 (PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))    &&
+                 (inRecord.Event.KeyEvent.bKeyDown != TRUE)           &&
+                 (inRecord.EventType != KEY_EVENT))
             {
-               if(HL_AVAIL () != STATUS_OK)
-               {
-                  fprintf(stdout, "Required Hardlock Not Detected.\n");
-                  Result = HL_LOGOUT ();
-                  CTIExit (EXIT_PROCESS, -1);
-               }
-               time (&timeStart);
+                if(Spark)
+                {
+                    if(++SparkCount >= 20)
+                    {
+                        SparkCount = 0;
+                        ImOkay ();
+                    }
+                }
+
+#ifdef HARDLOCK
+                /* HARDLOCK check once every 5 minutes */
+                time (&timeStop);
+                if(difftime(timeStop, timeStart) >= 300)
+                {
+                    if(HL_AVAIL () != STATUS_OK)
+                    {
+                        fprintf(stdout, "Required Hardlock Not Detected.\n");
+                        Result = HL_LOGOUT ();
+                        CTIExit (EXIT_PROCESS, -1);
+                    }
+                    time (&timeStart);
+                }
+#endif
+
+                if(Count != 0)
+                {
+                    ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
+                }
+
+                CTISleep(250L);      // Keep this from a tight loop
             }
-            #endif
 
             if(Count != 0)
             {
-               ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
+                ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
             }
 
-            CTISleep(250L);      // Keep this from a tight loop
-         }
-
-         if(Count != 0)
-         {
-            ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
-         }
-
-         if( inRecord.EventType != KEY_EVENT || ( inRecord.EventType == KEY_EVENT && inRecord.Event.KeyEvent.bKeyDown == FALSE ))
-         {
-            CTISleep(250L);      // Keep this from a tight loop
-            continue;
-         }
-
-         if((inRecord.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
-         {
-            Char = tolower(inRecord.Event.KeyEvent.uChar.AsciiChar);
-         }
-         else
-         {
-            Char = 0;
-         }
-
-         memset(&inRecord, 0, sizeof(inRecord));
-
-         switch(Char)
-         {
-         case 0x68:              // alt - h
-         case 0x3f:              // alt - ?
-            /* Print some instructions */
+            if( inRecord.EventType != KEY_EVENT || ( inRecord.EventType == KEY_EVENT && inRecord.Event.KeyEvent.bKeyDown == FALSE ))
             {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-               dout << endl;
-               dout << "Port Control for NT" << endl << endl;
-               dout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
-               dout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
-               dout << "Alt - E     Trace error communications only" << endl;
-               dout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
-               dout << "             PORTER_TRACE_PORT    " << endl;
-               dout << "             PORTER_TRACE_REMOTE  " << endl;
-               dout << "Alt - H     This help screen" << endl;
-               dout << "Alt - L     Toggle printer logging" << endl;
-               dout << "Alt - Q     Display port queue counts / stats" << endl;
-               dout << "Alt - S     Issue a system wide timesync" << endl;
-               dout << "Alt - T     Trace all communications" << endl;
-               dout << endl;
-
-               break;
-            }
-         case 0x74:              // alt-t
-            {
-               TraceFlag = !TraceFlag;
-               if(TraceFlag)
-               {
-                  if(TraceErrorsOnly)
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << "Trace is Now On for Errors Only" << endl;
-                  }
-                  else
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << "Trace is Now On for All Messages" << endl;
-                  }
-               }
-               else
-               {
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << "Trace is Now Off for All Messages" << endl;
-                  }
-               }
-
-               break;
-            }
-         case 0x65:              // alt-e
-            {
-               RWMutexLock::LockGuard  guard(coutMux);
-               TraceErrorsOnly = !TraceErrorsOnly;
-               if(TraceErrorsOnly)
-               {
-                  TraceFlag = TRUE;
-                  fprintf(stdout, "Trace is Now On for Errors Only\n");
-               }
-               else if(TraceFlag)
-               {
-                  fprintf(stdout, "Trace is Now On for All Messages\n");
-               }
-               else
-               {
-                  //fprintf(stdout, "[1;5;33m\nTrace is Now Off for All Messages\n");
-                  fprintf(stdout, "Trace is Now Off for All Messages\n");
-               }
-
-               break;
-
-            }
-         case 0x72:              // alt-r
-            {
-               {
-                  RWMutexLock::LockGuard  guard(coutMux);
-                  fprintf(stdout, "\nDownloading Routes to All CCU-711's\n");
-               }
-               LoadAllRoutes ();
-               break;
-            }
-         case 0x64:              // alt-d
-            {
-               RWMutexLock::LockGuard  guard(coutMux);
-               Double = !Double;
-               if(Double)
-                  fprintf(stdout, "\nCommands Will be Sent Double\n");
-               else
-                  fprintf(stdout, "\nCommands Will Not be Sent Double\n");
-
-               break;
-            }
-         case 0x66:              // alt-f trace filter.
-            {
-               if(TracePort || TraceRemote)
-               {
-                  fprintf(stdout, "Trace filter is now off\n");
-                  TracePort = 0;
-                  TraceRemote = 0;
-               }
-               else
-               {
-                  if(!(CTIScanEnv ("PORTER_TRACE_PORT", &Environment)))
-                  {
-                     TracePort = atoi (Environment);
-                     fprintf(stdout, "Filtering Traces for Port %ld\n", TracePort);
-                  }
-                  else if(!(CTIScanEnv ("PORTER_TRACE_REMOTE",  &Environment)))
-                  {
-                     TraceRemote = atoi (Environment);
-                     fprintf(stdout, "Filtering Traces for Remote %ld\n", TraceRemote);
-                  }
-                  else
-                  {
-                     fprintf(stdout, "Neither PORTER_TRACE_PORT nor PORTER_TRACE_REMOTE defined in the environment\n");
-                  }
-               }
-               break;
-            }
-         case 0x6d:              // alt-m trace filter.
-            {
-               #ifndef DEBUG_MEMORY
-               fprintf(stdout, "Module not compiled for Memory Dumps\n");
-               #else
-               fprintf(stderr, "Memory Dump ------- \n");
-               fprintf(stderr, "  Start Memory Deltas ------- \n");
-               _dump_allocated_delta(10);
-               fprintf(stderr, "  Stop  Memory Deltas ------- \n\n");
-               fprintf(stderr, "  Start Allocated Memory  ------- \n");
-               _dump_allocated(10);
-               fprintf(stderr, "  Stop  Allocated Memory  ------- \n\n");
-               fprintf(stderr, "  Start Heap Check  ------- \n");
-               _heap_check();
-               fprintf(stderr, "  Stop  Heap Check  ------- \n");
-               fprintf(stderr, "Memory Dump ------- \n");
-               #endif
-
-               break;
+                CTISleep(250L);      // Keep this from a tight loop
+                continue;
             }
 
-         case 0x6c:              // alt-l
+            if((inRecord.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
             {
-               RWMutexLock::LockGuard  guard(coutMux);
-               PrintLogEvent = !PrintLogEvent;
-               if(PrintLogEvent)
-                  fprintf(stdout, "\nCommunications Events Will be Logged\n");
-               else
-                  fprintf(stdout, "\nCommunications Events Will Not be Logged\n");
-
-               break;
-
+                Char = tolower(inRecord.Event.KeyEvent.uChar.AsciiChar);
             }
-         case 0x63:              // alt-c
+            else
             {
-               RWMutexLock::LockGuard  guard(coutMux);
-               /* Issue a cold start to each CCU */
-               fprintf(stdout, "\nIssuing Cold Starts to All CCU-711's\n");
+                Char = 0;
+            }
 
-               {
-                  RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
-                  RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            memset(&inRecord, 0, sizeof(inRecord));
 
-                  CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
-                  CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+            switch(Char)
+            {
+            case 0x68:              // alt - h
+            case 0x3f:              // alt - ?
+                /* Print some instructions */
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-                  for(; ++itr_prt ;)
-                  {
-                     CtiPort *Port = itr_prt.value();
+                    dout << endl;
+                    dout << "Port Control for NT" << endl << endl;
+                    dout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
+                    dout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
+                    dout << "Alt - E     Trace error communications only" << endl;
+                    dout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
+                    dout << "             PORTER_TRACE_PORT    " << endl;
+                    dout << "             PORTER_TRACE_REMOTE  " << endl;
+                    dout << "Alt - H     This help screen" << endl;
+                    dout << "Alt - L     Toggle printer logging" << endl;
+                    dout << "Alt - Q     Display port queue counts / stats" << endl;
+                    dout << "Alt - S     Issue a system wide timesync" << endl;
+                    dout << "Alt - T     Trace all communications" << endl;
+                    dout << endl;
 
-                     if(!Port->isInhibited())
-                     {
-                        itr_dev.reset(DeviceManager.getMap());
-
-                        for(; ++itr_dev ;)
+                    break;
+                }
+            case 0x74:              // alt-t
+                {
+                    TraceFlag = !TraceFlag;
+                    if(TraceFlag)
+                    {
+                        if(TraceErrorsOnly)
                         {
-                           CtiDeviceBase *RemoteDevice = itr_dev.value();
-
-                           if(Port->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
-                           {
-                              if(RemoteDevice->getAddress() != CCUGLOBAL)
-                              {
-                                 /* Cold Start */
-                                 IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
-                              }
-                           }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Trace is Now On for Errors Only" << endl;
                         }
-                     }
-                  }
-               }
-               break;
-            }
-         case 0x73:              // alt-s
-            {
-               RWMutexLock::LockGuard  guard(coutMux);
-               /* Force a time sync */
-               fprintf(stdout, "\nForcing Sytem Wide Time Sync\n");
-
-               //CTIPostEventSem (TimeSyncSem);
-               SetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
-
-               break;
-            }
-         case 0x71:              // alt-q
-            {
-               RWMutexLock::LockGuard  guard(coutMux);
-               /* Report on the state of the queues */
-
-               {
-                  // Cannot really lock this because the user is needed to complete the iteration.
-                  RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
-                  RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-
-                  CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
-                  CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
-
-                  for(; ++itr_prt ;)
-                  {
-                     CtiPort *Port = itr_prt.value();
-
-                     if(!Port->isInhibited())
-                     {
-                        ULONG QueEntCnt = 0L;
-                        /* Print out the port queue information */
-                        QueryQueue (*QueueHandle(Port->getPortID()), &QueEntCnt);
-
-
+                        else
                         {
-                           CtiLockGuard<CtiLogger> doubt_guard(dout);
-                           dout << "Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Trace is Now On for All Messages" << endl;
                         }
-
-                        itr_dev.reset(DeviceManager.getMap());
-                        /* Do the remotes on this port */
-                        for(; ++itr_dev ;)
+                    }
+                    else
+                    {
                         {
-                           CtiDeviceBase *RemoteDevice = itr_dev.value();
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Trace is Now Off for All Messages" << endl;
+                        }
+                    }
 
-                           if(Port->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
-                           {
-                              CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+                    break;
+                }
+            case 0x65:              // alt-e
+                {
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    TraceErrorsOnly = !TraceErrorsOnly;
+                    if(TraceErrorsOnly)
+                    {
+                        TraceFlag = TRUE;
+                        fprintf(stdout, "Trace is Now On for Errors Only\n");
+                    }
+                    else if(TraceFlag)
+                    {
+                        fprintf(stdout, "Trace is Now On for All Messages\n");
+                    }
+                    else
+                    {
+                        //fprintf(stdout, "[1;5;33m\nTrace is Now Off for All Messages\n");
+                        fprintf(stdout, "Trace is Now Off for All Messages\n");
+                    }
 
-                              if(pInfo != NULL)
-                              {
-                                 QueryQueue (pInfo->QueueHandle, &QueEntCnt);
-                                 {
+                    break;
+
+                }
+            case 0x72:              // alt-r
+                {
+                    {
+                        RWMutexLock::LockGuard  guard(coutMux);
+                        fprintf(stdout, "\nDownloading Routes to All CCU-711's\n");
+                    }
+                    LoadAllRoutes ();
+                    break;
+                }
+            case 0x64:              // alt-d
+                {
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    Double = !Double;
+                    if(Double)
+                        fprintf(stdout, "\nCommands Will be Sent Double\n");
+                    else
+                        fprintf(stdout, "\nCommands Will Not be Sent Double\n");
+
+                    break;
+                }
+            case 0x66:              // alt-f trace filter.
+                {
+                    if(TracePort || TraceRemote)
+                    {
+                        fprintf(stdout, "Trace filter is now off\n");
+                        TracePort = 0;
+                        TraceRemote = 0;
+                    }
+                    else
+                    {
+                        if(!(CTIScanEnv ("PORTER_TRACE_PORT", &Environment)))
+                        {
+                            TracePort = atoi (Environment);
+                            fprintf(stdout, "Filtering Traces for Port %ld\n", TracePort);
+                        }
+                        else if(!(CTIScanEnv ("PORTER_TRACE_REMOTE",  &Environment)))
+                        {
+                            TraceRemote = atoi (Environment);
+                            fprintf(stdout, "Filtering Traces for Remote %ld\n", TraceRemote);
+                        }
+                        else
+                        {
+                            fprintf(stdout, "Neither PORTER_TRACE_PORT nor PORTER_TRACE_REMOTE defined in the environment\n");
+                        }
+                    }
+                    break;
+                }
+            case 0x6d:              // alt-m trace filter.
+                {
+#ifndef DEBUG_MEMORY
+                    fprintf(stdout, "Module not compiled for Memory Dumps\n");
+#else
+                    fprintf(stderr, "Memory Dump ------- \n");
+                    fprintf(stderr, "  Start Memory Deltas ------- \n");
+                    _dump_allocated_delta(10);
+                    fprintf(stderr, "  Stop  Memory Deltas ------- \n\n");
+                    fprintf(stderr, "  Start Allocated Memory  ------- \n");
+                    _dump_allocated(10);
+                    fprintf(stderr, "  Stop  Allocated Memory  ------- \n\n");
+                    fprintf(stderr, "  Start Heap Check  ------- \n");
+                    _heap_check();
+                    fprintf(stderr, "  Stop  Heap Check  ------- \n");
+                    fprintf(stderr, "Memory Dump ------- \n");
+#endif
+
+                    break;
+                }
+
+            case 0x6c:              // alt-l
+                {
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    PrintLogEvent = !PrintLogEvent;
+                    if(PrintLogEvent)
+                        fprintf(stdout, "\nCommunications Events Will be Logged\n");
+                    else
+                        fprintf(stdout, "\nCommunications Events Will Not be Logged\n");
+
+                    break;
+
+                }
+            case 0x63:              // alt-c
+                {
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    /* Issue a cold start to each CCU */
+                    fprintf(stdout, "\nIssuing Cold Starts to All CCU-711's\n");
+
+                    {
+                        RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
+                        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+
+                        CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
+                        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+
+                        for(; ++itr_prt ;)
+                        {
+                            CtiPort *Port = itr_prt.value();
+
+                            if(!Port->isInhibited())
+                            {
+                                itr_dev.reset(DeviceManager.getMap());
+
+                                for(; ++itr_dev ;)
+                                {
+                                    CtiDeviceBase *RemoteDevice = itr_dev.value();
+
+                                    if(Port->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
+                                    {
+                                        if(RemoteDevice->getAddress() != CCUGLOBAL)
+                                        {
+                                            /* Cold Start */
+                                            IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            case 0x73:              // alt-s
+                {
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    /* Force a time sync */
+                    fprintf(stdout, "\nForcing Sytem Wide Time Sync\n");
+
+                    //CTIPostEventSem (TimeSyncSem);
+                    SetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
+
+                    break;
+                }
+            case 0x71:              // alt-q
+                {
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    /* Report on the state of the queues */
+
+                    {
+                        // Cannot really lock this because the user is needed to complete the iteration.
+                        RWRecursiveLock<RWMutexLock>::LockGuard  port_guard(PortManager.getMux());        // Protect our iteration!
+                        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+
+                        CtiRTDB<CtiPort>::CtiRTDBIterator     itr_prt(PortManager.getMap());
+                        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(DeviceManager.getMap());
+
+                        for(; ++itr_prt ;)
+                        {
+                            CtiPort *Port = itr_prt.value();
+
+                            if(!Port->isInhibited())
+                            {
+                                ULONG QueEntCnt = 0L;
+                                /* Print out the port queue information */
+                                QueryQueue (*QueueHandle(Port->getPortID()), &QueEntCnt);
+
+
+                                {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "    CCU:  " << RemoteDevice->getName() << endl;
-                                    dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
-                                 }
-                                 QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
-                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    CHAR oldfill = dout.fill('0');
-                                    dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
-                                    dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
-                                    dout.fill(oldfill);
-                                 }
-                              }
-                           }
+                                    dout << "Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+                                }
+
+                                itr_dev.reset(DeviceManager.getMap());
+                                /* Do the remotes on this port */
+                                for(; ++itr_dev ;)
+                                {
+                                    CtiDeviceBase *RemoteDevice = itr_dev.value();
+
+                                    if(Port->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
+                                    {
+                                        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+                                        if(pInfo != NULL)
+                                        {
+                                            QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << "    CCU:  " << RemoteDevice->getName() << endl;
+                                                dout << "                   Queue Queue Entries:  " << QueEntCnt << endl;
+                                            }
+                                            QueryQueue (pInfo->ActinQueueHandle, &QueEntCnt);
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                CHAR oldfill = dout.fill('0');
+                                                dout << "                   Actin Queue Entries:  " << QueEntCnt << endl;
+                                                dout << "                   Status Byte:          " << hex << setw(4) << (int)pInfo->Status << endl;
+                                                dout.fill(oldfill);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-                     }
-                  }
-               }
-               break;
+                    }
+                    break;
+                }
+            default:
+                if(Char != 0)
+                {
+                    fprintf(stdout, " No ALT 0x%04X, 0x%04X, 0x%02X 0x%08X\n",inRecord.Event.KeyEvent.wVirtualScanCode,inRecord.Event.KeyEvent.wVirtualKeyCode, Char, inRecord.Event.KeyEvent.dwControlKeyState);
+                }
+                break;
             }
-         default:
-            if(Char != 0)
-            {
-               fprintf(stdout, " No ALT 0x%04X, 0x%04X, 0x%02X 0x%08X\n",inRecord.Event.KeyEvent.wVirtualScanCode,inRecord.Event.KeyEvent.wVirtualKeyCode, Char, inRecord.Event.KeyEvent.dwControlKeyState);
-            }
-            break;
-         }
-      }
-   }
+        }
+    }
 
-   PorterCleanUp(0);
+    PorterCleanUp(0);
 
-   #ifdef HARDLOCK
-   // LOGOUT HARDLOCK
-   Result = HL_LOGOUT ();
-   #endif
+#ifdef HARDLOCK
 
-   return 0;
+    // LOGOUT HARDLOCK
+    Result = HL_LOGOUT ();
+#endif
+
+    return 0;
 }
 
 
@@ -974,599 +978,605 @@ INT PorterMainFunction (INT argc, CHAR **argv)
  */
 VOID APIENTRY PorterCleanUp (ULONG Reason)
 {
-   PorterQuit = TRUE;
-   SetEvent( hPorterEvents[P_QUIT_EVENT] );
-   PorterListenNexus.CTINexusClose();
+    PorterQuit = TRUE;
+    SetEvent( hPorterEvents[P_QUIT_EVENT] );
+    PorterListenNexus.CTINexusClose();
 
 
-   if(PortShareManager.size() > 0)
-   {
-       //  delete/stop the shared ports
-       while(PortShareManager.size() > 0)
-       {
-           delete PortShareManager.back();
-           PortShareManager.pop_back();
-       }
-   }
+    if(PortShareManager.size() > 0)
+    {
+        //  delete/stop the shared ports
+        while(PortShareManager.size() > 0)
+        {
+            delete PortShareManager.back();
+            PortShareManager.pop_back();
+        }
+    }
 
 
-   if(_pilThread.isValid())               _pilThread.requestCancellation(2000);
-   if(_dispThread.isValid())              _dispThread.requestCancellation(2000);
-   if(_connThread.isValid())              _connThread.requestCancellation(200);
-   if(_guiThread.isValid())               _guiThread.requestCancellation(200);
-   if(_tsyncThread.isValid())             _tsyncThread.requestCancellation(200);
-   if(_perfThread.isValid())              _perfThread.requestCancellation(200);
-   if(_perfuThread.isValid())             _perfuThread.requestCancellation(200);
-   if(_fillerThread.isValid())            _fillerThread.requestCancellation(200);
-   if(_vconfThread.isValid())             _vconfThread.requestCancellation(200);
-   if(_queueCCU711Thread.isValid())       _queueCCU711Thread.requestCancellation(200);
-   if(_kickerCCU711Thread.isValid())      _kickerCCU711Thread.requestCancellation(200);
-   if(_dispThread.isValid())              _dispThread.requestCancellation(200);
+    if(_pilThread.isValid())               _pilThread.requestCancellation(2000);
+    if(_dispThread.isValid())              _dispThread.requestCancellation(2000);
+    if(_connThread.isValid())              _connThread.requestCancellation(200);
+    if(_guiThread.isValid())               _guiThread.requestCancellation(200);
+    if(_tsyncThread.isValid())             _tsyncThread.requestCancellation(200);
+    if(_perfThread.isValid())              _perfThread.requestCancellation(200);
+    if(_perfuThread.isValid())             _perfuThread.requestCancellation(200);
+    if(_fillerThread.isValid())            _fillerThread.requestCancellation(200);
+    if(_vconfThread.isValid())             _vconfThread.requestCancellation(200);
+    if(_queueCCU711Thread.isValid())       _queueCCU711Thread.requestCancellation(200);
+    if(_kickerCCU711Thread.isValid())      _kickerCCU711Thread.requestCancellation(200);
+    if(_dispThread.isValid())              _dispThread.requestCancellation(200);
 
 
-   if(_connThread.isValid())
-   {
-      if(_connThread.join(100) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _connThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _connThread shutdown" << endl;
-      }
-   }
+    if(_connThread.isValid())
+    {
+        if(_connThread.join(100) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _connThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _connThread shutdown" << endl;
+        }
+    }
 
-   if(_guiThread.isValid())
-   {
-      if(_guiThread.join(100) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _guiThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _guiThread shutdown" << endl;
-      }
-   }
+    if(_guiThread.isValid())
+    {
+        if(_guiThread.join(100) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _guiThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _guiThread shutdown" << endl;
+        }
+    }
 
-   if(_perfThread.isValid())
-   {
-      if(_perfThread.join(100) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _perfThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _perfThread shutdown" << endl;
-      }
-   }
+    if(_perfThread.isValid())
+    {
+        if(_perfThread.join(100) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _perfThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _perfThread shutdown" << endl;
+        }
+    }
 
-   if(_perfuThread.isValid())
-   {
-      if(_perfuThread.join(100) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _perfuThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _perfuThread shutdown" << endl;
-      }
-   }
+    if(_perfuThread.isValid())
+    {
+        if(_perfuThread.join(100) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _perfuThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _perfuThread shutdown" << endl;
+        }
+    }
 
-   if(_tsyncThread.isValid())
-   {
-      if(_tsyncThread.join(100) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _tsyncThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _tsyncThread shutdown" << endl;
-      }
-   }
+    if(_tsyncThread.isValid())
+    {
+        if(_tsyncThread.join(100) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _tsyncThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _tsyncThread shutdown" << endl;
+        }
+    }
 
-   if(_fillerThread.isValid())
-   {
-      if(_fillerThread.join(100) != RW_THR_COMPLETED)
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _fillerThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _fillerThread shutdown" << endl;
-      }
-   }
+    if(_fillerThread.isValid())
+    {
+        if(_fillerThread.join(100) != RW_THR_COMPLETED)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _fillerThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _fillerThread shutdown" << endl;
+        }
+    }
 
-   if(_vconfThread.isValid())
-   {
-      if(_vconfThread.join(100) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _vconfThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _vconfThread shutdown" << endl;
-      }
-   }
+    if(_vconfThread.isValid())
+    {
+        if(_vconfThread.join(100) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _vconfThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _vconfThread shutdown" << endl;
+        }
+    }
 
 
-   if(_dispThread.isValid())
-   {
-      if(_dispThread.join(15000) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _dispThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _dispThread shutdown" << endl;
-      }
-   }
+    if(_dispThread.isValid())
+    {
+        if(_dispThread.join(15000) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _dispThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _dispThread shutdown" << endl;
+        }
+    }
 
-   if(_pilThread.isValid())
-   {
-      if(_pilThread.join(15000) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _pilThread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _pilThread shutdown" << endl;
-      }
-   }
+    if(_pilThread.isValid())
+    {
+        if(_pilThread.join(15000) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _pilThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _pilThread shutdown" << endl;
+        }
+    }
 
-   if(_queueCCU711Thread.isValid())
-   {
-      if(_queueCCU711Thread.join(1500) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _queueCCU711Thread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _queueCCU711Thread shutdown" << endl;
-      }
-   }
+    if(_queueCCU711Thread.isValid())
+    {
+        if(_queueCCU711Thread.join(1500) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _queueCCU711Thread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _queueCCU711Thread shutdown" << endl;
+        }
+    }
 
-   if(_kickerCCU711Thread.isValid())
-   {
-      if(_kickerCCU711Thread.join(1500) != RW_THR_COMPLETED )
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _kickerCCU711Thread did not shutdown" << endl;
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " _kickerCCU711Thread shutdown" << endl;
-      }
-   }
+    if(_kickerCCU711Thread.isValid())
+    {
+        if(_kickerCCU711Thread.join(1500) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _kickerCCU711Thread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _kickerCCU711Thread shutdown" << endl;
+        }
+    }
 
-   {
-      RWRecursiveLock<RWMutexLock>::LockGuard prt_guard(PortManager.getMux()); // Protect our destruction!
-      PortManager.haltLogs();
-   }
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard prt_guard(PortManager.getMux()); // Protect our destruction!
+        PortManager.haltLogs();
+    }
 
-   // Make sure all the logs get output and done!
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " logger shutdown" << endl;
-   }
+    // Make sure all the logs get output and done!
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " logger shutdown" << endl;
+    }
 
-   dout.interrupt(CtiThread::SHUTDOWN);
-   dout.join();
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
 }
 
 
 
 void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 {
-   if(ke->bKeyDown)  fprintf(stdout, "Key     DOWN\n");
-   else              fprintf(stdout, "Key NOT DOWN\n");
+    if(ke->bKeyDown)  fprintf(stdout, "Key     DOWN\n");
+    else              fprintf(stdout, "Key NOT DOWN\n");
 
-   fprintf(stdout, "Repeat Count = %d\n",ke->wRepeatCount);
-   fprintf(stdout, "Key  Code %d = 0x%04X\n", ke->wVirtualKeyCode, ke->wVirtualKeyCode);
-   fprintf(stdout, "Scan Code %d = 0x%04X\n", ke->wVirtualScanCode, ke->wVirtualScanCode);
-   fprintf(stdout, "Char         = %x\n",ke->uChar.AsciiChar);
+    fprintf(stdout, "Repeat Count = %d\n",ke->wRepeatCount);
+    fprintf(stdout, "Key  Code %d = 0x%04X\n", ke->wVirtualKeyCode, ke->wVirtualKeyCode);
+    fprintf(stdout, "Scan Code %d = 0x%04X\n", ke->wVirtualScanCode, ke->wVirtualScanCode);
+    fprintf(stdout, "Char         = %x\n",ke->uChar.AsciiChar);
 
-   fprintf(stdout, "Control State: 0x%08X\n", ke->dwControlKeyState);
+    fprintf(stdout, "Control State: 0x%08X\n", ke->dwControlKeyState);
 
-   if(ke->dwControlKeyState & CAPSLOCK_ON              )
-   {
-      fprintf(stdout, "\tCapsLock ON\n");
-   }
-   if(ke->dwControlKeyState & ENHANCED_KEY             )
-   {
-      fprintf(stdout, "\tEnhanced Key\n");
-   }
-   if(ke->dwControlKeyState & LEFT_ALT_PRESSED         )
-   {
-      fprintf(stdout, "\tL Alt      \n");
-   }
-   if(ke->dwControlKeyState & LEFT_CTRL_PRESSED        )
-   {
-      fprintf(stdout, "\tL Ctrl     \n");
-   }
-   if(ke->dwControlKeyState & NUMLOCK_ON               )
-   {
-      fprintf(stdout, "\tNumLock ON\n");
-   }
-   if(ke->dwControlKeyState & RIGHT_ALT_PRESSED        )
-   {
-      fprintf(stdout, "\tR Alt      \n");
-   }
-   if(ke->dwControlKeyState & RIGHT_CTRL_PRESSED       )
-   {
-      fprintf(stdout, "\tR Ctrl     \n");
-   }
-   if(ke->dwControlKeyState & SCROLLLOCK_ON            )
-   {
-      fprintf(stdout, "\tScroll Lock\n");
-   }
-   if(ke->dwControlKeyState & SHIFT_PRESSED            )
-   {
-      fprintf(stdout, "\tShift      \n");
-   }
+    if(ke->dwControlKeyState & CAPSLOCK_ON              )
+    {
+        fprintf(stdout, "\tCapsLock ON\n");
+    }
+    if(ke->dwControlKeyState & ENHANCED_KEY             )
+    {
+        fprintf(stdout, "\tEnhanced Key\n");
+    }
+    if(ke->dwControlKeyState & LEFT_ALT_PRESSED         )
+    {
+        fprintf(stdout, "\tL Alt      \n");
+    }
+    if(ke->dwControlKeyState & LEFT_CTRL_PRESSED        )
+    {
+        fprintf(stdout, "\tL Ctrl     \n");
+    }
+    if(ke->dwControlKeyState & NUMLOCK_ON               )
+    {
+        fprintf(stdout, "\tNumLock ON\n");
+    }
+    if(ke->dwControlKeyState & RIGHT_ALT_PRESSED        )
+    {
+        fprintf(stdout, "\tR Alt      \n");
+    }
+    if(ke->dwControlKeyState & RIGHT_CTRL_PRESSED       )
+    {
+        fprintf(stdout, "\tR Ctrl     \n");
+    }
+    if(ke->dwControlKeyState & SCROLLLOCK_ON            )
+    {
+        fprintf(stdout, "\tScroll Lock\n");
+    }
+    if(ke->dwControlKeyState & SHIFT_PRESSED            )
+    {
+        fprintf(stdout, "\tShift      \n");
+    }
 
-   fprintf(stdout, "\n");
+    fprintf(stdout, "\n");
 
 }
 
 INT RefreshPorterRTDB(void *ptr)
 {
-   INT   i;
-   INT   status = NORMAL;
-   DWORD dwWait;
+    INT   i;
+    INT   status = NORMAL;
+    DWORD dwWait;
+    LONG  id = 0;
 
-   CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)ptr;
+    CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)ptr;
 
-   // Reload the globals used by the porter app too.
-   InitYukonBaseGlobals();
-   LoadPorterGlobals();
+    // Reload the globals used by the porter app too.
+    InitYukonBaseGlobals();
+    LoadPorterGlobals();
 
-   if(pChg == NULL || (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT) )
-   {
-      if(pChg != NULL)
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reloading all ports based upon db change" << endl;
-         }
-      }
-
-      RWRecursiveLock<RWMutexLock>::LockGuard  guard(PortManager.getMux());
-      PortManager.RefreshList();
-      // PortManager.DumpList();
-   }
-
-   if(!PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
-   {
-      if(pChg != NULL)
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reloading all devices based upon db change" << endl;
-         }
-      }
-
-      DeviceManager.RefreshList();
-      DeviceManager.RefreshStatistics();
-      DeviceManager.RefreshRoutes();
-   }
-
-   if(!PorterQuit)
-   {
-      if(pChg == NULL || (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
-      {
-         if(pChg != NULL)
-         {
+    if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT)) )
+    {
+        if(pChg != NULL)
+        {
             {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << RWTime() << " Reloading all routes based upon db change" << endl;
-            }
-         }
-
-         RouteManager.RefreshList();
-         // RouteManager.DumpList();
-      }
-
-      /* Make routes associate with devices */
-      attachRouteManagerToDevices(&DeviceManager, &RouteManager);
-      attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
-
-      if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
-      {
-         LONG paoid = GetPAOIdOfPoint( pChg->getId() );
-
-         RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-         CtiDevice *pDevToReset = DeviceManager.getEqual( paoid );
-         if(pDevToReset)
-         {
-             pDevToReset->ResetDevicePoints();
-             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Reset device " << pDevToReset->getName() << "'s pointmanager due to pointchange on point " <<  pChg->getId() << endl;
-             }
-         }
-         else
-         {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-         }
-      }
-   }
-   else
-   {
-      PorterCleanUp(0);
-      return -1;
-   }
+                dout << RWTime() << " Reloading all ports based upon db change" << endl;
+            }
+        }
 
-   /* see if we need to start process's for queuing */
-   {
-      RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());        // Protect our iteration!
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(PortManager.getMux());
+        PortManager.RefreshList();
+    }
 
-      if(!(_queueCCU711Thread.isValid()) && DeviceManager.getMap().contains(containsCCU711, NULL))
-      {
-         _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
-         _queueCCU711Thread.start();
+    if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());
 
-         if( !(_kickerCCU711Thread.isValid()) )
-         {
-            _kickerCCU711Thread = rwMakeThreadFunction( KickerThread, (void*)NULL );
-            _kickerCCU711Thread.start();
-         }
-      }
-   }
+        if(pChg != NULL)
+        {
+            id = pChg->getId();
+        }
 
-   {
-      PortManager.apply( applyTAPPortStatus, NULL);
-      PortManager.apply( applyPortVerify, NULL);
-   }
+        if(id)
+        {
+            DeviceManager.RefreshList(id);      // Reloads them all if id is not in the list already!
+        }
+        else
+        {
+            DeviceManager.RefreshList();
+        }
+        DeviceManager.RefreshStatistics();
+        DeviceManager.RefreshRoutes();
+    }
 
-   if(pChg != NULL)
-   {
-      delete pChg;
-   }
+    if(!PorterQuit)
+    {
+        if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
+        {
+            if(pChg != NULL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Reloading all routes based upon db change" << endl;
+                }
+            }
 
-   return status;
+            RouteManager.RefreshList();
+            // RouteManager.DumpList();
+        }
+
+        /* Make routes associate with devices */
+        attachRouteManagerToDevices(&DeviceManager, &RouteManager);
+        attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+
+        if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
+        {
+            LONG paoid = GetPAOIdOfPoint( pChg->getId() );
+
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiDevice *pDevToReset = DeviceManager.getEqual( paoid );
+            if(pDevToReset)
+            {
+                pDevToReset->ResetDevicePoints();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Reset device " << pDevToReset->getName() << "'s pointmanager due to pointchange on point " << pChg->getId() << endl;
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    else
+    {
+        PorterCleanUp(0);
+        return -1;
+    }
+
+    /* see if we need to start process's for queuing */
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());        // Protect our iteration!
+
+        if(!(_queueCCU711Thread.isValid()) && DeviceManager.getMap().contains(containsCCU711, NULL))
+        {
+            _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
+            _queueCCU711Thread.start();
+
+            if( !(_kickerCCU711Thread.isValid()) )
+            {
+                _kickerCCU711Thread = rwMakeThreadFunction( KickerThread, (void*)NULL );
+                _kickerCCU711Thread.start();
+            }
+        }
+    }
+
+    {
+        PortManager.apply( applyTAPPortStatus, NULL);
+        PortManager.apply( applyPortVerify, NULL);
+    }
+
+    if(pChg != NULL)
+    {
+        delete pChg;
+    }
+
+    return status;
 }
 
 
 void LoadPorterGlobals(void)
 {
-   INT  j;
-   char temp[80];
-   RWCString Temp;
-   /* Definitions to get environment variables */
-   CHAR Info[50] = {'\0'};
-   PCHAR PInfo;
+    INT  j;
+    char temp[80];
+    RWCString Temp;
+    /* Definitions to get environment variables */
+    CHAR Info[50] = {'\0'};
+    PCHAR PInfo;
 
 
-   // Causes all normal error and dout traffic to be routed to the porter.logxx files
-   cParmPorterServiceLog = FALSE;
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_SERVICE_LOG")).isNull())
-   {
-      if(!stricmp("TRUE", Temp.data()))
-      {
-         cParmPorterServiceLog = TRUE;
-      }
-   }
+    // Causes all normal error and dout traffic to be routed to the porter.logxx files
+    cParmPorterServiceLog = FALSE;
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_SERVICE_LOG")).isNull())
+    {
+        if(!stricmp("TRUE", Temp.data()))
+        {
+            cParmPorterServiceLog = TRUE;
+        }
+    }
 
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_RELOAD_RATE")).isNull())
-   {
-      PorterRefreshRate = atoi(Temp.data());
-   }
-   else
-   {
-      PorterRefreshRate = 300;
-   }
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_RELOAD_RATE")).isNull())
+    {
+        PorterRefreshRate = atoi(Temp.data());
+    }
+    else
+    {
+        PorterRefreshRate = 300;
+    }
 
-   if( !(Temp = gConfigParms.getValueAsString("PIL_QUEUE_SIZE")).isNull())
-   {
-      PILMaxQueueSize = atoi(Temp.data());
-   }
-   else
-   {
-      PILMaxQueueSize = 1000;
-   }
+    if( !(Temp = gConfigParms.getValueAsString("PIL_QUEUE_SIZE")).isNull())
+    {
+        PILMaxQueueSize = atoi(Temp.data());
+    }
+    else
+    {
+        PILMaxQueueSize = 1000;
+    }
 
-   /* Check the extra delay flag */
-   if( !(Temp = gConfigParms.getValueAsString("PORTER_EXTRATIMEOUT")).isNull())
-   {
-      ExtraTimeOut = atoi(Temp.data());
-   }
-   else
-   {
-      ExtraTimeOut = 0;
-   }
+    /* Check the extra delay flag */
+    if( !(Temp = gConfigParms.getValueAsString("PORTER_EXTRATIMEOUT")).isNull())
+    {
+        ExtraTimeOut = atoi(Temp.data());
+    }
+    else
+    {
+        ExtraTimeOut = 0;
+    }
 
-   /* Check the number of queue octets allowed */
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_MAXOCTS")).isNull())
-   {
-      MaxOcts = atoi(Temp.data());
-      if(MaxOcts < 81)
-      {
-         MaxOcts = 81;
-      }
-      else if(MaxOcts > 261)
-      {
-         MaxOcts = 261;
-      }
-   }
-   else
-   {
-      MaxOcts = 261;
-   }
+    /* Check the number of queue octets allowed */
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_MAXOCTS")).isNull())
+    {
+        MaxOcts = atoi(Temp.data());
+        if(MaxOcts < 81)
+        {
+            MaxOcts = 81;
+        }
+        else if(MaxOcts > 261)
+        {
+            MaxOcts = 261;
+        }
+    }
+    else
+    {
+        MaxOcts = 261;
+    }
 
-   /* Check if we need to start the TCP/IP Interface */
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_TCPIP")).isNull())
-   {
-      if(!(stricmp ("YES", Temp.data())) || (!(stricmp ("SES92", Temp.data()))))
-      {
-         StartTCPIP = TCP_SES92;
-      }
-      else if(!(stricmp ("CCU710", Temp.data())))
-      {
-         StartTCPIP = TCP_CCU710;
-      }
-      else if(!(stricmp ("WELCO", Temp.data())))
-      {
-         StartTCPIP = TCP_WELCO;
-      }
-      else
-      {
-         fprintf(stdout, "Unknown TCP/IP Interface Type\n");
-      }
-   }
+    /* Check if we need to start the TCP/IP Interface */
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_TCPIP")).isNull())
+    {
+        if(!(stricmp ("YES", Temp.data())) || (!(stricmp ("SES92", Temp.data()))))
+        {
+            StartTCPIP = TCP_SES92;
+        }
+        else if(!(stricmp ("CCU710", Temp.data())))
+        {
+            StartTCPIP = TCP_CCU710;
+        }
+        else if(!(stricmp ("WELCO", Temp.data())))
+        {
+            StartTCPIP = TCP_WELCO;
+        }
+        else
+        {
+            fprintf(stdout, "Unknown TCP/IP Interface Type\n");
+        }
+    }
 
-   /* Resolve the stuff that we need for DIO24 Output */
-   if(!(Temp = gConfigParms.getValueAsString("DIO24")).isNull())
-   {
-      strcpy (Info, Temp.data());
-      /* Start the parcing process */
-      if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
-      {
-         DIO24Base = DAS08BASE;
-         Info[0] = '\0';
-      }
-   }
-   else if(!(Temp = gConfigParms.getValueAsString("DAS08")).isNull())
-   {
-      strcpy (Info, Temp.data());
-      /* Start the tokenizing */
-      if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
-      {
-         Info[0] = '\0';
-      }
-      else
-      {
-         DIO24Base += DIO24OFFSET;
-      }
-   }
-   else
-   {
-      Info[0] = '\0';
-   }
+    /* Resolve the stuff that we need for DIO24 Output */
+    if(!(Temp = gConfigParms.getValueAsString("DIO24")).isNull())
+    {
+        strcpy (Info, Temp.data());
+        /* Start the parcing process */
+        if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
+        {
+            DIO24Base = DAS08BASE;
+            Info[0] = '\0';
+        }
+    }
+    else if(!(Temp = gConfigParms.getValueAsString("DAS08")).isNull())
+    {
+        strcpy (Info, Temp.data());
+        /* Start the tokenizing */
+        if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
+        {
+            Info[0] = '\0';
+        }
+        else
+        {
+            DIO24Base += DIO24OFFSET;
+        }
+    }
+    else
+    {
+        Info[0] = '\0';
+    }
 
-   /* Unravel the mode flags */
-   if(Info[0] == '\0')
-   {
-      DIO24Mode[0] = 0xffff;
-   }
-   else
-   {
-      j = 0;
-      while((PInfo = strtok (NULL, ";,")) != NULL && j < 9)
-      {
-         if(sscanf (PInfo, "%hx", &DIO24Mode[j++]) != 1)
-         {
-            break;
-         }
-      }
-   }
-
-
-   /* Check if we are using L and G LCU's */
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_LANDGLCUS")).isNull() && (!(stricmp ("YES", Temp.data()))))
-   {
-      LAndGLCUs = TRUE;
-   }
-
-   /*  set the frequency info -- Defaults to 12.5 */
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_FREQ")).isNull())
-   {
-      /* Decode the system frequency */
-      if(!(stricmp (Temp.data(), "7.3")))
-      {
-         DLCFreq1 = 125;
-         DLCFreq2 = 51;
-      }
-      else if(!(stricmp (Temp.data(), "7.8")))
-      {
-         DLCFreq1 = 125;
-         DLCFreq2 = 48;
-      }
-      else if(!(stricmp (Temp.data(), "8.3")))
-      {
-         DLCFreq1 = 49;
-         DLCFreq2 = 12;
-      }
-      else if(!(stricmp (Temp.data(), "8.8")))
-      {
-         DLCFreq1 = 124;
-         DLCFreq2 = 55;
-      }
-      else if(!(stricmp (Temp.data(), "9.6")))
-      {
-         DLCFreq1 = 17;
-         DLCFreq2 = 7;
-      }
-      else if(!(stricmp (Temp.data(), "10.4")))
-      {
-         DLCFreq1 = 121;
-         DLCFreq2 = 46;
-      }
-      else if(!(stricmp (Temp.data(), "12.5")))
-      {
-         DLCFreq1 = 94;
-         DLCFreq2 = 37;
-      }
-      else if(!(stricmp (Temp.data(), "13.8")))
-      {
-         DLCFreq1 = 123;
-         DLCFreq2 = 35;
-      }
-   }
-
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_DEBUGLEVEL")).isNull())
-   {
-      char *eptr;
-      PorterDebugLevel = strtoul(Temp.data(), &eptr, 16);
-   }
+    /* Unravel the mode flags */
+    if(Info[0] == '\0')
+    {
+        DIO24Mode[0] = 0xffff;
+    }
+    else
+    {
+        j = 0;
+        while((PInfo = strtok (NULL, ";,")) != NULL && j < 9)
+        {
+            if(sscanf (PInfo, "%hx", &DIO24Mode[j++]) != 1)
+            {
+                break;
+            }
+        }
+    }
 
 
-   if(!(Temp = gConfigParms.getValueAsString("PORTER_TSYNC_RATE")).isNull())
-   {
-      if(!(TimeSyncRate = atol (Temp.data())))
-      {
-         /* Unable to convert so assume "NOT EVER" */
-         TimeSyncRate = 0L;
-      }
-   }
-   else
-   {
-      TimeSyncRate = 3600L;
-   }
+    /* Check if we are using L and G LCU's */
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_LANDGLCUS")).isNull() && (!(stricmp ("YES", Temp.data()))))
+    {
+        LAndGLCUs = TRUE;
+    }
+
+    /*  set the frequency info -- Defaults to 12.5 */
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_FREQ")).isNull())
+    {
+        /* Decode the system frequency */
+        if(!(stricmp (Temp.data(), "7.3")))
+        {
+            DLCFreq1 = 125;
+            DLCFreq2 = 51;
+        }
+        else if(!(stricmp (Temp.data(), "7.8")))
+        {
+            DLCFreq1 = 125;
+            DLCFreq2 = 48;
+        }
+        else if(!(stricmp (Temp.data(), "8.3")))
+        {
+            DLCFreq1 = 49;
+            DLCFreq2 = 12;
+        }
+        else if(!(stricmp (Temp.data(), "8.8")))
+        {
+            DLCFreq1 = 124;
+            DLCFreq2 = 55;
+        }
+        else if(!(stricmp (Temp.data(), "9.6")))
+        {
+            DLCFreq1 = 17;
+            DLCFreq2 = 7;
+        }
+        else if(!(stricmp (Temp.data(), "10.4")))
+        {
+            DLCFreq1 = 121;
+            DLCFreq2 = 46;
+        }
+        else if(!(stricmp (Temp.data(), "12.5")))
+        {
+            DLCFreq1 = 94;
+            DLCFreq2 = 37;
+        }
+        else if(!(stricmp (Temp.data(), "13.8")))
+        {
+            DLCFreq1 = 123;
+            DLCFreq2 = 35;
+        }
+    }
+
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_DEBUGLEVEL")).isNull())
+    {
+        char *eptr;
+        PorterDebugLevel = strtoul(Temp.data(), &eptr, 16);
+    }
 
 
-   if(DebugLevel & 0x0001)
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_TSYNC_RATE")).isNull())
+    {
+        if(!(TimeSyncRate = atol (Temp.data())))
+        {
+            /* Unable to convert so assume "NOT EVER" */
+            TimeSyncRate = 0L;
+        }
+    }
+    else
+    {
+        TimeSyncRate = 3600L;
+    }
 
-      dout << "Loading porter globals: " << endl;
-      dout << "PORTER_RELOAD_RATE    " << PorterRefreshRate << endl;
-      dout << "PIL_QUEUE_SIZE        " << PILMaxQueueSize << endl;
-      dout << "PORTER_EXTRATIMEOUT     " << ExtraTimeOut << endl;
-      dout << "PORTER_MAXOCTS          " << MaxOcts << endl;
-      dout << "PORTER_PORTER_TCPIP     " << StartTCPIP << endl;
-   }
+
+    if(DebugLevel & 0x0001)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        dout << "Loading porter globals: " << endl;
+        dout << "PORTER_RELOAD_RATE    " << PorterRefreshRate << endl;
+        dout << "PIL_QUEUE_SIZE        " << PILMaxQueueSize << endl;
+        dout << "PORTER_EXTRATIMEOUT     " << ExtraTimeOut << endl;
+        dout << "PORTER_MAXOCTS          " << MaxOcts << endl;
+        dout << "PORTER_PORTER_TCPIP     " << StartTCPIP << endl;
+    }
 }
 
 
@@ -1601,4 +1611,3 @@ void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool
         traceList.clearAndDestroy();
     }
 }
-
