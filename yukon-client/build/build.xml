@@ -15,6 +15,7 @@
      <property name="macs"           value="${yukon.base}/macs" />
      <property name="commander"     value="${yukon.base}/commander" />
      <property name="trending"     value="${yukon.base}/trending" />
+     <property name="webgraph"     value="${yukon.base}/webgraph" />
      <property name="dbeditor"     value="${yukon.base}/dbeditor" />
      <!-- <property name="web"          value="${yukon.base}/web" /> -->
      <property name="calchist"     value="${yukon.base}/calchist" />
@@ -66,6 +67,7 @@
         <ant dir="${macs}" target="${dotarget}" />
         <ant dir="${commander}" target="${dotarget}" />
         <ant dir="${trending}" target="${dotarget}" />
+        <ant dir="${webgraph}" target="${dotarget}" />
         <ant dir="${dbeditor}" target="${dotarget}" />
         <ant dir="${calchist}" target="${dotarget}" />
         <ant dir="${logger}" target="${dotarget}"/>

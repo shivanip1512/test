@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<project name="trending" default="all">
+
+   <property file="../build/build.properties"/>
+
+   <target name="all" depends="clean,build">
+    </target>
+   
+   <target name="build">
+       <mkdir dir="build"/>
+       
+       <javac srcdir="src" destdir="build">                               
+          <classpath>                        
+             <fileset dir="${yukon.lib}">
+                <include name="**/*.jar"/>
+             </fileset>
+	      </classpath> 
+     	</javac>
+
+       <jar jarfile="${yukon.lib}/webgraph.jar"
+            basedir="build/" 
+            manifest="resource/manifest.mf" />       
+
+	<copy todir="${yukon.lib}">
+ 	    <fileset dir="resource">
+		<include name="**/*.gif"/>
+ 		<include name="**/*.ico"/>
+	    </fileset>
+       </copy>
+   </target>
+
+   <target name="clean">
+       <delete dir="build"/>        
+
+    </target>
+   
+</project>

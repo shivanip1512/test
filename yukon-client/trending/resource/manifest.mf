@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.webgraph.WebGraph
-Class-Path: ./ graph.jar common.jar dbeditor.jar jfreechart-0.9.0.jar jcommon-0.6.2.jar rwav.jar acme.jar SqlServer.jar jcfield401k.jar classes12.zip ../config/ ../log/ ../export/
+Class-Path: ./ graph.jar common.jar jfreechart-0.9.0.jar jcommon-0.6.2.jar rwav.jar acme.jar SqlServer.jar jcfield401k.jar classes12.zip ../config/ ../log/ ../export/
 
