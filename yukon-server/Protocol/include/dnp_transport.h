@@ -2,15 +2,16 @@
 *
 * File:   dnp_transport
 *
-* Class:  CtiDNPTransport
+* Namespace: CtiDNP
+* Class:     Transport
 * Date:   5/7/2002
 *
 * Author: Matt Fisher
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/03/10 21:01:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,21 +19,38 @@
 #define __DNP_TRANSPORT_H__
 #pragma warning( disable : 4786)
 
-#include "dllbase.h"
+
 #include "dnp_datalink.h"
 #include "xfer.h"
 
-class CtiDNPTransport
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class Transport
 {
 private:
-    CtiDNPDatalink  _datalink;
-    unsigned char  *_outPayload,       *_inPayload;
-    unsigned int    _outPayloadLen,     _inPayloadLen,
-                    _outPayloadSent,    _inPayloadRecv,
-                    _currentPacketLen,  _seq;
-    unsigned short  _srcAddr, _dstAddr;
+    Datalink  _datalink;
 
-    enum TransportIOState
+    struct payload_t
+    {
+        unsigned char *data;
+        unsigned int   length;
+
+        union
+        {
+            unsigned int sent;
+            unsigned int received;
+        };
+    };
+
+    payload_t _payload_in,
+              _payload_out;
+
+    unsigned int    _current_packet_length,  _sequence;
+    unsigned short  _source_address, _destination_address;
+
+    enum IOState
     {
         Uninitialized = 0,
         Output,
@@ -45,39 +63,39 @@ private:
 
     enum
     {
-        TransportHeaderLen     =   1,
-        TransportMaxPayloadLen = 249
+        HeaderLen     =   1,
+        MaxPayloadLen = 249
     };
 
-    struct _transport_header_t
+    struct header_t
     {
         unsigned char seq   : 6;
         unsigned char first : 1;
         unsigned char final : 1;
     };
 
-    struct _transport_packet_t
+    struct packet_t
     {
-        _transport_header_t header;
+        header_t header;
         unsigned char data[254];
-    } _inPacket, _outPacket;
+    } _in_packet, _out_packet;
 
 public:
-    CtiDNPTransport();
+    Transport();
 
-    CtiDNPTransport(const CtiDNPTransport &aRef);
+    Transport( const Transport &aRef );
 
-    virtual ~CtiDNPTransport();
+    virtual ~Transport();
 
-    CtiDNPTransport &operator=(const CtiDNPTransport &aRef);
+    Transport &operator=( const Transport &aRef );
 
-    void setAddresses(unsigned short dst, unsigned short src);
-    void setOptions( int options );
+    void setAddresses( unsigned short dst, unsigned short src );
+    void setOptions  ( int options );
 
     void resetLink( void );
 
-    int initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr);
-    int initForInput(unsigned char *buf);
+    int initForOutput( unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr );
+    int initForInput ( unsigned char *buf );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
@@ -87,5 +105,9 @@ public:
 
     int  getInputSize( void );
 };
+
+}
+}
+}
 
 #endif // #ifndef __DNP_TRANSPORT_H__
