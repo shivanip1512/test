@@ -6,7 +6,7 @@ package com.cannontech.servlet;
  */
 import javax.servlet.http.HttpServlet;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.graph.exportdata.ExportDataFile;
+import com.cannontech.database.db.graph.GraphRenderers;
 
 public class Download extends HttpServlet
 {	
@@ -85,9 +85,9 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			else if (extension.equalsIgnoreCase("html"))
 			{
 				resp.setContentType("text/html");
-				if( graph.getViewType() == com.cannontech.graph.model.TrendModelType.TABULAR_VIEW)
+				if( graph.getViewType() == GraphRenderers.TABULAR)
 					graph.encodeTabularHTML(out);
-				else if (graph.getViewType() == com.cannontech.graph.model.TrendModelType.SUMMARY_VIEW)
+				else if (graph.getViewType() == GraphRenderers.SUMMARY)
 					graph.encodeSummmaryHTML(out);
 			}
 			else if (extension.equalsIgnoreCase(""))
