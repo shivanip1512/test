@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/14 15:42:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -657,7 +657,7 @@ typedef struct _VSTRUCT
    //LONG        DeviceID;                     // 083199 CGP
 
    // USHORT   Priority;
-   // USHORT   Retry;
+   INT      Retry;
 
 
    USHORT   CommandType;
