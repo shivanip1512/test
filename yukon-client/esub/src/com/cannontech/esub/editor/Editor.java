@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -36,7 +37,6 @@ import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
-import com.cannontech.esub.util.Util;
 import com.cannontech.roles.application.EsubEditorRole;
 
 import com.loox.jloox.LxComponent;
@@ -141,7 +141,7 @@ public class Editor extends JPanel {
 					e.printStackTrace();
 				} finally { //make to always get back into not placing mode
 					elementPlacer.setIsPlacing(false);
-					getDrawing().getLxView().setCursor(Util.DEFAULT_CURSOR);
+					getDrawing().getLxView().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 				
 				}
@@ -327,7 +327,7 @@ public class Editor extends JPanel {
 	public void loadDrawing(final String drawingFile) {
 		
 		try {
-		setCursor(Util.WAIT_CURSOR);
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 								
 		stopUpdating();	
 		getDrawing().load(drawingFile);
@@ -346,7 +346,7 @@ public class Editor extends JPanel {
 		} 
 		finally {
 			getUndoManager().discardAllEdits();
-			setCursor(Util.DEFAULT_CURSOR);
+			setCursor(Cursor.getDefaultCursor());
 		}
 	}
 

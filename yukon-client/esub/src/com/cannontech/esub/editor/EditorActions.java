@@ -671,7 +671,7 @@ class EditorActions {
 			editor.setBehavior(image);
 			editor.elementPlacer.setElement(image);
 			editor.elementPlacer.setIsPlacing(true);
-			editor.getDrawing().getLxView().setCursor(Util.CROSSHAIR_CURSOR);
+			editor.getDrawing().getLxView().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		}
 	};
 
