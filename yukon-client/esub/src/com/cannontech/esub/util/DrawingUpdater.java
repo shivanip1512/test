@@ -49,7 +49,7 @@ public class DrawingUpdater extends TimerTask {
 	}
 
 	public void updateDrawing() {
-		synchronized (drawing) {			
+		synchronized (drawing) {	
 			try {
 				// keep stuff up to date in the cache
 				DefaultDatabaseCache.getInstance().getAllDevices();

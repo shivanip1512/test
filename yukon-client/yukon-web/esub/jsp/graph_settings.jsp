@@ -17,7 +17,7 @@
         "5 Days",
         "1 Week",
         "1 Month",        
-        "Yesterday",
+        "Yesterday", 
         "Prev 2 Days",
         "Prev 3 Days",
         "Prev 5 Days",
