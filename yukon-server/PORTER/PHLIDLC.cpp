@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/21 18:39:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/09 14:38:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -577,11 +577,11 @@ IDLCSetDelaySets (CtiDevice *Dev)
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     /* Defines for file handle */
-    FILE *HFile;
+    FILE *HFile = NULL;
     USHORT MyPort, MyRemote;
 
     // 072302 CGP. Let's just make this happen by default.
-    USHORT T_RTSOn      = 8;
+    USHORT T_RTSOn      = 100;
     USHORT T_CTSTo      = 168;
     USHORT T_KeyOff     = 32;
     USHORT T_IntraTo    = 248;
@@ -592,39 +592,25 @@ IDLCSetDelaySets (CtiDevice *Dev)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " DELAY.DAT should be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
-        }
-
-        /* Walk through the file looking for the appropriate port and remote */
-        for(;;)
-        {
-            if(fscanf (HFile,"%hd,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
-            {
-                T_RTSOn      = 8;
-                T_CTSTo      = 168;
-                T_KeyOff     = 32;
-                T_IntraTo    = 248;
-                BA_Trig      = 170;
-
-                break;
-            }
-
-            if(MyPort == Dev->getPortID() && MyRemote == Dev->getAddress())
-            {
-                break;
-            }
+            dout << RWTime() << " DELAY.DAT MUST be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
         }
 
         fclose (HFile);
+        HFile = NULL;
     }
-    else if((HFile = fopen ("..\\CONFIG\\DELAY.DAT", "r")) != NULL)
+
+    if((HFile = fopen ("..\\CONFIG\\DELAY.DAT", "r")) != NULL)
     {
         /* Walk through the file looking for the appropriate port and remote */
         for(;;)
         {
             if(fscanf (HFile,"%hd,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
             {
-                T_RTSOn      = 8;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Device not detected in delay.dat file **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                T_RTSOn      = 100;
                 T_CTSTo      = 168;
                 T_KeyOff     = 32;
                 T_IntraTo    = 248;
@@ -646,7 +632,7 @@ IDLCSetDelaySets (CtiDevice *Dev)
     if(PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " " << Dev->getName() << " timings being set to: " << endl;
+        dout << " " << Dev->getName() << " (" << Dev->getPortID() << "," << Dev->getAddress() << ") timings being set to: " << endl;
         dout << " T_RTSOn    " << T_RTSOn << endl;
         dout << " T_CTSTo    " << T_CTSTo << endl;
         dout << " T_KeyOff   " << T_KeyOff << endl;
