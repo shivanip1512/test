@@ -199,8 +199,8 @@ function changeFormat(format)
 
 function exportData(extension)
 {
-	changeFormat(extension);
-	document.exportForm.action="/servlet/Download?";
+//	changeFormat(extension);
+	document.exportForm.action="/servlet/Download?ext="+extension;
 	document.exportForm.method="post";
 	document.exportForm.submit();
 }
