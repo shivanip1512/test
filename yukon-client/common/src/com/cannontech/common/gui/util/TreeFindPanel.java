@@ -98,6 +98,10 @@ public class TreeFindPanel extends DataInputPanel implements KeyListener
 		return ivjJTextFieldText;
 	}
 	
+	public void focusOnTextBox() 
+	{
+		getJTextFieldText().requestFocus();
+	}
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.lang.Object
@@ -151,5 +155,6 @@ public class TreeFindPanel extends DataInputPanel implements KeyListener
 			return;
 
 		getJTextFieldText().setText( val.toString() );
+		getJTextFieldText().requestFocus();
 	}
 }
