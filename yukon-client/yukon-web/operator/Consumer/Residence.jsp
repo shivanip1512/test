@@ -5,14 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <script language="JavaScript">
-function copyAddress(form) {
-	form.BAddr1.value = form.SAddr1.value;
-	form.BAddr2.value = form.SAddr2.value;
-	form.BCity.value = form.SCity.value;
-	form.BState.value = form.SState.value;
-	form.BZip.value = form.SZip.value;
-}
-</script>
+
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
