@@ -28,6 +28,7 @@ public class PowerFailPointCreate
 	{
 		PowerFailPointCreate creater = new PowerFailPointCreate();
 		creater.createPowerFailPoints();
+		System.exit(0);
 	}
 
 	/**
@@ -49,7 +50,7 @@ public class PowerFailPointCreate
 		com.cannontech.common.util.CtiUtilities.binarySearchRepetition( 
 						points,
 						DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-						com.cannontech.database.data.lite.LiteComparators.litePointPointOffsetComparator,
+						com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
 						pointTempList );
 					
 		for (int i = 0; i < pointTempList.size(); i++)
