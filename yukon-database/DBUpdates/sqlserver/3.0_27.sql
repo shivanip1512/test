@@ -2470,7 +2470,7 @@ TOUDayID             numeric              not null,
 TOUDayOffset         numeric              not null
 );
 go
-alter table TOUDayRateSwitches
+alter table TOUDayMapping
    add constraint PK_TOUDAYMAPPING primary key  (TOUScheduleID, TOUDayOffset);
 go
 alter table TOUDayMapping
