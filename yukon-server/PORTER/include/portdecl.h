@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/03 20:20:38 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/03 21:35:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ INT SchlPostScan  ( OUTMESS *OutMessage, INMESS  *InMessage, CtiDeviceBase  *Dev
 
 /* Prototypes from PORTQUE.C */
 VOID QueueThread (PVOID);
-INT CCUResponseDecode (INMESS *, CtiDeviceBase*, int Retry);
+INT CCUResponseDecode (INMESS *, CtiDeviceBase*, OUTMESS *OutMessage);
 VOID KickerThread (PVOID);
 INT DeQueue(INMESS *);
 INT CCUQueueFlush    (CtiDeviceBase *Dev);
@@ -143,7 +143,7 @@ IDLCFunction (CtiDeviceBase *pDev, USHORT Source, USHORT Dest, USHORT Function);
 /* various ccu specific data */
 IDLCInit (CtiPort *PortRecord, CtiDeviceBase *RemoteRecord, REMOTESEQUENCE *RemoteSequence);
 IDLCSetDelaySets(CtiDeviceBase *pDev);
-IDLCRColQ(CtiDeviceBase *pDev);
+IDLCRColQ(CtiDeviceBase *pDev, INT priority = 11);
 IDLCSetBaseSList(CtiDeviceBase *pDev);
 IDLCSetTSStores(CtiDeviceBase *pDev, USHORT Priority, USHORT Trigger, USHORT Period);
 IDLCRCont(CtiDeviceBase *pDev);

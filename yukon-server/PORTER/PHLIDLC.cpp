@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/03 21:35:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,7 +251,7 @@ IDLCRCont (CtiDevice *Dev)
 
 
 /* routine to build an idlc RCOLQ function */
-IDLCRColQ (CtiDevice *Dev)
+IDLCRColQ (CtiDevice *Dev, INT priority)
 {
     INT status = NORMAL;
     OUTMESS *OutMessage;
@@ -269,7 +269,7 @@ IDLCRColQ (CtiDevice *Dev)
         OutMessage->DeviceID = Dev->getID();
 
         /* Figure out what the priority should be, but don't let it be less than 11 */
-        OutMessage->Priority = 11;
+        OutMessage->Priority = priority;
 
         for(i = 0; i < MAXQUEENTRIES; i++)
         {
