@@ -72,11 +72,11 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 
 	if( e.getSource() == getJCheckBoxOpCount() )
 	{
-		getJLabelOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
-		getJTextFieldOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
-		
-		getJLabelState().setEnabled( !getJCheckBoxOpCount().isSelected() );
-		getJComboBoxState().setEnabled( !getJCheckBoxOpCount().isSelected() );
+//		getJLabelOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
+//		getJTextFieldOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
+//		
+//		getJLabelState().setEnabled( !getJCheckBoxOpCount().isSelected() );
+//		getJComboBoxState().setEnabled( !getJCheckBoxOpCount().isSelected() );
 	}
 
 }
@@ -268,6 +268,7 @@ private javax.swing.JTextField getJTextFieldOpCount()
 			jTextFieldOpCount.setDocument( new LongRangeDocument(0, 999999) );
 			
 			jTextFieldOpCount.setEnabled( false );
+			jTextFieldOpCount.setVisible( false );
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
@@ -343,7 +344,8 @@ private javax.swing.JCheckBox getJCheckBoxOpCount()
 			jCheckBoxOpCount = new javax.swing.JCheckBox();
 			jCheckBoxOpCount.setName("JLabelOpCount");
 			jCheckBoxOpCount.setFont(new java.awt.Font("dialog", 0, 14));
-			jCheckBoxOpCount.setText("Update Operation Count");			
+			jCheckBoxOpCount.setText("Reset Daily Operation Count");
+			jCheckBoxOpCount.setToolTipText("Check this option to set the daily operations count to zero");
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
@@ -370,6 +372,7 @@ private javax.swing.JLabel getJLabelOpCount()
 			jLabelOpCount.setText("Op Count:");
 			
 			jLabelOpCount.setEnabled( false );
+			jLabelOpCount.setVisible( false );
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
@@ -487,7 +490,7 @@ private void initialize()
 	{
 		setName("CapBankEntryPanel");
 		setLayout(new java.awt.GridBagLayout());
-		setPreferredSize( new Dimension(280, 200) );
+		setPreferredSize( new Dimension(280, 180) );
 
 		java.awt.GridBagConstraints constraintsJLabelCapBank = new java.awt.GridBagConstraints();
 		constraintsJLabelCapBank.gridx = 1; constraintsJLabelCapBank.gridy = 1;
@@ -601,27 +604,27 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 	try
 	{
-		// Send new point Here
 		Message msg = null;
+		Message cmdMsg = null;
 
 		if( getJComboBoxState().isEnabled() )
 		{
 			msg = createPointData();
 		}
-		else if( getJTextFieldOpCount().isEnabled() )
+		
+		if( getJCheckBoxOpCount().isSelected() )
 		{
-			CBCCommand cmdMsg = new CBCCommand(
+			cmdMsg = new CBCCommand(
 					CBCCommand.RESET_OPCOUNT, getCapObject().getCcId().intValue() );
-			
-			//cmdMsg.set
-			
-			msg = cmdMsg;
 		}
 
 
 		if( getConnectionWrapper() != null )
 		{
 			getConnectionWrapper().write( msg );
+			
+			if( cmdMsg != null )
+				getConnectionWrapper().write( cmdMsg );
 		}
 		else
 		{
