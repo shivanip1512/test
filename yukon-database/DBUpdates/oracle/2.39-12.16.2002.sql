@@ -285,7 +285,17 @@ update graphdataseries set type = replace(type, 'yesterday', '33');
 /
 
 /* Alter the graphdataseries column type from a varchar to a numeric */
-alter table graphdataseries alter column type numeric;
+create table gdstemp  (
+   gdsID              NUMBER                           not null,
+   type               NUMBER                           not null
+);
+insert into gdstemp (gdsid, type) (select distinct graphdataseriesid, type from graphdataseries);
+alter table graphdataseries modify type null;
+update graphdataseries set type = null;
+alter table graphdataseries modify type number;
+update graphdataseries set type = (select type from gdstemp where graphdataseriesid = gdsid);
+alter table graphdataseries modify type not null;
+drop table gdstemp;
 /
 
 /* Update graphdataseries type.
