@@ -1933,6 +1933,11 @@ public void setDeviceType(int type)
 			getIntegrityRateCheckBox().setText("Class 0,1,2,3 Scan");
 			getIntegrityRateComboBox().setSelectedItem("5 minute");
       }
+	  else if( type == PAOGroups.RTUWELCO )
+	  {
+			getIntegrityRateCheckBox().setText("Integrity Rate");
+			getIntegrityRateComboBox().setSelectedItem("3 minute");	
+	  }
       else if( type == PAOGroups.LCU415 )
       {
          getPeriodicHealthCheckBox().setText("Status & Analog");
@@ -1989,6 +1994,7 @@ public void setDeviceType(int type)
 	getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
 	getJComboBoxAltIntegrityRate().setSelectedItem( CtiUtilities.STRING_NONE );
 	getJComboBoxAltAccRate().setSelectedItem( CtiUtilities.STRING_NONE );
+	
 }
 /**
  * Insert the method's description here.
