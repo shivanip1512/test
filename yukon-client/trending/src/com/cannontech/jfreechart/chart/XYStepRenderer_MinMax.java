@@ -13,8 +13,9 @@ import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.CrosshairInfo;
-import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.XYStepRenderer;
 import org.jfree.data.XYDataset;
 
@@ -72,8 +73,11 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
         if (y1==null)
 			return;
 
-		double transX1 = horizontalAxis.translateValueToJava2D(x1.doubleValue(), dataArea);
-		double transY1 = verticalAxis.translateValueToJava2D(y1.doubleValue(), dataArea);
+		AxisLocation domainAxisLocation = plot.getDomainAxisLocation();
+		AxisLocation rangeAxisLocation = plot.getRangeAxisLocation();
+
+		double transX1 = horizontalAxis.translateValueToJava2D(x1.doubleValue(), dataArea, domainAxisLocation);
+		double transY1 = verticalAxis.translateValueToJava2D(y1.doubleValue(), dataArea, rangeAxisLocation);
 
         if( this.plotMinMaxValues)
 		{                        

@@ -9,20 +9,19 @@ package com.cannontech.graph;
  */
 import java.awt.Rectangle;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.w3c.dom.Element;
 
+import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
-import org.jfree.chart.JFreeChart;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.graph.GraphDefinition;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.ChartFactory;
 
 public class Graph implements GraphDefines
 {
@@ -572,6 +571,7 @@ public void setStartDate(java.util.Date newStartDate)
 	{
 		com.cannontech.clientutils.CTILogger.info("Changing Date!");
 		startDate = newStartDate;
+		setUpdateTrend(true);
 	}
 }
 

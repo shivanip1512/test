@@ -1,43 +1,43 @@
 package com.cannontech.graph.model;
 
-import com.cannontech.database.db.graph.GraphDataSeries;
-import com.cannontech.database.db.point.Point;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.Legend;
-import org.jfree.chart.StandardLegend;
 import org.jfree.chart.TextTitle;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.HorizontalCategoryAxis;
-import org.jfree.chart.axis.HorizontalDateAxis;
-import org.jfree.chart.axis.HorizontalNumberAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberAxis3D;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.axis.VerticalNumberAxis;
-import org.jfree.chart.axis.VerticalNumberAxis3D;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberAxis3D;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.VerticalCategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.CategoryItemRenderer;
+import org.jfree.chart.renderer.DefaultDrawingSupplier;
+import org.jfree.chart.renderer.DrawingSupplier;
 import org.jfree.chart.renderer.LineAndShapeRenderer;
 import org.jfree.chart.renderer.StandardXYItemRenderer;
-import org.jfree.chart.renderer.VerticalBarRenderer;
-import org.jfree.chart.renderer.VerticalBarRenderer3D;
+import org.jfree.chart.renderer.BarRenderer;
+import org.jfree.chart.renderer.BarRenderer3D;
 import org.jfree.chart.renderer.XYItemRenderer;
 import org.jfree.chart.renderer.XYStepRenderer;
 import org.jfree.chart.tooltips.StandardCategoryToolTipGenerator;
 import org.jfree.chart.tooltips.TimeSeriesToolTipGenerator;
+import org.jfree.data.AbstractDataset;
+import org.jfree.data.AbstractSeriesDataset;
 import org.jfree.data.DefaultCategoryDataset;
+import org.jfree.data.XYDataset;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.AbstractDataset;
-import org.jfree.data.AbstractSeriesDataset;
-import org.jfree.data.XYDataset;
-import org.jfree.chart.renderer.DrawingSupplier;
-import org.jfree.chart.renderer.DefaultDrawingSupplier;
-//import com.cannontech.graph.model.TrendProperties;
+
+import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.point.Point;
+import com.cannontech.jfreechart.chart.YukonStandardLegend;
+
 public class TrendModel implements com.cannontech.graph.GraphDefines 
 {
     private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
@@ -218,6 +218,12 @@ private AbstractDataset getSecondaryDataset()
 	}
 	return null;
 }
+private boolean isMultipleDataset()
+{
+	if( getPrimaryDataset() != null & getSecondaryDataset() != null)
+		return true;
+	return false;
+}
 private int getDatasetSeriesCount()
 {
 	int count = 0;
@@ -392,30 +398,30 @@ private Axis getHorizontalAxis()
 	{
 		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
 		{
-			NumberAxis domainAxis = new HorizontalNumberAxis("Percentage");
+			NumberAxis domainAxis = new NumberAxis("Percentage");
 			domainAxis.setAutoRange(false);
 			domainAxis.setMaximumAxisValue(100);
 			domainAxis.setTickMarksVisible(true);	
-			((HorizontalNumberAxis)domainAxis).setVerticalTickLabels(false);
+			((NumberAxis)domainAxis).setVerticalTickLabels(false);
 			return domainAxis;
 		}
 		else
 		{
-			DateAxis domainAxis = new HorizontalDateAxis("Date/Time");
+			DateAxis domainAxis = new DateAxis("Date/Time");
 			domainAxis.setAutoRange(false);
 			domainAxis.setMaximumDate(getStopDate());
 			domainAxis.setMinimumDate(getStartDate());
 		
 			domainAxis.setTickMarksVisible(true);	
-			((HorizontalDateAxis)domainAxis).setVerticalTickLabels(false);
+			((DateAxis)domainAxis).setVerticalTickLabels(false);
 			return domainAxis;
 		}
 	}
 	else if( rendererType == TrendModelType.BAR_VIEW || rendererType == TrendModelType.BAR_3D_VIEW)
 	{
-		CategoryAxis catAxis = new HorizontalCategoryAxis("Date/Time");
-		((HorizontalCategoryAxis)catAxis).setVerticalCategoryLabels(false);
-		((HorizontalCategoryAxis)catAxis).setSkipCategoryLabelsToFit(true);
+		CategoryAxis catAxis = new CategoryAxis("Date/Time");
+		((CategoryAxis)catAxis).setVerticalCategoryLabels(false);
+		((CategoryAxis)catAxis).setSkipCategoryLabelsToFit(true);
 		catAxis.setTickMarksVisible(true);
 		return catAxis;
 	}
@@ -459,10 +465,10 @@ private Integer getPrimaryGDSPointId()
 	}
 	return primaryGDSPointID;
 }			
-private StandardLegend getLegend(JFreeChart fChart)
+private YukonStandardLegend getLegend(JFreeChart fChart)
 {
 	//Legend setup
-	StandardLegend legend = new StandardLegend(fChart);
+	YukonStandardLegend legend = new YukonStandardLegend(fChart);
 	legend.setAnchor(Legend.SOUTH);
 	legend.setItemFont(new java.awt.Font("dialog", java.awt.Font.BOLD, 10));
 /*
@@ -569,9 +575,9 @@ public TrendSerie[] getTrendSeries()
 private NumberAxis getPrimaryVerticalAxis()	//LEFT
 {
 	if( rendererType == TrendModelType.BAR_3D_VIEW)
-		rangeAxis1 = new VerticalNumberAxis3D("Reading");
+		rangeAxis1 = new NumberAxis3D("Reading");
 	else
-		rangeAxis1 = new VerticalNumberAxis("Reading");
+		rangeAxis1 = new NumberAxis("Reading");
 		
 
 //	rangeAxis1.setLabel(TrendProperties.getRangeLabel_primary());
@@ -591,12 +597,12 @@ private NumberAxis getPrimaryVerticalAxis()	//LEFT
 
 private NumberAxis getSecondaryVerticalAxis()	//RIGHT
 {
-	if( rangeAxis2 == null || (rangeAxis2 instanceof VerticalNumberAxis3D))
+	if( rangeAxis2 == null || (rangeAxis2 instanceof NumberAxis3D))
 	{
 		if( rendererType == TrendModelType.BAR_3D_VIEW)
-			rangeAxis2 = new VerticalNumberAxis3D("Reading");
+			rangeAxis2 = new NumberAxis3D("Reading");
 		else
-			rangeAxis2 = new VerticalNumberAxis("Reading");
+			rangeAxis2 = new NumberAxis("Reading");
 
 //		rangeAxis2.setLabel(TrendProperties.getRangeLabel_secondary());
 		if( getAutoScaleRight().charValue() != 'Y')
@@ -1125,43 +1131,43 @@ public JFreeChart refresh(int newRendererType)
 	}
 	else if( rendererType == TrendModelType.BAR_VIEW)
 	{
-		CategoryItemRenderer rend = new VerticalBarRenderer(new StandardCategoryToolTipGenerator());
+		CategoryItemRenderer rend = new BarRenderer(new StandardCategoryToolTipGenerator(), new org.jfree.chart.urls.StandardCategoryURLGenerator());
 //		XYItemRenderer rend = new com.jrefinery.chart.renderer.ClusteredXYBarRenderer(.001, true);
 		rend.setDrawingSupplier(getDrawingSupplier(PRIMARY));
 //		plot = new com.jrefinery.chart.plot.XYPlot( (com.jrefinery.data.XYDataset)getPrimaryDataset(), (ValueAxis)getHorizontalAxis(), getPrimaryVerticalAxis(), rend);
-		plot = new VerticalCategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), (CategoryAxis)getHorizontalAxis(), getPrimaryVerticalAxis(), rend);
+		plot = new CategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), (CategoryAxis)getHorizontalAxis(), getPrimaryVerticalAxis(), rend, PlotOrientation.VERTICAL);
 
 		//Attempt to do multiple axis
 		//	FIX ME...Not able to do multiple bar axis, make lines instead (hopefully for not very long)
 
 		if( getDatasetCount(SECONDARY) > 0)
 		{
-			((VerticalCategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
-			((VerticalCategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
-			((VerticalCategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
+			((CategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
+			((CategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
+			((CategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
 			rend = new LineAndShapeRenderer(LineAndShapeRenderer.LINES);
 			rend.setDrawingSupplier(getDrawingSupplier(SECONDARY));
-			((VerticalCategoryPlot)plot).setSecondaryRenderer(rend);
+			((CategoryPlot)plot).setSecondaryRenderer(rend);
 		}
 	}
 	else if( rendererType == TrendModelType.BAR_3D_VIEW)
 	{
 
-		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
+		CategoryItemRenderer rend = new BarRenderer3D(10, 10);
 
 		rend.setDrawingSupplier(getDrawingSupplier(PRIMARY));
-		plot = new VerticalCategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), (CategoryAxis)getHorizontalAxis(), getPrimaryVerticalAxis(), rend);
+		plot = new CategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), (CategoryAxis)getHorizontalAxis(), getPrimaryVerticalAxis(), rend, PlotOrientation.VERTICAL);
 
 		//Attempt to do multiple axis
 		//	FIX ME...Not able to do multiple bar axis, make lines instead (hopefully for not very long)
 		if(getDatasetCount(SECONDARY) > 0)
 		{
-			((VerticalCategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
-			((VerticalCategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
-			((VerticalCategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
+			((CategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
+			((CategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
+			((CategoryPlot)plot).setSecondaryRangeAxis(getSecondaryVerticalAxis());
 			rend = new LineAndShapeRenderer(LineAndShapeRenderer.LINES);
 			rend.setDrawingSupplier(getDrawingSupplier(SECONDARY));
-			((VerticalCategoryPlot)plot).setSecondaryRenderer(rend);
+			((CategoryPlot)plot).setSecondaryRenderer(rend);
 		}
 	}
 	else if( rendererType == TrendModelType.TABULAR_VIEW)

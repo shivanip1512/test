@@ -14,8 +14,9 @@ import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.CrosshairInfo;
-import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.StandardXYItemRenderer;
 import org.jfree.chart.tooltips.StandardXYToolTipGenerator;
 import org.jfree.chart.tooltips.XYToolTipGenerator;
@@ -108,10 +109,13 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
 		Number y1n = dataset.getYValue(series, item);
 		if (y1n != null)
 		{
+			AxisLocation domainAxisLocation = plot.getDomainAxisLocation();
+			AxisLocation rangeAxisLocation = plot.getRangeAxisLocation();
+			
 		    double x1 = x1n.doubleValue();
 		    double y1 = y1n.doubleValue();
-		    double transX1 = domainAxis.translateValueToJava2D(x1, dataArea);
-		    double transY1 = rangeAxis.translateValueToJava2D(y1, dataArea);
+		    double transX1 = domainAxis.translateValueToJava2D(x1, dataArea, domainAxisLocation);
+		    double transY1 = rangeAxis.translateValueToJava2D(y1, dataArea, rangeAxisLocation);
 		
 			if( this.plotMinMaxValues)
 			{  

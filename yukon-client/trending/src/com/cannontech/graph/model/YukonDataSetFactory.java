@@ -72,9 +72,9 @@ public class YukonDataSetFactory
 			{
 				double lf = serie.getLoadFactor();
 				if( lf < 0)
-					stat += "     Load Factor: n/a";
+					stat += "     LF: n/a";
 				else
-					stat += "     Load Factor: " + LF_FORMAT.format(lf);
+					stat += "     LF: " + LF_FORMAT.format(lf);
 			}
 
 			if( (options & TrendModelType.LEGEND_MIN_MAX_MASK) == TrendModelType.LEGEND_MIN_MAX_MASK)
@@ -82,27 +82,28 @@ public class YukonDataSetFactory
 				if( serie.getAxis().equals(new Character('L')))
 				{					
 					if( serie.getMinimumValue() == null ||	serie.getMinimumValue().doubleValue() == Double.MAX_VALUE)
-						stat += "    Min:  n/a";
+						stat += "   Min:  n/a";
 					else
-						stat += "    Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
+						stat += "   Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
 
 					if( serie.getMaximumValue() == null ||	serie.getMaximumValue().doubleValue() == Double.MIN_VALUE)
-						stat += "    Max:  n/a";
+						stat += "   Max:  n/a";
 					else
-						stat += "    Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
+						stat += "   Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
 				}
 				else if( serie.getAxis().equals(new Character('R')))
 				{					
 					if( serie.getMinimumValue() == null || serie.getMinimumValue().doubleValue() == Double.MAX_VALUE)
-						stat += "    Min:  n/a";
+						stat += "   Min:  n/a";
 					else
-						stat += "    Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
+						stat += "   Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
 					if( serie.getMaximumValue() == null || serie.getMaximumValue().doubleValue() == Double.MIN_VALUE)
-						stat += "    Max:  n/a";
+						stat += "   Max:  n/a";
 					else
-						stat += "    Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
+						stat += "   Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
 				}
 			}
+//			stat += "     " + serie.getAxis();
 		}
 		return stat;
     }    	
@@ -214,7 +215,7 @@ public class YukonDataSetFactory
 								}
 							}
 							//Update the serie's name for legend display.
-			//YOU ARE HERE TRYING TO FIND A BETTER WAY TO UPDATE THE NAME!!! (FOR LEGEND PURPOSES)
+							//FIND A BETTER WAY TO UPDATE THE NAME!!! (FOR LEGEND PURPOSES)
 							series.setName(series.getName() + updateSeriesNames(serie));
 							dSet[datasetIndex].addSeries(series);
 						}
@@ -351,7 +352,7 @@ public class YukonDataSetFactory
 //			com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
 			for ( int i = 0; i < datasetValues.length; i++)
 			{
-				XYSeries xySeries = new XYSeries(tSeries[i].getLabel());			
+				XYSeries xySeries = new XYSeries(tSeries[i].getLabel() + updateSeriesNames(tSeries[i]));
 				for (int j = 0; j < datasetValues[i].length; j++)
 				{
 					if( datasetValues[i][j] != null)
@@ -428,7 +429,8 @@ public class YukonDataSetFactory
 				TimePeriod prevTimePeriod = null;
 				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 				{
-					String serieKey = tSeries[i].getLabel().toString();
+//					String serieKey = tSeries[i].getLabel().toString();
+					String serieKey = tSeries[i].getLabel().toString() + updateSeriesNames(tSeries[i]);
 					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT					
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
@@ -541,7 +543,7 @@ public class YukonDataSetFactory
 				TimePeriod prevTimePeriod = null;
 				if(GraphDataSeries.isGraphType(tSeries[i].getTypeMask()))
 				{
-					String serieKey = tSeries[i].getLabel().toString();
+					String serieKey = tSeries[i].getLabel().toString() + updateSeriesNames(tSeries[i]);
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
 						if( tSeries[i].getDataPairArray() != null)

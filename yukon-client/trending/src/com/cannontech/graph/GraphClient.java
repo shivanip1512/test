@@ -73,7 +73,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 									frame.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 									// Set to currentDate - always want this date to be TODAY!
 									GraphClient.this.getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.getToday());
-									GraphClient.this.getGraph().setStartDate(getStartDateComboBox().getSelectedDate());
+									GraphClient.this.setStartDate(getStartDateComboBox().getSelectedDate());
 									GraphClient.this.getGraph().setUpdateTrend(true);
 									updateCurrentPane();
 									long timer = (System.currentTimeMillis());
@@ -192,15 +192,15 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if (event.getSource() == getStartDateComboBox())
 	{
 		// Need to make sure the date has changed otherwise we are doing a billion updates on the one stateChange.
-		if( getStartDate().compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
+		if( getStartDate().compareTo((Object)getStartDateComboBox().getSelectedDate()) != 0 )
 		{
-			Date testDate = getStartDateComboBox().getSelectedDate();
-			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-			cal.setTime(testDate);
-			cal.set(java.util.GregorianCalendar.HOUR_OF_DAY, 3);
+//			Date testDate = getStartDateComboBox().getSelectedDate();
+//			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+//			cal.setTime(testDate);
+//			cal.set(java.util.GregorianCalendar.HOUR_OF_DAY, 3);
 
-//			getGraph().setStartDate(ivjStartDateComboBox.getSelectedDate());
-			getGraph().setStartDate(cal.getTime());
+			setStartDate(getStartDateComboBox().getSelectedDate());
+//			setStartDate(cal.getTime());
 			actionPerformed_GetRefreshButton(TrendModelType.DONT_CHANGE_VIEW);
 		}
 	}
@@ -612,6 +612,8 @@ public void actionPerformed_GetTimePeriodComboBox( )
  */
 public void actionPerformed_GetToggleButton( )
 {
+	
+	//ADD CODE FOR WHEN CURRENT/HISTORICAL IS SELECTED 2 TIMES IN A ROW!!!
 	//Put action events from getTimePeriodComboBox on hold until the method ends
 	getTimePeriodComboBox().removeActionListener(this);
 	getStartDateComboBox().removeActionListener(this);
@@ -631,6 +633,7 @@ public void actionPerformed_GetToggleButton( )
 
 		getTimePeriodComboBox().setSelectedIndex(currIndex); //set to saved currentPeriod
 		getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.getToday()); //set to currentDate
+		setStartDate(getStartDateComboBox().getSelectedDate());
 		currentWeek = NO_WEEK;
 	}
 	else if ( getHistoricalRadioButton().isSelected() )
@@ -648,7 +651,10 @@ public void actionPerformed_GetToggleButton( )
 
 		getTimePeriodComboBox().setSelectedIndex(histIndex); //set to saved histPeriod
 		if( histDate != null)
+		{
 			getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
+			setStartDate(getStartDateComboBox().getSelectedDate());
+		}
 		else
 			com.cannontech.clientutils.CTILogger.info(" %%% hist date null!!! ");
 	}
@@ -1215,6 +1221,10 @@ private Date getStartDate()
 {
 	return getGraph().getStartDate();
 }
+private void setStartDate(Date newStartDate)
+{
+	getGraph().setStartDate(newStartDate );
+}
 /**
  * Return the DateComboBox property value.
  * @return com.cannontech.common.gui.util.DateComboBox
@@ -1227,7 +1237,7 @@ private com.cannontech.common.gui.util.DateComboBox getStartDateComboBox() {
 			ivjStartDateComboBox.setName("StartDateComboBox");
 			ivjStartDateComboBox.setMinimumSize(new java.awt.Dimension(50, 23));
 			// user code begin {1}
-			getGraph().setStartDate(ivjStartDateComboBox.getSelectedDate());
+			setStartDate(ivjStartDateComboBox.getSelectedDate());
 			com.cannontech.clientutils.CTILogger.info(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + getStartDate());
 			ivjStartDateComboBox.addActionListener(this);
 			ivjStartDateComboBox.setEnabled(false);
