@@ -52,9 +52,9 @@ public class LMProgramEvent extends LMCustomerEventBase {
         getLMProgramEvent().retrieve();
     }
     
-    public static void deleteAllLMProgramEvents(int accountID) {
+    public static void deleteLMProgramEvents(int accountID) {
 		try {
-	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID );
+	    	Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID );
 	    	
 	    	LMProgramEvent event = new LMProgramEvent();
 	    	for (int i = 0; i < eventIDs.length; i++) {
@@ -82,10 +82,9 @@ public class LMProgramEvent extends LMCustomerEventBase {
 		}
     }
     
-	public static void deleteAllLMProgramEvents(int energyCompanyID, int programID) {
+	public static void deleteAllLMProgramEvents(int programID) {
 		try {
-			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs(
-					energyCompanyID, programID );
+			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( programID );
 			
 			LMProgramEvent event = new LMProgramEvent();
 			for (int i = 0; i < eventIDs.length; i++) {
@@ -100,7 +99,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
     
 	public static LMProgramEvent[] getAllLMProgramEvents(int accountID) {
 		try {
-			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID );
+			Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getLMProgramEventIDs( accountID );
 			
 			LMProgramEvent[] events = new LMProgramEvent[ eventIDs.length ];
 			for (int i = 0; i < events.length; i++) {

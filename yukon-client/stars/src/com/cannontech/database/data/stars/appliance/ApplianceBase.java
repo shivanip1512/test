@@ -42,14 +42,9 @@ public class ApplianceBase extends DBPersistent {
 	            getApplianceBase().getApplianceID() );
         
         // delete from tables of each appliance type
-        delete( "ApplianceAirConditioner", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceDualFuel", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceGenerator", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceGrainDryer", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceHeatPump", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceIrrigation", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceStorageHeat", "ApplianceID", getApplianceBase().getApplianceID() );
-		delete( "ApplianceWaterHeater", "ApplianceID", getApplianceBase().getApplianceID() );
+        String[] tables = com.cannontech.database.db.stars.appliance.ApplianceBase.DEPENDENT_TABLES;
+        for (int i = 0; i < tables.length; i++)
+        	delete( tables[i], "ApplianceID", getApplianceBase().getApplianceID() );
         
         getApplianceBase().delete();
     }

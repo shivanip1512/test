@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.appliance;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -41,6 +42,17 @@ public class ApplianceBase extends DBPersistent {
 
 	public static final String GET_NEXT_APPLIANCE_ID_SQL =
 		"SELECT MAX(ApplianceID) FROM " + TABLE_NAME;
+	
+	public static final String[] DEPENDENT_TABLES = {
+		"ApplianceAirConditioner",
+		"ApplianceDualFuel",
+		"ApplianceGenerator",
+		"ApplianceGrainDryer",
+		"ApplianceHeatPump",
+		"ApplianceIrrigation",
+		"ApplianceStorageHeat",
+		"ApplianceWaterHeater"
+	};
 
 	public ApplianceBase() {
 		super();
@@ -144,93 +156,46 @@ public class ApplianceBase extends DBPersistent {
 
 		return new Integer( nextApplianceID );
 	}
-    
-	public static int[] getAllAccountIDsWithProgram(int programID, int energyCompanyID) {
-		String sql = "SELECT DISTINCT app.AccountID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
-				"WHERE ProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    	
+	
+	public static void deleteAppliancesByCategory(int appCatID) {
+		String cond = "FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
+		SqlStatement stmt = new SqlStatement( "", CtiUtilities.getDatabaseAlias() );
+		
 		try {
+			for (int i = 0; i < DEPENDENT_TABLES.length; i++) {
+				String sql = "DELETE FROM " + DEPENDENT_TABLES[i] + " WHERE ApplianceID IN (SELECT ApplianceID " + cond + ")";
+				stmt.setSQLString( sql );
+				stmt.execute();
+			}
+			
+			String sql = "DELETE FROM LMHardwareConfiguration WHERE ApplianceID IN (SELECT ApplianceID " + cond + ")";
+			stmt.setSQLString( sql );
 			stmt.execute();
-    		
-			int[] accountIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-    		
-			return accountIDs;
+			
+			stmt.setSQLString( "DELETE " + cond );
+			stmt.execute();
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 		}
-    	
-		return null;
 	}
-    
-	public static int[] getAllApplianceIDsWithProgram(int programID, int energyCompanyID) {
-		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
-				"WHERE ProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    	
+	
+	public static void resetAppliancesByProgram(int programID) {
+		String cond = " WHERE ProgramID = " + programID;
+		String sql = "DELETE FROM LMHardwareConfiguration WHERE ApplianceID IN (" +
+			"SELECT ApplianceID FROM " + TABLE_NAME + cond + ")";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		
 		try {
 			stmt.execute();
-    		
-			int[] appIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				appIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-    		
-			return appIDs;
+			
+			sql = "UPDATE " + TABLE_NAME + " SET ProgramID = 0" + cond;
+			stmt.setSQLString( sql );
+			stmt.execute();
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 		}
-    	
-		return null;
-	}
-    
-	public static int[] getAllAccountIDsWithCategory(int appCatID, int energyCompanyID) {
-		String sql = "SELECT DISTINCT app.AccountID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
-				"WHERE ApplianceCategoryID = " + appCatID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    	
-		try {
-			stmt.execute();
-    		
-			int[] accountIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-    		
-			return accountIDs;
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-    	
-		return null;
-	}
-    
-	public static int[] getAllApplianceIDsWithCategory(int appCatID, int energyCompanyID) {
-		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
-				"WHERE ApplianceCategoryID = " + appCatID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    	
-		try {
-			stmt.execute();
-    		
-			int[] appIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				appIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-    		
-			return appIDs;
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-    	
-		return null;
 	}
 
 	public Integer getApplianceID() {

@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.event;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
@@ -68,7 +69,7 @@ public class LMProgramEvent extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public static Integer[] getAllLMProgramEventIDs(int accountID) {
+    public static Integer[] getLMProgramEventIDs(int accountID) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE AccountID=" + accountID + " ORDER BY EventID";
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
@@ -82,7 +83,7 @@ public class LMProgramEvent extends DBPersistent {
 			return eventIDs;
         }
         catch (Exception e) {
-        	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+        	CTILogger.error( e.getMessage(), e );
         }
         
         return null;
@@ -103,18 +104,14 @@ public class LMProgramEvent extends DBPersistent {
 			return eventIDs;
         }
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
         
 		return null;
     }
     
-    public static Integer[] getAllLMProgramEventIDs(int energyCompanyID, int programID) {
-    	String sql = "SELECT event.EventID FROM " +
-    			TABLE_NAME + " event, ECToAccountMapping map " +
-				"WHERE event.ProgramID = " + programID +
-				" AND event.AccountID = map.AccountID" +
-				" AND map.EnergyCompanyID = " + energyCompanyID;
+    public static Integer[] getAllLMProgramEventIDs(int programID) {
+    	String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE ProgramID = " + programID;
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         
 		try {
@@ -127,7 +124,7 @@ public class LMProgramEvent extends DBPersistent {
 			return eventIDs;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
         
 		return null;

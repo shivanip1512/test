@@ -7,6 +7,7 @@
 package com.cannontech.stars.web.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
@@ -34,10 +35,14 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -211,6 +216,92 @@ public class StarsAdminUtil {
 		energyCompany.getStarsEnrollmentPrograms().addStarsApplianceCategory( starsAppCat );
 		
 		return liteAppCat;
+	}
+	
+	public static void deleteApplianceCategory(int appCatID, LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
+	{
+		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory(appCatID);
+		
+		int[] programIDs = new int[ liteAppCat.getPublishedPrograms().size() ];
+		for (int i = 0; i < liteAppCat.getPublishedPrograms().size(); i++)
+			programIDs[i] = ((LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(i)).getProgramID();
+		Arrays.sort( programIDs );
+		
+		// Delete all program events in the category
+		for (int j = 0; j < programIDs.length; j++)
+			com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents( programIDs[j] );
+		
+		// Delete all appliances in the category
+		com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
+		
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			
+			ArrayList accounts = company.getAllCustAccountInformation();
+			for (int j = 0; j < accounts.size(); j++) {
+				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(j);
+				
+				Iterator appIt = liteAcctInfo.getAppliances().iterator();
+				while (appIt.hasNext()) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) appIt.next();
+					if (liteApp.getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
+						appIt.remove();
+					}
+				}
+				
+				Iterator progIt = liteAcctInfo.getPrograms().iterator();
+				while (progIt.hasNext()) {
+					int progID = ((LiteStarsLMProgram) progIt.next()).getProgramID();
+					if (Arrays.binarySearch(programIDs, progID) >= 0)
+						progIt.remove();
+				}
+				
+				Iterator it = liteAcctInfo.getProgramHistory().iterator();
+				while (it.hasNext()) {
+					int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
+					if (Arrays.binarySearch(programIDs, progID) >= 0)
+						it.remove();
+				}
+				
+				company.updateStarsCustAccountInformation( liteAcctInfo );
+			}
+		}
+		
+		com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+				new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+		StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
+		Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
+		
+		energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
+		StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
+		
+		for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
+			LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
+			
+			com.cannontech.database.db.web.YukonWebConfiguration cfg =
+					new com.cannontech.database.db.web.YukonWebConfiguration();
+			cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
+			Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
+			
+			StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
+		}
+		
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			company.updateStarsEnrollmentPrograms();
+		}
+	}
+	
+	public static void deleteAllApplianceCategories(LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
+	{
+		ArrayList appCats = energyCompany.getApplianceCategories();
+		for (int i = appCats.size() - 1; i >= 0; i--) {
+			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(i);
+			deleteApplianceCategory( liteAppCat.getApplianceCategoryID(), energyCompany );
+		}
 	}
 	
 	public static LiteServiceCompany createServiceCompany(String companyName, LiteStarsEnergyCompany energyCompany)
