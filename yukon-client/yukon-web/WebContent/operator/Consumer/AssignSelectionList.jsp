@@ -7,7 +7,8 @@
 	Hashtable preprocessedData = (Hashtable) session.getAttribute(ImportManagerUtil.PREPROCESSED_DATA);
 	TreeMap valueIDMap = (TreeMap) preprocessedData.get(listName);
 	
-	boolean updateAvail = (list != null) && list.getUserUpdateAvailable().equalsIgnoreCase("Y") || listName.equals("ServiceCompany");
+	boolean updateAvail = (list != null) && list.getUserUpdateAvailable().equalsIgnoreCase("Y")
+			|| listName.equals("ServiceCompany") || listName.equals("Substation");
 %>
 <html>
 <head>
@@ -153,6 +154,15 @@ function setListEntry(form, value, idx) {
 <%
 			}
 		}
+		else if (listName.equals("Substation")) {
+			for (int j = 0; j < substations.getStarsSubstationCount(); j++) {
+				StarsSubstation sub = substations.getStarsSubstation(j);
+				String selected = (id != null && sub.getSubstationID() == id.intValue())? "selected" : "";
+%>
+                      <option value="<%= sub.getSubstationID() %>" <%= selected %>><%= sub.getSubstationName() %></option>
+<%
+			}
+		}
 		else if (listName.equals("LoadGroup")) {
 			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
@@ -218,7 +228,7 @@ function setListEntry(form, value, idx) {
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td width="50%"> 
-                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='ImportAccount2.jsp'">
+                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='ImportSTARS2.jsp'">
                   </td>
                 </tr>
               </table>

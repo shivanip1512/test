@@ -39,6 +39,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -1003,6 +1004,16 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 				LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
 				if (text.equalsIgnoreCase( liteCompany.getCompanyName() ))
 					return new Integer( liteCompany.getCompanyID() );
+			}
+		}
+		else if (listName.equals("Substation")) {
+			if (text.equals("")) return null;
+			
+			ArrayList substations = energyCompany.getAllSubstations();
+			for (int i = 0; i < substations.size(); i++) {
+				LiteSubstation liteSub = (LiteSubstation) substations.get(i);
+				if (text.equalsIgnoreCase( liteSub.getSubstationName() ))
+					return new Integer( liteSub.getSubstationID() );
 			}
 		}
 		else if (listName.equals("LoadType")) {
@@ -2762,6 +2773,12 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					for (int i = 0; i < entryTexts.length; i++) {
 						LiteServiceCompany liteCompany = StarsAdminUtil.createServiceCompany( entryTexts[i], energyCompany );
 						valueIDMap.put( newEntries.get(i), new Integer(liteCompany.getCompanyID()) );
+					}
+				}
+				else if (listName.equals("Substation")) {
+					for (int i = 0; i < entryTexts.length; i++) {
+						LiteSubstation liteSub = StarsAdminUtil.createSubstation( entryTexts[i], 0, energyCompany );
+						valueIDMap.put( newEntries.get(i), new Integer(liteSub.getSubstationID()) );
 					}
 				}
 				else {
