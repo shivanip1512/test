@@ -76,7 +76,7 @@ protected Series400ConfigPanel getSeries400ConfigPanel() {
  */
 
 protected String getHeaderText() {
-	return "2-Way Config Setup";
+	return "MCT Config Setup";
 }
 
 

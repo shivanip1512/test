@@ -19,7 +19,7 @@ public class ConfigModel extends DBTreeModel
  * HolidayScheduleModel constructor comment.
  */
 public ConfigModel() {
-	super(new DBTreeNode("Two-way Config"));
+	super(new DBTreeNode("MCT Config"));
 }
 /**
  * Insert the method's description here.
@@ -36,7 +36,7 @@ public boolean isLiteTypeSupported( int liteType )
  * @return java.lang.String
  */
 public String toString() {
-	return "Config";
+	return "MCT Config";
 }
 /**
  * Insert the method's description here.

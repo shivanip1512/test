@@ -696,7 +696,7 @@ private javax.swing.JLabel getConfigLabel() {
 			ivjConfigLabel = new javax.swing.JLabel();
 			ivjConfigLabel.setName("ConfigLabel");
 			ivjConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjConfigLabel.setText("MCT Two-way Config:  ");
+			ivjConfigLabel.setText("MCT Config:  ");
 			ivjConfigLabel.setVisible(false);
 			// user code begin {1}
 			ivjConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));

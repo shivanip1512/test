@@ -53,7 +53,7 @@ private void initialize() {
 	billingGroupMenuItem.setFont( font );
 	billingGroupMenuItem.setMnemonic('b');
 	
-	config2WayMenuItem = new CommandableMenuItem("Two-way Config...");
+	config2WayMenuItem = new CommandableMenuItem("MCT Config...");
 	config2WayMenuItem.setFont( font );
 	config2WayMenuItem.setMnemonic('m');
 
