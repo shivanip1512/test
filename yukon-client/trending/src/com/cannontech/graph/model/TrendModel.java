@@ -18,6 +18,7 @@ import com.jrefinery.chart.renderer.VerticalBarRenderer;
 import com.jrefinery.chart.renderer.VerticalBarRenderer3D;
 import com.jrefinery.chart.renderer.XYItemRenderer;
 import com.jrefinery.chart.renderer.XYStepRenderer;
+import com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator;
 import com.jrefinery.data.DefaultCategoryDataset;
 
 public class TrendModel implements com.cannontech.graph.GraphDataFormats
@@ -819,17 +820,15 @@ public JFreeChart refresh(int rendererType)
 		
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);
 
-        NumberAxis axis2 = getVerticalNumberAxis_secondary();
-        axis2.setLabel("Secondary");
-        axis2.setAutoRangeIncludesZero(false);
-        ((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(axis2);
-        ((com.jrefinery.chart.XYPlot)plot).setSecondaryDataset(dataset);
-        ((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(axis2);
-        XYItemRenderer renderer = ((com.jrefinery.chart.XYPlot)plot).getRenderer();
-        DateAxis axis = (DateAxis) ((com.jrefinery.chart.XYPlot)plot).getDomainAxis();
-        axis.setDateFormatOverride(new java.text.SimpleDateFormat("MMM-yyyy"));
-
-		plot.setSecondaryDataset((com.jrefinery.data.XYDataset)dataset);
+//       axis2.setAutoRangeIncludesZero(false);
+//        ((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(axis2);
+//        ((com.jrefinery.chart.XYPlot)plot).setSecondaryDataset(dataset);
+//        ((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(axis2);
+//        XYItemRenderer renderer = ((com.jrefinery.chart.XYPlot)plot).getRenderer();
+//        DateAxis axis = (DateAxis) ((com.jrefinery.chart.XYPlot)plot).getDomainAxis();
+//        axis.setDateFormatOverride(new java.text.SimpleDateFormat("MMM-yyyy"));
+//
+//		plot.setSecondaryDataset((com.jrefinery.data.XYDataset)dataset);
 //        ((com.jrefinery.chart.XYPlot)plot).addRangeMarker(new com.jrefinery.chart.Marker(.64, java.awt.Color.blue));
 //		
 	}
@@ -888,7 +887,7 @@ public JFreeChart refresh(int rendererType)
 			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 
 		
-		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
+		CategoryItemRenderer rend = new VerticalBarRenderer3D(new StandardCategoryToolTipGenerator(), 10);
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
 	}
 
