@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/25 16:48:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/30 21:29:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1274,15 +1274,53 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
             {
                 pPoint = getDevicePointOffsetTypeEqual( pid, AnalogPointType );
 
-                if( parse.getFlags() & CMD_FLAG_GV_KVAH || parse.getFlags() & CMD_FLAG_GV_KVARH )
+                switch( getIEDPort().getIEDType() )
                 {
-                    Value  = BCDtoBase10( DSt->Message + 7, 6 );
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        if( parse.getFlags() & CMD_FLAG_GV_KVAH || parse.getFlags() & CMD_FLAG_GV_KVARH )
+                        {
+                            Value  = BCDtoBase10( DSt->Message + 7, 6 );
+                        }
+                        else
+                        {
+                            Value  = BCDtoBase10( DSt->Message, 7 );
+                            Value /= 100.0;
+                        }
+
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        int tmp, i;
+
+                        for( i = 0; i < 3; i++ )
+                        {
+                            tmp = DSt->Message[i];
+                            DSt->Message[i] = DSt->Message[5-i];
+                            DSt->Message[5-i] = tmp;
+                        }
+                        for( i = 0; i < 3; i++ )
+                        {
+                            tmp = DSt->Message[i+6];
+                            DSt->Message[i+6] = DSt->Message[11-i];
+                            DSt->Message[11-i] = tmp;
+                        }
+
+                        if( parse.getFlags() & CMD_FLAG_GV_KVAH || parse.getFlags() & CMD_FLAG_GV_KVARH )
+                        {
+                            Value  = BCDtoBase10( DSt->Message + 6, 6 );
+                        }
+                        else
+                        {
+                            Value  = BCDtoBase10( DSt->Message, 6 );
+                        }
+
+                        break;
+                    }
                 }
-                else
-                {
-                    Value  = BCDtoBase10( DSt->Message, 7 );
-                    Value /= 100.0;
-                }
+
 
                 if( pPoint != NULL )
                 {
