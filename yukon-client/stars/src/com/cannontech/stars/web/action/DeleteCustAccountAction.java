@@ -15,7 +15,6 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -137,17 +136,6 @@ public class DeleteCustAccountAction implements ActionBase {
 		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 		
 		try {
-			// Remove hardwares from the account
-			for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-				int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
-				
-				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
-				deleteHw.setInventoryID( invID );
-				deleteHw.setDeleteFromInventory( false );
-				
-				DeleteLMHardwareAction.removeInventory(deleteHw, null, energyCompany, conn);
-			}
-			
 			com.cannontech.database.data.stars.customer.CustomerAccount account =
 					StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
 			account.setDbConnection( conn );
