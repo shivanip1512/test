@@ -8,10 +8,11 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
-<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<!--<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
 </head>
 
-<body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -24,26 +25,22 @@
               <tr> 
                 <td colspan="4" height="74" background="Header.gif">&nbsp;</td>
               </tr>
-              <tr bgcolor="#666699"> 
-                <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
-                	Capacitor Control 
+              <tr> 
+                <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Capacitor Control 
             		<% if( !cbcServlet.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
             		<% if( cbcSession.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
             			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %> seconds) </font><%}%>
-            		</em></font></td>
+            		</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   
                 <td width="58" valign="middle"> 
-                  <div align="center"><span><a href="../Operations.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Home</font></a></span></div>
+                  <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>                
                   </td>
                   
                 <td width="57" valign="middle"> 
-                  <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">
-                  	<font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">
-                  	 Log Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
-                  </td>
-                  
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                </td>
               </tr>
             </table>
           </td>
@@ -93,22 +90,18 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-
-			<table width="657" border="0" cellspacing="0" cellpadding="0">
-			  <tr>
-                <td width="650" valign="top" class="Main"> 
-                  
+            <table width="657" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td width="650" valign="top" class="MainText"> 
                   <p>&nbsp;</p>
                   <form name="MForm"> 
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
-                              <td width="409"><span class="TableCell"></span><span class="HeaderCell">&nbsp;&nbsp;
-                                Substation Buses for the Area : 
-                                <font color="##666699"> <%= cbcSession.getLastArea() %> </font></span></td>
-
+                          <tr class="HeaderCell"> 
+                              <td width="409">&nbsp;&nbsp;Substation Buses for the Area : 
+                                <span class="SchedText"> <%= cbcSession.getLastArea() %> </span></td>
                               <td width="191"> 
                                 <div align="right"> </div>
                               </td>
@@ -120,7 +113,7 @@
                   
                   
 				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -139,7 +132,7 @@
 	                  %>         
                       
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= i %>" >
+                        <td width="100" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= i %>" class="Link1">
                           <div name = "subPopup" align = "left" cursor:default;" >
                              <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>

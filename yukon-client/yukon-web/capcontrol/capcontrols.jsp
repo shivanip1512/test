@@ -63,10 +63,11 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<!--<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
 </head>
 
-<body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -80,24 +81,20 @@
                 <td colspan="4" height="74" background="Header.gif">&nbsp;</td>
               </tr>
               <tr bgcolor="#666699"> 
-                <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
-                		Capacitor Control 
+                <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Capacitor Control 
                 		<% if( !cbcServlet.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
                 		<% if( cbcSession.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
                 			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %>seconds) </font><%}%>
-                		</em></font></td>
+                		</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   
                 <td width="58" valign="middle"> 
-                  <div align="center"><span><a href="../Operations.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Home</font></a></span></div>
-                  </td>
-                  
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">
-                  	<font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">
-                  	 Log Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
-                  </td>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                </td>
               </tr>
             </table>
           </td>
@@ -132,7 +129,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 			<table width="657" border="0" cellspacing="0" cellpadding="0">
 			  <tr> 
-                <td width="650" valign="top" class="Main" align="center"> 
+                <td width="650" valign="top" class="MainText" align="center"> 
                   <p>&nbsp;</p>
 
 		<% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
@@ -145,8 +142,7 @@
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
                           <tr bgcolor="#CCCCCC"> 
                               
-                              <td width="409"><span class="TableCell"></span><span class="HeaderCell">&nbsp;&nbsp; 
-                                Substation Bus Data</span></td>
+                              <td width="409"><span class="HeaderCell">&nbsp;&nbsp;Substation Bus Data</span></td>
                               <td width="191"> 
                                 
                               <div align="right">
@@ -159,7 +155,7 @@
                   </table>
 
 				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -172,7 +168,7 @@
                         <td width="80">Reports</td>
                       </tr>
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= rowID.intValue() %>" >
+                        <td width="100" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= rowID.intValue() %>" class="Link1">
                           <div name = "subPopup" align = "left" cursor:default;" >
                              <%= subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>
@@ -214,8 +210,7 @@
                     <tr>
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
-                              
+                          <tr > 
                               <td class="HeaderCell">&nbsp;&nbsp; Feeder Data 
                               </td>
                             </tr>
@@ -224,7 +219,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
@@ -279,17 +274,15 @@
                     <tr> 
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
-                              
-                              <td class="HeaderCell">&nbsp;&nbsp;Capacitor Bank 
-                                Data<font color="##666699"> </font> </td>
+                          <tr> 
+                            <td class="HeaderCell">&nbsp;&nbsp;Capacitor Bank Data</td>
                           </tr>
                         </table>
                       </td>
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         <td width="43"> <%=capBankMdl.getColumnName(CapBankTableModel.STATUS_COLUMN) %></td>
@@ -329,10 +322,9 @@
                     <tr> 
                       <td> 
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC" height=32> 
-                            <td class="HeaderCell" align="center">&nbsp;&nbsp;<font size="3">
-                            	Available Controls for : 
-                            	<font color="##666699"> <%= label %> </font> </font> </td>
+                          <tr height=32> 
+                            <td class="HeaderCell" align="center">&nbsp;&nbsp;Available Controls for : 
+                            	<span class="SchedText"> <%= label %> </span> </td>
                           </tr>
                         </table>
                       </td>
@@ -340,40 +332,31 @@
                   </table>
 
                   <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                    <tr bgcolor="#CCCCCC" class="HeaderCell"> 
-
+                    <tr class="HeaderCell"> 
                       <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= enableID %>">
-                        Enable </td>
+                        <input type="radio" name="cmdID" value="<%= enableID %>">Enable</td>
                       <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= disableID %>">
-                        Disable </td>
+                        <input type="radio" name="cmdID" value="<%= disableID %>">Disable</td>
 
 <%                    if( CapControlWebAnnex.CMD_SUB.equals(controlType)
   	                  	  || CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
                        { 
                          //any confirm can be set here since it will send the real confirm based on the state  %>
                       <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= CBCCommand.CONFIRM_CLOSE %>">
-                        Confirm
-							 </td>
+                        <input type="radio" name="cmdID" value="<%= CBCCommand.CONFIRM_CLOSE %>">Confirm</td>
 <%                     } %>
 
 
 <%                    if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
                        { %>
                       <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= CBCCommand.OPEN_CAPBANK %>">
-                        Open Bank
-							 </td>
+                        <input type="radio" name="cmdID" value="<%= CBCCommand.OPEN_CAPBANK %>">Open Bank</td>
 <%                     } %>
 
 <%                    if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
                        { %>
                       <td width="16%" align="center"> 
-                        <input type="radio" name="cmdID" value="<%= CBCCommand.CLOSE_CAPBANK %>">
-                        Close Bank
-							 </td>
+                        <input type="radio" name="cmdID" value="<%= CBCCommand.CLOSE_CAPBANK %>">Close Bank</td>
 <%                     } %>
 
 
@@ -381,8 +364,7 @@
                        { %>
                       <td width="16%" align="center"> 
 		                  <div align="left">
-                        <input type="radio" id="ManCh" name="cmdID" value="<%= CBCCommand.CMD_MANUAL_ENTRY %>">
-                        Manual Change		                  
+                        <input type="radio" id="ManCh" name="cmdID" value="<%= CBCCommand.CMD_MANUAL_ENTRY %>">Manual Change		                  
 			               <select name="manualChange" onchange="ManCh.checked=true" >
 <%	                  	for( int i = 0; i < CapBankTableModel.getStateNames().length; i++ )
 	                  	{ %>

@@ -53,10 +53,11 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
-<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<!--<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
 </head>
 
-<body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -80,15 +81,11 @@
                 
                   
                 <td width="58" valign="middle"> 
-                  <div align="center"><span><a href="../Operations.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Home</font></a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
-                  
                 <td width="57" valign="middle"> 
-                  <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">
-                  	<font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">
-                  	 Log Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
-                  </td>
-                  
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                </td>
               </tr>
             </table>
           </td>
@@ -147,22 +144,19 @@
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
 
-                          <tr bgcolor="#CCCCCC"> 
-                              <td width="409"><span class="TableCell"></span><span class="HeaderCell">&nbsp;&nbsp;
-                              	Single Substation Bus View for the Area : 
-                                <a href= "AllSubs.jsp">
-                                <font color="##666699"> 
+                          <tr class="HeaderCell"> 
+                              <td width="409">&nbsp;&nbsp;Single Substation Bus View for the Area: 
+                                <a href= "AllSubs.jsp" class="Link4">
+                                <span class="SchedText"> 
                                 <%= cbcSession.getLastArea() %> 
-                                </font>
-                                </a>                                
-                                
-                              </span></td>
+                                </span>
+                                </a>
+                              </td>
 
 
 				    		  <form name="SubBusForm" method="POST" > 
                             <td width="300" height="40"> 
-                              <div align="right"> <span class="HeaderCell">&nbsp;&nbsp;
-								    Other Subs in Area : </span> 
+                              <div align="right">&nbsp;&nbsp;Other Subs in Area :
 
                                 <select name="subRowID" onchange="this.form.submit()" >
                                   <%
@@ -188,7 +182,7 @@
                     </tr>
                   </table>
 				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -237,10 +231,10 @@
                     <tr>
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
+                          <tr> 
                               <td class="HeaderCell">&nbsp;&nbsp;
                               Feeders for Substation : 
-                              <font color="##666699"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </font>
+                              <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </span>
                               </td>
                             </tr>
                         </table>
@@ -248,7 +242,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
@@ -267,7 +261,7 @@
                   	{	     
 	                  %>         
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "SingleFeeder.jsp?feederRowID=<%= i %>" >
+                        <td width="100" class="TableCell"><a href= "SingleFeeder.jsp?feederRowID=<%= i %>" class="Link1">
                           <div name = "sub" align = "left" cursor:default;" >
 									<%= feederMdl.getValueAt(i, FeederTableModel.NAME_COLUMN) %> </div>
                           </a></td>
@@ -280,7 +274,7 @@
                         
                         <td width="44" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.TARGET_COLUMN) %></td>
                         <td width="36" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.VAR_LOAD_COLUMN) %></td>
-								<td width="45" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.TIME_STAMP_COLUMN) %></td>                        
+						<td width="45" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.TIME_STAMP_COLUMN) %></td>                        
                         <td width="45" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="45" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.WATTS_COLUMN) %></td>
                         <td width="36" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
@@ -306,9 +300,9 @@
                     <tr> 
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
+                          <tr> 
                               <td class="HeaderCell">&nbsp;&nbsp;Capacitor Banks for Substation :
-                                <font color="##666699"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </font>
+                                <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </span>
                               </td>
                           </tr>
                         </table>
@@ -316,7 +310,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         <td width="43"> <%=capBankMdl.getColumnName(CapBankTableModel.STATUS_COLUMN) %></td>
