@@ -104,6 +104,7 @@
           <td width="15%" class="HeaderCell">Acknowledged</td>
           <td width="15%" class="HeaderCell">Ack Date/Time</td>
           <td width="15%" class="HeaderCell">Ack User</td>
+          <td width="15%" class="HeaderCell">Ack Type</td>
         </tr>
         <%
                         // Iterator through all the customers
@@ -149,6 +150,14 @@
               - 
               <% } %>
           </td>
+          <td width="15%" class="TableCell"> 
+              <% if( customers[i].getUserIDname() != null && !customers[i].getUserIDname().equalsIgnoreCase("null") ) { %>
+              Web Response 
+              <% } else { %>
+              - 
+              <% } %>
+          </td>
+          
         </tr>
         <%
                             }

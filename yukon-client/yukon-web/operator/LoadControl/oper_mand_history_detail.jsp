@@ -111,10 +111,11 @@
               <table width="600" border="1" cellspacing="0" cellpadding="2">
                 <tr> 
                   <td width="25%" class="HeaderCell">Company</td>
-                  <td width="20%" class="HeaderCell">Acknowledged</td>
+                  <td width="16%" class="HeaderCell">Acknowledged</td>
                   <td width="25%" class="HeaderCell">Ack Date/Time</td>
-                  <td width="15%" class="HeaderCell">Ack Late</td>
-                  <td width="15%" class="HeaderCell">Ack User</td>
+                  <td width="11%" class="HeaderCell">Ack Late</td>
+                  <td width="11%" class="HeaderCell">Ack User</td>
+                  <td width="12%" class="HeaderCell">Ack Type</td>
                 </tr>
                 <%
 			com.cannontech.web.history.HCurtailCustomer[] customers = programs[i].getCurtailCustomers();
@@ -138,10 +139,19 @@
 	%>
                 <tr> 
                   <td width="25%" class="TableCell"> <%= customers[j].getCompanyName() %></td>
-                  <td width="20%" class="TableCell"> <%= activity.getAckStatus() %></td>
+                  <td width="16%" class="TableCell"> <%= activity.getAckStatus() %></td>
                   <td width="25%" class="TableCell"> <%= ackDateTimeStr %></td>
-                  <td width="15%" class="TableCell"> <%= activity.getAckLateFlag() %></td>
-                  <td width="15%" class="TableCell"> <%= ackPersonStr %></td>
+                  <td width="11%" class="TableCell"> <%= activity.getAckLateFlag() %></td>
+                  <td width="11%" class="TableCell"> <%= ackPersonStr %></td>
+                  <td width="12%" class="TableCell">
+                  <%
+                    if( activity.getAckStatus().equalsIgnoreCase("Acknowledged")){
+                    %>
+                      Web Response 
+                    <%}else{%>
+                      -
+                    <%}%>
+                  </td>
                 </tr>
                 <%
 			}
