@@ -5,6 +5,7 @@ package com.cannontech.common.gui.util;
  */
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
@@ -14,6 +15,7 @@ import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
@@ -68,14 +70,7 @@ public TreeViewPanel() {
 	super();
 	initialize();
 }
-/**
- * TreeViewPanel constructor comment.
- */
-public TreeViewPanel(LiteBaseTreeModel[] models) {
-	super();
-	initialize();
-	setTreeModels( models );
-}
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
@@ -263,9 +258,19 @@ public Object getSortBySelection() {
 public JTree getTree() 
 {
 	if( tree == null )
-	{
+	{		
 		tree = new JTree( 
 			new com.cannontech.database.model.NullDBTreeModel() );
+
+		//this removes the automatic expand/collapse from our tree
+		tree.setUI(new BasicTreeUI() 
+		{
+			protected boolean isToggleEvent(MouseEvent event) 
+			{
+				return false;
+		 	}
+		});
+			
 	}
 
 	return tree;

@@ -227,7 +227,7 @@ public final static boolean hasCapBank(Integer pointID, String databaseAlias) th
 	try
 	{
 		stmt.execute();
-      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
+      return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -258,7 +258,7 @@ public final static boolean hasCapControlSubstationBus(Integer pointID, String d
 	try
 	{
 		stmt.execute();
-      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
+      return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -286,7 +286,7 @@ public final static boolean hasLMGroup(Integer pointID, String databaseAlias) th
 	try
 	{
 		stmt.execute();
-      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
+      return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -315,7 +315,7 @@ public final static boolean hasLMTrigger(Integer pointID, String databaseAlias) 
 	try
 	{
 		stmt.execute();
-      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
+      return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -343,7 +343,7 @@ public final static boolean hasRawPointHistorys(Integer pointID, String database
 	try
 	{
 		stmt.execute();
-		return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
+		return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -373,7 +373,7 @@ public final static boolean hasSystemLogEntry(Integer ptID, String databaseAlias
 	try
 	{
 		stmt.execute();
-      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
+      return new Integer(stmt.getRow(0)[0].toString()).intValue() > 0;
 	}
 	catch( Exception e )
 	{

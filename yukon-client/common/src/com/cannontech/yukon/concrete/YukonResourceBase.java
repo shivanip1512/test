@@ -338,24 +338,27 @@ public abstract class YukonResourceBase implements IYukon
    // ---------------------------------------------------------------------------------   
    public void setSQLString( String sql )
    {
+   	getSQLStatement().setSQLString( sql );
    }
    
    public void setDBConnection( Connection conn )
    {
+   	getSQLStatement().setDBConnection( conn );
    }
    
 	public void execute() throws CommandExecutionException
 	{
+		getSQLStatement().execute();
 	}
 	
 	public Object[] getRow( int row )
 	{
-		return null;
+		return getSQLStatement().getRow(row);
 	}
 	
 	public int getRowCount()
 	{
-		return 0;
+		return getSQLStatement().getRowCount();
 	}
 
 

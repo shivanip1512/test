@@ -37,7 +37,10 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
+import Acme.RefInt;
+import Acme.Nnrpd.ArticleCache;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
@@ -48,6 +51,7 @@ import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
@@ -943,12 +947,8 @@ public void executeDefaultButton_ActionPerformed(ActionEvent event) {
 		}
 	} 
 
-	
-
-	f.setCursor(savedCursor);
-	
-	
-	}
+	f.setCursor(savedCursor);	
+}
 
 
 /**
@@ -957,199 +957,66 @@ public void executeDefaultButton_ActionPerformed(ActionEvent event) {
  * @param event java.awt.event.ActionEvent
  */
 private void executeDeleteButton_ActionPerformed(ActionEvent event)
-{
-   DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
-   int confirm = 0, anID=0, deletionType = 0;
-   boolean deleteVerified = false;
-
-   if( !(node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase) )
-      return;
-
+{	
+	TreeItemDeleter tid = new TreeItemDeleter( getTreeViewPanel() );
+	int confirm = tid.executeDelete();
+   DefaultMutableTreeNode[] nodes = tid.getNodes();
+	DBPersistent[] deletables = tid.getDeletables();
 	
-	//a DBPersistent object must be created from the Lite object so you can do a delete
-	com.cannontech.database.db.DBPersistent toDelete =
-		com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) node.getUserObject());
-	String tmp = new String();
-	StringBuffer message = new StringBuffer("");
-		
-	if (toDelete instanceof com.cannontech.database.data.point.PointBase)
-	{
-			anID = ((com.cannontech.database.data.point.PointBase) toDelete).getPoint().getPointID().intValue();
-			message = new StringBuffer("Are you sure you want to Permanently Delete '" + ((com.cannontech.database.data.lite.LitePoint)node.getUserObject()).getPointName() + "'?");
-			tmp = "You cannot delete the point '" + ((com.cannontech.database.data.lite.LitePoint)node.getUserObject()).getPointName() + "'";
-			deleteVerified = true;
-			deletionType = DBDeletionWarn.POINT_TYPE;
-	}
-	else if (toDelete instanceof com.cannontech.database.data.notification.NotificationRecipient)
-	{
-         message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteNotificationRecipient)node.getUserObject()).getRecipientName() + "'?");
-			anID = ((com.cannontech.database.data.notification.NotificationRecipient) toDelete).getNotificationRecipient().getRecipientID().intValue();
-			tmp = "You cannot delete the notification recipient '" + ((com.cannontech.database.data.lite.LiteNotificationRecipient)node.getUserObject()).getRecipientName() + "'";
-			deleteVerified = true;
-			deletionType = DBDeletionWarn.NOTIFICATION_TYPE;
-	}		
-	else if (toDelete instanceof com.cannontech.database.data.notification.GroupNotification)
-	{
-			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteNotificationGroup)node.getUserObject()).getNotificationGroupName() + "'?");
-			anID = ((com.cannontech.database.data.notification.GroupNotification) toDelete).getNotificationGroup().getNotificationGroupID().intValue();
-			tmp = "You cannot delete the notification group '" + ((com.cannontech.database.data.lite.LiteNotificationGroup)node.getUserObject()).getNotificationGroupName() + "'";
-			deleteVerified = true;
-			deletionType = DBDeletionWarn.NOTIFICATION_TYPE;
-	}
-	else if (toDelete instanceof com.cannontech.database.data.state.GroupState)
-	{
-			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteStateGroup)node.getUserObject()).getStateGroupName() + "'?");
-			anID = ((com.cannontech.database.data.state.GroupState) toDelete).getStateGroup().getStateGroupID().intValue();
-			tmp = "You cannot delete the state group '" + ((com.cannontech.database.data.lite.LiteStateGroup)node.getUserObject()).getStateGroupName() + "'";
-			deleteVerified = true;
-			deletionType = DBDeletionWarn.STATEGROUP_TYPE;
-	}
-	else if (toDelete instanceof com.cannontech.database.data.port.DirectPort)
-	{
-			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.port.DirectPort) toDelete).getPortName() + "?");
-			anID = ((com.cannontech.database.data.port.DirectPort) toDelete).getCommPort().getPortID().intValue();
-			tmp = "You cannot delete the comm port '" + ((com.cannontech.database.data.port.DirectPort) toDelete).getPortName() + "'";
-			deleteVerified = true;
-			deletionType = DBDeletionWarn.PORT_TYPE;
-	}
-	else if (toDelete instanceof com.cannontech.database.data.device.DeviceBase)
-	{
-			message = new StringBuffer("Are you sure you want to permanently delete '" + node + "?");
-			anID = ((com.cannontech.database.data.device.DeviceBase) toDelete).getDevice().getDeviceID().intValue();
-			tmp = "You cannot delete the device '" + node + "'";
-			deleteVerified = true;
-			deletionType = DBDeletionWarn.DEVICE_TYPE;
-	}
-   
-   
-	if( deleteVerified )
-	{
-		try
-		{	
-         byte deleteVal = DBDeletionWarn.deletionAttempted(anID, deletionType);
-         
-         if( deleteVal == DBDeletionWarn.STATUS_ALLOW
-             || deleteVal == DBDeletionWarn.STATUS_CONFIRM )
-         {
-					confirm =
-						javax.swing.JOptionPane.showConfirmDialog(
-							getParentFrame(),
-							message.toString() + DBDeletionWarn.getTheWarning().toString(),
-							"Confirm Delete",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.WARNING_MESSAGE);
-         }
-			else
-			{				
-					confirm =
-						javax.swing.JOptionPane.showConfirmDialog(
-							getParentFrame(),
-							tmp + DBDeletionWarn.getTheWarning().toString(),
-							"Unable to Delete",
-							JOptionPane.CLOSED_OPTION,
-							JOptionPane.WARNING_MESSAGE);
-
-               confirm = JOptionPane.NO_OPTION; //make it seem they clicked the NO to delete the Point
-			}
-		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			confirm =
-				javax.swing.JOptionPane.showConfirmDialog(
-					getParentFrame(),
-					"Are you sure you want to permanently delete '" + node + "'?",
-					"Confirm Delete",
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.WARNING_MESSAGE);
-		}
-		
-	}	
-	else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
-	{
-		confirm =
-			javax.swing.JOptionPane.showConfirmDialog(
-				getParentFrame(),
-				"Are you sure you want to permanently delete '" + node + 
-				"' and all of its points?\n\n" +
-				"*The delete process will take extra time if several points are present.\n" +
-				"*All points history will also be deleted.",
-				"Confirm Delete",
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE);		
-	}
-	else if( toDelete instanceof com.cannontech.database.db.notification.AlarmCategory )
-	{
-		javax.swing.JOptionPane.showMessageDialog(
-				getParentFrame(),
-				"You can not delete alarm categories using the DatabaseEditor",
-				"Delete Denied",
-				JOptionPane.INFORMATION_MESSAGE);
-
-		confirm = JOptionPane.NO_OPTION;
-	}
-	else
-		confirm =
-			javax.swing.JOptionPane.showConfirmDialog(
-				getParentFrame(),
-				"Are you sure you want to permanently delete '" + node + "'?",
-				"Confirm Delete",
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE);
-
-
-
 	if (confirm == JOptionPane.YES_OPTION)
 	{
-		//make sure there isnt already an editor frame showing for this node
-		if (isEditorAlreadyShowing(node))
+		for( int i = 0; i < nodes.length; i++ )
 		{
-			//set the current selected frame to the one found
-			PropertyPanel current = (PropertyPanel) getEditorFrame(node).getContentPane();
-
-			//just act as though the cancel button was pressed on the editor pane
-			if (current != null)
-				current.fireCancelButtonPressed();
-		}
-
-		Transaction t = Transaction.createTransaction(Transaction.DELETE, toDelete);
-
-		try
-		{
-			toDelete = t.execute();
-
-			//fire DBChange messages out to Dispatch
-			generateDBChangeMsg( toDelete, DBChangeMsg.CHANGE_TYPE_DELETE );
-
-			fireMessage(new MessageEvent(this, toDelete + " deleted successfully from the database."));
-			
-			//getTreeViewPanel().refresh();  //refresh the whole tree
-			//getTreeViewPanel().treeNodeDelete( node );
-		}
-		catch (com.cannontech.database.TransactionException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			fireMessage(
-				new MessageEvent(
-					this,
-					"Error deleting " + toDelete + " from the database.  Error received was:  " + e.getMessage(),
-					MessageEvent.ERROR_MESSAGE));
-		}
-		finally
-		{
-			//Destroy the frame on an ok or a cancel
-			JTreeEditorFrame frame = getEditorFrame(node);
-			if (frame != null)
+			//make sure there isnt already an editor frame showing for this node
+			if (isEditorAlreadyShowing(nodes[i]))
 			{
-				frame.setVisible(false);
-				PropertyPanel current = (PropertyPanel) frame.getContentPane();
-				current.setChanged(false);
-			}
+				//set the current selected frame to the one found
+				PropertyPanel current = (PropertyPanel) getEditorFrame(nodes[i]).getContentPane();
+	
+				//just act as though the cancel button was pressed on the editor pane
+				if (current != null)
+					current.fireCancelButtonPressed();
+			}		
 
-		}
+			Transaction t = Transaction.createTransaction(Transaction.DELETE, deletables[i]);
+	
+			try
+			{
+				deletables[i] = t.execute();
+	
+				//fire DBChange messages out to Dispatch
+				generateDBChangeMsg( deletables[i], DBChangeMsg.CHANGE_TYPE_DELETE );
+	
+				fireMessage(new MessageEvent(this, deletables[i] + " deleted successfully from the database."));
+			}
+			catch (com.cannontech.database.TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				fireMessage(
+					new MessageEvent(
+						this,
+						"Error deleting " + deletables[i] + " from the database.  Error received was:  " + e.getMessage(),
+						MessageEvent.ERROR_MESSAGE));
+			}
+			finally
+			{
+				//Destroy the frame on an ok or a cancel
+				JTreeEditorFrame frame = getEditorFrame(nodes[i]);
+				if (frame != null)
+				{
+					frame.setVisible(false);
+					PropertyPanel current = (PropertyPanel) frame.getContentPane();
+					current.setChanged(false);
+				}
+	
+			}
+		}//end for loop
 	}
 
 }
+
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/13/2001 3:36:23 PM)
@@ -1858,67 +1725,6 @@ private DBEditorTreePopUpMenu getTreeNodePopupMenu()
 		treeNodePopUpMenu.setName("TreeNodePopupMenu");
 	}
 
-/*   DefaultMutableTreeNode selectedNode = getTreeViewPanel().getSelectedNode();
-
-	treeNodePopUpMenu.getJMenuItemChangeType().setEnabled(true);
-	treeNodePopUpMenu.getJMenuItemCopy().setEnabled(true);
-	treeNodePopUpMenu.getJMenuItemDelete().setEnabled(true);
-	treeNodePopUpMenu.getJMenuItemEdit().setEnabled(true);
-	treeNodePopUpMenu.getJMenuSortAllPointsBy().setEnabled(false);
-
-	if (selectedNode != null)
-	{
-		if (selectedNode instanceof DummyTreeNode || selectedNode.isRoot())
-		{
-			treeNodePopUpMenu.getJMenuItemChangeType().setEnabled(false);
-			treeNodePopUpMenu.getJMenuItemCopy().setEnabled(false);
-			treeNodePopUpMenu.getJMenuItemDelete().setEnabled(false);
-			treeNodePopUpMenu.getJMenuItemEdit().setEnabled(false);
-
-			if (!selectedNode.isRoot())
-				treeNodePopUpMenu.getJMenuSortAllPointsBy().setEnabled(true);
-		}
-		if (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
-		{
-			if (((com.cannontech.database.data.lite.LiteYukonPAObject) selectedNode.getUserObject()).getPaoClass()
-				== com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL 
-				|| ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedNode.getUserObject()).getType()
-				== com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
-				|| ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedNode.getUserObject()).getType()
-				== com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
-				|| ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedNode.getUserObject()).getPaoClass()
-				== com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT)
-			{
-				treeNodePopUpMenu.getJMenuItemChangeType().setEnabled(false);
-
-			}
-			else if (
-				((com.cannontech.database.data.lite.LiteYukonPAObject) selectedNode.getUserObject()).getPaoClass()
-					== com.cannontech.database.data.pao.PAOGroups.CLASS_CUSTOMER
-					|| ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedNode.getUserObject()).getPaoClass()
-						== com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
-			{
-				treeNodePopUpMenu.getJMenuItemChangeType().setEnabled(false);
-				treeNodePopUpMenu.getJMenuItemCopy().setEnabled(false);
-			}
-		}
-		else if (
-			selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationGroup
-				|| selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationRecipient
-				|| selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteAlarmCategory
-				|| (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
-				    && ((com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject()).getType()
-				         == com.cannontech.database.data.pao.PAOGroups.CAP_CONTROL_SUBBUS) )
-		{
-			treeNodePopUpMenu.getJMenuItemChangeType().setEnabled(false);
-			treeNodePopUpMenu.getJMenuItemCopy().setEnabled(false);
-		}
-	
-		
-
-	}
-*/
-
 	return treeNodePopUpMenu;
 }
 /**
@@ -1932,7 +1738,9 @@ private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 		treeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
 		
 		//treeViewPanel.addItemListener( this );
-		treeViewPanel.getTree().getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+
+		getTree().getSelectionModel().setSelectionMode(
+			javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION );
 	}
 
 	return this.treeViewPanel;
@@ -2199,7 +2007,7 @@ private void initConnections()
 
 	
 	// add the mouselistener for the JTree
-	MouseListener ml = new MouseAdapter() 
+	MouseListener ml = new MouseAdapter()
 	{
 		public void mousePressed(MouseEvent e) 
 		{
@@ -2207,7 +2015,12 @@ private void initConnections()
 			
 			if(selRow != -1) 
 			{
-				getTree().setSelectionRow( selRow );
+				//be sure this is not a multi selection attempt
+				if( !e.isShiftDown() && !e.isControlDown() 
+				    && getTree().getSelectionCount() <= 1 )
+				{
+					getTree().setSelectionRow( selRow );
+				}
 
 				if(e.getClickCount() == 1) 
 				{
@@ -2218,6 +2031,7 @@ private void initConnections()
 					executeEditButton_ActionPerformed( new ActionEvent(e.getSource(), e.getID(), "MouseDBLClicked") );
 				}
 			}
+			
 		}
 	};
 
@@ -2248,9 +2062,8 @@ private void initialize(JRootPane rootPane)
 	//connect to dispatch
 	getConnToDispatch();
 
-	
-	initConnections();
 
+	initConnections();
 }
 
 /**
@@ -2349,65 +2162,78 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 {
 	if( event.getSource() == DatabaseEditor.this.getTreeNodePopupMenu() )
 	{
-      DefaultMutableTreeNode selectedNode = getTreeViewPanel().getSelectedNode();
-   
+		//defaults value here
       getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(true);
       getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(true);
       getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(true);
       getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(true);
       getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);
-
-
-      if (selectedNode != null)
-      {
-         if (selectedNode instanceof DummyTreeNode || selectedNode.isRoot())
-         {
-            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
-            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
-            getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(false);
-            getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(false);
-   
-            if (!selectedNode.isRoot())
-               getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
-         }
-         
-         if (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
-         {
-            com.cannontech.database.data.lite.LiteYukonPAObject litYuk =
-                  (com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject();
-            
-            if( litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL 
-                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
-                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
-                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
-            {
-               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);               
-   
-            }
-            else if ( litYuk.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER
-                       || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
-            {
-               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
-               getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
-            }
-
-         }
-         else if (
-            selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationGroup
-               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationRecipient
-               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteAlarmCategory
-               || (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
-                   && ((com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject()).getType()
-                        == com.cannontech.database.data.pao.CapControlTypes.CAP_CONTROL_SUBBUS) )
-         {
-            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
-            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
-         }
-      
-         
-   
-      }
-      
+		
+		
+		//check for multi select
+		if( getTreeViewPanel().getSelectedNodes().length > 1 )
+		{
+	      getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+	      getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+	      getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(true);
+	      getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(true);
+	      getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(false);			
+		}
+		else
+		{
+	      DefaultMutableTreeNode selectedNode = getTreeViewPanel().getSelectedNode();
+	
+	
+	      if (selectedNode != null)
+	      {
+	         if (selectedNode instanceof DummyTreeNode || selectedNode.isRoot())
+	         {
+	            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+	            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+	            getTreeNodePopupMenu().getJMenuItemDelete().setEnabled(false);
+	            getTreeNodePopupMenu().getJMenuItemEdit().setEnabled(false);
+	   
+	            if (!selectedNode.isRoot())
+	               getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
+	         }
+	         
+	         if (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+	         {
+	            com.cannontech.database.data.lite.LiteYukonPAObject litYuk =
+	                  (com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject();
+	            
+	            if( litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL 
+	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
+	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
+	                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
+	            {
+	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);               
+	   
+	            }
+	            else if ( litYuk.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CUSTOMER
+	                       || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
+	            {
+	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+	               getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+	            }
+	
+	         }
+	         else if (
+	            selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationGroup
+	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationRecipient
+	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteAlarmCategory
+	               || (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
+	                   && ((com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject()).getType()
+	                        == com.cannontech.database.data.pao.CapControlTypes.CAP_CONTROL_SUBBUS) )
+	         {
+	            getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
+	            getTreeNodePopupMenu().getJMenuItemCopy().setEnabled(false);
+	         }
+	      
+	         
+	   
+	      }
+		}      
       
 	}
 

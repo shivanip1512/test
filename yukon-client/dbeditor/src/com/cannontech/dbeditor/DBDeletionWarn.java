@@ -15,6 +15,7 @@ public class DBDeletionWarn
 	public static final int STATEGROUP_TYPE = 3;
 	public static final int PORT_TYPE = 4;
 	public static final int DEVICE_TYPE = 5;
+	public static final int PAO_TYPE = 6;
 
    //the return types of each possible delete
    public static final byte STATUS_ALLOW = 1;
@@ -47,6 +48,7 @@ private static byte createDeleteStringForCommPort(int portID) throws java.sql.SQ
 	//this point is deleteable
 	return STATUS_ALLOW;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/31/2001 2:36:20 PM)
@@ -227,6 +229,9 @@ public static byte deletionAttempted(int anID, int type) throws java.sql.SQLExce
 
 		else if(type == DEVICE_TYPE)
 			return createDeleteStringForDevice(anID);
+
+		else if(type == PAO_TYPE)
+			return STATUS_CONFIRM;
 
 		else
 			return STATUS_DISALLOW;
