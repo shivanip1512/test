@@ -329,6 +329,34 @@ function confirmDelete() {
   </tr>
 </cti:checkRole> 
 
+<cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+  <tr> 
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
+  </tr>
+  <tr>
+    <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/AnalysisImage.jpg">&nbsp;</td>
+    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AnalysisHeader.gif" width="76" height="15"><br>
+      <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
+        <tr> 
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+        </tr>
+        <tr> 
+          <td align = "center" class = "MainText" width="25%"><cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../analysis/reporting.jsp" class = "Link1" style = "text-decoration:none;"> 
+              Reports</a></div>
+            </cti:checkRole></td>
+        </tr>
+      </table>
+    </td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
+  </tr>
+</cti:checkRole>
+
 <cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
@@ -340,37 +368,32 @@ function confirmDelete() {
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AdminHeader.gif" width="129" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
-          <td width="20%">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
-          <td width="20%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
+          <td width="25%">&nbsp;</td>
         </tr>
         <tr> 
-          <td align = "center" class = "MainText" width="20%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
+          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
               Energy Company</a></div>
             </cti:checkProperty> </td>
 		  <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
 		    <input type="hidden" name="action" value="DeleteEnergyCompany">
 		    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/login.jsp">
-            <td align = "center" class="MainText" width="20%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
+            <td align = "center" class="MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
               <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onclick="confirmDelete()">Delete 
                 Energy Company</span></div>
               </cti:checkProperty> </td>
 		  </form>
-          <td align = "center" class = "MainText" width="20%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
+          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
               Energy Company</a></div>
             </cti:checkProperty> </td>
-          <td align = "center" class = "MainText" width="20%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
+          <td align = "center" class = "MainText" width="25%"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/ManageMembers.jsp" class = "Link1" style = "text-decoration:none;"> 
               Member Management</a></div>
             </cti:checkProperty></td>
-          <td align = "center" class = "MainText" width="20%"><cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "../analysis/reporting.jsp" class = "Link1" style = "text-decoration:none;"> 
-              Reports</a></div>
-            </cti:checkRole></td>
         </tr>
       </table>
     </td>
