@@ -56,7 +56,14 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
 
     }
     else
+    {
         _valid = FALSE;
+    }
+
+    if( _valid )
+    {
+        _pointCalcWindowEndTime = RWTime(RWDate(1,1,1990));
+    }
 }
 
 CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
@@ -82,7 +89,8 @@ CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
 void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 {
     _components.append( componentToAdd );
-}
+    componentToAdd->passParent( this );
+}               
 
 
 void CtiCalc::cleanup( void )
@@ -150,6 +158,30 @@ void CtiCalc::saveGuts(RWvostream &aStream) const
    }
 }
 */
+
+
+void CtiCalc::push( double val )
+{
+    _stack.push( val );
+}
+
+
+double CtiCalc::pop( void )
+{
+    double val;
+    if( !_stack.isEmpty( ) )
+    {
+        val = _stack.top( );
+        _stack.pop( );
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to pop from empty stack in point \"" << _pointId << "\" - returning 0.0" << endl;
+        val = 0.0;
+    }
+    return val;
+}
 
 
 PointUpdateType CtiCalc::getUpdateType( void )
@@ -229,4 +261,16 @@ int CtiCalc::getUpdateInterval( ) const
 {
     return _updateInterval;
 }
+
+const RWTime& CtiCalc::getPointCalcWindowEndTime() const
+{
+    return _pointCalcWindowEndTime;
+}
+
+CtiCalc& CtiCalc::setPointCalcWindowEndTime(const RWTime& endTime)
+{
+    _pointCalcWindowEndTime = endTime;
+    return *this;
+}
+
 

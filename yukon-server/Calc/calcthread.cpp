@@ -13,36 +13,41 @@
 #include "calcthread.h"
 
 
-void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality )
+void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
 {
     RWMutexLock::LockGuard msgLock(_pointDataMutex);
 //    RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
     RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
     CtiHashKey hashKey(changedID);
     //not sure about this --> BOOL informDependents = FALSE;
-    
-    pointStore[&hashKey]->setPointValue( newValue, newTime, newQuality );
-    dependentIterator = pointStore[&hashKey]->getDependents( );
-    
-    // not sure about this --> for( ; (*dependentIterator)( ) && informDependents; )
 
-    for( ; (*dependentIterator)( ); )
+    CtiPointStore* pointStore = CtiPointStore::getInstance();
+    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+    if( newTime > pointPtr->getPointTime() )
     {
-//  currently, we don't have any other types that require knowing about dependencies, but who knows.  I had had this
-//    piece of code in here until i realized that there will likely only be one update type that cares whether a point's
-//    been updated - the allupdate type.
-//        switch( dependentIterator->key( ).updateType )
-//        {
-//            case allUpdate:
-                //  this is a bit of a hack - I'm counting on the probability that there will be fewer components 
-                //    to check than possible affected points to insert into, to search for a duplicate in a set.
-                //    either way, I will be doing some extra work for each point that depends on multiple calc
-                //    points.
-                _auAffectedPoints.append( dependentIterator->key( ).dependentID );
-//        }
-    }
+        pointPtr->setPointValue( newValue, newTime, newQuality, newTags );
+        dependentIterator = pointPtr->getDependents( );
 
-    delete dependentIterator;
+        // not sure about this --> for( ; (*dependentIterator)( ) && informDependents; )
+
+        for( ; (*dependentIterator)( ); )
+        {
+    //  currently, we don't have any other types that require knowing about dependencies, but who knows.  I had had this
+    //    piece of code in here until i realized that there will likely only be one update type that cares whether a point's
+    //    been updated - the allupdate type.
+    //        switch( dependentIterator->key( ).updateType )
+    //        {
+    //            case allUpdate:
+                    //  this is a bit of a hack - I'm counting on the probability that there will be fewer components 
+                    //    to check than possible affected points to insert into, to search for a duplicate in a set.
+                    //    either way, I will be doing some extra work for each point that depends on multiple calc
+                    //    points.
+                    _auAffectedPoints.append( dependentIterator->key( ).dependentID );
+    //        }
+        }
+
+        delete dependentIterator;
+    }
 }
 
 
@@ -95,7 +100,7 @@ void CtiCalculateThread::periodicLoop( void )
             }
 
             messageInMulti = TRUE;
-            
+
             pointId = calcPoint->getPointId( );
 
             {
@@ -103,20 +108,22 @@ void CtiCalculateThread::periodicLoop( void )
                 newPointValue = calcPoint->calculate( );
             }
 
-			calcPoint->setNextInterval(calcPoint->getUpdateInterval());
+            calcPoint->setNextInterval(calcPoint->getUpdateInterval());
 
-            sprintf( pointDescription, "calc point %ul update", pointId );
-
-            CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, NormalQuality,
-                                                             CalculatedPointType, pointDescription);
-
-            periodicMultiMsg->getData( ).insert( pointData );
-
+            //if( calcPoint->getSendFlag() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
-            }
+                sprintf( pointDescription, "calc point %ul update", pointId );
 
+                CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, NormalQuality,
+                                                                 CalculatedPointType, pointDescription);
+
+                periodicMultiMsg->getData( ).insert( pointData );
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
+                }
+            }
         }
 
         //  post message 
@@ -194,10 +201,38 @@ void CtiCalculateThread::allUpdateLoop( void )
                     continue;  // for
 
                 recalcValue = calcPoint->calculate( );
-                pointsInMulti = TRUE;
-                sprintf( pointDescription, "calc point %ul update", recalcPointID );
-                CtiPointDataMsg *pData = new CtiPointDataMsg(recalcPointID, recalcValue, NormalQuality, CalculatedPointType, pointDescription);
-                pChg->getData( ).insert( pData );
+
+                CtiPointDataMsg *pData = NULL;
+
+                if( calcPoint->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
+                {
+                    CtiHashKey pointHashKey(calcPoint->getPointId());
+                    CtiPointStore* pointStore = CtiPointStore::getInstance();
+                    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
+
+                    if( RWTime() >= calcPoint->getPointCalcWindowEndTime() )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
+                        }
+                        pData = new CtiPointDataMsg(recalcPointID, pointPtr->getPointValue(), NormalQuality, CalculatedPointType, pointDescription);
+                        pData->setTime(calcPoint->getPointCalcWindowEndTime());
+                    }
+
+                    pointPtr->setPointValue( recalcValue, RWTime(), InvalidQuality, 0 );
+                }
+                else
+                {
+                    pData = new CtiPointDataMsg(recalcPointID, recalcValue, NormalQuality, CalculatedPointType, pointDescription);
+                }
+
+                if( pData != NULL )
+                {
+                    pointsInMulti = TRUE;
+                    sprintf( pointDescription, "calc point %ul update", recalcPointID );
+                    pChg->getData( ).insert( pData );
+                }
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -259,6 +294,14 @@ void CtiCalculateThread::calcLoop( void )
     allUpdateThreadFunc.join( );
 }
 
+void CtiCalculateThread::appendCalcPoint( long pointID )
+{
+    CtiHashKey pointHashKey(pointID);
+    CtiPointStoreElement *tmpElementPtr = NULL;
+
+    tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( pointID, 0, undefined );
+}
+
 void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int updateinterval )
 {
     CtiCalc *newPoint;
@@ -273,8 +316,8 @@ void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
             break;
         default:
             {
-                RWMutexLock::LockGuard guard(coutMux);
-                cout << __FILE__ << " (" << __LINE__ << ") Attempt to insert unknown CtiCalc point type \"" << updatetype
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << __FILE__ << " (" << __LINE__ << ") Attempt to insert unknown CtiCalc point type \"" << updatetype
                      << "\", value \"" << newPoint->getUpdateType() << "\";  aborting point insert" << endl;
             }
             break;
@@ -303,8 +346,8 @@ void CtiCalculateThread::appendPointComponent( long pointID, RWCString &componen
     }
     else
     {
-        RWMutexLock::LockGuard guard(coutMux);
-        cout << __FILE__ << " (" << __LINE__ << ") Can't find calc point \"" << pointID
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << __FILE__ << " (" << __LINE__ << ") Can't find calc point \"" << pointID
         << "\" in either point collection;  aborting component insert" << endl;
         return;
     }
@@ -317,10 +360,10 @@ void CtiCalculateThread::appendPointComponent( long pointID, RWCString &componen
     //    collected in one place.
     
     //  insert parameters are (point, dependent, updatetype)
-    tmpElementPtr = pointStore.insertPointElement( componentPointID, pointID, updateType ); 
-        
+    tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( componentPointID, pointID, updateType );
+
     newComponent = new CtiCalcComponent( componentType, componentPointID, operationType,
-                                         tmpElementPtr, constantValue, functionName );
+                                         constantValue, functionName );
     targetCalcPoint->appendComponent( newComponent );
 }
 
@@ -386,3 +429,4 @@ BOOL CtiCalculateThread::isAUpdateAllCalcPointID(const long aPointID)
 
     return foundPoint;
 }
+

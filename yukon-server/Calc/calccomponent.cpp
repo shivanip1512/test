@@ -1,5 +1,6 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
+#include <math.h>
 #include <iostream>
 using namespace std;
 
@@ -7,121 +8,95 @@ using namespace std;
 
 #include "calccomponent.h"
 #include "logger.h"
+#include "calc.h"
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
 
 CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long componentPointId, 
-                                    const RWCString &operationType, CtiPointStoreElement *pointPtr, 
+                                    const RWCString &operationType,
                                     double constantValue, const RWCString &functionName )
 {
-   _valid = TRUE;
-      
-   if( pointPtr == NULL && !componentType.compareTo("operation", RWCString::ignoreCase) )
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "ERROR creating CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag" << endl;
-       _valid = FALSE;
-   } 
-   else if( !componentType.compareTo("operation", RWCString::ignoreCase) )
-   {
-      _componentType = operation;
-      _componentPointId = componentPointId;
-      _pointPtr = pointPtr;
-      _lastUseUpdateNum = -1;
-      
-      if( operationType == "+" ) 
-      {
-            _operationType = addition;
-      }
-      else if( operationType == "-" )  
-      {
-          _operationType = subtraction;
-      }
-      else if( operationType == "*" )
-      {
-            _operationType = multiplication;
-      }
-      else if( operationType == "/" )  
-      {
-            _operationType = division;
-      }
-      else
-      {
-          _valid = FALSE;
-      }
+    _updatesInCurrentAvg = 0;
+    _valid = TRUE;
 
-      {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Adding CtiCalcComponent - Normal Operation ComponentPointID = " << componentPointId << endl;
-      }
+    if( componentPointId == 0 && !componentType.compareTo("operation", RWCString::ignoreCase) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "ERROR creating CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag" << endl;
+        _valid = FALSE;
+    }
+    else if( !componentType.compareTo("operation", RWCString::ignoreCase) )
+    {
+        _componentType = operation;
+        _componentPointId = componentPointId;
+        _lastUseUpdateNum = -1;
 
-   }
-   else if( !componentType.compareTo("constant", RWCString::ignoreCase) )
-   {
-      _componentType = constant;
-      if( constantValue != 0.0 )
-         _constantValue = constantValue;
-      else
-         _valid = FALSE;
+        if( operationType == "+" )          _operationType = addition;
+        else if( operationType == "-" )     _operationType = subtraction;
+        else if( operationType == "*" )     _operationType = multiplication;
+        else if( operationType == "/" )     _operationType = division;
+        else if( operationType == "push" )  _operationType = push;
+        else                                _valid = FALSE;
 
-      if( operationType == "+" ) 
-      {
-            _operationType = addition;
-      }
-      else if( operationType == "-" )  
-      {
-          _operationType = subtraction;
-      }
-      else if( operationType == "*" )
-      {
-            _operationType = multiplication;
-      }
-      else if( operationType == "/" )  
-      {
-            _operationType = division;
-      }
-      else
-      {
-          _valid = FALSE;
-      }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Adding CtiCalcComponent - Normal Operation ComponentPointID = " << componentPointId << endl;
+        }
 
-      {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
-      }
+    }
+    else if( !componentType.compareTo("constant", RWCString::ignoreCase) )
+    {
+        _componentType = constant;
+        if( constantValue != 0.0 )
+            _constantValue = constantValue;
+        else
+            _valid = FALSE;
+
+        if( operationType == "+" )          _operationType = addition;
+        else if( operationType == "-" )     _operationType = subtraction;
+        else if( operationType == "*" )     _operationType = multiplication;
+        else if( operationType == "/" )     _operationType = division;
+        else if( operationType == "push" )  _operationType = push;
+        else                                _valid = FALSE;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
+        }
 
 
-   }
-   else if( !componentType.compareTo("function", RWCString::ignoreCase)  )
-   {
-      _componentType = function;
-      _functionName = functionName;
-   }
-   else
-   {
-      _valid = FALSE;   
+    }
+    else if( !componentType.compareTo("function", RWCString::ignoreCase) )
+    {
+        _componentType = function;
+        _functionName = functionName;
+        _componentPointId = componentPointId;
+        _lastUseUpdateNum = -1;
+    }
+    else
+    {
+        _valid = FALSE;   
 
-      {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Invalid CtiCalcComponent - ComponentPointID = " << componentPointId << endl;
-      }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Invalid CtiCalcComponent - ComponentPointID = " << componentPointId << endl;
+        }
 
-   }
+    }
 }
-   
+
 CtiCalcComponent &CtiCalcComponent::operator=( const CtiCalcComponent &copyFrom )
 {
-   _componentType = copyFrom._componentType;
-   _pointId = copyFrom._pointId;
-   _componentPointId = copyFrom._componentPointId;
-   _operationType = copyFrom._operationType;
-   _pointPtr = copyFrom._pointPtr;
-   _constantValue = copyFrom._constantValue;
-   _functionName = copyFrom._functionName;
-   _pointUpdated = copyFrom._pointUpdated;
-   _valid = copyFrom._valid;
-   return *this;
+    _componentType = copyFrom._componentType;
+    _pointId = copyFrom._pointId;
+    _componentPointId = copyFrom._componentPointId;
+    _operationType = copyFrom._operationType;
+    _constantValue = copyFrom._constantValue;
+    _functionName = copyFrom._functionName;
+    _pointUpdated = copyFrom._pointUpdated;
+    _valid = copyFrom._valid;
+    return *this;
 }
 
 /*  FIX_ME:  This class has some wacky persistence issues.  I'm not sure how to fix this, and I 
@@ -155,64 +130,228 @@ void CtiCalcComponent::saveGuts(RWvostream &aStream) const
 */
 BOOL CtiCalcComponent::isUpdated( void )
 {
-  //  you can only be updated (or non-) if you're a point...
-  if( _componentType == operation )
-     return ( (_lastUseUpdateNum == _pointPtr->getNumUpdates()) || 
-              (_pointPtr->getPointQuality() == UnintializedQuality) )?(FALSE):(TRUE);
-  else
-     return TRUE;
+    //  you can only be updated (or non-) if you're a point...
+    if( _componentType == operation )
+    {
+        CtiHashKey hashKey(_componentPointId);
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+        if( _lastUseUpdateNum != componentPointPtr->getNumUpdates() )
+        {
+            return TRUE;
+        }
+        else if( componentPointPtr->getPointQuality() == NonUpdatedQuality )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " - Point quality is non updated, Point ID: " << componentPointPtr->getPointNum() << endl;
+            }
+            return TRUE;
+        }
+        else if( componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " - Point tags mark component disabled, Point ID: " << componentPointPtr->getPointNum() << endl;
+            }
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+    else
+        return TRUE;
 }
 
 double CtiCalcComponent::calculate( double input )
 {
-    double tempValue = 0;
-
-    if ( _componentType == operation)
+    if( _componentType == operation )
     {
-        // using a point value
+        CtiHashKey hashKey(_componentPointId);
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
 
-        // handle operations on points
-        _lastUseUpdateNum = _pointPtr->getNumUpdates( );
+        _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
 
-        tempValue = _pointPtr->getPointValue( );
+        switch( _operationType )
+        {
+            case addition:       input += componentPointPtr->getPointValue( );  break;
+            case subtraction:    input -= componentPointPtr->getPointValue( );  break;
+            case multiplication: input *= componentPointPtr->getPointValue( );  break;
+            case division:       input /= componentPointPtr->getPointValue( );  break;
+            case push:           
+                if( _parent != NULL )
+                {
+                    _parent->push( input );
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << __FILE__ << " (" << __LINE__ << ")  attempt to \'push\' with no parent pointer - returning \'input\'" << endl;
+                }
+                break;
+        }
     }
-    else if ( _componentType == constant)
+    else if( _componentType == constant )
     {
-        // using a constant
-        tempValue = _constantValue;
+        switch( _operationType )
+        {
+            case addition:       input += _constantValue;  break;
+            case subtraction:    input -= _constantValue;  break;
+            case multiplication: input *= _constantValue;  break;
+            case division:       input /= _constantValue;  break;
+            case push:           
+                if( _parent != NULL )
+                {
+                    _parent->push( input );
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << __FILE__ << " (" << __LINE__ << ")  attempt to \'push\' with no parent pointer - returning \'input\'" << endl;
+                }
+                break;
+        }
+    }
+    else if( _componentType == function )
+    {
+        //  this, to keep this function small, and the functions elsewhere for maintenence
+        input = _doFunction( _functionName );
+    }
+    return input;
+}
+
+
+double CtiCalcComponent::_doFunction( RWCString &functionName )
+{
+    double retVal = 0.0;
+
+    //  Transformer Thermal Age Calculation
+    //  params:  Thermal Age Hours - the current thermal age of the transformer
+    //           HotSpotTemp - the hot spot temperature of the transformer, calculated elsewhere
+    //           UpdateFreq - the minutes between updates of the thermal age
+    if( functionName == "XfrmThermAge" )
+    {
+        double ThermalAgeHours, HotSpotTemp, UpdateFreq, tmp;
+        ThermalAgeHours = _parent->pop( );
+        HotSpotTemp = _parent->pop( );
+        UpdateFreq = _parent->pop( );
+
+        if( UpdateFreq < 0.001 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  in \'XfrmThermAge\' function -  parameter UpdateFreq < 0.001, setting to 1.0e10 to prevent runaway transformer aging" << endl;
+            UpdateFreq = 1.0e10;
+        }
+
+        tmp = ((15000.0 / 383.0) - 15000.0 / (HotSpotTemp + 273.0));
+        ThermalAgeHours += pow( 2.78, tmp ) / (60.0 / UpdateFreq);
+
+        retVal = ThermalAgeHours;
+    }
+
+    //  Hot Spot Calculation
+    //  params:  
+    else if( functionName == "HotSpot" )
+    {
+        double HotSpotTemp, OilTemp, TempRise, Load; 
+        double Rating, Mfactor, LoadWatts, LoadVARs;
+        OilTemp = _parent->pop( );
+        TempRise = _parent->pop( );
+        LoadWatts = _parent->pop( );
+        LoadVARs = _parent->pop( );
+        Rating = _parent->pop( );
+        Mfactor = _parent->pop( );
+
+        if( Rating == 0.0 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  in \'HotSpot\' function - Rating parameter equal to zero, setting to 1" << endl;
+            Rating = 1.0;
+        }
+
+        Load = sqrt( (LoadWatts * LoadWatts) + (LoadVARs * LoadVARs) );
+        HotSpotTemp = OilTemp + TempRise * pow( (Load / Rating), (2 * Mfactor) );
+
+        retVal = HotSpotTemp;
+    }
+    else if( functionName == "DemandAvg15" )
+    {
+        retVal = _figureDemandAvg(900);// seconds in avg
+    }
+    else if( functionName == "DemandAvg30" )
+    {
+        retVal = _figureDemandAvg(1800);// seconds in avg
+    }
+    else if( functionName == "DemandAvg60" )
+    {
+        retVal = _figureDemandAvg(3600);// seconds in avg
+    }
+/*    if( functionName == "otherfunction" )
+    {
+
+    }*/
+    return retVal;
+}
+
+double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
+{
+    double retVal = 0.0;
+
+    if( _updatesInCurrentAvg <= 1 )
+    {
+        RWTime currenttime = RWTime();
+        ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%secondsInAvg))+secondsInAvg;
+        _parent->setPointCalcWindowEndTime(RWTime(tempsum));
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  setting PointCalcWindowEndTime: " << _parent->getPointCalcWindowEndTime().asString() << endl;
+        }
+    }
+
+    CtiPointStore* pointStore = CtiPointStore::getInstance();
+
+    CtiHashKey componentHashKey(_componentPointId);
+    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+    CtiHashKey parentHashKey(_parent->getPointId());
+    CtiPointStoreElement* parentPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
+
+    if( componentPointPtr->getPointTime() > (_parent->getPointCalcWindowEndTime() - secondsInAvg) &&
+        componentPointPtr->getPointTime() <= _parent->getPointCalcWindowEndTime() )
+    {//is the last point data received in the average or not
+        double componentPointValue = componentPointPtr->getPointValue();
+        double currentCalcPointValue = parentPointPtr->getPointValue();
+
+        double currentTotal = currentCalcPointValue * _updatesInCurrentAvg;
+        _updatesInCurrentAvg++;
+        retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "current Calc Point Value: " << currentCalcPointValue << endl;
+            dout << "current Total: " << currentTotal << endl;
+            dout << "updates In Current Avg: " << _updatesInCurrentAvg << endl;
+            dout << "component Point Value: " << componentPointValue << endl;
+            dout << "(currentTotal + componentPointValue) / _updatesInCurrentAvg: " << retVal << endl;
+        }
     }
     else
     {
-        //  Must be a function something something _functionName
+        retVal = componentPointPtr->getPointValue();
+        _updatesInCurrentAvg = 1;
+    }
+
+    /*if( componentPointPtr->getPointTime() >= _parent->getPointCalcWindowEndTime() )
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  \"function\" code will be implemented someday...  for now, returning \'input\'" << endl;
+            dout << __FILE__ << " (" << __LINE__ << ")  reseting updates to zero" << endl;
         }
-        
-        return input;
-    }
+        _updatesInCurrentAvg = 0;
+    }*/
 
-
-    switch ( _operationType )
-    {
-        case addition:
-            input += tempValue;
-            break;
-    
-        case subtraction:
-            input -= tempValue;
-            break;
-    
-        case multiplication: 
-            input *= tempValue;
-            break;
-    
-        case division:
-            if (tempValue != 0)
-                input /= tempValue;
-
-            break;
-    }
-
-    return input;
+    return retVal;
 }
+

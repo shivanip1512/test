@@ -22,11 +22,12 @@ private:
     RWTPtrHashMap<CtiHashKey, CtiCalc, my_hash<CtiHashKey> , equal_to<CtiHashKey> > _periodicPoints, _allUpdatePoints;
     RWTValDeque<long> _auAffectedPoints;
     RWTPtrDeque<CtiMultiMsg> _outbox;
-    CtiPointStore pointStore;                        
     RWMutexLock _pointDataMutex;
 
     void periodicLoop( void );
     void allUpdateLoop( void );
+
+    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
 public:
     CtiCalculateThread( void )
@@ -39,17 +40,17 @@ public:
     void appendPoint( long pointID, RWCString &updateType, int updateInterval );
     void appendPointComponent( long pointID, RWCString &componentType, long componentPointID, 
                                RWCString &operationType, double constantValue, RWCString &functionName );
-    void pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality );
+    void appendCalcPoint( long pointID );
+    void pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags );
 
     BOOL isACalcPointID(const long aPointID);
     BOOL isAPeriodicCalcPointID(const long aPointID);
     BOOL isAUpdateAllCalcPointID(const long aPointID);
 
-    
     RWTPtrDeque<CtiMultiMsg>::size_type outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
     RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
-    *getPointDependencyIterator( void )                         {   return new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >( pointStore );   };
+    *getPointDependencyIterator( void )                         {   return new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
 
 };
 

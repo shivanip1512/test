@@ -49,18 +49,20 @@ private:
     long _pointNum, _numUpdates;
     double _pointValue;
     unsigned _pointQuality;
+    unsigned _pointTags;
     RWTime _pointTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
 //    RWTValSet<depStore, depStore> _dependents;
 
 public:
-    CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality ) :
-    _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _numUpdates(0)
+    CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
+    _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0)
     {  };
 
     long    getPointNum( void )         {   return _pointNum;   };
     double  getPointValue( void )       {   return _pointValue; };
     unsigned  getPointQuality( void )   {   return _pointQuality; };
+    unsigned  getPointTags( void )      {   return _pointTags; };
     RWTime  getPointTime( void )        {   return _pointTime;  };
     long    getNumUpdates( void )       {   return _numUpdates; };
     RWTValHashSetIterator<depStore, depStore, depStore> 
@@ -69,11 +71,12 @@ public:
 //            *getDependents( void )      {   return new RWTValSetIterator<depStore, depStore>( _dependents );    };
 
 protected:
-    void setPointValue( double newValue, RWTime &newTime, unsigned newQuality )
+    void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
     {
         _pointTime = newTime;
         _pointValue = newValue;
         _pointQuality = newQuality;
+        _pointTags = newTags;
         _numUpdates++;
     };
 
@@ -90,11 +93,18 @@ protected:
 class CtiPointStore : public RWTPtrHashMap<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, equal_to<CtiHashKey> >
 {
 public:
-    CtiPointStore( void )  {  };
+    static CtiPointStore *getInstance();
+    CtiPointStoreElement *insertPointElement( long pointNum, long dependentId, enum PointUpdateType updateType );
 
+private:
+
+    CtiPointStore( void )  {  };
     ~CtiPointStore( )      {  this->clearAndDestroy( );  };
 
-    CtiPointStoreElement *insertPointElement( long dependentId, long pointNum, enum PointUpdateType updateType );
+    //The singleton instance of CtiPointStore
+    static CtiPointStore* _instance;
+    
+    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
