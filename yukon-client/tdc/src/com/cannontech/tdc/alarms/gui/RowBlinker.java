@@ -109,8 +109,9 @@ public void start()
 {
 	try
 	{
-		java.net.URL url = new java.net.URL( "file:/" + TDCDefines.ALARM_SOUND_FILE );
-	
+		java.net.URL url = RowBlinker.class.getResource( TDCDefines.ALARM_SOUND_FILE );
+
+        
 		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
 		audioFormat = audioInputStream.getFormat();
 		// At present, ALAW and ULAW encodings must be converted
