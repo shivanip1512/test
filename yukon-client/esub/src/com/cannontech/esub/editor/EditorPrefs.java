@@ -13,13 +13,14 @@ public class EditorPrefs {
 
 	// Keys for settigs/getting preferences
 	public static final String DEFAULT_WORKING_DIR = "Default Working";
-
+	public static final String DEFAULT_DRAWING_WIDTH = "Default Drawing Width";
+	public static final String DEFAULT_DRAWING_HEIGHT = "Default Drawing Height";
+	
 	// Singleton instance
 	private static EditorPrefs instance;
 	
 	// instance variables
 	private Preferences prefs;
-	private String workingDir;
 		
 	public static synchronized EditorPrefs getPreferences() {
 		if( instance == null ) {
@@ -46,6 +47,25 @@ public class EditorPrefs {
 			e.printStackTrace();
 		}
 	}
+	
+	public int getDefaultDrawingWidth() {
+		String widthStr = get(DEFAULT_DRAWING_WIDTH, "1024");
+		return Integer.parseInt(widthStr);
+	}
+	
+	public void setDefaultDrawingWidth(int width) {
+		put(DEFAULT_DRAWING_WIDTH, Integer.toString(width));
+	}
+	
+	public int getDefaultDrawingHeight() {
+		String heightStr = get(DEFAULT_DRAWING_HEIGHT, "768");
+		return Integer.parseInt(heightStr);
+	}
+	
+	public void setDefaultDrawingHeight(int height) {
+		put(DEFAULT_DRAWING_HEIGHT, Integer.toString(height));
+	}
+			
 	/**
 	 * Returns the workingDir.
 	 * @return String

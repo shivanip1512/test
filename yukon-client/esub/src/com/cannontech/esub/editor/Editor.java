@@ -17,6 +17,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -201,13 +202,19 @@ public class Editor extends JPanel {
 		//editPopup.add(deletePopupItem);
 		//	Lx.setActionProcessor(actionProcessor);
 
+		EditorPrefs prefs = EditorPrefs.getPreferences();
+		
 		drawing = new Drawing();
 
 		elementPlacer = new ElementPlacer();
 
 		LxGraph lxGraph = getDrawing().getLxGraph();
 		LxView lxView = getDrawing().getLxView();
-
+				
+		JPanel viewPanel = new JPanel();
+		viewPanel.setLayout(null);		
+		viewPanel.add(lxView);
+		
 		EditorActions editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
@@ -216,12 +223,12 @@ public class Editor extends JPanel {
 		JToolBar toolBar = editorToolBar.getToolBar();
 
 		p.setLayout(new java.awt.BorderLayout());
-		p.add(lxView, java.awt.BorderLayout.CENTER);
+		p.add(viewPanel, java.awt.BorderLayout.CENTER);
 		p.add(menuBar, java.awt.BorderLayout.NORTH);
 		p.add(toolBar, java.awt.BorderLayout.WEST);
-
+		p.setPreferredSize(new Dimension(prefs.getDefaultDrawingWidth(),prefs.getDefaultDrawingHeight()));
 		lxView.addMouseListener(viewMouseListener);		
-			
+					
 //		lxView.registerKeyboardAction(E)
 		/*deletePopupItem.addActionListener(
 			editorActions.getAction(EditorActions.SET_DYNAMIC_TEXT_COLOR));		
@@ -356,7 +363,13 @@ public class Editor extends JPanel {
 		frame.getContentPane().add(scrollPane);
 
 		frame.setSize(defaultSize);
-		editor.setPreferredSize(defaultSize);
+		
+		//set the location of the frame to the center of the screen
+        frame.setLocation( (java.awt.Toolkit.getDefaultToolkit().getScreenSize().width - frame.getSize().width) / 2,
+                     (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - frame.getSize().height) / 2);
+
+        frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("esubEditorIcon.png"));
+//		editor.setPreferredSize(defaultSize);
 
 		frame.pack();
 		frame.show();
@@ -402,7 +415,7 @@ public class Editor extends JPanel {
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String selectedFile = fileChooser.getSelectedFile().getPath();
-
+			
 			getDrawing().save(selectedFile);
 			setFrameTitle(selectedFile);
 
@@ -420,6 +433,11 @@ public class Editor extends JPanel {
 			currentDir = EditorPrefs.getPreferences().getWorkingDir();
 			com.cannontech.common.gui.image.ImageChooser.getInstance().setCurrentDirectory(
 				new File(currentDir));
+				
+			int currentWidth = getDrawing().getMetaElement().getDrawingWidth();
+			int currentHeight = getDrawing().getMetaElement().getDrawingHeight();
+			EditorPrefs.getPreferences().setDefaultDrawingWidth(currentWidth);
+			EditorPrefs.getPreferences().setDefaultDrawingHeight(currentHeight);
 
 		}
 

@@ -7,7 +7,14 @@ A 0 2 0 0 ffffff66 1 ! 0
 1
 "0" 1
 
-36
+38
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1024 768
 
 com.cannontech.esub.editor.element.DrawingMetaElement
 ! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
@@ -262,18 +269,25 @@ A 0 1 0 0 $ 1 ! 0 0
 40 ""
 
 com.cannontech.esub.editor.element.DynamicText
-! 110101100 70;90;57.996094;8.78125 5 0 $ ! ! 0
+! 110101100 72;90;57.996094;8.78125 5 0 $ ! ! 0
 A 0 0 0 0 $ 1 C ffffffff 0 0
 0 0
-"Arial Bold" 0 12 "-95.58 MW"
+"Arial Bold" 0 12 "-98.55 MW"
 764 3 ""
 
 com.cannontech.esub.editor.element.DynamicText
-! 110101100 50;570;174.101562;8.875 5 0 $ ! ! 0
+! 110101100 50;570;173.439453;8.890625 5 0 $ ! ! 0
 A 0 0 0 0 $ 1 C ffffffff 0 0
 0 0
-"Arial Bold" 0 12 "Wed Oct 02 14:35:05 CDT 2002"
+"Arial Bold" 0 12 "Wed Oct 30 12:15:06 CST 2002"
 764 8 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 72;102;67.685547;8.765625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "10.23 MVAR"
+765 3 ""
 
 
 0

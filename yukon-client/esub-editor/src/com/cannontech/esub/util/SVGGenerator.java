@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
@@ -62,22 +64,21 @@ public class SVGGenerator {
 	 	
 	 	// get the root element (the svg element)
 		Element svgRoot = doc.getDocumentElement();
-System.out.println(d.getMetaElement().getDrawingWidth());
-System.out.println(d.getMetaElement().getDrawingHeight());	
+
 		svgRoot.setAttributeNS(null, "width", Integer.toString(d.getMetaElement().getDrawingWidth()));
 		svgRoot.setAttributeNS(null, "height", Integer.toString(d.getMetaElement().getDrawingHeight()));
 	 	svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
-	 	
+	 		 	
 		Element scriptElem = doc.createElementNS(null, "script");
 		scriptElem.setAttributeNS(null, "type", "text/ecmascript");
 		scriptElem.setAttributeNS(null, "xlink:href", "refresh.js");
 		svgRoot.appendChild(scriptElem);
-		 		
+	
 		Element backRect = doc.createElementNS(svgNS, "rect");
 		backRect.setAttributeNS(null, "width", "100%");
 		backRect.setAttributeNS(null, "height", "100%");
 		backRect.setAttributeNS(null, "color", "#000000");
-		svgRoot.appendChild(backRect);
+		svgRoot.appendChild(backRect);	 		
 
 		LxComponent[] c	= graph.getComponents();
 		for( int i = 0; i < c.length; i++ ) {
@@ -127,10 +128,11 @@ System.out.println(d.getMetaElement().getDrawingHeight());
 				svgRoot.appendChild(elem);
 			}
 		}
-		com.cannontech.esub.xml.Writer domWriter = new com.cannontech.esub.xml.Writer();
-		domWriter.setOutput(writer);
-		domWriter.write(doc);
-		writer.flush();	
+	
+		OutputFormat format  = new OutputFormat( doc );   //Serialize DOM
+        XMLSerializer    serial = new XMLSerializer(writer, format);
+        serial.asDOMSerializer();                            // As a DOM Serializer
+        serial.serialize( doc.getDocumentElement() );       		 		
 	}
 	
 	private Element createLink(SVGDocument doc, DrawingElement elem) {

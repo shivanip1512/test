@@ -10,7 +10,6 @@ import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
-import com.loox.jloox.LxSVGGenerator;
 import com.loox.jloox.LxView;
 
 /**
@@ -48,6 +47,8 @@ public class Drawing implements Serializable {
 				((DrawingElement) comps[i]).setDrawing(this);
 			}							
 		}
+		
+		getLxView().setSize( getMetaElement().getDrawingWidth(), getMetaElement().getDrawingHeight());
 	}
 
 	public synchronized void save(String fileName) {
@@ -143,6 +144,9 @@ public class Drawing implements Serializable {
 			lxView.setMagneticGridEnabled(true);
 			lxView.setMagneticGridVisible(true);
 			lxView.setMagneticGridSize(10);
+			lxView.setLocation(0,0); 
+			lxView.setSize(EditorPrefs.getPreferences().getDefaultDrawingWidth(),
+							EditorPrefs.getPreferences().getDefaultDrawingHeight());
 		}
 
 		return lxView;

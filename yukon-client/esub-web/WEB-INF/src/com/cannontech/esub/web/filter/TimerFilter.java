@@ -10,6 +10,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * Filter that times how long a request takes.
  * @author alauinger
@@ -43,7 +45,8 @@ public class TimerFilter implements Filter {
 	    if (req instanceof HttpServletRequest) {
       		name = ((HttpServletRequest)req).getRequestURI();
     	}	
-    	config.getServletContext().log(name + ": " + (after - before) + "ms");
+    	CTILogger.info(name + ": " + (after - before) + "ms");
+//    	config.getServletContext().log(name + ": " + (after - before) + "ms");
   	}
 	
 
