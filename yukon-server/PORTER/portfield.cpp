@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2002/09/19 15:57:59 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2002/09/19 17:53:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,7 +101,6 @@ using namespace std;
 #include "rtdb.h"
 
 #include "port_base.h"
-#include "port_local_modem.h"
 #include "prot_711.h"
 #include "statistics.h"
 #include "trx_info.h"
@@ -552,8 +551,6 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
     ULONG  QueueCount = 0;
 
     bool    bDisconnect = false;
-
-    CtiPortLocalModem    *modem = NULL;
 
     if(Port->connected() && (Port->shouldDisconnect() || Device == NULL))
     {
