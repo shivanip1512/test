@@ -98,10 +98,8 @@ public boolean retrieveBillingData(String dbAlias)
 	String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), null, null, validDemandAccOffsets)).toString());
 		sql += " ORDER BY " 
 			+ SQLStringBuilder.DMG_METERNUMBER + ", " 
-			+ SQLStringBuilder.DMG_DEVICEID + ", "
 			+ SQLStringBuilder.PT_POINTOFFSET + ", " 
 			+ SQLStringBuilder.RPH_TIMESTAMP;
-		
 
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
@@ -131,6 +129,7 @@ public boolean retrieveBillingData(String dbAlias)
 			int lastPointID = 0;
 			int lastDeviceID = 0;
 			int currentDeviceID = 0;
+			String lastMeterNumber = "";
 
 			while (rset.next())
 			{
@@ -142,59 +141,57 @@ public boolean retrieveBillingData(String dbAlias)
 					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
 				}
 				
-//				if( currentPointID != lastPointID )	//just getting max time for each point
-//				{
-//					lastPointID = currentPointID;
-
-					String meterNumber = rset.getString(1);
-					currentDeviceID = rset.getInt(2);
-					java.sql.Timestamp ts = rset.getTimestamp(3);
-					int ptOffset = rset.getInt(5);
-					double reading = rset.getDouble(6)	/ multiplier;
-					Date tsDate = new Date(ts.getTime());
-					
-					inValidTimestamp:
-					if( lastTimeStamp.compareTo((Object)ts) == 0)
+				String meterNumber = rset.getString(1);
+				currentDeviceID = rset.getInt(2);
+				java.sql.Timestamp ts = rset.getTimestamp(3);
+				int ptOffset = rset.getInt(5);
+				double reading = rset.getDouble(6)	/ multiplier;
+				Date tsDate = new Date(ts.getTime());
+				
+				inValidTimestamp:
+				if( lastTimeStamp.compareTo((Object)ts) == 0)
+				{
+					if( isKW_demand(ptOffset) )
 					{
-						if( isKW_demand(ptOffset) )
-						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-								
-							//** Get the last record and add to it the other pointOffsets' values. **//
-							com.cannontech.billing.record.MV_90Record lastRecord =
-								(com.cannontech.billing.record.MV_90Record)getRecordVector().get(recCount -1);
+						if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							break inValidTimestamp;
+							
+						//** Get the last record and add to it the other pointOffsets' values. **//
+						com.cannontech.billing.record.MV_90Record lastRecord =
+							(com.cannontech.billing.record.MV_90Record)getRecordVector().get(recCount -1);
 
-							lastRecord.getReadingKWVector().add(new Double(reading));
-							lastRecord.setTimeKW(ts);
-							lastRecord.setDateKW(ts);
-						}
+						lastRecord.getReadingKWVector().add(new Double(reading));
+						lastRecord.setTimeKW(ts);
+						lastRecord.setDateKW(ts);
 					}
-					else
+				}
+				else
+				{
+					com.cannontech.billing.record.MV_90Record mv90Rec = 
+						new com.cannontech.billing.record.MV_90Record(meterNumber);
+					if (isKW_demand(ptOffset))
 					{
-						com.cannontech.billing.record.MV_90Record mv90Rec = 
-							new com.cannontech.billing.record.MV_90Record(meterNumber);
-						if (isKW_demand(ptOffset))
-						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-								break inValidTimestamp;
-							
-							readingVector = new java.util.Vector(4);	//best guess capacity is 4
-							readingVector.add(new Double(reading));
-							mv90Rec.setReadingKWVector(readingVector);
-							
-							mv90Rec.setTimeKW(ts);
-							mv90Rec.setDateKW(ts);
-							
-							if( currentDeviceID != lastDeviceID)
-								mv90Rec.setNewMeterNumber(true);
+						if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							break inValidTimestamp;
 						
-						}
-						lastDeviceID = currentDeviceID;
-						getRecordVector().addElement(mv90Rec);
-						recCount++;
+						readingVector = new java.util.Vector(4);	//best guess capacity is 4
+						readingVector.add(new Double(reading));
+						mv90Rec.setReadingKWVector(readingVector);
+						
+						mv90Rec.setTimeKW(ts);
+						mv90Rec.setDateKW(ts);
+						
+						if( !meterNumber.equalsIgnoreCase(lastMeterNumber))
+							mv90Rec.setNewMeterNumber(true);
+					
 					}
-//				}
+					lastMeterNumber = meterNumber;
+					lastDeviceID = currentDeviceID;
+					getRecordVector().addElement(mv90Rec);
+					recCount++;
+				}
+				lastTimeStamp = ts;
+		
 			}
 		}
 	}
