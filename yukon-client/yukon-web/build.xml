@@ -10,32 +10,29 @@
         <copy todir="build">
             <fileset dir=".">
                 <exclude name="build" />
+                <exclude name="work/**" />
                 <exclude name="**/CVS" />
                 <exclude name="WEB-INF/web.xml" />
             </fileset>
         </copy>
         
+        <copy todir="build/WEB-INF/lib">
+           <fileset dir="${yukon.lib}" >
+              <exclude name="*.properties"/>
+              <exclude name="j2ee.jar"/>
+           </fileset>
+        </copy>
+
+        <copy todir="build/WEB-INF/classes">
+           <fileset dir="${yukon.lib}" >
+              <include name="*.properties"/>
+           </fileset>
+        </copy>
+
         <war destfile="${yukon.lib}/yukon-web.war" basedir="build"
             webxml="WEB-INF/web.xml"
             duplicate="preserve">
         </war>
-<!--
-		<war destfile="${yukon.lib}/yukon-web.war" basedir="."
-			webxml="WEB-INF/web.xml"
-			duplicate="preserve">
-
-			<exclude name="work/**" />
-			<exclude name="WEB-INF/lib/*.properties" />            
-			
-			<lib dir="../lib">
-				<include name="**/*.jar" />
-			</lib>
-			
-			<classes dir="WEB-INF/lib">
-				<include name="**/*.properties" />
-			</classes>
-		</war>
--->        
 	</target>
    	
 	<target name="clean">
@@ -43,28 +40,6 @@
         <delete dir="build"/>
 	</target>
 	
-   <target name = "copywar" depends="warme, copy"/>
-   
-   <target name="warme">
-    <war destfile="yukon-web.war" webxml="WEB-INF/web.xml">
-        <fileset dir=".">
-            <exclude name="yukon.war"/>
-            <exclude name="/work/**"/>
-            <exclude name="\cvs\*"/>
-            <exclude name="/demos/**"/>
-            <exclude name="WEB-INF/web.xml"/>
-        </fileset>
-        <lib dir="..\lib">
-            <exclude name="*.properties"/>
-            <exclude name="j2ee.jar"/>
-        </lib>
-		<classes dir="WEB-INF/lib">
-			<include name="**/*.properties" />
-		</classes>
-        
-    </war>
-   </target>
-
    <target name = "copy">
        <copy todir="c:/Tomcat/webapps" preservelastmodified="yes">
            <fileset dir=".">
