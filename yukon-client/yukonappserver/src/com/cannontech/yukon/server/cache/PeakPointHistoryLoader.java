@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -29,8 +31,8 @@ java.util.Date timerStop = null;
 timerStart = new java.util.Date();
 //temp code
 	String sqlString = "SELECT RPH1.POINTID POINTID, RPH1.VALUE VALUE, MIN(RPH1.TIMESTAMP) TIMESTAMP " +
-						"FROM RAWPOINTHISTORY RPH1 WHERE RPH1.VALUE IN " + 
-						"(SELECT MAX(VALUE) FROM RAWPOINTHISTORY RPH2 WHERE RPH1.POINTID = RPH2.POINTID) " +
+						"FROM RAWPOINTHISTORY RPH1 WHERE RPH1.VALUE = " + 
+						"(SELECT MAX(RPH2.VALUE) FROM RAWPOINTHISTORY RPH2 WHERE RPH1.POINTID = RPH2.POINTID) " +
 						"GROUP BY RPH1.POINTID, RPH1.VALUE";
 //	String sqlString = "SELECT POINTID,POINTNAME,POINTTYPE,PAOBJECTID, " +
 //		"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > 0 ORDER BY PAObjectID, POINTOFFSET";
@@ -51,7 +53,8 @@ timerStart = new java.util.Date();
 			Double value = new Double(rset.getDouble(2));
 			java.sql.Timestamp ts = rset.getTimestamp(3);
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-			cal.setTimeInMillis(ts.getTime());
+			cal.setTime(new Date(ts.getTime()));
+			//cal.setTimeInMillis(ts.getTime());	// THIS IS A JDK1.4 thing
 			
 			com.cannontech.database.db.point.PeakPointHistory pph =	new com.cannontech.database.db.point.PeakPointHistory(pointID, cal, value);
 
