@@ -7,25 +7,27 @@ public class LiteYukonRole extends LiteBase {
 	private String roleName;
 	private String category;
 	private String defaultValue;
+	private String description;
 	
 	public LiteYukonRole() {
-		initialize(0,null,null,null);
+		initialize(0,null,null,null,null);
 	}
 
 	public LiteYukonRole(int roleID) {
-		initialize(roleID,null,null,null);
+		initialize(roleID,null,null,null,null);
 	}
 
-	public LiteYukonRole(int roleID, String roleName, String category, String defaultValue) {
-		initialize(roleID,roleName,category, defaultValue);
+	public LiteYukonRole(int roleID, String roleName, String category, String defaultValue, String description) {
+		initialize(roleID,roleName,category, defaultValue, description);
 	}
 	
-	private void initialize(int roleID, String roleName, String category, String defaultValue) {
+	private void initialize(int roleID, String roleName, String category, String defaultValue, String description) {
 		setLiteType(LiteTypes.YUKON_ROLE);
 		setRoleID(roleID);
 		setRoleName(roleName);		
 		setCategory(category);
 		setDefaultValue(defaultValue);
+		setDescription(description);
 	}
 	
 	/**
@@ -97,6 +99,22 @@ public class LiteYukonRole extends LiteBase {
 	 */
 	public String toString() {
 		return getRoleName();
+	}
+
+	/**
+	 * Returns the description.
+	 * @return String
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Sets the description.
+	 * @param description The description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

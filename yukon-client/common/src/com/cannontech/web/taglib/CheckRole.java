@@ -9,28 +9,14 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
- * 
+ * Attempts to matche a roleid with the LiteYukonUser in the current session.
+ * If a match is found then the body of the tag is evaluated, otherwise it is skipped.
  * @author alauinger
+ * @see CheckNoRole
  */
 public class CheckRole extends BodyTagSupport {
 
-	private String name;
-
-	/**
-	 * Returns the name.
-	 * @return String
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Sets the name.
-	 * @param name The name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+	private int roleid;
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
@@ -38,13 +24,26 @@ public class CheckRole extends BodyTagSupport {
 	public int doStartTag() throws JspException {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
-		if(	user == null || 
-				name == null ||
-				AuthFuncs.checkRole(user,name) == null) {
-					return SKIP_BODY;
-				}	
-				
-		return EVAL_BODY_INCLUDE;
+			
+		return (user == null || AuthFuncs.checkRole(user,roleid) == null) ?
+					SKIP_BODY :
+					EVAL_BODY_INCLUDE;
+	}
+
+	/**
+	 * Returns the roleid.
+	 * @return int
+	 */
+	public int getRoleid() {
+		return roleid;
+	}
+
+	/**
+	 * Sets the roleid.
+	 * @param roleid The roleid to set
+	 */
+	public void setRoleid(int roleid) {
+		this.roleid = roleid;
 	}
 
 }

@@ -38,7 +38,7 @@ public class AuthFuncs {
 			return null; //failure
 		}
 	}
-	
+		
 	/**
 	 * Returns a Pair<LiteYukonRole,String> if the given user 
 	 * has been granted the given role.  The second element in the Pair
@@ -47,68 +47,38 @@ public class AuthFuncs {
 	 * @param roleName
 	 * @return Pair
 	 */
-	public static Pair checkRole(LiteYukonUser user, String roleName) {
+	public static Pair checkRole(LiteYukonUser user, int roleID) {		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		
 		synchronized(cache) {
-			Map lookupMap = cache.getAllYukonUserRoleLookupMap();
-			
+			Map lookupMap = cache.getAllYukonUserRoleIDLookupMap();
 			Map m = (Map) lookupMap.get(user);
-	    	if(m != null) {
-	    		Pair p = (Pair) m.get(roleName);
-	    		return p;	    				
-	    	}
-		}
-		
-		return null;		
-	}
-	
-	/**
-	 * Returns a Pair<LiteYukonRole,String> if the given user 
-	 * has been granted the given role.  The second element in the Pair
-	 * is the value of role for this user.
-	 * @param user
-	 * @param roleName
-	 * @return Pair
-	 */
-	public static Pair checkRole(LiteYukonUser user, int roleID) {
-		LiteYukonRole role = getRole(roleID);
-		if(role != null) {			
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			
-			synchronized(cache) {
-				Map lookupMap = cache.getAllYukonUserRoleLookupMap();
-				
-				Map m = (Map) lookupMap.get(user);
-		    	if(m != null) {
-		    		Pair p = (Pair) m.get(role.getRoleName());
-		    		return p;	    				
-		    	}
+			if(m != null) {
+				Pair p = (Pair) m.get(new Integer(roleID));
+				return p;
 			}
-		}
+		}			
 		return null;		
 	}
-	
+		
 	/**
-	 * Returns the value for a given user and role name.
+	 * Returns the value for a given user and role
 	 * @param user
-	 * @param roleName
+	 * @param roleID
 	 * @return String
 	 */
-	public static String getRoleValue(LiteYukonUser user, String roleName) {
-		return getRoleValue(user,roleName,null);
+	public static String getRoleValue(LiteYukonUser user, int roleID) {
+		return getRoleValue(user,roleID,null);
 	}
 	
 	/**
-	 * Returns the value for a given user and role name.
-	 * If the user doesn't have this role then returns defaultValue for convenience.
+	 * Returns the value for a given user and role.
+	 * If no value is found then defaultValue is returned for convenience.
 	 * @param user
-	 * @param roleName
-	 * @param defaultValue
+	 * @param roleID
 	 * @return String
 	 */
-	public static String getRoleValue(LiteYukonUser user, String roleName, String defaultValue) {
-		Pair p = checkRole(user,roleName);
+	public static String getRoleValue(LiteYukonUser user, int roleID, String defaultValue) {
+		Pair p = checkRole(user,roleID);
 		return (p != null ? (String)p.second : defaultValue);
 	}
 	

@@ -489,13 +489,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	}
 
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
-	 */
-	public Map getAllYukonUserRoleLookupMap() {
-		return getDBCache().getAllYukonUserRoleLookupMap();
-	}
-
-	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroupUserMap()
 	 */
 	public Map getAllYukonGroupUserMap() {

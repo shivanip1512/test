@@ -55,16 +55,12 @@ public interface IDatabaseCache
    //Map<LiteYukonGroup,List<LiteYukonUser>>
    public java.util.Map getAllYukonGroupUserMap();
       
-   //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value>>> 
+   //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>> 
    public java.util.Map getAllYukonUserRoleMap();
       
    //Map<LiteYukonUser,List<Pair<LiteYukonRole,String(value)>>>
    public java.util.Map getAllYukonGroupRoleMap();	
-   
-   //Map<LiteYukonUser,Map<String(rolename),Pair<LiteYukonRole,String(value)>>
-   //Provided as a means to efficiently obtain a role and its value
-   public java.util.Map getAllYukonUserRoleLookupMap();
-        
+           
    //Map<LiteYukonUser,Map<Integer(roleid),Pair<LiteYukonRole,String(value)>>
    //Provided as a means to efficiently obtain a role and its value
    public java.util.Map getAllYukonUserRoleIDLookupMap(); 
