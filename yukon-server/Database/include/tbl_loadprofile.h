@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_loadprofile
@@ -9,16 +6,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_loadprofile.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:15 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/10/22 16:37:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #ifndef __TBL_LOADPROFILE_H__
 #define __TBL_LOADPROFILE_H__
 
-#define MAX_COLLECTED_CHANNEL 4
 #include <rw/db/select.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
@@ -43,13 +40,22 @@
 
 class IM_EX_CTIYUKONDB CtiTableDeviceLoadProfile : public CtiMemDBObject
 {
+public:
+
+    enum
+    {
+        MaxCollectedChannel = 4
+    };
+
 protected:
 
    LONG     _deviceID;
    INT      _lastIntervalDemandRate;
    INT      _loadProfileDemandRate;
+   INT      _voltageDemandInterval;
+   INT      _voltageLPDemandRate;
 
-   BOOL     _channelValid[ MAX_COLLECTED_CHANNEL ];
+   BOOL     _channelValid[MaxCollectedChannel];
 
 private:
 
@@ -64,13 +70,13 @@ public:
    CtiTableDeviceLoadProfile& operator=(const CtiTableDeviceLoadProfile& aRef);
 
    INT  getLastIntervalDemandRate() const;
-
-   CtiTableDeviceLoadProfile& setLastIntervalDemandRate( const INT aDemandInterval );
-
-   INT  getLoadProfileDemandRate() const;
-
+   INT  getLoadProfileDemandRate()  const;
+   INT  getVoltageDemandInterval()  const;
+   INT  getVoltageLoadProfileRate() const;
+/*
    CtiTableDeviceLoadProfile& setLoadProfileDemandRate( const INT aRate );
-
+   CtiTableDeviceLoadProfile& setLastIntervalDemandRate( const INT aDemandInterval );
+*/
    BOOL isChannelValid(const INT ch) const;
 
    CtiTableDeviceLoadProfile& setChannelValid( const INT ch, const BOOL val = TRUE );

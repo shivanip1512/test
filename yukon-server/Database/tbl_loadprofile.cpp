@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_loadprofile
@@ -11,11 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_loadprofile.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:35 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/10/22 16:37:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include "tbl_loadprofile.h"
 #include "logger.h"
@@ -25,7 +23,7 @@ _deviceID(-1),
 _lastIntervalDemandRate(INT_MAX),
 _loadProfileDemandRate(INT_MAX)
 {
-    for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+    for(int i = 0; i < MaxCollectedChannel; i++)
     {
         _channelValid[i] = FALSE;
     }
@@ -46,7 +44,7 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDe
         _lastIntervalDemandRate = aRef.getLastIntervalDemandRate();
         _loadProfileDemandRate  = aRef.getLoadProfileDemandRate();
 
-        for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+        for(int i = 0; i < MaxCollectedChannel; i++)
         {
             _channelValid[i]     = aRef.isChannelValid(1);
         }
@@ -54,23 +52,17 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDe
     return *this;
 }
 
-INT  CtiTableDeviceLoadProfile::getLastIntervalDemandRate() const
-{
+INT  CtiTableDeviceLoadProfile::getLastIntervalDemandRate() const   {   return _lastIntervalDemandRate; }
+INT  CtiTableDeviceLoadProfile::getLoadProfileDemandRate()  const   {   return _loadProfileDemandRate;  }
+INT  CtiTableDeviceLoadProfile::getVoltageDemandInterval()  const   {   return _voltageDemandInterval;  }
+INT  CtiTableDeviceLoadProfile::getVoltageLoadProfileRate() const   {   return _voltageLPDemandRate;    }
 
-    return _lastIntervalDemandRate;
-}
-
+/*
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setLastIntervalDemandRate( const INT aDemandInterval )
 {
 
     _lastIntervalDemandRate = aDemandInterval;
     return *this;
-}
-
-INT  CtiTableDeviceLoadProfile::getLoadProfileDemandRate() const
-{
-
-    return _loadProfileDemandRate;
 }
 
 CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setLoadProfileDemandRate( const INT aRate )
@@ -79,6 +71,7 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::setLoadProfileDemandRate( 
     _loadProfileDemandRate = aRate;
     return *this;
 }
+*/
 
 BOOL CtiTableDeviceLoadProfile::isChannelValid(const INT ch) const
 {
@@ -100,7 +93,9 @@ void CtiTableDeviceLoadProfile::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, R
     selector <<
     devTbl["lastintervaldemandrate"] <<
     devTbl["loadprofiledemandrate"] <<
-    devTbl["loadprofilecollection"];
+    devTbl["loadprofilecollection"] <<
+    devTbl["voltagedmdinterval"] <<
+    devTbl["voltagedmdrate"];
 
     selector.from(devTbl);
     selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
@@ -119,14 +114,16 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["deviceid"] >> _deviceID;
     rdr["lastintervaldemandrate"] >> _lastIntervalDemandRate;
-    rdr["loadprofiledemandrate"] >> _loadProfileDemandRate;
+    rdr["loadprofiledemandrate"]  >> _loadProfileDemandRate;
+    rdr["voltagedmdinterval"]     >> _voltageDemandInterval;
+    rdr["voltagedmdrate"]         >> _voltageLPDemandRate;
 
     rdr["loadprofilecollection"] >> rwsTemp;
     rwsTemp.toLower();
 
     if(!rwsTemp.isNull())
     {
-        for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+        for(int i = 0; i < MaxCollectedChannel; i++)
         {
             if( i < rwsTemp.mbLength() && rwsTemp.data()[i] == 'y' )
             {
