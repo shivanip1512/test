@@ -42,7 +42,10 @@
 #include "dllyukon.h"
 #include "numstr.h"
 
-CtiDeviceION::CtiDeviceION() {}
+CtiDeviceION::CtiDeviceION()
+{
+//    resetIONScansPending();
+}
 
 CtiDeviceION::CtiDeviceION(const CtiDeviceION &aRef)
 {
@@ -181,86 +184,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             break;
         }
 
-        /*
-        case ControlRequest:
-        {
-            int offset;
-            CtiIONBinaryOutputControl::ControlCode controltype;
-
-            if( parse.getFlags() & CMD_FLAG_OFFSET )
-            {
-                offset = parse.getiValue("offset");
-
-                if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
-                {
-                    controltype = CtiIONBinaryOutputControl::PulseOff;
-                }
-                else
-                {
-                    controltype = CtiIONBinaryOutputControl::PulseOn;
-                }
-
-                CtiProtocolION::ion_output_point controlout;
-
-                controlout.type   = CtiProtocolION::DigitalOutput;
-                controlout.offset = offset;
-
-                controlout.dout.control    = controltype;
-                controlout.dout.trip_close = CtiIONBinaryOutputControl::NUL;
-                controlout.dout.on_time    = 0;
-                controlout.dout.off_time   = 0;
-                controlout.dout.count      = 1;
-                controlout.dout.queue      = false;
-                controlout.dout.clear      = false;
-
-                _ion.setCommand(CtiProtocolION::ION_SetDigitalOut, &controlout, 1);
-
-                nRet = NoError;
-            }
-
-            break;
-        }
-
-        case PutValueRequest:
-        {
-            int offset;
-
-            if( parse.getFlags() & CMD_FLAG_PV_ANALOG )
-            {
-                CtiProtocolION::ion_output_point controlout;
-
-                controlout.type = CtiProtocolION::AnalogOutput;
-
-                controlout.aout.value = parse.getiValue("analogvalue");
-                controlout.offset     = parse.getiValue("analogoffset");
-
-                _ion.setCommand(CtiProtocolION::ION_SetAnalogOut, &controlout, 1);
-
-                nRet = NoError;
-            }
-
-            break;
-        }
-
-        case GetValueRequest:
-        case GetStatusRequest:
-        {
-
-        }
-        case PutStatusRequest:
-        case GetConfigRequest:
-        case PutConfigRequest:
-        case LoopbackRequest:
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-    */
-
         default:
         {
             {
@@ -350,16 +273,111 @@ void CtiDeviceION::initEventLogPosition( void )
             }
             else
             {
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                //if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "**** Checkpoint: Invalid Reader/No RawPointHistory for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
     }
 }
 
+
+/*
+void CtiDeviceION::resetIONScansPending( void )
+{
+    _scanGeneralPending     = false;
+    _scanIntegrityPending   = false;
+    _scanAccumulatorPending = false;
+}
+
+
+void CtiDeviceION::setIONScanPending(int scantype, bool pending)
+{
+    switch(scantype)
+    {
+        case ScanRateGeneral:   _scanGeneralPending     = pending;  break;
+        case ScanRateIntegrity: _scanIntegrityPending   = pending;  break;
+        case ScanRateAccum:     _scanAccumulatorPending = pending;  break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+}
+
+
+bool CtiDeviceION::clearedForScan(int scantype)
+{
+    bool status = false;
+
+    switch(scantype)
+    {
+        case ScanRateGeneral:
+        {
+            status = !_scanGeneralPending;
+            break;
+        }
+        case ScanRateIntegrity:
+        {
+            status = !_scanIntegrityPending;
+            break;
+        }
+        case ScanRateAccum:
+        {
+            status = !_scanAccumulatorPending;  //  MSKF 2003-01-31 true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
+            break;
+        }
+        case ScanRateLoadProfile:
+        {
+           status = true;
+           break;
+        }
+    }
+
+    status = validatePendingStatus(status, scantype);
+
+    return status;
+}
+
+
+void CtiDeviceION::resetForScan(int scantype)
+{
+    // OK, it is five minutes past the time I expected to have scanned this bad boy..
+    switch(scantype)
+    {
+        case ScanRateGeneral:
+        case ScanRateIntegrity:
+        case ScanRateAccum:
+        {
+            setIONScanPending(scantype, false);
+
+            if(isScanFreezePending())
+            {
+                resetScanFreezePending();
+                setScanFreezeFailed();
+            }
+
+            if(isScanPending())
+            {
+                resetScanPending();
+            }
+
+            if(isScanResetting())
+            {
+                resetScanResetting();
+                setScanResetFailed();
+            }
+            break;
+        }
+    }
+}
+*/
 
 
 INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
@@ -376,6 +394,8 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     pReq->setCommandString("scan general");
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+//    setIONScanPending(ScanRateGeneral, true);
 
     if(OutMessage)
     {
@@ -403,6 +423,35 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
+//    setIONScanPending(ScanRateIntegrity, true);
+
+    if(OutMessage)
+    {
+        delete OutMessage;
+        OutMessage = 0;
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
+{
+    INT status = NORMAL;
+    CtiCommandParser newParse("scan accumulator");
+
+    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    pReq->setCommandString("scan accumulator");
+
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+//    setIONScanPending(ScanRateAccum, true);
+
     if(OutMessage)
     {
         delete OutMessage;
@@ -419,9 +468,9 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     RWTPtrSlist<CtiPointDataMsg> pointData;
     RWTPtrSlist<CtiSignalMsg>    eventData;
 
-    _ion.recvCommResult(InMessage, outList);
-
     resetScanPending();
+
+    _ion.recvCommResult(InMessage, outList);
 
     if( _ion.hasInboundData() )
     {
@@ -479,9 +528,27 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                 CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
             }
+/*            else
+            {
+                setIONScanPending(ScanRateAccum, false);
+            }*/
 
             break;
         }
+
+/*        case CtiProtocolION::Command_ExceptionScan:
+        {
+            setIONScanPending(ScanRateGeneral, false);
+
+            break;
+        }
+
+        case CtiProtocolION::Command_IntegrityScan:
+        {
+            setIONScanPending(ScanRateIntegrity, false);
+
+            break;
+        }*/
     }
 
 
@@ -493,6 +560,8 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
                                        RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events )
 {
     CtiReturnMsg *retMsg, *vgMsg;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
     vgMsg  = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
@@ -534,8 +603,11 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             tmpMsg->setString(resultString);
 
-            //  ACH:  maybe check for "update" someday...  but for now, who cares
-            vgMsg->PointData().append(tmpMsg->replicateMessage());
+            if( parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE) )
+            {
+                vgMsg->PointData().append(tmpMsg->replicateMessage());
+            }
+
             retMsg->PointData().append(tmpMsg);
         }
         else
@@ -556,8 +628,8 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
             tmpSignal->setId(point->getID());
         }
 
+        //  only send to Dispatch
         vgList.append(tmpSignal->replicateMessage());
-        retList.append(tmpSignal);
     }
 
     retList.append(retMsg);
