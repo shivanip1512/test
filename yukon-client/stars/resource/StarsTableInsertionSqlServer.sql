@@ -5,9 +5,6 @@ insert into LMProgram values(0, 'Automatic', 'NNNN', 'NNNNNNNN', 0, 0, 0, 0, 0, 
 /* Route */
 INSERT INTO Route VALUES (0,0,'N');
 
-/* YukonWebConfiguration */
-insert into YukonWebConfiguration values (1,'','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','XYZ Utility','/default.config.properties');
-
 /* EnergyCompany */
 INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,0,0);
 
@@ -200,6 +197,7 @@ insert into YukonListEntry values (1104,1030,0,'Own',0);
 insert into YukonListEntry values (1105,1030,0,'Rent',0);
 insert into YukonListEntry values (1106,1049,1,'Tomorrow',2601);
 insert into YukonListEntry values (1107,1049,99,'Repeat Last',2699);
+insert into YukonListEntry values (1108,1049,2,'Today',2602);
 
 /* ECToGenericMapping */
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
@@ -258,30 +256,30 @@ INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00',1);
 INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00',2);
 
 /* LMThermostatSeasonEntry */
-INSERT INTO LMThermostatSeasonEntry VALUES (-1,-1,1046,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-2,-1,1046,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-3,-1,1046,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-4,-1,1046,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-5,-1,1048,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-6,-1,1048,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-7,-1,1048,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-8,-1,1048,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-9,-1,1049,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-10,-1,1049,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-11,-1,1049,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-12,-1,1049,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-13,-2,1046,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-14,-2,1046,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-15,-2,1046,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-16,-2,1046,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-17,-2,1048,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-18,-2,1048,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-19,-2,1048,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-20,-2,1048,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-21,-2,1049,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-22,-2,1049,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-23,-2,1049,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-24,-2,1049,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-24,-1,1046,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-23,-1,1046,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-22,-1,1046,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-21,-1,1046,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-20,-1,1048,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-19,-1,1048,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-18,-1,1048,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-17,-1,1048,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1049,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1049,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1049,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1049,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-12,-2,1046,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-11,-2,1046,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-10,-2,1046,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-9,-2,1046,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-8,-2,1048,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-7,-2,1048,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-6,-2,1048,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-5,-2,1048,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-4,-2,1049,21600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-3,-2,1049,30600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-2,-2,1049,61200,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1049,75600,72);
 
 /* LMThermostatManualEvent */
 INSERT INTO LMCustomerEventBase VALUES (-1,1064,1066,'01-JAN-70','','');
@@ -291,6 +289,7 @@ INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1);
 
 
 /* YukonWebConfiguration */
+insert into YukonWebConfiguration values(1,'','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','XYZ Utility','/default.config.properties');
 insert into YukonWebConfiguration values(
 2, 'AC.gif', '<b>CYCLE AC<br> Light, Medium</b> - When controlled, your air conditioning compressor will be interrupted for 10 minutes out of every half hour if you sign up for the light program and interrupted for 15 minutes out of every half hour if you sign up for the medium program.', 'Cycle AC', '');
 insert into YukonWebConfiguration values(

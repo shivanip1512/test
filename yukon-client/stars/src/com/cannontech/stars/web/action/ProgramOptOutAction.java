@@ -262,11 +262,9 @@ public class ProgramOptOutAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-				
-			StarsInventories inventories = accountInfo.getStarsInventories();
-			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
             
             // Update program history
+			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
             for (int i = 0; i < resp.getStarsLMProgramHistoryCount(); i++) {
             	StarsLMProgramHistory progHist = resp.getStarsLMProgramHistory(i);
             	
@@ -280,7 +278,7 @@ public class ProgramOptOutAction implements ActionBase {
             }
             ServletUtils.removeProgramHistory( accountInfo.getStarsCustomerAccount().getAccountID() );
             
-            if (inventories != null) {
+            if (ServerUtils.isOperator( user )) {
 				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 				DeviceStatus hwStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntry(
@@ -288,6 +286,7 @@ public class ProgramOptOutAction implements ActionBase {
 						DeviceStatus.class );
             	
 	            // Update hardware history
+				StarsInventories inventories = accountInfo.getStarsInventories();
 	            for (int i = 0; i < resp.getStarsLMHardwareHistoryCount(); i++) {
 		            StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory(i);
 		            

@@ -87,7 +87,7 @@ public class SearchCustAccountAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
-            if (searchAccount.getSearchValue().length() == 0) {
+            if (searchAccount.getSearchValue().trim().length() == 0) {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "The search value cannot be empty") );
             	return SOAPUtil.buildSOAPMessage( respOper );
@@ -163,17 +163,32 @@ public class SearchCustAccountAction implements ActionBase {
 					}
 					
 					acctBrief.setContactName( contact.getLastName() + ", " + contact.getFirstName() );
-					StringBuffer phoneNo = new StringBuffer( contact.getHomePhone() );
-					if (contact.getWorkPhone().length() > 0)
-						phoneNo.append( ", " ).append( contact.getWorkPhone() );
+					StringBuffer phoneNo = new StringBuffer();
+					if (contact.getHomePhone() != null)
+						phoneNo.append( contact.getHomePhone() ).append( "(H)" );
+					if (contact.getWorkPhone() != null) {
+						if (phoneNo.length() > 0) phoneNo.append( ", " );
+						phoneNo.append( contact.getWorkPhone() ).append( "(W)" );
+					}
+					if (phoneNo.length() == 0) phoneNo.append( "(none)" );
 					acctBrief.setContPhoneNumber( phoneNo.toString() );
 					
-					StringBuffer address = new StringBuffer( addr.getLocationAddress1() );
-					if (addr.getLocationAddress2().length() > 0)
-						address.append( ", " ).append( addr.getLocationAddress2() );
-					address.append( ", " ).append( addr.getCityName() )
-						   .append( ", " ).append( addr.getStateCode() )
-						   .append( " " ).append( addr.getZipCode() );
+					StringBuffer address = new StringBuffer();
+					if (addr.getLocationAddress1().trim().length() > 0)
+						address.append( addr.getLocationAddress1() );
+					if (addr.getLocationAddress2().trim().length() > 0) {
+						if (address.length() > 0) address.append( ", " );
+						address.append( addr.getLocationAddress2() );
+					}
+					if (addr.getCityName().trim().length() > 0) {
+						if (address.length() > 0) address.append( ", " );
+						address.append( addr.getCityName() );
+					}
+					if (addr.getStateCode().trim().length() > 0) {
+						if (address.length() > 0) address.append( ", " );
+						address.append( addr.getStateCode() ).append( " " ).append( addr.getZipCode() );
+					}
+					if (address.length() == 0) address.append( "(none)" );
 					acctBrief.setStreetAddress( address.toString() );
 					
 					resp.addStarsCustAccountBrief( acctBrief );
