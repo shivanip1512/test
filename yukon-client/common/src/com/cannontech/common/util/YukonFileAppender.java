@@ -26,8 +26,9 @@ import com.cannontech.util.ServletUtil;
  * starting writing yukon2.log.  File are overwritten upon rolling over.
  * @author aaron
  */
-public class YukonFileAppender extends FileAppender {
-	private String _baseFileName;
+public class YukonFileAppender extends FileAppender 
+{
+	private String _baseFileName;	
 	private long _nextCheck = System.currentTimeMillis() - 1;
 	private Date _now = new Date();
 	
@@ -43,6 +44,14 @@ public class YukonFileAppender extends FileAppender {
 		setAppend(true);
 		setFile(getTodaysFileName());
 		activateOptions();
+
+
+		// If the file is more than 1 day old, then we need to rollover immediately
+		File todaysFile = new File( getTodaysFileName() );
+		if( (_now.getTime() - todaysFile.lastModified()) >= 86400000L ) //1 day in millis
+			_nextCheck = System.currentTimeMillis() - 1; //force a rollover immediately
+		else
+			_nextCheck = ServletUtil.getTomorrow().getTime(); //rollover tomorrow
 	}
 
 		
