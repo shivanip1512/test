@@ -2217,7 +2217,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getPostCommWaitSpinner().setVisible(false);
 		getPostCommWaitLabel().setVisible(false);
 		//getPostCommWaitSpinner().setValue( ((RTCBase)rBase).getDeviceRTC().getPostCommWait() );
-      
+		getWaitLabel().setVisible(false);
 		getPasswordLabel().setVisible(false);
 		getPasswordTextField().setVisible(false);
 	}
