@@ -35,7 +35,7 @@ class CtiLMControlAreaStore
 {
 public:   
 
-    RWOrdered* getControlAreas();
+    RWOrdered* getControlAreas(ULONG secondsFrom1901);
 
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
@@ -45,6 +45,8 @@ public:
     void setValid(bool valid);
     bool getReregisterForPoints() const;
     void setReregisterForPoints(bool reregister);
+    const RWDBDateTime& getLastDBReloadTime() const;
+
     bool UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea);
     bool UpdateProgramDisableFlagInDB(CtiLMProgramBase* program);
     bool UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger);
@@ -70,7 +72,7 @@ private:
 
     bool _isvalid;
     bool _reregisterforpoints;
-    bool _doreset;
+    RWDBDateTime _lastdbreloadtime;
 
     //The singleton instance of CtiLMControlAreaStore
     static CtiLMControlAreaStore* _instance;
