@@ -5,7 +5,6 @@ import java.util.Iterator;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.esub.element.CurrentAlarmsTable;
 
 /**
  * Insert the type's description here.
@@ -13,7 +12,7 @@ import com.cannontech.esub.element.CurrentAlarmsTable;
  * @author: 
  */
 public class CurrentAlarmsTableEditorPanel extends com.cannontech.common.gui.util.DataInputPanel {
-	private CurrentAlarmsTable alarmsTable;
+	private com.cannontech.esub.element.CurrentAlarmsTable alarmsTable;
 	
 	private javax.swing.JLabel ivjAlarmCategoriesLabel = null;
 	private javax.swing.JComboBox ivjJComboBox1 = null;
@@ -210,7 +209,7 @@ public static void main(java.lang.String[] args) {
  * @param o java.lang.Object
  */
 public void setValue(Object o) {
-	alarmsTable = (CurrentAlarmsTable) o;
+	alarmsTable = (com.cannontech.esub.element.CurrentAlarmsTable) o;
 	LiteYukonPAObject device = PAOFuncs.getLiteYukonPAO(alarmsTable.getDeviceID());
 	getJComboBox1().setSelectedItem(device);
 }
