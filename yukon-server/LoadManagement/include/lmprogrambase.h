@@ -103,7 +103,7 @@ public:
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
     virtual BOOL hasControlHoursAvailable() const = 0;
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901) = 0;

@@ -734,7 +734,7 @@ BOOL CtiLMControlArea::isPastMinResponseTime(ULONG secondsFrom1901)
         {
             CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
             if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
-                currentLMProgram->getLastControlSent().seconds() + getMinResponseTime() > secondsFrom1901 )
+                currentLMProgram->getLastControlSent().seconds() + getMinResponseTime() >= secondsFrom1901 )
             {
                 returnBoolean = FALSE;
                 break;
@@ -991,7 +991,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                             }
                         }
 
-                        expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg);
+                        expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         newlyActivePrograms++;
                         if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
                             getControlAreaState() != CtiLMControlArea::ActiveState )
@@ -1121,7 +1121,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                         CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
                         while( lmProgramDirect->getProgramState() != CtiLMProgramBase::FullyActiveState )
                         {
-                            expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg);
+                            expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         }
                         if( currentLMProgram->getDefaultPriority() > getCurrentPriority() )
                         {
@@ -1229,7 +1229,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
     need to increased.  Refreshes time refresh programs shed times.  Updates
     current hours values in programs as they continue to control.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL examinedControlAreaForControlNeededFlag)
 {
     BOOL returnBoolean = FALSE;
     LONG numberOfActivePrograms = 0;
@@ -1242,7 +1242,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
-            if( ((CtiLMProgramDirect*)currentLMProgram)->maintainProgramControl(getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg) )
+            if( ((CtiLMProgramDirect*)currentLMProgram)->maintainProgramControl(getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isPastMinResponseTime(secondsFrom1901), examinedControlAreaForControlNeededFlag) )
             {
                 returnBoolean = TRUE;
             }

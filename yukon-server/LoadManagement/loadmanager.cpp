@@ -272,7 +272,7 @@ void CtiLoadManager::controlLoop()
                                     {
                                         //CtiLockGuard<CtiLogger> logger_guard(dout);
                                         //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                        if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg) )
+                                        if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,examinedControlAreaForControlNeededFlag) )
                                         {
                                             currentControlArea->setUpdatedFlag(TRUE);
                                         }
@@ -871,7 +871,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     {
                         char tempchar[80] = "";
                         text += "Current Trigger Value: ";
-                        _snprintf(tempchar,80,"%.*f",3,currentTrigger->getPointValue());
+                        _snprintf(tempchar,80,"%.*f",3,value);
                         text += tempchar;
                     }
                 }
