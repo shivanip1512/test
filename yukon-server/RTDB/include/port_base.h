@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/09/12 21:42:42 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/09/22 15:37:05 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,13 +212,16 @@ public:
     bool isMinMaxIdle() const;
     void setMinMaxIdle(bool mmi);
     bool waitForPost(HANDLE quitEvent = INVALID_HANDLE_VALUE, LONG timeout = -1L) const;
-    void postParent();
     void postEvent();
     LONG getPoolAssignedGUID() const;
     void setPoolAssignedGUID(LONG guid);
     HANDLE setQuitEventHandle(HANDLE quit);
     HANDLE getQuitEventHandle();
 
+    RWTime getLastOMRead() const;
+    void setLastOMRead(RWTime &atime = RWTime());
+    RWTime getLastOMComplete() const;
+    void setLastOMComplete(RWTime &atime = RWTime());
 
 protected:
 
@@ -259,6 +262,9 @@ private:
     exclusions                  _excluded;
     RWTime                      _lastReport;    // Last comm fail report happened here.
     bool                        _minMaxIdle;
+
+    RWTime                      _lastOMRead;
+    RWTime                      _lastOMComplete;
 };
 
 inline bool CtiPort::isQuestionable() const   { return _commFailCount >= portMaxCommFails();}

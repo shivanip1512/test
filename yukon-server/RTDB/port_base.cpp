@@ -1162,19 +1162,35 @@ bool CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
     return status;
 }
 
-void CtiPort::postParent()
+void CtiPort::postEvent()
 {
+    setLastOMComplete();
+
+    if(_postEvent != INVALID_HANDLE_VALUE)
+    {
+        SetEvent(_postEvent);
+    }
+
     if(_parentPort)
     {
         _parentPort->postEvent();
     }
 }
 
-void CtiPort::postEvent()
+RWTime CtiPort::getLastOMRead() const
 {
-    if(_postEvent != INVALID_HANDLE_VALUE)
-    {
-        SetEvent(_postEvent);
-    }
+    return _lastOMRead;
+}
+void CtiPort::setLastOMRead(RWTime &atime)
+{
+    _lastOMRead = atime;
+}
+RWTime CtiPort::getLastOMComplete() const
+{
+    return _lastOMComplete;
+}
+void CtiPort::setLastOMComplete(RWTime &atime)
+{
+    _lastOMComplete = atime;
 }
 
