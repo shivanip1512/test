@@ -214,11 +214,5 @@ function exportData(extension)
 	document.exportForm.submit();
 }
 
-function reportData(extension)
-{
-	document.exportForm.action="<%=request.getContextPath()%>/servlet/ReportGenerator?action=download&ext="+extension;
-	document.exportForm.method="post";
-	document.exportForm.submit();
-}
 
 </SCRIPT> <!--end javascript for trend/view menus-->
