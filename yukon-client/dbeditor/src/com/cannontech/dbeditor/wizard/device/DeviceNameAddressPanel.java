@@ -576,9 +576,9 @@ public boolean isInputValid()
 
 	int address = Integer.parseInt( getAddress() );
 
-   if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
+   if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
    {
-      setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+      setErrorString( com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
       getJLabelRange().setText( "(" + getErrorString() + ")" );
       getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
       getJLabelRange().setVisible( true );

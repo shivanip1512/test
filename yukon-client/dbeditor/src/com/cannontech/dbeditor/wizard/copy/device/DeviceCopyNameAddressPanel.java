@@ -708,9 +708,9 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	   
 	   	try {
 		      long addy = Long.parseLong(getAddressTextField().getText());
-		      if( !com.cannontech.dbeditor.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
+		      if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
 		      {
-		         setErrorString( com.cannontech.dbeditor.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+		         setErrorString( com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
 		
 		         getJLabelRange().setText( "(" + getErrorString() + ")" );
 		         getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
