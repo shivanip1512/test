@@ -9,7 +9,7 @@
         <mkdir dir="build"/>
         <copy todir="build">
             <fileset dir=".">
-                <exclude name="build" />
+                <exclude name="build/**" />
                 <exclude name="work/**" />
                 <exclude name="**/CVS" />
                 <exclude name="WEB-INF/web.xml" />
@@ -25,7 +25,7 @@
         </copy>
 
         <copy todir="build/WEB-INF/classes">
-           <fileset dir="${yukon.lib}" >
+           <fileset dir="build/WEB-INF/lib" >
               <include name="*.properties"/>
            </fileset>
         </copy>
