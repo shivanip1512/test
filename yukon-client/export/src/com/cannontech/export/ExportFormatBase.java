@@ -9,7 +9,9 @@ package com.cannontech.export;
 public abstract class ExportFormatBase //extends com.ms.service.Service
 {
 	private static final String VERSION = "2.1.18";	
-	public static String formatType = null;
+	private com.cannontech.export.ExportPropertiesBase exportProperties = null;
+//	public static String formatType = null;
+//	public static int formatID = -1;
 
 	private String directory = null;
 	private static com.cannontech.common.util.LogWriter logger = null;
@@ -36,15 +38,15 @@ public abstract String appendBatchFileParms(String batchString);
  */
 /* Return an instance of the ExportFormatBase specified from the command line */
 
-public final static ExportFormatBase createFileFormat(String formatString)
+public final static ExportFormatBase createFileFormat(int formatID)
 {
 	ExportFormatBase returnFormat = null;
 	
-	if( formatString.startsWith(ExportFormatTypes.formatTypeShortName[ExportFormatTypes.DBPURGE_FORMAT]))
+	if(formatID  == ExportFormatTypes.DBPURGE_FORMAT)
 	{
 		returnFormat = new DBPurge();
 	}
-	else if( formatString.startsWith(ExportFormatTypes.formatTypeShortName[ExportFormatTypes.CSVBILLING_FORMAT]))
+	else if( formatID == ExportFormatTypes.CSVBILLING_FORMAT)
 	{
 		returnFormat = new CSVBillingFormat();
 	}
@@ -52,6 +54,7 @@ public final static ExportFormatBase createFileFormat(String formatString)
 	{
 		com.cannontech.clientutils.CTILogger.info("No file format found - Unrecognized file format type");
 	}
+	returnFormat.getExportProperties().setFormatType(formatID);
 	return returnFormat;
 }
 /**
@@ -204,7 +207,7 @@ public void logEvent(String event, int severity)
 public static void main(String[] args)
 {
 	ExportFormatBase formatBase = null;
-
+	int format = -1;
 	for ( int i = 0; i < args.length; i++)
 	{
 		String argLowerCase = (String)args[i].toLowerCase();
@@ -213,8 +216,7 @@ public static void main(String[] args)
 		{
 			int startIndex = argLowerCase.indexOf("=") + 1;
 			String subString = argLowerCase.substring(startIndex);
-
-			setFormatType(subString);
+			format = Integer.valueOf(subString).intValue();
 		}
 		else if( argLowerCase.startsWith("one") || argLowerCase.startsWith("once"))
 		{
@@ -222,7 +224,7 @@ public static void main(String[] args)
 				formatBase.setIsService	(false);
 		}
 	}
-	if( formatType == null)
+	if( format < 0)
 	{
 		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
 		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
@@ -230,7 +232,7 @@ public static void main(String[] args)
 	}
 	else
 	{
-		formatBase = createFileFormat(formatType);
+		formatBase = createFileFormat(format);
 		formatBase.parseCommandLineArgs(args);
 		
 	}
@@ -289,9 +291,9 @@ abstract public void retrieveExportData();
  * Insert the method's description here.
  * Creation date: (4/12/2002 11:18:37 AM)
  */
-public static  void runMainWithGui(ExportFormatBase formatBase) 
+public static void runMainWithGui(ExportFormatBase formatBase) 
 {
-	if( formatType == null)
+	if( formatBase.getExportProperties().getFormatType() < 0)
 	{
 		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
 		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
@@ -318,7 +320,17 @@ public static  void runMainWithGui(ExportFormatBase formatBase)
 	com.cannontech.clientutils.CTILogger.info("..Finished " + formatBase.getClass().getName() + " File Export.");
 	formatBase.logEvent("..Finished " + formatBase.getClass().getName()+ " File Export.", com.cannontech.common.util.LogWriter.INFO);
 }
-public abstract void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel);
+//public abstract void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel);
+public void setExportProperties(com.cannontech.export.ExportPropertiesBase exportProps)
+{
+	exportProperties = exportProps;
+}
+public com.cannontech.export.ExportPropertiesBase getExportProperties()
+{
+	if( exportProperties == null)
+		exportProperties = new com.cannontech.export.ExportPropertiesBase();
+	return exportProperties;
+}
 /**
  * Insert the method's description here.
  * Creation date: (2/28/2002 3:21:56 PM)
@@ -336,10 +348,14 @@ private void setEmailGroup(com.cannontech.database.db.notification.NotificationG
 {
 	emailGroup = newEmailGroup;
 }
-public static void setFormatType (String format)
-{
-	formatType = format;
-}
+//public static void setFormat (int format)
+//{
+//	formatID = format;
+//}
+//public static int getFormatID ()
+//{
+//	return formatID;
+//}
 public void setIsService(boolean value)
 {
 	isService = value;
