@@ -166,6 +166,18 @@
         <ant dir="${filename}" target="${dotarget}"/>
     </target>
 
+
+    <target name="yukon-web">
+<!--    	<antcall target="servlet"/> -->
+<!--    	<antcall target="loadcontrol"/>
+    	<antcall target="trending"/> -->
+    	<antcall target="singlebuild" inheritAll="true">
+    		<param name="dotarget" value="build"/>
+    		<param name="filename" value="${yukon-web}"/>
+    	</antcall>
+    </target>
+
+
 	<!--Added build option for copying the needed jar files into the WEB-INF directory of yukon-web. SN-->
 	<target name="webbuild" depends="build,webcopy"/>
 
