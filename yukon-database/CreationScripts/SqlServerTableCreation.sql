@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/17/2004 3:13:04 PM                         */
+/* Created on:     2/17/2004 3:30:20 PM                         */
 /*==============================================================*/
 
 
@@ -5931,6 +5931,12 @@ insert into YukonUserRole values (-776,-1,-203,-20301,'(none)');
 insert into YukonUserRole values (-780,-1,-204,-20400,'(none)');
 insert into YukonUserRole values (-785,-1,-205,-20500,'(none)');
 insert into YukonUserRole values (-790,-1,-207,-20700,'(none)');
+insert into YukonUserRole values (-791,-1,-209,-20900,'(none)');
+insert into YukonUserRole values (-792,-1,-209,-20901,'(none)');
+insert into YukonUserRole values (-793,-1,-209,-20902,'(none)');
+insert into YukonUserRole values (-794,-1,-209,-20903,'(none)');
+insert into YukonUserRole values (-795,-1,-209,-20904,'(none)');
+
 insert into YukonUserRole values (-800,-1,-201,-20800,'(none)');
 insert into YukonUserRole values (-810,-1,-201,-20810,'(none)');
 insert into YukonUserRole values (-813,-1,-201,-20813,'(none)');
