@@ -11,7 +11,6 @@ import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.StreamableCapObject;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.gui.CapBankTableModel;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.util.MessageEvent;
@@ -577,7 +576,6 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	try
 	{
 		Message msg = null;
-		Message cmdMsg = null;
 		Message opCntMsg = null;
 
 		if( getJComboBoxState().isEnabled() )
@@ -592,12 +590,8 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		
 		if( getJCheckBoxOpCount().isSelected() )
 		{
-			cmdMsg = new CBCCommand(
-					CBCCommand.RESET_OPCOUNT, getCapObject().getCcId().intValue() );
-					
 			//if we have a valid NON-ZERO value for the new opcount, send it
-			//  in a PointData message
-			
+			//  in a PointData message			
 			if( getJTextFieldOpCount().getText() != null
 				 && getJTextFieldOpCount().getText().length() > 0 )
 			{
@@ -616,9 +610,6 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		{
 			getConnectionWrapper().write( msg );
 			
-			if( cmdMsg != null )
-				getConnectionWrapper().write( cmdMsg );
-
 			if( opCntMsg!= null )
 				getConnectionWrapper().write( opCntMsg );
 		}
