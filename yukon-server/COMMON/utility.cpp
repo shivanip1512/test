@@ -865,6 +865,11 @@ void identifyProject(const CTICOMPILEINFO &Info)
     return;
 }
 
+RWCString identifyProjectVersion(const CTICOMPILEINFO &Info)
+{
+    return RWCString(CtiNumStr(Info.major)) + "." + RWCString(CtiNumStr(Info.minor)) + "." + RWCString(CtiNumStr(Info.build));
+}
+
 void identifyProjectComponents(const CTICOMPONENTINFO *pInfo)
 {
     for(int i = 0 ; pInfo[i].fname != NULL ; i++)

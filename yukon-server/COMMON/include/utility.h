@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/07/27 15:47:06 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/09/08 19:54:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,6 +120,7 @@ typedef struct {
 } CtiQueueAnalysis_t;
 
 
+IM_EX_CTIBASE RWCString identifyProjectVersion(const CTICOMPILEINFO &Info);
 IM_EX_CTIBASE void identifyProject(const CTICOMPILEINFO &Info);
 IM_EX_CTIBASE void identifyProjectComponents(const CTICOMPONENTINFO *pInfo);
 
