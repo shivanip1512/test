@@ -1510,8 +1510,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public ArrayList loadAllInventory() {
-		ArrayList inventory = getAllInventory();
-		if (inventoryLoaded) return inventory;
+		if (inventoryLoaded) return getAllInventory();
 		
 		java.sql.Connection conn = null;
 		try {
@@ -1540,7 +1539,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		inventoryLoaded = true;
-		return inventory;
+		return getAllInventory();
 	}
 	
 	public LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
@@ -2214,6 +2213,34 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Returns IDs of the customer accounts containing hardware
+	 * with the specified serial number
+	 */
+	public int[] searchBySerialNumber(String serialNo) {
+		ArrayList inventory = loadAllInventory();
+		ArrayList acctIDList = new ArrayList();
+		
+		synchronized (inventory) {
+			for (int i = 0; i < inventory.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+				if (liteInv.getInventoryID() < 0) continue;
+				
+				if (liteInv instanceof LiteStarsLMHardware) {
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+					if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase(serialNo) && liteHw.getAccountID() > 0)
+						acctIDList.add( new Integer(liteHw.getAccountID()) );
+				}
+			}
+		}
+		
+		int[] accountIDs = new int[ acctIDList.size() ];
+		for (int i = 0; i < acctIDList.size(); i++)
+			accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+		
+		return accountIDs;
 	}
 	
 	

@@ -1,13 +1,16 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -123,23 +126,61 @@ public class SearchCustAccountAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
             	}
             	
-				accountIDs = CustomerAccount.searchByPhoneNumber( new Integer(energyCompanyID), phoneNo );
+            	ArrayList contactList = new ArrayList();
+            	
+            	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+            	synchronized (cache) {
+					for (int i = 0; i < cache.getAllContacts().size(); i++) {
+						LiteContact liteContact = (LiteContact) cache.getAllContacts().get(i);
+						for (int j = 0; j < liteContact.getLiteContactNotifications().size(); j++) {
+							LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(j);
+							if ((liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ||
+								liteNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) &&
+								liteNotif.getNotification().equals( phoneNo ))
+							{
+								contactList.add( liteContact );
+								break;
+							}
+						}
+					}
+            	}
+            	
+            	int[] contactIDs = new int[ contactList.size() ];
+            	for (int i = 0; i < contactList.size(); i++)
+            		contactIDs[i] = ((LiteContact) contactList.get(i)).getContactID();
+            	
+				accountIDs = CustomerAccount.searchByPrimaryContactIDs( contactIDs, energyCompanyID );
             	if (accountIDs != null && accountIDs.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME).getEntryID()) {
             	/* Search by last name */
-            	accountIDs = CustomerAccount.searchByLastName( new Integer(energyCompanyID), searchAccount.getSearchValue() );
+				ArrayList contactList = new ArrayList();
+            	
+				DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+				synchronized (cache) {
+					for (int i = 0; i < cache.getAllContacts().size(); i++) {
+						LiteContact liteContact = (LiteContact) cache.getAllContacts().get(i);
+						if (liteContact.getContLastName().toUpperCase().startsWith( searchAccount.getSearchValue().toUpperCase() ))
+							contactList.add( liteContact );
+					}
+				}
+            	
+				int[] contactIDs = new int[ contactList.size() ];
+				for (int i = 0; i < contactList.size(); i++)
+					contactIDs[i] = ((LiteContact) contactList.get(i)).getContactID();
+            	
+				accountIDs = CustomerAccount.searchByPrimaryContactIDs( contactIDs, energyCompanyID );
             	if (accountIDs != null && accountIDs.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO).getEntryID()) {
             	/* Search by hardware serial number */
-            	accountIDs = CustomerAccount.searchBySerialNumber( searchAccount.getSearchValue(), energyCompanyID );
+            	accountIDs = energyCompany.searchBySerialNumber( searchAccount.getSearchValue() );
             	if (accountIDs != null && accountIDs.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }
-
+            
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
 			
             if (liteAcctInfo != null) {

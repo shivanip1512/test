@@ -79,11 +79,11 @@ public class CustomerAccount extends DBPersistent {
         return null;
     }
     
-    private static int[] searchByPrimaryContactIDs(Integer energyCompanyID, int[] contactIDs) {
+    public static int[] searchByPrimaryContactIDs(int[] contactIDs, int energyCompanyID) {
     	if (contactIDs == null || contactIDs.length == 0) return null;
     	
         String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
-    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = acct.AccountID "
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
     			   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
     	for (int i = 1; i < contactIDs.length; i++)
     		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
@@ -130,7 +130,7 @@ public class CustomerAccount extends DBPersistent {
 			for (int i = 0; i < contactIDs.length; i++)
 				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
 			
-			return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+			return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -167,7 +167,7 @@ public class CustomerAccount extends DBPersistent {
 			for (int i = 0; i < contactIDs.length; i++)
 				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
 			
-	        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -275,7 +275,7 @@ public class CustomerAccount extends DBPersistent {
 			for (int i = 0; i < contactIDs.length; i++)
 				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 			
-	        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
