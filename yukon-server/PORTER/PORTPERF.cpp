@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/11 16:48:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/18 16:22:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -694,14 +694,14 @@ VOID PerfThread (VOID *Arg)
 /* Routine to Update statistics for Ports and Remotes every 5 minutes */
 VOID PerfUpdateThread (PVOID Arg)
 {
-    #define PERFUPDATERATE  300L
+    ULONG PerfUpdateRate = 300L;
 
     ULONG PostCount;
     USHORT i;
     CtiPort *PortRecord;
     HEV PerfUpdateSem;
     PSZ Environment;
-    USHORT Rate;
+    ULONG Rate;
     RWTime now;
 
     /* set the priority of this guy high */
@@ -713,20 +713,11 @@ VOID PerfUpdateThread (PVOID Arg)
     }
 
     /* Check for the port update frequency environment variable */
-    if(!(CTIScanEnv ("YUKON_PORTSTATRATE", &Environment)))
+    if(!(CTIScanEnv ("YUKON_DEVICESTATUPDATERATE", &Environment)))
     {
         if(!(Rate = atoi (Environment)))
         {
-            PortPerfUpdateCount = Rate;
-        }
-    }
-
-    /* Check for the port update frequency environment variable */
-    if(!(CTIScanEnv ("YUKON_DEVICESTATRATE", &Environment)))
-    {
-        if(!(Rate = atoi (Environment)))
-        {
-            RemotePerfUpdateCount = Rate;
+            PerfUpdateRate = Rate;
         }
     }
 
@@ -738,13 +729,15 @@ VOID PerfUpdateThread (PVOID Arg)
             /* Update Stats on a five minute basis but not on the hour mark.*/
             now = now.now();
 
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (PERFUPDATERATE - (now.seconds() % PERFUPDATERATE))) )
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 1000L * (PerfUpdateRate - (now.seconds() % PerfUpdateRate))) )
             {
                PorterQuit = TRUE;
             }
 
             /* Do the statistics */
             statisticsRecord();
+
+            Sleep(1000);                // Make sure we don't get a runaway.
         }
     }
     catch(...)
