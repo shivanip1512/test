@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/03/11 17:27:44 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/05/12 17:07:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2213,5 +2213,38 @@ bool CtiDeviceLCU::isExecutionProhibitedByInternalLogic() const
     }
 
     return prohibited;
+}
+
+INT CtiDeviceLCU::getProtocolWrap() const
+{
+    INT protocol = ProtocolWrapIDLC;
+
+    switch(_lcuType)
+    {
+    case LCU_T3026:
+        {
+            protocol = ProtocolWrapNone;
+            break;
+        }
+    default:
+        {
+            protocol = ProtocolWrapIDLC;
+            break;
+        }
+    }
+
+    if(gConfigParms.isOpt("LCU_PROTOCOLWRAP"))
+    {
+        if( !gConfigParms.getValueAsString("LCU_PROTOCOLWRAP").compareTo("idlc", RWCString::ignoreCase) )
+        {
+            protocol = ProtocolWrapIDLC;
+        }
+        else
+        {
+            protocol = ProtocolWrapNone;
+        }
+    }
+
+    return protocol;
 }
 

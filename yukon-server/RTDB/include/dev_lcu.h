@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/11/06 21:15:56 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/12 17:07:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,6 +183,8 @@ public:
     bool           watchBusyBit() const;
 
     virtual bool isExecutionProhibitedByInternalLogic() const;
+
+    virtual INT getProtocolWrap() const;
 
 };
 #endif // #ifndef __DEV_LCU_H__
