@@ -230,12 +230,4 @@
 		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
 		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 	}
-	
-	com.cannontech.yc.bean.YCBean ycBean = (com.cannontech.yc.bean.YCBean) session.getAttribute(ServletUtil.ATT_YC_BEAN);
-	if(ycBean == null)
-	{
-		session.setAttribute(ServletUtil.ATT_YC_BEAN, new com.cannontech.yc.bean.YCBean());
-		ycBean = (com.cannontech.yc.bean.YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
-	}
-
 %>
