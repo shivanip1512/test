@@ -5,23 +5,27 @@ package com.cannontech.database.data.lite;
  */
 public class LiteEnergyCompany extends LiteBase {
 	private String name;
-
+	private int primaryContactID;
+	private int userID;
+	
 	public LiteEnergyCompany() {
-		initialize(0,null);
+		initialize(0,null,0,0);
 	}
 	
 	public LiteEnergyCompany(int id) {
-		initialize(id,null);
+		initialize(id,null,0,0);
 	}
 	
-	public LiteEnergyCompany(int id, String name) {
-		initialize(id,name);		
+	public LiteEnergyCompany(int id, String name, int primaryContactID, int userID) {
+		initialize(id,name, primaryContactID, userID);		
 	}	
 	
-	private void initialize(int id, String name) {
+	private void initialize(int id, String name, int primaryContactID, int userID) {
 		setLiteType(LiteTypes.ENERGY_COMPANY);
 		setLiteID(id);
 		setName(name);		
+		setPrimaryContactID(primaryContactID);
+		setUserID(userID);
 	}	
 	
 	/**
@@ -54,6 +58,34 @@ public class LiteEnergyCompany extends LiteBase {
 	 */
 	public void setEnergyCompanyID(int energyCompanyID) {
 		setLiteID(energyCompanyID);
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPrimaryContactID() {
+		return primaryContactID;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getUserID() {
+		return userID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPrimaryContactID(int i) {
+		primaryContactID = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setUserID(int i) {
+		userID = i;
 	}
 
 }
