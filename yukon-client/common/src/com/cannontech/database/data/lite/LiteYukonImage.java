@@ -62,7 +62,7 @@ public class LiteYukonImage extends LiteBase
          s.execute();
    
          if( s.getRowCount() <= 0 )
-            throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
+            throw new IllegalStateException("Unable to find YukonImage with imageID = " + getLiteID() );
    
    
          setImageCategory( s.getRow(0)[0].toString() );

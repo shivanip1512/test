@@ -71,7 +71,7 @@ public void retrieve(String databaseAlias)
       s.execute();
 
       if( s.getRowCount() <= 0 )
-         throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
+         throw new IllegalStateException("Unable to find HolidaySchedule with holidayScheduleID = " + getLiteID() );
 
 
       setHolidayScheduleID( new Integer(s.getRow(0)[0].toString()).intValue() );
