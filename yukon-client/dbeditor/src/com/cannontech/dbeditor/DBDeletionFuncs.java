@@ -2,6 +2,7 @@ package com.cannontech.dbeditor;
 
 import Acme.RefInt;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -10,7 +11,7 @@ import com.cannontech.database.db.DBPersistent;
 /**
  * Insert the type's description here.
  * Creation date: (6/14/2002 3:25:50 PM)
- * @author: 
+ * @author: jdayton
  */
 public class DBDeletionFuncs 
 {
@@ -31,6 +32,7 @@ public class DBDeletionFuncs
 	public static final int HOLIDAY_SCHEDULE		= 10;
 	public static final int LOGIN_GRP_TYPE			= 11;
 	public static final int BASELINE_TYPE			= 12;
+	public static final int CONFIG_TYPE				= 13;
 
 
    //the return types of each possible delete
@@ -182,6 +184,22 @@ public class DBDeletionFuncs
 			//this object is deleteable
 			return STATUS_ALLOW;
 		}
+		
+	private static byte createDeleteStringForConfig(int conID) throws java.sql.SQLException
+			{
+				Integer theID = new Integer( conID );
+	
+				if( ConfigTwoWay.inUseByMCT(
+						theID, CtiUtilities.getDatabaseAlias() ) )
+				{
+					theWarning.delete(0, theWarning.length());
+					theWarning.append(CR_LF + "because it is in use by an MCT.");
+					return STATUS_DISALLOW;
+				}
+	
+				//this object is deleteable
+				return STATUS_ALLOW;
+			}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (5/31/2001 2:36:20 PM)
@@ -356,7 +374,16 @@ public class DBDeletionFuncs
 				unableDel.append("You cannot delete the baseline '" + nodeName + "'");
 				deletionType = DBDeletionFuncs.BASELINE_TYPE;
 			}
+		}
+		
+		else if (toDelete instanceof com.cannontech.database.data.config.ConfigTwoWay)
+		{
+			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the two-way config '" + nodeName + "'");
+			anID = ((ConfigTwoWay) toDelete).getConfigID().intValue();
+			deletionType = DBDeletionFuncs.CONFIG_TYPE;
 		}	
+		
 		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 		{
 			message.append("Are you sure you want to permanently delete '" + nodeName + 
@@ -453,6 +480,9 @@ public class DBDeletionFuncs
 			else if(type == BASELINE_TYPE)
 				return createDeleteStringForBaseline(anID);
 	
+			else if(type == CONFIG_TYPE)
+					return createDeleteStringForConfig(anID);
+			
 			else if(type == LOGIN_TYPE)
 				return createDeleteStringForLogin(anID);
 	
