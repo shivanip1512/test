@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/02/16 21:00:37 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/10/08 20:27:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@
 #include "dbmemobject.h"
 #include "dlldefs.h"
 
-class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject
 {
 protected:
 
