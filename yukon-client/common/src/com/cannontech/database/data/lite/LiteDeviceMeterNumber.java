@@ -1,5 +1,9 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+
 /**
  * Insert the type's description here.
  * Creation date: (9/5/2001 5:12:39 PM)
@@ -9,6 +13,8 @@ public class LiteDeviceMeterNumber extends LiteBase
 {
 	String meterNumber = null;
 	String collGroup = null;
+	String testCollGroup = null;
+	String billGroup = null;
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
@@ -27,12 +33,14 @@ public LiteDeviceMeterNumber(int devID)
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
-public LiteDeviceMeterNumber(int devID, String meterNum, String collGrp)
+public LiteDeviceMeterNumber(int devID, String meterNum, String collGrp, String testCollGrp, String billGrp)
 {
 	super();
 	setDeviceID(devID);
 	meterNumber = new String(meterNum);
 	collGroup = new String(collGrp);
+	testCollGroup = new String(testCollGrp);
+	billGroup = new String(billGrp);
 
 	setLiteType(LiteTypes.DEVICE_METERNUMBER);	
 }
@@ -53,11 +61,9 @@ public String getMeterNumber() {
  */
 public void retrieve(String databaseAlias) 
 {
-	
-   com.cannontech.database.SqlStatement s = 
-      new com.cannontech.database.SqlStatement(
-         "SELECT METERNUMBER, COLLECTIONGROUP FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
-         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+   SqlStatement s = new SqlStatement(
+         "SELECT METERNUMBER, COLLECTIONGROUP, TESTCOLLECTIONGROUP, BILLINGGROUP FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
+         CtiUtilities.getDatabaseAlias() );
 
 	try 
 	{
@@ -69,10 +75,12 @@ public void retrieve(String databaseAlias)
 
       setMeterNumber( s.getRow(0)[0].toString() );
       setCollGroup(s.getRow(0)[1].toString());
+      setTestCollGroup( s.getRow(0)[2].toString());
+      setBillGroup(s.getRow(0)[3].toString());
 	}
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 
 }
@@ -124,4 +132,37 @@ public boolean equals(Object o)
     {
         this.collGroup = new String(collGroup);
     }
+
+	/**
+	 * @return
+	 */
+	public String getBillGroup()
+	{
+		return billGroup;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setBillGroup(String billGrp)
+	{
+		billGroup = new String(billGrp);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getTestCollGroup()
+	{
+		return testCollGroup;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setTestCollGroup(String testCollGrp)
+	{
+		testCollGroup = new String(testCollGrp);
+	}
+
 }

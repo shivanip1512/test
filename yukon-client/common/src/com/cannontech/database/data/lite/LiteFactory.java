@@ -116,6 +116,8 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setDeviceID(new Integer(((LiteDeviceMeterNumber)liteObject).getDeviceID()) );
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setMeterNumber(((LiteDeviceMeterNumber)liteObject).getMeterNumber() );
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setCollectionGroup(((LiteDeviceMeterNumber)liteObject).getCollGroup() );
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setTestCollectionGroup(((LiteDeviceMeterNumber)liteObject).getTestCollGroup() );
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setBillingGroup(((LiteDeviceMeterNumber)liteObject).getBillGroup() );
 				break;				
 			case LiteTypes.HOLIDAY_SCHEDULE:
 				returnObject = new com.cannontech.database.data.holiday.HolidaySchedule();
@@ -375,7 +377,9 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteDeviceMeterNumber(
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber(),
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getCollectionGroup());
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getCollectionGroup(),
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getTestCollectionGroup(),
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getBillingGroup());
 	}
 	else if( val instanceof YukonUser )
 	{
