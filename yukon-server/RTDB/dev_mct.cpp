@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/08 14:28:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/09 19:13:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2411,6 +2411,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 }
 
 
+                if( getDebugLevel() & 0x01 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2424,7 +2425,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                 if( multnum == 1000 )
                 {
-                    resultStr += " multiplier: pulses\n";
+                    resultStr += " multiplier: 1.000 (pulses)\n";
                 }
                 else
                 {
