@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/10 21:23:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,45 +17,49 @@
 #include "dnp_object_time.h"
 #include "logger.h"
 
-CtiDNPTime::CtiDNPTime(int variation) : CtiDNPObject(Group, variation)
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Time::Time(int variation) : Object(Group, variation)
 {
     _seconds      = 0.0;
     _milliseconds = 0.0;
 }
 
 
-CtiDNPTime::CtiDNPTime(int group, int variation) : CtiDNPObject(group, variation)
+Time::Time(int group, int variation) : Object(group, variation)
 {
     _seconds      = 0.0;
     _milliseconds = 0.0;
 }
 
 
-double CtiDNPTime::getSeconds() const
+double Time::getSeconds() const
 {
     return _seconds;
 }
 
 
-double CtiDNPTime::getMilliseconds() const
+double Time::getMilliseconds() const
 {
     return _milliseconds;
 }
 
 
-void CtiDNPTime::setSeconds( double seconds )
+void Time::setSeconds( double seconds )
 {
     _seconds = seconds;
 }
 
 
-void CtiDNPTime::setMilliseconds( double millis )
+void Time::setMilliseconds( double millis )
 {
     _milliseconds = millis;
 }
 
 
-int CtiDNPTime::restore(unsigned char *buf, int len)
+int Time::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -80,7 +84,7 @@ int CtiDNPTime::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPTime::restoreVariation(unsigned char *buf, int len, int variation)
+int Time::restoreVariation(const unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
@@ -107,7 +111,7 @@ int CtiDNPTime::restoreVariation(unsigned char *buf, int len, int variation)
         case TimeAndDateWithInterval:
         {
             //  restore the time block first
-            pos += restoreVariation(buf, len, CtiDNPTime::TimeAndDate);
+            pos += restoreVariation(buf, len, Time::TimeAndDate);
 
             //  then restore the interval
             _interval = 0.0;
@@ -128,12 +132,12 @@ int CtiDNPTime::restoreVariation(unsigned char *buf, int len, int variation)
 }
 
 
-int CtiDNPTime::serialize(unsigned char *buf)
+int Time::serialize(unsigned char *buf) const
 {
     return serializeVariation(buf, getVariation());
 }
 
-int CtiDNPTime::serializeVariation(unsigned char *buf, int variation)
+int Time::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
 
@@ -169,7 +173,7 @@ int CtiDNPTime::serializeVariation(unsigned char *buf, int variation)
             long tmp;
 
             //  serialize the time block first
-            pos += serializeVariation(buf, CtiDNPTime::TimeAndDate);
+            pos += serializeVariation(buf, Time::TimeAndDate);
 
             tmp = _interval;
 
@@ -186,7 +190,7 @@ int CtiDNPTime::serializeVariation(unsigned char *buf, int variation)
 }
 
 
-int CtiDNPTime::getSerializedLen(void)
+int Time::getSerializedLen(void) const
 {
     int retVal = 0;
 
@@ -211,12 +215,12 @@ int CtiDNPTime::getSerializedLen(void)
 }
 
 
-CtiDNPTimeCTO::CtiDNPTimeCTO(int variation) : CtiDNPTime(Group, variation)
+TimeCTO::TimeCTO(int variation) : Time(Group, variation)
 {
 
 }
 
-int CtiDNPTimeCTO::restore(unsigned char *buf, int len)
+int TimeCTO::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -227,7 +231,7 @@ int CtiDNPTimeCTO::restore(unsigned char *buf, int len)
         case TimeAndDateCTO:
         case TimeAndDateCTOUnsynchronized:
         {
-            pos += restoreVariation(buf,len,CtiDNPTime::TimeAndDate);
+            pos += restoreVariation(buf,len,Time::TimeAndDate);
             break;
         }
 
@@ -246,7 +250,7 @@ int CtiDNPTimeCTO::restore(unsigned char *buf, int len)
     return pos;
 }
 
-int CtiDNPTimeCTO::serialize(unsigned char *buf)
+int TimeCTO::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -255,7 +259,7 @@ int CtiDNPTimeCTO::serialize(unsigned char *buf)
         case TimeAndDateCTO:
         case TimeAndDateCTOUnsynchronized:
         {
-            pos += serializeVariation(buf, CtiDNPTime::TimeAndDate);
+            pos += serializeVariation(buf, Time::TimeAndDate);
             break;
         }
     }
@@ -263,7 +267,7 @@ int CtiDNPTimeCTO::serialize(unsigned char *buf)
     return pos;
 }
 
-int CtiDNPTimeCTO::getSerializedLen(void)
+int TimeCTO::getSerializedLen(void) const
 {
     int retVal = 0;
 
@@ -282,13 +286,13 @@ int CtiDNPTimeCTO::getSerializedLen(void)
 }
 
 
-CtiDNPTimeDelay::CtiDNPTimeDelay(int variation) : CtiDNPObject(Group, variation)
+TimeDelay::TimeDelay(int variation) : Object(Group, variation)
 {
 
 }
 
 
-double CtiDNPTimeDelay::getSeconds() const
+double TimeDelay::getSeconds() const
 {
     double retVal;
 
@@ -305,7 +309,7 @@ double CtiDNPTimeDelay::getSeconds() const
 }
 
 
-double CtiDNPTimeDelay::getMilliseconds() const
+double TimeDelay::getMilliseconds() const
 {
     double retVal;
 
@@ -322,7 +326,7 @@ double CtiDNPTimeDelay::getMilliseconds() const
 }
 
 
-int CtiDNPTimeDelay::restore(unsigned char *buf, int len)
+int TimeDelay::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -335,13 +339,17 @@ int CtiDNPTimeDelay::restore(unsigned char *buf, int len)
     return pos;
 }
 
-int CtiDNPTimeDelay::serialize(unsigned char *buf)
+int TimeDelay::serialize(unsigned char *buf) const
 {
     return 0;
 }
 
-int CtiDNPTimeDelay::getSerializedLen(void)
+int TimeDelay::getSerializedLen(void) const
 {
     return 0;
+}
+
+}
+}
 }
 

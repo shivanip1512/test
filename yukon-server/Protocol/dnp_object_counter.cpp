@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/03/10 21:23:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,34 +17,38 @@
 #include "dnp_object_counter.h"
 #include "logger.h"
 
-CtiDNPCounter::CtiDNPCounter(int variation) :
-    CtiDNPObject(Group, variation)
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Counter::Counter(int variation) :
+    Object(Group, variation)
 {
 
 }
 
 
-CtiDNPCounter::CtiDNPCounter(int group, int variation) :
-    CtiDNPObject(group, variation)
+Counter::Counter(int group, int variation) :
+    Object(group, variation)
 {
 
 }
 
 
-int CtiDNPCounter::restore(unsigned char *buf, int len)
+int Counter::restore(const unsigned char *buf, int len)
 {
     //  ACH:  check minimum length, like the others
     return restoreVariation(buf, len, getVariation());
 }
 
 
-int CtiDNPCounter::serialize(unsigned char *buf)
+int Counter::serialize(unsigned char *buf) const
 {
     return 0;
 }
 
 
-int CtiDNPCounter::getSerializedLen(void)
+int Counter::getSerializedLen(void) const
 {
     int retVal;
 
@@ -67,7 +71,7 @@ int CtiDNPCounter::getSerializedLen(void)
 }
 
 
-int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
+int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
@@ -133,7 +137,7 @@ int CtiDNPCounter::restoreVariation(unsigned char *buf, int len, int variation)
 }
 
 
-int CtiDNPCounter::serializeVariation(unsigned char *buf, int variation)
+int Counter::serializeVariation(unsigned char *buf, int variation) const
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -144,7 +148,7 @@ int CtiDNPCounter::serializeVariation(unsigned char *buf, int variation)
 }
 
 
-CtiPointDataMsg *CtiDNPCounter::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -209,17 +213,17 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( const CtiDNPTimeCTO *cto )
 
 
 
-CtiDNPCounterChange::CtiDNPCounterChange(int variation) : CtiDNPObject(Group, variation)
+CounterChange::CounterChange(int variation) : Object(Group, variation)
 {
 
 }
 
-CtiDNPCounterFrozen::CtiDNPCounterFrozen(int variation) : CtiDNPCounter(Group, variation)
+CounterFrozen::CounterFrozen(int variation) : Counter(Group, variation)
 {
 
 }
 
-int CtiDNPCounterFrozen::restore(unsigned char *buf, int len)
+int CounterFrozen::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -227,12 +231,12 @@ int CtiDNPCounterFrozen::restore(unsigned char *buf, int len)
     {
         case Binary16Bit:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPCounter::Binary16Bit);
+            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
             break;
         }
         case Binary16BitNoFlag:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPCounter::Binary16BitNoFlag);
+            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16BitNoFlag);
             break;
         }
     }
@@ -242,13 +246,13 @@ int CtiDNPCounterFrozen::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPCounterFrozen::serialize(unsigned char *buf)
+int CounterFrozen::serialize(unsigned char *buf) const
 {
     return 0;
 }
 
 
-int CtiDNPCounterFrozen::getSerializedLen(void)
+int CounterFrozen::getSerializedLen(void) const
 {
     int retVal;
 
@@ -258,7 +262,7 @@ int CtiDNPCounterFrozen::getSerializedLen(void)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - in CtiDNPCounterFrozen::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - in CounterFrozen::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             retVal = 0;
@@ -271,7 +275,7 @@ int CtiDNPCounterFrozen::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPCounterFrozen::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *CounterFrozen::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -279,7 +283,7 @@ CtiPointDataMsg *CtiDNPCounterFrozen::getPoint( const CtiDNPTimeCTO *cto )
     int quality;
 
     //  inherited types just add on to the parent's values
-    tmpMsg = CtiDNPCounter::getPoint(cto);
+    tmpMsg = Counter::getPoint(cto);
 
 /*    switch(getVariation())
     {
@@ -347,8 +351,12 @@ CtiPointDataMsg *CtiDNPCounterFrozen::getPoint( const CtiDNPTimeCTO *cto )
 }
 
 
-CtiDNPCounterFrozenEvent::CtiDNPCounterFrozenEvent(int variation) : CtiDNPObject(Group, variation)
+CounterFrozenEvent::CounterFrozenEvent(int variation) : Object(Group, variation)
 {
 
+}
+
+}
+}
 }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/03/10 21:23:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,26 +17,29 @@
 #include "dnp_object_binaryinput.h"
 #include "logger.h"
 
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
 
-CtiDNPBinaryInput::CtiDNPBinaryInput(int group, int variation) : CtiDNPObject(group, variation)
+BinaryInput::BinaryInput(int group, int variation) : Object(group, variation)
 {
     _bi.raw = 0;
 }
 
 
-CtiDNPBinaryInput::CtiDNPBinaryInput(int variation) : CtiDNPObject(Group, variation)
+BinaryInput::BinaryInput(int variation) : Object(Group, variation)
 {
     _bi.raw = 0;
 }
 
 
-int CtiDNPBinaryInput::restore(unsigned char *buf, int len)
+int BinaryInput::restore(const unsigned char *buf, int len)
 {
     return restoreVariation(buf, len, getVariation());
 }
 
 
-int CtiDNPBinaryInput::restoreVariation(unsigned char *buf, int len, int variation)
+int BinaryInput::restoreVariation(const unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
@@ -67,7 +70,7 @@ int CtiDNPBinaryInput::restoreVariation(unsigned char *buf, int len, int variati
 }
 
 
-int CtiDNPBinaryInput::restoreBits(unsigned char *buf, int bitoffset, int len)
+int BinaryInput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 {
     int bitpos;
 
@@ -102,7 +105,7 @@ int CtiDNPBinaryInput::restoreBits(unsigned char *buf, int bitoffset, int len)
 }
 
 
-int CtiDNPBinaryInput::serializeVariation(unsigned char *buf, int variation)
+int BinaryInput::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
 
@@ -130,13 +133,13 @@ int CtiDNPBinaryInput::serializeVariation(unsigned char *buf, int variation)
 }
 
 
-int CtiDNPBinaryInput::serialize(unsigned char *buf)
+int BinaryInput::serialize(unsigned char *buf) const
 {
     return serializeVariation(buf, getVariation());
 }
 
 
-int CtiDNPBinaryInput::getSerializedLen(void)
+int BinaryInput::getSerializedLen(void) const
 {
     int retVal;
 
@@ -164,7 +167,7 @@ int CtiDNPBinaryInput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPBinaryInput::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -235,15 +238,15 @@ CtiPointDataMsg *CtiDNPBinaryInput::getPoint( const CtiDNPTimeCTO *cto )
 
 
 
-CtiDNPBinaryInputChange::CtiDNPBinaryInputChange(int variation) : CtiDNPBinaryInput(variation),
-    _time(CtiDNPTime::TimeAndDate),
-    _timeRelative(CtiDNPTimeDelay::Fine)
+BinaryInputChange::BinaryInputChange(int variation) : BinaryInput(variation),
+    _time(Time::TimeAndDate),
+    _timeRelative(TimeDelay::Fine)
 {
 
 }
 
 
-int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
+int BinaryInputChange::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -253,14 +256,14 @@ int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
     {
         case WithoutTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
+            pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
 
             break;
         }
 
         case WithTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
+            pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
             pos += _time.restore(buf + pos, len - pos);
 
             break;
@@ -268,7 +271,7 @@ int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
 
         case WithRelativeTime:
         {
-            pos += restoreVariation(buf + pos, len - pos, CtiDNPBinaryInput::WithStatus);
+            pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
             pos += _timeRelative.restore(buf + pos, len - pos);
 
             {
@@ -296,7 +299,7 @@ int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPBinaryInputChange::serialize(unsigned char *buf)
+int BinaryInputChange::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -304,14 +307,14 @@ int CtiDNPBinaryInputChange::serialize(unsigned char *buf)
     {
         case WithoutTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPBinaryInput::WithStatus);
+            pos += serializeVariation(buf + pos, BinaryInput::WithStatus);
 
             break;
         }
 
         case WithTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPBinaryInput::WithStatus);
+            pos += serializeVariation(buf + pos, BinaryInput::WithStatus);
             pos += _time.serialize(buf + pos);
 
             break;
@@ -319,7 +322,7 @@ int CtiDNPBinaryInputChange::serialize(unsigned char *buf)
 
         case WithRelativeTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPBinaryInput::WithStatus);
+            pos += serializeVariation(buf + pos, BinaryInput::WithStatus);
             pos += _timeRelative.serialize(buf + pos);
 
             break;
@@ -338,7 +341,7 @@ int CtiDNPBinaryInputChange::serialize(unsigned char *buf)
 }
 
 
-int CtiDNPBinaryInputChange::getSerializedLen(void)
+int BinaryInputChange::getSerializedLen(void) const
 {
     int len = 0;
 
@@ -380,7 +383,7 @@ int CtiDNPBinaryInputChange::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg = NULL;
 
@@ -388,7 +391,7 @@ CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( const CtiDNPTimeCTO *cto )
     {
         case WithTime:
         {
-            tmpMsg = CtiDNPBinaryInput::getPoint(cto);
+            tmpMsg = BinaryInput::getPoint(cto);
 
             tmpMsg->setTime(_time.getSeconds() + rwEpoch);
             tmpMsg->setMillis(_time.getMilliseconds());
@@ -407,7 +410,7 @@ CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( const CtiDNPTimeCTO *cto )
             seconds      += milliseconds / 1000;
             milliseconds %= 1000;
 
-            tmpMsg = CtiDNPBinaryInput::getPoint(cto);
+            tmpMsg = BinaryInput::getPoint(cto);
 
             tmpMsg->setTime(seconds + rwEpoch);
             tmpMsg->setMillis(milliseconds);
@@ -421,4 +424,9 @@ CtiPointDataMsg *CtiDNPBinaryInputChange::getPoint( const CtiDNPTimeCTO *cto )
 
     return tmpMsg;
 }
+
+}
+}
+}
+
 

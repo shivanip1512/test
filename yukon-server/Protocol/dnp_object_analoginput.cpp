@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/03/10 21:25:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,23 +18,27 @@
 #include "logger.h"
 
 
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
 //  ---  ANALOG INPUT  ---
 
-CtiDNPAnalogInput::CtiDNPAnalogInput(int group, int variation) : CtiDNPObject(group, variation)
+AnalogInput::AnalogInput(int group, int variation) : Object(group, variation)
 {
     _value = 0;
     _flags.raw = 0;
 }
 
 
-CtiDNPAnalogInput::CtiDNPAnalogInput(int variation) : CtiDNPObject(Group, variation)
+AnalogInput::AnalogInput(int variation) : Object(Group, variation)
 {
     _value = 0;
     _flags.raw = 0;
 }
 
 
-int CtiDNPAnalogInput::restore(unsigned char *buf, int len)
+int AnalogInput::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -59,7 +63,7 @@ int CtiDNPAnalogInput::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variation)
+int AnalogInput::restoreVariation(const unsigned char *buf, int len, int variation)
 {
     int pos = 0;
 
@@ -120,13 +124,13 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
 }
 
 
-int CtiDNPAnalogInput::serialize(unsigned char *buf)
+int AnalogInput::serialize(unsigned char *buf) const
 {
     return serializeVariation(buf, getVariation());
 }
 
 
-int CtiDNPAnalogInput::serializeVariation(unsigned char *buf, int variation)
+int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
 
@@ -173,7 +177,7 @@ int CtiDNPAnalogInput::serializeVariation(unsigned char *buf, int variation)
 }
 
 
-int CtiDNPAnalogInput::getSerializedLen(void)
+int AnalogInput::getSerializedLen(void) const
 {
     int retVal;
 
@@ -219,7 +223,7 @@ int CtiDNPAnalogInput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPAnalogInput::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -304,14 +308,14 @@ CtiPointDataMsg *CtiDNPAnalogInput::getPoint( const CtiDNPTimeCTO *cto )
 
 //  ---  ANALOG INPUT FROZEN  ---
 
-CtiDNPAnalogInputFrozen::CtiDNPAnalogInputFrozen(int variation) : CtiDNPAnalogInput(Group, variation),
-    _tof(CtiDNPTime::TimeAndDate)
+AnalogInputFrozen::AnalogInputFrozen(int variation) : AnalogInput(Group, variation),
+    _tof(Time::TimeAndDate)
 {
 
 }
 
 
-int CtiDNPAnalogInputFrozen::restore(unsigned char *buf, int len)
+int AnalogInputFrozen::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -333,38 +337,38 @@ int CtiDNPAnalogInputFrozen::restore(unsigned char *buf, int len)
         {
             case AI16Bit:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
                 break;
             }
 
             case AI16BitNoFlag:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16BitNoFlag);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16BitNoFlag);
                 break;
             }
 
             case AI16BitWithTimeOfFreeze:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
                 pos += _tof.restore(buf + pos, len - pos);
                 break;
             }
 
             case AI32Bit:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
                 break;
             }
 
             case AI32BitNoFlag:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16BitNoFlag);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16BitNoFlag);
                 break;
             }
 
             case AI32BitWithTimeOfFreeze:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
                 pos += _tof.restore(buf + pos, len - pos);
                 break;
             }
@@ -385,7 +389,7 @@ int CtiDNPAnalogInputFrozen::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPAnalogInputFrozen::serialize(unsigned char *buf)
+int AnalogInputFrozen::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -393,38 +397,38 @@ int CtiDNPAnalogInputFrozen::serialize(unsigned char *buf)
     {
         case AI16Bit:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
             break;
         }
 
         case AI16BitNoFlag:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16BitNoFlag);
+            pos += serializeVariation(buf + pos, AnalogInput::AI16BitNoFlag);
             break;
         }
 
         case AI16BitWithTimeOfFreeze:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
             pos += _tof.serialize(buf + pos);
             break;
         }
 
         case AI32Bit:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
             break;
         }
 
         case AI32BitNoFlag:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16BitNoFlag);
+            pos += serializeVariation(buf + pos, AnalogInput::AI16BitNoFlag);
             break;
         }
 
         case AI32BitWithTimeOfFreeze:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
             pos += _tof.serialize(buf + pos);
             break;
         }
@@ -444,7 +448,7 @@ int CtiDNPAnalogInputFrozen::serialize(unsigned char *buf)
 }
 
 
-int CtiDNPAnalogInputFrozen::getSerializedLen(void)
+int AnalogInputFrozen::getSerializedLen(void) const
 {
     int retVal;
 
@@ -504,14 +508,14 @@ int CtiDNPAnalogInputFrozen::getSerializedLen(void)
 
 //  ---  ANALOG INPUT CHANGE  ---
 
-CtiDNPAnalogInputChange::CtiDNPAnalogInputChange(int variation) : CtiDNPAnalogInput(Group, variation),
-    _toc(CtiDNPTime::TimeAndDate)
+AnalogInputChange::AnalogInputChange(int variation) : AnalogInput(Group, variation),
+    _toc(Time::TimeAndDate)
 {
 
 }
 
 
-int CtiDNPAnalogInputChange::restore(unsigned char *buf, int len)
+int AnalogInputChange::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -533,26 +537,26 @@ int CtiDNPAnalogInputChange::restore(unsigned char *buf, int len)
         {
             case AI16BitNoTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
                 break;
             }
 
             case AI16BitWithTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI16Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI16Bit);
                 pos += _toc.restore(buf + pos, len - pos);
                 break;
             }
 
             case AI32BitNoTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
                 break;
             }
 
             case AI32BitWithTime:
             {
-                pos += restoreVariation(buf + pos, len - pos, CtiDNPAnalogInput::AI32Bit);
+                pos += restoreVariation(buf + pos, len - pos, AnalogInput::AI32Bit);
                 pos += _toc.restore(buf + pos, len - pos);
                 break;
             }
@@ -573,7 +577,7 @@ int CtiDNPAnalogInputChange::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPAnalogInputChange::serialize(unsigned char *buf)
+int AnalogInputChange::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -581,26 +585,26 @@ int CtiDNPAnalogInputChange::serialize(unsigned char *buf)
     {
         case AI16BitNoTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
             break;
         }
 
         case AI16BitWithTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI16Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI16Bit);
             pos += _toc.serialize(buf + pos);
             break;
         }
 
         case AI32BitNoTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
             break;
         }
 
         case AI32BitWithTime:
         {
-            pos += serializeVariation(buf + pos, CtiDNPAnalogInput::AI32Bit);
+            pos += serializeVariation(buf + pos, AnalogInput::AI32Bit);
             pos += _toc.serialize(buf + pos);
             break;
         }
@@ -620,7 +624,7 @@ int CtiDNPAnalogInputChange::serialize(unsigned char *buf)
 }
 
 
-int CtiDNPAnalogInputChange::getSerializedLen(void)
+int AnalogInputChange::getSerializedLen(void) const
 {
     int retVal;
 
@@ -656,11 +660,11 @@ int CtiDNPAnalogInputChange::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPAnalogInputChange::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
-    tmpMsg = CtiDNPAnalogInput::getPoint(cto);
+    tmpMsg = AnalogInput::getPoint(cto);
 
     switch(getVariation())
     {
@@ -685,14 +689,14 @@ CtiPointDataMsg *CtiDNPAnalogInputChange::getPoint( const CtiDNPTimeCTO *cto )
 
 //  ---  ANALOG INPUT FROZEN EVENT  ---
 
-CtiDNPAnalogInputFrozenEvent::CtiDNPAnalogInputFrozenEvent(int variation) : CtiDNPAnalogInput(Group, variation),
-    _tofe(CtiDNPTime::TimeAndDate)
+AnalogInputFrozenEvent::AnalogInputFrozenEvent(int variation) : AnalogInput(Group, variation),
+    _tofe(Time::TimeAndDate)
 {
 
 }
 
 
-int CtiDNPAnalogInputFrozenEvent::restore(unsigned char *buf, int len)
+int AnalogInputFrozenEvent::restore(const unsigned char *buf, int len)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -703,13 +707,13 @@ int CtiDNPAnalogInputFrozenEvent::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPAnalogInputFrozenEvent::serialize(unsigned char *buf)
+int AnalogInputFrozenEvent::serialize(unsigned char *buf) const
 {
     return 0;
 }
 
 
-int CtiDNPAnalogInputFrozenEvent::getSerializedLen(void)
+int AnalogInputFrozenEvent::getSerializedLen(void) const
 {
     int retVal;
 
@@ -742,5 +746,9 @@ int CtiDNPAnalogInputFrozenEvent::getSerializedLen(void)
     }
 
     return retVal;
+}
+
+}
+}
 }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/03/10 21:23:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,25 +17,29 @@
 #include "dnp_object_class.h"
 #include "logger.h"
 
-CtiDNPClass::CtiDNPClass(int variation) : CtiDNPObject(Group, variation)
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Class::Class(int variation) : Object(Group, variation)
 {
 
 }
 
 
-int CtiDNPClass::restore(unsigned char *buf, int len)
-{
-    return 0;
-}
-
-
-int CtiDNPClass::serialize(unsigned char *buf)
+int Class::restore(const unsigned char *buf, int len)
 {
     return 0;
 }
 
 
-int CtiDNPClass::getSerializedLen(void)
+int Class::serialize(unsigned char *buf) const
+{
+    return 0;
+}
+
+
+int Class::getSerializedLen(void) const
 {
     int retVal;
 
@@ -65,4 +69,7 @@ int CtiDNPClass::getSerializedLen(void)
     return retVal;
 }
 
+}
+}
+}
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/03/10 21:23:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,12 +17,16 @@
 #include "dnp_object_binaryoutput.h"
 #include "logger.h"
 
-CtiDNPBinaryOutput::CtiDNPBinaryOutput(int variation) : CtiDNPObject(Group, variation)
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+BinaryOutput::BinaryOutput(int variation) : Object(Group, variation)
 {
 
 }
 
-int CtiDNPBinaryOutput::restore(unsigned char *buf, int len)
+int BinaryOutput::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -53,7 +57,7 @@ int CtiDNPBinaryOutput::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPBinaryOutput::restoreBits(unsigned char *buf, int bitoffset, int len)
+int BinaryOutput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 {
     int bitpos;
 
@@ -87,7 +91,7 @@ int CtiDNPBinaryOutput::restoreBits(unsigned char *buf, int bitoffset, int len)
 }
 
 
-int CtiDNPBinaryOutput::serialize(unsigned char *buf)
+int BinaryOutput::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -115,7 +119,7 @@ int CtiDNPBinaryOutput::serialize(unsigned char *buf)
 }
 
 
-int CtiDNPBinaryOutput::getSerializedLen(void)
+int BinaryOutput::getSerializedLen(void) const
 {
     int retVal;
 
@@ -143,7 +147,7 @@ int CtiDNPBinaryOutput::getSerializedLen(void)
 }
 
 
-CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( const CtiDNPTimeCTO *cto )
+CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 {
     CtiPointDataMsg *tmpMsg;
 
@@ -212,13 +216,13 @@ CtiPointDataMsg *CtiDNPBinaryOutput::getPoint( const CtiDNPTimeCTO *cto )
 
 
 
-CtiDNPBinaryOutputControl::CtiDNPBinaryOutputControl(int variation) : CtiDNPObject(Group, variation)
+BinaryOutputControl::BinaryOutputControl(int variation) : Object(Group, variation)
 {
 
 }
 
 
-void CtiDNPBinaryOutputControl::setControlBlock(unsigned long onTime, unsigned long offTime,
+void BinaryOutputControl::setControlBlock(unsigned long onTime, unsigned long offTime,
                                                 unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose)
 {
     _crob_or_pcb.block.on_time  = onTime;
@@ -234,7 +238,7 @@ void CtiDNPBinaryOutputControl::setControlBlock(unsigned long onTime, unsigned l
 }
 
 
-int CtiDNPBinaryOutputControl::restore(unsigned char *buf, int len)
+int BinaryOutputControl::restore(const unsigned char *buf, int len)
 {
     int pos = 0;
 
@@ -269,7 +273,7 @@ int CtiDNPBinaryOutputControl::restore(unsigned char *buf, int len)
 }
 
 
-int CtiDNPBinaryOutputControl::restoreBits(unsigned char *buf, int bitoffset, int len)
+int BinaryOutputControl::restoreBits(const unsigned char *buf, int bitoffset, int len)
 {
     int bitpos;
 
@@ -305,7 +309,7 @@ int CtiDNPBinaryOutputControl::restoreBits(unsigned char *buf, int bitoffset, in
 }
 
 
-int CtiDNPBinaryOutputControl::serialize(unsigned char *buf)
+int BinaryOutputControl::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
@@ -337,7 +341,7 @@ int CtiDNPBinaryOutputControl::serialize(unsigned char *buf)
 }
 
 
-int CtiDNPBinaryOutputControl::getSerializedLen(void)
+int BinaryOutputControl::getSerializedLen(void) const
 {
     int retVal;
 
@@ -366,12 +370,16 @@ int CtiDNPBinaryOutputControl::getSerializedLen(void)
 }
 
 
-int CtiDNPBinaryOutputControl::getStatus( void ) const
+int BinaryOutputControl::getStatus( void ) const
 {
     int retVal;
 
     retVal = _crob_or_pcb.block.status;
 
     return retVal;
+}
+
+}
+}
 }
 
