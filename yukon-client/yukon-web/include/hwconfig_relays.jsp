@@ -1,13 +1,9 @@
 <%--
 Required variables:
-	deviceTypeID: int
+	hwConfigType: int
 	configuration: StarsLMConfiguration
 --%>
 <%
-	boolean isSA205 = ECUtils.isSA205(deviceTypeID);
-	boolean isSA305 = ECUtils.isSA305(deviceTypeID);
-	boolean isExpressCom = ECUtils.isExpressCom(deviceTypeID);
-	
 	String[] coldLoadPickup = new String[8];
 	Arrays.fill(coldLoadPickup, "");
 	String[] tamperDetect = new String[8];
@@ -39,17 +35,17 @@ Required variables:
           <td width="30" class="HeaderCell">Relay</td>
           <td width="65" class="HeaderCell">Cold Load 
             Pickup</td>
-<% if (isSA205 || isSA305) { %>
+<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) { %>
           <td width="65" class="HeaderCell">Tamper 
             Detect</td>
 <% } %>
-<% if (isExpressCom) { %>
+<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
           <td width="65" class="HeaderCell">Program</td>
           <td width="65" class="HeaderCell">Splinter</td>
 <% } %>
         </tr>
 <%
-	int numRelay = isExpressCom? 8 : 4;
+	int numRelay = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
 	for (int i = 0; i < numRelay; i++) {
 %>
         <tr align="center"> 
@@ -57,12 +53,12 @@ Required variables:
           <td width="65"> 
             <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10">
           </td>
-<% if (isSA205 || isSA305) { %>
+<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) { %>
           <td width="65"> 
             <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10">
           </td>
 <% } %>
-<% if (isExpressCom) { %>
+<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
           <td width="65"> 
             <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10">
           </td>

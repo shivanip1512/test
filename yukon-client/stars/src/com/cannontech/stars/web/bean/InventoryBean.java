@@ -194,15 +194,41 @@ public class InventoryBean {
 		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
 			hardwares = inventorySet;
 		}
-		else if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+		else if (showEnergyCompany) {
+			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
+				LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( getMember() );
+				ArrayList inventory = member.loadAllInventory();
+				
+				hardwares = new ArrayList();
+				for (int i = 0; i < inventory.size(); i++)
+					hardwares.add( new Pair(inventory.get(i), member) );
+			}
+			else {
+				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
+				hardwares = new ArrayList();
+				
+				for (int i = 0; i < members.size(); i++) {
+					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
+					ArrayList inventory = member.loadAllInventory();
+					for (int j = 0; j < inventory.size(); j++)
+						hardwares.add( new Pair(inventory.get(j), member) );
+				}
+			}
+		}
+		else {
+			hardwares = getEnergyCompany().loadAllInventory();
+		}
+		
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
 			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 		{
-			hardwares = getEnergyCompany().loadAllInventory();
-			
 			if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
 				Iterator it = hardwares.iterator();
 				while (it.hasNext()) {
-					if (!(it.next() instanceof LiteStarsLMHardware))
+					Object invObj = it.next();
+					if (invObj instanceof Pair)
+						invObj = ((Pair)invObj).getFirst();
+					if (!(invObj instanceof LiteStarsLMHardware))
 						it.remove();
 				}
 			}
@@ -210,10 +236,12 @@ public class InventoryBean {
 			if (getSearchBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO) {
 				inventorySet = new ArrayList();
 				for (int i = 0; i < hardwares.size(); i++) {
-					if (hardwares.get(i) instanceof LiteStarsLMHardware) {
-						if (((LiteStarsLMHardware)hardwares.get(i)).getManufacturerSerialNumber().startsWith( getSearchValue() ))
-							inventorySet.add( hardwares.get(i) );
-					}
+					Object invObj = hardwares.get(i);
+					if (invObj instanceof Pair)
+						invObj = ((Pair)invObj).getFirst();
+					if (invObj instanceof LiteStarsLMHardware
+						&& ((LiteStarsLMHardware)invObj).getManufacturerSerialNumber().startsWith( getSearchValue() ))
+						inventorySet.add( hardwares.get(i) );
 				}
 				
 				hardwares = inventorySet;
@@ -225,42 +253,16 @@ public class InventoryBean {
 				inventorySet = new ArrayList();
 				if (instDate != null) {
 					for (int i = 0; i < hardwares.size(); i++) {
-						LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
-						if (liteInv.getInstallDate() > instDate.getTime())
-							inventorySet.add( liteInv );
+						Object invObj = hardwares.get(i);
+						if (invObj instanceof Pair)
+							invObj = ((Pair)invObj).getFirst();
+						if (((LiteInventoryBase)invObj).getInstallDate() > instDate.getTime())
+							inventorySet.add( invObj );
 					}
 				}
 				
 				hardwares = inventorySet;
 				setSortBy( YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE );
-			}
-		}
-		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
-			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
-				LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( getMember() );
-				ArrayList inventory = member.loadAllInventory();
-				
-				if (showEnergyCompany) {
-					hardwares = new ArrayList();
-					for (int i = 0; i < inventory.size(); i++)
-						hardwares.add( new Pair(inventory.get(i), member) );
-				}
-				else
-					hardwares = inventory;
-			}
-			else if (showEnergyCompany) {
-				hardwares = new ArrayList();
-				
-				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
-				for (int i = 0; i < members.size(); i++) {
-					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
-					ArrayList inventory = member.loadAllInventory();
-					for (int j = 0; j < inventory.size(); j++)
-						hardwares.add( new Pair(inventory.get(j), member) );
-				}
-			}
-			else {
-				hardwares = getEnergyCompany().loadAllInventory();
 			}
 		}
 		
@@ -381,7 +383,8 @@ public class InventoryBean {
 		if (AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 			&& (getEnergyCompany().getChildren().size() > 0))
 		{
-			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
+			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0
+				|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
 				showEnergyCompany = true;
 			}
 			else if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) {
@@ -461,16 +464,6 @@ public class InventoryBean {
 		else
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
-		{
-			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
-			if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0)
-				htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
-			else if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
-				htmlBuf.append("<input type='hidden' name='action' value='SelectLMHardware'>").append(LINE_SEPARATOR);
-		}
-		
 		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
@@ -543,7 +536,7 @@ public class InventoryBean {
 				|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 			{
 				htmlBuf.append("          <td class='TableCell' width='1%'>");
-				htmlBuf.append("<input type='radio' name='InvID' value='").append(liteInv.getInventoryID()).append("'>");
+				htmlBuf.append("<input type='radio' name='InvID' onclick='selectInventory(").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append(")'>");
 				htmlBuf.append("</td>").append(LINE_SEPARATOR);
 			}
 	        
@@ -611,7 +604,7 @@ public class InventoryBean {
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
-			htmlBuf.append("      <input type='submit' name='Submit' value='Select' onclick='return validate(this.form)'>").append(LINE_SEPARATOR);
+			htmlBuf.append("      <input type='button' name='Select' value='Select' onclick='validate()'>").append(LINE_SEPARATOR);
 			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 			htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 			if (referer != null)
@@ -621,7 +614,6 @@ public class InventoryBean {
 			htmlBuf.append("    </td>").append(LINE_SEPARATOR);
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
-			htmlBuf.append("</form>").append(LINE_SEPARATOR);
 		}
         
 		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
@@ -637,6 +629,16 @@ public class InventoryBean {
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 		}
+        
+		htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0)
+			htmlBuf.append("  <input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
+		else if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+			htmlBuf.append("  <input type='hidden' name='action' value='SelectLMHardware'>").append(LINE_SEPARATOR);
+		htmlBuf.append("  <input type='hidden' name='InvID' value=''>").append(LINE_SEPARATOR);
+		if (showEnergyCompany)
+			htmlBuf.append("  <input type='hidden' name='MemberID' value=''>").append(LINE_SEPARATOR);
+		htmlBuf.append("</form>").append(LINE_SEPARATOR);
         
 		htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append(LINE_SEPARATOR);
@@ -660,13 +662,19 @@ public class InventoryBean {
 		htmlBuf.append("  location.href='").append(pageName).append("?page=' + document.getElementById('Page').value;").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
 		
-		htmlBuf.append("function validate(form) {").append(LINE_SEPARATOR);
+		htmlBuf.append("function selectInventory(invID, memberID) {").append(LINE_SEPARATOR);
+		htmlBuf.append("  var form = document.InventoryBeanForm;").append(LINE_SEPARATOR);
+		htmlBuf.append("  form.InvID.value = invID;").append(LINE_SEPARATOR);
+		if (showEnergyCompany)
+			htmlBuf.append("  form.MemberID.value = memberID;").append(LINE_SEPARATOR);
+		htmlBuf.append("}").append(LINE_SEPARATOR);
+		
+		htmlBuf.append("function validate() {").append(LINE_SEPARATOR);
 		htmlBuf.append("  var radioBtns = document.getElementsByName('InvID');").append(LINE_SEPARATOR);
 		htmlBuf.append("  if (radioBtns != null) {").append(LINE_SEPARATOR);
 		htmlBuf.append("    for (i = 0; i < radioBtns.length; i++)").append(LINE_SEPARATOR);
-		htmlBuf.append("      if (radioBtns[i].checked) return true;").append(LINE_SEPARATOR);
+		htmlBuf.append("      if (radioBtns[i].checked) document.InventoryBeanForm.submit();").append(LINE_SEPARATOR);
 		htmlBuf.append("  }").append(LINE_SEPARATOR);
-		htmlBuf.append("  return false;").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
 		
 		htmlBuf.append("function selectAccount(accountID) {").append(LINE_SEPARATOR);

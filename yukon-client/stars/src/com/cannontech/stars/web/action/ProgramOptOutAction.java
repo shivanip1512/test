@@ -782,11 +782,12 @@ public class ProgramOptOutAction implements ActionBase {
 			throw new WebClientException( "The serial # of the hardware cannot be empty" );
         
 		String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber();
-		if (ECUtils.isSA205( liteHw.getLmHardwareTypeID() ) || ECUtils.isSA305( liteHw.getLmHardwareTypeID() ))
+		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305)
 		{
 			cmd += " override " + String.valueOf( offHours );
 		}
-		else if (ECUtils.isVersaCom( liteHw.getLmHardwareTypeID() ) || ECUtils.isExpressCom( liteHw.getLmHardwareTypeID() ))
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM || hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)
 		{
 			cmd += " service out temp offhours " + String.valueOf(offHours);
 		}

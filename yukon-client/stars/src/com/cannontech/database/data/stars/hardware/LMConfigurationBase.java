@@ -134,7 +134,8 @@ public class LMConfigurationBase extends DBPersistent {
 		config.getLMConfigurationBase().setConfigurationID( new Integer(configID) );
 		
 		try {
-			if (ECUtils.isSA205( hwTypeID )) {
+			int hwConfigType = ECUtils.getHardwareConfigType( hwTypeID );
+			if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA205 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -145,7 +146,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA205( sa205 );
 				}
 			}
-			else if (ECUtils.isSA305( hwTypeID )) {
+			else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA305 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -156,7 +157,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA305( sa305 );
 				}
 			}
-			else if (ECUtils.isExpressCom( hwTypeID )) {
+			else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationExpressCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -167,7 +168,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setExpressCom( xcom );
 				}
 			}
-			else if (ECUtils.isVersaCom( hwTypeID )) {
+			else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationVersaCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();

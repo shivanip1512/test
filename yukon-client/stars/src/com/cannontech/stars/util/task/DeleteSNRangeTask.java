@@ -161,7 +161,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 			}
 		}
 		else {
-			ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID.intValue(), snFrom, snTo );
+			ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID, snFrom, snTo );
 			numToBeDeleted = hwList.size();
 			
 			for (int i = 0; i < hwList.size(); i++) {

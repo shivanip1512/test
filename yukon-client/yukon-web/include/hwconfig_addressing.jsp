@@ -1,10 +1,10 @@
 <%--
 Required variables:
-	deviceTypeID: int
+	hwConfigType: int
 	configuration: StarsLMConfiguration
 --%>
 <%
-	if (ECUtils.isSA205(deviceTypeID)) {
+	if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
 		SA205 sa205 = null;
 		if (configuration != null) sa205 = configuration.getSA205();
 		if (sa205 == null) {
@@ -57,7 +57,7 @@ Required variables:
 </table>
 <%
 	}
-	else if (ECUtils.isSA305(deviceTypeID)) {
+	else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
 		SA305 sa305 = null;
 		if (configuration != null) sa305 = configuration.getSA305();
 		if (sa305 == null) sa305 = new SA305();
@@ -120,7 +120,7 @@ Required variables:
 </table>
 <%
 	}
-	else if (ECUtils.isVersaCom(deviceTypeID)) {
+	else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
 		VersaCom vcom = null;
 		if (configuration != null) vcom = configuration.getVersaCom();
 		if (vcom == null) vcom = new VersaCom();
@@ -327,7 +327,7 @@ Required variables:
 </table>
 <%
 	}
-	else if (ECUtils.isExpressCom(deviceTypeID)) {
+	else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 		ExpressCom xcom = null;
 		if (configuration != null) xcom = configuration.getExpressCom();
 		if (xcom == null) xcom = new ExpressCom();

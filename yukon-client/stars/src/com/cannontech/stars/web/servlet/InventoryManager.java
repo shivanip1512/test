@@ -1374,9 +1374,16 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		int invID = Integer.parseInt( req.getParameter("InvID") );
-		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
+		if (req.getParameter("MemberID") == null) {
+			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
+			session.setAttribute(INVENTORY_TO_CHECK, liteInv);
+		}
+		else {
+			LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( Integer.parseInt(req.getParameter("MemberID")) );
+			LiteInventoryBase liteInv = member.getInventoryBrief( invID, true );
+			session.setAttribute(INVENTORY_TO_CHECK, new Pair(liteInv, member));
+		}
 		
-		session.setAttribute(INVENTORY_TO_CHECK, liteInv);
 		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 	}
 	

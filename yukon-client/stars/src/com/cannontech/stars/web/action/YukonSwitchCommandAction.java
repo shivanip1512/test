@@ -232,11 +232,12 @@ public class YukonSwitchCommandAction implements ActionBase {
 		java.util.Date now = new java.util.Date();
 		
 		String cmd = null;
-		if (ECUtils.isVersaCom( liteHw.getLmHardwareTypeID() ) || ECUtils.isExpressCom( liteHw.getLmHardwareTypeID() ))
+		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM || hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)
 		{
 			cmd = "putconfig service out serial " + liteHw.getManufacturerSerialNumber();
 		}
-		else if (ECUtils.isSA205( liteHw.getLmHardwareTypeID() )) {
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
 			// To disable a SA205 switch, reconfig all slots to the unused address
 			StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 			starsCfg.setSA205( new SA205() );
@@ -250,14 +251,19 @@ public class YukonSwitchCommandAction implements ActionBase {
 			UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw );
 			cmd = getConfigCommands( liteHw, energyCompany, true, null )[0];
 		}
-		else if (ECUtils.isSA305( liteHw.getLmHardwareTypeID() )) {
+		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
 			// TODO: reconfig a SA305 switch to disable it
 		}
-		
 		if (cmd == null) return;
 		
-		int rtID = (routeID != null)? routeID.intValue()
-				: ((liteHw.getRouteID() != 0)? liteHw.getRouteID() : energyCompany.getDefaultRouteID());
+		int rtID = 0;
+		if (routeID != null)
+			rtID = routeID.intValue();
+		else
+			rtID = liteHw.getRouteID();
+		if (rtID == 0)
+			rtID = energyCompany.getDefaultRouteID();
+		
 		ServerUtils.sendSerialCommand( cmd, rtID );
 		
 		// Add "Termination" to hardware events
@@ -288,23 +294,30 @@ public class YukonSwitchCommandAction implements ActionBase {
 		throws WebClientException
 	{
 		// SA205 and SA305 switches don't have an "in service" command
-		if (ECUtils.isSA205( liteHw.getLmHardwareTypeID() ) || ECUtils.isSA305( liteHw.getLmHardwareTypeID() ))
+		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305)
 			return;
 		
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
-        
+		
+		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
+		
+		int rtID = 0;
+		if (routeID != null)
+			rtID = routeID.intValue();
+		else
+			rtID = liteHw.getRouteID();
+		if (rtID == 0)
+			rtID = energyCompany.getDefaultRouteID();
+		
+		ServerUtils.sendSerialCommand( cmd, rtID );
+		
+		// Add "Activation Completed" to hardware events
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 		java.util.Date now = new java.util.Date();
 		
-		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
-		
-		int rtID = (routeID != null)? routeID.intValue()
-				: ((liteHw.getRouteID() != 0)? liteHw.getRouteID() : energyCompany.getDefaultRouteID());
-		ServerUtils.sendSerialCommand( cmd, rtID );
-		
-		// Add "Activation Completed" to hardware events
 		try {
 			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
 			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
@@ -359,27 +372,34 @@ public class YukonSwitchCommandAction implements ActionBase {
         	}
         }
         
-        final int routeID = (optRouteID != null)? optRouteID.intValue()
-        		: ((liteHw.getRouteID() > 0)? liteHw.getRouteID() : energyCompany.getDefaultRouteID());
+        int routeID = 0;
+        if (optRouteID != null)
+        	routeID = optRouteID.intValue();
+        else
+        	routeID = liteHw.getRouteID();
+        if (routeID == 0)
+        	routeID = energyCompany.getDefaultRouteID();
         
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 		
+		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
 		if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
-			&& (ECUtils.isVersaCom( liteHw.getLmHardwareTypeID() ) || ECUtils.isExpressCom( liteHw.getLmHardwareTypeID() )))
+			&& (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM || hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM))
 		{
 			// Send an in service command first
 			sendEnableCommand( energyCompany, liteHw, optRouteID );
 			
 			final String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing, optGroupID );
 			if (cfgCmds == null) return;
+			final int routeID2 = routeID;
 			
 			// Send the config command a while later
 			TimerTask sendCfgTask = new TimerTask() {
 				public void run() {
 					try {
 						for (int i = 0; i < cfgCmds.length; i++)
-							ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
+							ServerUtils.sendSerialCommand( cfgCmds[i], routeID2 );
 					}
 					catch (WebClientException e) {}
 					CTILogger.info( "*** Config command sent ***" );

@@ -49,6 +49,11 @@ public class ECUtils {
 	
 	public static final int SA205_UNUSED_ADDR = 3909;
 	
+	public static final int HW_CONFIG_TYPE_EXPRESSCOM = 1;
+	public static final int HW_CONFIG_TYPE_VERSACOM = 2;
+	public static final int HW_CONFIG_TYPE_SA205 = 3;
+	public static final int HW_CONFIG_TYPE_SA305 = 4;
+	
 	public static StarsThermoModeSettings getThermSeasonMode(int configID) {
 		if (configID == YUK_WEB_CONFIG_ID_COOL)
 			return StarsThermoModeSettings.COOL;
@@ -249,28 +254,24 @@ public class ECUtils {
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 	}
 	
-	public static boolean isExpressCom(int devTypeID) {
+	public static int getHardwareConfigType(int devTypeID) {
 		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
-		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
-				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
-				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
-				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
-	}
-	
-	public static boolean isVersaCom(int devTypeID) {
-		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
-		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM
-				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000
-				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000
-				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000);
-	}
-	
-	public static boolean isSA205(int devTypeID) {
-		return YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205;
-	}
-	
-	public static boolean isSA305(int devTypeID) {
-		return YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305;
+		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
+			return HW_CONFIG_TYPE_EXPRESSCOM;
+		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000
+			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000)
+			return HW_CONFIG_TYPE_VERSACOM;
+		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205)
+			return HW_CONFIG_TYPE_SA205;
+		else if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305)
+			return HW_CONFIG_TYPE_SA305;
+		
+		return 0;
 	}
 	
 	/**
@@ -520,7 +521,7 @@ public class ECUtils {
 		return ids;
 	}
 	
-	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeID, Integer snFrom, Integer snTo) {
+	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, Integer devTypeID, Integer snFrom, Integer snTo) {
 		ArrayList hwList = new ArrayList();
 		
 		ArrayList inventory = energyCompany.loadAllInventory();
@@ -529,7 +530,7 @@ public class ECUtils {
 				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
 				
-				if (liteHw.getLmHardwareTypeID() != devTypeID) continue;
+				if (liteHw.getLmHardwareTypeID() != devTypeID.intValue()) continue;
 				try {
 					int serialNo = Integer.parseInt( liteHw.getManufacturerSerialNumber() );
 					if (snFrom != null && serialNo < snFrom.intValue()) continue;

@@ -133,7 +133,7 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
-		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID.intValue(), snFrom, snTo );
+		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID, snFrom, snTo );
 		numToBeUpdated = hwList.size();
 		
 		for (int i = 0; i < hwList.size(); i++) {

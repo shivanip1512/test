@@ -14,11 +14,12 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -44,6 +45,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	boolean isCanceled = false;
 	String errorMsg = null;
 	
+	ArrayList invToConfig = null;
 	ArrayList hwsToConfig = null;
 	boolean configNow = false;
 	HttpServletRequest request = null;
@@ -80,16 +82,28 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (configNow) {
-			if (status == STATUS_FINISHED)
-				return numSuccess + " hardwares have been configured successfully";
+			if (status == STATUS_FINISHED && numFailure == 0) {
+				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
+					Integer[] snRange = (Integer[]) invToConfig.get(0);
+					return "The SN range " + snRange[1] + " to " + snRange[2] + " has been configured successfully.";
+				}
+				else
+					return numSuccess + " hardwares have been configured successfully.";
+			}
 			else
-				return numSuccess + " of " + numToBeConfigured + " hardwares configured";
+				return numSuccess + " of " + numToBeConfigured + " hardwares have been configured.";
 		}
 		else {
-			if (status == STATUS_FINISHED)
-				return numSuccess + " hardware configuration saved to batch successfully";
+			if (status == STATUS_FINISHED && numFailure == 0) {
+				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
+					Integer[] snRange = (Integer[]) invToConfig.get(0);
+					return "The SN range " + snRange[1] + " to " + snRange[2] + " has been saved to batch.";
+				}
+				else
+					return numSuccess + " hardware configuration saved to batch.";
+			}
 			else
-				return numSuccess + " of " + numToBeConfigured + " hardware configuration saved to batch";
+				return numSuccess + " of " + numToBeConfigured + " hardware configuration saved to batch.";
 		}
 	}
 
@@ -108,7 +122,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		ArrayList invToConfig = (ArrayList) session.getAttribute( InventoryManager.INVENTORY_TO_CONFIG );
+		invToConfig = (ArrayList) session.getAttribute( InventoryManager.INVENTORY_TO_CONFIG );
 		if (invToConfig == null) {
 			status = STATUS_ERROR;
 			errorMsg = "There is no hardware to configure";
@@ -117,22 +131,37 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
+		boolean searchMembers = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS );
 		hwsToConfig = new ArrayList();
-		int devTypeID = 0;
 		
 		for (int i = 0; i < invToConfig.size(); i++) {
-			if (invToConfig.get(i) instanceof Pair) {
-				devTypeID = ((Integer) ((Pair)invToConfig.get(i)).getFirst()).intValue();
-				Integer[] snRange = (Integer[]) ((Pair)invToConfig.get(i)).getSecond();
-				ArrayList hwsInRange = ECUtils.getLMHardwareInRange( energyCompany, devTypeID, snRange[0], snRange[1] );
+			if (invToConfig.get(i) instanceof Integer[]) {
+				Integer[] snRange = (Integer[]) invToConfig.get(i);
 				
-				for (int j = 0; j < hwsInRange.size(); j++) {
-					if (!hwsToConfig.contains( hwsInRange.get(j) ))
-						hwsToConfig.add( hwsInRange.get(j) );
+				if (!searchMembers) {
+					ArrayList hwsInRange = ECUtils.getLMHardwareInRange( energyCompany, snRange[0], snRange[1], snRange[2] );
+					for (int j = 0; j < hwsInRange.size(); j++) {
+						if (!hwsToConfig.contains( hwsInRange.get(j) ))
+							hwsToConfig.add( hwsInRange.get(j) );
+					}
+				}
+				else {
+					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+					for (int j = 0; j < descendants.size(); j++) {
+						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+						ArrayList hwsInRange = ECUtils.getLMHardwareInRange( company, snRange[0], snRange[1], snRange[2] );
+						for (int k = 0; k < hwsInRange.size(); k++) {
+							if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)hwsInRange.get(k) ))
+								hwsToConfig.add( new Pair(hwsInRange.get(k), company) );
+						}
+					}
 				}
 			}
+			else if (invToConfig.get(i) instanceof Pair) {
+				if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)((Pair)invToConfig.get(i)).getFirst() ))
+					hwsToConfig.add( invToConfig.get(i) );
+			}
 			else {
-				devTypeID = ((LiteStarsLMHardware)invToConfig.get(i)).getLmHardwareTypeID();
 				if (!hwsToConfig.contains( invToConfig.get(i) ))
 					hwsToConfig.add( invToConfig.get(i) );
 			}
@@ -170,7 +199,6 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		
 		if (request.getParameter("Route") != null) {
 			int routeID = Integer.parseInt( request.getParameter("Route") );
-			if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 			if (options != null)
 				options += ";RouteID:" + routeID;
 			else
@@ -188,26 +216,35 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		}
 		
 		for (int i = 0; i < hwsToConfig.size(); i++) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+			LiteStarsLMHardware liteHw = null;
+			LiteStarsEnergyCompany company = null;
+			if (hwsToConfig.get(i) instanceof Pair) {
+				liteHw = (LiteStarsLMHardware) ((Pair)hwsToConfig.get(i)).getFirst();
+				company = (LiteStarsEnergyCompany) ((Pair)hwsToConfig.get(i)).getSecond();
+			}
+			else {
+				liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+				company = energyCompany;
+			}
 			
 			try {
 				if (hwConfig != null)
 					UpdateLMHardwareConfigAction.updateLMConfiguration( hwConfig, liteHw );
 				
 				if (configNow) {
-					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, options);
+					YukonSwitchCommandAction.sendConfigCommand(company, liteHw, true, options);
 					
 					if (liteHw.getAccountID() > 0) {
-						StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+						StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteHw.getAccountID() );
 						if (starsAcctInfo != null) {
-							StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+							StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, company );
 							YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
 						}
 					}
 				}
 				else {
 					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
+					cmd.setEnergyCompanyID( company.getLiteID() );
 					cmd.setAccountID( liteHw.getAccountID() );
 					cmd.setInventoryID( liteHw.getInventoryID() );
 					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
@@ -220,7 +257,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			}
 			catch (WebClientException e) {
 				CTILogger.error( e.getMessage() , e );
-				hardwareSet.add( liteHw );
+				hardwareSet.add( hwsToConfig.get(i) );
 				numFailure++;
 			}
 			
@@ -234,21 +271,23 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		
 		String logMsg = "Serial Range:";
 		for (int i = 0; i < invToConfig.size(); i++) {
-			if (invToConfig.get(i) instanceof Pair) {
-				Integer[] snRange = (Integer[]) ((Pair)invToConfig.get(i)).getSecond();
-				logMsg += snRange[0] + " - " + snRange[1] + ",";
+			if (invToConfig.get(i) instanceof Integer[]) {
+				Integer[] snRange = (Integer[]) invToConfig.get(i);
+				logMsg += snRange[1] + " - " + snRange[2] + ",";
 			}
 			else {
-				logMsg += ((LiteStarsLMHardware)invToConfig.get(i)).getManufacturerSerialNumber() + ",";
+				Object hwObj = invToConfig.get(i);
+				if (hwObj instanceof Pair) hwObj = ((Pair)hwObj).getFirst();
+				logMsg += ((LiteStarsLMHardware)hwObj).getManufacturerSerialNumber() + ",";
 			}
 		}
-		logMsg += "Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID).getEntryText();
-		if (options != null) logMsg += "," + options;
+		if (options != null) logMsg += options;
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_CONFIG_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;
 		
-		session.removeAttribute( InventoryManager.INVENTORY_TO_CONFIG );
+		if (numFailure == 0)
+			session.removeAttribute( InventoryManager.INVENTORY_TO_CONFIG );
 		session.removeAttribute( InventoryManager.INVENTORY_SET );
 		
 		if (numFailure > 0) {
@@ -261,6 +300,15 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
 		}
+	}
+	
+	static boolean isHardwareContained(ArrayList hwList, LiteStarsLMHardware liteHw) {
+		for (int i = 0; i < hwList.size(); i++) {
+			Object hwObj = hwList.get(i);
+			if (hwObj instanceof Pair) hwObj = ((Pair)hwObj).getFirst();
+			if (hwObj.equals( liteHw )) return true;
+		}
+		return false;
 	}
 
 }

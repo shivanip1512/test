@@ -9,7 +9,7 @@
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	boolean useHardwareAddressing = Boolean.valueOf(trackHwAddr).booleanValue();
 	
-	int deviceTypeID = 0;
+	int hwConfigType = 0;
 	StarsLMConfiguration configuration = null;
 	
 	ArrayList invToConfig = (ArrayList) session.getAttribute(InventoryManager.INVENTORY_TO_CONFIG);
@@ -18,35 +18,41 @@
 		session.setAttribute(InventoryManager.INVENTORY_TO_CONFIG, invToConfig);
 	}
 	else if (invToConfig.size() > 0) {
-		if (invToConfig.get(0) instanceof Pair)
-			deviceTypeID = ((Integer) ((Pair)invToConfig.get(0)).getFirst()).intValue();
+		int devTypeID = 0;
+		if (invToConfig.get(0) instanceof Integer[])
+			devTypeID = ((Integer[])invToConfig.get(0))[0].intValue();
+		else if (invToConfig.get(0) instanceof Pair)
+			devTypeID = ((LiteStarsLMHardware)((Pair)invToConfig.get(0)).getFirst()).getLmHardwareTypeID();
 		else
-			deviceTypeID = ((LiteStarsLMHardware)invToConfig.get(0)).getLmHardwareTypeID();
+			devTypeID = ((LiteStarsLMHardware)invToConfig.get(0)).getLmHardwareTypeID();
+		
+		hwConfigType = ECUtils.getHardwareConfigType(devTypeID);
 	}
 	
 	if (request.getParameter("AddRange") != null) {
-		Integer newDevTypeID = Integer.valueOf(request.getParameter("DeviceType"));
-		if (deviceTypeID > 0 && newDevTypeID.intValue() != deviceTypeID) {
-			errorMsg = "The device type you tried to add is not the same as those already added. You can only configure hardwares with the same device type at a time.";
+		Integer devTypeID = Integer.valueOf(request.getParameter("DeviceType"));
+		int newHwConfigType = ECUtils.getHardwareConfigType(devTypeID.intValue());
+		
+		if (hwConfigType > 0 && newHwConfigType != hwConfigType) {
+			errorMsg = "The devices you tried to add don't have the same addressing scheme as those already added.";
 		}
 		else {
 			try {
-				Integer[] snRange = new Integer[2];
-				snRange[0] = Integer.valueOf(request.getParameter("From"));
-				snRange[1] = Integer.valueOf(request.getParameter("To"));
+				Integer snFrom = Integer.valueOf(request.getParameter("From"));
+				Integer snTo = Integer.valueOf(request.getParameter("To"));
 				
 				boolean foundRange = false;
 				for (int i = 0; i < invToConfig.size(); i++) {
-					if (invToConfig.get(i) instanceof Pair) {
-						Integer[] range = (Integer[]) ((Pair)invToConfig.get(i)).getSecond();
-						if (range[0].intValue() == snRange[0].intValue() && range[1].intValue() == snRange[1].intValue()) {
+					if (invToConfig.get(i) instanceof Integer[]) {
+						Integer[] snRange = (Integer[]) invToConfig.get(i);
+						if (snRange[0].intValue() == devTypeID.intValue() && snRange[1].intValue() == snFrom.intValue() && snRange[2].intValue() == snTo.intValue()) {
 							foundRange = true;
 							break;
 						}
 					}
 				}
 				
-				if (!foundRange) invToConfig.add(new Pair(newDevTypeID, snRange));
+				if (!foundRange) invToConfig.add(new Integer[] {devTypeID, snFrom, snTo});
 			}
 			catch (NumberFormatException e) {
 				errorMsg = "Invalid number format in the SN range";
@@ -54,14 +60,29 @@
 		}
 	}
 	else if (request.getParameter("Add") != null) {
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
-		if (liteHw != null) {
+		Object invObj = session.getAttribute(InventoryManager.INVENTORY_TO_CHECK);
+		if (invObj != null) {
 			session.removeAttribute(InventoryManager.INVENTORY_TO_CHECK);
-			if (deviceTypeID > 0 && liteHw.getLmHardwareTypeID() != deviceTypeID) {
-				errorMsg = "The device type you tried to add is not the same as those already added. You can only configure hardwares with the same device type at a time.";
+			
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware)
+					((invObj instanceof Pair)? ((Pair)invObj).getFirst() : invObj);
+			int newHwConfigType = ECUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
+			
+			if (hwConfigType > 0 && newHwConfigType != hwConfigType) {
+				errorMsg = "The device you tried to add doesn't have the same addressing scheme as those already added.";
 			}
 			else {
-				if (!invToConfig.contains(liteHw)) invToConfig.add(liteHw);
+				boolean foundHardware = false;
+				for (int i = 0; i < invToConfig.size(); i++) {
+					Object obj = invToConfig.get(i);
+					if (obj instanceof Pair) obj = ((Pair)obj).getFirst();
+					if (obj.equals(liteHw)) {
+						foundHardware = true;
+						break;
+					}
+				}
+				
+				if (!foundHardware) invToConfig.add(invObj);
 			}
 		}
 	}
@@ -233,17 +254,20 @@ function removeAllConfig(form) {
                         </tr>
 <%
 	for (int i = 0; i < invToConfig.size(); i++) {
+		int devTypeID = 0;
 		String serialNo = null;
-		if (invToConfig.get(i) instanceof Pair) {
-			deviceTypeID = ((Integer) ((Pair)invToConfig.get(i)).getFirst()).intValue();
-			Integer[] snRange = (Integer[]) ((Pair)invToConfig.get(i)).getSecond();
-			serialNo = snRange[0].toString() + " to " + snRange[1].toString();
+		if (invToConfig.get(i) instanceof Integer[]) {
+			Integer[] snRange = (Integer[]) invToConfig.get(i);
+			devTypeID = snRange[0].intValue();
+			serialNo = snRange[1].toString() + " to " + snRange[2].toString();
 		}
 		else {
-			deviceTypeID = ((LiteStarsLMHardware)invToConfig.get(i)).getLmHardwareTypeID();
-			serialNo = ((LiteStarsLMHardware)invToConfig.get(i)).getManufacturerSerialNumber();
+			Object invObj = invToConfig.get(i);
+			if (invObj instanceof Pair) invObj = ((Pair)invObj).getFirst();
+			devTypeID = ((LiteStarsLMHardware)invObj).getLmHardwareTypeID();
+			serialNo = ((LiteStarsLMHardware)invObj).getManufacturerSerialNumber();
 		}
-		String deviceType = YukonListFuncs.getYukonListEntry(deviceTypeID).getEntryText();
+		String deviceType = YukonListFuncs.getYukonListEntry(devTypeID).getEntryText();
 %>
                         <tr> 
                           <td class="TableCell" width="128"><%= deviceType %></td>

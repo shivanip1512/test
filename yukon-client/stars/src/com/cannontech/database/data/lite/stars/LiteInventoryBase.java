@@ -248,8 +248,8 @@ public class LiteInventoryBase extends LiteBase {
 		
 		boolean isSA = false;
 		if (this instanceof LiteStarsLMHardware) {
-			int devTypeID = ((LiteStarsLMHardware)this).getLmHardwareTypeID();
-			isSA = ECUtils.isSA205(devTypeID) || ECUtils.isSA305(devTypeID);
+			int hwConfigType = ECUtils.getHardwareConfigType( ((LiteStarsLMHardware)this).getLmHardwareTypeID() );
+			isSA = hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305;
 		}
 		
 		for (int i = invHist.size() - 1; i >= 0; i--) {
