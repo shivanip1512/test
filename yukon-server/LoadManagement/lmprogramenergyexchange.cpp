@@ -228,7 +228,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
     
     Sets the group selection method of the energy exchange program
 ---------------------------------------------------------------------------*/    
-DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -278,7 +278,7 @@ void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 
     Handles manual control messages for the energy exchange program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -742,12 +742,18 @@ void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
 
     CtiLMProgramBase::restore(rdr);
 
-    setMinNotifyTime(0);
+    rdr["minnotifytime"] >> _minnotifytime;
+    rdr["heading"] >> _heading;
+    rdr["messageheader"] >> _messageheader;
+    rdr["messagefooter"] >> _messagefooter;
+    rdr["canceledmsg"] >> _canceledmsg;
+    rdr["stoppedearlymsg"] >> _stoppedearlymsg;
+    /*setMinNotifyTime(0);
     setHeading("Null");
     setMessageHeader("Null");
     setMessageFooter("Null");
     setCanceledMsg("Null");
-    setStoppedEarlyMsg("Null");
+    setStoppedEarlyMsg("Null");*/
 }
 
 /*---------------------------------------------------------------------------
@@ -756,19 +762,15 @@ void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
     Restores the database entries for a energy exchange program that are not
     contained in the base table.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr)
+/*void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr)
 {
-
-
-    RWCString tempBoolString;
-
     rdr["minnotifytime"] >> _minnotifytime;
     rdr["heading"] >> _heading;
     rdr["messageheader"] >> _messageheader;
     rdr["messagefooter"] >> _messagefooter;
     rdr["canceledmsg"] >> _canceledmsg;
     rdr["stoppedearlymsg"] >> _stoppedearlymsg;
-}
+}*/
 
 /*---------------------------------------------------------------------------
     dumpDynamicData

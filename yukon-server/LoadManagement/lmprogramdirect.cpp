@@ -189,7 +189,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& st
 
     Sets the group selection method of the direct program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -739,7 +739,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                             {
                                 if( period != 0 )
                                 {
-                                    LONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
+                                    ULONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
                                     if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
                                     {
                                         tempCycleCount++;
@@ -1361,7 +1361,7 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
     Returns a boolean that represents if the current gear for the program
     has changed because of duration, priority, or trigger offset.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFrom1901)
+BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901)
 {
 
 
@@ -1507,7 +1507,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
     Maintains control on the program by going through all groups that are
     active and sending refresh pil requests if needed.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -1969,7 +1969,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
     and send sheds to those groups, it also updates the group control state
     of the groups that have been rotated through and are now inactive.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::refreshStandardProgramControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -2018,7 +2018,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(LONG secondsFrom1901, Cti
                 cycleCount = 8;//seems like a reasonable default
             }
 
-            LONG periodEndInSecondsFrom1901 = 0;
+            ULONG periodEndInSecondsFrom1901 = 0;
             if( cycleRefreshRate == 0 )
             {
                 periodEndInSecondsFrom1901 = getLastControlSent().seconds()+(period * cycleCount)+1;
@@ -2114,7 +2114,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(LONG secondsFrom1901, Cti
                                 LONG estimatedControlTimeInSeconds = period * cycleCount;
                                 if( getManualControlReceivedFlag() )
                                 {
-                                    unsigned long secondsSince1901 = RWDBDateTime().seconds();
+                                    ULONG secondsSince1901 = RWDBDateTime().seconds();
                                     if( (secondsSince1901 + estimatedControlTimeInSeconds) > getDirectStopTime().seconds())
                                     {
                                         cycleCount = 0;
@@ -2223,7 +2223,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(LONG secondsFrom1901, Cti
                 sendRate = period / ((_lmprogramdirectgroups.entries()/2)+(_lmprogramdirectgroups.entries()%2));
             }
 
-            LONG sendRateEndFrom1901 = getLastControlSent().seconds()+sendRate;
+            ULONG sendRateEndFrom1901 = getLastControlSent().seconds()+sendRate;
 
             //this loop turns groups inactive when there shed is concluded and refreshes emetcon and ripple groups
             for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
@@ -2384,7 +2384,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(LONG secondsFrom1901, Cti
                 cycleCount = 8;//seems like a reasonable default
             }
 
-            LONG periodEndInSecondsFrom1901 = 0;
+            ULONG periodEndInSecondsFrom1901 = 0;
             if( cycleRefreshRate == 0 )
             {
                 periodEndInSecondsFrom1901 = getLastControlSent().seconds()+(period * cycleCount)+1;
@@ -2480,7 +2480,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(LONG secondsFrom1901, Cti
                                 LONG estimatedControlTimeInSeconds = period * cycleCount;
                                 if( getManualControlReceivedFlag() )
                                 {
-                                    unsigned long secondsSince1901 = RWDBDateTime().seconds();
+                                    ULONG secondsSince1901 = RWDBDateTime().seconds();
                                     if( (secondsSince1901 + estimatedControlTimeInSeconds) > getDirectStopTime().seconds())
                                     {
                                         cycleCount = 0;
@@ -2755,7 +2755,7 @@ void CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
 
     Handles manual control messages for the direct program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
 
 
@@ -3140,14 +3140,30 @@ CtiLMProgramBase* CtiLMProgramDirect::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::restore(RWDBReader& rdr)
 {
-
-
     CtiLMProgramBase::restore(rdr);
 
-    /*setCurrentGearNumber(0);
-    setLastGroupControlled(0);
-    setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
-    setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));*/
+    RWDBNullIndicator isNull;
+    _insertDynamicDataFlag = FALSE;
+
+    rdr["currentgearnumber"] >> isNull;
+    if( !isNull )
+    {
+        rdr["currentgearnumber"] >> _currentgearnumber;
+        rdr["lastgroupcontrolled"] >> _lastgroupcontrolled;
+        rdr["starttime"] >> _directstarttime;
+        rdr["stoptime"] >> _directstoptime;
+
+        _insertDynamicDataFlag = FALSE;
+    }
+    else
+    {
+        setCurrentGearNumber(0);
+        setLastGroupControlled(0);
+        setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+
+        _insertDynamicDataFlag = TRUE;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -3156,9 +3172,8 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     Restores the database entries for a direct program that are not contained
     in the base table.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramDirect::restoreDirectSpecificDatabaseEntries(RWDBReader& rdr)
+/*void CtiLMProgramDirect::restoreDirectSpecificDatabaseEntries(RWDBReader& rdr)
 {
-
     RWDBNullIndicator isNull;
     RWDBDateTime dynamicTimeStamp;
     _insertDynamicDataFlag = FALSE;
@@ -3183,7 +3198,7 @@ void CtiLMProgramDirect::restoreDirectSpecificDatabaseEntries(RWDBReader& rdr)
 
         _insertDynamicDataFlag = TRUE;
     }
-}
+}*/
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
