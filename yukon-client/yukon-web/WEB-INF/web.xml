@@ -1,286 +1,245 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0"  encoding="iso-8859-1"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
-  <display-name>Yukon Web Application</display-name>
-  <description>The Yukon web application</description>
-  
-  <filter>
-    <filter-name>timerFilter</filter-name>
-    <filter-class>
-    com.cannontech.esub.web.filter.TimerFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>jsFilter</filter-name>
-    <filter-class>
-    com.cannontech.esub.web.filter.JSFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>imageFilter</filter-name>
-    <filter-class>
-    com.cannontech.esub.web.filter.ImageFilter</filter-class>
-  </filter>
-  
-  <filter-mapping>
-    <filter-name>timerFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>jsFilter</filter-name>
-    <url-pattern>/esub/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>imageFilter</filter-name>
-    <url-pattern>/esub/*</url-pattern>
-  </filter-mapping>
-  
-  <servlet>
-    <servlet-name>LoginController</servlet-name>
-    <display-name>LoginController</display-name>
-    <description>Handles user authentication.</description>
-    <servlet-class>
-    com.cannontech.servlet.LoginController</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>DBPropertiesServlet</servlet-name>
-    <display-name>DBPropertiesServlet</display-name>
-    <description>Returns a set of db.properties to
-    clients</description>
-    <servlet-class>
-    com.cannontech.servlet.DBPropertiesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>MACSConnectionServlet</servlet-name>
-    <display-name>MACSConnectionServlet</display-name>
-    <description>Maintains a connection to MACS</description>
-    <servlet-class>
-    com.cannontech.servlet.MACSConnectionServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>GraphGenerator</servlet-name>
-    <display-name>GraphGenerator</display-name>
-    <description>Dynamically generates graphs in gif
-    format</description>
-    <servlet-class>
-    com.cannontech.servlet.GraphGenerator</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>PILConnectionServlet</servlet-name>
-    <display-name>PILConnectionServlet</display-name>
-    <description>Maintains a connection to
-    PIL(PORTER)</description>
-    <servlet-class>
-    com.cannontech.servlet.PILConnectionServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>ScheduleController</servlet-name>
-    <display-name>ScheduleController</display-name>
-    <description>Handles start/stop requests to MACS</description>
-    <servlet-class>
-    com.cannontech.servlet.ScheduleController</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>SwitchCommand</servlet-name>
-    <display-name>SwitchCommand</display-name>
-    <description>Handles commands by serial number.</description>
-    <servlet-class>
-    com.cannontech.servlet.YukonSwitchCommand</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>CommanderServlet</servlet-name>
-    <display-name>CommanderServlet</display-name>
-    <description>Send operation commmands to deviceID.</description>
-    <servlet-class>
-    com.cannontech.servlet.CommanderServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <servlet-name>CurtailmentServlet</servlet-name>
-    <display-name>CurtailmentServlet</display-name>
-    <description>Handles acknowledging of mandatory
-    curtailments.</description>
-    <servlet-class>
-    com.cannontech.servlet.CurtailmentServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>LCConnectionServlet</servlet-name>
-    <display-name>LCConnectionServlet</display-name>
-    <description>Maintains a connection with loadcontrol
-    server.</description>
-    <servlet-class>
-    com.cannontech.servlet.LCConnectionServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>Download</servlet-name>
-    <display-name>Download</display-name>
-    <description>Handles downloading of tabular data in various
-    formats.</description>
-    <servlet-class>com.cannontech.servlet.Download</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>BillingServlet</servlet-name>
-    <display-name>BillingServlet</display-name>
-    <description>Billing reports for various formats.</description>
-    <servlet-class>
-    com.cannontech.servlet.BillingServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>PWordRequest</servlet-name>
-    <display-name>PWordRequest</display-name>
-    <description>Allows a user to request a password via email.</description>
-    <servlet-class>
-    com.cannontech.servlet.PWordRequest</servlet-class>
-  </servlet>  
-  <servlet>
-    <servlet-name>SetupServlet</servlet-name>
-    <display-name>SetupServlet</display-name>
-    <description>Allows a user to configure Yukon specific settings.</description>
-    <servlet-class>
-    com.cannontech.servlet.SetupServlet</servlet-class>
-  </servlet>  
-
-
-
-  
-  <!-- STARS specific configs -->
-  <servlet>
-    <servlet-name>SOAPServer</servlet-name>
-    <display-name>SOAPServer</display-name>
-    <description>Parse the request SOAP message and send back SOAP
-    response.</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>SOAPClient</servlet-name>
-    <display-name>SOAPClient</display-name>
-    <description>Send SOAP request to server and parse respones
-    from server.</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.SOAPClient</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>StarsAdmin</servlet-name>
-    <display-name>StarsAdmin</display-name>
-    <description>Administration functions for consumer information.</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.StarsAdmin</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>InventoryManager</servlet-name>
-    <display-name>InventoryManager</display-name>
-    <description>Inventory management</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.InventoryManager</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>WorkOrderManager</servlet-name>
-    <display-name>WorkOrderManager</display-name>
-    <description>Work order management</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.WorkOrderManager</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>StarsPWordRequest</servlet-name>
-    <display-name>StarsPWordRequest</display-name>
-    <description>Allows a user to request a password via email.</description>
-    <servlet-class>
-    com.cannontech.stars.web.servlet.StarsPWordRequest</servlet-class>
-  </servlet>  
-  <!-- STARS specific configs -->
-
-
-
-  <!-- CapControl specific configs -->
-  <servlet>
-    <servlet-name>CBCConnServlet</servlet-name>
-    <display-name>CBCConnServlet</display-name>
-    <description>Maintains a connection with the CapControl server.</description>
-    <servlet-class>
-    com.cannontech.servlet.CBCConnServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
-  </servlet>
-  <!-- End CapControl specific configs -->
-
-
-  <!-- esub specific servlets -->
-  <servlet>
-    <servlet-name>svgGenerator</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>DynamicTextServlet</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.DynamicTextServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>StateImageServlet</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.StateImageServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>UpdateAttribute</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.UpdateAttribute</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>ClearAlarm</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.ClearAlarm</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>AlarmsTableGenerator</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.AlarmsTableGenerator</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>AlarmTextStyleServlet</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.AlarmTextStyleServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>ControlServlet</servlet-name>
-    <servlet-class>
-    com.cannontech.esub.web.servlet.ControlServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-  <!-- end esub specific servlets -->
-  
-  <servlet-mapping>
-    <servlet-name>svgGenerator</servlet-name>
-    <url-pattern>*.svg</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>invoker</servlet-name>
-    <url-pattern>/servlet/*</url-pattern>
-  </servlet-mapping>
-  
-  <session-config>
-    <session-timeout>60</session-timeout>
-  </session-config>
-  
-  <mime-mapping>
-    <extension>txt</extension>
-    <mime-type>text/plain</mime-type>
-  </mime-mapping>
-  <mime-mapping>
-    <extension>html</extension>
-    <mime-type>text/html</mime-type>
-  </mime-mapping>
-  <mime-mapping>
-    <extension>svg</extension>
-    <mime-type>image/svg+xml</mime-type>
-  </mime-mapping>
-  <mime-mapping>
-    <extension>svgz</extension>
-    <mime-type>image/svg+xml</mime-type>
-  </mime-mapping>
-  
-  <welcome-file-list>
-    <welcome-file>login.jsp</welcome-file>
-  </welcome-file-list>
-
+	<display-name>Yukon Web Application</display-name>
+	<description>The Yukon web application</description>
+	<filter>
+		<filter-name>timerFilter</filter-name>
+		<filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>jsFilter</filter-name>
+		<filter-class>com.cannontech.esub.web.filter.JSFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>imageFilter</filter-name>
+		<filter-class>com.cannontech.esub.web.filter.ImageFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>timerFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>jsFilter</filter-name>
+		<url-pattern>/esub/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>imageFilter</filter-name>
+		<url-pattern>/esub/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>LoginController</servlet-name>
+		<display-name>LoginController</display-name>
+		<description>Handles user authentication.</description>
+		<servlet-class>com.cannontech.servlet.LoginController</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DBPropertiesServlet</servlet-name>
+		<display-name>DBPropertiesServlet</display-name>
+		<description>Returns a set of db.properties to clients</description>
+		<servlet-class>com.cannontech.servlet.DBPropertiesServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MACSConnectionServlet</servlet-name>
+		<display-name>MACSConnectionServlet</display-name>
+		<description>Maintains a connection to MACS</description>
+		<servlet-class>com.cannontech.servlet.MACSConnectionServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>GraphGenerator</servlet-name>
+		<display-name>GraphGenerator</display-name>
+		<description>Dynamically generates graphs in gif format</description>
+		<servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>PILConnectionServlet</servlet-name>
+		<display-name>PILConnectionServlet</display-name>
+		<description>Maintains a connection to PIL(PORTER)</description>
+		<servlet-class>com.cannontech.servlet.PILConnectionServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>ScheduleController</servlet-name>
+		<display-name>ScheduleController</display-name>
+		<description>Handles start/stop requests to MACS</description>
+		<servlet-class>com.cannontech.servlet.ScheduleController</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>SwitchCommand</servlet-name>
+		<display-name>SwitchCommand</display-name>
+		<description>Handles commands by serial number.</description>
+		<servlet-class>com.cannontech.servlet.YukonSwitchCommand</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>CommanderServlet</servlet-name>
+		<display-name>CommanderServlet</display-name>
+		<description>Send operation commmands to deviceID.</description>
+		<servlet-class>com.cannontech.servlet.CommanderServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>CurtailmentServlet</servlet-name>
+		<display-name>CurtailmentServlet</display-name>
+		<description>Handles acknowledging of mandatory curtailments.</description>
+		<servlet-class>com.cannontech.servlet.CurtailmentServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>LCConnectionServlet</servlet-name>
+		<display-name>LCConnectionServlet</display-name>
+		<description>Maintains a connection with loadcontrol server.</description>
+		<servlet-class>com.cannontech.servlet.LCConnectionServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>Download</servlet-name>
+		<display-name>Download</display-name>
+		<description>Handles downloading of tabular data in various formats.</description>
+		<servlet-class>com.cannontech.servlet.Download</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>BillingServlet</servlet-name>
+		<display-name>BillingServlet</display-name>
+		<description>Billing reports for various formats.</description>
+		<servlet-class>com.cannontech.servlet.BillingServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>PWordRequest</servlet-name>
+		<display-name>PWordRequest</display-name>
+		<description>Allows a user to request a password via email.</description>
+		<servlet-class>com.cannontech.servlet.PWordRequest</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>SetupServlet</servlet-name>
+		<display-name>SetupServlet</display-name>
+		<description>Allows a user to configure Yukon specific settings.</description>
+		<servlet-class>com.cannontech.servlet.SetupServlet</servlet-class>
+	</servlet>
+	<!-- STARS specific configs -->
+	<servlet>
+		<servlet-name>SOAPServer</servlet-name>
+		<display-name>SOAPServer</display-name>
+		<description>Parse the request SOAP message and send back SOAP response.</description>
+		<servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>SOAPClient</servlet-name>
+		<display-name>SOAPClient</display-name>
+		<description>Send SOAP request to server and parse respones from server.</description>
+		<servlet-class>com.cannontech.stars.web.servlet.SOAPClient</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StarsAdmin</servlet-name>
+		<display-name>StarsAdmin</display-name>
+		<description>Administration functions for consumer information.</description>
+		<servlet-class>com.cannontech.stars.web.servlet.StarsAdmin</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>InventoryManager</servlet-name>
+		<display-name>InventoryManager</display-name>
+		<description>Inventory management</description>
+		<servlet-class>com.cannontech.stars.web.servlet.InventoryManager</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>WorkOrderManager</servlet-name>
+		<display-name>WorkOrderManager</display-name>
+		<description>Work order management</description>
+		<servlet-class>com.cannontech.stars.web.servlet.WorkOrderManager</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StarsPWordRequest</servlet-name>
+		<display-name>StarsPWordRequest</display-name>
+		<description>Allows a user to request a password via email.</description>
+		<servlet-class>com.cannontech.stars.web.servlet.StarsPWordRequest</servlet-class>
+	</servlet>
+	<!-- STARS specific configs -->
+	<!-- CapControl specific configs -->
+	<servlet>
+		<servlet-name>CBCConnServlet</servlet-name>
+		<display-name>CBCConnServlet</display-name>
+		<description>Maintains a connection with the CapControl server.</description>
+		<servlet-class>com.cannontech.servlet.CBCConnServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+	<!-- End CapControl specific configs -->
+	<!-- esub specific servlets -->
+	<servlet>
+		<servlet-name>svgGenerator</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DynamicTextServlet</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.DynamicTextServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StateImageServlet</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.StateImageServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>UpdateAttribute</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.UpdateAttribute</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ClearAlarm</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.ClearAlarm</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>AlarmsTableGenerator</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.AlarmsTableGenerator</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>AlarmTextStyleServlet</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.AlarmTextStyleServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ControlServlet</servlet-name>
+		<servlet-class>com.cannontech.esub.web.servlet.ControlServlet</servlet-class>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+	<!-- end esub specific servlets -->
+	<servlet>
+		<servlet-name>CttpServlet</servlet-name>
+		<servlet-class>com.cannontech.cttp.servlet.CttpServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>svgGenerator</servlet-name>
+		<url-pattern>*.svg</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>svgGenerator</servlet-name>
+		<url-pattern>*.svgz</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>invoker</servlet-name>
+		<url-pattern>/servlet/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CttpServlet</servlet-name>
+		<url-pattern>/cttp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CttpServlet</servlet-name>
+		<url-pattern>/cttp/</url-pattern>
+	</servlet-mapping>
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
+	<mime-mapping>
+		<extension>txt</extension>
+		<mime-type>text/plain</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>html</extension>
+		<mime-type>text/html</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>svg</extension>
+		<mime-type>image/svg+xml</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>svgz</extension>
+		<mime-type>image/svg+xml</mime-type>
+	</mime-mapping>
+	<welcome-file-list>
+		<welcome-file>login.jsp</welcome-file>
+	</welcome-file-list>
 </web-app>
