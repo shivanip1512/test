@@ -20,7 +20,7 @@ import com.jrefinery.chart.renderer.XYItemRenderer;
 import com.jrefinery.chart.renderer.XYStepRenderer;
 import com.jrefinery.data.DefaultCategoryDataset;
 
-public class TrendModel implements com.cannontech.graph.GraphDataFormats
+public class TrendModel implements com.cannontech.graph.GraphDefines
 {
     private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
 	private java.text.SimpleDateFormat TRANSLATE_DATE= new java.text.SimpleDateFormat("HHmmss");
@@ -776,7 +776,7 @@ public JFreeChart refresh(int rendererType)
 		}
 
 		com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator generator =
-			 new com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator(com.cannontech.graph.GraphDataFormats.dwellValuesDateTimeformat, valueFormat);
+			 new com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator(dwellValuesDateTimeformat, valueFormat);
 
 		XYItemRenderer rend = null;
 

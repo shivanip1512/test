@@ -8,7 +8,7 @@ package com.cannontech.graph.buffer.html;
 import com.cannontech.graph.model.TrendModel;
 //import com.cannontech.graph.GraphDataFormats;
 
-public abstract class HTMLBuffer implements com.cannontech.graph.GraphDataFormats
+public abstract class HTMLBuffer implements com.cannontech.graph.GraphDefines
 {
 	public TrendModel model = null;
 

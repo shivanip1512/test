@@ -5,7 +5,7 @@ package com.cannontech.graph.exportdata;
  * Creation date: (8/21/2002 9:48:51 AM)
  * @author: 
  */
-public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.cannontech.graph.GraphDataFormats
+public class ExportDataFile implements com.cannontech.graph.GraphDefines
 {
 	private int exportPane = 0;		//Trend Pane index.  Specifies which types are valid for each tab.
 	/*  VALID PANES ARE::::

@@ -17,7 +17,7 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.ServletUtil;
 
-public class GraphBean implements GraphDataFormats, GraphDefines
+public class GraphBean implements GraphDefines
 {
 	private Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();

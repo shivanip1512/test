@@ -5,7 +5,7 @@ package com.cannontech.graph.exportdata;
  * Creation date: (8/21/2002 9:48:51 AM)
  * @author: 
  */
-public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.cannontech.graph.GraphDefines, com.cannontech.graph.GraphDataFormats, java.beans.PropertyChangeListener 
+public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.cannontech.graph.GraphDefines, java.beans.PropertyChangeListener 
 {
 //	private int exportPane = 0;		//Trend Pane index.  Specifies which types are valid for each tab.
 		

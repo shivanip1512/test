@@ -24,7 +24,7 @@ import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
 import com.jrefinery.chart.JFreeChart;
 
-public class Graph implements GraphDataFormats, GraphDefines, com.jrefinery.chart.event.ChartChangeListener
+public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChangeListener
 {
 public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 {
@@ -75,6 +75,7 @@ public Graph()
 	// LOAD PEAKPOINTHISTORY
 	//  THIS IS ONLY TEMPORARY UNTIL WE FIGURE OUT A TIMER WAY OF DOING THIS.
 	//  12/11/02 SN  (It's probably 2004 by now...HA!)    
+	/*
    	com.cannontech.database.cache.TimedDatabaseCache cache = com.cannontech.database.cache.TimedDatabaseCache.getInstance();
 	synchronized(cache)
 	{
@@ -86,7 +87,7 @@ public Graph()
 			com.cannontech.database.db.point.PeakPointHistory pt = (com.cannontech.database.db.point.PeakPointHistory) iter.next();
 			com.cannontech.clientutils.CTILogger.info(" PEAK POINT TS/VALUE = " + pt.getPointID() + " | " + pt.getTimeStamp().getTime() + " | " + pt.getValue());
 		}
-	}		
+	}		*/
 } 
 
 /**
