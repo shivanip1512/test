@@ -149,7 +149,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -355,7 +355,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -473,7 +473,7 @@ IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PU
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -559,7 +559,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         //autopsy(__FILE__, __LINE__);
@@ -616,6 +616,8 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
         /* get the exclusion semaphore */
         if( !CTIRequestMutexSem (QueueHandle->BlockSem, 2500) )
         {
+            try
+            {
             /* We the man so unless there has been a fubar...*/
             if(QueueHandle->First != NULL)
             {
@@ -644,11 +646,19 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
 
                     Entry = Entry->Next;
                 }
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
 
                 CTIReleaseMutexSem (QueueHandle->BlockSem);
             }
         }
-    }
 
     return element;
 }
@@ -684,7 +694,7 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
         }
 
         // autopsy(__FILE__, __LINE__);

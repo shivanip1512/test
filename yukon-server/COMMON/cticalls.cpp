@@ -220,17 +220,41 @@ APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG time)
 
    rVal = WaitForSingleObject(hmtx, time);
 
-   if(
-     (rVal == WAIT_OBJECT_0) ||
-     (rVal == WAIT_ABANDONED)
-     )
+   switch(rVal)
    {
-      return(APIRET)0;    // We have the mutex now!
+   case WAIT_OBJECT_0:
+       {
+           rVal = 0;
+           break;
+       }
+   case WAIT_ABANDONED:
+       {
+           {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** CTIRequestMutexSem: Wait Abandoned **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
+           }
+
+           rVal = 0;
+           break;
+       }
+   case WAIT_TIMEOUT:
+       {
+           rVal = 1;
+           break;
+       }
+   default:
+       {
+           {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** CTIRequestMutexSem: WaitResult = " << rVal << " **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
+           }
+
+           rVal = 1;
+           break;
+       }
    }
-   else
-   {
-      return(APIRET)1;    // Error of some sort occured! timeout or otherwise
-   }
+
+   return (APIRET)rVal;    // We have the mutex now!
 #endif
 }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/09/02 18:50:15 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/08/10 16:53:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     dout << RWTime() << " Porter's OM Count = " << omc << endl;
                 }
 
-                PortManager.apply( applyPortQueueReport, NULL );
+                PortManager.apply( applyPortQueueReport, (void*)1 );
             }
 
             if( PIL.isBroken() && !bServerClosing )
