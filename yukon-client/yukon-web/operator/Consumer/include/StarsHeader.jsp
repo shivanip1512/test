@@ -92,14 +92,13 @@
 			user = SOAPServer.getStarsYukonUser( lYukonUser );
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 			
-			MultiAction actions = new MultiAction();
-			actions.addAction( new GetEnergyCompanySettingsAction(), request, session );
+			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
 			
-			SOAPMessage reqMsg = actions.build(request, session);
+			SOAPMessage reqMsg = action.build(request, session);
 			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-			SOAPMessage respMsg = actions.process(reqMsg, session);
+			SOAPMessage respMsg = action.process(reqMsg, session);
 			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-			actions.parse(reqMsg, respMsg, session);
+			action.parse(reqMsg, respMsg, session);
 		}
 		
 		ecSettings = (StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
