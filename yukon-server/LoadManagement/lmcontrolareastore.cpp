@@ -56,7 +56,7 @@ struct id_hash{LONG operator()(LONG x) const { return x; } };
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(RWDBDateTime(1990,1,1,0,0,0,0))
+CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(RWDBDateTime(1990,1,1,0,0,0,0)), _wascontrolareadeletedflag(false)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _controlAreas = new RWOrdered();
@@ -359,14 +359,17 @@ void CtiLMControlAreaStore::reset()
                         while ( rdr() )
                         {
                             LONG tempPAObjectId = 0;
+                            LONG tempProgramId = 0;
                             RWCString tempPAOCategory;
                             RWCString tempPAOType;
                             rdr["category"] >> tempPAOCategory;
                             rdr["type"] >> tempPAOType;
                             rdr["paobjectid"] >> tempPAObjectId;
+                            rdr["deviceid"] >> tempProgramId;
 
                             if( currentLMGroupBase != NULL &&
-                                tempPAObjectId == currentLMGroupBase->getPAOId() )
+                                tempPAObjectId == currentLMGroupBase->getPAOId() &&
+                                tempProgramId == currentLMGroupBase->getLMProgramId() )
                             {
                                 rdr["pointid"] >> isNull;
                                 if( !isNull )
@@ -1510,8 +1513,14 @@ void CtiLMControlAreaStore::reset()
         {
             dumpAllDynamicData();
         }
+        ULONG msgBitMask = CtiLMControlAreaMsg::AllControlAreasSent;
+        if( _wascontrolareadeletedflag )
+        {
+            msgBitMask = CtiLMControlAreaMsg::AllControlAreasSent | CtiLMControlAreaMsg::ControlAreaDeleted;
+        }
+        _wascontrolareadeletedflag = false;
         CtiLMExecutorFactory f;
-        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*_controlAreas,CtiLMControlAreaMsg::AllControlAreasSent));
+        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
         executor->Execute();
         delete executor;
     }
@@ -1707,6 +1716,18 @@ void CtiLMControlAreaStore::setReregisterForPoints(bool reregister)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _reregisterforpoints = reregister;
+}
+
+bool CtiLMControlAreaStore::getWasControlAreaDeletedFlag()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    return _wascontrolareadeletedflag;
+}
+
+void CtiLMControlAreaStore::setWasControlAreaDeletedFlag(bool wasDeleted)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    _wascontrolareadeletedflag = wasDeleted;
 }
 
 /*---------------------------------------------------------------------------
