@@ -31,6 +31,23 @@ public static String addCharBetweenWords(char addedChar, String str )
 
 	return b.toString().trim();
 }
+    
+public static String trimSpaces( String s ) 
+{
+   int len = s.length();
+   int st = 0;
+   char[] val = s.toCharArray();    /* avoid getfield opcode */
+
+   while ((st < len) && (val[st] == ' ')) {
+       st++;
+   }
+   while ((st < len) && (val[len - 1] == ' ')) {
+       len--;
+   }
+   
+   return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
+}
+    
 /**
  * Insert the method's description here.
  * Creation date: (3/28/2002 11:00:46 AM)

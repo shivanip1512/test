@@ -628,7 +628,7 @@ private Object substituteObject(Object o)
 	else
 	if( o instanceof Character )
 	{
-		return o.toString().trim();
+		return com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
 	}
 	else
 	if( o instanceof java.util.GregorianCalendar )
@@ -649,7 +649,7 @@ private Object substituteObject(Object o)
 	else
 	if( o instanceof String )
 	{
-		return o.toString().trim();
+		return com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
 	}
 	else
 		return o;
