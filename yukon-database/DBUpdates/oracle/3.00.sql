@@ -2,6 +2,36 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+create table MCTConfig  (
+   ConfigID             NUMBER                           not null,
+   ConfigName           VARCHAR2(30)                     not null,
+   ConfigType           NUMBER                           not null,
+   ConfigMode           VARCHAR2(30)                     not null,
+   MCTWire1             NUMBER                           not null,
+   Ke1                  FLOAT                            not null,
+   MCTWire2             NUMBER                           not null,
+   Ke2                  FLOAT                            not null,
+   MCTWire3             NUMBER                           not null,
+   Ke3                  FLOAT                            not null
+);
+alter table MCTConfig
+   add constraint PK_MCTCONFIG primary key (ConfigID);
+
+
+create table MCTConfigMapping  (
+   MctID                NUMBER                           not null,
+   ConfigID             NUMBER                           not null
+);
+alter table MCTConfigMapping
+   add constraint PK_MCTCONFIGMAPPING primary key (MctID, ConfigID);
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_McCfg foreign key (ConfigID)
+      references MCTConfig (ConfigID);
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_Dev foreign key (MctID)
+      references DEVICE (DEVICEID);
+
+
 create table YukonServices  (
    ServiceID            NUMBER                           not null,
    ServiceName          VARCHAR2(60)                     not null,
@@ -305,11 +335,13 @@ update YukonRoleProperty set keyname='default', defaultvalue='false', descriptio
 insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
 insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
 insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
+insert into YukonRoleProperty values(-1013,-1,'stars_soap_server','(none)','Where the soap server is running, the default value is the local host');
 insert into YukonRoleProperty values(-1216,-3,'log_to_file','false','Tells all logging that it needs to go to a file');
 
 insert into YukonGroupRole values(11,-1,-1,-1010,'(none)');
 insert into YukonGroupRole values(12,-1,-1,-1011,'(none)');
 insert into YukonGroupRole values(13,-1,-1,-1012,'(none)');
+insert into YukonGroupRole values(14,-1,-1,-1013,'(none)');
 insert into YukonGroupRole values(66,-1,-3,-1216,'(none)');
 
 
@@ -358,6 +390,29 @@ alter table capcontrolsubstationbus add ControlSendRetries number;
 update capcontrolsubstationbus set ControlSendRetries = 0;
 alter table capcontrolsubstationbus modify column ControlSendRetries not null;
 
+
+
+drop table TagLog;
+create table TagLog  (
+   LogID                NUMBER                           not null,
+   InstanceID           NUMBER                           not null,
+   PointID              NUMBER                           not null,
+   TagID                NUMBER                           not null,
+   UserName             VARCHAR2(60)                     not null,
+   Action               VARCHAR2(20)                     not null,
+   Description          VARCHAR2(120)                    not null,
+   TagTime              DATE                             not null,
+   RefStr               VARCHAR2(60)                     not null,
+   ForStr               VARCHAR2(60)                     not null
+);
+alter table TagLog
+   add constraint PK_TAGLOG primary key (LogID);
+alter table TagLog
+   add constraint FK_TagLg_Pt foreign key (PointID)
+      references POINT (POINTID);
+alter table TagLog
+   add constraint FK_TagLg_Tgs foreign key (TagID)
+      references Tags (TagID);
 
 
 /******************************************************************************/

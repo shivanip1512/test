@@ -2,6 +2,42 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+create table MCTConfig (
+ConfigID             numeric              not null,
+ConfigName           varchar(30)          not null,
+ConfigType           numeric              not null,
+ConfigMode           varchar(30)          not null,
+MCTWire1             numeric              not null,
+Ke1                  float                not null,
+MCTWire2             numeric              not null,
+Ke2                  float                not null,
+MCTWire3             numeric              not null,
+Ke3                  float                not null
+);
+go
+alter table MCTConfig
+   add constraint PK_MCTCONFIG primary key  (ConfigID);
+go
+
+
+create table MCTConfigMapping (
+MctID                numeric              not null,
+ConfigID             numeric              not null
+);
+go
+alter table MCTConfigMapping
+   add constraint PK_MCTCONFIGMAPPING primary key  (MctID, ConfigID);
+go
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_McCfg foreign key (ConfigID)
+      references MCTConfig (ConfigID);
+go
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_Dev foreign key (MctID)
+      references DEVICE (DEVICEID);
+go
+
+
 
 create table YukonServices (
 ServiceID            numeric              not null,
@@ -333,6 +369,7 @@ go
 insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
 insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
 insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
+insert into YukonRoleProperty values(-1013,-1,'stars_soap_server','(none)','Where the soap server is running, the default value is the local host');
 insert into YukonRoleProperty values(-1216,-3,'log_to_file','false','Tells all logging that it needs to go to a file');
 go
 
@@ -340,6 +377,7 @@ go
 insert into YukonGroupRole values(11,-1,-1,-1010,'(none)');
 insert into YukonGroupRole values(12,-1,-1,-1011,'(none)');
 insert into YukonGroupRole values(13,-1,-1,-1012,'(none)');
+insert into YukonGroupRole values(14,-1,-1,-1013,'(none)');
 insert into YukonGroupRole values(66,-1,-3,-1216,'(none)');
 
 
@@ -394,6 +432,36 @@ go
 update capcontrolsubstationbus set ControlSendRetries = 0;
 go
 alter table capcontrolsubstationbus alter column ControlSendRetries numeric not null;
+go
+
+
+
+drop table TagLog;
+go
+
+create table TagLog (
+LogID                numeric              not null,
+InstanceID           numeric              not null,
+PointID              numeric              not null,
+TagID                numeric              not null,
+UserName             varchar(60)          not null,
+Action               varchar(20)          not null,
+Description          varchar(120)         not null,
+TagTime              datetime             not null,
+RefStr               varchar(60)          not null,
+ForStr               varchar(60)          not null
+);
+go
+alter table TagLog
+   add constraint PK_TAGLOG primary key  (LogID);
+go
+alter table TagLog
+   add constraint FK_TagLg_Pt foreign key (PointID)
+      references POINT (POINTID);
+go
+alter table TagLog
+   add constraint FK_TagLg_Tgs foreign key (TagID)
+      references Tags (TagID);
 go
 
 
