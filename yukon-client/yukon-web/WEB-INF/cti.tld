@@ -160,5 +160,25 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
-  </tag>  
+  </tag>
+  
+  <tag>
+  	<name>isPropertyTrue</name>
+  	<tagclass>com.cannontech.web.taglib.IsPropertyTrue</tagclass>
+  	<attribute>
+  		<name>propertyid</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  </tag>
+  <tag>
+  	<name>isPropertyFalse</name>
+  	<tagclass>com.cannontech.web.taglib.IsPropertyFalse</tagclass>
+  	<attribute>
+  		<name>propertyid</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  </tag>
+
 </taglib>
