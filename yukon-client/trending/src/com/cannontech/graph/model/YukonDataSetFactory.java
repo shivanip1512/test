@@ -16,7 +16,7 @@ import org.jfree.data.DefaultCategoryDataset;
 import org.jfree.data.SeriesException;
 import org.jfree.data.XYSeries;
 import org.jfree.data.XYSeriesCollection;
-import org.jfree.data.time.Second;
+import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -33,31 +33,21 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 	public static AbstractDataset [] createDataset(TrendSerie [] trendSeries, int options_, int type_ )
 	{
 		options = options_;
-		
-		if( type_ == GraphRenderers.LINE|| type_ == GraphRenderers.SHAPES_LINE || type_ == GraphRenderers.STEP)
-		{
-			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)
-				return YukonDataSetFactory.createLoadDurationDataSet(trendSeries);
-			else
-				return YukonDataSetFactory.createBasicDataSet(trendSeries);
-			
-		}/*
-		else if( type_ == GraphRenderers.BAR_VIEW )
-		{
-			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)			
-				return YukonDataSetFactory.createLoadDurationDataSet(trendSeries);
-			else
-				return YukonDataSetFactory.createBasicDataSet(trendSeries);
-		}*/
-		
-		else if( type_ == GraphRenderers.BAR || type_ == GraphRenderers.BAR_3D)
+		if( type_ == GraphRenderers.BAR || type_ == GraphRenderers.BAR_3D)
 		{
 			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)			
 				return YukonDataSetFactory.createVerticalCategoryDataSet_LD(trendSeries);
 			else
 				return YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 		}
-		return null;
+		else //if( type_ == GraphRenderers.LINE|| type_ == GraphRenderers.LINE_SHAPES || type_ == GraphRenderers.STEP)
+		{
+			if( (options_ & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)
+				return YukonDataSetFactory.createLoadDurationDataSet(trendSeries);
+			else
+				return YukonDataSetFactory.createBasicDataSet(trendSeries);
+	
+		}		
 	}
 	
     private static String updateSeriesNames(TrendSerie serie)
@@ -167,7 +157,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-							TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Second.class);
+							TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Minute.class);
 
 							if( serie.getDataItemsMap() != null)
 							{
@@ -217,10 +207,6 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 		}
 		return dSet;
 	}
-
-	
-	
-	
 	
 	/**
 	 * Insert the method's description here.
@@ -228,7 +214,6 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 	 * @param cModels FreeChartModel []
 	 */
 	public static XYSeriesCollection [] createLoadDurationDataSet(TrendSerie[] tSeries)
-//	public static XYBarDataset []createLoadDurationDataSet(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
 			return null;
@@ -349,10 +334,6 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 
 		//Sort values based on primary gds, if it exists.		
 		sortValuesDescending(dataset, primaryDset, primaryIndex);
-//		XYBarDataset barDataset [] = new XYBarDataset[2];
-//		barDataset[0]=new XYBarDataset(dataset[0], 0.9);
-///		barDataset[1]=new XYBarDataset(dataset[1], 0.9);
-//		return barDataset;
 		return dataset;
 	}
 
@@ -414,9 +395,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 				TimeSeriesDataItem prevTimePeriod = null;
 				if(GDSTypesFuncs.isGraphType(tSeries[i].getTypeMask()))
 				{
-//					String serieKey = tSeries[i].getLabel().toString();
 					String serieKey = tSeries[i].getLabel().toString() + updateSeriesNames(tSeries[i]);
-					//UNCOMMENT WITH MULTIPLE AXIS SUPPORT					
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
 						if( tSeries[i].getDataItemsMap() != null)
@@ -471,7 +450,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 		return dataset;
 	}
 
-
+	
 	public static DefaultCategoryDataset [] createVerticalCategoryDataSet_LD(TrendSerie[] tSeries)
 	{
 		if( tSeries == null)
