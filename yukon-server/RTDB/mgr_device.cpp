@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2004/07/21 19:48:57 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2004/07/30 21:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1806,6 +1806,10 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                 // Processed above!
                                 break;
                             }
+                        case (CtiTablePaoExclusion::ExFunctionLMSubordination):
+                            {
+                                break; // Do not care about this stuff.
+                            }
                         default:
                             {
                                 {
@@ -1912,6 +1916,9 @@ void CtiDeviceManager::refreshExclusions(LONG id)
         dout << RWTime() << " Looking for Device Exclusions" << endl;
     }
     CtiTablePaoExclusion::getSQL( db, keyTable, selector );
+
+    // The servers do not care about the LM subordination.
+    selector.where(keyTable["functionid"] != CtiTablePaoExclusion::ExFunctionLMSubordination && selector.where());
 
     if(id > 0)
     {

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/19 14:50:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/07/30 21:33:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,8 @@ public:
     {
         ExFunctionIdExclusion,          // This is the default and stipulates a non-simultaneous execution.  A cannot execute with B.
         ExFunctionPlaceHolder,          //
-        ExFunctionCycleTime,          // Excludes based upon an aligned window offset and duration from aligned window start.
+        ExFunctionCycleTime,            // Excludes based upon an aligned window offset and duration from aligned window start.
+        ExFunctionLMSubordination,      // Used by LM to determin which groups/programs are subordinate to others.
 
         ExFunctionInvalid
 
