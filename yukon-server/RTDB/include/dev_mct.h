@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/20 21:01:41 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/24 14:37:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,20 +44,23 @@ protected:
 
     enum
     {
-        MCT_ModelAddr       = 0x00,
-        MCT_ModelLen        =    8,
-        MCT_SspecLen        =    5,
+        MCT_ModelAddr        = 0x00,
+        MCT_ModelLen         =    8,
+        MCT_SspecLen         =    5,
 
-        MCT_FuncWriteOpen   = 0x41,
-        MCT_FuncWriteClose  = 0x42,
-        MCT_TimeAddr        = 0x46,
-        MCT_TimeLen         =    3,
-        MCT_TSyncAddr       = 0x49,
-        MCT_TSyncLen        =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
+        MCT_FuncWriteOpen    = 0x41,
+        MCT_FuncWriteClose   = 0x42,
+        MCT_TimeAddr         = 0x46,
+        MCT_TimeLen          =    3,
+        MCT_TSyncAddr        = 0x49,
+        MCT_TSyncLen         =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
 
-        MCT_Rollover        = 100000,  //  5 digits
+        MCT_GroupAddrInhibit = 0x53,
+        MCT_GroupAddrEnable  = 0x54,
 
-        MCT_LPInt_Func      = 0x70
+        MCT_Rollover         = 100000,  //  5 digits
+
+        MCT_LPInt_Func       = 0x70
     };
 
 private:
