@@ -111,19 +111,47 @@
       </div>
     </td>
   </tr>
+  </cti:checkMultiRole>
+  <cti:checkRole roleid="<%=UserControlRole.ROLEID%>">
+  <tr>
+    <td height="20">
+      <div align="left"><span class="NavHeader"><cti:getProperty propertyid="<%= UserControlRole.USER_CONTROL_LABEL%>"/></span><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <cti:checkProperty propertyid="<%=UserControlRole.AUTO%>">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_lm_control.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_lm_control.jsp"))[1] %></td>
+          </tr>
+          </cti:checkProperty>
+          <cti:checkProperty propertyid="<%=UserControlRole.TIME_BASED%>">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_lm_time.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_lm_time.jsp"))[1] %></td>
+          </tr>
+          </cti:checkProperty>
+          <cti:checkProperty propertyid="<%=UserControlRole.SWITCH_COMMAND%>">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("switch_commands.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("switch_commands.jsp"))[1] %></td>
+          </tr>
+          </cti:checkProperty>
+        </table>
+      </div>
+    </td>
+  </tr>
+  </cti:checkRole>
+  <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>"> 
   <tr>
     <td height="20">
       <div align="left"><span class="NavHeader">Administration</span><br>
-        <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>"> 
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="10"><%= ((String[]) links.get("user_ee_profile.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("user_ee_profile.jsp"))[1] %></td>
           </tr>
         </table>
-        </cti:checkRole>
       </div>
     </td>
   </tr>
-  </cti:checkMultiRole>
+  </cti:checkRole>
 </table>
