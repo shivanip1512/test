@@ -12,7 +12,10 @@
 
     int textFieldRouteID = -1;
     
-    String sql = "select GENERICMACRO.CHILDID from OPERATORSERIALGROUP,GENERICMACRO WHERE GENERICMACRO.OWNERID=OPERATORSERIALGROUP.LMGROUPID AND OPERATORSERIALGROUP.LOGINID=" +user.getUserID()  + " ORDER BY GENERICMACRO.CHILDORDER";
+    String sql = "select gm.CHILDID from UserPaoOwner us, GENERICMACRO gm " + 
+    	"WHERE gm.OWNERID=us.PaoID AND us.UserID=" + user.getUserID()  +
+    	" AND gm.MacroType = '" + MacroTypes.GROUP + "'" +
+    	" ORDER BY gm.CHILDORDER";
 
     Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { Integer.class } );
 	Object[][] versacomNameSerial = null;

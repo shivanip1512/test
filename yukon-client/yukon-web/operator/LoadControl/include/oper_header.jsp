@@ -13,6 +13,7 @@
 <%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
+<%@ page import="com.cannontech.database.db.macro.MacroTypes" %>
 
 <%@ page import="java.util.TimeZone" %>
 <%@ page import="java.util.GregorianCalendar" %>

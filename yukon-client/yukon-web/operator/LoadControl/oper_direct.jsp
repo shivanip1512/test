@@ -19,6 +19,7 @@
 <%@ page import="java.util.Vector" %> 
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.Collections" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
  
 <cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">  
 <%
@@ -43,16 +44,14 @@
 	/*
 	 * Determine which lm programs we need to display
 	 */
-    long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
-    System.out.println(programIDs.length);
-    java.util.Arrays.sort(programIDs);
+
     LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
-	  System.out.println(allPrograms.length);
+	System.out.println(allPrograms.length);
     // Match our program ids with the actual programs in the cache so we know what to display
     for( int i = 0; i < allPrograms.length; i++ )
     {
-        long id = allPrograms[i].getYukonID().longValue();
-        if( java.util.Arrays.binarySearch(programIDs, id ) >= 0 )
+        int id = allPrograms[i].getYukonID().intValue();
+        if( AuthFuncs.hasExlusiveAccess(user, id) )
         {
             // found one
             ourPrograms.add(allPrograms[i]);

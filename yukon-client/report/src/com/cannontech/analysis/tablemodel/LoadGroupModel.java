@@ -8,6 +8,8 @@ import com.cannontech.analysis.data.lm.LGAccounting;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
+import com.cannontech.database.db.user.UserPaoOwner;
 
 /**
  * Created on Dec 15, 2003
@@ -154,9 +156,10 @@ public class LoadGroupModel extends ReportModelBase
 				{
 					sql.append("AND LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
-					" FROM LMDIRECTOPERATORLIST DOL, LMPROGRAMDIRECTGROUP DG " +
-					" WHERE DOL.PROGRAMID = DG.DEVICEID " +
-					" AND DOL.OPERATORLOGINID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
+					" FROM " + UserPaoOwner.TABLE_NAME + " us, " +
+					LMProgramDirectGroup.TABLE_NAME + " DG " +
+					" WHERE us.PaoID = DG.DEVICEID " +
+					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
 					" WHERE ECLL.ENERGYCOMPANYID IN ( " + getECIDs()[0]);
 					for (int i = 1; i < getECIDs().length; i++)
