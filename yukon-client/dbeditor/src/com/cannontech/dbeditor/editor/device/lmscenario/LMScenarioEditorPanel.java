@@ -41,14 +41,10 @@ public class LMScenarioEditorPanel extends PropertyPanel implements com.cannonte
 		switch(panelIndex)
 		{
 		case 0:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmscenario.LMControlScenarioBasePanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioProgramSettingsPanel();
 			objs[1] = "General";
 			break;
-			
-		case 1:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioProgramSettingsPanel();
-			objs[1] = "Program Settings";
-		}
+		}	
 		return objs;
 	}
 	/**
@@ -119,7 +115,7 @@ public class LMScenarioEditorPanel extends PropertyPanel implements com.cannonte
 		java.util.Vector panels = new java.util.Vector();
 		java.util.Vector tabs = new java.util.Vector();
 		DataInputPanel tempPanel;
-		final int PANEL_COUNT = 2;
+		final int PANEL_COUNT = 1;
 
 		for( int i = 0; i < PANEL_COUNT; i++ )
 		{

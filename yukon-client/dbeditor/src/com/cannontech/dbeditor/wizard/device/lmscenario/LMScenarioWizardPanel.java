@@ -16,7 +16,6 @@ import com.cannontech.common.wizard.WizardPanel;
  */
 public class LMScenarioWizardPanel extends WizardPanel 
 {
-	private LMControlScenarioBasePanel lmControlScenarioBasePanel;
 	private LMScenarioProgramSettingsPanel lmScenarioProgramSettingsPanel;
 	/**
 	 * LMGroupWizardPanel constructor comment.
@@ -47,13 +46,6 @@ public class LMScenarioWizardPanel extends WizardPanel
 	 * Creation date: (3/2/2004 4:01:28 PM)
 	 * @return com.cannontech.dbeditor.wizard.device.lmcontrolarea.LMControlScenarioPanel
 	 */
-	public LMControlScenarioBasePanel getLmControlScenarioPanel() 
-	{
-		if( lmControlScenarioBasePanel == null )
-			lmControlScenarioBasePanel = new LMControlScenarioBasePanel();
-		
-		return lmControlScenarioBasePanel;
-	}
 	
 	public LMScenarioProgramSettingsPanel getLmScenarioProgramSettingsPanel() 
 	{
@@ -80,12 +72,6 @@ public class LMScenarioWizardPanel extends WizardPanel
 	{
 		if( currentInputPanel == null )
 		{
-			getLmControlScenarioPanel().initLeftList();
-			return getLmControlScenarioPanel();
-		}
-		if( currentInputPanel == getLmControlScenarioPanel())
-		{
-			getLmScenarioProgramSettingsPanel().setValue(getLmControlScenarioPanel().getValue(null));
 			return getLmScenarioProgramSettingsPanel();
 		}
 		
