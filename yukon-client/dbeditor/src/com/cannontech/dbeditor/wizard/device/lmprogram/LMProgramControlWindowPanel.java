@@ -670,7 +670,8 @@ public void setValue(Object o)
 				
 			if( window.getWindowNumber().intValue() == 1 )
 			{
-				getJCheckBoxUse1().doClick();
+				if(! getJCheckBoxUse1().isSelected())
+					getJCheckBoxUse1().doClick();
 				int startTime = window.getAvailableStartTime().intValue();
 				int stopTime = window.getAvailableStopTime().intValue();
 				if(stopTime > 86400)
@@ -681,7 +682,8 @@ public void setValue(Object o)
 			
 			if( window.getWindowNumber().intValue() == 2 )
 			{
-				getJCheckBoxUse2().doClick();
+				if(! getJCheckBoxUse2().isSelected())
+					getJCheckBoxUse2().doClick();
 				int startTime = window.getAvailableStartTime().intValue();
 				int stopTime = window.getAvailableStopTime().intValue();
 				if(stopTime > 86400)
@@ -711,6 +713,10 @@ public void setTimedOperationalStateCondition(boolean timedOrNot)
 		ivjLocalBorder2.setTitle("Control Times #2");
 		getJPanelOptionalWindow2().setBorder(ivjLocalBorder2);
 		
+		getJCheckBoxUse1().setSelected(timedOrNot);
+		getTimeComboStart1().setEnabled( timedOrNot );
+		getTimeComboStop1().setEnabled( timedOrNot );
+		
 	}
 	else
 	{
@@ -728,13 +734,13 @@ public void setTimedOperationalStateCondition(boolean timedOrNot)
 		ivjLocalBorder2.setTitle("Optional Available For Control Window #2");
 		getJPanelOptionalWindow2().setBorder(ivjLocalBorder2);
 		
-		if(getJCheckBoxUse2().isSelected())
-			getJCheckBoxUse2().doClick();
+		/*if(getJCheckBoxUse2().isSelected())
+			getJCheckBoxUse2().doClick();*/
 	}
 	
-	//fire it off to enable that window
-	getJCheckBoxUse1().setSelected(!timedOrNot);
-	getJCheckBoxUse1().doClick();
+	/*//fire it off to enable that window
+	if(! getJCheckBoxUse1().isSelected());
+		getJCheckBoxUse1().doClick();*/
 	
 	getJCheckBoxUse1().setVisible(!timedOrNot);
 
