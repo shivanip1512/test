@@ -78,17 +78,20 @@ update YukonRoleProperty set DefaultValue='Residential Customers', Description='
 update YukonRoleProperty set DefaultValue='Web Client Operators' where RolePropertyID=-1106;
 
 /* web client role properties */
-update YukonRoleProperty set DefaultValue='yukon/CannonStyle.css' where RolePropertyId=-10802;
-update YukonRoleProperty set DefaultValue='yukon/Bullet.gif' where RolePropertyId=-10803;
-update YukonRoleProperty set DefaultValue='yukon/BulletExpand.gif' where RolePropertyId=-10804;
-update YukonRoleProperty set DefaultValue='yukon/DemoHeader.gif' where RolePropertyId=-10805;
+update YukonRoleProperty set DefaultValue='yukon/CannonStyle.css' where RolePropertyId=-10802 and DefaultValue='CannonStyle.css';
+update YukonRoleProperty set DefaultValue='yukon/Bullet.gif' where RolePropertyId=-10803 and DefaultValue='Bullet.gif';
+update YukonRoleProperty set DefaultValue='yukon/BulletExpand.gif' where RolePropertyId=-10804 and DefaultValue='BulletExpand.gif';
+update YukonRoleProperty set DefaultValue='yukon/DemoHeader.gif' where RolePropertyId=-10805 and DefaultValue='DemoHeader.gif';
 update YukonRoleProperty set KeyName='log_in_url', DefaultValue='/login.jsp', Description='The url where the user login from. It is used as the url to send the users to when they log off.' where RolePropertyID=-10806;
 /* @error ignore */
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 /* @error ignore */
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
-update YukonRoleProperty set DefaultValue='yukon/BottomConnector.gif' where RolePropertyId=-10807;
-update YukonRoleProperty set DefaultValue='yukon/MidConnector.gif' where RolePropertyId=-10808;
+update YukonRoleProperty set DefaultValue='yukon/BottomConnector.gif' where RolePropertyId=-10807 and DefaultValue='BottomConnector.gif';
+update YukonRoleProperty set DefaultValue='yukon/MidConnector.gif' where RolePropertyId=-10808 and DefaultValue='MidConnector.gif';
+
+/* operator administrator role properties */
+insert into YukonRoleProperty values(-20003,-200,'Manage Members','false','Controls whether to allow managing the energy company''s members');
 
 /* operator consumer info role properties */
 update YukonRoleProperty set KeyName='Super Operator', DefaultValue='false', Description='Used for some testing functions (not recommended)' where RolePropertyID=-20150;
@@ -139,8 +142,8 @@ insert into YukonRoleProperty values(-40102,-400,'Link Thermostat Instructions',
 update YukonRoleProperty set DefaultValue='THERMOSTAT - SCHEDULE' where RolePropertyID=-40157;
 update YukonRoleProperty set DefaultValue='THERMOSTAT - MANUAL' where RolePropertyID=-40158;
 update YukonRoleProperty set Description='Description on the contact us page. The special fields will be replaced by real information when displayed on the web.' where RolePropertyID=-40173;
-update YukonRoleProperty set DefaultValue='yukon/Mom.jpg' where RolePropertyId=-40180;
-update YukonRoleProperty set DefaultValue='yukon/Family.jpg' where RolePropertyId=-40181;
+update YukonRoleProperty set DefaultValue='yukon/Mom.jpg' where RolePropertyId=-40180 and DefaultValue='Mom.jpg';
+update YukonRoleProperty set DefaultValue='yukon/Family.jpg' where RolePropertyId=-40181 and DefaultValue='Family.jpg';
 
 /* residential customers group */
 /* @error ignore */
