@@ -183,38 +183,63 @@ clean:
         @%cd $(CWD)
 
 deps:
-        @%cd $(COMPILEBASE)\server
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\database
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\rtdb
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\common
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\message
-        @$(MAKE) -f makedeps.mak -nologo  $@
         @%cd $(COMPILEBASE)\protocol
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\dispatch
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\porter
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\scanner
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\pil
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\service
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\mccmd
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\macs
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\capcontrol
-        @$(MAKE) -f makedeps.mak -nologo  $@
-        @%cd $(COMPILEBASE)\loadmanagement
-        @$(MAKE) -f makedeps.mak -nologo  $@
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\proclog
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\server
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\database
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\rtdb
+        @title %cd%
+        @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\dbsignal
-        @$(MAKE) -f makedeps.mak -nologo  $@
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\common
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\message
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\dispatch
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\porter
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\scanner
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\pil
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\service
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\fdr
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\calc
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\mccmd
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\macs
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\capcontrol
+        @title %cd%
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\loadmanagement
+        @title %cd%
+        @$(MAKE) -nologo  $@
         @%cd $(CWD)
 
 copy:

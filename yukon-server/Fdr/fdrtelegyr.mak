@@ -107,13 +107,15 @@ deps:
                 $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
 
 #UPDATE#
-fdrtelegyr.obj: cparms.h dlldefs.h msg_multi.h collectable.h \
-        msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
-        dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-        guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-        exchange.h queue.h pointtypes.h logger.h thread.h fdrtelegyr.h\
-        fdrinterface.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
-        fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-        queues.h device.h devicetypes.h
+fdrtelegyr.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
+		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h logger.h thread.h queue.h pointtypes.h dbaccess.h \
+		sema.h hashkey.h resolvers.h db_entry_defines.h fdr.h \
+		fdrdebuglevel.h fdrinterface.h mgr_fdrpoint.h rtdb.h \
+		fdrpoint.h fdrdestination.h fdrpointlist.h queues.h \
+		fdrtelegyr.h fdrasciiimportbase.h device.h devicetypes.h \
+		telegyrgroup.h telegyrcontrolcenter.h
 #ENDUPDATE#
 

@@ -133,8 +133,8 @@ mc_dbthr.obj:	mc_dbthr.h mc.h logger.h thread.h mutex.h dlldefs.h \
 		guard.h mgr_mcsched.h rtdb.h hashkey.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mc_sched.h dbmemobject.h tbl_pao.h \
 		tbl_mcsched.h tbl_mcsimpsched.h message.h collectable.h
-mc_fileint.obj:	mc_fileint.h fileint.h dlldefs.h queue.h mgr_mcsched.h \
-		mc.h logger.h thread.h mutex.h guard.h rtdb.h hashkey.h \
+mc_fileint.obj:	mc_fileint.h fileint.h dlldefs.h queue.h logger.h \
+		thread.h mutex.h guard.h mgr_mcsched.h mc.h rtdb.h hashkey.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mc_sched.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		message.h collectable.h mc_msg.h ctibase.h ctinexus.h

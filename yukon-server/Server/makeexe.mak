@@ -83,9 +83,7 @@ con_mgr.obj:	dlldefs.h collectable.h con_mgr.h connection.h exchange.h \
 		guard.h logger.h thread.h message.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
 		queue.h ctibase.h ctinexus.h
-ctique.obj:	ctique.h
-dlldbmemmgr.obj:	mgr_mempoint.h dlldefs.h utility.h dsm2.h mutex.h \
-		guard.h
+dlldbmemmgr.obj:	dlldefs.h utility.h dsm2.h mutex.h guard.h
 executor.obj:	executor.h message.h collectable.h dlldefs.h con_mgr.h \
 		connection.h exchange.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
