@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/02/11 22:37:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -582,7 +582,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
                 if(pPt && pPt->isStatus() && pPt->getControlOffset() == 9)
                 {
-                    if(!lcuLockout(OutMessage, parse.getFlags() & CMD_FLAG_CTL_OPEN ? false : true))
+                    if(!lcuLockout(OutMessage, parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_SHED) ? false : true))
                     {
                         outList.insert( OutMessage );
                         OutMessage = NULL;
@@ -2004,7 +2004,7 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Local Mode is set on the LCU! " << getName() << endl;
+                dout << RWTime() << " Local (MnA_TESTMODE) Mode is set on the LCU! " << getName() << endl;
             }
             _lockedOut = true;
         }
