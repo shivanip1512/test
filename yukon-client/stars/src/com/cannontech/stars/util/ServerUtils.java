@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -364,6 +366,46 @@ public class ServerUtils {
 		}
 		
 		return null;
+	}
+	
+	public static String[] splitString(String str, String delim) {
+		StreamTokenizer st = new StreamTokenizer( new StringReader(str) );
+		st.resetSyntax();
+		st.wordChars( 0, 255 );
+		st.quoteChar( '"' );
+		for (int i = 0; i < delim.length(); i++)
+			st.ordinaryChar( delim.charAt(i) );
+		
+		ArrayList tokenList = new ArrayList();
+		boolean isDelimLast = true;	// Whether the last token is a deliminator
+		
+		try {
+			while (st.nextToken() != StreamTokenizer.TT_EOF) {
+				if (isDelimLast) {
+					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"') {
+						tokenList.add( st.sval );
+						isDelimLast = false;
+					}
+					else if (st.ttype == ',') {
+						tokenList.add( "" );
+					}
+				}
+				else {
+					if (st.ttype == ',') isDelimLast = true;
+				}
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		// If the line ends with a comma, add an empty string to the column list 
+		if (isDelimLast) tokenList.add( "" );
+		
+		String[] tokens = new String[ tokenList.size() ];
+		tokenList.toArray( tokens );
+		return tokens;
 	}
 
 }

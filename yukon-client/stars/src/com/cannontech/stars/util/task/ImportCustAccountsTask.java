@@ -233,7 +233,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				if (custLines.length > 0 && custLines[0].startsWith( COL_NAME_LABEL )) {
 					custLineNo++;
 					
-					String[] labels = ImportManager.parseColumns( custLines[0].substring(COL_NAME_LABEL.length()) );
+					String[] labels = ServerUtils.splitString( custLines[0].substring(COL_NAME_LABEL.length()), "," );
 					numCustCol = labels.length;
 					
 					for (int i = 0; i < labels.length; i++) {
@@ -270,7 +270,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (custLines[i].trim().equals("") || custLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] columns = ImportManager.parseColumns( custLines[i] );
+					String[] columns = ServerUtils.splitString( custLines[i], "," );
 					if (columns.length != numCustCol)
 						throw new WebClientException( "Incorrect number of fields" );
 					
@@ -309,7 +309,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				if (hwLines.length > 0 && hwLines[0].startsWith( COL_NAME_LABEL )) {
 					hwLineNo++;
 					
-					String[] labels = ImportManager.parseColumns( hwLines[0].substring(COL_NAME_LABEL.length()) );
+					String[] labels = ServerUtils.splitString( hwLines[0].substring(COL_NAME_LABEL.length()), "," );
 					numHwCol = labels.length;
 					
 					for (int i = 0; i < HW_COLUMNS.length; i++)
@@ -344,7 +344,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (hwLines[i].trim().equals("") || hwLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] columns = ImportManager.parseColumns( hwLines[i] );
+					String[] columns = ServerUtils.splitString( hwLines[i], "," );;
 					if (columns.length != numHwCol)
 						throw new WebClientException( "Incorrect number of fields" );
 					

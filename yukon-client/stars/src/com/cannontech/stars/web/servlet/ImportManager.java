@@ -491,36 +491,6 @@ public class ImportManager extends HttpServlet {
 		
 		return fields;
 	}
-	
-	public static String[] parseColumns(String line) throws java.io.IOException {
-		StreamTokenizer st = prepareStreamTokenzier( line );
-		ArrayList colList = new ArrayList();
-		
-		String token = null;	// Current token
-		boolean isSeparatorLast = true;	// Whether the last token is a separator (,)
-		
-		while (st.nextToken() != StreamTokenizer.TT_EOF) {
-			if (isSeparatorLast) {
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"') {
-					colList.add( st.sval );
-					isSeparatorLast = false;
-				}
-				else if (st.ttype == ',') {
-					colList.add( "" );
-				}
-			}
-			else {
-				if (st.ttype == ',') isSeparatorLast = true;
-			}
-		}
-		
-		// If the line ends with a comma, add an empty string to the column list 
-		if (isSeparatorLast) colList.add( "" );
-		
-		String[] columns = new String[ colList.size() ];
-		colList.toArray( columns );
-		return columns;
-	}
     
 	private static final Hashtable parsers = new Hashtable();
 	static {
@@ -1861,7 +1831,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsCustomer(String line) throws Exception {
 		String[] fields = prepareFields( NUM_ACCOUNT_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 18)
 			throw new WebClientException( "Incorrect number of fields in customer file" );
 		
@@ -1900,7 +1870,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsServiceInfo(String line, Hashtable userLabels) throws Exception {
 		String[] fields = prepareFields( NUM_ACCOUNT_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 17)
 			throw new WebClientException( "Incorrect number of fields in service info file" );
 		
@@ -1966,7 +1936,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsInventory(String line, Hashtable userLabels) throws Exception {
 		String[] fields = prepareFields(NUM_INV_FIELDS);
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 19)
 			throw new WebClientException( "Incorrect number of fields in inventory file" );
 		
@@ -2011,7 +1981,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsReceiver(String line) throws Exception {
 		String[] fields = prepareFields( NUM_INV_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 20)
 			throw new WebClientException( "Incorrect number of fields in receiver file" );
 		
@@ -2052,7 +2022,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsMeter(String line) throws Exception {
 		String[] fields = prepareFields( NUM_INV_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 6)
 			throw new WebClientException( "Incorrect number of fields in meter file" );
 
@@ -2085,7 +2055,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsLoadInfo(String line, Hashtable userLabels) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 21)
 			throw new WebClientException( "Incorrect number of fields in load info file" );
 		
@@ -2161,7 +2131,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsWorkOrder(String line) throws Exception {
 		String[] fields = prepareFields( NUM_ORDER_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 20)
 			throw new WebClientException( "Incorrect number of fields in work order file" );
 		
@@ -2209,7 +2179,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsResidenceInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_RES_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 21)
 			throw new WebClientException( "Incorrect number of fields in residence info file" );
 		
@@ -2249,7 +2219,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsACInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 7)
 			throw new WebClientException( "Incorrect number of fields in AC info file" );
 		
@@ -2278,7 +2248,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsWHInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in WH info file" );
 		
@@ -2308,7 +2278,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsGeneratorInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 8)
 			throw new WebClientException( "Incorrect number of fields in generator info file" );
 		
@@ -2339,7 +2309,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsIrrigationInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 10)
 			throw new WebClientException( "Incorrect number of fields in irrigation info file" );
 		
@@ -2371,7 +2341,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsGrainDryerInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in grain dryer info file" );
 		
@@ -2402,7 +2372,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsHeatPumpInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in heat pump info file" );
 		
@@ -2432,7 +2402,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsStorageHeatInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in storage heat info file" );
 		
@@ -2462,7 +2432,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsDualFuelInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 9)
 			throw new WebClientException( "Incorrect number of fields in dual fuel info file" );
 		
@@ -2488,7 +2458,7 @@ public class ImportManager extends HttpServlet {
 	 */
 	private String[] parseStarsGeneralInfo(String line) throws Exception {
 		String[] fields = prepareFields( NUM_APP_FIELDS );
-		String[] columns = parseColumns( line );
+		String[] columns = ServerUtils.splitString( line, "," );
 		if (columns.length != 5)
 			throw new WebClientException( "Incorrect number of fields in general info file" );
 		
