@@ -18,13 +18,13 @@ public class LMGroupSA305 extends com.cannontech.database.db.DBPersistent
 	private Integer routeID;
 	private String addressUsage;
 	private Integer utilityAddress;
-	private Integer groupAddress;
-	private Integer divisionAddress;
-	private Integer substationAddress;
+	private Integer groupAddress = new Integer(-1);
+	private Integer divisionAddress = new Integer(-1);
+	private Integer substationAddress = new Integer(-1);
 	private String individualAddress;
-	private Integer rateFamily;
-	private Integer rateMember;
-	private Integer rateHierarchy;
+	private Integer rateFamily = new Integer(-1);
+	private Integer rateMember = new Integer(-1);
+	private Integer rateHierarchy = new Integer(-1);
 	private String loadNumber;
 
 	public static final String SETTER_COLUMNS[] = 
