@@ -1,7 +1,10 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
-import com.cannontech.common.constants.*;
+
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.common.util.CtiUtilities;
 
 /**

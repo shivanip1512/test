@@ -1,8 +1,8 @@
 package com.cannontech.stars.util.task;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ServerUtils;
 
 /**

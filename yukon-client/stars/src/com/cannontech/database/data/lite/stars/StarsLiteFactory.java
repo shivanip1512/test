@@ -1,7 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -17,8 +16,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -29,7 +28,6 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
-import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**

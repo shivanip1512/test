@@ -11,7 +11,6 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.db.stars.report.CallReportBase;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;

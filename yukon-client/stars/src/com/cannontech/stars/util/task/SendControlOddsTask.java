@@ -1,11 +1,9 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;

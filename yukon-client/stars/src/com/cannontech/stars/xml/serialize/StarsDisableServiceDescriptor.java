@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDisableServiceDescriptor.java,v 1.51 2003/09/19 18:39:20 zyao Exp $
+ * $Id: StarsDisableServiceDescriptor.java,v 1.52 2003/09/26 16:46:28 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,21 +11,16 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.mapping.ClassDescriptor;
-import org.exolab.castor.mapping.FieldDescriptor;
-import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.handlers.*;
+import org.exolab.castor.xml.NodeType;
+import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.*;
+import org.exolab.castor.xml.validators.IntegerValidator;
 
 /**
  * 
  * 
- * @version $Revision: 1.51 $ $Date: 2003/09/19 18:39:20 $
+ * @version $Revision: 1.52 $ $Date: 2003/09/26 16:46:28 $
 **/
 public class StarsDisableServiceDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

@@ -1,23 +1,17 @@
 package com.cannontech.stars.web.action;
 
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -25,7 +19,6 @@ import com.cannontech.stars.util.task.SendConfigCommandTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
@@ -33,8 +26,6 @@ import com.cannontech.stars.xml.serialize.StarsEnableService;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
-import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
-import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;

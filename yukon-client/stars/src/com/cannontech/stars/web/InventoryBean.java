@@ -2,15 +2,17 @@ package com.cannontech.stars.web;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;

@@ -8,7 +8,6 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
@@ -20,7 +19,6 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.RefreshTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;

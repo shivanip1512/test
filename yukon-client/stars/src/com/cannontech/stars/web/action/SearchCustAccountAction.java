@@ -5,16 +5,14 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.customer.AccountSite;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;

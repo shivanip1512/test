@@ -1,21 +1,13 @@
 package com.cannontech.stars.util.task;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.CtiProperties;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.ProgramOptOutAction;

@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,7 +8,6 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -32,12 +30,10 @@ import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;

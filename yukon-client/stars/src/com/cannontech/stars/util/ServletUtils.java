@@ -1,13 +1,9 @@
 package com.cannontech.stars.util;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeMap;

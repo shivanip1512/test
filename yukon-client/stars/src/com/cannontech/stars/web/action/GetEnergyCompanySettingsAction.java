@@ -8,7 +8,6 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
@@ -22,7 +21,6 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 

@@ -1,24 +1,27 @@
 package com.cannontech.stars.web.servlet;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.DeleteLMHardwareAction;
-import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.InstallationCompany;
+import com.cannontech.stars.xml.serialize.LMDeviceType;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsLMHw;
+import com.cannontech.stars.xml.serialize.Voltage;
 
 /**
  * @author yao

@@ -1,6 +1,5 @@
 package com.cannontech.database.data.stars.report;
 
-import com.cannontech.database.Transaction;
 import com.cannontech.database.db.DBPersistent;
 
 

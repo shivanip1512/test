@@ -7,7 +7,6 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
