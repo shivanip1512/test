@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/12/12 17:06:37 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/12/16 16:40:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1117,6 +1117,7 @@ int WWVReceiversetup (HANDLE *WWVPortHandle)
 /* Routine to synchronize the computer's clock with a WWV Receiver */
 int WWVClockSync (HANDLE WWVPortHandle)
 {
+#if 0
     struct tm WWVTimeStruct;
     struct timeb  WWVTime;
     time_t WwvUtcTime;
@@ -1299,7 +1300,7 @@ int WWVClockSync (HANDLE WWVPortHandle)
     WWVTime.dstflag = WWVTimeStruct.tm_isdst;
 
     UCTSetFTime (&WWVTime);
-
+#endif
     return(NORMAL);
 }
 
