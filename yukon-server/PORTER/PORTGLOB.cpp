@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:31 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/10/28 16:08:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,8 @@ IM_EX_PORTGLOB UINT           PorterDebugLevel = 0x00000000;
 
 IM_EX_PORTGLOB bool           gIgnoreTCU5X00QueFull = false;
 IM_EX_PORTGLOB BOOL           PorterQuit = FALSE;
+
+IM_EX_PORTGLOB UINT           PorterPortInitQueuePurgeDelay = 20;
 
 IM_EX_PORTGLOB RWCString      gDelayDatFile("..\\CONFIG\\DELAY.DAT");
 

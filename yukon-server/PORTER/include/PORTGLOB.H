@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/07/21 22:06:25 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/10/28 16:08:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,6 +102,7 @@ extern IM_EX_PORTGLOB UINT          PorterDebugLevel;
 extern IM_EX_PORTGLOB BOOL          PorterQuit;
 extern IM_EX_PORTGLOB HANDLE        hPorterEvents[];
 extern IM_EX_PORTGLOB bool          gIgnoreTCU5X00QueFull;
+extern IM_EX_PORTGLOB UINT          PorterPortInitQueuePurgeDelay;
 
 
 
