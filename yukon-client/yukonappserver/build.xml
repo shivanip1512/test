@@ -16,9 +16,6 @@
 		    <fileset dir="src">
 				<include name="**/*.java"/>
 			</fileset>
-		    <fileset dir="ejbsrc">
-				<include name="**/*.java"/>
-			</fileset>
 		</copy>
 
        <javac srcdir="temp" destdir="build" target="1.4" debug="true">
