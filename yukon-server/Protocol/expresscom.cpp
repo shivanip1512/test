@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/02/21 22:20:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/02/28 16:01:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include <rw\re.h>
 #include <rw/rwtime.h>
 
+#include "cparms.h"
 #include "expresscom.h"
 #include "logger.h"
 #include "numstr.h"
@@ -188,6 +189,8 @@ INT CtiProtocolExpresscom::timeSync(RWTime &local, bool fullsync)
     RWDate date( gmt, RWZone::utc() );
 
     BYTE dayOfWeek = date.weekDay() % 7;    // RWDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
+
+    gmt += ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
 
     _message.push_back( mtTimeSync );
     _message.push_back( (fullsync ? 0x80 : 0x00) | (gmt.isDST() ? 0x40 : 0x00) | (dayOfWeek & 0x07) );
@@ -1054,7 +1057,18 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     if(parse.isKeyValid("xctimesync"))
     {
         bool dsync = parse.getiValue("xcdatesync", 0) ? true : false;
-        status = timeSync( RWTime(), dsync );
+
+        RWTime now;
+
+        if(parse.isKeyValid("xctimesync_hour"))
+        {
+            unsigned uhour = parse.getiValue("xctimesync_hour", 0);
+            unsigned uminute = parse.getiValue("xctimesync_minute", 0);
+            unsigned usecond = parse.getiValue("xctimesync_second", 0);
+            now = RWTime(uhour, uminute, usecond);
+        }
+
+        status = timeSync( now, dsync );
     }
 
     if(parse.isKeyValid("xcrawconfig"))
