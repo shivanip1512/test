@@ -625,6 +625,20 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             DOUBLE x = _parent->pop();
             retVal = pow(x,y);
         }
+        else if( !functionName.compareTo("Absolute Value",RWCString::ignoreCase) )
+        {
+            DOUBLE a = _parent->pop();
+            retVal = fabs(a);
+        }
+        else if( !functionName.compareTo("Max Difference",RWCString::ignoreCase) )
+        {
+            DOUBLE a = _parent->pop();
+            DOUBLE b = _parent->pop();
+            DOUBLE c = _parent->pop();
+
+            retVal = (fabs(a-b) + fabs(b-c) + fabs(c-a)) / 2.0;
+
+        }
         else
         {
             // We do not have a function.
