@@ -86,8 +86,8 @@ go
 
 /* We must change the reference ID from CustomerLogin to match  */
 /*  the new entry into YukonUser (There better not be more than 100 operator logins) */
-udpate CustomerContact set LoginID=LoginID+100 where LoginID >= 0
-udpate CustomerLoginSerialGroup set LoginID=LoginID+100 where LoginID >= 0
+update CustomerContact set LoginID=LoginID+100 where LoginID >= 0
+update CustomerLoginSerialGroup set LoginID=LoginID+100 where LoginID >= 0
 go
 
 insert into YukonUser (UserID,UserName,Password,LoginCount,LastLogin,Status)
