@@ -17,8 +17,8 @@ import com.cannontech.database.db.DBPersistent;
 public class DeviceMCT400Series extends DBPersistent {
 	
 	private Integer deviceID;
-	private Integer disconnectAddress;
-	private Integer touScheduleID;
+	private Integer disconnectAddress = new Integer(-1);
+	private Integer touScheduleID = new Integer(0);
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -149,8 +149,7 @@ public void retrieve()
 			setDisconnectAddress( (Integer) results[1] );
 			setTOUScheduleID( (Integer) results[2] );
 		}
-		else
-			throw new Error(getClass() + " - Incorrect Number of results retrieved");
+		
 	}
 	catch (Exception e)
 	{
@@ -254,6 +253,66 @@ public final static boolean hasTOUSchedule(Integer mctID, String databaseAlias) 
 	{
 		return false;
 	}
+}
+
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @return boolean
+ * @param deviceID java.lang.Integer
+ */
+public static boolean deleteAnAddress(Integer mctID, java.sql.Connection conn)
+{
+	java.sql.PreparedStatement pstmt = null;		
+	String sql = "DELETE FROM " + TABLE_NAME + " WHERE DeviceID=" + mctID;
+
+	try
+	{		
+		if( conn == null )
+		{
+			throw new IllegalStateException("Database connection should not be (null)");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.executeUpdate();
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) 
+				pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+	return true;
+}
+
+public void deleteAnAddress(Integer mctID)
+{
+	try
+	{
+		java.sql.Connection conn = null;
+	
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+	
+		deleteAnAddress(mctID, conn);
+		conn.commit();	
+		conn.close();
+	}
+	catch( java.sql.SQLException e2 )
+	{
+		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+	}	
 }
 }
 

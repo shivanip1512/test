@@ -84,8 +84,8 @@ public void setDeviceMCT400Series( DeviceMCT400Series mct400Series )
 public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
 	
-	if(hasMCT400SeriesSettings())
-		getDeviceMCT400Series().retrieve();
+	//if(hasMCT400SeriesSettings())
+	getDeviceMCT400Series().retrieve();
 }
 
 /**
@@ -97,8 +97,7 @@ public void setDbConnection(java.sql.Connection conn)
 {
 	super.setDbConnection(conn);
 	
-	if(hasMCT400SeriesSettings())
-		getDeviceMCT400Series().setDbConnection(conn);
+	getDeviceMCT400Series().setDbConnection(conn);
 }
 
 /**
@@ -108,8 +107,7 @@ public void setDbConnection(java.sql.Connection conn)
 public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 	
-	if(hasMCT400SeriesSettings())
-		getDeviceMCT400Series().setDeviceID(deviceID);
+	getDeviceMCT400Series().setDeviceID(deviceID);
 }
 
 /**
@@ -119,7 +117,7 @@ public void update() throws java.sql.SQLException {
 	super.update();
 	
 	if(hasMCT400SeriesSettings())
-		getDeviceMCT400Series().update();
+		getDeviceMCT400Series().add();
 }
 
 private boolean hasMCT400SeriesSettings()
@@ -135,6 +133,38 @@ public void setHasTOU(boolean usesTOU)
 public void setHasDisconnect(boolean usesDisconn)
 {
 	hasDisconnect = usesDisconn;
+}
+
+public boolean hasDisconnect()
+{
+	hasDisconnect = false;
+	
+	try
+	{
+		hasDisconnect = DeviceMCT400Series.hasDisconnectAddress(getDevice().getDeviceID());
+	}
+	catch( java.sql.SQLException e2 )
+	{
+		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+	}	
+	
+	return hasDisconnect;
+}
+
+public boolean hasTOU()
+{
+	hasTOU = false;
+	
+	try
+	{
+		hasTOU = DeviceMCT400Series.hasTOUSchedule(getDevice().getDeviceID());
+	}
+	catch( java.sql.SQLException e2 )
+	{
+		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+	}	
+	
+	return hasTOU;
 }
 
 }
