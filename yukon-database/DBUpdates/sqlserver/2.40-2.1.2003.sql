@@ -209,3 +209,5 @@ alter table ContactNotification
    add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
       references YukonListEntry (EntryID)
 go
+alter TABLE YukonRole add RoleDescription VARCHAR(200) not null DEFAULT '(none)'
+go

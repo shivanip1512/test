@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/13/2003 11:50:15 AM                        */
+/* Created on:     2/17/2003 9:55:57 AM                         */
 /*==============================================================*/
 
 
@@ -4101,80 +4101,80 @@ constraint PK_YUKONROLE primary key  (RoleID)
 go
 
 
-insert into YukonRole values(-1,'point_id_edit','Client','true');	
-insert into YukonRole values(-2,'dbeditor_core','Client','true');
-insert into YukonRole values(-3,'dbeditor_lm','Client','true');
-insert into YukonRole values(-4,'dbeditor_cap_control','Client','false');
-insert into YukonRole values(-5,'dbeditor_system','Client','true');
-insert into YukonRole values(-6,'dispatch_machine','Client','127.0.0.1');
-insert into YukonRole values(-7,'dispatch_port','Client','1510');
-insert into YukonRole values(-8,'porter_machine','Client','127.0.0.1');
-insert into YukonRole values(-9,'porter_port','Client','1540');
-insert into YukonRole values(-10,'macs_machine','Client','127.0.0.1');
-insert into YukonRole values(-11,'macs_port','Client','1900');
-insert into YukonRole values(-12,'cap_control_machine','Client','127.0.0.1');
-insert into YukonRole values(-13,'cap_control_port','Client','1910');
-insert into YukonRole values(-14,'loadcontrol_machine','Client','127.0.0.1');
-insert into YukonRole values(-15,'loadcontrol_port','Client','1920');
-insert into YukonRole values(-16,'loadcontrol_edit','Client','00000000');
-insert into YukonRole values(-17,'macs_edit','Client','00000CCC');
-insert into YukonRole values(-18,'tdc_express','Client','ludicrous_speed');
-insert into YukonRole values(-19,'tdc_max_rows','Client','500');
-insert into YukonRole values(-20,'calc_historical_interval','Client','900');
-insert into YukonRole values(-21,'calc_historical_baseline_calctime','Client','4');
-insert into YukonRole values(-22,'calc_historical_daysprevioustocollect','Client','30');
-insert into YukonRole values(-23,'webgraph_home_directory','Client','c:\yukon\client\webgraphs');
-insert into YukonRole values(-24,'webgraph_run_interval','Client','900');
-insert into YukonRole values(-25,'graph_edit_graphdefinition','Client','true');
-insert into YukonRole values(-26,'decimal_places','Client','2');
-insert into YukonRole values(-27,'CAP_CONTROL_INTERFACE','Client','amfm');
-insert into YukonRole values(-28,'utility_id_range','Client','1-254');
-insert into YukonRole values(-29,'tdc_rights','Client','00000000');
-insert into YukonRole values(-30,'cbc_creation_name','Client','CBC %PAOName%');
-insert into YukonRole values(-31,'billing_wiz_activate','Client','false'	);
-insert into YukonRole values(-32,'billing_input_file','Client','c:\yukon\client\bin\BillingIn.txt');
-insert into YukonRole values(-33,'client_log_level','Client','INFO');
-insert into YukonRole values(-34,'client_log_file','Client','false');
+insert into YukonRole values(-1,'point_id_edit','Client','true','(none)');	
+insert into YukonRole values(-2,'dbeditor_core','Client','true','(none)');
+insert into YukonRole values(-3,'dbeditor_lm','Client','true','(none)');
+insert into YukonRole values(-4,'dbeditor_cap_control','Client','false','(none)');
+insert into YukonRole values(-5,'dbeditor_system','Client','true','(none)');
+insert into YukonRole values(-6,'dispatch_machine','Client','127.0.0.1','(none)');
+insert into YukonRole values(-7,'dispatch_port','Client','1510','(none)');
+insert into YukonRole values(-8,'porter_machine','Client','127.0.0.1','(none)');
+insert into YukonRole values(-9,'porter_port','Client','1540','(none)');
+insert into YukonRole values(-10,'macs_machine','Client','127.0.0.1','(none)');
+insert into YukonRole values(-11,'macs_port','Client','1900','(none)');
+insert into YukonRole values(-12,'cap_control_machine','Client','127.0.0.1','(none)');
+insert into YukonRole values(-13,'cap_control_port','Client','1910','(none)');
+insert into YukonRole values(-14,'loadcontrol_machine','Client','127.0.0.1','(none)');
+insert into YukonRole values(-15,'loadcontrol_port','Client','1920','(none)');
+insert into YukonRole values(-16,'loadcontrol_edit','Client','00000000','(none)');
+insert into YukonRole values(-17,'macs_edit','Client','00000CCC','(none)');
+insert into YukonRole values(-18,'tdc_express','Client','ludicrous_speed','(none)');
+insert into YukonRole values(-19,'tdc_max_rows','Client','500','(none)');
+insert into YukonRole values(-20,'calc_historical_interval','Client','900','(none)');
+insert into YukonRole values(-21,'calc_historical_baseline_calctime','Client','4','(none)');
+insert into YukonRole values(-22,'calc_historical_daysprevioustocollect','Client','30','(none)');
+insert into YukonRole values(-23,'webgraph_home_directory','Client','c:\yukon\client\webgraphs','(none)');
+insert into YukonRole values(-24,'webgraph_run_interval','Client','900','(none)');
+insert into YukonRole values(-25,'graph_edit_graphdefinition','Client','true','(none)');
+insert into YukonRole values(-26,'decimal_places','Client','2','(none)');
+insert into YukonRole values(-27,'CAP_CONTROL_INTERFACE','Client','amfm','(none)');
+insert into YukonRole values(-28,'utility_id_range','Client','1-254','(none)');
+insert into YukonRole values(-29,'tdc_rights','Client','00000000','(none)');
+insert into YukonRole values(-30,'cbc_creation_name','Client','CBC %PAOName%','(none)');
+insert into YukonRole values(-31,'billing_wiz_activate','Client','false'	,'(none)');
+insert into YukonRole values(-32,'billing_input_file','Client','c:\yukon\client\bin\BillingIn.txt','(none)');
+insert into YukonRole values(-33,'client_log_level','Client','INFO','(none)');
+insert into YukonRole values(-34,'client_log_file','Client','false','(none)');
 
-insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp');
-insert into YukonRole values(-101,'WEB_USER','WebClient','(none)');
-insert into YukonRole values(-102,'WEB_RESIDENTIAL_CUSTOMER','WebClient','(none)');
-insert into YukonRole values(-103,'WEB_CICUSTOMER','WebClient','(none)');
+insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp','(none)');
+insert into YukonRole values(-101,'WEB_USER','WebClient','(none)','(none)');
+insert into YukonRole values(-102,'WEB_RESIDENTIAL_CUSTOMER','WebClient','(none)','(none)');
+insert into YukonRole values(-103,'WEB_CICUSTOMER','WebClient','(none)','(none)');
 
-insert into YukonRole values(-120,'OPERATOR_CONSUMER_INFO','WebClient','(none)');
-insert into YukonRole values(-121,'OPERATOR_COMMERCIAL_METERING','WebClient','(none)');
-insert into YukonRole values(-122,'OPERATOR_LOADCONTROL','WebClient','(none)');
-insert into YukonRole values(-123,'OPERATOR_HARDWARE_INVENTORY','WebClient','(none)');
-insert into YukonRole values(-124,'OPERATOR_WORK_ORDERS','WebClient','(none)');
-insert into YukonRole values(-125,'OPERATOR_ADMINISTRATION','WebClient','(none)');
+insert into YukonRole values(-120,'OPERATOR_CONSUMER_INFO','WebClient','(none)','(none)');
+insert into YukonRole values(-121,'OPERATOR_COMMERCIAL_METERING','WebClient','(none)','(none)');
+insert into YukonRole values(-122,'OPERATOR_LOADCONTROL','WebClient','(none)','(none)');
+insert into YukonRole values(-123,'OPERATOR_HARDWARE_INVENTORY','WebClient','(none)','(none)');
+insert into YukonRole values(-124,'OPERATOR_WORK_ORDERS','WebClient','(none)','(none)');
+insert into YukonRole values(-125,'OPERATOR_ADMINISTRATION','WebClient','(none)','(none)');
 
-insert into YukonRole values(-140,'CICUSTOMER_DIRECT_CONTROL','WebClient','(none)');
-insert into YukonRole values(-141,'CICUSTOMER_CURTAILMENT','WebClient','(none)');
-insert into YukonRole values(-142,'CICUSTOMER_ENERGY_EXCHANGE','WebClient','(none)');
+insert into YukonRole values(-140,'CICUSTOMER_DIRECT_CONTROL','WebClient','(none)','(none)');
+insert into YukonRole values(-141,'CICUSTOMER_CURTAILMENT','WebClient','(none)','(none)');
+insert into YukonRole values(-142,'CICUSTOMER_ENERGY_EXCHANGE','WebClient','(none)','(none)');
 
-insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)');
-insert into YukonRole values(-161,'CONSUMERINFO_ACCOUNT_GENERAL','ConsumerInfo','(none)');
-insert into YukonRole values(-162,'CONSUMERINFO_ACCOUNT_CALL_TRACKING','ConsumerInfo','(none)');
-insert into YukonRole values(-163,'CONSUMERINFO_METERING','ConsumerInfo','(none)');
-insert into YukonRole values(-164,'CONSUMERINFO_METERING_INTERVAL_DATA','ConsumerInfo','(none)');
-insert into YukonRole values(-165,'CONSUMERINFO_METERING_USAGE','ConsumerInfo','(none)');
-insert into YukonRole values(-166,'CONSUMERINFO_PROGRAMS','ConsumerInfo','(none)');
-insert into YukonRole values(-167,'CONSUMERINFO_PROGRAMS_CONTROL_HISTORY','ConsumerInfo','(none)');
-insert into YukonRole values(-168,'CONSUMERINFO_PROGRAMS_ENROLLMENT','ConsumerInfo','(none)');
-insert into YukonRole values(-169,'CONSUMERINFO_PROGRAMS_OPTOUT','ConsumerInfo','(none)');
-insert into YukonRole values(-170,'CONSUMERINFO_APPLIANCES','ConsumerInfo','(none)');
-insert into YukonRole values(-171,'CONSUMERINFO_APPLIANCES_CREATE','ConsumerInfo','(none)');
-insert into YukonRole values(-172,'CONSUMERINFO_HARDWARE','ConsumerInfo','(none)');
-insert into YukonRole values(-173,'CONSUMERINFO_HARDWARE_CREATE','ConsumerInfo','(none)');
-insert into YukonRole values(-174,'CONSUMERINFO_WORKORDERS','ConsumerInfo','(none)');
-insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)');
-insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_PASSWORD','ConsumerInfo','(none)');
-insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)');
-insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)');
+insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-161,'CONSUMERINFO_ACCOUNT_GENERAL','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-162,'CONSUMERINFO_ACCOUNT_CALL_TRACKING','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-163,'CONSUMERINFO_METERING','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-164,'CONSUMERINFO_METERING_INTERVAL_DATA','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-165,'CONSUMERINFO_METERING_USAGE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-166,'CONSUMERINFO_PROGRAMS','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-167,'CONSUMERINFO_PROGRAMS_CONTROL_HISTORY','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-168,'CONSUMERINFO_PROGRAMS_ENROLLMENT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-169,'CONSUMERINFO_PROGRAMS_OPTOUT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-170,'CONSUMERINFO_APPLIANCES','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-171,'CONSUMERINFO_APPLIANCES_CREATE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-172,'CONSUMERINFO_HARDWARE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-173,'CONSUMERINFO_HARDWARE_CREATE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-174,'CONSUMERINFO_WORKORDERS','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_PASSWORD','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)','(none)');
 
-insert into yukonrole values(-200,'ESUBVIEW','Esub','true');
-insert into yukonrole values(-201,'ESUBEDIT','Esub','true');
-insert into yukonrole values(-202,'ESUBCONTROL','Esub','true');
+insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
+insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
+insert into yukonrole values(-202,'ESUBCONTROL','Esub','true','(none)');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
