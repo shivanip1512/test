@@ -2,6 +2,7 @@ package com.cannontech.yukon.server;
 
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IDBPersistent;
+import com.cannontech.yukon.ISQLStatement;
 
 // ---------------------------------------------------------------------------------
 //  Imports for IDatabase implementation
@@ -17,6 +18,11 @@ import com.cannontech.database.data.lite.LiteBase;
 import java.sql.SQLException;
 import java.util.List;
 
+// ---------------------------------------------------------------------------------
+//  Imports for ISQLStatement implementation
+// ---------------------------------------------------------------------------------   
+import com.cannontech.common.util.CommandExecutionException;
+import java.sql.Connection;
 
 /**
  * @author rneuharth
@@ -28,6 +34,8 @@ public class YukonServerResource implements com.cannontech.yukon.IYukon
 {
    private static IDatabaseCache dbCache = null;
    private static IDBPersistent dbPersistent = null;
+   private static ISQLStatement sqlStatement = null;
+
 
    // ---------------------------------------------------------------------------------
    //  START of the IDBPersistent implementation
@@ -342,5 +350,38 @@ public class YukonServerResource implements com.cannontech.yukon.IYukon
        getDBCache().setDatabaseAlias( newAlias );
    }
 
+
+   // ---------------------------------------------------------------------------------
+   //  START of the ISQLStatement implementation
+   // ---------------------------------------------------------------------------------   
+   public void setSQLString( String sql )
+   {
+   }
+   
+   public void setDBConnection( Connection conn )
+   {
+   }
+   
+	public void execute() throws CommandExecutionException
+	{
+	}
+	
+	public Object[] getRow( int row )
+	{
+		return null;
+	}
+	
+	public int getRowCount()
+	{
+		return 0;
+	}
+
+   private static synchronized ISQLStatement getSQLStatement()
+   {
+      if( sqlStatement == null )
+         sqlStatement = new com.cannontech.ejb.SqlStatementBean();
+      
+      return sqlStatement;
+   }
 
 }
