@@ -367,7 +367,7 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("DeleteLMHardware")) {
 			clientAction = new DeleteLMHardwareAction();
-			destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
 			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
 		else if (action.equalsIgnoreCase("UpdateLogin")) {
