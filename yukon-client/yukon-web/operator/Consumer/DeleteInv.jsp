@@ -1,6 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
