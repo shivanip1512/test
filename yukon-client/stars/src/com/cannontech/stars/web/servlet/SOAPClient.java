@@ -13,6 +13,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -338,46 +339,48 @@ public class SOAPClient extends HttpServlet {
 			|| action.equalsIgnoreCase("OverrideLMHardware"))
 		{
 			clientAction = new ProgramOptOutAction();
-			SOAPMessage msg = clientAction.build( req, session );
-			if (msg == null) {
-				resp.sendRedirect( errorURL );
-				return;
-			}
 			
-			MultiAction actions = new MultiAction();
-			actions.addAction( clientAction, msg );
-        	
-			StarsExitInterviewQuestions questions = null;
-			if (user != null) {
-				StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-				if (ecSettings != null)
-					questions = ecSettings.getStarsExitInterviewQuestions();
-			}
-            
-			if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0
-				&& action.equalsIgnoreCase("OptOutProgram"))
-			{
-				session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
-				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
-				return;
-			}
-			else {	// if no exit interview questions, then skip the next page and send out the command immediately
-				SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
-				SOAPMessage msg2 = action2.build( req, session );
-				if (msg2 == null) {
+			String recip = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
+			if (recip != null && recip.trim().length() > 0) {
+				SOAPMessage msg = clientAction.build( req, session );
+				if (msg == null) {
 					resp.sendRedirect( errorURL );
 					return;
 				}
 				
-				actions.addAction( action2, msg2 );
-				clientAction = actions;
-				
-				session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
-				session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-				destURL = errorURL = req.getContextPath() +
-						(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+				MultiAction actions = new MultiAction();
+				actions.addAction( clientAction, msg );
+	        	
+				StarsExitInterviewQuestions questions = null;
+				StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
+						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+				if (ecSettings != null)
+					questions = ecSettings.getStarsExitInterviewQuestions();
+	            
+				if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0
+					&& action.equalsIgnoreCase("OptOutProgram"))
+				{
+					session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
+					resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
+					return;
+				}
+				else {	// if no exit interview questions, then skip the next page and send out the command immediately
+					SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
+					SOAPMessage msg2 = action2.build( req, session );
+					if (msg2 == null) {
+						resp.sendRedirect( errorURL );
+						return;
+					}
+					
+					actions.addAction( action2, msg2 );
+					clientAction = actions;
+				}
 			}
+			
+			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
+			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
+			destURL = errorURL = req.getContextPath() +
+					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		else if (action.equalsIgnoreCase("SendOptOutNotification")) {
 			clientAction = new SendOptOutNotificationAction();

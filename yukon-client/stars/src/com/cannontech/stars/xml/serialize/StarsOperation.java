@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.86 2004/08/06 17:35:06 zyao Exp $
+ * $Id: StarsOperation.java,v 1.87 2004/10/06 20:59:15 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.86 $ $Date: 2004/08/06 17:35:06 $
+ * @version $Revision: 1.87 $ $Date: 2004/10/06 20:59:15 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -148,7 +148,7 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsUpdateThermostatManualOptionResponse _starsUpdateThermostatManualOptionResponse;
 
-    private StarsSendExitInterviewAnswers _starsSendExitInterviewAnswers;
+    private StarsSendOptOutNotification _starsSendOptOutNotification;
 
     private StarsGetEnergyCompanySettings _starsGetEnergyCompanySettings;
 
@@ -597,16 +597,6 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsSearchCustomerAccountResponse getStarsSearchCustomerAccountResponse() 
 
     /**
-     * Returns the value of field 'starsSendExitInterviewAnswers'.
-     * 
-     * @return the value of field 'starsSendExitInterviewAnswers'.
-    **/
-    public StarsSendExitInterviewAnswers getStarsSendExitInterviewAnswers()
-    {
-        return this._starsSendExitInterviewAnswers;
-    } //-- StarsSendExitInterviewAnswers getStarsSendExitInterviewAnswers() 
-
-    /**
      * Returns the value of field 'starsSendOddsForControl'.
      * 
      * @return the value of field 'starsSendOddsForControl'.
@@ -615,6 +605,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsSendOddsForControl;
     } //-- StarsSendOddsForControl getStarsSendOddsForControl() 
+
+    /**
+     * Returns the value of field 'starsSendOptOutNotification'.
+     * 
+     * @return the value of field 'starsSendOptOutNotification'.
+    **/
+    public StarsSendOptOutNotification getStarsSendOptOutNotification()
+    {
+        return this._starsSendOptOutNotification;
+    } //-- StarsSendOptOutNotification getStarsSendOptOutNotification() 
 
     /**
      * Returns the value of field 'starsSuccess'.
@@ -1345,17 +1345,6 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsSearchCustomerAccountResponse(StarsSearchCustomerAccountResponse) 
 
     /**
-     * Sets the value of field 'starsSendExitInterviewAnswers'.
-     * 
-     * @param starsSendExitInterviewAnswers the value of field
-     * 'starsSendExitInterviewAnswers'.
-    **/
-    public void setStarsSendExitInterviewAnswers(StarsSendExitInterviewAnswers starsSendExitInterviewAnswers)
-    {
-        this._starsSendExitInterviewAnswers = starsSendExitInterviewAnswers;
-    } //-- void setStarsSendExitInterviewAnswers(StarsSendExitInterviewAnswers) 
-
-    /**
      * Sets the value of field 'starsSendOddsForControl'.
      * 
      * @param starsSendOddsForControl the value of field
@@ -1365,6 +1354,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsSendOddsForControl = starsSendOddsForControl;
     } //-- void setStarsSendOddsForControl(StarsSendOddsForControl) 
+
+    /**
+     * Sets the value of field 'starsSendOptOutNotification'.
+     * 
+     * @param starsSendOptOutNotification the value of field
+     * 'starsSendOptOutNotification'.
+    **/
+    public void setStarsSendOptOutNotification(StarsSendOptOutNotification starsSendOptOutNotification)
+    {
+        this._starsSendOptOutNotification = starsSendOptOutNotification;
+    } //-- void setStarsSendOptOutNotification(StarsSendOptOutNotification) 
 
     /**
      * Sets the value of field 'starsSuccess'.

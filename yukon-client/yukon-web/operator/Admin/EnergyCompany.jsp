@@ -92,10 +92,22 @@ function addCustomerGroup(form) {
 	if (form.CustGroupList.value == "") return;
 	form.CustomerGroup.value = appendString(form.CustomerGroup.value, form.CustGroupList.value);
 }
+
+function setSendNotification(form) {
+	form.OptOutNotif.disabled = !form.SendNotif.checked;
+	if (form.SendNotif.checked) form.OptOutNotif.focus();
+}
+
+function init() {
+	if (document.form1.OptOutNotif.value == "")
+		document.form1.OptOutNotif.disabled = true;
+	else
+		document.form1.SendNotif.checked = true;
+}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -260,7 +272,8 @@ function addCustomerGroup(form) {
                           Notif. Recipients:</td>
                         <td class="TableCell"> 
                           <input type="text" name="OptOutNotif" size="50" value="<%= liteEC.getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS) %>">
-                        </td>
+                          <input type="checkbox" name="SendNotif" value="true" onclick="setSendNotification(this.form)">
+                          Send Notification</td>
                       </tr>
                     </table>
                   </td>

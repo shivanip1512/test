@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContacts.java,v 1.31 2004/08/06 17:35:10 zyao Exp $
+ * $Id: StarsCustomerContacts.java,v 1.32 2004/10/06 20:59:22 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.31 $ $Date: 2004/08/06 17:35:10 $
+ * @version $Revision: 1.32 $ $Date: 2004/10/06 20:59:22 $
 **/
 public abstract class StarsCustomerContacts implements java.io.Serializable {
 

@@ -394,7 +394,7 @@
 				<xs:element ref="stars-UpdateThermostatScheduleResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOption" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOptionResponse" minOccurs="0"/>
-				<xs:element ref="stars-SendExitInterviewAnswers" minOccurs="0"/>
+				<xs:element ref="stars-SendOptOutNotification" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettings" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettingsResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateControlNotification" minOccurs="0"/>
@@ -1126,7 +1126,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-SendExitInterviewAnswers">
+	<xs:element name="stars-SendOptOutNotification">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-ExitInterviewQuestion" minOccurs="0" maxOccurs="unbounded"/>

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.86 2004/08/06 17:35:14 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.87 2004/10/06 20:59:29 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.86 $ $Date: 2004/08/06 17:35:14 $
+ * @version $Revision: 1.87 $ $Date: 2004/10/06 20:59:29 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -1721,35 +1721,35 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsSendExitInterviewAnswers
-        desc = new XMLFieldDescriptorImpl(StarsSendExitInterviewAnswers.class, "_starsSendExitInterviewAnswers", "stars-SendExitInterviewAnswers", NodeType.Element);
+        //-- _starsSendOptOutNotification
+        desc = new XMLFieldDescriptorImpl(StarsSendOptOutNotification.class, "_starsSendOptOutNotification", "stars-SendOptOutNotification", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsOperation target = (StarsOperation) object;
-                return target.getStarsSendExitInterviewAnswers();
+                return target.getStarsSendOptOutNotification();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsOperation target = (StarsOperation) object;
-                    target.setStarsSendExitInterviewAnswers( (StarsSendExitInterviewAnswers) value);
+                    target.setStarsSendOptOutNotification( (StarsSendOptOutNotification) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsSendExitInterviewAnswers();
+                return new StarsSendOptOutNotification();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsSendExitInterviewAnswers
+        //-- validation code for: _starsSendOptOutNotification
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

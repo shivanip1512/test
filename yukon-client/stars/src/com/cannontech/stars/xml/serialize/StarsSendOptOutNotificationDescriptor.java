@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsSendOptOutNotificationDescriptor.java,v 1.1 2004/10/06 20:59:11 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/10/06 20:59:11 $
 **/
-public class StarsSendExitInterviewAnswersDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsSendOptOutNotificationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsSendExitInterviewAnswersDescriptor extends org.exolab.castor.x
      //- Constructors -/
     //----------------/
 
-    public StarsSendExitInterviewAnswersDescriptor() {
+    public StarsSendOptOutNotificationDescriptor() {
         super();
-        xmlName = "stars-SendExitInterviewAnswers";
+        xmlName = "stars-SendOptOutNotification";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -66,14 +66,14 @@ public class StarsSendExitInterviewAnswersDescriptor extends org.exolab.castor.x
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsSendExitInterviewAnswers target = (StarsSendExitInterviewAnswers) object;
+                StarsSendOptOutNotification target = (StarsSendOptOutNotification) object;
                 return target.getStarsExitInterviewQuestion();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsSendExitInterviewAnswers target = (StarsSendExitInterviewAnswers) object;
+                    StarsSendOptOutNotification target = (StarsSendOptOutNotification) object;
                     target.addStarsExitInterviewQuestion( (StarsExitInterviewQuestion) value);
                 }
                 catch (Exception ex) {
@@ -93,7 +93,7 @@ public class StarsSendExitInterviewAnswersDescriptor extends org.exolab.castor.x
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswersDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsSendOptOutNotificationDescriptor()
 
 
       //-----------/
@@ -125,7 +125,7 @@ public class StarsSendExitInterviewAnswersDescriptor extends org.exolab.castor.x
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers.class;
+        return com.cannontech.stars.xml.serialize.StarsSendOptOutNotification.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

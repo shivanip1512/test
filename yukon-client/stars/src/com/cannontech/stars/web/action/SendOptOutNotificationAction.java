@@ -41,7 +41,7 @@ import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
 import com.cannontech.stars.xml.serialize.StarsProgramReenable;
-import com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers;
+import com.cannontech.stars.xml.serialize.StarsSendOptOutNotification;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -68,26 +68,29 @@ public class SendOptOutNotificationAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
             
-			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsExitInterviewQuestions questions = ecSettings.getStarsExitInterviewQuestions();
-			StarsSendExitInterviewAnswers sendAnswers = new StarsSendExitInterviewAnswers();
-            
-			if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
-				String[] qIDStrs = req.getParameterValues( "QID" );
-				String[] answers = req.getParameterValues( "Answer" );
-            	
-				for (int i = 0; i < qIDStrs.length; i++) {
-					StarsExitInterviewQuestion answer = new StarsExitInterviewQuestion();
-					answer.setQuestionID( Integer.parseInt(qIDStrs[i]) );
-					answer.setAnswer( answers[i] );
-					sendAnswers.addStarsExitInterviewQuestion( answer );
-					int qID = Integer.parseInt( qIDStrs[i] );
+			StarsSendOptOutNotification sendNotif = new StarsSendOptOutNotification();
+			
+			if (req.getParameter("action").equalsIgnoreCase("SendOptOutNotification")) {
+				StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
+						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+				StarsExitInterviewQuestions questions = ecSettings.getStarsExitInterviewQuestions();
+	            
+				if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
+					String[] qIDStrs = req.getParameterValues( "QID" );
+					String[] answers = req.getParameterValues( "Answer" );
+	            	
+					for (int i = 0; i < qIDStrs.length; i++) {
+						StarsExitInterviewQuestion answer = new StarsExitInterviewQuestion();
+						answer.setQuestionID( Integer.parseInt(qIDStrs[i]) );
+						answer.setAnswer( answers[i] );
+						sendNotif.addStarsExitInterviewQuestion( answer );
+						int qID = Integer.parseInt( qIDStrs[i] );
+					}
 				}
 			}
             
 			StarsOperation operation = new StarsOperation();
-			operation.setStarsSendExitInterviewAnswers( sendAnswers );
+			operation.setStarsSendOptOutNotification( sendNotif );
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
@@ -127,7 +130,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 				sendNotification( notifMsg, energyCompany );
             
 			StarsSuccess success = new StarsSuccess();
-			success.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully" );
+			success.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " notification has been sent successfully." );
             
 			respOper.setStarsSuccess( success );
 			return SOAPUtil.buildSOAPMessage( respOper );
@@ -137,7 +140,7 @@ public class SendOptOutNotificationAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " notification") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " notification.") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
@@ -155,14 +158,16 @@ public class SendOptOutNotificationAction implements ActionBase {
 		try {
 			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
-			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
-				return failure.getStatusCode();
-			}
-			
 			StarsSuccess success = operation.getStarsSuccess();
-			if (success == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			if (success == null) {
+				StarsFailure failure = operation.getStarsFailure();
+				if (failure != null) {
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+					return failure.getStatusCode();
+				}
+				else
+					return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			}
             
 			return 0;
 		}
@@ -314,9 +319,9 @@ public class SendOptOutNotificationAction implements ActionBase {
 		int exitQType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
 		LiteInterviewQuestion[] liteQuestions = energyCompany.getInterviewQuestions( exitQType );
         
-		StarsSendExitInterviewAnswers sendAnswers = operation.getStarsSendExitInterviewAnswers();
-		for (int i = 0; i < sendAnswers.getStarsExitInterviewQuestionCount(); i++) {
-			StarsExitInterviewQuestion answer = sendAnswers.getStarsExitInterviewQuestion(i);
+		StarsSendOptOutNotification sendNotif = operation.getStarsSendOptOutNotification();
+		for (int i = 0; i < sendNotif.getStarsExitInterviewQuestionCount(); i++) {
+			StarsExitInterviewQuestion answer = sendNotif.getStarsExitInterviewQuestion(i);
 			
 			for (int j = 0; j < liteQuestions.length; j++) {
 				if (liteQuestions[j].getQuestionID() == answer.getQuestionID()) {
@@ -417,8 +422,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 	
 	public static void sendNotification(String notifMessage, LiteStarsEnergyCompany energyCompany) throws Exception {
 		String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
-		if (toStr == null)
-			throw new Exception( "Property \"optout_notification_recipients\" not found" );
+		if (toStr == null || toStr.trim().length() == 0)
+			throw new Exception( "Property \"optout_notification_recipients\" is not set" );
 		
 		StringTokenizer st = new StringTokenizer( toStr, "," );
 		ArrayList toList = new ArrayList();

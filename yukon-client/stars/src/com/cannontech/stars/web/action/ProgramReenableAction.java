@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -110,7 +111,10 @@ public class ProgramReenableAction implements ActionBase {
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 	        
 			// Get the notification message to send later
-			String notifMsg = SendOptOutNotificationAction.getReenableNotifMessage( energyCompany, liteAcctInfo, reqOper );
+			String notifMsg = null;
+			String notifRecip = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
+			if (notifRecip != null && notifRecip.trim().length() > 0)
+				notifMsg = SendOptOutNotificationAction.getReenableNotifMessage( energyCompany, liteAcctInfo, reqOper );
 			
 			if (reenable.getCancelScheduledOptOut()) {
 				// Cancel all the scheduled opt out events
@@ -177,7 +181,16 @@ public class ProgramReenableAction implements ActionBase {
 			}
 			
 			// Send the notification message saved earlier
-			SendOptOutNotificationAction.sendNotification( notifMsg, energyCompany );
+			if (notifMsg != null) {
+				try {
+					SendOptOutNotificationAction.sendNotification( notifMsg, energyCompany );
+				}
+				catch (Exception e) {
+					CTILogger.error( e.getMessage(), e );
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) + " notification.") );
+				}
+			}
 			
             respOper.setStarsProgramReenableResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -205,26 +218,25 @@ public class ProgramReenableAction implements ActionBase {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
+			StarsProgramReenableResponse resp = operation.getStarsProgramReenableResponse();
+            if (resp != null) {
+				if (resp.getDescription() != null)
+					session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
+	            
+				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+	            
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+				LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+	            
+				parseResponse( resp, accountInfo, energyCompany );
+            }
+            
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
-
-			StarsProgramReenableResponse resp = operation.getStarsProgramReenableResponse();
-            if (resp == null)
-            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            
-            if (resp.getDescription() != null)
-            	session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
-            
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-            
-			parseResponse( resp, accountInfo, energyCompany );
 			
             return 0;
         }

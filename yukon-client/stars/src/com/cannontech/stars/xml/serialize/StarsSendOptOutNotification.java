@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsSendOptOutNotification.java,v 1.1 2004/10/06 20:59:23 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/10/06 20:59:23 $
 **/
-public class StarsSendExitInterviewAnswers implements java.io.Serializable {
+public class StarsSendOptOutNotification implements java.io.Serializable {
 
 
       //--------------------------/
@@ -41,10 +41,10 @@ public class StarsSendExitInterviewAnswers implements java.io.Serializable {
      //- Constructors -/
     //----------------/
 
-    public StarsSendExitInterviewAnswers() {
+    public StarsSendOptOutNotification() {
         super();
         _starsExitInterviewQuestionList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers()
+    } //-- com.cannontech.stars.xml.serialize.StarsSendOptOutNotification()
 
 
       //-----------/
@@ -207,11 +207,11 @@ public class StarsSendExitInterviewAnswers implements java.io.Serializable {
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsSendOptOutNotification unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsSendOptOutNotification) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsSendOptOutNotification.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsSendOptOutNotification unmarshal(java.io.Reader) 
 
     /**
     **/

@@ -91,18 +91,14 @@ public class MultiAction implements ActionBase {
 			for (int i = 0; i < actionList.size(); i++) {
 				ActionBase action = (ActionBase) actionList.get(i);
 				SOAPMessage msg = action.process(reqMsg, session);
+				SOAPUtil.mergeSOAPMsgOfOperation(respMsg, msg);
 				
 				StarsOperation oper = SOAPUtil.parseSOAPMsgForOperation( msg );
 				if (oper.getStarsFailure() != null) {
 					// If one operation failed, then the whole operation failed
 					failedAction = action;
-					
-					StarsOperation respOper = new StarsOperation();
-					respOper.setStarsFailure( oper.getStarsFailure() );
-					return SOAPUtil.buildSOAPMessage( respOper );
+					return respMsg;
 				}
-				
-				SOAPUtil.mergeSOAPMsgOfOperation(respMsg, msg);
 			}
 			
 			return respMsg;

@@ -327,15 +327,16 @@ public class ProgramOptOutAction implements ActionBase {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
-			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
-				return failure.getStatusCode();
-			}
-
 			StarsProgramOptOutResponse resp = operation.getStarsProgramOptOutResponse();
-            if (resp == null)
-            	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+            if (resp == null) {
+				StarsFailure failure = operation.getStarsFailure();
+				if (failure != null) {
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+					return failure.getStatusCode();
+				}
+				else
+					return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+            }
 			
 			if (resp.getDescription() != null)
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );

@@ -657,6 +657,8 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			String optOutNotif = req.getParameter( "OptOutNotif" );
+			if (optOutNotif == null || optOutNotif.trim().length() == 0)
+				optOutNotif = CtiUtilities.STRING_NONE;
 			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, CtiUtilities.STRING_NONE);
 			
 			if (!value.equalsIgnoreCase( optOutNotif )) {

@@ -246,16 +246,17 @@ public class NewCustAccountAction implements ActionBase {
 		try {
 			StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-
-			StarsFailure failure = respOper.getStarsFailure();
-			if (failure != null) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
-				return failure.getStatusCode();
-			}
 			
 			StarsSuccess success = respOper.getStarsSuccess();
-			if (success == null)
-				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			if (success == null) {
+				StarsFailure failure = respOper.getStarsFailure();
+				if (failure != null) {
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+					return failure.getStatusCode();
+				}
+				else
+					return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			}
 			
 			session.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
 			

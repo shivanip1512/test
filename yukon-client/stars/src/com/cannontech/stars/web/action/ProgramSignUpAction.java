@@ -252,10 +252,15 @@ public class ProgramSignUpAction implements ActionBase {
 		try {
 			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
-			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
-				return failure.getStatusCode();
+			StarsProgramSignUpResponse resp = operation.getStarsProgramSignUpResponse();
+			if (resp == null) {
+				StarsFailure failure = operation.getStarsFailure();
+				if (failure != null) {
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+					return failure.getStatusCode();
+				}
+				else
+					return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
@@ -263,7 +268,6 @@ public class ProgramSignUpAction implements ActionBase {
 				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				
-				StarsProgramSignUpResponse resp = operation.getStarsProgramSignUpResponse();
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );
 				
 				if (resp.getStarsLMPrograms() != null)
