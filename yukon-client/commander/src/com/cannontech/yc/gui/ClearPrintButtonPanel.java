@@ -27,7 +27,7 @@ public javax.swing.JButton getClearButton() {
 			ivjClearButton = new javax.swing.JButton();
 			ivjClearButton.setName("ClearButton");
 			ivjClearButton.setToolTipText("Clear the message board text area.");
-			ivjClearButton.setText("Clear");
+			ivjClearButton.setText("Clear All");
 			ivjClearButton.setMaximumSize(new java.awt.Dimension(77, 24));
 			ivjClearButton.setActionCommand("Clear");
 			ivjClearButton.setPreferredSize(new java.awt.Dimension(77, 24));
