@@ -173,11 +173,14 @@ insert into yukonusergroup values(16,-1);
 
 /* Web Client Role */
 insert into yukongrouprole values(2222, 236, -108, -10800, '/user/CILC/user_trending.jsp');
-insert into yukongrouprole values(2223, 236, -108, -10801, 'ALL');
 insert into yukongrouprole values(2224, 236, -108, -10802, '(none)');
 insert into yukongrouprole values(2225, 236, -108, -10803, '(none)');
 insert into yukongrouprole values(2226, 236, -108, -10804, '(none)');
 insert into yukongrouprole values(2227, 236, -108, -10805, '(none)');
+insert into yukongrouprole values(22280, 236, -108, -10806, '(none)');
+insert into yukongrouprole values(22290, 236, -108, -10807, '(none)');
+insert into yukongrouprole values(22300, 236, -108, -10808, '(none)');
+
 
 /* Customer Direct Loadcontrol role */
 insert into yukongrouprole values(2228, 236, -300, -30000, '(none)');
@@ -353,7 +356,7 @@ insert into lmgroup values(27,500.0);
 insert into lmgroup values(28,400.0);
 insert into lmgroup values(29,200.0);
 insert into lmgroup values(30,200.0);
-
+	
 /* deviceid, routeid, utilityaddress, sectionaddress, classaddress, divisionaddress, addressusage,
    relayusage, serialaddress */
 insert into lmgroupversacom values(10,3,30,1,1,1,'USCD','1  ','0');
@@ -784,17 +787,19 @@ insert into yukonpaobject values(140,'LOADMANAGEMENT','LOADMANAGEMENT','Latching
 /* paobjectid, controltype, availableseasons, availableweekdays, maxhoursdaily,
    maxhoursmonthly, maxhoursseasonal, maxhoursannually, minactivatetime, minrestarttime,
    holidaysheduleid, seasonscheduleid */
-insert into lmprogram values(40,'Automatic','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(50,'Automatic','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(60,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(70,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(80,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(90,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(100,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(110,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(120,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(130,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
-insert into lmprogram values(140,'ManualOnly','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0);
+insert into lmprogram values(40,'Automatic',1);
+insert into lmprogram values(50,'Automatic',1);
+insert into lmprogram values(60,'ManualOnly',1);
+insert into lmprogram values(70,'ManualOnly',1);
+insert into lmprogram values(80,'ManualOnly',1);
+insert into lmprogram values(90,'ManualOnly',1);
+insert into lmprogram values(100,'ManualOnly',1);
+insert into lmprogram values(110,'ManualOnly',1);
+insert into lmprogram values(120,'ManualOnly',1);
+insert into lmprogram values(130,'ManualOnly',1);
+insert into lmprogram values(140,'ManualOnly',1);
+
+insert into lmprogramconstraints values(1,'DefaultConstraints','YYYY','YYYYYYYN',0,0,0,0,0,0,0,0,0,0);
 
 /* paobjectid, groupselectionmethod */
 insert into lmprogramdirect values(40);
@@ -923,7 +928,7 @@ insert into contact values(17,'Harry','Polter',13,1);
 insert into contact values(18,'MIke','Tiger',14,1);
 insert into contact values(19,'Joey','Ramone',15,1);
 insert into contact values(20,'Matt','Rumsfield',16,1);
-
+ 
 
 insert into yukongroup values(235, 'lmoperator', 'Custom lm operator group');
 
@@ -940,20 +945,24 @@ insert into yukonusergroup values(20, -1);
 /* adds loadmanagement roles to the web operators */
 
 /* Energy Company Role */
-insert into yukongrouprole values(3111, 235, -2, -1100, 'josh@cannontech.com');
-insert into yukongrouprole values(3112, 235, -2, -1101, 'josh@cannontech.com');
+insert into yukongrouprole values(3111, 235, -2, -1100, 'aaronl@cannontech.com');
+insert into yukongrouprole values(3112, 235, -2, -1101, 'aaronl@cannontech.com');
 insert into yukongrouprole values(3113, 235, -2, -1102, '(none)');
 insert into yukongrouprole values(3114, 235, -2, -1103, '(none)');
 insert into yukongrouprole values(3115, 235, -2, -1104, '(none)');
 insert into yukongrouprole values(3116, 235, -2, -1105, '(none)');
+insert into yukongrouprole values(31160, 235, -2, -1106, '(none)');
+
 
 /* Web Client Role */
 insert into yukongrouprole values(3333, 235, -108, -10800, '/operator/Operations.jsp');
-insert into yukongrouprole values(3334, 235, -108, -10801, 'ALL');
 insert into yukongrouprole values(2235, 235, -108, -10802, '(none)');
 insert into yukongrouprole values(2236, 235, -108, -10803, '(none)');
 insert into yukongrouprole values(2237, 235, -108, -10804, '(none)');
 insert into yukongrouprole values(2238, 235, -108, -10805, '(none)');
+insert into yukongrouprole values(22390, 235, -108, -10806, '(none)');
+insert into yukongrouprole values(2291, 235, -108, -10807, '(none)');
+insert into yukongrouprole values(22392, 235, -108, -10808, '(none)');
 
 /* Operator Direct Loadcontrol Role */
 insert into yukongrouprole values(3339, 235, -203, -20300, '(none)');
