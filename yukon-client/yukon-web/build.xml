@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<project name="yukon web" default="all">
+
+	<property file="../build/build.properties" />
+	
+	<target name="all" depends="clean,build" />
+	
+	<target name="build">
+		<war destfile="${yukon.lib}/yukon-web.war" basedir="."
+			webxml="WEB-INF/web.xml"
+			duplicate="preserve">
+
+			<exclude name="work/**" />
+			<exclude name="WEB-INF/lib/*.properties" />
+			
+			<lib dir="../lib">
+				<include name="**/*.jar" />
+			</lib>
+			
+			<classes dir="WEB-INF/lib">
+				<include name="**/*.properties" />
+			</classes>
+		</war>
+	</target>
+	
+	<target name="clean">
+		<delete file="${yukon.lib}/yukon-web.war" />
+	</target>
+	
+</project>
