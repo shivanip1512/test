@@ -95,6 +95,7 @@ public:
     ostream& operator<<(double n);
     ostream& operator<<(long double n);
     ostream& operator<<(void * n);
+    ostream& operator<<(const string& s);
     ostream& operator<<(const RWTime &r);
 
     char fill(char cfill);
