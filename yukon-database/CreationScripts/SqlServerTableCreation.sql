@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     7/21/2004 1:16:51 PM                         */
+/* Created on:     8/2/2004 9:55:13 AM                          */
 /*==============================================================*/
 
 
@@ -535,6 +535,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DeviceVerification')
+            and   type = 'U')
+   drop table DeviceVerification
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('DeviceWindow')
             and   type = 'U')
    drop table DeviceWindow
@@ -634,6 +642,14 @@ if exists (select 1
            where  id = object_id('DynamicTags')
             and   type = 'U')
    drop table DynamicTags
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicVerification')
+            and   type = 'U')
+   drop table DynamicVerification
 go
 
 
@@ -2835,6 +2851,23 @@ go
 
 
 /*==============================================================*/
+/* Table : DeviceVerification                                   */
+/*==============================================================*/
+create table DeviceVerification (
+ReceiverID           numeric              not null,
+TransmitterID        numeric              not null,
+ResendOnFail         char(1)              not null,
+Disable              char(1)              not null
+)
+go
+
+
+alter table DeviceVerification
+   add constraint PK_DEVICEVERIFICATION primary key  (ReceiverID, TransmitterID)
+go
+
+
+/*==============================================================*/
 /* Table : DeviceWindow                                         */
 /*==============================================================*/
 create table DeviceWindow (
@@ -3130,6 +3163,28 @@ go
 
 alter table DynamicTags
    add constraint PK_DYNAMICTAGS primary key  (InstanceID)
+go
+
+
+/*==============================================================*/
+/* Table : DynamicVerification                                  */
+/*==============================================================*/
+create table DynamicVerification (
+LogID                numeric              not null,
+TimeArrival          datetime             not null,
+ReceiverID           numeric              not null,
+TransmitterID        numeric              not null,
+Command              varchar(256)         not null,
+Code                 varchar(128)         not null,
+CodeSequence         numeric              not null,
+Received             char(1)              not null,
+CodeStatus           varchar(32)          not null
+)
+go
+
+
+alter table DynamicVerification
+   add constraint PK_DYNAMICVERIFICATION primary key  (LogID)
 go
 
 
@@ -6402,16 +6457,16 @@ insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false
 
 
 /* TDC Role */
-insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','<description>');
-insert into YukonRoleProperty values(-10101,-101,'macs_edit','00000CCC','<description>');
+insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
+insert into YukonRoleProperty values(-10101,-101,'macs_edit','00000CCC','The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00)');
 insert into YukonRoleProperty values(-10102,-101,'tdc_express','ludicrous_speed','<description>');
-insert into YukonRoleProperty values(-10103,-101,'tdc_max_rows','500','<description>');
-insert into YukonRoleProperty values(-10104,-101,'tdc_rights','00000000','<description>');
+insert into YukonRoleProperty values(-10103,-101,'tdc_max_rows','500','The number of rows shown before creating a new page of data');
+insert into YukonRoleProperty values(-10104,-101,'tdc_rights','00000000','The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), CONTROL_YUKON_SERVICES(0x00010000), HIDE_ALARM_COLORS(0x80000000)');
 insert into YukonRoleProperty values(-10105,-101,'CAP_CONTROL_INTERFACE','amfm','<description>');
-insert into YukonRoleProperty values(-10106,-101,'cbc_creation_name','CBC %PAOName%','<description>');
-insert into YukonRoleProperty values(-10107,-101,'tdc_alarm_count','3','<description>');
-insert into YukonRoleProperty values(-10108,-101,'decimal_places','2','<description>');
-insert into YukonRoleProperty values(-10109,-101,'pfactor_decimal_places','1','<description>');
+insert into YukonRoleProperty values(-10106,-101,'cbc_creation_name','CBC %PAOName%','What text will be added onto CBC names when they are created');
+insert into YukonRoleProperty values(-10107,-101,'tdc_alarm_count','3','Total number alarms that are displayed in the quick access list');
+insert into YukonRoleProperty values(-10108,-101,'decimal_places','2','How many decimal places to show for real values');
+insert into YukonRoleProperty values(-10109,-101,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
 
 
@@ -6834,6 +6889,7 @@ go
 insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.services.DynamicNotifcationServer', '(none)', '(none)' );
 /* insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' ); */
 /* insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' ); */
+/* insert into YukonServices values( 4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)'); */
 
 alter table YukonServices
    add constraint PK_YUKSER primary key  (ServiceID)
@@ -7240,7 +7296,7 @@ go
 /* View: LMProgram_View                                         */
 /*==============================================================*/
 go
-create view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
+create view LMProgram_View  as
 select u.SeasonScheduleID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID t.DEVICEID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableSeasons, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID t.DEVICEID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableSeasons, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u LMPROGRAM t, LMProgramConstraints u LMPROGRAM t, LMProgramConstraints u
 where u.ConstraintID = t.ConstraintID u.ConstraintID = t.ConstraintID; u.ConstraintID = t.ConstraintID;
@@ -7317,6 +7373,12 @@ go
 alter table AlarmCategory
    add constraint FK_ALRMCAT_NOTIFGRP foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID)
+go
+
+
+alter table DeviceVerification
+   add constraint FK_DevV_Dev1 foreign key (ReceiverID)
+      references DEVICE (DEVICEID)
 go
 
 
@@ -7776,6 +7838,12 @@ alter table DeviceWindow
 go
 
 
+alter table DeviceVerification
+   add constraint FK_DevV_Dev2 foreign key (TransmitterID)
+      references DEVICE (DEVICEID)
+go
+
+
 alter table DeviceAddress
    add constraint FK_Dev_DevDNP foreign key (DeviceID)
       references DEVICE (DEVICEID)
@@ -7845,6 +7913,18 @@ go
 alter table DynamicTags
    add constraint FK_DYN_REF__TAG foreign key (TagID)
       references Tags (TagID)
+go
+
+
+alter table DynamicVerification
+   add constraint FK_DynV_Dev1 foreign key (ReceiverID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DynamicVerification
+   add constraint FK_DynV_Dev2 foreign key (TransmitterID)
+      references DEVICE (DEVICEID)
 go
 
 
