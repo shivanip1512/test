@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/11/05 16:41:58 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/01/15 21:46:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -927,8 +927,9 @@ public:
 } OUTMESS;
 
 
-typedef struct _INMESS
+typedef class CTIINMESS
 {
+public:
 
    LONG        DeviceID;                     // 083199 CGP     // The device id of the transmitter device.
    LONG        TargetID;                     // 022701 CGP     // The device id of the end-of-line device. May be the same as DeviceID depending on protocol
@@ -966,6 +967,14 @@ typedef struct _INMESS
       } DUPSt;
       GWRESPONSESTRUCT GWRSt;
    } Buffer;
+
+public:
+
+    CTIINMESS()
+    {
+       memset(this, 0, sizeof(CTIINMESS));
+    }
+
 } INMESS;
 
 #define PEXEC_DEVID        -1;
