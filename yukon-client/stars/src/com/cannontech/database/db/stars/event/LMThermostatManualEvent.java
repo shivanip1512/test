@@ -87,7 +87,7 @@ public class LMThermostatManualEvent extends DBPersistent {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
-    public static Integer[] getAllLMThermostatManualEventIDs(Integer inventoryID, java.sql.Connection conn) {
+    public static Integer[] getAllLMThermostatManualEventIDs(int inventoryID, java.sql.Connection conn) {
         String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID = ? ORDER BY EventID";
 
         java.sql.PreparedStatement pstmt = null;
@@ -103,7 +103,7 @@ public class LMThermostatManualEvent extends DBPersistent {
             else
             {
                 pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
+                pstmt.setInt( 1, inventoryID );
                 rset = pstmt.executeQuery();
 
                 while (rset.next())
@@ -132,7 +132,7 @@ public class LMThermostatManualEvent extends DBPersistent {
         return eventIDs;
     }
 
-    public static void deleteAllLMThermostatManualEvents(Integer inventoryID, java.sql.Connection conn) {
+    public static void deleteAllLMThermostatManualEvents(int inventoryID, java.sql.Connection conn) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID = ?";
 
         java.sql.PreparedStatement pstmt = null;
@@ -145,7 +145,7 @@ public class LMThermostatManualEvent extends DBPersistent {
             else
             {
                 pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
+                pstmt.setInt( 1, inventoryID );
                 pstmt.execute();
             }
         }
