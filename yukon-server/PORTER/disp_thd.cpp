@@ -1,3 +1,4 @@
+
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
@@ -7,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:36 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 16:38:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,105 +65,122 @@ extern INT RefreshPorterRTDB(void *ptr = NULL);
 
 void DispatchMsgHandlerThread(VOID *Arg)
 {
-   BOOL           bServerClosing = FALSE;
+    BOOL           bServerClosing = FALSE;
 
-   RWTime         TimeNow;
-   RWTime         RefreshTime          = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
-   CtiMessage     *MsgPtr              = NULL;
-   UINT           refreshWhat = 0;
-   CtiDBChangeMsg *pChg = NULL;
+    RWTime         TimeNow;
+    RWTime         RefreshTime          = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
+    CtiMessage     *MsgPtr              = NULL;
+    UINT           changeCnt = 0;
+    CtiDBChangeMsg *pChg = NULL;
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
+    }
 
-   VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
-   VanGoghConnection.WriteConnQue(new CtiRegistrationMsg("Porter MsgHandler", rwThreadId(), FALSE));
+    VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
+    VanGoghConnection.WriteConnQue(new CtiRegistrationMsg("Porter MsgHandler", rwThreadId(), FALSE));
 
-   /* perform the wait loop forever */
-   for( ; !bServerClosing ; )
-   {
-      pChg = NULL;
-      MsgPtr = VanGoghConnection.ReadConnQue(2000L);
+    /* perform the wait loop forever */
+    for( ; !bServerClosing ; )
+    {
+        MsgPtr = VanGoghConnection.ReadConnQue(2000L);
 
-      TimeNow = RWTime();
+        TimeNow = RWTime();
 
-      if(MsgPtr != NULL)
-      {
-         switch(MsgPtr->isA())
-         {
-         case MSG_DBCHANGE:
+        if(MsgPtr != NULL)
+        {
+            switch(MsgPtr->isA())
             {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " Porter has received a DBCHANGE message from Dispatch" << endl;
-               }
+            case MSG_DBCHANGE:
+                {
+                    changeCnt++;
 
-               pChg = (CtiDBChangeMsg *)MsgPtr->replicateMessage();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << TimeNow << " Porter has received a DBCHANGE message from Dispatch." << endl;
+                    }
 
+                    #if 1
 
+                    if(pChg)
+                    {
+                        delete pChg;
+                        pChg = NULL;
 
-               SetEvent(hPorterEvents[P_REFRESH_EVENT]);
-               RefreshTime = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow << "  Pending DBCHANGE message has been preempted." << endl;
+                        }
+                    }
 
+                    if(changeCnt < 1)           // If we have more than one change we must reload all items.
+                    {
+                        pChg = (CtiDBChangeMsg *)MsgPtr->replicateMessage();
+                    }
 
-               break;
+                    RefreshTime = TimeNow + 120;        // We will update two minutes after db changes cease!
+
+                    #else
+                    SetEvent(hPorterEvents[P_REFRESH_EVENT]);
+                    RefreshTime = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
+                    #endif
+
+                    break;
+                }
+            case MSG_COMMAND:
+                {
+                    CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr;
+
+                    switch(Cmd->getOperation())
+                    {
+                    case (CtiCommandMsg::Shutdown):
+                        {
+                            SetEvent(hPorterEvents[P_QUIT_EVENT]);
+                            PorterQuit = TRUE;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Porter received a shutdown message from somewhere" << endl;
+                            break;
+                        }
+                    case (CtiCommandMsg::AreYouThere):
+                        {
+                            VanGoghConnection.WriteConnQue(Cmd->replicateMessage()); // Copy one back
+                            break;
+                        }
+                    default:
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << endl;
+                        }
+                    }
+                    break;
+                }
+
+            default:
+                {
+                    break;
+                }
             }
-         case MSG_COMMAND:
-            {
-               CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr;
 
-               switch(Cmd->getOperation())
-               {
-               case (CtiCommandMsg::Shutdown):
-                  {
-                     SetEvent(hPorterEvents[P_QUIT_EVENT]);
-                     PorterQuit = TRUE;
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << RWTime() << " Porter received a shutdown message from somewhere" << endl;
-                     break;
-                  }
-               case (CtiCommandMsg::AreYouThere):
-                  {
-                     VanGoghConnection.WriteConnQue(Cmd->replicateMessage()); // Copy one back
-                     // CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     // dout << RWTime() << " Porter has been pinged" << endl;
-                     break;
-                  }
-               default:
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << endl;
-                  }
-               }
-               break;
-            }
-
-         default:
-            {
-               break;
-            }
-         }
-
-         delete MsgPtr;
-      }
+            delete MsgPtr;
+        }
 
 
-      if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
-      {
-         bServerClosing = TRUE;
-      }
-      else if(TimeNow > RefreshTime || ( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_REFRESH_EVENT], 0L) ))
-      {
-         // Refresh the porter in memory database once every 5 minutes.
-         ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
-         RefreshPorterRTDB((void*)pChg);
-         RefreshTime = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
-      }
-   } /* End of for */
+        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
+        {
+            bServerClosing = TRUE;
+        }
+        else if(TimeNow > RefreshTime || ( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_REFRESH_EVENT], 0L) ))
+        {
+            // Refresh the porter in memory database once every 5 minutes.
+            ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
+            RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
+            RefreshTime = TimeNow - (TimeNow.seconds() % PorterRefreshRate) + PorterRefreshRate;
 
-   VanGoghConnection.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
-   VanGoghConnection.ShutdownConnection();
+            pChg = NULL;
+        }
+    } /* End of for */
+
+    VanGoghConnection.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.ShutdownConnection();
 }
-
