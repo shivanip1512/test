@@ -58,6 +58,12 @@ function changeNavStyle(t)
 	
 function trendMenuAppear(event, source, divId)
 {
+	coordx = parseInt(source.offsetLeft + source.offsetWidth/5);
+	coordy = parseInt(source.offsetTop + source.offsetHeight + 2);
+	basicMenuAppear(event, source, divId, coordx, coordy);
+}
+function basicMenuAppear(event, source, divId, xpos, ypos)
+{
 	if (currentMenu)
 	{
 		currentMenu.style.visibility = 'hidden';
@@ -75,8 +81,12 @@ function trendMenuAppear(event, source, divId)
 	}*/
 
 	var element = document.getElementById(divId);
-	coordx = parseInt(source.offsetLeft + source.offsetWidth/5);
-	coordy = parseInt(source.offsetTop + source.offsetHeight + 2);
+	if( xpos == null)
+		xpos = parseInt(source.offsetLeft + source.offsetWidth);
+	if( ypos == null)
+		ypos = parseInt(source.offsetTop);
+	coordx = parseInt(xpos);
+	coordy = parseInt(ypos);
 	while (source.offsetParent)
 	{
 		source = source.offsetParent;
@@ -115,6 +125,7 @@ function trendMenuAppear(event, source, divId)
 	}
 }
 
+
 function hardwareMenuAppear(event, source, divId, num)
 {
 	if (currentMenu)
@@ -124,56 +135,10 @@ function hardwareMenuAppear(event, source, divId, num)
 	currentMenu = document.getElementById(divId);
 	
 	if (!initHardwareMenu(currentMenu, num)) return;
-/*	
-	var source;
-	if (window.event)
-	{
-		source = window.event.srcElement;
-	}
-	else
-	{
-		source = event.target;
-	}*/
 	
-	var element = document.getElementById(divId);
 	coordx = parseInt(source.offsetLeft + source.offsetWidth);
 	coordy = parseInt(source.offsetTop + source.offsetHeight - 12);
-	
-	while (source.offsetParent)
-	{
-		source = source.offsetParent;
-		coordx = coordx + parseInt(source.offsetLeft);
-		coordy = coordy + parseInt(source.offsetTop);
-	}
-	
-	element.style.left = coordx + 'px';
-	element.style.top = coordy + 'px';
-	element.style.visibility = 'visible';
-	if (window.event)
-	{
- 		document.attachEvent("onclick", hideMenu);
-	}
-	else
-	{
-		document.addEventListener("click", hideMenu, true);
-    }
-	
-	function hideMenu(event)
-	{
-		var element = document.getElementById(divId);
-		element.style.visibility = 'hidden';
-		if (window.event)
-		{
-			document.detachEvent("onclick", hideMenu);
-			//window.event.cancelBubble = true;
-	    	//window.event.returnValue = false;
-		}
-		else
-		{
-			document.removeEventListener("click",hideMenu, true);
-			//event.preventDefault();
-		}
-	}
+	basicMenuAppear(event, source, divID, coordx, coordy);
 }
 
 function showPage(idx) {
