@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/05/09 16:09:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/07/21 22:14:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ VOID PortPoolDialoutThread(void *pid)
         }
         else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
-            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID);
+            CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {

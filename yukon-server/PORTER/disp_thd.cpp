@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/13 19:35:29 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/07/21 22:14:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "mgr_device.h"
+#include "mgr_port.h"
 #include "dlldefs.h"
 #include "connection.h"
 
@@ -61,9 +62,12 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 CtiConnection  VanGoghConnection;
 
 extern INT RefreshPorterRTDB(void *ptr = NULL);
+extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 
 void DispatchMsgHandlerThread(VOID *Arg)
 {
+    extern CtiPortManager PortManager;
+
     BOOL           bServerClosing = FALSE;
 
     RWTime         TimeNow;
@@ -93,8 +97,12 @@ void DispatchMsgHandlerThread(VOID *Arg)
         if(omc > 10 && nowTime > nextTime)
         {
             nextTime = nowTime.seconds() - (nowTime.seconds() % 300) + 300;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Porter's OM Count = " << omc << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Porter's OM Count = " << omc << endl;
+            }
+
+            PortManager.apply( applyPortQueueReport, NULL );
         }
 
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2003/05/23 22:16:50 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2003/07/21 22:14:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,7 @@ using namespace std;
 #include "utility.h"
 #include "dllyukon.h"
 
+#define DO_GATEWAYTHREAD               1
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
 #define DO_VCONFIGTHREAD               1
@@ -199,6 +200,7 @@ vector< CtiPortShare * > PortShareManager;
 RWThreadFunction _connThread;
 RWThreadFunction _dispThread;
 RWThreadFunction _guiThread;
+RWThreadFunction _gwThread;
 RWThreadFunction _pilThread;
 RWThreadFunction _tsyncThread;
 RWThreadFunction _perfThread;
@@ -375,15 +377,78 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
     }
 }
 
-void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+static char* metric_names[] = {
+    "   WAIT        ",
+    "   RESULT      ",
+    "   QUEUED      ",
+    "   ACTIN       ",
+    "   AWORD       ",
+    "   BWORD       ",
+    "   DTRAN       ",
+    "   RCONT       ",
+    "   RIPPLE      ",
+    "   STAGE       ",
+    "   VERSACOM    ",
+    "   TSYNC       ",
+    "   REMS        ",
+    "   FISHERPIERCE",
+    "   EN/DECODED  ",
+    "   COMMANDCODE "
+};
+
+void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
     /* Report on the state of the queues */
 
     if(!ptPort->isInhibited())
     {
-        ULONG QueEntCnt = 0L;
+        ULONG QueEntCnt = ptPort->queueCount();
         /* Print out the port queue information */
-        QueryQueue (*QueueHandle(ptPort->getPortID()), &QueEntCnt);
+
+        CtiQueueAnalysis_t qa;
+        memset(&qa, 0, sizeof(qa));
+
+        ptPort->applyPortQueue(&qa, applyPortQueueOutMessageReport);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+            dout << RWTime() << " Port " << ptPort->getName() << endl;
+            for(int pri = 1; pri < 16; pri++)
+            {
+                if(qa.priority_count[pri] > 0)
+                {
+                    dout << "  Priority " << setw(3) << pri << " OM Count " << setw(5) << qa.priority_count[pri] << endl;
+                }
+            }
+
+            // Now I need to look for some of the interesting metrics in the system!  These will be the first 16.
+            // 0  #define WAIT            0x0001
+            // 1  #define RESULT          0x0002
+            // 2  #define QUEUED          0x0004
+            // 3  #define ACTIN           0x0008
+            // 4  #define AWORD           0x0010
+            // 5  #define BWORD           0x0020
+            // 6  #define DTRAN           0x0040
+            // 7  #define RCONT           0x0080
+            // 8  #define RIPPLE          0x0100
+            // 09 #define STAGE           0x0200
+            // 10 #define VERSACOM        0x0400
+            // 11 #define TSYNC           0x0800
+            // 12 #define REMS            0x1000   // This can never be used now.... CGP Corey.
+            // 13 #define FISHERPIERCE    0x1000
+            // 14 #define ENCODED         0x4000
+            // 14 #define DECODED         0x4000
+            // 15 #define COMMANDCODE     0x8000
+
+            int pos;
+            for(pos = 0; pos < 16; pos++)
+            {
+                if(qa.metrics[pos])
+                    dout << metric_names[pos] << "           OM Count " << setw(5) << qa.metrics[pos] << endl;
+            }
+        }
+
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -590,7 +655,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _guiThread.start();
     }
 
-    /* Another CTIDBG_new Yukon Thread:
+    if(DO_GATEWAYTHREAD && !gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT").compareTo("true", RWCString::ignoreCase))
+    {
+        _gwThread = rwMakeThreadFunction( PorterGWThread, (void*)NULL );
+        _gwThread.start();
+    }
+
+    /* Another new Yukon Thread:
      * This thread manages connections to iMacs and other RWCollectable message senders
      * This guy is the PIL
      */
@@ -990,6 +1061,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
+    if(_gwThread.isValid())                _gwThread.requestCancellation(200);
     if(_pilThread.isValid())               _pilThread.requestCancellation(200);
     if(_dispThread.isValid())              _dispThread.requestCancellation(200);
     if(_connThread.isValid())              _connThread.requestCancellation(200);
@@ -1113,6 +1185,20 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _dispThread shutdown" << endl;
+        }
+    }
+
+    if(_gwThread.isValid())
+    {
+        if(_gwThread.join(15000) != RW_THR_COMPLETED )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _gwThread did not shutdown" << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " _gwThread shutdown" << endl;
         }
     }
 

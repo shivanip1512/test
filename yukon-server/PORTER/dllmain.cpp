@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/dllmain.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/05/23 22:16:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/07/21 22:14:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,8 @@ CtiSyncDefStruct PorterSyncs[] = {
    { CtiEventType, TRUE , FALSE, "CtiScannerPostEvent"},
    { CtiEventType, TRUE , FALSE, "CtiPerformEvent"},
    { CtiEventType, TRUE , FALSE, "CtiPorterQuitEvent"},
-   { CtiEventType, TRUE , FALSE, "CtiRefreshEvent"}
+   { CtiEventType, TRUE , FALSE, "CtiRefreshEvent"},
+   { CtiEventType, TRUE , FALSE, "CtiGWResultEvent"}
 };
 
 VOID APIENTRY GlobalsCleanUp ()
