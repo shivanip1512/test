@@ -1255,10 +1255,10 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( RWCString& capacitor_id_
                                             dout << RWTime() << " - " << text << ", " << additional << endl;
                                         }
                                     }
-                                    currentCapBank->setOperationalState(cap_fs==tempFixedOperationalStateString?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
+                                    currentCapBank->setOperationalState(!cap_fs.compareTo(tempFixedOperationalStateString,RWCString::ignoreCase)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
                                     updateCapBankFlag = true;
                                 }
-                                if( (bool)currentCapBank->getDisableFlag() != (cap_disable_flag == m3iAMFMDisabledString) )
+                                if( (bool)currentCapBank->getDisableFlag() != (!cap_disable_flag.compareTo(m3iAMFMDisabledString,RWCString::ignoreCase)) )
                                 {
                                     {
                                         char tempchar[64] = "";
@@ -1279,7 +1279,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( RWCString& capacitor_id_
                                             dout << RWTime() << " - " << text << ", " << additional << endl;
                                         }
                                     }
-                                    currentCapBank->setDisableFlag(cap_disable_flag == m3iAMFMDisabledString);
+                                    currentCapBank->setDisableFlag(!cap_disable_flag.compareTo(m3iAMFMDisabledString,RWCString::ignoreCase));
                                     updateCapBankFlag = true;
                                 }
                                 if( !currentCapBank->getControllerType().compareTo(translateCBCModelToControllerType(cbc_model), RWCString::ignoreCase) )
@@ -1573,9 +1573,9 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(LONG feederid, LONG capid, 
                             if( currentCapBank->getMapLocationId() == capid )
                             {
                                 enableddisabled.toUpper();
-                                if( (bool)currentCapBank->getDisableFlag() != (enableddisabled == m3iAMFMDisabledString) )
+                                if( (bool)currentCapBank->getDisableFlag() != (!enableddisabled.compareTo(m3iAMFMDisabledString,RWCString::ignoreCase)) )
                                 {
-                                    currentCapBank->setDisableFlag(enableddisabled == m3iAMFMDisabledString);
+                                    currentCapBank->setDisableFlag(!enableddisabled.compareTo(m3iAMFMDisabledString,RWCString::ignoreCase));
                                     UpdateCapBankDisableFlagInDB(currentCapBank);
                                     currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                                     {
@@ -1636,9 +1636,9 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(LONG feederid, RWCString
                     if( currentFeeder->getMapLocationId() == feederid )
                     {
                         enableddisabled.toUpper();
-                        if( (bool)currentFeeder->getDisableFlag() != (enableddisabled == m3iAMFMDisabledString) )
+                        if( (bool)currentFeeder->getDisableFlag() != (!enableddisabled.compareTo(m3iAMFMDisabledString,RWCString::ignoreCase)) )
                         {
-                            currentFeeder->setDisableFlag(enableddisabled == m3iAMFMDisabledString);
+                            currentFeeder->setDisableFlag(!enableddisabled.compareTo(m3iAMFMDisabledString,RWCString::ignoreCase));
                             UpdateFeederDisableFlagInDB(currentFeeder);
                             currentCCSubstationBus->setBusUpdatedFlag(TRUE);
                             {
@@ -1772,7 +1772,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    if( amfm_interface == m3iAMFMInterfaceString )
+    if( !amfm_interface.compareTo(m3iAMFMInterfaceString,RWCString::ignoreCase) )
     {
         int refreshrate = 3600;
         RWCString dbDll = "none";
@@ -2228,9 +2228,12 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 
             RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
 
-            for(int k=0;k<ccCapBanks.entries();k++)
+            //**********************************************************************
+            //The operation count on a cap bank is actually a total not a daily, doh
+            //**********************************************************************
+            /*for(int k=0;k<ccCapBanks.entries();k++)
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];*/
                 /*{
                     char tempchar[64] = "";
                     RWCString text = RWCString("Daily Operations were ");
@@ -2240,8 +2243,11 @@ void CtiCCSubstationBusStore::resetDailyOperations()
                     additional += currentCapBank->getPAOName();
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
                 }*/
-                currentCapBank->setCurrentDailyOperations(0);
-            }
+                /*currentCapBank->setCurrentDailyOperations(0);
+            }*/
+            //**********************************************************************
+            //The operation count on a cap bank is actually a total not a daily, doh
+            //**********************************************************************
         }
     }
 }
