@@ -869,28 +869,16 @@ INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
     {
         status = Inherited::connectToDevice(Device,trace);
     }
-<<<<<<< port_direct.cpp
-    return status;
-=======
 
     return status;
->>>>>>> 1.16
 }
 
 INT  CtiPortDirect::disconnect(CtiDevice *Device, INT trace)
 {
-<<<<<<< port_direct.cpp
-    INT status = NORMAL;
-
-    status = Inherited::disconnect(Device,trace);
-    if(!status && _dialable)
-=======
     int status = NORMAL;
 
     status = Inherited::disconnect(Device,trace);
-
-    if(_dialable)
->>>>>>> 1.16
+    if(!status && _dialable)
     {
         status = close(trace);                           // Release the port handle
     }
