@@ -192,7 +192,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		else if( event.getSource() == getYCFileMenu().saveMenuItem )
 			save(getDebugOutputTextPane());
 	
-		else if( event.getSource() == getYCViewMenu().findMenuItem )
+		else if( event.getSource() == getYCViewMenu().searchMenuItem)
 		{
 			String value = javax.swing.JOptionPane.showInputDialog(
 				this, "Name of the item: ", "Find",
