@@ -1,5 +1,7 @@
 package com.cannontech.graph.menu;
 
+import com.cannontech.graph.model.TrendModelType;
+
 /**
  * This type was created in VisualAge.
  */
@@ -21,6 +23,34 @@ public class ViewMenu extends javax.swing.JMenu {
 public ViewMenu() {
 	super();
 	initialize();
+}
+/**
+ * YukonCommanderFileMenu constructor comment.
+ */
+public ViewMenu(int viewType) {
+	super();
+	initialize();
+	setSelectedView(viewType);
+}
+
+/**
+ * @param viewType
+ */
+private void setSelectedView(int viewType)
+{
+	if( viewType == TrendModelType.LINE_VIEW)
+		getLineGraphRadioButtonItem().setSelected(true);
+	else if( viewType == TrendModelType.STEP_VIEW)
+		getStepGraphRadioButtonItem().setSelected(true);
+	else if( viewType == TrendModelType.SHAPES_LINE_VIEW)
+		getShapeLineGraphRadioButtonItem().setSelected(true);
+	else if( viewType == TrendModelType.BAR_VIEW)
+		getBarGraphRadioButtonItem().setSelected(true);
+	else if( viewType == TrendModelType.BAR_3D_VIEW)
+		getBarGraph3DRadioButtonItem().setSelected(true);
+	else	//DEFAULT
+		getLineGraphRadioButtonItem().setSelected(true);
+
 }
 /**
  * Return the BarGraph3DRadioButtonItem property value.
