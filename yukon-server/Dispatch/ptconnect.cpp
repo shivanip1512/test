@@ -57,7 +57,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
             {
                ConnMgrMsg->PointData().insert(pData);
 
-               (ConnectionManagerCollection[i])->WriteConnQue(ConnMgrMsg); // Default priority of 7 is used here!
+               (ConnectionManagerCollection[i])->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << RWTime() << " Posting point " << ChgMsg.getId() << " to local connection " << (ConnectionManagerCollection[i])->getClientName() << endl;
