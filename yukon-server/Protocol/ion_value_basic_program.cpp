@@ -17,12 +17,16 @@
 #include "logger.h"
 
 
+CtiIONProgram::CtiIONProgram( ) :
+    CtiIONValue(IONProgram)
+{
+}
+
 CtiIONProgram::CtiIONProgram( CtiIONStatement *initial ) :
     CtiIONValue(IONProgram)
 {
     addStatement( initial );
 }
-
 
 CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValue(IONProgram)
@@ -45,6 +49,8 @@ CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLen
         //  make sure we read the method out okay
         if( tmpMethod != NULL && tmpMethod->isValid( ) )
         {
+            setValid(true);
+
             streamPos += tmpMethod->getSerializedValueLength( );
 
             tmpStatement = CTIDBG_new CtiIONStatement( handle, tmpMethod );
@@ -55,9 +61,10 @@ CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLen
         }
         else
         {
+            setValid(false);
+
             //  read an invalid CtiIONMethod - rest of stream is likely corrupt.
             streamPos = streamLength;
-            setValid( FALSE );
         }
     }
 }
@@ -65,6 +72,7 @@ CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLen
 
 CtiIONProgram::~CtiIONProgram( )
 {
+    clearAndDestroy();
 }
 
 
@@ -75,12 +83,27 @@ CtiIONProgram &CtiIONProgram::addStatement( CtiIONStatement *toAdd )
 }
 
 
+CtiIONProgram &CtiIONProgram::clearAndDestroy( void )
+{
+    while( !_statements.empty() )
+    {
+        delete _statements.back();
+
+        _statements.pop_back();
+    }
+
+    return *this;
+}
+
+
 unsigned int CtiIONProgram::getSerializedValueLength( void ) const
 {
     unsigned int length = 0;
 
     for( int i = 0; i < _statements.size( ); i++ )
+    {
         length += _statements[i]->getSerializedValueLength( );
+    }
 
     return length;
 }

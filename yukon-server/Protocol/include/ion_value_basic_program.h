@@ -22,12 +22,14 @@ class IM_EX_PROT CtiIONProgram : public CtiIONValue
 {
 public:
 
+    CtiIONProgram( );
     CtiIONProgram( CtiIONStatement *initial );
     CtiIONProgram( unsigned char *byteStream, unsigned long streamLength );
 
     ~CtiIONProgram( );
 
     CtiIONProgram &addStatement( CtiIONStatement *toAdd );
+    CtiIONProgram &clearAndDestroy( void );
 
     unsigned int getSerializedValueLength( void ) const;
     void putSerializedValue( unsigned char *buf ) const;
