@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/05 19:37:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/06/12 15:26:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,25 @@ int main(int argc, char* argv[] )
    BOOL bConsole;
    LPTSTR szName = "Dispatch";
    LPTSTR szDisplay = "Yukon Dispatch Service";
+
+   HANDLE hExclusion = INVALID_HANDLE_VALUE;
+
+   if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, szName)) != NULL )
+   {
+       // Oh no, dispatch is running on this machine already.
+       CloseHandle(hExclusion);
+       cout << "Dispatch is already running!!!" << endl;
+       Sleep(15000);
+       return(-1);
+   }
+
+   hExclusion = CreateEvent(NULL, TRUE, FALSE, szName);
+
+   if( hExclusion == (HANDLE)NULL )
+   {
+       cout << "Couldn't create " << szName << " Event Object" << endl;
+       return(-1);
+   }
 
    InitDispatchGlobals();
 
@@ -99,6 +118,9 @@ int main(int argc, char* argv[] )
 
    dout.interrupt(CtiThread::SHUTDOWN);
    dout.join();
+
+   if(hExclusion != INVALID_HANDLE_VALUE) CloseHandle(hExclusion);
+
 
    return 0;
 }
