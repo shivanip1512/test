@@ -666,9 +666,6 @@ update YukonGroupRole set grouproleid=grouproleid * -1 where grouproleid > 0;
 update YukonUserRole set userroleid=userroleid * -1 where userroleid > 0;
 
 
-update YukonUser set username = 'admin', password = 'admin' where userid = -1;
-update YukonUser set username = 'yukon', password = 'yukon' where userid = -2;
-
 insert into YukonGroup values(-2,'System Administrator Grp','A set of roles that allow administrative access to the system.');
 insert into YukonUserGroup values(-2,-2);
 insert into YukonUserGroup values(-2,-1);
@@ -1351,9 +1348,9 @@ alter table DeviceLoadProfile modify VoltageDmdRate not null;
 update yukonpaobject set type = 'MCT-410iLE' where type = 'MCT-410 kWh Only';
 
 
-alter table CTIDatabse add Build number;
-update CTIDatabse set Build = 0;
-alter table CTIDatabse modify Build not null;
+alter table CTIDatabase add Build number;
+update CTIDatabase set Build = 0;
+alter table CTIDatabase modify Build not null;
 
 
 
