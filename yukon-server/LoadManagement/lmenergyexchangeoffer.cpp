@@ -201,7 +201,7 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
                 selector.orderByDescending(lmEnergyExchangeProgramOfferTable["offerid"]);
 
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
@@ -234,10 +234,11 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
                 << getRunStatus()
                 << getOfferDate();
 
-                /*{
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << inserter.asString().data() << endl;
-                }*/
+                }
 
                 inserter.execute( conn );
             }
@@ -271,10 +272,11 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
             updater.where(lmEnergyExchangeProgramOfferTable["deviceid"]==getPAOId() &&//will be paobjectid
                           lmEnergyExchangeProgramOfferTable["offerid"]==getOfferId());
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
 
@@ -287,7 +289,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 
                 selector.orderByDescending(lmEnergyExchangeProgramOfferTable["offerid"]);
 
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << selector.asString().data() << endl;
@@ -318,10 +320,11 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
                 << getRunStatus()
                 << getOfferDate();
 
-                /*{
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << inserter.asString().data() << endl;
-                }*/
+                }
 
                 inserter.execute( conn );
             }

@@ -1725,6 +1725,12 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
 
         updater << yukonPAObjectTable["disableflag"].assign( RWCString((controlArea->getDisableFlag()?'Y':'N')) );
 
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << updater.asString().data() << endl;
+        }
+
         updater.execute( conn );
 
         CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
@@ -1758,6 +1764,12 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBase* progr
 
         updater << yukonPAObjectTable["disableflag"].assign( RWCString((program->getDisableFlag()?'Y':'N')) );
 
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << updater.asString().data() << endl;
+        }
+
         updater.execute( conn );
 
         CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
@@ -1790,6 +1802,12 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupBase* group)
         updater.where( yukonPAObjectTable["paobjectid"] == group->getPAOId() );
 
         updater << yukonPAObjectTable["disableflag"].assign( RWCString((group->getDisableFlag()?'Y':'N')) );
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << updater.asString().data() << endl;
+        }
 
         updater.execute( conn );
 
@@ -1825,6 +1843,12 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 
         updater.where( lmControlAreaTriggerTable["deviceid"] == trigger->getPAOId() &&
                        lmControlAreaTriggerTable["triggernumber"] == trigger->getTriggerNumber() );
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << updater.asString().data() << endl;
+        }
 
         updater.execute( conn );
 

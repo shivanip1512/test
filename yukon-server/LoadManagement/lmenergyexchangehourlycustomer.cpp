@@ -285,7 +285,6 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted customer activity into LMEnergyExchangeHourlyCustomer, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revisionnumber: " << getRevisionNumber() << endl;
@@ -302,10 +301,11 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
             << getHour()
             << getAmountCommitted();
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
         }
@@ -343,10 +343,11 @@ void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTabl
                           lmEnergyExchangeHourlyCustomerTable["revisionnumber"]==getRevisionNumber() &&
                           lmEnergyExchangeHourlyCustomerTable["hour"]==getHour());
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
         }

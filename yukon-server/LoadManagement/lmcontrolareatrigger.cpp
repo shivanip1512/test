@@ -786,10 +786,11 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
             updater.where( dynamicLMControlAreaTriggerTable["deviceid"]==getPAOId() &&//will be paobjectid
                            dynamicLMControlAreaTriggerTable["triggernumber"]==getTriggerNumber() );
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
         }
@@ -809,10 +810,11 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
             << getPeakPointValue()
             << getLastPeakPointValueTimestamp();
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
 

@@ -783,10 +783,11 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
                 << getRunStatus()
                 << getAdditionalInfo();
 
-                /*{
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << inserter.asString().data() << endl;
-                }*/
+                }
 
                 inserter.execute( conn );
             }
@@ -821,10 +822,11 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
             updater.where(lmCurtailProgramActivityTable["deviceid"]==getPAOId() &&//will be paobjectid
                           lmCurtailProgramActivityTable["curtailreferenceid"]==getCurtailReferenceId());
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
 
@@ -872,10 +874,11 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
                 << getRunStatus()
                 << getAdditionalInfo();
 
-                /*{
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << inserter.asString().data() << endl;
-                }*/
+                }
 
                 inserter.execute( conn );
             }

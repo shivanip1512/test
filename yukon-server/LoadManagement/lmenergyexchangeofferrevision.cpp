@@ -404,7 +404,6 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
@@ -422,10 +421,11 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
             << getOfferExpirationDateTime()
             << getAdditionalInfo();
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
         }
@@ -464,10 +464,11 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
             updater.where(lmEnergyExchangeOfferRevisionTable["offerid"]==getOfferId() &&
                           lmEnergyExchangeOfferRevisionTable["revisionnumber"]==getRevisionNumber());
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
         }

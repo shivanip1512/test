@@ -420,7 +420,6 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;
@@ -441,10 +440,11 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
             << getNameOfAcceptPerson()
             << getEnergyExchangeNotes();
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
         }
@@ -486,10 +486,11 @@ void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable(
                           lmEnergyExchangeCustomerReplyTable["offerid"]==getOfferId() &&
                           lmEnergyExchangeCustomerReplyTable["revisionnumber"]==getRevisionNumber());
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
         }

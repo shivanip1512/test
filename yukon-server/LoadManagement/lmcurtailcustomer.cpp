@@ -265,7 +265,6 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 
         if( conn.isValid() )
         {
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted customer activity area into LMCurtailCustomerActivity: " << getCompanyName() << endl;
@@ -287,10 +286,11 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
                      << getCustomerDemandLevel()
                      << RWCString( ( getAckLateFlag() ? 'Y': 'N' ) );
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
         }
@@ -328,10 +328,11 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
             updater.where(lmCurtailCustomerActivityTable["customerid"]==getCustomerId() &&
                           lmCurtailCustomerActivityTable["curtailreferenceid"]==getCurtailReferenceId());
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
         }

@@ -1011,10 +1011,11 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
 
                 updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
 
-                /*{
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << updater.asString().data() << endl;
-                }*/
+                }
                 updater.execute( conn );
             }
             else
@@ -1034,10 +1035,11 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
                 << RWCString( ( getManualControlReceivedFlag() ? 'Y': 'N' ) )
                 << currentDateTime;
 
-                /*{
+                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+                {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << inserter.asString().data() << endl;
-                }*/
+                }
 
                 inserter.execute( conn );
 
