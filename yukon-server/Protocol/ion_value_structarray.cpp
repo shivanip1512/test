@@ -111,8 +111,8 @@ unsigned char CtiIONStructArray::getStructArrayClassDescriptor( void ) const
 
     switch( getStructArrayType() )
     {
-        case StructArray_AlarmArray:    retVal = ClassDescriptor_StructArray_Alarm;         break;
-        case StructArray_LogArray:      retVal = ClassDescriptor_StructArray_LogRecord;     break;
+        case StructArrayType_AlarmArray:    retVal = ClassDescriptor_StructArray_Alarm;         break;
+        case StructArrayType_LogArray:      retVal = ClassDescriptor_StructArray_LogRecord;     break;
 
         default:
         {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/03/13 19:35:47 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/06/02 14:55:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,8 +97,8 @@ public:
 
     enum StructArrayTypes
     {
-        StructArray_LogArray,
-        StructArray_AlarmArray,
+        StructArrayType_LogArray,
+        StructArrayType_AlarmArray,
 //        StructArray_MultiArray  //  eh?  no clear definition in the spec
     };
 };
@@ -122,8 +122,8 @@ private:
 
         bool retVal = true;
 
-        if(      Struct::isStructType(&element, Struct::StructType_Alarm) )         setStructArrayType(StructArray_AlarmArray);
-        else if( Struct::isStructType(&element, Struct::StructType_LogRecord) )     setStructArrayType(StructArray_LogArray);
+        if(      Struct::isStructType(&element, Struct::StructType_Alarm) )         setStructArrayType(StructArrayType_AlarmArray);
+        else if( Struct::isStructType(&element, Struct::StructType_LogRecord) )     setStructArrayType(StructArrayType_LogArray);
         else
         {
             {
