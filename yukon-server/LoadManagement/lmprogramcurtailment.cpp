@@ -598,13 +598,13 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
             }
             currentCustomer->addLMCurtailCustomerActivityTable();
 
-            CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
+            CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
             emailMsg->setSubject(getHeading());
 
             RWCString emailBody = getMessageHeader();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Facility:  ";
-            emailBody += currentCustomer->getPAOName();
+            emailBody += currentCustomer->getCompanyName();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Start:  ";
             emailBody += getCurtailmentStartTime().rwtime().asString();
@@ -658,7 +658,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
             CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
             currentCustomer->dumpDynamicData();
 
-            CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getPAOId(),CtiEmailMsg::CICustomerEmailType);
+            CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
             emailMsg->setSubject(getHeading());
 
             RWCString emailBody;
@@ -680,7 +680,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
             emailBody += getMessageHeader();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Facility:  ";
-            emailBody += currentCustomer->getPAOName();
+            emailBody += currentCustomer->getCompanyName();
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Scheduled Start:  ";
             emailBody += getCurtailmentStartTime().rwtime().asString();
@@ -1086,13 +1086,6 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
     rdr["acktimelimit"] >> _acktimelimit;
     rdr["canceledmsg"] >> _canceledmsg;
     rdr["stoppedearlymsg"] >> _stoppedearlymsg;
-    /*setMinNotifyTime(0);
-    setHeading("Null");
-    setMessageHeader("Null");
-    setMessageFooter("Null");
-    setAckTimeLimit(0);
-    setCanceledMsg("Null");
-    setStoppedEarlyMsg("Null");*/
     setCurtailReferenceId(0);
     setActionDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
     setNotificationDateTime(RWDBDateTime(1990,1,1,0,0,0,0));
@@ -1101,23 +1094,6 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
     setRunStatus(CtiLMProgramCurtailment::NullRunStatus);
     setAdditionalInfo("null");
 }
-
-/*---------------------------------------------------------------------------
-    restoreDirectSpecificDatabaseEntries
-
-    Restores the database entries for a curtailment program that are not
-    contained in the base table.
----------------------------------------------------------------------------*/
-/*void CtiLMProgramCurtailment::restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr)
-{
-    rdr["minnotifytime"] >> _minnotifytime;
-    rdr["heading"] >> _heading;
-    rdr["messageheader"] >> _messageheader;
-    rdr["messagefooter"] >> _messagefooter;
-    rdr["acktimelimit"] >> _acktimelimit;
-    rdr["canceledmsg"] >> _canceledmsg;
-    rdr["stoppedearlymsg"] >> _stoppedearlymsg;
-}*/
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
