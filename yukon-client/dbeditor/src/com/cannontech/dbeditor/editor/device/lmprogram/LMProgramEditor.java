@@ -89,12 +89,12 @@ public Object[] createNewPanel(int panelIndex)
 			
 		case 6:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectNotificationPanel();
-			objs[1] = "Notification";
+			objs[1] = "Message";
 			break;
 			
 		case 7:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectCustomerListPanel();
-			objs[1] = "Direct Customers";
+			objs[1] = "Notification";
 			break;
 			
 		case 8:
