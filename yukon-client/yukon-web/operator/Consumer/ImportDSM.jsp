@@ -1,10 +1,25 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%
+	Properties savedReq = null;
+	if (request.getParameter("Done") != null)
+		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	else
+		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	if (savedReq == null) savedReq = new Properties();
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<script language="JavaScript">
+function generateConfigFiles(form) {
+	form.action.value = "GenerateConfigFiles";
+	form.REDIRECT.value = form.REFERRER.value;
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -28,55 +43,50 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = "IMPORT ACCOUNT DATA"; %>
+              <% String header = "IMPORT DSM DATABASE"; %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
-			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="ImportCustAccounts">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
-                <table width="600" border="0" cellspacing="0" cellpadding="0">
+              <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
+                <input type="hidden" name="action" value="ImportDSM">
+                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportDSM.jsp?Done">
+                <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Consumer/ImportDSM.jsp">
+                <table width="500" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
-                    <td class="MainText" align="center">Select or enter the import 
-                      file(s). Only the &quot;Customer File&quot; is required. 
-                      You can leave other fields empty if they don't apply. Don't 
-                      check the &quot;Pre-scan...&quot; box unless you are instructed 
-                      to do so.</td>
+                    <td class="MainText"> 
+                      <ol>
+                        <li>Enter the directory for the DSM data files.</li>
+                        <li>Click the &quot;Generate Config Files&quot; button 
+                          to generate configuration files &quot;_route.map&quot; 
+                          and &quot;_receivertype.map&quot;. Follow the instructions 
+                          in these files to complete them.</li>
+                        <li>Click the &quot;Submit&quot; button to start the conversion 
+                          program.</li>
+                      </ol>
+                    </td>
                   </tr>
                 </table>
                 <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
-                    <td width="150" align="right">Customer File: </td>
-                    <td width="250"> 
-                      <input type="file" name="CustFile" size="35">
+                    <td width="150"> 
+                      <div align="right">DSM Data Directory: </div>
                     </td>
-                  </tr>
-                  <tr> 
-                    <td width="150" align="right">Hardware File: </td>
                     <td width="250"> 
-                      <input type="file" name="HwFile" size="35">
-                    </td>
-                  </tr>
-                  <tr align="center"> 
-                    <td colspan="2" class="MainText"> 
-                      <input type="checkbox" name="PreScan" value="true">
-                      Pre-scan the import file(s) to check for potential problems.</td>
-                  </tr>
-                  <tr align="center"> 
-                    <td colspan="2" class="MainText">Email (to receive log file): 
-                      <input type="text" name="Email" size="35">
+                      <input type="text" name="ImportDir" size="35" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("ImportDir")) %>">
                     </td>
                   </tr>
                 </table>
+                <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="5">
                   <tr> 
                     <td align="center"> 
-                      <input type="submit" name="Submit" value="Submit">
+                      <input type="button" name="Submit" value="Generate Config Files" onClick="generateConfigFiles(this.form)">
+                      <input type="submit" name="Submit2" value="Submit">
                     </td>
                   </tr>
                 </table>
-              </form>
+			  </form>
             </div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>

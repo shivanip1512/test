@@ -84,9 +84,19 @@ function confirmDelete() {
 	String importID = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT);
 	if (importID.equals("(none)")) importID = null;
 	if (importID != null) {
+		String importURI = "ImportAccount.jsp";
+		String importLabel = "Import Account";
+		if (importID.equalsIgnoreCase("STARS")) {
+			importURI = "ImportSTARS.jsp";
+			importLabel = "Import STARS";
+		}
+		else if (importID.equalsIgnoreCase("DSM")) {
+			importURI = "ImportDSM.jsp";
+			importLabel = "Import DSM";
+		}
 %>
             <div align = "center" style = "border:solid 1px #666999;">
-			  <a href="Consumer/ImportAccount.jsp" class = "Link1" style = "text-decoration:none;">Import Accounts</a>
+			  <a href="Consumer/<%= importURI %>" class = "Link1" style = "text-decoration:none;"><%= importLabel %></a>
 			</div>
 <%
 	}

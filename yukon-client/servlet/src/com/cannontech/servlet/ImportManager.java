@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -39,6 +40,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.ImportCustAccountsTask;
+import com.cannontech.stars.util.task.ImportDSMDataTask;
 import com.cannontech.stars.util.task.ImportStarsDataTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -419,6 +421,10 @@ public class ImportManager extends HttpServlet {
 			assignSelectionList( user, req, session );
 		else if (action.equalsIgnoreCase("ImportStarsData"))
 			importStarsData( user, req, session );
+		else if (action.equalsIgnoreCase("GenerateConfigFiles"))
+			generateConfigFiles( user, req, session );
+		else if (action.equalsIgnoreCase("ImportDSM"))
+			importDSMData( user, req, session );
         
 		resp.sendRedirect( redirect );
 	}
@@ -462,6 +468,57 @@ public class ImportManager extends HttpServlet {
 			
 			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 			session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
+			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+		}
+		catch (WebClientException e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			redirect = referer;
+		}
+	}
+	
+	private void generateConfigFiles(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		try {
+			File importDir = new File( req.getParameter("ImportDir") );
+			if (importDir.isFile())
+				importDir = importDir.getParentFile();
+			
+			if (!importDir.exists())
+				throw new WebClientException("The specified directory doesn't exist");
+			
+			Properties savedReq = new Properties();
+			savedReq.put("ImportDir", importDir.getAbsolutePath());
+			session.setAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST, savedReq);
+			
+			ImportDSMDataTask.generateConfigFiles( importDir );
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration files have been generated. Please follow the instructions in the files to complete them before converting the database.");
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			if (e instanceof WebClientException)
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			else
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to generate the configuration files");
+			redirect = referer;
+		}
+	}
+	
+	private void importDSMData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			File importDir = new File( req.getParameter("ImportDir") );
+			if (importDir.isFile())
+				importDir = importDir.getParentFile();
+			
+			if (!importDir.exists())
+				throw new WebClientException("The specified directory doesn't exist");
+			
+			ImportDSMDataTask task = new ImportDSMDataTask( energyCompany, importDir );
+			long id = ProgressChecker.addTask( task );
+			
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 		}
 		catch (WebClientException e) {
@@ -2497,30 +2554,8 @@ public class ImportManager extends HttpServlet {
 			}
 		}
 		
-		TimeConsumingTask task = new ImportStarsDataTask(user, preprocessedData);
+		ImportStarsDataTask task = new ImportStarsDataTask(user, preprocessedData);
 		long id = ProgressChecker.addTask( task );
-		
-		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
-		for (int i = 0; i < 5; i++) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {}
-			
-			task = ProgressChecker.getTask(id);
-			
-			if (task.getStatus() == ImportStarsDataTask.STATUS_FINISHED) {
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
-				ProgressChecker.removeTask( id );
-				return;
-			}
-			
-			if (task.getStatus() == ImportStarsDataTask.STATUS_ERROR) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
-				ProgressChecker.removeTask( id );
-				return;
-			}
-		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);

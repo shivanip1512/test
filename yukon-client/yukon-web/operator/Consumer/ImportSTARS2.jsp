@@ -52,7 +52,7 @@
 			
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
 			  <input type="hidden" name="action" value="ImportStarsData">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount.jsp">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportSTARS.jsp">
               <table width="300" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
 <%
 	for (int i = 0; i < ImportManagerUtil.LIST_NAMES.length; i++) {
@@ -86,7 +86,7 @@
 					<% if (hasUnassigned) { %>onclick="return confirm('There are still unassigned lists, are you sure you want to continue?')"<% } %>>
                   </td>
                   <td width="50%"> 
-                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='ImportAccount.jsp'">
+                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='ImportSTARS.jsp'">
                   </td>
                 </tr>
               </table>
