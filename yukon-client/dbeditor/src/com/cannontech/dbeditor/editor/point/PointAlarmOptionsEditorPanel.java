@@ -814,7 +814,7 @@ public void newContactButton_ActionPerformed(java.awt.event.ActionEvent actionEv
 	QuickContactPanel contactPanel = new QuickContactPanel();	
 	int userResponse =
 		javax.swing.JOptionPane.showInternalOptionDialog(
-			CtiUtilities.getParentFrame(this),
+			CtiUtilities.getDesktopPane(this),
 			contactPanel,
 			"Create New Contact",
 			javax.swing.JOptionPane.OK_CANCEL_OPTION,
