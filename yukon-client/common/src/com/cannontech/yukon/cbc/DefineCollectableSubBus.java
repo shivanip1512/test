@@ -29,7 +29,7 @@ public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.I
  * getCxxClassId method comment.
  */
 public int getCxxClassId() {
-	return this.CTI_CCSUBSTATIONBUS_ID;
+	return CTI_CCSUBSTATIONBUS_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -122,6 +122,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setWaiveControlFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
+	subBus.setAdditionalFlags( (String) vstr.restoreObject( SimpleMappings.CString ) );
 
 
 	subBus.setCcFeeders( (java.util.Vector)vstr.restoreObject(polystr) );
@@ -204,6 +205,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 		(subBus.getWaiveControlFlag().booleanValue() == true)
 		? 1 : 0 );
+	vstr.saveObject( subBus.getAdditionalFlags(), SimpleMappings.CString );
    
 	vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
 }

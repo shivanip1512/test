@@ -31,14 +31,11 @@ public class SubBus extends StreamableCapObject
 	private Integer minRepsonseTime = null;
 	private Integer minConfirmPercent = null;
 	private Integer failurePercent = null;
-
 	private String daysOfWeek = null;
 	private Integer mapLocationID = null;
 	private Integer decimalPlaces = null;
-   
-   private Double lowerBandWidth = null;
-   private String controlUnits = null;
-   
+	private Double lowerBandWidth = null;
+	private String controlUnits = null;
 	private java.util.Date nextCheckTime = null;
 	private Boolean newPointDataReceivedFlag = null;
 	private Boolean busUpdateFlag = null;
@@ -56,16 +53,15 @@ public class SubBus extends StreamableCapObject
 	private Double varValueBeforeControl = null;
 	private Integer lastFeederControlledPAOID = null;
 	private Integer lastFeederControlledPosition = null;
-
-   private Double powerFactorValue = null;
-   private Double kVarSolution = null;
-   private Double estimatedPFValue = null;
-
-   private Integer currentVarPtQuality = null;
-
+	
+	private Double powerFactorValue = null;
+	private Double kVarSolution = null;
+	private Double estimatedPFValue = null;
+	private Integer currentVarPtQuality = null;
 	private Integer controlDelayTime = null;
 	private Integer controlSendRetries = null;
 	private Boolean waiveControlFlag = null;
+	private String additionalFlags = null;
 
 
 	//should only contain objects of type Feeder
@@ -1155,4 +1151,20 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 			return new ModifiedDate( subBus.getLastCurrentVarPointUpdateTime().getTime(), ModifiedDate.FRMT_NOSECS );
 	}
 */
+	/**
+	 * @return
+	 */
+	public String getAdditionalFlags()
+	{
+		return additionalFlags;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setAdditionalFlags(String string)
+	{
+		additionalFlags = string;
+	}
+
 }
