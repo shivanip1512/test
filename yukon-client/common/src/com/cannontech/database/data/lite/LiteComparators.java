@@ -126,6 +126,23 @@ public final class LiteComparators
 			return false;
 		}
 	};
+
+	public static java.util.Comparator liteNameComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			if( o1 == null || o2 == null )
+				return -1;
+
+			String thisVal = o1.toString();
+			String anotherVal = o2.toString();
+			return ( thisVal.compareToIgnoreCase(anotherVal) );
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
 	
 	public static java.util.Comparator liteRoleCategoryComparator = new java.util.Comparator()
 	{
