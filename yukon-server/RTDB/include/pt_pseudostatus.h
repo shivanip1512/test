@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_pseudostatus.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,8 +20,8 @@
 /*
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_pseudostatus.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:19 $
 *
 */
 #include <rw\cstring.h>
@@ -64,7 +64,7 @@ public:
    CtiTablePointStatus  getPointStatus() const     { return _pointStatus; }
    CtiTablePointStatus& getPointStatus()           { return _pointStatus; }
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
    {
       Inherited::getSQL(db, keyTable, selector);
       CtiTablePointStatus::getSQL(db, keyTable, selector);

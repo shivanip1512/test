@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_ripple.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:54:37 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/22 19:47:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,7 @@ public:
     virtual LONG getRouteID();
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);

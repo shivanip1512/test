@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,8 +66,7 @@ public:
    CtiPortTCPIPDirect&        setTcpIpInfo(const CtiTablePortTCPIP& tcpipinfo);
 
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   static void getSQL(RWCString &Columns, RWCString &Tables, RWCString &Conditions);
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
    virtual INT init();

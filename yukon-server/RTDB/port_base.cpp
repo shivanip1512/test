@@ -562,7 +562,7 @@ RWCString CtiPort::getModemInit() const             { return RWCString("");}
 
 void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-    CtiTblPAO::getSQL(db, keyTable, selector);
+    _tblPAO.getSQL(db, keyTable, selector);
     CtiTablePortBase::getSQL(db, keyTable, selector);
     CtiTablePortSettings::getSQL(db, keyTable, selector);
     CtiTablePortTimings::getSQL(db, keyTable, selector);

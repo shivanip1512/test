@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,9 +87,9 @@ private:
     virtual INT  getCCUVarBits() const                 { return 0;}
     virtual INT  getStages() const                     { return 0;}
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
     {
-        CtiTblPAO::getSQL(db, keyTable, selector);
+        _tblPAO.getSQL(db, keyTable, selector);
         CtiTableCommRoute::getSQL(db, keyTable, selector);
     }
 

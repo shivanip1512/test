@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_carrier.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:16 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ public:
       return *this;
    }
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
    {
       Inherited::getSQL(db, keyTable, selector);
       CtiTableDeviceLoadProfile::getSQL(db, keyTable, selector);

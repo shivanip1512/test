@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:54:37 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/22 19:47:17 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ public:
     CtiDeviceMacro &addDevice( CtiDeviceBase *toAdd );
 
     void DecodeDatabaseReader( RWDBReader &rdr );
-    static void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector );
+    virtual void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector );
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     virtual INT processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList );
     virtual INT initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList );

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_repeater.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:32 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,18 +73,9 @@ public:
    virtual INT  getStages() const                  { return RepeaterList.entries(); }
 
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
    {
       Inherited::getSQL(db, keyTable, selector);
-      // Collect CtiTableRepeaterRoute in a later directed call specific to this table...
-   }
-
-   static void getSQL(RWCString &Columns, RWCString &Tables, RWCString &Conditions)
-   {
-      if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-      Inherited::getSQL(Columns, Tables, Conditions);
-
       // Collect CtiTableRepeaterRoute in a later directed call specific to this table...
    }
 

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:03 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -362,11 +362,9 @@ void CtiTblPAO::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-
-
     rdr["paobjectid"] >> _paObjectID;
-    rdr["category"] >> _category;
-    rdr["paoclass"] >> _classStr;
+    rdr["category"]   >> _category;
+    rdr["paoclass"]   >> _classStr;
 
     _class = resolvePAOClass(_classStr);
 

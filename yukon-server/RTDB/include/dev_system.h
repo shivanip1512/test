@@ -16,8 +16,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_system.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:28 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:47:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,39 +32,16 @@ public:
 
    typedef CtiDeviceBase Inherited;
 
-   CtiDeviceSystem();// {}
+   CtiDeviceSystem();
 
-   CtiDeviceSystem(const CtiDeviceSystem& aRef);/*
-   {
-      *this = aRef;
-   }                                              */
+   CtiDeviceSystem(const CtiDeviceSystem& aRef);
 
-   virtual ~CtiDeviceSystem();// {}
+   virtual ~CtiDeviceSystem();
 
-   CtiDeviceSystem& operator=(const CtiDeviceSystem& aRef);/*
-   {
-      if(this != &aRef)
-      {
-         Inherited::operator=(aRef);
-      }
-      return *this;
-   }                                                         */
+   CtiDeviceSystem& operator=(const CtiDeviceSystem& aRef);
 
-   static void getSQL(RWCString &Columns, RWCString &Tables, RWCString &Conditions);/*
-   {
-      Inherited::getSQL(Columns, Tables, Conditions);
-   }                                                                                  */
-
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);/*
-   {
-      Inherited::getSQL(db, keyTable, selector);
-   }                                                                                    */
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);/*
-   {
-      Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-   }                                                   */
-
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   virtual void DecodeDatabaseReader(RWDBReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
