@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/08/05 12:53:27 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/09/22 15:37:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -342,6 +342,7 @@ VOID ConnectionThread (VOID *Arg)
             }
 
             SendError (OutMessage, MISPARAM);      // Message has been consumed!
+            continue;            // The for loop
         }
         else
         {
