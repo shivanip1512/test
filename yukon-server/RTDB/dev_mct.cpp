@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2005/02/25 21:55:43 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2005/03/01 15:59:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1464,43 +1464,6 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
     }
-    else if( parse.isKeyValid("lp_command") )  //  load profile
-    {
-        if( !executeGetValueLoadProfile(pReq, parse, OutMessage, vgList, retList, outList) )
-        {
-            found = true;
-            function = OutMessage->Sequence;
-        }
-    }
-    else if( parse.isKeyValid("outage") )  //  outages
-    {
-        int outagenum = parse.getiValue("outage");
-
-        function = CtiProtocolEmetcon::GetValue_Outage;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-        if( outagenum < 0 || outagenum > 6 )
-        {
-            found = false;
-
-            if( errRet )
-            {
-                RWCString temp = "Bad outage specification - Acceptable values:  1-6";
-                errRet->setResultString( temp );
-                errRet->setStatus(NoMethod);
-                retList.insert( errRet );
-                errRet = NULL;
-            }
-        }
-        else if(outagenum > 4 )
-        {
-            OutMessage->Buffer.BSt.Function += 2;
-        }
-        else if(outagenum > 2 )
-        {
-            OutMessage->Buffer.BSt.Function += 1;
-        }
-    }
     else  //  if( parse.getFlags() & CMD_FLAG_GV_KWH ) - default to a KWH read
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
@@ -1567,16 +1530,6 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
 
     return nRet;
-}
-
-INT CtiDeviceMCT::executeGetValueLoadProfile( CtiRequestMsg              *pReq,
-                                              CtiCommandParser           &parse,
-                                              OUTMESS                   *&OutMessage,
-                                              RWTPtrSlist< CtiMessage >  &vgList,
-                                              RWTPtrSlist< CtiMessage >  &retList,
-                                              RWTPtrSlist< OUTMESS >     &outList )
-{
-    return NoMethod;
 }
 
 INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
@@ -3733,6 +3686,11 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( resultString );
+
+        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE )
+        {
+            ReturnMsg->setExpectMore(true);
+        }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
