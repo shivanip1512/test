@@ -494,7 +494,8 @@ public final static String getCommandsDirPath()
  */
 public final static String getConfigDirPath()
 {
-	return USER_DIR + "../config/";
+	//return USER_DIR + "../config/";
+	return USER_DIR + "/";
 }
 
 
