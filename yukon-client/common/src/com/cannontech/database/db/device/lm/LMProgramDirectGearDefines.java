@@ -1,5 +1,4 @@
 package com.cannontech.database.db.device.lm;
-
 /**
  * Insert the type's description here.
  * Creation date: (4/3/2002 10:45:14 AM)
@@ -18,6 +17,8 @@ public interface LMProgramDirectGearDefines
 	public static final String CONTROL_MASTER_CYCLE = "MasterCycle";
 	public static final String CONTROL_ROTATION = "Rotation";
 	public static final String CONTROL_LATCHING = "Latching";
+	public static final String THERMOSTAT_SETBACK = "ThermostatSetback";
+	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
 
 	//a mapping of all the possible control methods
 	public static final String[] ALL_CONTROL_METHODS =
@@ -26,7 +27,10 @@ public interface LMProgramDirectGearDefines
 		CONTROL_SMART_CYCLE,
 		CONTROL_MASTER_CYCLE,
 		CONTROL_ROTATION,
-		CONTROL_LATCHING
+		CONTROL_LATCHING,
+		THERMOSTAT_PRE_OPERATE,
+		THERMOSTAT_SETBACK
+		
 	};
 
 	//all possible method stop type values

@@ -1,5 +1,8 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
+import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
+
 /**
  * This type was created in VisualAge.
  *  new 1.8
@@ -110,6 +113,14 @@ public abstract class LMProgramDirectGear
 		{
 			return new com.cannontech.database.data.device.lm.TimeRefreshGear();
 		}
+		else if (gearType.equalsIgnoreCase(THERMOSTAT_PRE_OPERATE))
+		{
+			return new ThermostatPreOperateGear();
+		}
+		else if (gearType.equalsIgnoreCase(THERMOSTAT_SETBACK))
+		{
+			return new ThermostatSetbackGear();
+		}
 		else
 			throw new IllegalArgumentException(
 				"Unable to create DirectGear for type : " + gearType);
@@ -175,25 +186,10 @@ public abstract class LMProgramDirectGear
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 
-		//get all the gears that have the passed in DeviceID
-		String sql = "select " 	+ SETTER_COLUMNS[1] + ", " 
-								+ SETTER_COLUMNS[2] + ", " 
-								+ SETTER_COLUMNS[3] + ", " 
-								+ SETTER_COLUMNS[4] + ", " 
-								+ SETTER_COLUMNS[5] + ", " 
-								+ SETTER_COLUMNS[6] + ", " 
-				     			+ SETTER_COLUMNS[7] + ", " 
-								+ SETTER_COLUMNS[8] + ", " 
-								+ SETTER_COLUMNS[9] + ", " 
-								+ SETTER_COLUMNS[10] + ", "
-								+ SETTER_COLUMNS[11] + ", "
-								+ SETTER_COLUMNS[12] + ", " 
-								+ SETTER_COLUMNS[13] + ", " 
-								+ SETTER_COLUMNS[14] + ", " 
-								+ SETTER_COLUMNS[15] + ", "
-								+ SETTER_COLUMNS[16] + ", " 
-								+ SETTER_COLUMNS[17] + ", "   
-								+ CONSTRAINT_COLUMNS[0] + " from " + TABLE_NAME +
+		//get all the gears that have the passed DeviceID
+		String sql = "select " + CONSTRAINT_COLUMNS[0]
+					+ ", " + SETTER_COLUMNS[3] 
+					+ " from " + TABLE_NAME +
 				" where deviceid=? order by GearNumber";
 		try
 		{
@@ -207,40 +203,18 @@ public abstract class LMProgramDirectGear
 
 			while (rset.next())
 			{
-				//some ugly stuff below!
-				String gName = rset.getString(1); //"GearName");
-				Integer gNumber = new Integer(rset.getInt(2)); //"GearNumber"));
+
+				Integer gID = new Integer(rset.getInt(1)); //"GearID"));
 
 				LMProgramDirectGear gear =
-					LMProgramDirectGear.createGearFactory(rset.getString(3));
+					LMProgramDirectGear.createGearFactory(rset.getString(2));
 				//"ControlMethod") );
 
 				gear.setDeviceID(deviceID);
-				gear.setGearName(gName);
-				gear.setGearNumber(gNumber);
-
-				//GearMethod is gotten in the creteGearFactory call above
-				//gear.setControlMethod( rset.getString("ControlMethod") );
-
-				gear.setMethodRate(new Integer(rset.getInt(4)));
-				gear.setMethodPeriod(new Integer(rset.getInt(5)));
-				gear.setMethodRateCount(new Integer(rset.getInt(6)));
-				gear.setCycleRefreshRate(new Integer(rset.getInt(7)));
-				gear.setMethodStopType(rset.getString(8));
-				gear.setChangeCondition(rset.getString(9));
-				gear.setChangeDuration(new Integer(rset.getInt(10)));
-
-				gear.setChangePriority(new Integer(rset.getInt(11)));
-				gear.setChangeTriggerNumber(new Integer(rset.getInt(12)));
-				gear.setChangeTriggerOffset(new Double(rset.getDouble(13)));
-				gear.setPercentReduction(new Integer(rset.getInt(14)));
-				gear.setGroupSelectionMethod(rset.getString(15));
-				gear.setMethodOptionType(rset.getString(16));
-				gear.setMethodOptionMax(new Integer(rset.getInt(17)));
-				gear.setGearID(new Integer(rset.getInt(18)));
-
-				gear.setDbConnection(null);
-
+				gear.setGearID(gID);
+				
+				gear.setDbConnection(conn);
+				gear.retrieve();
 				tmpList.add(gear);
 			}
 
@@ -267,6 +241,58 @@ public abstract class LMProgramDirectGear
 
 		return retVal;
 	}
+	
+public static final java.util.Vector getTheGearIDs(
+		Integer deviceID,
+		java.sql.Connection conn)
+		throws java.sql.SQLException
+{
+		String sql = "SELECT GearID FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
+
+	java.util.Vector someIDs = new java.util.Vector();
+		
+	if (conn == null)
+		throw new IllegalArgumentException("Received a (null) database connection");
+
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+	try
+   	{
+       	if (conn == null)
+           	throw new IllegalArgumentException("Received a (null) database connection");
+
+       	pstmt = conn.prepareStatement(sql.toString());
+
+       	rset = pstmt.executeQuery();
+
+       	while( rset.next() )
+        {
+           	someIDs.addElement(new Integer(rset.getInt(1)));
+       	}
+		return someIDs;
+        
+   	}
+   	catch (java.sql.SQLException e)
+   	{
+       	e.printStackTrace();
+   	}
+   	finally
+   	{
+       	try
+       	{
+          	if (pstmt != null)
+           	pstmt.close();
+       	}
+      	catch (java.sql.SQLException e2)
+       	{
+       		e2.printStackTrace(); //something is up
+       	}
+   	}
+ 
+    throw new java.sql.SQLException("Unable to retrieve the gearIDs where deviceID = " + deviceID);
+}
+
 
 	/**
 	 * Insert the method's description here.
