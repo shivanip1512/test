@@ -5,9 +5,6 @@ insert into LMProgram values(0, 'Automatic', 'NNNN', 'NNNNNNNN', 0, 0, 0, 0, 0, 
 /* Route */
 INSERT INTO Route VALUES (0,0,'N');
 
-/* YukonUser */
-INSERT INTO YukonUser VALUES (0,'(none)','(none)',0,'01-JAN-2000','Disabled');
-
 /* EnergyCompany */
 INSERT INTO YukonUser VALUES (-100,'DefaultCTI','$cti_default',0,'01-JAN-00','Enabled');
 INSERT INTO EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
