@@ -85,7 +85,7 @@ function loadTarget(form)
                       <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
                       <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                       <input type="hidden" name="ACTION" value="DownloadReport">
-                      <table width="538" border="0" cellspacing="2" cellpadding="0">
+                      <table width="500" border="0" cellspacing="2" cellpadding="0">
                         <tr> 
                           <td class = "TableCell" width="50%" valign = "top" align="left" height="100%"> 
                             <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
@@ -123,6 +123,9 @@ function loadTarget(form)
                           </td>
                         </tr>
                         <tr> 
+                          <td>&nbsp;</td>
+                        </tr>                        
+                        <tr> 
                           <td width="50%" height="100%" valign="top"> 
                             <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
                               <tr> 
@@ -157,6 +160,9 @@ function loadTarget(form)
                             </table>
                           </td>
                         </tr>
+                        <tr> 
+                          <td>&nbsp;</td>
+                        </tr>                        
                         <tr> 
                           <td width="50%" height="100%" valign="top"> 
                             <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
