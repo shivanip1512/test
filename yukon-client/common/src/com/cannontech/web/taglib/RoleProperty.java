@@ -14,6 +14,7 @@ import com.cannontech.util.ServletUtil;
 public class RoleProperty extends javax.servlet.jsp.tagext.BodyTagSupport {
 
 	public int propertyid;
+	public String defaultvalue = null;
 	public String format = null;
 	
 /**
@@ -39,8 +40,10 @@ public int doStartTag() throws JspException {
 	try {
 		String uri = null;			
 		LiteYukonUser user = (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
-		if(user != null) {			
-			String text = AuthFuncs.getRolePropertyValue(user, propertyid, "Missing rolePropertyID:  " + Integer.toString(propertyid));
+		if(user != null) {
+			if (defaultvalue == null) defaultvalue=" ";
+			//defaultvalue = "Missing rolePropertyID:  " + Integer.toString(propertyid);
+			String text = AuthFuncs.getRolePropertyValue(user, propertyid, defaultvalue);
 			String fmat = getFormat();
 			if (fmat != null) {
 				if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_UPPER ))
@@ -93,6 +96,20 @@ public int doStartTag() throws JspException {
 	 */
 	public void setFormat(String format) {
 		this.format = format;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getDefaultvalue() {
+		return defaultvalue;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setDefaultvalue(String string) {
+		defaultvalue = string;
 	}
 
 }
