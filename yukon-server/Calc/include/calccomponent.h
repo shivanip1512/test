@@ -39,10 +39,8 @@ private:
     int                  _pointUpdated;
     BOOL                 _valid;
     long                 _lastUseUpdateNum;
-    int                  _updatesInCurrentAvg;
 
     double               _doFunction( RWCString & );
-
     double               _figureDemandAvg( long );
 
 protected:
@@ -53,7 +51,7 @@ public:
 
     CtiCalcComponent( ) :
     _componentType(constant), _pointId(-1), _componentPointId(-1), _operationType(multiplication),
-    _constantValue(0.0), _functionName(""), _valid(0), _lastUseUpdateNum(0), _calcpoint(NULL), _updatesInCurrentAvg(0)
+    _constantValue(0.0), _functionName(""), _valid(0), _lastUseUpdateNum(0), _calcpoint(NULL)
     {};
 
     CtiCalcComponent( const RWCString &componentType, long componentPointId, const RWCString &operationType,

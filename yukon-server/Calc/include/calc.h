@@ -18,6 +18,7 @@ private:
     PointUpdateType      _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
+    int                  _updatesInCurrentAvg;
     long                 _pointId;
     BOOL                 _valid;
     RWTime               _pointCalcWindowEndTime;
@@ -36,7 +37,8 @@ private:
 public:
 
     CtiCalc( ) :
-    _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ), _pointCalcWindowEndTime( RWTime(RWDate(1,1,1990)) )
+    _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ),
+        _pointCalcWindowEndTime( RWTime(RWDate(1,1,1990)) ), _updatesInCurrentAvg(0)
     {};
 
     CtiCalc( long pointId, const RWCString &updateType, int updateInterval );
@@ -61,6 +63,7 @@ public:
     void cleanup( void );
     PointUpdateType getUpdateType( void );
     double calculate( int &calc_quality, RWTime &calc_time );
+    double figureDemandAvg(long secondsInAvg);
     BOOL ready( void );
     void push( double );
     double pop( void );

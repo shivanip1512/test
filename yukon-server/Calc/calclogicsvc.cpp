@@ -426,6 +426,8 @@ void CtiCalcLogicService::Run( )
 
             for( ; !UserQuit; )
             {
+                try
+                {
                 rwnow = rwnow.now();
                 if(rwnow > announceTime)
                 {
@@ -502,6 +504,14 @@ void CtiCalcLogicService::Run( )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
+                    }
+                }
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             } // end for userquit

@@ -260,13 +260,13 @@ void CtiCalculateThread::onUpdateLoop( void )
 
                     CtiPointStore* pointStore = CtiPointStore::getInstance();
                     CtiHashKey pointHashKey(calcPoint->getPointId());
-                    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
+                    CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
 
-                    recalcValue = calcPoint->calculate( calcQuality, calcTime );
+                    recalcValue = calcPoint->calculate( calcQuality, calcTime );    // Here is the MATH
                     calcPoint->setNextInterval(calcPoint->getUpdateInterval());     // This only matters for periodicPlusUpdatePoints.
 
                     // Make sure we do not try to move backwards in time.
-                    if( pointPtr->getPointTime() > calcTime )
+                    if( calcPointPtr->getPointTime() > calcTime )
                     {
                         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
                         {
@@ -279,21 +279,13 @@ void CtiCalculateThread::onUpdateLoop( void )
 
                     CtiPointDataMsg *pData = NULL;
 
-
                     if( calcPoint->getPointCalcWindowEndTime().seconds() > RWTime(RWDate(1,1,1991)).seconds() )
                     {// demand average point madness
 
                         long davgpid = calcPoint->findDemandAvgComponentPointId();
 
-                        if(!davgpid)
+                        if(davgpid)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** CONFIG ERROR **** Demand Average points require a point to be identified (no pre-push).  Point ID " << calcPoint->getPointId() << endl;
-                            }
-                            continue;
-                        }
-
                         CtiHashKey componentPointHashKey(davgpid);
                         CtiPointStoreElement* componentPointPtr = 0;
 
@@ -302,28 +294,35 @@ void CtiCalculateThread::onUpdateLoop( void )
                         if(componentPointPtr)
                         {
                             RWTime now;
+                                RWTime et = calcPoint->getPointCalcWindowEndTime();
                             RWTime etplus = (calcPoint->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
 
-                            if( now >= calcPoint->getPointCalcWindowEndTime() &&
-                                now < etplus )
-                            {
+                                if( et <= now &&  now < etplus )    // Are we greater than the end time, but less than the end time + "slop"
+                                {
                                 if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID
-                                    << " New Demand Avg Value: " << recalcValue << endl;
-                                }
+                                        dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
+                                    }
                                 pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                                 pData->setTime(calcPoint->getPointCalcWindowEndTime());
                             }
 
-                            pointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
-                        }
+                                calcPointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
+                            }
                         else
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
+                            }
+                        }
+                    }
+                    else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** CONFIG ERROR **** Demand Average points require a point to be identified (no pre-push).  Point ID " << calcPoint->getPointId() << endl;
                             }
                         }
                     }
