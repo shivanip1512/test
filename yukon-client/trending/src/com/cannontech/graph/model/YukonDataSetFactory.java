@@ -23,7 +23,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 	 * Creation date: (8/2/2001 10:46:02 AM)
 	 * @param gModel com.cannontech.graph.model.GraphModel
 	 */
-	public static java.util.TreeMap buildCategoryTreeMap(TrendSerie [] tSeries, int validSeriesSize)
+	public static java.util.TreeMap buildTreeMap(TrendSerie [] tSeries, int validSeriesSize)
 	{
 		java.util.TreeMap tree = new java.util.TreeMap();
 
@@ -103,7 +103,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		return dSet;
 	}
 	
-    /**
+	/**
      * Creates a horizontally combined chart.
      */
 /*    public JFreeChart createHorizontallyCombinedChart() {
@@ -176,31 +176,29 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 	 * Creation date: (8/2/2001 10:46:02 AM)
 	 * @param cModels FreeChartModel []
 	 */
-	public static com.jrefinery.data.DefaultCategoryDataset createLoadDurationDataSet(TrendSerie[] tSeries)
-//	public static com.jrefinery.data.DefaultIntervalCategoryDataset createLoadDurationDataSet(TrendSerie[] tSeries)
+	public static com.jrefinery.data.XYSeriesCollection createLoadDurationDataSet(TrendSerie[] tSeries, Integer peakPointId)
 	{
 		if( tSeries == null)
 			return null;
 
 		//Valid series are those that have type = graph.  tSeries has all types of series,
 		//  therefore we need to weed out those we don't want in the graph.
-				
-		java.util.Vector tNamesVector = new java.util.Vector(tSeries.length);//capacity is best guess right now.
+		int peakPtIndex = -1;
+			
 		int validSeriesLength = 0;
 		for( int i = 0; i < tSeries.length; i++)
 		{
 			if( tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
 			{
-				tNamesVector.add(tSeries[i].getLabel().toString());
+				if( tSeries[i].getPointId().equals(peakPointId))
+				{	//find the 'graph' point representing the peak point, if it exists!
+					peakPtIndex = validSeriesLength;
+				}
 				validSeriesLength++;
 			}
 		}
-		
-		//set the series names up, excluding any not included in the buildTreeMap return.		
-		String[] seriesNames = new String[tNamesVector.size()];		
-		tNamesVector.toArray(seriesNames);
-		
-		java.util.TreeMap tree = buildCategoryTreeMap(tSeries, validSeriesLength);
+
+		java.util.TreeMap tree = buildTreeMap(tSeries, validSeriesLength);
 		if( tree == null)
 			return null;
 
@@ -208,16 +206,15 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		java.util.Set keySet = tree.keySet();
 		Long[] keyArray = new Long[keySet.size()];
 		keySet.toArray(keyArray);
-		
+
 		// Create the category list (of timestamps).
-		String[] categoryList = new String[keyArray.length];
-		float categoryCount = keyArray.length -1;// scale is from 0 start point not 1
+		// Categories only serve a purpose to create a graph with a percentage axis.
+		double[] categories = new double[keyArray.length];
+		double categoryCount = keyArray.length -1;// scale is from 0 start point not 1
 		for (int i = 0; i < keyArray.length; i++)
-		{
-			categoryList[i] = percentFormat.format((i/categoryCount));
-			com.cannontech.clientutils.CTILogger.info(" Category "  + i + " = " + categoryList[i]);
-		}
-		
+			categories[i] = ( i / categoryCount ) * 100;
+
+		// Create the dataset of values for each point.
 		Double[][] datasetValues = new Double[validSeriesLength][];
 		for (int i = 0; i < validSeriesLength; i++)
 		{
@@ -228,40 +225,24 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 				datasetValues[i][j] = values[i];
 			}
 		}
-		sortValuesDescending(datasetValues, categoryList);
-		return (new com.jrefinery.data.DefaultCategoryDataset(seriesNames,  categoryList, datasetValues));
-	}
 
-	public static com.jrefinery.data.TimeSeriesCollection createMinMaxDataSetSeries(TrendSerie [] tSeries) 
-	{
-		if( tSeries == null)
-			return null;
-
-		com.jrefinery.data.TimeSeriesCollection dSet = new com.jrefinery.data.TimeSeriesCollection();
-
-		for ( int i = 0; i < tSeries.length; i++)
+		//Sort values based on peak point if it exists.		
+		sortValuesDescending(datasetValues, peakPtIndex);
+		
+		//Create a collection of series as the dataset.
+		com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
+		for ( int i = 0; i < datasetValues.length; i++)
 		{
-			TrendSerie serie = tSeries[i];
-			if( serie != null)
+			com.jrefinery.data.XYSeries xySeries = new com.jrefinery.data.XYSeries(tSeries[i].getLabel());
+			for (int j = 0; j < datasetValues[i].length; j++)
 			{
-				if( serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
-				{
-					com.jrefinery.data.BasicTimeSeries series = 
-						new com.jrefinery.data.BasicTimeSeries(("Min/Max " + serie.getLabel()), com.jrefinery.data.Second.class);
-								
-					if( serie.getDataPairArray() != null)
-					{
-						series.add(serie.getMaximumTSDataPair());
-						series.add(serie.getMinimumTSDataPair());
-					}
-					dSet.addSeries(series);
-				}
+				if( datasetValues[i][j] != null)
+					xySeries.add(categories[j], datasetValues[i][j].doubleValue());
 			}
+			collection.addSeries(xySeries);			
 		}
-		return dSet;
+		return collection;
 	}
-	
-
 
 
 
@@ -273,7 +254,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		
 		long TRANSLATE_TIME = 86400000;
 		TRANSLATE_TIME = (startDate.getTime() - compareStart.getTime());
-		
+		System.out.println("StartDate = " + startDate + "  CompareStart = " + compareStart);	
 		for ( int i = 0; i < tSeries.length; i++)
 		{
 			TrendSerie serie = tSeries[i];
@@ -378,7 +359,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		String[] seriesNames = new String[tNamesVector.size()];		
 		tNamesVector.toArray(seriesNames);
 	
-		java.util.TreeMap tree = buildCategoryTreeMap(tSeries, validSeriesLength);
+		java.util.TreeMap tree = buildTreeMap(tSeries, validSeriesLength);
 		if( tree == null)
 			return null;
 
@@ -439,22 +420,54 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 	 * @param xHrs java.util.ArrayList
 	 * @param yQual java.util.ArrayList
 	 */
-	private static Double[][] sortValuesDescending(Double[][] dataSetValues, String[] categoryList)
+	private static Double[][] sortValuesDescending(Double[][] dataSetValues, int peakPtIndex)
 	{
-		// Sort the values according to the readings (descending)
 		int maxIndex = 0;
-		for (int i = 0; i < dataSetValues.length; i++)
+		if( peakPtIndex < 0 )	//No peak point!
 		{
-			if( dataSetValues[i] != null)
+			// Sort the values according to their value readings (descending)
+			for (int i = 0; i < dataSetValues.length; i++)
 			{
-				for (int j = 0; j < dataSetValues[i].length; j++)
+				if( dataSetValues[i] != null)
 				{
-					maxIndex = findMaxIndex(dataSetValues[i], j);
+					for (int j = 0; j < dataSetValues[i].length; j++)
+					{
+						maxIndex = findMaxIndex(dataSetValues[i], j);
+						if( maxIndex != j)
+						{
+							Double tempDataSetValue = dataSetValues[i][j];
+							dataSetValues[i][j] = dataSetValues[i][maxIndex];
+							dataSetValues[i][maxIndex] = tempDataSetValue;
+						}
+					}
+				}
+			}
+			
+		}			
+		else
+		{
+			// Have a peak point and need to sort peak values only!  Rest are coincidental on Peak Point!
+			if( dataSetValues[peakPtIndex] != null)
+			{
+				for (int j = 0; j < dataSetValues[peakPtIndex].length; j++)
+				{
+					maxIndex = findMaxIndex(dataSetValues[peakPtIndex], j);
 					if( maxIndex != j)
 					{
-						Double tempDataSetValue = dataSetValues[i][j];
-						dataSetValues[i][j] = dataSetValues[i][maxIndex];
-						dataSetValues[i][maxIndex] = tempDataSetValue;
+						Double tempDataSetValue = dataSetValues[peakPtIndex][j];
+						dataSetValues[peakPtIndex][j] = dataSetValues[peakPtIndex][maxIndex];
+						dataSetValues[peakPtIndex][maxIndex] = tempDataSetValue;
+						
+						for ( int x = 0; x < dataSetValues.length; x++)
+						{
+							// For all other points, sort according to the peak values' sorting.
+							if (x != peakPtIndex)
+							{
+								tempDataSetValue = dataSetValues[x][j];
+								dataSetValues[x][j] = dataSetValues[x][maxIndex];
+								dataSetValues[x][maxIndex] = tempDataSetValue;
+							}
+						}						
 					}
 				}
 			}

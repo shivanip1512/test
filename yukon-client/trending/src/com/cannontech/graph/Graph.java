@@ -599,7 +599,7 @@ public void setMinIntervalRate( int newRate)
  */
 public void setModelType(int newModelType)
 {
-	setUpdateTrend(true);
+//	setUpdateTrend(true);
 	modelType = newModelType;
 }
 public void setOptionsMaskHolder(int newMask, boolean setMasked)
@@ -616,6 +616,8 @@ public void setOptionsMaskHolder(int newMask, boolean setMasked)
 			options_mask_holder ^= newMask;
 		}
 	}
+	if( getTrendModel() != null)
+		getTrendModel().setOptionsMask(getOptionsMaskHolder());
 }
 
 public void setSeriesMask(int newMask, boolean setMasked)
@@ -733,9 +735,9 @@ public void update()
 	{
 		TrendModel newModel = new TrendModel(getCurrentGraphDefinition(), getOptionsMaskHolder()); 
 		setTrendModel( newModel );
-		freeChart = getTrendModel().setupFreeChart(getModelType());
-		updateTrend = false;
+		updateTrend = false;		
 	}
+	freeChart = getTrendModel().refresh(getModelType());
 }
 
 }

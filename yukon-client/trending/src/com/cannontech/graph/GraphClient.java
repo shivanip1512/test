@@ -6,27 +6,23 @@ package com.cannontech.graph;
  * @author: 
  */
 
-import javax.swing.event.ChangeListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import java.util.Date;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.model.GraphDefinitionTreeModel;
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.menu.FileMenu;
 import com.cannontech.graph.menu.HelpMenu;
+import com.cannontech.graph.menu.OptionsMenu;
 import com.cannontech.graph.menu.TrendMenu;
 import com.cannontech.graph.menu.ViewMenu;
-import com.cannontech.graph.menu.OptionsMenu;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.model.GraphDefinitionTreeModel;
-
-import java.util.Date;
 
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, TrendModelType, java.awt.event.ActionListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener 
 {
@@ -210,58 +206,64 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 			currentStartDate = ivjStartDateComboBox.getSelectedDate();
 		}
 	}
-
 	else if( event.getSource() == getViewMenu().getLineGraphRadioButtonItem() )
 	{
 		actionPerformed_GetRefreshButton(LINE_MODEL);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(true);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getStepGraphRadioButtonItem() )
 	{
 		actionPerformed_GetRefreshButton(STEP_MODEL);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(true);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+		getFileMenu().getExportMenuitem().setEnabled(true);
+	}
+	else if( event.getSource() == getViewMenu().getShapeLineGraphRadioButtonItem() )
+	{
+		actionPerformed_GetRefreshButton(SHAPES_LINE_MODEL);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getBarGraphRadioButtonItem())
 	{
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, false);		
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);		
 		actionPerformed_GetRefreshButton(BAR_MODEL);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(false);
-		getOptionsMenu().getShowYesterdayMenuItem().setSelected(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if ( event.getSource() == getViewMenu().getBarGraph3DRadioButtonItem())
 	{
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, false);
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);
 		actionPerformed_GetRefreshButton(BAR_3D_MODEL);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(false);
-		getOptionsMenu().getShowYesterdayMenuItem().setSelected(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}	
 	else if ( event.getSource() == getViewMenu().getLoadDurationRadioButtonItem())
 	{
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, false);		
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);		
 		actionPerformed_GetRefreshButton(LOAD_DURATION_LINE_MODEL);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(false);
-		getOptionsMenu().getShowYesterdayMenuItem().setSelected(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 	else if( event.getSource() == getViewMenu().getLoadDuration3DRadioButtonItem() )
 	{
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, false);
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);
 		actionPerformed_GetRefreshButton(LOAD_DURATION_STEP_MODEL);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
 		getFileMenu().getExportMenuitem().setEnabled(true);
 	}
 
-	else if( event.getSource() == getOptionsMenu().getShowYesterdayMenuItem())
+	else if( event.getSource() == getOptionsMenu().getPlotYesterdayMenuItem())
 	{
 		com.cannontech.clientutils.CTILogger.info("yesterday change");
-		boolean isMasked = getOptionsMenu().getShowYesterdayMenuItem().isSelected();
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, isMasked);
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_MULTIPLE_DAY_MASK, isMasked);
-		getGraph().setUpdateTrend(true);		
+		boolean isMasked = getOptionsMenu().getPlotYesterdayMenuItem().isSelected();
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, isMasked);
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_MULTIPLE_DAY_MASK, isMasked);
+		getGraph().setUpdateTrend(true);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
 	}
 //	else if( event.getSource() == getOptionsMenu().getSetupMultipleDaysMenuItem())
 //	{
@@ -280,6 +282,26 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		boolean isMasked = getOptionsMenu().getDwellMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.DWELL_LABELS_MASK, isMasked);
 	}
+	else if( event.getSource() == getOptionsMenu().getPlotMinMaxValuesMenuItem())
+	{
+		boolean isMasked = getOptionsMenu().getPlotMinMaxValuesMenuItem().isSelected();
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_MIN_MAX_MASK, isMasked);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+	}
+
+	else if( event.getSource() == getOptionsMenu().getShowLoadFactorMenuItem())
+	{
+		boolean isMasked = getOptionsMenu().getShowLoadFactorMenuItem().isSelected();
+		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_LOAD_FACTOR_LEGEND_MASK, isMasked);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+	}
+	else if( event.getSource() == getOptionsMenu().getShowMinMaxMenuItem())
+	{
+		boolean isMasked = getOptionsMenu().getShowMinMaxMenuItem().isSelected();
+		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_MIN_MAX_LEGEND_MASK, isMasked);
+		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
+	}
+
 	
 	else if( event.getSource() == getTimePeriodComboBox())
 	{
@@ -561,13 +583,13 @@ public void actionPerformed_GetTimePeriodComboBox( )
 	if( ! getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(ServletUtil.TODAY.toString()) &&
 		!getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(ServletUtil.ONEDAY.toString()) )
 	{
-		getOptionsMenu().getShowYesterdayMenuItem().setSelected(false);
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(false);
-		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
+		getGraph().setOptionsMaskHolder(TrendModelType.PLOT_YESTERDAY_MASK, false);
 	}
 	else
 	{
-		getOptionsMenu().getShowYesterdayMenuItem().setEnabled(true);
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
 	}
 	getGraph().setUpdateTrend(true);
 }
