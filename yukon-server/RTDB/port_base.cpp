@@ -795,27 +795,30 @@ bool CtiPort::setPortForDevice(CtiDevice* Device)
     {
         if(Device->getType() == TYPE_TAPTERM)
         {
+            #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port is about to communicate with a TAP dialup device. " << Device->getName() << endl;
+                dout << RWTime() << " Port is about to communicate with a TAP device. " << Device->getName() << endl;
             }
+            #endif
 
             setLine(1200, 7, EVENPARITY, ONESTOPBIT);
             enableXONXOFF();
         }
         else
         {
+            #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port is about to communicate with a NON - TAP dialup device. " << Device->getName() << endl;
+                dout << RWTime() << " Port is about to communicate with a NON - TAP device. " << Device->getName() << endl;
             }
+            #endif
 
-
-            if(Device->getBaudRate() != getBaudRate())
+            if(Device->getBaudRate() && Device->getBaudRate() != getBaudRate())
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Device: " << Device->getName() << " linesettings are overriding port " << getName() << " settings!" << endl;
+                    dout << RWTime() << " Device: " << Device->getName() << " linesettings (" << Device->getBaudRate() << ":" << Device->getBits() << "," << Device->getParity() << "," << Device->getStopBits() << ") are overriding port " << getName() << " settings!" << endl;
                 }
                 setLine(Device->getBaudRate(), Device->getBits(), Device->getParity(), Device->getStopBits());
             }
