@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/10/12 01:15:07 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/10/22 22:12:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,8 @@
 #include "dnp_object_class.h"
 #include "dnp_object_binaryoutput.h"
 #include "dnp_object_analogoutput.h"
+#include "dnp_object_time.h"
+
 
 CtiProtocolDNP::CtiProtocolDNP()
 {
@@ -79,6 +81,34 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 
     switch( command )
     {
+        case DNP_WriteTime:
+        {
+            CtiDNPTime *timeNow = CTIDBG_new CtiDNPTime(CtiDNPTime::TimeAndDate);
+            RWTime Now;
+
+            timeNow->setSeconds(Now.seconds() - rwEpoch);
+
+            _appLayer.setCommand(CtiDNPApplication::RequestWrite);
+
+            CtiDNPObjectBlock dob(CtiDNPObjectBlock::NoIndex_ByteQty);
+
+            dob.addObject(timeNow);
+
+            _appLayer.addObjectBlock(dob);
+
+            break;
+        }
+        case DNP_ReadTime:
+        {
+            _appLayer.setCommand(CtiDNPApplication::RequestRead);
+
+            CtiDNPObjectBlock dob(CtiDNPObjectBlock::NoIndex_NoRange,
+                                  CtiDNPTime::Group, CtiDNPTime::TimeAndDate);
+
+            _appLayer.addObjectBlock(dob);
+
+            break;
+        }
         case DNP_Class0Read:
         {
             _appLayer.setCommand(CtiDNPApplication::RequestRead);
@@ -91,24 +121,24 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 
             break;
         }
-        case DNP_Class0123Read:
+        case DNP_Class1230Read:
         {
             _appLayer.setCommand(CtiDNPApplication::RequestRead);
 
-            CtiDNPObjectBlock dob0(CtiDNPObjectBlock::NoIndex_NoRange),
-                              dob1(CtiDNPObjectBlock::NoIndex_NoRange),
+            CtiDNPObjectBlock dob1(CtiDNPObjectBlock::NoIndex_NoRange),
                               dob2(CtiDNPObjectBlock::NoIndex_NoRange),
-                              dob3(CtiDNPObjectBlock::NoIndex_NoRange);
+                              dob3(CtiDNPObjectBlock::NoIndex_NoRange),
+                              dob0(CtiDNPObjectBlock::NoIndex_NoRange);
 
-            dob0.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
             dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
             dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
             dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
+            dob0.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
 
-            _appLayer.addObjectBlock(dob0);
             _appLayer.addObjectBlock(dob1);
             _appLayer.addObjectBlock(dob2);
             _appLayer.addObjectBlock(dob3);
+            _appLayer.addObjectBlock(dob0);
 
             break;
         }
@@ -334,6 +364,11 @@ int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
         OutMessage->Destination  = _slaveAddress;
         OutMessage->EventCode    = RESULT;
         OutMessage->MessageFlags = commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
+
+        if( _currentCommand == DNP_WriteTime )
+        {
+            OutMessage->Priority = MAXPRIORITY - 1;
+        }
     }
     else
     {
@@ -474,6 +509,19 @@ const char *CtiProtocolDNP::getControlResultString( void ) const
 
     return retVal;
 }
+
+
+bool CtiProtocolDNP::hasTimeResult( void ) const
+{
+    return _appLayer.hasTimeResult();
+}
+
+unsigned long CtiProtocolDNP::getTimeResult( void ) const
+{
+    return _appLayer.getTimeResult();
+}
+
+
 
 const char const *CtiProtocolDNP::ControlResultStr_RequestAccepted      = "Request accepted";
 const char const *CtiProtocolDNP::ControlResultStr_ArmTimeout           = "Operate received after select timeout";

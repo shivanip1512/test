@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/10/12 01:15:07 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/10/22 22:12:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,10 +84,13 @@ public:
     bool hasInboundPoints( void );
     void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
 
-    bool hasControlResult( void ) const;
-    bool getControlResultSuccess( void ) const;
-    long getControlResultOffset( void )  const;
+    bool hasControlResult( void )              const;
+    bool getControlResultSuccess( void )       const;
+    long getControlResultOffset( void )        const;
     const char *getControlResultString( void ) const;
+
+    bool          hasTimeResult( void ) const;
+    unsigned long getTimeResult( void ) const;
 
 
     enum DNPOutputPointType
@@ -125,12 +128,14 @@ public:
     enum DNPCommand
     {
         DNP_Invalid = 0,
+        DNP_WriteTime,
+        DNP_ReadTime,
         DNP_Class0Read,
         DNP_Class1Read,
         DNP_Class2Read,
         DNP_Class3Read,
         DNP_Class123Read,
-        DNP_Class0123Read,
+        DNP_Class1230Read,
         DNP_SetAnalogOut,
         DNP_SetDigitalOut_Direct,
         DNP_SetDigitalOut_SBO_Select,
