@@ -129,13 +129,14 @@ public static void main(String[] args)
 		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Output Filename");
 		validArguments = false;
 	}
+	/*
 	if( (inputFileName == null) &&
 		  (fileFormatType == FileFormatTypes.MVRS || fileFormatType == FileFormatTypes.WLT_40) )
 	{
 		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Input Filename");
 		validArguments = false;
 	}
-
+*/
 	if( validArguments )
 	{
 		FileFormatBase fileFormatBase = FileFormatFactory.createFileFormat(fileFormatType);
