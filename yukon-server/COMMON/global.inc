@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.5 $                               #
-#       $Date: 2002/07/18 16:56:27 $                  #
+#       $Revision: 1.6 $                               #
+#       $Date: 2002/09/19 17:42:18 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -138,6 +138,11 @@ INCLPATHS=-I. -I.\include
 
 # Must be done in the Makefiles themselves (to prevent name collisions)... .PATH.h = .;$INCPATHADDITIONS);$(INCLUDE)
 # Must be done in the Makefiles themselves (to prevent name collisions)... .PATH.cpp = .;$(CPPREFDIRS)
+
+.IgnoreMissingHeader shared_ptr.hpp
+
+.Hdr.hpp = ^^\#[ \t]*include[ \t][ \t]*\"@.*@\"
+.Hdr.hpp = ^^\#[ \t]*INCLUDE[ \t][ \t]*\"@.*@\"
 
 .PATH.obj = $(OBJ)
 .PATH.exe = $(BIN)

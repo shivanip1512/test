@@ -33,9 +33,6 @@ INCLPATHS+= \
 ;$(TCLINC) \
 ;$(RW)
 
-.PATH.HPP = \
-$(BOOST)
-
 
 
 YUKONHOLIDAYDLLOBJS=\
