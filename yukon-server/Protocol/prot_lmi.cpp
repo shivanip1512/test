@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/09/20 16:12:44 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/09/21 15:53:40 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,21 @@ CtiProtocolLMI::CtiProtocolLMI(const CtiProtocolLMI &aRef)
 
 CtiProtocolLMI::~CtiProtocolLMI()
 {
+    while( !_verification_objects.empty() )
+    {
+        CtiVerificationBase *vob = _verification_objects.front();
+        _verification_objects.pop();
+
+        delete vob;
+    }
+
+    while( !_codes.empty() )
+    {
+        CtiOutMessage *om = _codes.front();
+        _codes.pop();
+
+        delete om;
+    }
 }
 
 
