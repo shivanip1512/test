@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (9/19/00 10:13:05 AM)
  * @author: 
  */
+import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -227,21 +228,30 @@ public boolean needsComboIniting()
  */
 public void buttonBarPanel_JButtonDisableAllAction_actionPerformed(java.util.EventObject newEvent) 
 {
+	
+	int res = JOptionPane.showConfirmDialog( this, 
+						"Are you sure you want to DISABLE ALL control areas?", 
+						"Disable Confirmation", 
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
 
-	for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
+	if( res == JOptionPane.OK_OPTION )
 	{
-		if( !getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
+		for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
 		{
-			LoadControlClientConnection.getInstance().write(
-				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
-					 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
-					 				0, 0.0) );
+			if( !getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
+			{
+				LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
+						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
+						 				0, 0.0) );
+			}
 		}
+	
+		getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+			"All control areas " +
+			"have been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
 	}
 
-	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-		"All control areas " +
-		"have been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
 
 }
 /**
@@ -252,22 +262,29 @@ public void buttonBarPanel_JButtonDisableAllAction_actionPerformed(java.util.Eve
 public void buttonBarPanel_JButtonEnableAllAction_actionPerformed(java.util.EventObject newEvent) 
 {
 
-	boolean enablePerformed = false;
-	
-	for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
+	int res = JOptionPane.showConfirmDialog( this,
+						"Are you sure you want to ENABLE ALL control areas?", 
+						"Enable Confirmation", 
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+
+	if( res == JOptionPane.OK_OPTION )
 	{
-		if( getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
+		for(int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
 		{
-			LoadControlClientConnection.getInstance().write(
-				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
-					 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
-					 				0, 0.0) );
+			if( getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
+			{
+				LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
+						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
+						 				0, 0.0) );
+			}
 		}
+	
+		getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+			"All control areas " + 
+			"have been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
 	}
 
-	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-		"All control areas " + 
-		"have been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );
 }
 
 /**
@@ -279,25 +296,41 @@ public void buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(java.u
 	{
 		if( getSelectedControlArea().getDisableFlag().booleanValue() )
 		{
-			LoadControlClientConnection.getInstance().write(
-				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
-					 				getSelectedControlArea().getYukonID().intValue(),
-					 				0, 0.0) );
+			int res = JOptionPane.showConfirmDialog( this,
+								"Are you sure you want to ENABLE the selected control area?", 
+								"Enable Confirmation", 
+								JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
 
-			getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-				"Control area '" + getSelectedControlArea().getYukonName() + 
-				"' has been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );		
+			if( res == JOptionPane.OK_OPTION )
+			{
+				LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
+						 				getSelectedControlArea().getYukonID().intValue(),
+						 				0, 0.0) );
+	
+				getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+					"Control area '" + getSelectedControlArea().getYukonName() + 
+					"' has been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );		
+			}
 		}
 		else
 		{
-			LoadControlClientConnection.getInstance().write(
-				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
-					 				getSelectedControlArea().getYukonID().intValue(),
-					 				0, 0.0) );
+			int res = JOptionPane.showConfirmDialog( this,
+								"Are you sure you want to DISABLE the selected control area?", 
+								"Disable Confirmation", 
+								JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
 
-			getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-				"Control area '" + getSelectedControlArea().getYukonName() + 
-				"' has been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );					 				
+			if( res == JOptionPane.OK_OPTION )
+			{
+				LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
+						 				getSelectedControlArea().getYukonID().intValue(),
+						 				0, 0.0) );
+	
+				getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
+					"Control area '" + getSelectedControlArea().getYukonName() + 
+					"' has been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );					 				
+			}
 		}
 		
 	}

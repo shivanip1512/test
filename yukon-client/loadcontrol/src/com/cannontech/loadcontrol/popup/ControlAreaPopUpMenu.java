@@ -434,26 +434,42 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 	if( getLoadControlArea().getDisableFlag().booleanValue() )
 	{
 		//send a message to the server telling it to ENABLE this LMControlArea
-		LoadControlClientConnection.getInstance().write(
-				new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
-					 				getLoadControlArea().getYukonID().intValue(),
-					 				0, 0.0) );
-					 				
-		fireObservedRowChanged(
-			"Control area '" + getLoadControlArea().getYukonName() +
-			"' has been manually ENABLED." );
+		int res = JOptionPane.showConfirmDialog( this,
+							"Are you sure you want to ENABLE the selected control area?", 
+							"Enable Confirmation", 
+							JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+
+		if( res == JOptionPane.OK_OPTION )
+		{
+			LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
+						 				getLoadControlArea().getYukonID().intValue(),
+						 				0, 0.0) );
+						 				
+			fireObservedRowChanged(
+				"Control area '" + getLoadControlArea().getYukonName() +
+				"' has been manually ENABLED." );
+		}
 	}
 	else
 	{
-		//send a message to the server telling it to DISABLE this LMControlArea
-		LoadControlClientConnection.getInstance().write(
-				new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
-					 				getLoadControlArea().getYukonID().intValue(),
-					 				0, 0.0) );
+		int res = JOptionPane.showConfirmDialog( this,
+							"Are you sure you want to DISABLE the selected control area?", 
+							"Disable Confirmation",
+							JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
 
-		fireObservedRowChanged(
-			"Control area '" + getLoadControlArea().getYukonName() +
-			"' has been manually DISABLED." );
+		if( res == JOptionPane.OK_OPTION )
+		{
+			//send a message to the server telling it to DISABLE this LMControlArea
+			LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
+						 				getLoadControlArea().getYukonID().intValue(),
+						 				0, 0.0) );
+	
+			fireObservedRowChanged(
+				"Control area '" + getLoadControlArea().getYukonName() +
+				"' has been manually DISABLED." );
+		}
 	}
 
 	return;
