@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/10/24 17:25:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/11/12 19:56:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -798,6 +798,13 @@ void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
                         //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
                         //                           for all consumers
                         pMsg->setId(_objectIndices[i] + 1);
+
+                        //  if it is a binary output, offset by BinaryOutputStatusOffset (currently 10,000)
+                        //    to make sure it doesn't collide with the other status points
+                        if( tmpObj->getGroup() == CtiDNPBinaryOutput::Group )
+                        {
+                            pMsg->setId(pMsg->getId() + CtiDNPBinaryOutput::BinaryOutputStatusOffset);
+                        }
                     }
 
                     pointList.append(pMsg);
