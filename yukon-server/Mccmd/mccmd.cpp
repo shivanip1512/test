@@ -9,13 +9,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/08/28 16:08:49 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/09/24 18:01:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-#include <set>
 
 #include <tcl.h>
 
@@ -1262,13 +1260,11 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     // Nothing to do get outta here
     if( req_set.entries() == 0 )
         return TCL_OK;
-
-    //Make a copy of the request set so we can match return messages
-    //and write out all of the requests
+   
+    //write out all of the requests
     RWSetIterator iter(req_set);
     for( ; iter(); )
     {
-
         CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
         req->setUserMessageId(msgid);
 
@@ -1277,11 +1273,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         else
             WriteOutput( (char*) req->CommandString().data() );
 
-
         PILConnection->WriteConnQue(req);
     }
-
-    if( timeout == 0 )
+    
+    if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
 
     long start = time(NULL);
@@ -1297,70 +1292,20 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     {
         status = queue_ptr->read(msg, 100);
 
-
         if( status != RW_THR_TIMEOUT && msg != NULL )
         {
-
             if( msg->isA() == MSG_PCRETURN )
             {
-
                 // received a message, reset the timeout
                 start = time(NULL);
 
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
-
-                long dev_id = ret_msg->DeviceId();
-
-                if( good_set.find(dev_id) != good_set.end() )
-                {
-                    RWCString warn("received a message for a device already in the good list, id: ");
-                    warn += CtiNumStr(dev_id);
-                    WriteOutput(warn);
-                }
-                else
-                {
-                    if( ret_msg->ExpectMore() )
-                    {
-                        device_set.insert(dev_id);
-                    }
-                    else
-                    {
-                        if( ret_msg->Status() == 0 )
-                        {
-                            if( bad_set.erase(dev_id) > 0 )
-                            {
-                                RWCString warn("moved device from bad list to good list, id: ");
-                                warn += CtiNumStr(dev_id);
-                                WriteOutput(warn);
-                            }
-
-                            device_set.erase(dev_id);
-
-                            if( !good_set.insert(dev_id).second )
-                            {
-                                RWCString warn("device already in good list, id: ");
-                                warn += CtiNumStr(dev_id);
-                                WriteOutput(warn);
-                            }
-                        }
-                        else
-                        {
-                            device_set.erase(dev_id);
-
-                            if( !bad_set.insert(dev_id).second)
-                            {
-                                RWCString warn("device already in bad list, id: ");
-                                warn += CtiNumStr(dev_id);
-                                WriteOutput(warn);
-                            }
-                        }
-
-                        // have we received everything expected?
-                        if( device_set.size() == 0 )
-                            break;
-                    }
-                }
+                HandleReturnMessage(*ret_msg, good_set, bad_set, device_set);
+                
+                // have we received everything expected?
+                if( device_set.size() == 0 )
+                    break;                
             }
             else
             {
@@ -1445,6 +1390,89 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     else
     {
         return TCL_OK;
+    }
+}
+
+/***
+    Handles the sorting of an incoming message form PIL
+****/   
+void HandleMessage(const RWCollectable& msg,
+                   set<long, less<long> >& good_set,
+                   set<long, less<long> >& bad_set,
+                   set<long, less<long> >& device_set )
+{
+    if( msg.isA() == MSG_PCRETURN )
+    {
+        HandleReturnMessage( (CtiReturnMsg&) msg, good_set, bad_set, device_set);
+    }
+    if( msg.isA() == MSG_MULTI )
+    {
+        CtiMultiMsg& multi_msg = (CtiMultiMsg&) msg;
+        
+        for( unsigned i = 0; i < multi_msg.getData( ).entries( ); i++ )
+        {        
+            HandleMessage( *(multi_msg.getData()[i]), good_set, bad_set, device_set);
+        }
+    }
+    else
+    {
+        RWCString warn("received an unkown message with class id: ");
+        warn += CtiNumStr(msg.isA());
+        WriteOutput(warn);
+    }
+}
+
+void HandleReturnMessage(const CtiReturnMsg& msg, 
+                         set<long, less<long> >& good_set,
+                         set<long, less<long> >& bad_set,
+                         set<long, less<long> >& device_set )                                                    
+{
+    long dev_id = msg.DeviceId();
+
+    if( good_set.find(dev_id) != good_set.end() )
+    {
+        RWCString warn("received a message for a device already in the good list, id: ");
+        warn += CtiNumStr(dev_id);
+        WriteOutput(warn);
+    }
+    else
+    {
+        if( msg.ExpectMore() )
+        {
+            device_set.insert(dev_id);
+        }
+        else
+        {
+            if( msg.Status() == 0 )
+            {
+                if( bad_set.erase(dev_id) > 0 )
+                {
+                    RWCString warn("moved device from bad list to good list, id: ");
+                    warn += CtiNumStr(dev_id);
+                    WriteOutput(warn);
+                }
+
+                device_set.erase(dev_id);
+
+                if( !good_set.insert(dev_id).second )
+                {
+                    RWCString warn("device already in good list, id: ");
+                    warn += CtiNumStr(dev_id);
+                    WriteOutput(warn);
+                }
+            }
+            else
+            {
+                device_set.erase(dev_id);
+
+                if( !bad_set.insert(dev_id).second)
+                {
+                    RWCString warn("device already in bad list, id: ");
+                    warn += CtiNumStr(dev_id);
+                    WriteOutput(warn);
+                }
+            }                       
+        }
     }
 }
 

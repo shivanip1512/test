@@ -21,6 +21,8 @@
                              
 #include <functional>
 #include <iostream>
+#include <set>
+
 using namespace std;
 
 #include <rw/collect.h>
@@ -113,6 +115,16 @@ static int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
 static int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
    
 static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way);
+
+static void HandleReturnMessage(const CtiReturnMsg& msg, 
+                         set<long, less<long> >& good_set,
+                         set<long, less<long> >& bad_set,
+                         set<long, less<long> >& device_set );
+
+static void HandleMessage(const RWCollectable& msg, 
+                         set<long, less<long> >& good_set,
+                         set<long, less<long> >& bad_set,
+                         set<long, less<long> >& device_set );
 
 /* Retrieves the id of a notification group given its name */
 static long GetNotificationGroupID( const RWCString& name );
