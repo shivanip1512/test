@@ -665,6 +665,20 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             double x = _calcpoint->pop();
             retVal = pow(x,y);
         }
+        else if( !functionName.compareTo("Max",RWCString::ignoreCase) )
+        {
+            DOUBLE a = _calcpoint->pop();
+            DOUBLE b = _calcpoint->pop();
+
+            retVal = ((a)>(b))?(a):(b);
+        }
+        else if( !functionName.compareTo("Min",RWCString::ignoreCase) )
+        {
+            DOUBLE a = _calcpoint->pop();
+            DOUBLE b = _calcpoint->pop();
+
+            retVal = ((a)<(b))?(a):(b);
+        }
         else if( !functionName.compareTo("Absolute Value",RWCString::ignoreCase) )
         {
             double a = _calcpoint->pop();
