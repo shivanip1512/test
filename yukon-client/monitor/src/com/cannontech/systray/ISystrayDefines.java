@@ -1,5 +1,7 @@
 package com.cannontech.systray;
 
+import snoozesoft.systray4j.SysTrayMenuIcon;
+
 /**
  * @author rneuharth
  *
@@ -15,16 +17,49 @@ public interface ISystrayDefines
 	public static final String MSG_ALRM_TOTALS	= "Alarm Totals : ";
 
 
+
+	/*
+		public static final String EXEC_TDC = "cmd /C java -jar tdc.jar";
+		public static final String EXEC_DBEDITOR = "cmd /C java -jar dbeditor.jar";
+		public static final String EXEC_COMMANDER = "cmd /C java -jar yc.jar";
+		public static final String EXEC_TRENDING = "cmd /C java -jar graph.jar";
+	*/
+
 	//command line execs for apps
 	public static final String EXEC_TDC = "cmd /C java -jar d:/yukon/client/bin/tdc.jar";
 	public static final String EXEC_DBEDITOR = "cmd /C java -jar d:/yukon/client/bin/dbeditor.jar";
 	public static final String EXEC_COMMANDER = "cmd /C java -jar d:/yukon/client/bin/yc.jar";
 	public static final String EXEC_TRENDING = "cmd /C java -jar d:/yukon/client/bin/graph.jar";
 
-/*
-	public static final String EXEC_TDC = "cmd /C java -jar tdc.jar";
-	public static final String EXEC_DBEDITOR = "cmd /C java -jar dbeditor.jar";
-	public static final String EXEC_COMMANDER = "cmd /C java -jar yc.jar";
-	public static final String EXEC_TRENDING = "cmd /C java -jar graph.jar";
-*/
+
+	//indexes to the icons array that have meaning
+	public static final int ICO_NO_ALRM = 0;
+	public static final int ICO_DISCON = 1;
+	public static final int ICO_NO_LOG = 2;
+	public static final int ICO_ANIME_START = 3;
+
+
+	// create icons
+	// the extension can be omitted for icons
+	public static final SysTrayMenuIcon[] ALL_ICONS = 
+	{
+		//default state
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonNoAlarm" + SysTrayMenuIcon.getExtension()) ),
+	
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonDiscon" + SysTrayMenuIcon.getExtension()) ),
+	
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonNoLog" + SysTrayMenuIcon.getExtension()) ),
+	
+	
+		//all animated icons go below here
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonAlarm1" + SysTrayMenuIcon.getExtension()) ),
+	
+		new SysTrayMenuIcon(
+			ClassLoader.getSystemResource("YukonAlarm2" + SysTrayMenuIcon.getExtension()) ),
+	};
+
 }

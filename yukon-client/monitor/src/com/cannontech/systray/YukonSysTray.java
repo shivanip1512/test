@@ -20,46 +20,10 @@ import snoozesoft.systray4j.*;
  * The main application that brings up the sys tray icon for Yukon. All components and icons
  * used are created/found in here. 
  */
-public class YukonSysTray implements SysTrayMenuListener, ActionListener
-{
+public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystrayDefines
+{	
 	private AlarmHandler alarmHandler = null;
 	private Thread iconCyclerThrd = null;
-	
-
-	private final SysTrayMenu yukonSysTray = 
-			new SysTrayMenu( ALL_ICONS[ICO_DISCON], ISystrayDefines.MSG_STARTING );
-
-	// create icons
-	// the extension can be omitted for icons
-	static final SysTrayMenuIcon[] ALL_ICONS = 
-	{
-		//default state
-		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonNoAlarm" + SysTrayMenuIcon.getExtension()) ),
-
-		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonDiscon" + SysTrayMenuIcon.getExtension()) ),
-
-		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonNoLog" + SysTrayMenuIcon.getExtension()) ),
-
-
-		//all animated icons go below here
-		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("YukonAlarm1" + SysTrayMenuIcon.getExtension()) ),
-
-		new SysTrayMenuIcon(
-			ClassLoader.getSystemResource("YukonAlarm2" + SysTrayMenuIcon.getExtension()) ),
-	};
-
-	
-	//indexes to the icons array that have meaning
-	public static final int ICO_NO_ALRM = 0;
-	public static final int ICO_DISCON = 1;
-	public static final int ICO_NO_LOG = 2;
-	public static final int ICO_ANIME_START = 3;
-
-
 
 	private SysTrayMenuItem menuItemExit = null;
 	private SysTrayMenuItem menuItemAbout = null;
@@ -76,6 +40,10 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener
 	private SysTrayMenuItem menuItemProperties = null;
 
 
+	private final SysTrayMenu yukonSysTray = 
+		new SysTrayMenu( ALL_ICONS[ICO_DISCON], ISystrayDefines.MSG_STARTING );
+
+
 	public YukonSysTray()
 	{
 		super();
@@ -87,41 +55,15 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener
 		// create the menu that is for the systray icon
 		initComponents();
 	}
-
+	
 	public synchronized void startCycleImages()
 	{
-		if( iconCyclerThrd == null )
+		if( iconCyclerThrd == null 
+			 || iconCyclerThrd.isInterrupted() )
 		{
-			Runnable r = new Runnable()
-			{
-				public void run()
-				{
-					try
-					{
-						while( true )
-						{
-							for( int i = ICO_ANIME_START; i < ALL_ICONS.length; i++ )
-							{
-								yukonSysTray.setIcon( ALL_ICONS[i] );
-								
-								Thread.currentThread().sleep(1000);
-							}
-
-						}
-					}
-					catch( Exception e ) {}
-					finally
-					{
-						yukonSysTray.setIcon( ALL_ICONS[ICO_NO_ALRM] );
-						iconCyclerThrd = null;
-					}
-
-				}
-
-			};
-
-
-			iconCyclerThrd = new Thread(r, "IconCycler" );
+			iconCyclerThrd = new Thread(
+					new SystrayFlasher(yukonSysTray), "IconCycler" );
+			
 			iconCyclerThrd.start();
 		}
 	}
