@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.StateImage;
@@ -35,8 +34,8 @@ public class PersistStateImage extends BasePersistElement {
 			
 			switch(version) {
 				case 1: {
-					 LitePoint lp = PointFuncs.getLitePoint( LxSaveUtils.readInt(in));
-        			elem.setPoint(lp);
+					int pointID = LxSaveUtils.readInt(in);
+        			elem.setPointID(pointID);
                     elem.setLinkTo(LxSaveUtils.readString(in));   
 				}
 				break;
