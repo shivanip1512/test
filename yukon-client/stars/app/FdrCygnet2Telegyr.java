@@ -26,6 +26,9 @@ public class FdrCygnet2Telegyr {
 	private static final int YUKON_POINT_ID = 1;
 	private static final int API_GROUP_NAME = 2;
 	
+	private static final java.text.DecimalFormat grpNumFormat =
+			new java.text.DecimalFormat( "000" );	// three digits
+	
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println( "Usage: java " + FdrCygnet2Telegyr.class.getName() + " input_file [output_file]" );
@@ -41,30 +44,50 @@ public class FdrCygnet2Telegyr {
 		
 		File outputFile = (args.length > 1)? new File(args[1]) : new File(inputFile.getParent(), OUTPUT_FILE);
 		ArrayList sqlStmts = new ArrayList();
-		TreeMap telegyrGrps = new TreeMap();
+		//TreeMap telegyrGrps = new TreeMap();
+		int maxGrpNum = 0;
 		
 		for (int i = 1; i < lines.size(); i++) {
 			String line = (String) lines.get(i);
 			String[] fields = line.split(",");
 			
 			char pointType = fields[EMS_TREN_NAME].charAt(0);
+			int pointID = Integer.parseInt( fields[YUKON_POINT_ID] );
+			int grpNum = (pointID - 1) / 128 + 1;
+			String grpName = ((pointType == 'A')? "Analog" : "Status") + grpNumFormat.format( grpNum );
 			
-			if (!telegyrGrps.containsKey( fields[API_GROUP_NAME] ))
-				telegyrGrps.put( fields[API_GROUP_NAME], ((pointType == 'A')? "analog" : "digital") );
+//			if (!telegyrGrps.containsKey( grpName ))
+//				telegyrGrps.put( grpName, ((pointType == 'A')? "analog" : "digital") );
+			
+//			if (grpNum > maxGrpNum) maxGrpNum = grpNum;
 			
 			String sql = "update FDRTranslation set InterfaceType='TELEGYR', destination='TELEGYR', Translation='Point:" +
-					fields[EMS_TREN_NAME] + ";Group:" + fields[API_GROUP_NAME] + ";POINTTYPE:" + ((pointType == 'A')? "Analog" : "Status") +
+					fields[EMS_TREN_NAME] + ";Group:" + grpName + ";POINTTYPE:" + ((pointType == 'A')? "Analog" : "Status") +
 					"' where PointID=" + fields[YUKON_POINT_ID] + ";";
 			sqlStmts.add( sql );
 		}
 		
-		Object[] grpNames = telegyrGrps.keySet().toArray();
-		for (int i = 0; i < grpNames.length; i++) {
-			String grpName = (String) grpNames[i];
-			String grpType = (String) telegyrGrps.get( grpName );
-			
-			String sql = "insert into FDRTelegyrGroup values (" + (i+1) + ",'" + grpName + "',120,'" + grpType + "');";
-			sqlStmts.add( i, sql );
+//		Object[] grpNames = telegyrGrps.keySet().toArray();
+//		for (int i = 0; i < grpNames.length; i++) {
+//			String grpName = (String) grpNames[i];
+//			String grpType = (String) telegyrGrps.get( grpName );
+//			
+//			String sql = "insert into FDRTelegyrGroup values (" + (i+1) + ",'" + grpName + "',120,'" + grpType + "');";
+//			sqlStmts.add( i, sql );
+//		}
+		
+		maxGrpNum = 50;	// We will generate 50 groups each
+		
+		for (int i = 1; i <= maxGrpNum; i++) {
+			String grpNum = grpNumFormat.format( i );
+			String sql = "insert into FDRTelegyrGroup values (" + i + ",'Analog" + grpNum + "',120,'analog');";
+			sqlStmts.add( i-1, sql );
+		}
+		
+		for (int i = maxGrpNum + 1; i <= maxGrpNum * 2; i++) {
+			String grpNum = grpNumFormat.format( i - maxGrpNum );
+			String sql = "insert into FDRTelegyrGroup values (" + i + ",'Status" + grpNum + "',120,'digital');";
+			sqlStmts.add( i-1, sql );
 		}
 		
 		try {
