@@ -18,6 +18,11 @@
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 
+<%@ page import="com.cannontech.roles.operator.CommercialMeteringRole"%>
+<%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
+<%@ page import="com.cannontech.graph.model.TrendModelType" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
+
 <cti:checklogin/>
  
 <%
@@ -29,7 +34,7 @@
 		return;
 	}
 	
-	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
 	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
@@ -130,4 +135,31 @@
 	datePart.setTimeZone(tz);
 	dateFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
+	
+//METERING PARAMETERS
+	LiteYukonUser liteYukonUser = null;
+	int liteYukonUserID = -1;
+	try
+	{
+		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
+		liteYukonUserID = liteYukonUser.getLiteID();		
+	}
+	catch (IllegalStateException ise)
+	{
+	}
+	int energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+	if (liteYukonUser == null)
+	{
+		response.sendRedirect(request.getContextPath() + "/login.jsp"); return;
+	}
+
+	Object[][] gData = null;
 %>
+	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
+		<%-- this body is executed only if the bean is created --%>
+	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
+	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(ServletUtil.getToday())%>"/>
+	<jsp:setProperty name="graphBean" property="period" value="<%=ServletUtil.historicalPeriods[0]%>"/>
+	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
+	    <%-- intialize bean properties --%>
+	</jsp:useBean>
