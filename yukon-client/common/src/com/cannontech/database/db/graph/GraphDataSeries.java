@@ -26,7 +26,7 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent {
 	//respectively..... it saves a database hit in
 	//certain circumstances
 	private java.lang.String deviceName;
-	private java.lang.Integer uomID;	
+//	private java.lang.Integer uomID;	
 /**
  * GraphDataSeries constructor comment.
  */
@@ -114,7 +114,9 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID)
 public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID, String databaseAlias) 
 {
 	
-	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
+//	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
+	//Remove PointUnit table in order to get Status points visible.  Status points have no pointunit.
+	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
 
 	com.cannontech.database.SqlStatement sql = new com.cannontech.database.SqlStatement(sqlString, databaseAlias);
 
@@ -140,7 +142,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		String axis = (String) sql.getRow(i)[4];
 		java.math.BigDecimal color = (java.math.BigDecimal) sql.getRow(i)[5];
 		String deviceName = (String) sql.getRow(i)[6];
-		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
+//		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
 	
 		dataSeries.setGraphDataSeriesID ( new Integer( gdsID.intValue() ) );		
 		dataSeries.setGraphDefinitionID(graphDefinitionID);
@@ -150,7 +152,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		dataSeries.setAxis( new Character( axis.charAt(0)) );
 		dataSeries.setColor( new Integer( color.intValue() ) );
 		dataSeries.setDeviceName(deviceName);
-		dataSeries.setUoMId(new Integer (uomid.intValue()) );
+//		dataSeries.setUoMId(new Integer (uomid.intValue()) );
 			
 		temp.addElement( dataSeries );
 	}
@@ -270,7 +272,7 @@ public java.lang.String getType() {
  * Creation date: (10/6/00 2:49:54 PM)
  * @return java.lang.String
  */
-public java.lang.Integer getUoMId() {
+/*public java.lang.Integer getUoMId() {
 	return uomID;
 }
 /**
@@ -372,7 +374,7 @@ public void setType(java.lang.String newType) {
  * Creation date: (10/6/00 2:49:54 PM)
  * @param newUnitOfMeasure java.lang.String
  */
-public void setUoMId(java.lang.Integer newUOMID) {
+/*public void setUoMId(java.lang.Integer newUOMID) {
 	uomID = newUOMID;
 }
 /**
