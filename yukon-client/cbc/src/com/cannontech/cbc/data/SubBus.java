@@ -1,6 +1,5 @@
 package com.cannontech.cbc.data;
 
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**

@@ -188,12 +188,7 @@ public void logEvent(String event, int severity)
 			logger.log("Starting up " + className, com.cannontech.common.util.LogWriter.INFO );
 			logger.log("Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() +VERSION+ ".", com.cannontech.common.util.LogWriter.INFO );
 
-		}
-		catch( java.io.FileNotFoundException e )
-		{
-			e.printStackTrace();
-		}
-
+		}		
 		catch( java.io.IOException e )
 		{
 			e.printStackTrace();

@@ -6,7 +6,6 @@ package com.cannontech.dbeditor.range;
  * 
  * A undefined generated comment
  */
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.DeviceTypes;
 
 public class DeviceAddressRange

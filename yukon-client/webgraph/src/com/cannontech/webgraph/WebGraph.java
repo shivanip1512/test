@@ -5,7 +5,6 @@ package com.cannontech.webgraph;
  * Creation date: (10/24/2001 11:51:56 AM)
  * @author: 
  */
-import com.klg.jclass.util.swing.encode.*;
 import java.util.GregorianCalendar;
 
 import com.cannontech.graph.Graph;

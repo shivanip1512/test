@@ -7,7 +7,6 @@ import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
 import com.cannontech.cbc.capbankeditor.ObservableCapBankRow;
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.CapControlTags;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.messages.CBCCommand;
 

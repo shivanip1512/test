@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import javax.swing.Timer;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
@@ -629,7 +630,7 @@ public void setDbAlias(java.lang.String newDbAlias) {
 	 */
 public synchronized void update(java.util.Observable o, java.lang.Object arg) 
 {
-	com.cannontech.clientutils.CTILogger.info( getClass() + ": received type: " + arg.getClass());
+	CTILogger.info( getClass() + ": received type: " + arg.getClass());
 
 	if( arg instanceof com.cannontech.loadcontrol.events.LCChangeEvent )
 	{

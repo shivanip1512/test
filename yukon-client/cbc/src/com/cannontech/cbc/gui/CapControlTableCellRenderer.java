@@ -1,8 +1,5 @@
 package com.cannontech.cbc.gui;
 
-import com.cannontech.cbc.data.CapControlTags;
-import com.cannontech.common.gui.util.Colors;
-
 /**
  * This type was created in VisualAge.
  */

@@ -5,7 +5,6 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 import javax.swing.event.TreeSelectionEvent;

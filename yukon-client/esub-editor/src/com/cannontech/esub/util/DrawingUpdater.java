@@ -1,15 +1,11 @@
 package com.cannontech.esub.util;
 
-import java.text.DecimalFormat;
 import java.util.TimerTask;
 
 import com.cannontech.common.cache.PointChangeCache;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
-import com.cannontech.database.cache.functions.UnitMeasureFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.editor.element.DynamicText;
