@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/02/21 20:32:48 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/02/21 22:20:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1053,7 +1053,8 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 
     if(parse.isKeyValid("xctimesync"))
     {
-        status = timeSync( RWTime() );
+        bool dsync = parse.getiValue("xcdatesync", 0) ? true : false;
+        status = timeSync( RWTime(), dsync );
     }
 
     if(parse.isKeyValid("xcrawconfig"))

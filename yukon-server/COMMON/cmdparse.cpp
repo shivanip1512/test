@@ -3135,6 +3135,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
     if(CmdStr.contains(" time"))
     {
         _cmd["xctimesync"] = CtiParseValue( TRUE );  // Temperatures are celsius
+
+        if(CmdStr.contains(" date"))
+        {
+            _cmd["xcdatesync"] = CtiParseValue( TRUE );  // Temperatures are celsius
+        }
     }
 
     if(!(token = CmdStr.match("template +((\"|')[^\"']+(\"|'))")).isNull())
