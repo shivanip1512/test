@@ -3,8 +3,7 @@ package com.cannontech.graph.menu;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+
 
 public class OptionsMenu extends javax.swing.JMenu {
 	private javax.swing.JCheckBoxMenuItem ivjDwellMenuItem = null;
