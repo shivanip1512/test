@@ -2,15 +2,16 @@
 *
 * File:   dnp_datalink
 *
-* Class:  CtiDNPDatalink
+* Namespace: CtiDNP
+* Class:     Datalink
 * Date:   5/6/2002
 *
 * Author: Matt Fisher
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/10 21:07:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +25,11 @@
 
 #include "dnp_datalink_packet.h"
 
-class CtiDNPDatalink
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+class Datalink
 {
 private:
 
@@ -39,13 +44,13 @@ private:
     bool _fcb_out, _fcb_in;
 
     //  used in all cases
-    dnp_datalink_packet _packet;
-    dnp_datalink_packet _control_packet;
+    datalink_packet _packet;
+    datalink_packet _control_packet;
 
     int _comm_errors;
     int _protocol_errors;
 
-    enum DatalinkIOState
+    enum IOState
     {
         State_IO_Uninitialized,
         State_IO_Output,
@@ -56,7 +61,7 @@ private:
         State_IO_Failed
     } _io_state;
 
-    enum DatalinkControlState
+    enum ControlState
     {
         State_Control_Ready,
         State_Control_Request_DLReset_Out,
@@ -89,29 +94,29 @@ protected:
 
     unsigned short computeCRC(const unsigned char *buf, int len);
 
-    void constructDataPacket( dnp_datalink_packet &packet, unsigned char *buf, unsigned long len );
+    void constructDataPacket( datalink_packet &packet, unsigned char *buf, unsigned long len );
 
     bool isControlPending( void );
-    bool processControl( const dnp_datalink_packet &packet );
+    bool processControl( const datalink_packet &packet );
     void generateControl( CtiXfer &xfer );
     void decodeControl  ( CtiXfer &xfer, int status );
 
-    void constructPrimaryControlPacket  ( dnp_datalink_packet &packet, PrimaryControlFunction   function, bool fcv, bool fcb );
-    void constructSecondaryControlPacket( dnp_datalink_packet &packet, SecondaryControlFunction function, bool dfc );
+    void constructPrimaryControlPacket  ( datalink_packet &packet, PrimaryControlFunction   function, bool fcv, bool fcb );
+    void constructSecondaryControlPacket( datalink_packet &packet, SecondaryControlFunction function, bool dfc );
 
-    void sendPacket( dnp_datalink_packet &packet, CtiXfer &xfer );
-    void recvPacket( dnp_datalink_packet &packet, CtiXfer &xfer );
+    void sendPacket( datalink_packet &packet, CtiXfer &xfer );
+    void recvPacket( datalink_packet &packet, CtiXfer &xfer );
 
-    bool isValidDataPacket( const dnp_datalink_packet &packet );
-    bool isValidAckPacket ( const dnp_datalink_packet &packet );
+    bool isValidDataPacket( const datalink_packet &packet );
+    bool isValidAckPacket ( const datalink_packet &packet );
 
     int  calcPacketLength( int headerLen );
-    bool isEntirePacket( const dnp_datalink_packet &packet, unsigned long in_recv );
+    bool isEntirePacket( const datalink_packet &packet, unsigned long in_recv );
 
-    bool areFramingBytesValid( const dnp_datalink_packet &packet );
-    bool areCRCsValid        ( const dnp_datalink_packet &packet );
+    bool areFramingBytesValid( const datalink_packet &packet );
+    bool areCRCsValid        ( const datalink_packet &packet );
 
-    void putPacketPayload( const dnp_datalink_packet &packet, unsigned char *buf, int *len );
+    void putPacketPayload( const datalink_packet &packet, unsigned char *buf, int *len );
 
     enum PrimaryControlFunction
     {
@@ -147,12 +152,12 @@ protected:
 
 public:
 
-    CtiDNPDatalink();
-    CtiDNPDatalink(const CtiDNPDatalink &aRef);
+    Datalink();
+    Datalink(const Datalink &aRef);
 
-    virtual ~CtiDNPDatalink();
+    virtual ~Datalink();
 
-    CtiDNPDatalink &operator=(const CtiDNPDatalink &aRef);
+    Datalink &operator=(const Datalink &aRef);
 
     void setAddresses( unsigned short dst, unsigned short src);
     void setOptions  ( int options );
@@ -181,5 +186,9 @@ public:
         Error_UnknownMessage
     };
 };
+
+}
+}
+}
 
 #endif // #ifndef __DNP_DATALINK_H__
