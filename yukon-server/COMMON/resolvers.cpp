@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/10/09 19:36:56 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/11/21 21:22:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1441,6 +1441,7 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_TAPTERM:
     case TYPE_WCTP:
     case TYPE_KV2:
+    case TYPE_ION7700:
         {
             slaveAddress = -1;
             break;
