@@ -527,37 +527,29 @@ private javax.swing.JLabel getTransmitDurationJLabel() {
 	}
 	return ivjTransmitDurationJLabel;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-public Object getValue(Object o) {
-	
+public Object getValue(Object o)
+{	
 	YukonPAObject pao = (YukonPAObject)o;
 
 	if(getJCheckBoxEnable().isSelected())
 	{
 		//Add new exclusion timing information to the assigned PAOExclusion Vector
 		Integer paoID = pao.getPAObjectID();
-		Integer functionID = CtiUtilities.EXCLUSION_TIMING_FUNC_ID;
-		String funcName = CtiUtilities.EXCLUSION_TIME_INFO;
-	
-		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-		StringBuffer exclusionTiming = new StringBuffer();
-		exclusionTiming.append("CycleTime:");
-		Integer cycleTime = new Integer(getCycleTimeJTextField().getText());
-		cycleTime = new Integer(cycleTime.intValue() * 60);
-		exclusionTiming.append(cycleTime);
-		exclusionTiming.append(",Offset:" + getJTextFieldOffset().getText());
-		exclusionTiming.append(",TransmitTime:" + getJTextFieldTransmitTime().getText());
-	
-		PAOExclusion paoExcl = new PAOExclusion(
-			paoID, functionID, funcName, exclusionTiming.toString()
-			);
 		
-		pao.getPAOExclusionVector().add( paoExcl );
+		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+		PAOExclusion paoExcl = 
+			PAOExclusion.createExclusTiming( paoID,
+				new Integer(getCycleTimeJTextField().getText()),
+				new Integer(getJTextFieldOffset().getText()),
+				new Integer(getJTextFieldTransmitTime().getText()) );
 
+		pao.getPAOExclusionVector().add( paoExcl );
 	} 
 	
 	//if it isn't enabled, save the info but don't make it a "real" entry (append a comment symbol)
@@ -567,25 +559,18 @@ public Object getValue(Object o) {
 	{
 		//Add new exclusion timing information to the assigned PAOExclusion Vector
 		Integer paoID = pao.getPAObjectID();
-		Integer functionID = CtiUtilities.EXCLUSION_TIMING_FUNC_ID;
-		String funcName = CtiUtilities.EXCLUSION_TIME_INFO;
-	
-	    //CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-		StringBuffer exclusionTiming = new StringBuffer();
-		//appending the "#" to the string so that porter knows not to use it
-		exclusionTiming.append("#CycleTime:");
-		Integer cycleTime = new Integer(getCycleTimeJTextField().getText());
-		cycleTime = new Integer(cycleTime.intValue() * 60);
-		exclusionTiming.append(cycleTime);
-		exclusionTiming.append(",Offset:" + getJTextFieldOffset().getText());
-		exclusionTiming.append(",TransmitTime:" + getJTextFieldTransmitTime().getText());
-	
-	
-		PAOExclusion paoExcl = new PAOExclusion(
-			paoID, functionID, funcName, exclusionTiming.toString()
-			);
 		
+		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+		PAOExclusion paoExcl = 
+			PAOExclusion.createExclusTiming( paoID,
+				new Integer(getCycleTimeJTextField().getText()),
+				new Integer(getJTextFieldOffset().getText()),
+				new Integer(getJTextFieldTransmitTime().getText()) );
+
+		//appending the "#" to the string so that porter knows not to use it
+		paoExcl.setFuncParams( "#" + paoExcl.getFuncParams() );
 		pao.getPAOExclusionVector().add( paoExcl );
+		
 	}
 	return pao;
 }
