@@ -189,23 +189,26 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 	
 	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany) throws WebClientException, CommandExecutionException
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws WebClientException, CommandExecutionException
 	{
 		String orderNo = createOrder.getOrderNumber();
-		if (orderNo != null) {
-			if (orderNo.trim().length() == 0)
-				throw new WebClientException( "Order # cannot be empty" );
-			if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
-				throw new WebClientException( "Order # cannot start with reserved string '" + ServerUtils.AUTO_GEN_NUM_PREC + "'" );
-			if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() ))
-				throw new WebClientException( "Order # already exists" );
-		}
-		else {
-			// Order # not provided, get the next one available
-			orderNo = energyCompany.getNextOrderNumber();
-			if (orderNo == null)
-				throw new WebClientException( "Failed to assign an order # automatically" );
-			createOrder.setOrderNumber( ServerUtils.AUTO_GEN_NUM_PREC + orderNo );
+		
+		if (checkConstraint) {
+			if (orderNo != null) {
+				if (orderNo.trim().length() == 0)
+					throw new WebClientException( "Order # cannot be empty" );
+				if (orderNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+					throw new WebClientException( "Order # cannot start with reserved string '" + ServerUtils.AUTO_GEN_NUM_PREC + "'" );
+				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() ))
+					throw new WebClientException( "Order # already exists" );
+			}
+			else {
+				// Order # not provided, get the next one available
+				orderNo = energyCompany.getNextOrderNumber();
+				if (orderNo == null)
+					throw new WebClientException( "Failed to assign an order # automatically" );
+				createOrder.setOrderNumber( ServerUtils.AUTO_GEN_NUM_PREC + orderNo );
+			}
 		}
         
 		com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
@@ -230,6 +233,12 @@ public class CreateServiceRequestAction implements ActionBase {
 			liteAcctInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
 		
 		return liteOrder;
+	}
+	
+	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
+		LiteStarsEnergyCompany energyCompany) throws WebClientException, CommandExecutionException
+	{
+		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, true);
 	}
 
 }

@@ -270,30 +270,33 @@ public class NewCustAccountAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
-	throws WebClientException, CommandExecutionException {
+	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, StarsYukonUser user,
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws WebClientException, CommandExecutionException
+	{
 		StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
 		StarsUpdateLogin updateLogin = newAccount.getStarsUpdateLogin();
         
-		// Check to see if the account number has duplicates
-		String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
-				   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + user.getEnergyCompanyID()
-				   + " AND UPPER(acct.AccountNumber) = UPPER('" + starsAccount.getAccountNumber() + "')";
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-		stmt.execute();
-		
-		if (stmt.getRowCount() > 0)
-			throw new WebClientException( "The account number already exists" );
-        
-		// Check to see if the login is valid
-		if (updateLogin != null) {
-			if (updateLogin.getUsername().trim().length() == 0 || updateLogin.getPassword().trim().length() == 0)
-				throw new WebClientException( "Username and password cannot be empty" );
-		    
-			if (!UpdateLoginAction.checkLogin( updateLogin ))
-				throw new WebClientException( "Username already exists" );
-		}
+        if (checkConstraint) {
+			// Check to see if the account number has duplicates
+			String sql = "SELECT 1 FROM CustomerAccount acct, ECToAccountMapping map "
+					   + "WHERE acct.AccountID = map.AccountID AND map.EnergyCompanyID = " + user.getEnergyCompanyID()
+					   + " AND UPPER(acct.AccountNumber) = UPPER('" + starsAccount.getAccountNumber() + "')";
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			if (stmt.getRowCount() > 0)
+				throw new WebClientException( "The account number already exists" );
+        	
+			// Check to see if the login is valid
+			if (updateLogin != null) {
+				if (updateLogin.getUsername().trim().length() == 0 || updateLogin.getPassword().trim().length() == 0)
+					throw new WebClientException( "Username and password cannot be empty" );
+		    	
+				if (!UpdateLoginAction.checkLogin( updateLogin ))
+					throw new WebClientException( "Username already exists" );
+			}
+        }
     	
 		/* Create yukon user */
 		int userID = com.cannontech.user.UserUtils.USER_YUKON_ID;
@@ -411,6 +414,12 @@ public class NewCustAccountAction implements ActionBase {
         
 		//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
 		return liteAcctInfo;
+	}
+	
+	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException, CommandExecutionException
+	{
+		return newCustomerAccount(newAccount, user, energyCompany, true);
 	}
 
 }

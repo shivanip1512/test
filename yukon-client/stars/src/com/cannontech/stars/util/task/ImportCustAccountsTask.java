@@ -137,16 +137,16 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[ImportManager.IDX_ACCOUNT_NO] );
 				
 				if (liteAcctInfo == null) {
-					liteAcctInfo = ImportManager.newCustomerAccount( custFields, user, energyCompany );
+					liteAcctInfo = ImportManager.newCustomerAccount(custFields, user, energyCompany, false);
 					
 					LiteInventoryBase liteInv = null;
 					if (!invFields[ImportManager.IDX_SERIAL_NO].equalsIgnoreCase(""))
-						liteInv = ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+						liteInv = ImportManager.insertLMHardware(invFields, liteAcctInfo, energyCompany, conn, true);
 					
 					Integer invID = null;
 					if (liteInv != null)
 						invID = new Integer( liteInv.getInventoryID() );
-					ImportManager.programSignUp( programs, liteAcctInfo, invID, energyCompany, conn );
+					ImportManager.programSignUp(programs, liteAcctInfo, invID, energyCompany, conn);
 					
 					numAcctAdded++;
 				}
@@ -157,19 +157,19 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					if (!invFields[ImportManager.IDX_SERIAL_NO].equalsIgnoreCase(""))
 					{
 						if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_INSERT )) {
-							ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+							ImportManager.insertLMHardware(invFields, liteAcctInfo, energyCompany, conn, true);
 						}
 						else if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_UPDATE )) {
-							ImportManager.updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+							ImportManager.updateLMHardware(invFields, liteAcctInfo, energyCompany, conn);
 						}
 						else if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_REMOVE )) {
-							ImportManager.removeLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+							ImportManager.removeLMHardware(invFields, liteAcctInfo, energyCompany, conn);
 						}
 						else {	// Hardware action field not specified
 							if (liteAcctInfo.getInventories().size() == 0)
-								ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+								ImportManager.insertLMHardware(invFields, liteAcctInfo, energyCompany, conn, true);
 							else
-								ImportManager.updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+								ImportManager.updateLMHardware(invFields, liteAcctInfo, energyCompany, conn);
 						}
 					}
 					
@@ -177,7 +177,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						Integer dftInvID = null;
 						if (liteAcctInfo.getInventories().size() == 1)
 							dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
-						ImportManager.programSignUp( programs, liteAcctInfo, dftInvID, energyCompany, conn );
+						ImportManager.programSignUp(programs, liteAcctInfo, dftInvID, energyCompany, conn);
 					}
 					
 					numAcctUpdated++;

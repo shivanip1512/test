@@ -1848,8 +1848,8 @@ public class ImportManager extends HttpServlet {
 	    account.setPrimaryContact( primContact );
 	}
 
-	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
-		throws Exception
+	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user,
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
 	{
 		// Build the request message
 		StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
@@ -1865,7 +1865,7 @@ public class ImportManager extends HttpServlet {
 			newAccount.setStarsUpdateLogin( login );
 		}
 		
-		return NewCustAccountAction.newCustomerAccount( newAccount, user, energyCompany );
+		return NewCustAccountAction.newCustomerAccount(newAccount, user, energyCompany, checkConstraint);
 	}
 
 	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
@@ -2014,7 +2014,7 @@ public class ImportManager extends HttpServlet {
 	}
 
 	public static LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
+		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn, boolean checkConstraint) throws Exception
 	{
 		// Check inventory and build request message
 		int devTypeID = ImportManager.getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
@@ -2025,8 +2025,10 @@ public class ImportManager extends HttpServlet {
 		LiteInventoryBase liteInv = null;
 		
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID, energyCompany );
-		if (ECUtils.isLMHardware( categoryID ))
-			liteInv = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
+		if (ECUtils.isLMHardware( categoryID )) {
+			if (checkConstraint)
+				liteInv = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
+		}
 		else if (fields[IDX_DEVICE_NAME].length() > 0)
 			liteInv = energyCompany.searchForDevice( categoryID, fields[IDX_DEVICE_NAME] );
 		
@@ -2414,7 +2416,7 @@ public class ImportManager extends HttpServlet {
 	}
 
 	public static void newServiceRequest(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
 	{
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		createOrder.setOrderNumber( fields[IDX_ORDER_NO] );
@@ -2477,7 +2479,7 @@ public class ImportManager extends HttpServlet {
 		company.setEntryID( Integer.parseInt(fields[IDX_ORDER_CONTRACTOR]) );
 		createOrder.setServiceCompany( company );
 	    
-		CreateServiceRequestAction.createServiceRequest( createOrder, liteAcctInfo, energyCompany );
+		CreateServiceRequestAction.createServiceRequest(createOrder, liteAcctInfo, energyCompany, checkConstraint);
 	}
 
 	public static void newResidenceInfo(String[] fields, LiteStarsCustAccountInformation liteAcctInfo)
