@@ -2013,9 +2013,12 @@ public static void main(String[] args) {
                      (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - f.getSize().height) / 2);
 
       f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-
-	  ClientSession session = ClientSession.establishSession(f);			
-		
+			
+	  ClientSession session = ClientSession.getInstance(); 
+	  if(!session.establishSession(f)){
+		  System.exit(-1);			
+	  }
+	  	
 	  if(session == null) 
 	  {
 		  System.exit(-1);

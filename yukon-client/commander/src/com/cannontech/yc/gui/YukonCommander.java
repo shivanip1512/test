@@ -1279,13 +1279,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow( ycClient, "ctismall.gif", "Loading resources...", new java.awt.Font("dialog", 0, 14), java.awt.Color.black, java.awt.Color.black, 1 );
 			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
 			
-			ClientSession session = ClientSession.establishSession(ycClient);			
-		
-			if(session == null) 
-			{
-				System.exit(-1);
+			ClientSession session = ClientSession.getInstance(); 
+			if(!session.establishSession(ycClient)) {
+				System.exit(-1);			
 			}
-	
+		
 			if(!session.checkRole(CommanderRole.ROLEID)) {
 			  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
 			  System.exit(-1);				

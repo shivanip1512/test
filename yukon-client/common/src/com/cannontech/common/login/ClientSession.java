@@ -68,12 +68,18 @@ public class ClientSession {
 		return AuthFuncs.checkRoleProperty(getUser(), rolePropertyID);
 	}
 	
-		
+	public static synchronized ClientSession getInstance() {
+		if(instance == null) {
+			instance = new ClientSession();
+		}
+		return instance;
+	}
+	
 	/**
 	 * Attempt to establish a session
 	 * @return
 	 */
-	public static synchronized ClientSession establishSession() {
+	public synchronized boolean establishSession() {
 		return establishSession(null);
 	}
 	
@@ -83,54 +89,50 @@ public class ClientSession {
 	 * @param parent
 	 * @return
 	 */
-	public static synchronized ClientSession establishSession(Frame parent) {
+	public synchronized boolean establishSession(Frame parent) {
 		String errMsg = null;
 		
-		if(instance == null) {				
-			ClientSession session = new ClientSession();
-
-			LoginPrefs prefs = LoginPrefs.getInstance();
-			LiteYukonUser user;	
-							
-			Properties dbProps = PoolManager.loadDBProperties();
-			if(dbProps != null && !dbProps.isEmpty()) {
-				CTILogger.info("Local database properties found, skipping logon");
-				user = YukonUserFuncs.getLiteYukonUser(-1);
-				if(user == null) {
-					CTILogger.error("Couldn't locate default user in the database");
-					return null;
-				}
-				session.user = user;
-				instance = session;
-				return instance;
-			}
+		LoginPrefs prefs = LoginPrefs.getInstance();
+		LiteYukonUser user;	
+		
+		Properties dbProps = PoolManager.loadDBProperties();
+		if(dbProps != null && !dbProps.isEmpty()) {
+			CTILogger.info("Local database properties found, skipping logon");
+			user = YukonUserFuncs.getLiteYukonUser(-1);
 			
+			if(user == null) {
+				CTILogger.error("Couldn't locate default user in the database");
+				return false;
+			}
 
-			String sessionID = prefs.getCurrentSessionID();
-			String host = prefs.getCurrentYukonHost();
-			int port = prefs.getCurrentYukonPort();
+			this.user = user;
+			return true;
+		}
+
+		String sessionID = prefs.getCurrentSessionID();
+		String host = prefs.getCurrentYukonHost();
+		int port = prefs.getCurrentYukonPort();
 					
-			try {										
-				dbProps = 
-					LoginSupport.getDBProperties(sessionID, host, port);
-			}
-			catch(RuntimeException re) {
-				//dismiss 
-			}
+		try {										
+			dbProps = 
+				LoginSupport.getDBProperties(sessionID, host, port);
+		}
+		catch(RuntimeException re) {
+			//dismiss 
+		}
 				
-			if(dbProps != null && !dbProps.isEmpty()) {
-				PoolManager.setDBProperties(dbProps);
-				user = YukonUserFuncs.getLiteYukonUser(prefs.getCurrentUserID());
+		if(dbProps != null && !dbProps.isEmpty()) {
+			PoolManager.setDBProperties(dbProps);
+			user = YukonUserFuncs.getLiteYukonUser(prefs.getCurrentUserID());
 				
-				if(user != null) {
-					session.user = user;
-					session.sessionID = sessionID;
-					session.host = host;
-					session.port = port;
-					instance = session;					
+			if(user != null) {
+				this.user = user;
+				this.sessionID = sessionID;
+				this.host = host;
+				this.port = port;
 				}
-				else {
-					errMsg = "Couldn't locate user in the database";
+			else {
+				errMsg = "Couldn't locate user in the database";
 				}
 			}
 			else
@@ -152,19 +154,26 @@ public class ClientSession {
 						user = AuthFuncs.login(lp.getUsername(), lp.getPassword());
 						
 						if(user != null) {
-							session.user = user;
-							session.sessionID = sessionID;
-							session.host = host;
-							session.port = port;
-							instance = session;
+							boolean rememberPass = lp.isRememberPassword();
+							this.user = user;
+							this.sessionID = sessionID;
+							this.host = host;
+							this.port = port;
+							
 							prefs.setCurrentUserID(user.getUserID());
 							prefs.setCurrentSessionID(sessionID);
 							prefs.addAvailableYukonHost(lp.getYukonHost());
 							prefs.setCurrentYukonHost(lp.getYukonHost());
 							prefs.setCurrentYukonPort(lp.getYukonPort());
 							prefs.setDefaultUsername(lp.getUsername());
-							prefs.setDefaultPassword(lp.getPassword());
-							prefs.setDefaultRememberPassword(lp.isRememberPassword());
+							
+							if(rememberPass) {
+								prefs.setDefaultPassword(lp.getPassword());
+							}
+							else {
+								prefs.setDefaultPassword("");
+							}
+							prefs.setDefaultRememberPassword(rememberPass);
 						}
 						else {
 							errMsg = "couldn't locat user inthe db";
@@ -179,16 +188,23 @@ public class ClientSession {
 					errMsg = "Couldn't get a sessionid";
 				}
 			}
-			
-		}
 				
 		if(errMsg != null) {
 			JOptionPane.showMessageDialog(null, errMsg, "Unable to establish session...", JOptionPane.ERROR_MESSAGE);
-		}
+			return false;
 		
-		return instance;
+		}
+		return true;
 	}
-
+	
+	public synchronized void closeSession() {
+		if(sessionID != null) {
+			LoginPrefs.getInstance().setCurrentSessionID("");
+			LoginPrefs.getInstance().setCurrentUserID(-1);
+			LoginSupport.closeSession(sessionID, host, port);
+		}
+	}
+	
 	// My pretty private instance
 	private static ClientSession instance;
 }

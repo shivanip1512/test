@@ -2018,9 +2018,12 @@ public static void main(String[] args)
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();
         mainFrame.setIconImage(
             java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
-            
-		ClientSession session = ClientSession.establishSession(mainFrame);			
-		
+            	
+		ClientSession session = ClientSession.getInstance(); 
+		if(!session.establishSession(mainFrame)){
+			System.exit(-1);			
+		}
+	  	
 		if(session == null) 		
 			System.exit(-1);
 				

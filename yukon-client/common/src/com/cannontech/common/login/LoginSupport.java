@@ -66,7 +66,7 @@ class LoginSupport {
 			throw new RuntimeException("Bad URL", e);			
 		}
 	 	HttpURLConnection conn = null;
-	 	
+
 	 	try {
 	 		conn = (HttpURLConnection) url.openConnection();
 	 		conn.setRequestProperty("Cookie", sessionID);
@@ -81,5 +81,23 @@ class LoginSupport {
 	 		}
 	 		catch(IOException ioe2) { throw new RuntimeException(e.getMessage()); }
 	 	}	 	
+	}
+	
+	static void closeSession(String sessionID, String yukonHost, int port) {
+		URL url;
+		try {
+			url = new URL("http", yukonHost, port, "/servlet/LoginController?ACTION=LOGOUT");
+		}
+		catch(MalformedURLException e) {
+			throw new RuntimeException("Bad URL", e);
+		}
+		
+		try {
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestProperty("Cookie", sessionID);
+			conn.getContent();
+		} catch (IOException e1) {
+			throw new RuntimeException(e1.getMessage());
+		}
 	}
 }

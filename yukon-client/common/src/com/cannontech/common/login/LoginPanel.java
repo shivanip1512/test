@@ -32,7 +32,7 @@ import com.cannontech.common.util.CtiUtilities;
  * Basic login panel.
  * @author aaron
  */
-class LoginPanel extends JPanel implements CaretListener {
+class LoginPanel extends JPanel implements CaretListener, ActionListener {
 	
 	private final JLabel messageLabel = new JLabel("Enter your Yukon username and password:");
 	//private final JLabel messageLabel2 = new JLabel("")
@@ -110,8 +110,12 @@ class LoginPanel extends JPanel implements CaretListener {
 		add(loginButton, loginButtonCons);			
 		add(cancelButton, cancelButtonCons);
 		
+		((JTextField) hostComboBox.getEditor().getEditorComponent()).addKeyListener(myKeyAdapter);
+		//hostComboBox.addActionListener(this);
 		usernameField.addCaretListener(this);
 		passwordField.addCaretListener(this);
+		
+		hostComboBox.addKeyListener(myKeyAdapter);
 		usernameField.addKeyListener(myKeyAdapter);
 		passwordField.addKeyListener(myKeyAdapter);
 		rememberCheckBox.addKeyListener(myKeyAdapter);
@@ -167,7 +171,8 @@ class LoginPanel extends JPanel implements CaretListener {
 	}
 	
 	public void caretUpdate(CaretEvent e) {
-		loginButton.setEnabled(	getUsername().length() > 0 && 
+		loginButton.setEnabled( getYukonHost().length() >0 &&
+								getUsername().length() > 0 && 
 								getPassword().length() > 0);
 	}
 	
@@ -267,4 +272,14 @@ class LoginPanel extends JPanel implements CaretListener {
 		}
 		
 	}
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	public void actionPerformed(ActionEvent e) {
+		loginButton.setEnabled( getYukonHost().length() >0 &&
+										getUsername().length() > 0 && 
+										getPassword().length() > 0);
+
+	}
+
 }
