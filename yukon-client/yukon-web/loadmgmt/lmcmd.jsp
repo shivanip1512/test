@@ -4,6 +4,7 @@
 
 String cmd = request.getParameter("cmd");
 String itemid = request.getParameter("itemid");
+boolean isPageGood = true;
 
 if( cmd == null || itemid == null )
 {
@@ -14,7 +15,14 @@ if( cmd == null || itemid == null )
 }
 
 WebCmdMsg cmdMsg = LMCmdMsgFactory.createCmdMsg( cmd, new Integer(itemid), null, lcCache );
+if( cmdMsg.getLMData() == null )
+{
+	CTILogger.warn( 
+		"Unable to create valid message for the given command (cmd = " + cmd +
+		", ItemID = " + itemid + "), ignoring request" );
 
+	isPageGood = false;
+}
 %>
 
 <html>
@@ -168,9 +176,11 @@ function setStopPixTime()
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
 		
-		
     <div class="confMsg"><BR><%= cmdMsg.getHTMLTextMsg() %></div>
 		<BR>
+<% if ( isPageGood ) { %>
+
+
 <%
 	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) )
 	{
@@ -524,8 +534,8 @@ function setStopPixTime()
 		int winStartInt = LCUtils.decodeStartWindow(cntrlArea);
 		int winStopInt = LCUtils.decodeStopWindow(cntrlArea);
 
-		String winStart = (winStartInt == LMControlArea.INVAID_INT ? "" : CtiUtilities.decodeSecondsToTime(winStartInt) );
-		String winStop = (winStopInt == LMControlArea.INVAID_INT ? "" : CtiUtilities.decodeSecondsToTime(winStopInt) );
+		String winStart = (winStartInt == LMControlArea.INVAID_INT ? "08:00" : CtiUtilities.decodeSecondsToTime(winStartInt) );
+		String winStop = (winStopInt == LMControlArea.INVAID_INT ? "15:00" : CtiUtilities.decodeSecondsToTime(winStopInt) );
 %>
 	<div class="TableCell"> 
 	  <div align="center">Select the new window Start and Stop times:</div>
@@ -544,7 +554,7 @@ function setStopPixTime()
                 <table width="100" border="0" cellspacing="0" height="40" align="center">
                   <tr> 
                     <td valign = "top" align = "center"> 
-                      <div> 
+                      <div>
                         <input type="text" name="startTime1" value="<%= winStart %>" size="5" onChange = "moveStartStopPtr('start')">
                       </div>
                     </td>
@@ -671,6 +681,7 @@ function setStopPixTime()
 
 	  <BR>
 		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "return update()">
+<% }  /* Ending of the isPageGood check */ %>
 		<input type="submit" name="Submit" value="Cancel" class="defButton" onclick = "self.close()">
 	</form>
 	</div>
