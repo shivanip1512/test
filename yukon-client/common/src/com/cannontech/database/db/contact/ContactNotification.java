@@ -1,6 +1,7 @@
 package com.cannontech.database.db.contact;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
 
@@ -26,6 +27,12 @@ public class ContactNotification extends com.cannontech.database.db.DBPersistent
 	private Integer notificationCatID= null;
 	private String disableFlag = "N";
 	private String notification = CtiUtilities.STRING_NONE;
+	
+	//temp fix for this DB object being inside a DATA object as a set
+	public int opcode = Transaction.UPDATE;
+
+
+
 
 	private final String CONSTRAINT_COLUMNS[] = { "ContactNotifID" };
 	
@@ -63,6 +70,36 @@ public class ContactNotification extends com.cannontech.database.db.DBPersistent
 		// ANY AND ALL REFERENCES TO THIS TABLE SHOULD BE DELETED HERE
 		delete( PointAlarming.TABLE_NAME, "RecipientID", getContactNotifID() ); 
 		delete( NotificationDestination.TABLE_NAME, "RecipientID", getContactNotifID() );
+	}
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (11/17/00 4:28:38 PM)
+	 * @return boolean
+	 */
+	public boolean equals(Object o)
+	{
+		if( o == null )
+			return false;
+		else if( o instanceof ContactNotification )
+		{
+			return ((ContactNotification)o).getContactNotifID().equals( getContactNotifID() );
+		}
+		else
+			return false;
+	}
+
+	/**
+	 * keep this consistent with .equals() pleez
+	 * o1.equals(o2) => o1.hashCode() == o2.hashCode()
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() 
+	{
+		if( getContactNotifID() == null )
+			return super.hashCode();
+		else
+			return getContactNotifID().intValue();
 	}
 	
 	/**

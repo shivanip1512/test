@@ -4,16 +4,12 @@ package com.cannontech.dbeditor.wizard.contact;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
+import java.util.Vector;
 
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -832,11 +828,55 @@ public Object getValue(Object val)
 	}
 
 	//clear out our old notifications
-	cnt.getContactNotifVect().removeAllElements();
+	//cnt.getContactNotifVect().removeAllElements();
+	Vector tempVect = new Vector( cnt.getContactNotifVect().size() );
+
+	for( int j = 0; j < cnt.getContactNotifVect().size(); j++ )
+	{
+		ContactNotification oldNotif = (ContactNotification)cnt.getContactNotifVect().get(j);
+		boolean fnd = false;
+		
+		for( int i = 0; i < getTableModel().getRowCount(); i++ )
+		{
+			ContactNotification cNotif = getTableModel().getContactNotificationRow(i);
+			
+			if( oldNotif.equals(cNotif) )
+			{
+				// item in OLD list & NEW list, update the cNotif
+				cNotif.opcode = Transaction.UPDATE;
+				tempVect.add( cNotif );
+				fnd = true;
+				break;
+			}
+		}
+
+		if( !fnd )
+		{
+			// item in OLD list only, delete the oldNotif
+			oldNotif.opcode = Transaction.DELETE;
+			tempVect.add( oldNotif );
+		}
+
+	}
+
+
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
-		cnt.getContactNotifVect().add( getTableModel().getContactNotificationRow(i) );
-	}	
+		ContactNotification cNotif = getTableModel().getContactNotificationRow(i);
+			
+		//if no id, this object must have been added by the user
+		if( cNotif.getContactNotifID() == null 
+			 || !cnt.getContactNotifVect().contains(cNotif) )
+		{
+			// item in NEW list, add the cNotif
+			cNotif.opcode = Transaction.INSERT;
+			tempVect.add( cNotif );
+		}
+	}
+
+
+	cnt.getContactNotifVect().clear();
+	cnt.getContactNotifVect().addAll( tempVect );
 
 
 	return cnt;

@@ -2,12 +2,12 @@ package com.cannontech.database.data.customer;
 
 import java.util.Vector;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.db.user.YukonUser;
 
 /**
  * This type was created in VisualAge.
@@ -261,13 +261,28 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		getContact().update();
 		
 
-		ContactNotification.deleteAllContactNotifications(
-				getDbConnection(),		 
-				getContact().getContactID().intValue() );
+//		ContactNotification.deleteAllContactNotifications(
+//				getDbConnection(),		 
+//				getContact().getContactID().intValue() );
+//		for( int i = 0; i < getContactNotifVect().size(); i++ )
+//		{
+//			((DBPersistent)getContactNotifVect().get(i)).add();
+//		}
 
-		for( int i = 0; i < getContactNotifVect().size(); i++ )
+		for( int i = (getContactNotifVect().size()-1); i >= 0; i-- )
 		{
-			((DBPersistent)getContactNotifVect().get(i)).add();
+			ContactNotification cNotif = (ContactNotification)getContactNotifVect().get(i);
+			
+			if( cNotif.opcode == Transaction.INSERT )
+				cNotif.add();
+			else if( cNotif.opcode == Transaction.UPDATE )
+				cNotif.update();
+			else if( cNotif.opcode == Transaction.DELETE )
+			{
+				cNotif.delete();
+				getContactNotifVect().remove( i );
+			}
+			
 		}
 
 	}
