@@ -19,6 +19,7 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
+import com.cannontech.report.cbc.CapBankListModel;
 
 /**
  * @author snebben
@@ -52,6 +53,10 @@ public class ReportTypes
 	public static final int EC_ACTIVITY_DETAIL_DATA = 16;
 	public static final int PROGRAM_DETAIL_DATA = 17;
 
+	/** Cap Bank Reports */
+	public static final int CBC_BANK_DATA = 18;
+
+	
 	/** String names for report types */
 	public static final String STATISTIC_DATA_STRING = "Communication Statistics";
 	public static final String STAT_CARRIER_COMM_DATA_STRING = "Carrier Communication Stats";
@@ -75,6 +80,8 @@ public class ReportTypes
 	public static final String LOAD_PROFILE_DATA_STRING = "Load Profile Data";
 	public static final String EC_ACTIVITY_DETAIL_DATA_STRING = "Activity Log - Detail";
 	public static final String PROGRAM_DETAIL_DATA_STRING = "Program Status Detail";
+	
+	public static final String CAPBANK_DATA_STRING = "CapBank Details";
 
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -99,7 +106,10 @@ public class ReportTypes
 		SUCCESS_METER_DATA_STRING,
 		LOAD_PROFILE_DATA_STRING,
 		EC_ACTIVITY_DETAIL_DATA_STRING,
-		PROGRAM_DETAIL_DATA_STRING
+		PROGRAM_DETAIL_DATA_STRING,
+		
+		//Capcontrol
+		CAPBANK_DATA_STRING
 	};
 
 
@@ -141,7 +151,7 @@ public class ReportTypes
 		{MISSED_METER_DATA, SUCCESS_METER_DATA, POWER_FAIL_DATA, DISCONNECT_DATA, LOAD_PROFILE_DATA},	//amr reports
 		{STAT_CARRIER_COMM_DATA, STAT_COMM_CHANNEL_DATA, STAT_DEVICE_COMM_DATA, STAT_TRANS_COMM_DATA},	//stat reports
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA},		//lm reports
-		{},		//cap control reports
+		{CBC_BANK_DATA}, //cap control reports
 		{CARRIER_DATA}, //database reports
 		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA},	//stars reports
 		{CARRIER_ROUTE_MACRO_DATA}	//other reports
@@ -188,6 +198,9 @@ public class ReportTypes
 				return new ActivityDetailModel();
 			case ReportTypes.PROGRAM_DETAIL_DATA:
 				return new ProgramDetailModel();				
+			case ReportTypes.CBC_BANK_DATA:
+				return new CapBankListModel();				
+
 			default:
 				return null;
 		}		

@@ -18,6 +18,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.report.CapBankReport;
 import com.cannontech.analysis.report.DatabaseReport;
 import com.cannontech.analysis.report.DisconnectReport;
 import com.cannontech.analysis.report.ECActivityLogReport;
@@ -59,6 +60,7 @@ import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.util.ClientConnection;
+import com.cannontech.report.cbc.CapBankListModel;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 
@@ -117,8 +119,15 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 	private static final int[] SYSTEM_LOG_MODELS = {
 		ModelFactory.SYSTEMLOG_TYPES_CHECKBOX
 	};
+	
+	private static final int[] CABBANK_MODELS = {
+		ModelFactory.CBC_ORDER_BY
+	};
+	
 	private HashMap modelMap = new HashMap();
-  private static final int [] REPORTS_MODEL = {
+	
+	
+	private static final int [] REPORTS_MODEL = {
 	  ModelFactory.MCT_CHECKBOX,
 	  ModelFactory.COMMCHANNEL_CHECKBOX,
 	  ModelFactory.DEVICE_CHECKBOX,
@@ -150,9 +159,12 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-
-	public void actionPerformed(ActionEvent event)
+	
+	private void handleMenuItemEvents(ActionEvent event)
 	{
+		//show the root node by default
+		getCheckBoxTreeViewPanel().getTree().setRootVisible(true);
+
 		if (event.getSource() == getReportsMenu().getTodayMenuItem())
 		{
 			enableComponents(false, false);
@@ -267,8 +279,18 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			loadTreeModels(DB_REPORTS_MODELS);
 			setModel(new RouteMacroModel(DeviceClasses.STRING_CLASS_CARRIER, ReportTypes.CARRIER_ROUTE_MACRO_DATA));
 		}
+		else if (event.getSource() == getReportsMenu().getCBCCapBankMenuItem())
+		{
+			getCheckBoxTreeViewPanel().getTree().setRootVisible(false);
+			enableComponents(false, false);
+			loadTreeModels(CABBANK_MODELS);
+			setModel( new CapBankListModel() );
+		}		
+	}
 
-		else if (event.getSource() == getGenerateButton())
+	public void actionPerformed(ActionEvent event)
+	{
+		if (event.getSource() == getGenerateButton())
 		{
 			if (getModel() == null)
 			{
@@ -352,6 +374,15 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 				model.setPaoIDs(paoIDs);
 				report = new SystemLogReport();
 			}
+			else if (model instanceof CapBankListModel)
+			{
+				String[] sortTypes = getStringsFromNodes();
+				//only use the zeroth sort by criteria
+				if( sortTypes != null && sortTypes.length > 0 )
+					((CapBankListModel)getModel()).setOrderBy( sortTypes[0] );
+
+				report = new CapBankReport();
+			}			
 			else if (model instanceof SystemLogModel)
 			{
 				String[] logTypes = getStringsFromNodes();
@@ -364,7 +395,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 					((SystemLogModel)getModel()).setLogTypes(logTypeIDs);
 				}
 				else
-				((SystemLogModel)getModel()).setLogTypes(null);
+					((SystemLogModel)getModel()).setLogTypes(null);
 				report = new SystemLogReport();
 			}
 			else
@@ -422,7 +453,12 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 		else if( event.getSource() == getFileMenu().getExitMenuItem() )
 		{
 			exit();
-		}		
+		}
+		else
+		{
+			handleMenuItemEvents( event );
+		}
+		
 	}
 	/**
 	 * @param startDate_ enables the Start Date label and calendar drop down

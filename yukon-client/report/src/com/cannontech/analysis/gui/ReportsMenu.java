@@ -35,6 +35,8 @@ public class ReportsMenu extends javax.swing.JMenu {
 	private javax.swing.JSeparator ivjSeparator1 = null;
 	private javax.swing.JRadioButtonMenuItem ivjCurrentStateMenuItem = null;
 	private javax.swing.JRadioButtonMenuItem ivjDisconnectedMenuItem = null;
+	
+	private javax.swing.JRadioButtonMenuItem cbcCapBankMenuItem = null;
 
 	private javax.swing.ButtonGroup reportButtonGroup = null;
 /**
@@ -184,6 +186,10 @@ private javax.swing.JMenu getCapControlMenu() {
 			ivjCapControlMenu.setName("CapControlMenu");
 			ivjCapControlMenu.setText("Cap Control");
 			// user code begin {1}
+			
+			ivjCapControlMenu.add( getCBCCapBankMenuItem() );
+
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -256,6 +262,30 @@ public javax.swing.JRadioButtonMenuItem getCurrentStateMenuItem() {
 	}
 	return ivjCurrentStateMenuItem;
 }
+
+/**
+ * Return the CurrentstateMenuItem property value.
+ * @return javax.swing.JCheckBoxMenuItem 
+ */
+public javax.swing.JRadioButtonMenuItem getCBCCapBankMenuItem()
+{
+	if (cbcCapBankMenuItem == null)
+	{
+		try
+		{
+			cbcCapBankMenuItem = new javax.swing.JRadioButtonMenuItem();
+			cbcCapBankMenuItem.setName("CapBankMenuItem");
+			cbcCapBankMenuItem.setText("CapBank List");
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return cbcCapBankMenuItem;
+}
+
 /**
  * Return the JMenu3 property value.
  * @return javax.swing.JMenu
