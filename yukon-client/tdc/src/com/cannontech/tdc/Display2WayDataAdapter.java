@@ -38,7 +38,6 @@ import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.roweditor.ObservedPointDataChange;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
 
@@ -56,8 +55,6 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final int DEFAULT_DISABLEDCOLOR = Colors.GRAY_ID;  // gray as of 8-31-2000
 	public static final int DEFAULT_ALARMCOLOR = Colors.RED_ID;  // red as of 1-12-2001
 	
-	private ObservableRow dataRow = null;
-		
 	//public Integer[] columnWidth = null;		
 	private Vector columnNames = new Vector();	
 	private Vector columnTypeName = new Vector();
@@ -1285,15 +1282,7 @@ public String getColumnTypeName( int index )
 		
 	return columnTypeName.elementAt( index ).toString();
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/10/00 6:00:44 PM)
- * @return com.cannontech.tdc.ObservableVector
- */
-public ObservableRow getObservedRow() 
-{
-	return dataRow;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/20/00 5:32:27 PM)
@@ -2125,18 +2114,6 @@ public synchronized void processSignalReceived( Signal signal )
 	}
 
 
-	int location = getRowNumber(signal);
-
-	// this is just in case the user has the edit RowEditor box open when
-	// this signal is received and the point is on the display
-	if ( dataRow == null && location >= 0 )
-		dataRow = new ObservableRow( (Vector)rows.elementAt( location ), location );
-
-	if( location >= 0 )
-		dataRow.setSignal( signal );
-
-
-
 	if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )  
 	{
 		//just add the raw columns to the display
@@ -2328,19 +2305,13 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 	
 	if ( rows.size() > 0 )   // make sure there are some rows
 	{
-		if ( dataRow == null )
-			dataRow = new ObservableRow( (Vector)rows.elementAt( location ), location );
-		else
-			dataRow.setRow( (Vector)rows.elementAt( location ) );
-			
+		Vector dataRow = (Vector)rows.elementAt( location );
+
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
 		{
 			Object message = getCellValueObject( point, location );
-			dataRow.setElementAt( message, 
-					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE), 
-					ObservedPointDataChange.POINT_VALUE_TYPE, point.getPointID(), 
-					isRowInAlarmVector( location ),
-					(int)point.getTags() );
+			dataRow.setElementAt( message,
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE) );
 		}
 
 
@@ -2363,16 +2334,10 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 			
 			if( img == null )
 				dataRow.setElementAt( CtiUtilities.STRING_NONE, 
-					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE), 
-					ObservedPointDataChange.POINT_IMAGE, point.getPointID(), 
-					isRowInAlarmVector( location ),
-					(int)point.getTags() );			
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE) ); 
 			else
 				dataRow.setElementAt( img, 
-					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE), 
-					ObservedPointDataChange.POINT_IMAGE, point.getPointID(),
-					isRowInAlarmVector( location ),
-					(int)point.getTags() );
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE) ); 
 		}
 
 
@@ -2383,10 +2348,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 	 			dataRow.setElementAt(
 			 			PointQualities.getQualityAbreviation( (int)point.getPointQuality() )
 			 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
-			 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY), 
-			 			ObservedPointDataChange.POINT_QUALITY_TYPE, point.getPointID(), 
-			 			isRowInAlarmVector( location ),
-						(int)point.getTags() );
+			 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ); 
 			}
 			catch( CTIPointQuailtyException ex )
 			{
@@ -2398,10 +2360,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 		{
  			dataRow.setElementAt(
 		 			TagUtils.getTagString( (int)point.getTags() ),
-		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_TAGS), 
-		 			ObservedPointDataChange.POINT_TAG_TYPE, point.getPointID(),
-		 			isRowInAlarmVector( location ),
-					(int)point.getTags() );
+		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_TAGS) ); 
 		}
 
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
@@ -2412,10 +2371,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 
 			dataRow.setElementAt( 
 					tempDate, 
-					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP), 
-					ObservedPointDataChange.POINT_TIMESTAMP_TYPE, point.getPointID(), 
-					isRowInAlarmVector( location ),
-					(int)point.getTags() );
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ); 
 		}
 
 
@@ -2423,10 +2379,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 		{					
  			dataRow.setElementAt(
 		 			TagUtils.isPointOutOfService((int)point.getTags()) ? "Disabled" : "Enabled",
-		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTSTATE), 
-		 			ObservedPointDataChange.POINT_STATE, point.getPointID(),
-		 			isRowInAlarmVector( location ),
-					(int)point.getTags() );
+		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTSTATE) );
 		}
 		
 		// More Dyanmic cell changes should follow
@@ -2489,16 +2442,7 @@ public void setLimboPointsValue(Object[] points)
 	}
 	
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/10/00 6:00:44 PM)
- * @return com.cannontech.tdc.ObservableVector
- */
-public void setObservedRow( int location ) 
-{
-	if( location >= 0 && location < getRowCount() )
-		dataRow = new ObservableRow( (Vector)rows.elementAt( location ), location );
-}
+
 /**
  * Tells a row that contains the given Signal or the given Signals PointID to alarm.
  * Creation date: (3/29/00 2:23:38 PM)

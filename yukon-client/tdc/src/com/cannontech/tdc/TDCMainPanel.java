@@ -546,42 +546,17 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 			 PointTypes.getType(ptType) == PointTypes.DEMAND_ACCUMULATOR_POINT ||
 			 PointTypes.getType(ptType) == PointTypes.CALCULATED_POINT )
 		{
-			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
-
-//			if( tableModel.isRowInAlarmVector(selectedRow) )
-//				return new AnalogPanel( data, 
-//										tableModel.getObservedRow(), 
-//										currentValue, 
-//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow) );
-//			else
-				return new AnalogPanel( data, 
-										tableModel.getObservedRow(), 
-										currentValue);
+			return new AnalogPanel( data, currentValue );
 		}
 		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
 					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
 					&& source != getJMenuItemPopUpManualEntry() )
 		{			
-			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
-
-			return new StatusPanelControlEntry( data, 
-									tableModel.getObservedRow(), 
-									currentValue);
+			return new StatusPanelControlEntry( data, currentValue );
 		}
 		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT )
 		{			
-			tableModel.setObservedRow( tableModel.getRowNumber( new Long(pt.getPointID()).longValue() ) );
-
-//			if( tableModel.isRowInAlarmVector(selectedRow) )
-//				return new StatusPanelManualEntry( data, 
-//										tableModel.getObservedRow(), 
-//										currentValue, 
-//										tableModel.getAlarmingRowVector().getAlarmingRow(selectedRow) );
-//			else
-				return new StatusPanelManualEntry( data, 
-										tableModel.getObservedRow(), 
-										currentValue);
-
+			return new StatusPanelManualEntry( data, currentValue );
 		}
 		else
 			com.cannontech.clientutils.CTILogger.info("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");

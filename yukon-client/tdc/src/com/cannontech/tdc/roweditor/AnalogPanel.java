@@ -5,21 +5,18 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/8/00 11:45:00 AM)
  * @author: 
  */
-import java.util.Observable;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.tdc.ObservableRow;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.commandevents.ControlCommand;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class AnalogPanel extends ManualEntryJPanel implements RowEditorDialogListener, java.util.Observer 
+public class AnalogPanel extends ManualEntryJPanel implements RowEditorDialogListener 
 {
 	public static final double MIN_INPUT_VALUE = -99999.99999;
 	public static final double MAX_INPUT_VALUE = 99999.99999;
@@ -39,18 +36,18 @@ private AnalogPanel() {
 /**
  * EditDataPanel constructor comment.
  */
-public AnalogPanel( EditorDialogData data, ObservableRow obsRow, Object currentValue, AlarmingRow alarmRow_ )
+public AnalogPanel( EditorDialogData data, Object currentValue, AlarmingRow alarmRow_ )
 {
-	super( data, obsRow, currentValue, alarmRow_ );
+	super( data, currentValue, alarmRow_ );
 		
 	initialize();
 }
 /**
  * EditDataPanel constructor comment.
  */
-public AnalogPanel(EditorDialogData data, Observable obsValue, Object currentValue) 
+public AnalogPanel(EditorDialogData data, Object currentValue) 
 {
-	super(data, obsValue, currentValue);
+	super(data, currentValue);
 	initialize();
 }
 /**
@@ -60,9 +57,6 @@ public AnalogPanel(EditorDialogData data, Observable obsValue, Object currentVal
 private void destroyObservers() 
 {
 	getAlarmPanel().deleteObserver();
-
-	if( getObservingData() != null )
-		getObservingData().deleteObserver( this );	
 }
 /**
  * Return the AlarmPanel property value.
@@ -81,7 +75,6 @@ private AlarmPanel getAlarmPanel() {
 			ivjAlarmPanel.setBorder(ivjLocalBorder);
 			// user code begin {1}
 
-			ivjAlarmPanel.setObservableData( getObservingData() );
 			ivjAlarmPanel.setParentPanel( this );
 			
 			// user code end
@@ -277,9 +270,6 @@ private void initialize() {
 
 	initReadOnlyData();
 
-	if( getObservingData() != null )
-		getObservingData().addObserver( this );
-
 	try 
 	{
 		Double.parseDouble( getStartingValue().toString() ); // if not a float, goto catch
@@ -378,29 +368,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 public void jTextFieldValue_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
 	return;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/10/00 5:06:20 PM)
- */
-public void update( java.util.Observable originator, Object newValue ) 
-{
-   super.update( originator, newValue );
-   
-	if( newValue instanceof ObservedPointDataChange )
-	{
-		ObservedPointDataChange value = (ObservedPointDataChange)newValue;
 
-		if( value.getType() == ObservedPointDataChange.POINT_VALUE_TYPE && value.getPointID() == getEditorData().getPointID() )
-		{
-			getJTextFieldValue().setText( value.getValue() );
-			
-			//getAlarmPanel().setVisible( value.isAlarming() );
-
-			this.revalidate();
-			this.repaint();
-		}
-	}		
-}
 /**
  * 
  */

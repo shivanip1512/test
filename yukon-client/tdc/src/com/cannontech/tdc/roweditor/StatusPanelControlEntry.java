@@ -11,7 +11,7 @@ import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.commandevents.ControlCommand;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class StatusPanelControlEntry extends ManualEntryJPanel implements RowEditorDialogListener, java.awt.event.ActionListener, java.util.Observer 
+public class StatusPanelControlEntry extends ManualEntryJPanel implements RowEditorDialogListener, java.awt.event.ActionListener 
 {
 	private String[] states = null;
 
@@ -33,8 +33,8 @@ private StatusPanelControlEntry() {
 /**
  * EditDataPanel constructor comment.
  */
-public StatusPanelControlEntry(com.cannontech.tdc.roweditor.EditorDialogData data, java.util.Observable obsValue, java.lang.Object currentValue) {
-	super(data, obsValue, currentValue);
+public StatusPanelControlEntry(com.cannontech.tdc.roweditor.EditorDialogData data, java.lang.Object currentValue) {
+	super(data, currentValue);
 	initialize();
 }
 /**
@@ -87,15 +87,6 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 		// user code end
 		handleException(ivjExc);
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/27/00 5:11:18 PM)
- */
-private void destroyObservers() 
-{
-	if( getObservingData() != null )
-		getObservingData().deleteObserver( this );	
 }
 /**
  * Insert the method's description here.
@@ -438,9 +429,6 @@ private void initialize() {
 
 	initData();
 
-	if( getObservingData() != null )
-		getObservingData().addObserver( this );
-
 	setStateText( getStartingValue().toString() );
 	
 	// user code end
@@ -452,8 +440,8 @@ private void initialize() {
  */
 public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	destroyObservers();
 }
+
 /**
  * Comment
  */
@@ -530,7 +518,6 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 	}
 	finally
 	{	
-		destroyObservers();
 		JButtonCancelAction_actionPerformed(null);
 	}
 
@@ -578,28 +565,6 @@ private void setStateText(final String state)
 		}
 	})	;
 
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/10/00 5:06:20 PM)
- */
-public void update( java.util.Observable originator, Object newValue ) 
-{
-   super.update( originator, newValue );
-
-	if( newValue instanceof ObservedPointDataChange )
-	{
-		ObservedPointDataChange value = (ObservedPointDataChange)newValue;
-
-		if( value.getType() == ObservedPointDataChange.POINT_VALUE_TYPE && value.getPointID() == getEditorData().getPointID() )
-		{
-			setStateText( value.getValue() );
-
-
-			this.revalidate();
-			this.repaint();
-		}
-	}		
 }
 /**
  * 

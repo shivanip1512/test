@@ -11,7 +11,7 @@ import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class StatusPanelManualEntry extends ManualEntryJPanel implements RowEditorDialogListener, java.util.Observer 
+public class StatusPanelManualEntry extends ManualEntryJPanel implements RowEditorDialogListener 
 {
 	private javax.swing.JComboBox ivjJComboBoxValues = null;
 	private javax.swing.JLabel ivjJLabelPtName = null;
@@ -29,9 +29,9 @@ private StatusPanelManualEntry() {
 /**
  * EditDataPanel constructor comment.
  */
-public StatusPanelManualEntry( EditorDialogData data, com.cannontech.tdc.ObservableRow obsValue, Object currentValue, AlarmingRow alarmRow_ ) 
+public StatusPanelManualEntry( EditorDialogData data, Object currentValue, AlarmingRow alarmRow_ ) 
 {
-	super( data, obsValue, currentValue, alarmRow_ );
+	super( data, currentValue, alarmRow_ );
 
 	if( data.getPointType() != com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		throw new IllegalArgumentException(
@@ -42,8 +42,8 @@ public StatusPanelManualEntry( EditorDialogData data, com.cannontech.tdc.Observa
 /**
  * EditDataPanel constructor comment.
  */
-public StatusPanelManualEntry(com.cannontech.tdc.roweditor.EditorDialogData data, java.util.Observable obsValue, java.lang.Object currentValue) {
-	super(data, obsValue, currentValue);
+public StatusPanelManualEntry(com.cannontech.tdc.roweditor.EditorDialogData data, java.lang.Object currentValue) {
+	super(data, currentValue);
 	initialize();
 }
 /**
@@ -53,10 +53,8 @@ public StatusPanelManualEntry(com.cannontech.tdc.roweditor.EditorDialogData data
 private void destroyObservers() 
 {
 	getAlarmPanel().deleteObserver();
-
-	if( getObservingData() != null )
-		getObservingData().deleteObserver( this );	
 }
+
 /**
  * Return the AlarmPanel property value.
  * @return com.cannontech.tdc.roweditor.AlarmPanel
@@ -74,7 +72,6 @@ private AlarmPanel getAlarmPanel() {
 			ivjAlarmPanel.setBorder(ivjLocalBorder);
 			// user code begin {1}
 
-			ivjAlarmPanel.setObservableData( getObservingData() );
 			ivjAlarmPanel.setParentPanel( this );
 	
 			// user code end
@@ -294,9 +291,6 @@ private void initialize() {
 
 	initData();
 
-	if( getObservingData() != null )
-		getObservingData().addObserver( this );
-
 	getJComboBoxValues().setSelectedItem( getStartingValue() );
 	
 	// user code end
@@ -338,31 +332,6 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 	{	
 		destroyObservers();
 	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/10/00 5:06:20 PM)
- */
-public void update( java.util.Observable originator, Object newValue ) 
-{
-   super.update( originator, newValue );
-
-	if( newValue instanceof ObservedPointDataChange )
-	{
-		ObservedPointDataChange value = (ObservedPointDataChange)newValue;
-
-		if( value.getType() == ObservedPointDataChange.POINT_VALUE_TYPE && value.getPointID() == getEditorData().getPointID() )
-		{
-			getJComboBoxValues().setSelectedItem( value.getValue() );
-
-			//getAlarmPanel().setVisible( value.isAlarming() );
-
-			this.revalidate();
-			this.repaint();
-		}
-      
-	}		
-
 }
 /**
  * 

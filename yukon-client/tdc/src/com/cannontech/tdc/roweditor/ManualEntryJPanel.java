@@ -11,7 +11,6 @@ public abstract class ManualEntryJPanel extends javax.swing.JPanel
 {
 	// an alarmRow is only present when we are alarming
 	private AlarmingRow alarmRow = null;
-	private java.util.Observable observingData = null;
 	private Object startingValue = null;
 	private EditorDialogData editorData = null;
 
@@ -25,21 +24,20 @@ protected ManualEntryJPanel() {
 /**
  * EditDataPanel constructor comment.
  */
-public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue, AlarmingRow alarmRow_ ) 
+public ManualEntryJPanel( EditorDialogData data, Object currentValue, AlarmingRow alarmRow_ ) 
 {
 	super();
 
 	alarmRow = alarmRow_;
 	editorData = data;
-	observingData = obsValue;
 	startingValue = currentValue;
 }
 /**
  * EditDataPanel constructor comment.
  */
-public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, Object currentValue ) 
+public ManualEntryJPanel( EditorDialogData data, Object currentValue ) 
 {
-	this( data, obsValue, currentValue, null );
+	this( data, currentValue, null );
 }
 
 /**
@@ -50,15 +48,6 @@ public ManualEntryJPanel( EditorDialogData data, java.util.Observable obsValue, 
 protected EditorDialogData getEditorData() {
 	return editorData;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/14/2001 2:55:54 PM)
- * @return java.util.Observable
- */
-protected java.util.Observable getObservingData() {
-	return observingData;
-}
-
 /**
  * Insert the method's description here.
  * Creation date: (11/14/2001 2:39:29 PM)
@@ -88,22 +77,6 @@ protected java.lang.Object getStartingValue() {
  */
 protected boolean isRowAlarmed() {
 	return getAlarmRow() != null;
-}
-
-
-protected void update( java.util.Observable originator, Object newValue ) 
-{
-   if( newValue instanceof ObservedPointDataChange )
-   {
-      ObservedPointDataChange value = (ObservedPointDataChange)newValue;
-
-      if( value.getType() == ObservedPointDataChange.POINT_VALUE_TYPE && value.getPointID() == getEditorData().getPointID() )
-      {
-         getEditorData().setTags( value.getTags() );
-      }
-      
-   }     
-
 }
 
 }
