@@ -1507,6 +1507,8 @@ go
 alter table DeviceLoadProfile alter column VoltageDmdRate numeric not null;
 go
 
+update yukonpaobject set type = 'MCT-410iLE' where type = 'MCT-410 kWh Only';
+
 
 
 
