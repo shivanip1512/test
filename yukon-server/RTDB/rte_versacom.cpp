@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/26 17:49:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/26 18:12:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
      */
     if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
     {
-        if(!Device->isInhibited())
+        if((status = Device->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
         {
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
@@ -205,24 +205,6 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                     dout << RWTime() << " " << resultString << endl;
                 }
             }
-        }
-        else
-        {
-            status = DEVICEINHIBITED;
-
-            CtiReturnMsg* pRet = new CtiReturnMsg(Device->getID(),
-                                                  RWCString(OutMessage->Request.CommandStr),
-                                                  Device->getName() + RWCString(": ") + FormatError(status),
-                                                  status,
-                                                  OutMessage->Request.RouteID,
-                                                  OutMessage->Request.MacroOffset,
-                                                  OutMessage->Request.Attempt,
-                                                  OutMessage->Request.TrxID,
-                                                  OutMessage->Request.UserID,
-                                                  OutMessage->Request.SOE,
-                                                  RWOrdered());
-
-            retList.insert( pRet );
         }
     }
     else

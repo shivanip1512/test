@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/20 20:59:24 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/06/26 18:12:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,6 +176,7 @@ public:
     virtual bool isMeter() const;
     virtual INT deviceMaxCommFails() const;
 
+    INT checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, const OUTMESS *&OutMessage);
 
     INT getCommFailCount() const;
     CtiDeviceBase& setCommFailCount(const INT i);

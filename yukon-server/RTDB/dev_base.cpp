@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/05 17:41:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/26 18:12:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,26 +92,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
     {
         propagateRequest(OutMessageTemplate, pReq);
 
-
-        if(isInhibited())
-        {
-            status = DEVICEINHIBITED;
-
-            CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
-                                                  RWCString(OutMessageTemplate->Request.CommandStr),
-                                                  getName() + RWCString(": ") + FormatError(status),
-                                                  status,
-                                                  OutMessageTemplate->Request.RouteID,
-                                                  OutMessageTemplate->Request.MacroOffset,
-                                                  OutMessageTemplate->Request.Attempt,
-                                                  OutMessageTemplate->Request.TrxID,
-                                                  OutMessageTemplate->Request.UserID,
-                                                  OutMessageTemplate->Request.SOE,
-                                                  RWOrdered());
-
-            retList.insert( pRet );
-        }
-        else
+        if((status = checkForInhibitedDevice(retList, OutMessageTemplate)) != DEVICEINHIBITED)
         {
             /*
              *  Now that the OutMessageTemplate is primed, we should send it out to the specific device..
@@ -742,4 +723,30 @@ void CtiDeviceBase::setOutMessageTargetID( LONG &omtid )
     return;
 }
 
+
+INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, const OUTMESS *&OutMessage)
+{
+    int status = NORMAL;
+
+    if(isInhibited())
+    {
+        status = DEVICEINHIBITED;
+
+        CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+                                              RWCString(OutMessage->Request.CommandStr),
+                                              getName() + RWCString(": ") + FormatError(status),
+                                              status,
+                                              OutMessage->Request.RouteID,
+                                              OutMessage->Request.MacroOffset,
+                                              OutMessage->Request.Attempt,
+                                              OutMessage->Request.TrxID,
+                                              OutMessage->Request.UserID,
+                                              OutMessage->Request.SOE,
+                                              RWOrdered());
+
+        retList.insert( pRet );
+    }
+
+    return status;
+}
 
