@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/01/08 23:19:06 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/01/16 22:45:44 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,7 +68,11 @@ CtiTransdataTracker::CtiTransdataTracker():
    _retry( "Retry" ),
    _dump( "XXXX\r\n" ),
    _fail( "failed\r\n" ),
-   _enter( "Enter" )
+   _enter( "Enter" ),
+   _lp( NULL ),
+   _storage( NULL ),
+   _meterData( NULL ),
+   _lastCommandSent( NULL )
 {
    reinitalize();
    reset();
@@ -90,26 +94,27 @@ void CtiTransdataTracker::destroy( void )
    _ymodem.destroy();
    _datalink.destroy();
 
-   if( _storage )
+   if( _storage != NULL )
    {
       delete [] _storage;
       _storage = NULL;
    }
 
-   if( _meterData )
+   if( _meterData != NULL )
    {
       delete [] _meterData;
       _meterData = NULL;
    }
 
-   if( _lastCommandSent )
+   if( _lastCommandSent != NULL )
    {
       delete [] _lastCommandSent;
       _lastCommandSent = NULL;
    }
 
-   if( _lp )
+   if( _lp != NULL )
    {
+      delete _lp;
       _lp = NULL;
    }
 }
@@ -139,11 +144,30 @@ void CtiTransdataTracker::reinitalize( void )
    _didBilling       = false;
    _haveData         = false;
 
-   _lp               = new mark_v_lp;
+   if( _lp != NULL )
+   {
+      delete _lp;
+   }
 
-   _storage          = new BYTE[Storage_size];    
-   _meterData        = new BYTE[Meter_size];
-   _lastCommandSent  = new BYTE[Command_size];
+   if( _storage != NULL )
+   {
+      delete [] _storage;
+   }
+
+   if( _meterData != NULL )
+   {
+      delete [] _meterData;
+   }
+
+   if( _lastCommandSent != NULL )
+   {
+      delete [] _lastCommandSent;
+   }
+
+   _lp               = CTIDBG_new mark_v_lp;
+   _storage          = CTIDBG_new BYTE[Storage_size];    
+   _meterData        = CTIDBG_new BYTE[Meter_size];
+   _lastCommandSent  = CTIDBG_new BYTE[Command_size];
 }
 
 //=====================================================================================================================
@@ -154,7 +178,6 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
    switch( _lastState )
    {
    case doPassword:
-//   case doIdentify:
    case doScroll:
    case doPullBuffer:
    case doEnabledChannels:
@@ -354,7 +377,6 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       case doPassword:
          {
             setXfer( xfer, _password, strlen( _good_return ), false, 1 );
-            _tempSent = _password;
             _datalink.buildMsg( xfer );
             _first = true;
          }
@@ -363,7 +385,6 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       case doEnabledChannels:
          {
             setXfer( xfer, _channels_enabled, 20, true, 1 );
-            _tempSent = _channels_enabled;
             _datalink.buildMsg( xfer );
          }
          break;
@@ -371,7 +392,6 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       case doTime:
          {
             setXfer( xfer, _get_clock, 50, true, 1 );
-            _tempSent = _get_clock;
             _datalink.buildMsg( xfer );
          }
          break;
@@ -379,21 +399,10 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       case doIntervalSize:
          {
             setXfer( xfer, _interval, 24, true, 1 );
-            _tempSent = _interval;
             _datalink.buildMsg( xfer );
             _moveAlong = true;   /////01/04
          }
          break;
-/*
-      case doIdentify:
-         {
-            setXfer( xfer, _identify, 41, true, 1 );
-            _tempSent = _identify;
-            _datalink.buildMsg( xfer );
-            _moveAlong = true;
-         }
-         break;
-*/      
       }
    }
 
@@ -413,7 +422,6 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
    case doScroll:
       {
          setXfer( xfer, _search_scrolls, 11, true, 1 );
-         _tempSent = _search_scrolls;
          _datalink.buildMsg( xfer );
       }
       break;
@@ -421,7 +429,6 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
    case doPullBuffer:
       {
          setXfer( xfer, _send_comm_buff, 25, true, 1 );
-         _tempSent = _send_comm_buff;
          _datalink.buildMsg( xfer );
       }
       break;
@@ -450,21 +457,21 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
    case doRecordDump:
       {
          setXfer( xfer, _dump_demands, 47, true, 1 );
-         _tempSent = _dump_demands;
          _datalink.buildMsg( xfer );
       }
       break;
      
    case doRecordNumber:
       {
-         //make this crap...
          _lp->numLpRecs = calcLPRecs();
-//         RWCString recNum( CtiNumStr( _lp->numLpRecs ).zpad( 4 ) );
-//         recNum.append( "\r\n" );
-         // ...into a function, it's ugly
-
-//         setXfer( xfer, recNum, 25, true, 1 );  
-         setXfer( xfer, formatRecNums( _lp->numLpRecs ), 25, true, 1 );  
+         setXfer( xfer, formatRecNums( _lp->numLpRecs ), 25, true, 1 );
+         
+         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ recs " << formatRecNums( _lp->numLpRecs ) << endl;
+         }
+         
          _datalink.buildMsg( xfer );
       }
       break;
@@ -528,25 +535,21 @@ bool CtiTransdataTracker::logOff( CtiXfer &xfer )
 bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
 {
    char  *ptr = NULL;
-   char  *temp = NULL;
+//   char  *temp = NULL;
    char  fluff[400];
    bool  foundCorrectCommand = false;
 
    memcpy( fluff, data, bytes );
    ptr = fluff;
 
-   for( ;; )
+   while( !foundCorrectCommand )
    {
-      temp = strstr( ( const char*)ptr, "DC" );
+      char *temp = strstr( ( const char*)ptr, "DC" );
 
       if( temp != NULL )
       {
          ptr = temp + 2;
          foundCorrectCommand = true;
-      }
-      else
-      {
-         break;
       }
    }
 
@@ -644,6 +647,11 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    memcpy( fluff, data, bytes );
    ptr = fluff;
 
+   for( int i = 0; i < 6; i++ )
+   {
+      timeBits[i] = 0;
+   }
+
    //shoud trim off any excess crap in the front....
    //make this a general thing and run everybody through it...!
    for( ;; )
@@ -708,7 +716,6 @@ bool CtiTransdataTracker::grabReturnedChannels( BYTE *data, int bytes )
       if( ptr != NULL )
       {
          ptr++;
-         //
          //this needs work. If the meter doesn't return 4 digits, we'll screw ourselves up by copying a null or
          //something in...
          _lp->numLpRecs = atoi( ptr );
@@ -734,12 +741,11 @@ void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
 int CtiTransdataTracker::calcLPRecs( void )
 {
    int channels = countChannels();
-   int numberLPRecs = (( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 )) * channels;
-
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   int numberLPRecs = 0;
+   
+   if( _lastLPTime < _lp->meterTime )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << RWTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ numberLPRecs " << numberLPRecs << endl;
+      numberLPRecs = (( _lp->meterTime - _lastLPTime ) / ( _lp->lpFormat[0] * 60 )) * channels;
    }
 
    if( numberLPRecs > Max_lp_recs )     
@@ -890,22 +896,19 @@ bool CtiTransdataTracker::gotValidResponse( const BYTE *data, int length )
 
    const char *ptr = ( const char *)data;
 
-//   if( strstr( ptr, "IEMS" ) == NULL )    //just a hack to keep from exploding if the meter sees II vs. IS
+   while( offset < length )
    {
-      while( offset < length )
+      if(( strstr( ptr + offset, _good_return ) != NULL ) ||
+         ( strstr( ptr + offset, _prot_message ) != NULL ) ||
+         ( strstr( ptr + offset, _enter ) != NULL ) ||
+         ( strstr( ptr + offset, _dump ) != NULL ))
       {
-         if(( strstr( ptr + offset, _good_return ) != NULL ) ||
-            ( strstr( ptr + offset, _prot_message ) != NULL ) ||
-            ( strstr( ptr + offset, _enter ) != NULL ) ||
-            ( strstr( ptr + offset, _dump ) != NULL ))
-         {
-            success = true;
-            break;
-         }
-         else
-         {
-            offset += strlen( ptr + offset ) + 1;
-         }
+         success = true;
+         break;
+      }
+      else
+      {
+         offset += strlen( ptr + offset ) + 1;
       }
    }
 
