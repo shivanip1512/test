@@ -89,7 +89,7 @@
                   </td>
                   <td width="302" class="HeaderCell"> 
                     <div align="center">Recent Control History <br>
-                      (since midnight yesterday)</div>
+                      (since midnight)</div>
                   </td>
                   <td width="180" class="HeaderCell"> 
                     <div align="center">Complete Control History</div>
