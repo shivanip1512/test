@@ -8,9 +8,9 @@ import java.util.Properties;
 
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistStateImage;
 import com.cannontech.esub.util.Util;
@@ -26,7 +26,7 @@ public class StateImage extends LxAbstractImage implements DrawingElement, Yukon
 	private static final String ELEMENT_ID = "stateImage";
 	private static final int CURRENT_VERSION = 1;
 	
-	private LitePoint point;
+	private int pointID = PointTypes.SYSTEM_POINT;
 	private LiteState currentState;
 		
 	private Drawing drawing;
@@ -47,13 +47,17 @@ public StateImage() {
  * @return com.cannontech.database.data.lite.LitePoint
  */
 public com.cannontech.database.data.lite.LitePoint getPoint() {
-	return point;
+	return PointFuncs.getLitePoint(pointID);
+}
+
+public int getPointID() {
+	return pointID;
 }
 
 /**
  * Creation date: (1/8/2002 2:07:06 PM)
  */
-private void initialize() {
+private void initialize() {	
 }
 
 /**
@@ -61,11 +65,11 @@ private void initialize() {
  * @param newPoint com.cannontech.database.data.lite.LitePoint
  */
 public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
-	point = newPoint;
+	setPointID(newPoint.getLiteID());
 }
 
 public void setPointID(int pointID) {
-	setPoint(PointFuncs.getLitePoint(pointID));
+	this.pointID = pointID;
 }
 
 	/**
