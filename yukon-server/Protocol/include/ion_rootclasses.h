@@ -21,16 +21,16 @@
  *         |   +---ion_arraytypes.h         ----+-- ion_moduletypes.h
  *         |       |                            |
  *         |       +---ion_structtypes.h    ----+   (utilizes, doesn't directly inherit)
- *         |       
- *         +---ion_netlayers.h
+ *         |
+ *         +---ion_net_*.h
  *
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
- 
+
 #include <vector>
 using namespace std;
-                    
+
 #ifndef FALSE
     #define FALSE 0
 #endif  //  #ifndef FALSE
@@ -38,13 +38,15 @@ using namespace std;
     #define TRUE 1
 #endif  //  #ifndef TRUE
 
+#include "dlldefs.h"
 
-class CtiIONSerializable
+
+class IM_EX_PROT CtiIONSerializable
 {
 public:
     CtiIONSerializable( )  { };
     ~CtiIONSerializable( )  { };
-    
+
     virtual void putSerialized( unsigned char *buf )  { };
     virtual unsigned int getSerializedLength( void )  { return 0; };
     unsigned char *getSerialized( void );
@@ -52,10 +54,10 @@ public:
 
 
 
-class CtiIONValue : protected CtiIONSerializable
+class IM_EX_PROT CtiIONValue : protected CtiIONSerializable
 {
 public:
-    
+
     ~CtiIONValue( ) { };
 
     enum IONValueTypes;
@@ -67,37 +69,37 @@ public:
     enum IONValueTypes
     {
         IONChar,
-        IONFloat,      
-        IONSignedInt,  
-        IONTime,       
+        IONFloat,
+        IONSignedInt,
+        IONTime,
         IONUnsignedInt,
-        IONNumeric,           
-        IONBoolean,    
+        IONNumeric,
+        IONBoolean,
         IONArray,
         IONProgram,
         IONInvalid
     };
 
 protected:
-    
-    CtiIONValue( IONValueTypes valueType ) : 
-        _valueType(valueType) 
+
+    CtiIONValue( IONValueTypes valueType ) :
+        _valueType(valueType)
         { };
     IONValueTypes _valueType;
     void setValid( int valid ) { _valid = valid; };
-    
+
     friend class CtiIONDataStream;  //  ideally, only DataStream would be friend to IONValue, and only for the sake of
     friend class CtiIONStruct;      //    restoreObject.  however, Struct and Method do need to pull in subsequent values,
     friend class CtiIONMethod;      //    so they are given access as well.
     friend class CtiIONArray;
     friend class CtiIONStructArray;
-    
+
     void putSerialized( unsigned char *buf );
     unsigned int getSerializedLength( void );
-    
+
     virtual void putSerializedHeader( unsigned char *buf );
     virtual unsigned int getSerializedHeaderLength( void );
-    
+
     virtual void putSerializedValue( unsigned char *buf ) = 0;
     virtual unsigned int getSerializedValueLength( void ) = 0;
 
@@ -106,12 +108,12 @@ protected:
     static CtiIONValue *restoreObject( unsigned char *&byteStream, unsigned long &streamLength );
 
 private:
-    int _valid; 
+    int _valid;
 };
 
 
 
-class CtiIONDataStream : public CtiIONSerializable
+class IM_EX_PROT CtiIONDataStream : public CtiIONSerializable
 {
 public:
     CtiIONDataStream( unsigned char *byteStream, unsigned long streamLength );
@@ -127,18 +129,18 @@ public:
 
 private:
     void parseByteStream( unsigned char *byteStream, unsigned long streamLength );
-    
+
     vector<CtiIONValue *> _streamValues;
-    
+
 };
-                         
 
 
-class CtiIONMethod
+
+class IM_EX_PROT CtiIONMethod
 {
 public:
     CtiIONMethod( )  { };
-    
+
     enum IONSimpleMethods;
     enum IONExtendedMethods;
 
@@ -148,7 +150,7 @@ public:
     ~CtiIONMethod( )  { };
 
     int isValid( void )  { return _valid; };
-    
+
     unsigned int getSerializedValueLength( void );
     void putSerializedValue( unsigned char *buf );
 
@@ -178,7 +180,7 @@ public:
 
     enum IONExtendedMethods
     {
-    	WriteIONLabel                = 0x0080,
+        WriteIONLabel                = 0x0080,
         ReadSecurityLevel            = 0x0081,
         ReadAllSecurityLevels        = 0x0082,
         ReadParentHandle             = 0x0083,
@@ -227,7 +229,7 @@ private:
 
 
 
-class CtiIONStatement
+class IM_EX_PROT CtiIONStatement
 {
 public:
 
@@ -240,7 +242,7 @@ public:
 
     void setHandle( unsigned long handle );
     int getHandle( void );
-    
+
     void setMethod( CtiIONMethod *method );
     CtiIONMethod getMethod( void );
 
