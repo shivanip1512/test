@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
@@ -45,6 +46,8 @@ public class CustomerAccount extends DBPersistent {
 
     public static int[] searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
 		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
 		
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
@@ -54,10 +57,10 @@ public class CustomerAccount extends DBPersistent {
 	                   + "WHERE map.EnergyCompanyID = ? AND map.AccountID = acct.AccountID"
 	                   + " AND UPPER(acct.AccountNumber) LIKE UPPER(?)";
 	        
-	        java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+	        stmt = conn.prepareStatement(sql);
 	        stmt.setInt(1, energyCompanyID.intValue());
 	        stmt.setString(2, accountNumber);
-	        java.sql.ResultSet rset = stmt.executeQuery();
+	        rset = stmt.executeQuery();
 	        
 	        ArrayList acctIDList = new ArrayList();
 	        while (rset.next())
@@ -74,6 +77,8 @@ public class CustomerAccount extends DBPersistent {
         }
 		finally {
 			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
 				if (conn != null) conn.close();
 			}
 			catch (java.sql.SQLException e) {}
@@ -92,11 +97,11 @@ public class CustomerAccount extends DBPersistent {
     		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
     	sql += ")";
     	
-        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
     	
     	try {
     		stmt.execute();
+    		
 			int[] accountIDs = new int[ stmt.getRowCount() ];
 			for (int i = 0; i < stmt.getRowCount(); i++)
 				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
@@ -112,18 +117,19 @@ public class CustomerAccount extends DBPersistent {
     
     public static int[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
 		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
     				
 			String sql = "SELECT DISTINCT ContactID FROM " + com.cannontech.database.db.contact.ContactNotification.TABLE_NAME
 					   + " WHERE Notification = ? AND (NotificationCategoryID = " + YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
 					   + " OR NotificationCategoryID = " + YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE + ")";
 			
-			java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+			stmt = conn.prepareStatement( sql );
 			stmt.setString(1, phoneNumber);
-			java.sql.ResultSet rset = stmt.executeQuery();
+			rset = stmt.executeQuery();
 			
 			ArrayList contactIDList = new ArrayList();
 			while (rset.next())
@@ -140,6 +146,8 @@ public class CustomerAccount extends DBPersistent {
 		}
 		finally {
 			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
 				if (conn != null) conn.close();
 			}
 			catch (java.sql.SQLException e) {}
@@ -150,17 +158,18 @@ public class CustomerAccount extends DBPersistent {
     
     public static int[] searchByLastName(Integer energyCompanyID, String lastName) {
 		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-    				
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
 			String sql = "SELECT ContactID FROM " + com.cannontech.database.db.contact.Contact.TABLE_NAME
 					   + " WHERE UPPER(ContLastName) LIKE UPPER(?)";
 			
-			java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+			stmt = conn.prepareStatement( sql );
 			stmt.setString(1, lastName + "%");
-			java.sql.ResultSet rset = stmt.executeQuery();
+			rset = stmt.executeQuery();
 			
 			ArrayList contactIDList = new ArrayList();
 			while (rset.next())
@@ -172,11 +181,13 @@ public class CustomerAccount extends DBPersistent {
 			
 	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
-		catch (Exception e) {
+		catch (java.sql.SQLException e) {
 			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
 				if (conn != null) conn.close();
 			}
 			catch (java.sql.SQLException e) {}
@@ -248,24 +259,43 @@ public class CustomerAccount extends DBPersistent {
      * Search by LocationAddress1, must be an exact match (case-insensitive)
      */
     public static int[] searchByAddress(Integer energyCompanyID, String addr1) {
-		String sql = "SELECT Contact.ContactID FROM Contact, Address "
-				+ "WHERE UPPER(Address.LocationAddress1) LIKE '%" + addr1.toUpperCase() + "%' "
-				+ "AND Contact.AddressID = Address.AddressID";
-		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
 		
 		try {
-			stmt.execute();
-			if (stmt.getRowCount() == 0)
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
+			String sql = "SELECT Contact.ContactID FROM Contact, Address "
+					+ "WHERE UPPER(Address.LocationAddress1) LIKE UPPER(?) AND Contact.AddressID = Address.AddressID";
+			
+			stmt = conn.prepareStatement( sql );
+			stmt.setString( 1, "%" + addr1 + "%" );
+			rset = stmt.executeQuery();
+			
+			ArrayList contactIDList = new ArrayList();
+			while (rset.next())
+				contactIDList.add( new Integer(rset.getInt(1)) );
+			
+			if (contactIDList.size() == 0)
 				return new int[0];
 			
-			int[] contactIDs = new int[ stmt.getRowCount() ];
+			int[] contactIDs = new int[ contactIDList.size() ];
 			for (int i = 0; i < contactIDs.length; i++)
-				contactIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
 			
 	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
-		catch (Exception e) {
+		catch (java.sql.SQLException e) {
 			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
 		}
 		
 		return null;
