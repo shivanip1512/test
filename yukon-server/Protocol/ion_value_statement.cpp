@@ -89,7 +89,7 @@ CtiIONMethod::CtiIONMethod( IONSimpleMethods method, CtiIONValue *parameter )
     _extendedMethodNum = NoExtendedMethod;
     _methodNum = method;
 
-    _valid = TRUE;
+    setValid(true);
 }
 
 
@@ -105,7 +105,7 @@ CtiIONMethod::CtiIONMethod( IONExtendedMethods method, CtiIONValue *parameter )
         _extendedMethodNum |= 0x8000;
     }
 
-    _valid = TRUE;
+    setValid(true);
 }
 
 
