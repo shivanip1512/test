@@ -952,8 +952,22 @@ insert into YukonListEntry values (1306,1051,0,'Address',2706);
 /* @error ignore */
 insert into YukonListEntry values (1336,1054,0,'Address',3306);
 
+insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or IP address of the voice server');
+insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
+insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 
+insert into YukonGroupRole values(-16,-1,-1,-1015,'(none)');
+insert into YukonGroupRole values(-17,-1,-1,-1016,'(none)');
+insert into YukonGroupRole values(-18,-1,-1,-1017,'(none)');
 
+insert into YukonRole values(-5,'Voice Server','Yukon','Inbound and outbound voice interface.');
+insert into YukonRoleProperty values(-1400,-5,'voice_app','login','The voice server application that Yukon should use');
+insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
+insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
+
+insert into YukonGroupRole values(-100,-1,-5,-1400,'(none)');
+insert into YukonGroupRole values(-101,-1,-5,-1401,'(none)');
+insert into YukonGroupRole values(-102,-1,-5,-1402,'(none)');
 
 
 
