@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/19 15:57:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/01/06 23:09:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,13 @@
 #include "tbl_port_dialup.h"
 #include "logger.h"
 
-CtiTablePortDialup::CtiTablePortDialup() {}
+CtiTablePortDialup::CtiTablePortDialup() :
+_portID(0),
+_modemType("Unknown"),
+_modemInitString("AT&F"),
+_prefixString(" "),
+_suffixString(" ")
+{}
 
 CtiTablePortDialup::CtiTablePortDialup(const CtiTablePortDialup& aRef)
 {
