@@ -39,6 +39,10 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
+        else if( operationType == ">" )     _operationType = greater;
+        else if( operationType == ">=" )    _operationType = geq;
+        else if( operationType == "<" )     _operationType = less;
+        else if( operationType == "<=" )    _operationType = leq;
         else if( !operationType.compareTo("push", RWCString::ignoreCase) )  _operationType = push;
         else
         {
@@ -260,6 +264,10 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         case subtraction:    input = _doFunction(RWCString("subtraction"));  break;
         case multiplication: input = _doFunction(RWCString("multiplication"));  break;
         case division:       input = _doFunction(RWCString("division"));  break;
+        case greater:        input = _doFunction(RWCString(">"));  break;
+        case geq:            input = _doFunction(RWCString(">="));  break;
+        case less:           input = _doFunction(RWCString("<"));  break;
+        case leq:            input = _doFunction(RWCString("<="));  break;
         case push:           break; // This was completed with the above push!
         }
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
@@ -332,6 +340,34 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
             double operand1 = _parent->pop( );
 
             retVal = operand1 / operand2;
+        }
+        else if( !functionName.compareTo(">") || !functionName.compareTo("greater than",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = (operand1 > operand2) ? 1.0 : 0.0;
+        }
+        else if( !functionName.compareTo(">=",RWCString::ignoreCase) || !functionName.compareTo("geq than",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = (operand1 >= operand2) ? 1.0 : 0.0;
+        }
+        else if( !functionName.compareTo("<",RWCString::ignoreCase) || !functionName.compareTo("less than",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = (operand1 < operand2) ? 1.0 : 0.0;
+        }
+        else if( !functionName.compareTo("<=",RWCString::ignoreCase) || !functionName.compareTo("leq than",RWCString::ignoreCase) )
+        {
+            double operand2 = _parent->pop( );
+            double operand1 = _parent->pop( );
+
+            retVal = (operand1 <= operand2) ? 1.0 : 0.0;
         }
         else if( !functionName.compareTo("logical and",RWCString::ignoreCase) )
         {

@@ -27,7 +27,11 @@ private:
         subtraction,
         division,
         multiplication,
-        push
+        push,
+        greater,
+        geq,
+        less,
+        leq
     }                    _operationType;
     double               _constantValue;
     RWCString            _functionName;
