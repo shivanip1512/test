@@ -25,9 +25,8 @@ public FileFormatCommandLine() {
  * Written by Jarid Kvale, starting 5/18/00
  * Improved by Josh Wolberg, starting 11/29/00
  *
- * Supports : CADPXL2 
+ * Supports : SEDC CADPXL2, CADP, CTICSV, DAFRON
  *
- * Not Supported : SEDC, MVRS, NCDC, CTI Standard 2, and CADP file formats
  *
  * @param args java.lang.String[]
  */
