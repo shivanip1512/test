@@ -225,7 +225,8 @@ create table DeviceSeries5RTU  (
    PowerValueMultiplier FLOAT                            not null,
    PowerValueOffset     FLOAT                            not null,
    StartCode            NUMBER                           not null,
-   StopCode             NUMBER                           not null
+   StopCode             NUMBER                           not null,
+   Retries              NUMBER                           not null
 );
 alter table DeviceSeries5RTU
    add constraint PK_DEVICESERIES5RTU primary key (DeviceID);

@@ -273,7 +273,8 @@ PowerValueLowLimit   numeric              not null,
 PowerValueMultiplier float                not null,
 PowerValueOffset     float                not null,
 StartCode            numeric              not null,
-StopCode             numeric              not null
+StopCode             numeric              not null,
+Retries              numeric              not null
 );
 go
 alter table DeviceSeries5RTU
