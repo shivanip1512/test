@@ -20,7 +20,8 @@ public class TrendSerie
 	private String type = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;		
 	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK;
 	
-	
+	// Flag for using graph multiplier
+	public boolean useMultiplier = false;
 	private com.jrefinery.data.TimeSeriesDataPair minimumTSDataPair = null;
 	private com.jrefinery.data.TimeSeriesDataPair maximumTSDataPair = null;
 
@@ -65,7 +66,8 @@ public class TrendSerie
 
 	public com.jrefinery.data.TimeSeriesDataPair getDataPairArray(int serie)
 	{
-		if( getMultiplier() != null)
+//		if( getMultiplier() != null)
+		if( getUseMultiplier())
 		{
 			com.jrefinery.data.TimePeriod tp = dataPairArray[serie].getPeriod();
 			Number val = new Double(dataPairArray[serie].getValue().doubleValue() * getMultiplier().doubleValue());
@@ -174,6 +176,10 @@ public class TrendSerie
 	{
 		return multiplier;
 	}
+	public boolean getUseMultiplier()
+	{
+		return useMultiplier;
+	}
 	public Integer getPointId()
 	{
 		return pointId;
@@ -241,6 +247,10 @@ public class TrendSerie
 	{
 		multiplier = newMultiplier;
 	}
+	public void setUseMultiplier(boolean selected)
+	{
+		useMultiplier = selected;
+	}	
 	protected void setPointId(Integer newPointId)
 	{
 		pointId = newPointId;
