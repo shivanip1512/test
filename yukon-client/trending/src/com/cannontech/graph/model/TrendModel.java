@@ -157,9 +157,9 @@ public String getChartName()
 	return chartName;
 }
 
-private java.awt.Color [] getDatasetColors(com.jrefinery.data.AbstractSeriesDataset dataset)
+private com.jrefinery.chart.PaintTable getPaintTable()
 {
-	java.awt.Color [] colors = null;
+	java.awt.Paint[] colors = null;
 	if( getTrendSeries() != null)
 	{
 		colors = new java.awt.Color[dataset.getSeriesCount()];
@@ -176,7 +176,11 @@ private java.awt.Color [] getDatasetColors(com.jrefinery.data.AbstractSeriesData
 			}
 		}
 	}
-	return colors;
+		
+    java.awt.Paint [][] p1 = new java.awt.Paint[][] {colors};
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);	
+	
+	return pt;
 }
 
 public void setAutoScaleLeft(Character newAutoScale)
@@ -511,9 +515,12 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
 			java.util.Vector dataPairVector = new java.util.Vector(0);			
 			int lastPointId = -1;
-			boolean addPrev = false;
+
 			boolean addNext = true;
-			
+			boolean firstOne = true;
+			java.util.Date start = getStartDate();
+			java.util.Date stop = new java.util.Date (getStartDate().getTime() + 86400000);
+
 			while( rset.next() )
 			{
 				int pointID = rset.getInt(1);
@@ -548,51 +555,50 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				if( GraphDataSeries.isUsageType(seriesTypeMask))
 				{
 					java.util.Date tsDate = new java.util.Date(ts.getTime());
-					//if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
-					if(tsDate.compareTo(getStartDate()) <= 0)
-					{
-						System.out.println(" startdate = " + ts);
-						addPrev = true;
-						dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);						
+
+					if(tsDate.compareTo(start) < 0)
+					{	
+						dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
 					}
-					else if( tsDate.compareTo(getStopDate()) == 0)
+					else if(tsDate.compareTo(start) == 0)
+					{	
+						dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
+						dataPairVector.add(dataPair);
+						firstOne = false;
+					}
+					else if( tsDate.compareTo(stop) >= 0)
 					{
-						if( addPrev)
+						if(firstOne)
 						{
-							System.out.println(" startdateXX = " + new java.sql.Timestamp(dataPair.getPeriod().getStart()) + "  ADDED ");
-							dataPairVector.add(dataPair);
-							addPrev = false;
+							if( dataPair != null)
+							{
+								dataPairVector.add(dataPair);
+								firstOne = false;
+							}
 						}
-						
 						if( addNext )
 						{
-							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);							
+							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
 							dataPairVector.add(dataPair);
-							System.out.println(" enddateXX = " + ts + "  ADDED ");
 							addNext = false;							
 						}
-					}
-					else if( tsDate.compareTo(getStopDate()) > 0)
-					{
-						if( addNext )
+
+						if(stop.getTime() < getStopDate().getTime())
 						{
-							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);							
-							dataPairVector.add(dataPair);
-							System.out.println(" enddate = " + ts + "  ADDED ");
-							addNext = false;							
+							start = stop;
+							stop = new java.util.Date(start.getTime() + 86400000);
+							addNext = true;
 						}
-						System.out.println(" enddate = " + ts);
+
 					}
 					else
 					{
-						if( addPrev)
+						if( firstOne)
 						{
-							System.out.println(" startdateXX = " + new java.sql.Timestamp(dataPair.getPeriod().getStart()) + "  ADDED ");
+							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);						
 							dataPairVector.add(dataPair);
-							addPrev = false;
+							firstOne = false;
 						}
-						dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);						
-						dataPairVector.add(dataPair);
 					}
 				}
 				else
@@ -633,8 +639,7 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 					if( trendSeries[i].getPointId().intValue() == lastPointId
 							&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
 							{
-//							&& (trendSeries[i].getTypeMask() & seriesTypeMask) == trendSeries[i].getTypeMask())
-						trendSeries[i].setDataPairArray(dataPairArray);
+								trendSeries[i].setDataPairArray(dataPairArray);
 							}
 				}
 			}
@@ -889,10 +894,7 @@ public JFreeChart refresh(int rendererType)
 //        com.jrefinery.chart.data.PlotFit pf = new com.jrefinery.chart.data.PlotFit((com.jrefinery.data.XYDataset)dataset, mavg);
 //        dataset = (com.jrefinery.data.AbstractSeriesDataset)pf.getFit();
 		
-	java.awt.Paint [] p = getDatasetColors(dataset);
-    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
-	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
-	rend.setFillPaintTable(pt);
+		rend.setFillPaintTable(getPaintTable());
 		
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);
 	}
@@ -933,10 +935,8 @@ public JFreeChart refresh(int rendererType)
 			 new com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator(dwellValuesDateTimeformat, valueFormat);
 
 		rend.setToolTipGenerator(generator)		;
-		java.awt.Paint [] p = getDatasetColors(dataset);
-	    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
-		com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
-		rend.setFillPaintTable(pt);
+		
+		rend.setFillPaintTable(getPaintTable());
 
 		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);	
 	}
@@ -948,16 +948,9 @@ public JFreeChart refresh(int rendererType)
 			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 
 		CategoryItemRenderer rend = new VerticalBarRenderer(new com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator());
-//
-	java.awt.Paint [] p = getDatasetColors(dataset);
-    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
-	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
-	rend.setFillPaintTable(pt);
 
-		
+		rend.setFillPaintTable(getPaintTable());
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis_primary(), rend);
-		
-//		plot.setSeriesPaint(getDatasetColors(dataset));
 	}
 	else if( rendererType == TrendModelType.BAR_3D_VIEW)
 	{
@@ -969,28 +962,21 @@ public JFreeChart refresh(int rendererType)
 //		CategoryItemRenderer rend = new VerticalBarRenderer3D(new StandardCategoryToolTipGenerator(), 10);
 		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
 
-	java.awt.Paint [] p = getDatasetColors(dataset);
-    java.awt.Paint [][] p1 = new java.awt.Paint[][] {p};
-	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);
-	rend.setFillPaintTable(pt);
-		
+		rend.setFillPaintTable(getPaintTable());		
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
-//		plot.setSeriesPaint(getDatasetColors(dataset));		
 	}
-//	plot.setSeriesPaint(getDatasetColors(dataset));
-	/*
-	java.awt.Paint [] x = getDatasetColors(dataset);
-	for (int i = 0; i < x.length; i++)
+	else if( rendererType == TrendModelType.TABULAR_VIEW)
 	{
-		plot.setSeriesPaint(i, x[i]);
-	}	
-	*/
-//	plot.setSeriesPaint(2, java.awt.Color.black);
-//	plot.setSeriesPaint(3, java.awt.Color.black);
+		return null;
+	}
+	else if( rendererType == TrendModelType.SUMMARY_VIEW)
+	{
+		return null;
+	}
 
 	JFreeChart fChart = null;
 	fChart = new JFreeChart(plot);//, com.jrefinery.chart.ChartFactory.createTimeSeriesChart("Yukon Trending Application", "Time", "Value", new com.jrefinery.data.TimeSeriesCollection(), true);
-	
+
 	fChart.setLegend( getLegend(fChart) );
 	fChart.setTitle(getTitle());
 	fChart.setSubtitles(getSubtitles());
