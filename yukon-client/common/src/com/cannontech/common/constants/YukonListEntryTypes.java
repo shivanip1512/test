@@ -55,6 +55,11 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_TOW_WEEKEND				= 2102;
 	public static final int YUK_DEF_ID_TOW_SATURDAY				= 2103;
 	public static final int YUK_DEF_ID_TOW_SUNDAY				= 2104;
+	public static final int YUK_DEF_ID_TOW_MONDAY				= 2105;
+	public static final int YUK_DEF_ID_TOW_TUESDAY				= 2106;
+	public static final int YUK_DEF_ID_TOW_WEDNESDAY				= 2107;
+	public static final int YUK_DEF_ID_TOW_THURSDAY				= 2108;
+	public static final int YUK_DEF_ID_TOW_FRIDAY				= 2109;
 	public static final int YUK_DEF_ID_QUE_TYPE_SIGNUP			= 2201;
 	public static final int YUK_DEF_ID_QUE_TYPE_EXIT				= 2202;
 	public static final int YUK_DEF_ID_ANS_TYPE_SELECTION		= 2301;
