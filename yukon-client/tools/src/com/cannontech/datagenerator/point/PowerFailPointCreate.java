@@ -82,7 +82,6 @@ public class PowerFailPointCreate extends PointCreate
 			Integer deviceID = new Integer( litePaobject.getLiteID());
 			accumPoint.getPoint().setPaoID( deviceID );
 	//		accumPoint.getPoint().setPseudoFlag(new Character('N'));	//derived attribute
-			accumPoint.getPoint().setLogicalGroup(new String("Default"));
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );	//default stateGroupId
 			accumPoint.getPoint().setServiceFlag(new Character('N'));
 			accumPoint.getPoint().setAlarmInhibit(new Character('N'));

@@ -53,9 +53,8 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			com.cannontech.database.data.point.AnalogPoint analogPoint = new com.cannontech.database.data.point.AnalogPoint();
 			analogPoint.setPointID(new Integer(pointID));
 			analogPoint.getPoint().setPointType(pointType);
-		    analogPoint.getPoint().setPointName( pointType + i);
+			analogPoint.getPoint().setPointName( pointType + i);
 			analogPoint.getPoint().setPaoID(new Integer(deviceID));
-			analogPoint.getPoint().setLogicalGroup(new String("Default"));
 			analogPoint.getPoint().setStateGroupID( new Integer(-1) );
 			analogPoint.getPoint().setServiceFlag(new Character('N'));
 			analogPoint.getPoint().setAlarmInhibit(new Character('N'));

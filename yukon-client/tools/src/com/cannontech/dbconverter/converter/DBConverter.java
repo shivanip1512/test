@@ -576,7 +576,6 @@ public boolean processAccumulatorPoints()
 		
 		// set default settings for BASE point
 		//accumPoint.getPoint().setPseudoFlag(new Character('N'));
-		accumPoint.getPoint().setLogicalGroup(new String("Default"));
 		accumPoint.getPoint().setServiceFlag(new Character('N'));
 		accumPoint.getPoint().setAlarmInhibit(new Character('N'));
 
@@ -756,7 +755,6 @@ public boolean processAnalogPoints()
 		analogPoint.getPoint().setPointOffset(new Integer( Integer.parseInt(tokenizer.nextElement().toString())));	
 
 		// set default settings for BASE point
-		analogPoint.getPoint().setLogicalGroup(new String("Default"));
 		analogPoint.getPoint().setServiceFlag(new Character('N'));
 		analogPoint.getPoint().setAlarmInhibit(new Character('N'));
 
@@ -1839,7 +1837,6 @@ public boolean processStatusPoints()
 		statusPoint.getPoint().setStateGroupID(new Integer( Integer.parseInt(tokenizer.nextElement().toString())));
 		
 		// set default settings for BASE point
-		statusPoint.getPoint().setLogicalGroup(new String("Default"));
 		statusPoint.getPoint().setServiceFlag(new Character('N'));
 		statusPoint.getPoint().setAlarmInhibit(new Character('N'));
 

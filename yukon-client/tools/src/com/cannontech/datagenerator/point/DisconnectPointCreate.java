@@ -86,7 +86,6 @@ public class DisconnectPointCreate extends PointCreate
 			Integer deviceID = new Integer( litePaobject.getLiteID());
 			statusPoint.getPoint().setPaoID( deviceID );
 	//		statusPoint.getPoint().setPseudoFlag(new Character('N'));	//derived attribute
-			statusPoint.getPoint().setLogicalGroup(new String("Default"));
 			statusPoint.getPoint().setStateGroupID( new Integer(2) );	//default stateGroupId
 			statusPoint.getPoint().setServiceFlag(new Character('N'));
 			statusPoint.getPoint().setAlarmInhibit(new Character('N'));
