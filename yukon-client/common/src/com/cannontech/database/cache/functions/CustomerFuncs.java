@@ -30,25 +30,21 @@ public static List getAllContacts(int customerID_)
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized(cache) 
 	{
-		Iterator iter = cache.getAllCustomers().iterator();
+		LiteCustomer customer = (LiteCustomer)cache.getAllCustomersMap().get(new Integer(customerID_));
 		java.util.Vector allContacts = new java.util.Vector(5);	//guess capacity
-		while(iter.hasNext())
+		if(customer != null)
 		{
-			LiteCustomer customer = (LiteCustomer) iter.next();
-			if(customer.getCustomerID() == customerID_)
+			int primCntctID = customer.getPrimaryContactID();
+			LiteContact liteContact = ContactFuncs.getContact(primCntctID);
+			if( liteContact != null)
+				allContacts.addElement(liteContact);
+			
+			for (int i = 0; i < customer.getAdditionalContacts().size(); i++)
 			{
-				int primCntctID = customer.getPrimaryContactID();
-				LiteContact liteContact = ContactFuncs.getContact(primCntctID);
-				if( liteContact != null)
-					allContacts.addElement(liteContact);
-				
-				for (int i = 0; i < customer.getAdditionalContacts().size(); i++)
-				{
-					allContacts.addElement(customer.getAdditionalContacts().get(i));
-				}
-				return allContacts;
+				allContacts.addElement(customer.getAdditionalContacts().get(i));
 			}
-		}		
+			return allContacts;
+		}
 	}
 	return null;
 }
@@ -58,18 +54,14 @@ public static LiteContact getPrimaryContact(int customerID_)
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache) 
 	{
-		Iterator iter = cache.getAllCICustomers().iterator();
-		while(iter.hasNext())
+		LiteCustomer customer = (LiteCustomer)cache.getAllCustomersMap().get(new Integer (customerID_));
+		if( customer != null)
 		{
-			LiteCICustomer ciCustomer = (LiteCICustomer) iter.next();
-			if(ciCustomer.getCustomerID() == customerID_)
-			{
-				int primCntctID = ciCustomer.getPrimaryContactID();
-				LiteContact liteContact = ContactFuncs.getContact(primCntctID);
-				if( liteContact != null)
-					return liteContact;
-			}
-		}		
+			int primCntctID = customer.getPrimaryContactID();
+			LiteContact liteContact = ContactFuncs.getContact(primCntctID);
+			if( liteContact != null)
+				return liteContact;
+		}
 	}
 	return null;
 }
@@ -138,16 +130,13 @@ public static LiteContact[] getUnusedContacts( )
  * @param customerID
  * @return LiteCICustomer
  */
-public static LiteCICustomer getLiteCICustomer(int customerID) {
-	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized( cache ) {
-			for(Iterator i = cache.getAllCICustomers().iterator(); i.hasNext();) {
-				LiteCICustomer lc = (LiteCICustomer) i.next();
-				if(lc.getCustomerID() == customerID ) {
-					return lc;
-				}
-			}	
-		}
+public static LiteCICustomer getLiteCICustomer(int customerID)
+{
+	//Get the customer from AllCustomersMap (make use of the map), retun null if NOT instance LiteCICustomer
+	LiteCustomer lc = getLiteCustomer(customerID);
+	if ( lc instanceof LiteCICustomer)
+		return (LiteCICustomer)lc;
+		
 	return null;
 }
 }
