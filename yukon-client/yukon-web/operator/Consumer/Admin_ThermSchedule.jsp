@@ -84,6 +84,8 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
+<script language="JavaScript" src ="../../JavaScript/nav_menu.js">
+</script>
 <script language="JavaScript" src ="../../JavaScript/drag.js">
 </script>
 <script language="JavaScript" src ="../../JavaScript/thermostat2.js">
@@ -250,7 +252,7 @@ MM_reloadPage(true);
 			  
 			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/StarsAdmin" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
-			  <input type="hidden" name="invID" value="<%= thermoSettings.getInventoryID() %>">
+			  <input type="hidden" name="InvID" value="<%= thermoSettings.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
