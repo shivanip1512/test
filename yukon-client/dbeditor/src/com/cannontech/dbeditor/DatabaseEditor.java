@@ -36,6 +36,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.defines.CommonDefines;
@@ -43,7 +44,7 @@ import com.cannontech.dbeditor.editor.defaults.DefaultRoutes;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.dbeditor.wizard.changetype.device.DeviceTypesPanel;
+import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import java.awt.Dimension;
 
@@ -693,18 +694,35 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 			changeType = false;
 	
 	}
+	
+	
 	if (changeType)
 	{
-
 		selectedObject = (com.cannontech.database.db.DBPersistent) p.getValue(selectedObject);
 
 		try
 		{
 
+			//we actually may be INSERTING a new object
+			if( selectedObject instanceof SmartMultiDBPersistent ) {
+				
+				SmartMultiDBPersistent smarty = (SmartMultiDBPersistent)selectedObject;
+						
+				for( int i = 0; i < smarty.size(); i++ )
+					if( !smarty.getDBPersistent(i).equals(smarty.getOwnerDBPersistent()) )
+						generateDBChangeMsg( 
+								smarty.getDBPersistent(i),
+								DBChangeMsg.CHANGE_TYPE_ADD );
+								
+				selectedObject = smarty.getOwnerDBPersistent();
+			}			
+
 			Transaction t1 = Transaction.createTransaction(Transaction.UPDATE, selectedObject);
 			selectedObject = t1.execute();
 
+			//always do this
 			generateDBChangeMsg( selectedObject, DBChangeMsg.CHANGE_TYPE_UPDATE );
+
 
 			//getTreeViewPanel().refresh();
 			getTreeViewPanel().selectObject(selectedObject);
@@ -771,7 +789,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 	  }
 
 	  if( userObject instanceof com.cannontech.database.data.device.DeviceBase         
-		   && DeviceTypesPanel.isDeviceTypeChangeable( 
+		   && DeviceChngTypesPanel.isDeviceTypeChangeable( 
                ((com.cannontech.database.data.device.DeviceBase)userObject).getPAOType()) )
 	  {
          showChangeTypeWizardPanel(

@@ -57,7 +57,7 @@ public void delete() throws java.sql.SQLException
 	com.cannontech.database.db.device.lm.LMControlAreaTrigger.deleteAllControlAreaTriggers( getControlArea().getDeviceID(), getDbConnection() );
 			
 	// delete all the associated LMPrograms for this control area
-	com.cannontech.database.db.device.lm.LMControlAreaProgramList.deleteAllControlAreaProgramList( getControlArea().getDeviceID(), getDbConnection() );
+	com.cannontech.database.db.device.lm.LMControlAreaProgram.deleteAllControlAreaProgramList( getControlArea().getDeviceID(), getDbConnection() );
 
 	getControlArea().delete();
 	
@@ -128,7 +128,7 @@ public void retrieve() throws java.sql.SQLException
 			getLmControlAreaTriggerVector().addElement( triggers[i] );
 		}
 
-		com.cannontech.database.db.device.lm.LMControlAreaProgramList programs[] = com.cannontech.database.db.device.lm.LMControlAreaProgramList.getAllControlAreaList( getControlArea().getDeviceID(), getDbConnection() );
+		com.cannontech.database.db.device.lm.LMControlAreaProgram programs[] = com.cannontech.database.db.device.lm.LMControlAreaProgram.getAllControlAreaList( getControlArea().getDeviceID(), getDbConnection() );
 		for( int i = 0; i < programs.length; i++ )
 		{
 			programs[i].setDbConnection(getDbConnection());
@@ -206,7 +206,7 @@ public void setPAObjectID(Integer paoID)
 	// do all the associated LMPrograms for this control area
 	if( getLmControlAreaProgramVector() != null )
 		for( int i = 0; i < getLmControlAreaProgramVector().size(); i++ )
-			((com.cannontech.database.db.device.lm.LMControlAreaProgramList) getLmControlAreaProgramVector().elementAt(i)).setDeviceID(paoID);
+			((com.cannontech.database.db.device.lm.LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).setDeviceID(paoID);
 }
 /**
  * This method was created in VisualAge.
@@ -232,10 +232,10 @@ public void update() throws java.sql.SQLException
 
 	
 	// delete all the associated LMPrograms for this control area
-	com.cannontech.database.db.device.lm.LMControlAreaProgramList.deleteAllControlAreaProgramList( getControlArea().getDeviceID(), getDbConnection() );
+	com.cannontech.database.db.device.lm.LMControlAreaProgram.deleteAllControlAreaProgramList( getControlArea().getDeviceID(), getDbConnection() );
 	// add all the associated LMPrograms for this control area
 	if( getLmControlAreaProgramVector() != null )
 		for( int i = 0; i < getLmControlAreaProgramVector().size(); i++ )
-			((com.cannontech.database.db.device.lm.LMControlAreaProgramList) getLmControlAreaProgramVector().elementAt(i)).add();
+			((com.cannontech.database.db.device.lm.LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).add();
 }
 }

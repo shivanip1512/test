@@ -60,6 +60,7 @@ public void delete() throws java.sql.SQLException
 	getDirectProgram().delete();
 	super.delete();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (10/18/2001 11:11:51 AM)
@@ -67,7 +68,9 @@ public void delete() throws java.sql.SQLException
 private void deleteFromDynamicTables() throws java.sql.SQLException
 {
 	delete("DynamicLMProgramDirect", "deviceID", getPAObjectID() );
+	delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/16/2001 3:46:23 PM)

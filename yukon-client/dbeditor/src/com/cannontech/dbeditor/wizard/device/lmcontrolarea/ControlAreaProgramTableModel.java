@@ -18,10 +18,10 @@ public class ControlAreaProgramTableModel extends javax.swing.table.AbstractTabl
 	
 	public class ProgramRow
 	{
-		private com.cannontech.database.db.device.lm.LMControlAreaProgramList programList = null;
+		private com.cannontech.database.db.device.lm.LMControlAreaProgram programList = null;
 		private com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
 		
-		public ProgramRow(com.cannontech.database.db.device.lm.LMControlAreaProgramList list, com.cannontech.database.data.lite.LiteYukonPAObject device)
+		public ProgramRow(com.cannontech.database.db.device.lm.LMControlAreaProgram list, com.cannontech.database.data.lite.LiteYukonPAObject device)
 		{
 			super();
 
@@ -29,7 +29,7 @@ public class ControlAreaProgramTableModel extends javax.swing.table.AbstractTabl
 			liteDevice = device;
 		}
 
-		public com.cannontech.database.db.device.lm.LMControlAreaProgramList getProgramList()
+		public com.cannontech.database.db.device.lm.LMControlAreaProgram getProgramList()
 		{
 			return programList;
 		}
@@ -53,7 +53,7 @@ public ControlAreaProgramTableModel() {
  * @param point com.cannontech.database.data.lite.LitePoint
  * @param val java.lang.Object
  */
-public boolean addRow(com.cannontech.database.db.device.lm.LMControlAreaProgramList list, com.cannontech.database.data.lite.LiteYukonPAObject device)
+public boolean addRow(com.cannontech.database.db.device.lm.LMControlAreaProgram list, com.cannontech.database.data.lite.LiteYukonPAObject device)
 {
 	for( int i = 0; i < getRowCount(); i++ )
 		if( getRowAt(i).getLiteDevice().getYukonID() == device.getYukonID() )

@@ -4,7 +4,7 @@ package com.cannontech.database.db.device.lm;
  * This type was created in VisualAge.
  */
 
-public class LMControlAreaProgramList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
+public class LMControlAreaProgram extends com.cannontech.database.db.DBPersistent implements DeviceListItem
 {
 	private Integer deviceID = null;
 	private Integer lmProgramDeviceID = new Integer(0);
@@ -25,7 +25,7 @@ public class LMControlAreaProgramList extends com.cannontech.database.db.DBPersi
 /**
  * LMGroupVersacomSerial constructor comment.
  */
-public LMControlAreaProgramList() {
+public LMControlAreaProgram() {
 	super();
 }
 /**
@@ -93,7 +93,7 @@ public static boolean deleteAllControlAreaProgramList(Integer ctrlAreaDeviceID, 
  * @return com.cannontech.database.db.point.State[]
  * @param stateGroup java.lang.Integer
  */
-public static final LMControlAreaProgramList[] getAllControlAreaList(Integer ctrlAreaDeviceID, java.sql.Connection conn ) throws java.sql.SQLException
+public static final LMControlAreaProgram[] getAllControlAreaList(Integer ctrlAreaDeviceID, java.sql.Connection conn ) throws java.sql.SQLException
 {
 	java.util.ArrayList tmpList = new java.util.ArrayList(30);
 	java.sql.PreparedStatement pstmt = null;
@@ -118,7 +118,7 @@ public static final LMControlAreaProgramList[] getAllControlAreaList(Integer ctr
 	
 			while( rset.next() )
 			{
-				LMControlAreaProgramList item = new LMControlAreaProgramList();
+				LMControlAreaProgram item = new LMControlAreaProgram();
 
 				item.setDbConnection(conn);
 				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
@@ -149,7 +149,7 @@ public static final LMControlAreaProgramList[] getAllControlAreaList(Integer ctr
 	}
 
 
-	LMControlAreaProgramList retVal[] = new LMControlAreaProgramList[ tmpList.size() ];
+	LMControlAreaProgram retVal[] = new LMControlAreaProgram[ tmpList.size() ];
 	tmpList.toArray( retVal );
 	
 	return retVal;

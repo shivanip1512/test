@@ -4,12 +4,13 @@ package com.cannontech.dbeditor.wizard.changetype.device;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.wizard.WizardPanel;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.pao.DeviceClasses;
 
 public class DeviceChangeTypeWizardPanel extends WizardPanel
 {
 	private com.cannontech.database.db.DBPersistent changeObject = null;
-	private int deviceClass;
-	private DeviceTypesPanel deviceTypesPanel;
+	private DeviceChngTypesPanel deviceTypesPanel;
 
 /**
  * DeviceWizardPanel constructor comment.
@@ -18,11 +19,14 @@ public DeviceChangeTypeWizardPanel(com.cannontech.database.db.DBPersistent objec
 {
 	super();
 	setChangeObject(objectToChange);
-	setDeviceClass();
 	
-  	getDeviceTypesPanel().setList(
-				getDeviceClass(), 
-            ((com.cannontech.database.data.device.DeviceBase) getChangeObject()).getPAOType() );
+   if( getChangeObject() instanceof DeviceBase ) {
+   	
+		getDeviceTypesPanel().setCurrentDevice( 
+				(DeviceBase)getChangeObject() );   	
+   }
+    	  	
+
 }
 
 /**
@@ -43,22 +47,14 @@ public com.cannontech.database.db.DBPersistent getChangeObject() {
 		
 	return changeObject;
 }
-/**
- * Insert the method's description here.
- * Creation date: (6/7/2001 9:30:52 AM)
- * @return int
- */
-public int getDeviceClass()
-{
-	return deviceClass;
-}
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
  */
-protected DeviceTypesPanel getDeviceTypesPanel() {
+protected DeviceChngTypesPanel getDeviceTypesPanel() {
 	if( deviceTypesPanel == null )
-		deviceTypesPanel = new DeviceTypesPanel();
+		deviceTypesPanel = new DeviceChngTypesPanel();
 		
 	return deviceTypesPanel;
 }
@@ -83,9 +79,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
     com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
 {
 
-    if (currentInputPanel == null)
+    if (currentInputPanel == null) {
+    	  
         return getDeviceTypesPanel();
-
+    }
     else
         throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
 }
@@ -94,9 +91,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel)
 {
-    boolean editPointID = false;
-
-    if (currentPanel == getDeviceTypesPanel())
+    if( currentPanel == getDeviceTypesPanel() )
         return true;
     else
     {
@@ -134,13 +129,5 @@ public void setChangeObject(com.cannontech.database.db.DBPersistent newObject)
 	 	}
  	}
  } 
-/**
- * Insert the method's description here.
- * Creation date: (6/7/2001 9:31:56 AM)
- */
-public void setDeviceClass()
-{
-	deviceClass = com.cannontech.database.data.pao.DeviceClasses.getClass(
-			((com.cannontech.database.data.device.DeviceBase) getChangeObject()).getPAOClass() );
-}
+
 }

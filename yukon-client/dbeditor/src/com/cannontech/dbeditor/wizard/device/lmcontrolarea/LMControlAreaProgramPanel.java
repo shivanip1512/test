@@ -666,7 +666,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( getJTableProgram().isEditing() )
 		getJTableProgram().getDefaultEditor(Integer.class).stopCellEditing();
 
-	com.cannontech.database.db.device.lm.LMControlAreaProgramList programList = new com.cannontech.database.db.device.lm.LMControlAreaProgramList();
+	com.cannontech.database.db.device.lm.LMControlAreaProgram programList = new com.cannontech.database.db.device.lm.LMControlAreaProgram();
 	programList.setDefaultPriority( new Integer( ((Number)getJCSpinFieldPriority().getValue()).intValue() ) );
 	programList.setStopOrder( new Integer( ((Number)getJCSpinFieldStopOrder().getValue()).intValue() ) );
 	
@@ -760,7 +760,7 @@ public void setValue(Object o)
 
 	for( int i = 0; i < controlArea.getLmControlAreaProgramVector().size(); i++ )
 	{
-		com.cannontech.database.db.device.lm.LMControlAreaProgramList programList = (com.cannontech.database.db.device.lm.LMControlAreaProgramList)controlArea.getLmControlAreaProgramVector().elementAt(i);
+		com.cannontech.database.db.device.lm.LMControlAreaProgram programList = (com.cannontech.database.db.device.lm.LMControlAreaProgram)controlArea.getLmControlAreaProgramVector().elementAt(i);
 		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
 
 		//find the LMProgram that this list item points at

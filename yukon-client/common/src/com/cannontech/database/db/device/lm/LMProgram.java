@@ -150,7 +150,7 @@ public static java.util.Vector getUnassignedPrograms()
 
 
 	String sql = "SELECT DeviceID FROM " + TABLE_NAME + " where " +
-					 " deviceid not in (select lmprogramdeviceid from " + LMControlAreaProgramList.TABLE_NAME +
+					 " deviceid not in (select lmprogramdeviceid from " + LMControlAreaProgram.TABLE_NAME +
 					 ") ORDER BY deviceid";
 
 	try
