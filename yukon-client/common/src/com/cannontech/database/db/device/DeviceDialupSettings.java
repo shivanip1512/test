@@ -1,5 +1,7 @@
 package com.cannontech.database.db.device;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
@@ -7,10 +9,10 @@ public class DeviceDialupSettings extends com.cannontech.database.db.DBPersisten
 {
 	private Integer deviceID = null;
 	private String phoneNumber = "0";
-	private Integer minConnectTime = new Integer(0);
+	private Integer minConnectTime = new Integer(CtiUtilities.NONE_ID);
 	private Integer maxConnectTime = new Integer(10);
 	private String lineSettings = "8N1";
-	private Integer baudRate = new Integer(com.cannontech.common.version.DBEditorDefines.BAUD_300);
+	private Integer baudRate = new Integer(CtiUtilities.NONE_ID);
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
