@@ -16,6 +16,7 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
@@ -365,6 +366,10 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
+				// Get the privilege group before the default login is deleted
+				LiteYukonGroup liteGroup = energyCompany.getOperatorDefaultGroup();
+				
+				// Delete the default operator login
 				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID &&
 					energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 				{
@@ -375,6 +380,17 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					yukonUser.deleteOperatorLogin();
 					
 					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
+				}
+				
+				// Delete the privilege group of the default operator login
+				if (liteGroup != null) {
+					com.cannontech.database.data.user.YukonGroup dftGroup =
+							new com.cannontech.database.data.user.YukonGroup();
+					dftGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
+					dftGroup.setDbConnection( conn );
+					dftGroup.delete();
+					
+					ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
 				status = STATUS_FINISHED;
