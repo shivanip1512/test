@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/11/24 17:03:53 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/01/27 17:53:01 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -615,6 +615,11 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
     deleter.where(table["timearrival"] < RWDBDateTime(RWTime(earliest + rwEpoch)));
 
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Beginning to prune DynamicVerification. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << deleter.asString() << endl;
+    }
     if( e = deleter.execute(conn).status().errorCode() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
