@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/10/22 22:13:53 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/10/24 17:29:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ using namespace std;
 #include "pointtypes.h"
 #include "mgr_route.h"
 #include "mgr_point.h"
+#include "msg_cmd.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
@@ -816,18 +817,26 @@ INT CtiDeviceDNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 
     if( pPIL != NULL )
     {
-        //  insert "Sky is falling" messages into pPIL here
+        CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-        // send the whole mess to dispatch
-        if (pPIL->PointData().entries() > 0)
+        if(pMsg != NULL)
         {
-            retList.insert( pPIL );
+            pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+            pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(getID());          // The id (device or point which failed)
+            pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+
+            if(InMessage->EventCode != 0)
+            {
+                pMsg->insert(InMessage->EventCode);
+            }
+            else
+            {
+                pMsg->insert(GeneralScanAborted);
+            }
+
+            retList.insert( pMsg );
         }
-        else
-        {
-            delete pPIL;
-        }
-        pPIL = NULL;
     }
     else
     {
