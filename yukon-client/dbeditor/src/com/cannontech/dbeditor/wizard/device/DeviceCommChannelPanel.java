@@ -266,7 +266,34 @@ public Object getValue(Object val)
 		((DeviceBase) val).setDeviceID( 
 				com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
 
-		SmartMultiDBPersistent smartDB = createPoints( ((DeviceBase) val).getPAObjectID() );
+		SmartMultiDBPersistent smartDB = null;
+      
+      //only add a COMM STATUS for an ION meter
+      if( DeviceTypesFuncs.isIon(devType) )
+      {
+         smartDB = new SmartMultiDBPersistent();
+         Integer pointID = 
+               new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+         
+         //A status point is automatically added to each transmitter
+         com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(
+               pointID,
+               com.cannontech.database.data.point.PointTypes.STATUS_POINT,
+               "COMM STATUS",
+               ((DeviceBase) val).getDevice().getDeviceID(),
+               new Integer(PointTypes.PT_OFFSET_TRANS_STATUS) );
+         
+         newPoint.getPoint().setStateGroupID( 
+               new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
+   
+         ((com.cannontech.database.data.point.StatusPoint) newPoint).setPointStatus(
+            new com.cannontech.database.db.point.PointStatus(pointID));
+         
+         smartDB.addDBPersistent( newPoint );
+      }
+      else
+         smartDB = createPoints( ((DeviceBase) val).getPAObjectID() );
+
 
 		smartDB.addDBPersistent( (DeviceBase)val );
 		smartDB.setOwnerDBPersistent( (DeviceBase)val );
