@@ -1,25 +1,15 @@
 package com.cannontech.servlet;
 
 /**
- * GraphGenerator generates a gif or jpg image of a graph based on the parameters
+ * GraphGenerator generates a png, svg, or jpg image of a graph based on the parameters
  * passed to it.
- * My most sincere apologies for the doGet method.  May it be rewritten someday.
  *
  * Parameters:
- *	gdefid = The graph definition id
- *  width = width of the image
- *  height = height of the image
- *  format = gif | svg
- *  start = mm:dd:yyyy:hh:mm:ss
- *  end = mm:dd:yyyy:hh:mm:ss
- *  db = database alias to use
- *  model = [ (com.cannontech.graph.model.GraphModelType.DATA_VIEW_MODEL = 0) |
- *			  (com.cannontech.graph.model.GraphModelType.BAR_GRAPH_MODEL = 1) | 
- *			  (com.cannontech.graph.model.GraphModelType.LOAD_DURATION_CURVE_MODEL = 2) ] 
- *			  (default = 0)
- *  loadfactor = [ true | false ] (default = true) Determines whether to show loadfactor
+ *	graphBean - takes in an instance of the Graphbean
+
  * Creation date: (12/9/99 3:23:27 PM)
  * @author: Aaron Lauinger
+ * updated for bean use - 11/20/02 Stacey Nebben
  */
 
 import com.cannontech.common.util.LogWriter;
@@ -48,117 +38,29 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 	try
 	{	 	
 		javax.servlet.http.HttpSession session = req.getSession(false);
-	
 		if (session == null)
 			resp.sendRedirect("/login.jsp");
-	
+
 		resp.setHeader("Cache-Control","no-store"); //HTTP 1.1
 		resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
 	 	resp.setDateHeader ("Expires", 0); 			//prevents caching at the proxy server
 
-	 	//User user = (User) session.getValue("USER");
-	 	
-		//Grab the parameter
+		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
+		if(localBean == null)
+			System.out.println("!!! BEAN IS NULL !!! ");
 			
-		int gDefId= Integer.parseInt( req.getParameter("gdefid") );
-		
-		int width = Integer.parseInt( req.getParameter("width") );
-		int height = Integer.parseInt( req.getParameter("height") );
-
-		String format = req.getParameter("format");
-		String dbAlias = req.getParameter("db");
-		String loadFactor = req.getParameter("loadfactor");		
-		int modelType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
-		
-		boolean showLoadFactor = true;
-		
-		if( format == null )
-				format = "gif";
-	
-		//default to showing load factor
-		if( loadFactor != null && loadFactor.equalsIgnoreCase("false"))
-			showLoadFactor = false;
-				
-		java.util.Date start = dateFormat.parse(req.getParameter("start"));		
-		java.util.Date end = dateFormat.parse(req.getParameter("end"));
-
-		String modelTypeStr = req.getParameter("model");
-		if( modelTypeStr != null )
-			modelType = Integer.parseInt(modelTypeStr);
-			
-		
-		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(gDefId));
-	
-		if (gDef != null)
-		{		
-			java.sql.Connection conn = null;
-			try
-			{
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-				gDef.setDbConnection(conn);
-				gDef.retrieve();
-
-				// Lose the reference to the connection
-				gDef.setDbConnection(null);
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();		 
-			}
-			finally
-			{   //make sure to close the connection
-				try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
-			}
-					
-			gDef.getGraphDefinition().setStartDate( start );
-			gDef.getGraphDefinition().setStopDate( end );
-						
-			com.cannontech.graph.Graph graph = new com.cannontech.graph.Graph();
-			graph.setDatabaseAlias(dbAlias);
-			graph.setSize(width, height);
-			graph.setCurrentGraphDefinition(gDef);
-			graph.setShowLoadFactor(showLoadFactor);
-			
-
-			graph.setViewType(modelType);
-
-			// Define the peak series....
-			for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
-			{
-				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
-
-				
-			}
-			
-			graph.update();			
-
-			javax.servlet.ServletOutputStream out = null;
-			
-			try
-			{				
-		    	out = resp.getOutputStream();		   		
-				if( format.equalsIgnoreCase("gif") )								
-					graph.encodeGif(out);
-				else if( format.equalsIgnoreCase("png") )
-					graph.encodePng(out);
-				else if( format.equalsIgnoreCase("jpg") )
-					;//graph.encodeJPG(out);
-				else
-				if( format.equalsIgnoreCase("svg") )
-					graph.encodeSVG(out);
-					
-				out.flush();
-			}
-			catch( java.io.IOException ioe )
-			{
-				ioe.printStackTrace();
-			}			
+		localBean.updateCurrentPane();
+		javax.servlet.ServletOutputStream out = null;
+		try
+		{	
+	    	out = resp.getOutputStream();
+			localBean.getGraph().encodePng(out);
+			out.flush();
 		}
-		else
+		catch( java.io.IOException ioe )
 		{
-				logger.log("Graphdefinition is null!", LogWriter.ERROR );
-		}	
+			ioe.printStackTrace();
+		}			
 
 	}
 	catch( Throwable t )
