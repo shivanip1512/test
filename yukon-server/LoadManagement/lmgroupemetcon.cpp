@@ -54,7 +54,7 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupEmetcon::getGoldAddress() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _goldaddress;
 }
 
@@ -65,7 +65,7 @@ ULONG CtiLMGroupEmetcon::getGoldAddress() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupEmetcon::getSilverAddress() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _silveraddress;
 }
 
@@ -76,7 +76,7 @@ ULONG CtiLMGroupEmetcon::getSilverAddress() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMGroupEmetcon::getAddressUsage() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _addressusage;
 }
 
@@ -87,7 +87,7 @@ const RWCString& CtiLMGroupEmetcon::getAddressUsage() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMGroupEmetcon::getRelayUsage() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _relayusage;
 }
 
@@ -98,7 +98,7 @@ const RWCString& CtiLMGroupEmetcon::getRelayUsage() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupEmetcon::getRouteId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _routeid;
 }
 
@@ -109,7 +109,7 @@ ULONG CtiLMGroupEmetcon::getRouteId() const
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::setGoldAddress(ULONG goldadd)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _goldaddress = goldadd;
     return *this;
 }
@@ -121,7 +121,7 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::setGoldAddress(ULONG goldadd)
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::setSilverAddress(ULONG silveradd)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _silveraddress = silveradd;
     return *this;
 }
@@ -133,7 +133,7 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::setSilverAddress(ULONG silveradd)
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::setAddressUsage(const RWCString& adduse)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _addressusage = adduse;
     return *this;
 }
@@ -145,7 +145,7 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::setAddressUsage(const RWCString& adduse)
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::setRelayUsage(const RWCString& relayuse)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _relayusage = relayuse;
     return *this;
 }
@@ -157,7 +157,7 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::setRelayUsage(const RWCString& relayuse)
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::setRouteId(ULONG rteid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _routeid = rteid;
     return *this;
 }
@@ -283,7 +283,7 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, UL
 void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restoreGuts( istrm );
 
@@ -302,7 +302,7 @@ void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
 void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     CtiLMGroupBase::saveGuts( ostrm );
 
@@ -320,7 +320,7 @@ void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::operator=(const CtiLMGroupEmetcon& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -341,7 +341,7 @@ CtiLMGroupEmetcon& CtiLMGroupEmetcon::operator=(const CtiLMGroupEmetcon& right)
 ---------------------------------------------------------------------------*/
 int CtiLMGroupEmetcon::operator==(const CtiLMGroupEmetcon& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator==(right);
 }
 
@@ -350,7 +350,7 @@ int CtiLMGroupEmetcon::operator==(const CtiLMGroupEmetcon& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMGroupEmetcon::operator!=(const CtiLMGroupEmetcon& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator!=(right);
 }
 
@@ -371,7 +371,7 @@ CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restore(rdr);
 }
@@ -384,7 +384,7 @@ void CtiLMGroupEmetcon::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::restoreEmetconSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["goldaddress"] >> _goldaddress;
     rdr["silveraddress"] >> _silveraddress;

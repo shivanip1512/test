@@ -136,8 +136,6 @@ private:
     RWCString _methodoptiontype;
     ULONG _methodoptionmax;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
     void restore(RWDBReader& rdr);
 };
 #endif

@@ -72,8 +72,6 @@ private:
     ULONG _pointidusage;
     ULONG _startcontrolrawstate;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
     void restore(RWDBReader& rdr);
 };
 #endif

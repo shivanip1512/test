@@ -54,7 +54,7 @@ CtiLMGroupRipple::~CtiLMGroupRipple()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupRipple::getRouteId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _routeid;
 }
 
@@ -65,7 +65,7 @@ ULONG CtiLMGroupRipple::getRouteId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupRipple::getShedTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _shedtime;
 }
 
@@ -76,7 +76,7 @@ ULONG CtiLMGroupRipple::getShedTime() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMGroupRipple::getControlValue() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _controlvalue;
 }
 
@@ -87,7 +87,7 @@ const RWCString& CtiLMGroupRipple::getControlValue() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMGroupRipple::getRestoreValue() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _restorevalue;
 }
 
@@ -99,7 +99,7 @@ const RWCString& CtiLMGroupRipple::getRestoreValue() const
 ---------------------------------------------------------------------------*/
 CtiLMGroupRipple& CtiLMGroupRipple::setRouteId(ULONG rteid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _routeid = rteid;
     return *this;
 }
@@ -111,7 +111,7 @@ CtiLMGroupRipple& CtiLMGroupRipple::setRouteId(ULONG rteid)
 ---------------------------------------------------------------------------*/
 CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(ULONG shed)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _shedtime = shed;
     return *this;
 }
@@ -123,7 +123,7 @@ CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(ULONG shed)
 ---------------------------------------------------------------------------*/
 CtiLMGroupRipple& CtiLMGroupRipple::setControlValue(const RWCString& control)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _controlvalue = control;
     return *this;
 }
@@ -135,7 +135,7 @@ CtiLMGroupRipple& CtiLMGroupRipple::setControlValue(const RWCString& control)
 ---------------------------------------------------------------------------*/
 CtiLMGroupRipple& CtiLMGroupRipple::setRestoreValue(const RWCString& restore)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _restorevalue = restore;
     return *this;
 }
@@ -269,7 +269,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
 void CtiLMGroupRipple::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restoreGuts( istrm );
 
@@ -287,7 +287,7 @@ void CtiLMGroupRipple::restoreGuts(RWvistream& istrm)
 void CtiLMGroupRipple::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     CtiLMGroupBase::saveGuts( ostrm );
 
@@ -304,7 +304,7 @@ void CtiLMGroupRipple::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupRipple& CtiLMGroupRipple::operator=(const CtiLMGroupRipple& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -323,7 +323,7 @@ CtiLMGroupRipple& CtiLMGroupRipple::operator=(const CtiLMGroupRipple& right)
 ---------------------------------------------------------------------------*/
 int CtiLMGroupRipple::operator==(const CtiLMGroupRipple& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator==(right);
 }
 
@@ -332,7 +332,7 @@ int CtiLMGroupRipple::operator==(const CtiLMGroupRipple& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMGroupRipple::operator!=(const CtiLMGroupRipple& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator!=(right);
 }
 
@@ -353,7 +353,7 @@ CtiLMGroupBase* CtiLMGroupRipple::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupRipple::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restore(rdr);
 }
@@ -366,7 +366,7 @@ void CtiLMGroupRipple::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupRipple::restoreRippleSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["routeid"] >> _routeid;
     rdr["shedtime"] >> _shedtime;

@@ -54,7 +54,7 @@ CtiLMGroupPoint::~CtiLMGroupPoint()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupPoint::getDeviceIdUsage() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _deviceidusage;
 }
 
@@ -65,7 +65,7 @@ ULONG CtiLMGroupPoint::getDeviceIdUsage() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupPoint::getPointIdUsage() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _pointidusage;
 }
 
@@ -76,7 +76,7 @@ ULONG CtiLMGroupPoint::getPointIdUsage() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupPoint::getStartControlRawState() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _startcontrolrawstate;
 }
 
@@ -87,7 +87,7 @@ ULONG CtiLMGroupPoint::getStartControlRawState() const
 ---------------------------------------------------------------------------*/
 CtiLMGroupPoint& CtiLMGroupPoint::setDeviceIdUsage(ULONG deviduse)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _deviceidusage = deviduse;
     return *this;
 }
@@ -99,7 +99,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setDeviceIdUsage(ULONG deviduse)
 ---------------------------------------------------------------------------*/
 CtiLMGroupPoint& CtiLMGroupPoint::setPointIdUsage(ULONG pointiduse)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _pointidusage = pointiduse;
     return *this;
 }
@@ -111,7 +111,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setPointIdUsage(ULONG pointiduse)
 ---------------------------------------------------------------------------*/
 CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(ULONG startcontrolstate)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _startcontrolrawstate = startcontrolstate;
     return *this;
 }
@@ -214,7 +214,7 @@ CtiCommandMsg* CtiLMGroupPoint::createLatchingRequestMsg(ULONG rawState, int pri
 void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restoreGuts( istrm );
 
@@ -231,7 +231,7 @@ void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
 void CtiLMGroupPoint::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     CtiLMGroupBase::saveGuts( ostrm );
 
@@ -247,7 +247,7 @@ void CtiLMGroupPoint::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupPoint& CtiLMGroupPoint::operator=(const CtiLMGroupPoint& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -265,7 +265,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::operator=(const CtiLMGroupPoint& right)
 ---------------------------------------------------------------------------*/
 int CtiLMGroupPoint::operator==(const CtiLMGroupPoint& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator==(right);
 }
 
@@ -274,7 +274,7 @@ int CtiLMGroupPoint::operator==(const CtiLMGroupPoint& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMGroupPoint::operator!=(const CtiLMGroupPoint& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator!=(right);
 }
 
@@ -295,7 +295,7 @@ CtiLMGroupBase* CtiLMGroupPoint::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupPoint::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restore(rdr);
 }
@@ -308,7 +308,7 @@ void CtiLMGroupPoint::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupPoint::restorePointSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["deviceidusage"] >> _deviceidusage;
     rdr["pointidusage"] >> _pointidusage;

@@ -58,7 +58,7 @@ CtiLMProgramDirectGear::~CtiLMProgramDirectGear()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoid;
 }
 
@@ -69,7 +69,7 @@ ULONG CtiLMProgramDirectGear::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramDirectGear::getGearName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _gearname;
 }
 
@@ -80,7 +80,7 @@ const RWCString& CtiLMProgramDirectGear::getGearName() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getGearNumber() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _gearnumber;
 }
 
@@ -91,7 +91,7 @@ ULONG CtiLMProgramDirectGear::getGearNumber() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramDirectGear::getControlMethod() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _controlmethod;
 }
 
@@ -103,7 +103,7 @@ const RWCString& CtiLMProgramDirectGear::getControlMethod() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getMethodRate() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _methodrate;
 }
 
@@ -115,7 +115,7 @@ ULONG CtiLMProgramDirectGear::getMethodRate() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getMethodPeriod() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _methodperiod;
 }
 
@@ -128,7 +128,7 @@ ULONG CtiLMProgramDirectGear::getMethodPeriod() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getMethodRateCount() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _methodratecount;
 }
 
@@ -141,7 +141,7 @@ ULONG CtiLMProgramDirectGear::getMethodRateCount() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getCycleRefreshRate() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _cyclerefreshrate;
 }
 
@@ -152,7 +152,7 @@ ULONG CtiLMProgramDirectGear::getCycleRefreshRate() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramDirectGear::getMethodStopType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _methodstoptype;
 }
 
@@ -163,7 +163,7 @@ const RWCString& CtiLMProgramDirectGear::getMethodStopType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramDirectGear::getChangeCondition() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _changecondition;
 }
 
@@ -174,7 +174,7 @@ const RWCString& CtiLMProgramDirectGear::getChangeCondition() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getChangeDuration() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _changeduration;
 }
 
@@ -185,7 +185,7 @@ ULONG CtiLMProgramDirectGear::getChangeDuration() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getChangePriority() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _changepriority;
 }
 
@@ -197,7 +197,7 @@ ULONG CtiLMProgramDirectGear::getChangePriority() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getChangeTriggerNumber() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _changetriggernumber;
 }
 
@@ -208,7 +208,7 @@ ULONG CtiLMProgramDirectGear::getChangeTriggerNumber() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirectGear::getChangeTriggerOffset() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _changetriggeroffset;
 }
 
@@ -219,7 +219,7 @@ DOUBLE CtiLMProgramDirectGear::getChangeTriggerOffset() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getPercentReduction() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _percentreduction;
 }
 
@@ -230,7 +230,7 @@ ULONG CtiLMProgramDirectGear::getPercentReduction() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramDirectGear::getGroupSelectionMethod() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _groupselectionmethod;
 }
 
@@ -241,7 +241,7 @@ const RWCString& CtiLMProgramDirectGear::getGroupSelectionMethod() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramDirectGear::getMethodOptionType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _methodoptiontype;
 }
 
@@ -252,7 +252,7 @@ const RWCString& CtiLMProgramDirectGear::getMethodOptionType() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramDirectGear::getMethodOptionMax() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _methodoptionmax;
 }
 
@@ -263,7 +263,7 @@ ULONG CtiLMProgramDirectGear::getMethodOptionMax() const
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPAOId(ULONG paoid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = paoid;
     //do not notify observers of this !
     return *this;
@@ -276,7 +276,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPAOId(ULONG paoid)
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const RWCString& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _gearname = name;
     return *this;
 }
@@ -288,7 +288,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearName(const RWCString& nam
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearNumber(ULONG gearnum)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _gearnumber = gearnum;
     return *this;
 }
@@ -300,7 +300,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGearNumber(ULONG gearnum)
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const RWCString& contmeth)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _controlmethod = contmeth;
     return *this;
 }
@@ -313,7 +313,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setControlMethod(const RWCString
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRate(ULONG methrate)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _methodrate = methrate;
     return *this;
 }
@@ -326,7 +326,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRate(ULONG methrate)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodPeriod(ULONG methper)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _methodperiod = methper;
     return *this;
 }
@@ -340,7 +340,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodPeriod(ULONG methper)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRateCount(ULONG methratecount)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _methodratecount = methratecount;
     return *this;
 }
@@ -354,7 +354,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodRateCount(ULONG methrat
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setCycleRefreshRate(ULONG cyclerefresh)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _cyclerefreshrate = cyclerefresh;
     return *this;
 }
@@ -366,7 +366,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setCycleRefreshRate(ULONG cycler
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const RWCString& methstoptype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _methodstoptype = methstoptype;
     return *this;
 }
@@ -378,7 +378,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodStopType(const RWCStrin
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const RWCString& changecond)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _changecondition = changecond;
     return *this;
 }
@@ -390,7 +390,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeCondition(const RWCStri
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeDuration(ULONG changedur)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _changeduration = changedur;
     return *this;
 }
@@ -402,7 +402,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeDuration(ULONG changedu
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangePriority(ULONG changeprior)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _changepriority = changeprior;
     return *this;
 }
@@ -415,7 +415,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangePriority(ULONG changepr
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerNumber(ULONG triggernumber)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _changetriggernumber = triggernumber;
     return *this;
 }
@@ -427,7 +427,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerNumber(ULONG tri
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerOffset(DOUBLE triggeroffset)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _changetriggeroffset = triggeroffset;
     return *this;
 }
@@ -439,7 +439,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setChangeTriggerOffset(DOUBLE tr
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPercentReduction(ULONG percentreduce)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _percentreduction = percentreduce;
     return *this;
 }
@@ -451,7 +451,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPercentReduction(ULONG percen
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const RWCString& group)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _groupselectionmethod = group;
 
     return *this;
@@ -464,7 +464,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setGroupSelectionMethod(const RW
 ---------------------------------------------------------------------------*/    
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const RWCString& optype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _methodoptiontype = optype;
 
     return *this;
@@ -477,7 +477,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const RWCStr
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionMax(ULONG opmax)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _methodoptionmax = opmax;
     return *this;
 }
@@ -491,7 +491,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionMax(ULONG opmax)
 void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -523,7 +523,7 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
 void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     RWCollectable::saveGuts( ostrm );
 
@@ -554,7 +554,7 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear& CtiLMProgramDirectGear::operator=(const CtiLMProgramDirectGear& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -586,7 +586,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::operator=(const CtiLMProgramDire
 ---------------------------------------------------------------------------*/
 int CtiLMProgramDirectGear::operator==(const CtiLMProgramDirectGear& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() == right.getPAOId();
 }
 
@@ -595,7 +595,7 @@ int CtiLMProgramDirectGear::operator==(const CtiLMProgramDirectGear& right) cons
 ---------------------------------------------------------------------------*/
 int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() != right.getPAOId();
 }
 
@@ -616,7 +616,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["deviceid"] >> _paoid;//will be paobjectid
     rdr["gearname"] >> _gearname;

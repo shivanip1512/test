@@ -80,8 +80,6 @@ private:
 
     BOOL _refreshsent;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
     void restore(RWDBReader& rdr);
 };
 #endif

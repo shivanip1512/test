@@ -66,8 +66,6 @@ private:
     ULONG _availablestarttime;
     ULONG _availablestoptime;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
     void restore(RWDBReader& rdr);
 };
 #endif

@@ -55,7 +55,7 @@ CtiLMGroupVersacom::~CtiLMGroupVersacom()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupVersacom::getUtilityAddress() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _utilityaddress;
 }
 
@@ -66,7 +66,7 @@ ULONG CtiLMGroupVersacom::getUtilityAddress() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupVersacom::getSectionAddress() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _sectionaddress;
 }
 
@@ -77,7 +77,7 @@ ULONG CtiLMGroupVersacom::getSectionAddress() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupVersacom::getClassAddress() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _classaddress;
 }
 
@@ -88,7 +88,7 @@ ULONG CtiLMGroupVersacom::getClassAddress() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupVersacom::getDivisionAddress() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _divisionaddress;
 }
 
@@ -99,7 +99,7 @@ ULONG CtiLMGroupVersacom::getDivisionAddress() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMGroupVersacom::getAddressUsage() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _addressusage;
 }
 
@@ -110,7 +110,7 @@ const RWCString& CtiLMGroupVersacom::getAddressUsage() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMGroupVersacom::getRelayUsage() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _relayusage;
 }
 
@@ -121,7 +121,7 @@ const RWCString& CtiLMGroupVersacom::getRelayUsage() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMGroupVersacom::getRouteId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _routeid;
 }
 
@@ -132,7 +132,7 @@ ULONG CtiLMGroupVersacom::getRouteId() const
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setUtilityAddress(ULONG utiladd)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _utilityaddress = utiladd;
     return *this;
 }
@@ -144,7 +144,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setUtilityAddress(ULONG utiladd)
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setSectionAddress(ULONG sectadd)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _sectionaddress = sectadd;
     return *this;
 }
@@ -156,7 +156,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setSectionAddress(ULONG sectadd)
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setClassAddress(ULONG classadd)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _classaddress = classadd;
     return *this;
 }
@@ -168,7 +168,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setClassAddress(ULONG classadd)
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setDivisionAddress(ULONG divadd)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _divisionaddress = divadd;
     return *this;
 }
@@ -180,7 +180,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setDivisionAddress(ULONG divadd)
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setAddressUsage(const RWCString& adduse)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _addressusage = adduse;
     return *this;
 }
@@ -192,7 +192,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setAddressUsage(const RWCString& adduse)
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setRelayUsage(const RWCString& relayuse)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _relayusage = relayuse;
     return *this;
 }
@@ -204,7 +204,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::setRelayUsage(const RWCString& relayuse)
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::setRouteId(ULONG rteid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _routeid = rteid;
     return *this;
 }
@@ -302,7 +302,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(ULONG offTime, UL
 void CtiLMGroupVersacom::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restoreGuts( istrm );
 
@@ -323,7 +323,7 @@ void CtiLMGroupVersacom::restoreGuts(RWvistream& istrm)
 void CtiLMGroupVersacom::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     CtiLMGroupBase::saveGuts( ostrm );
 
@@ -343,7 +343,7 @@ void CtiLMGroupVersacom::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::operator=(const CtiLMGroupVersacom& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -365,7 +365,7 @@ CtiLMGroupVersacom& CtiLMGroupVersacom::operator=(const CtiLMGroupVersacom& righ
 ---------------------------------------------------------------------------*/
 int CtiLMGroupVersacom::operator==(const CtiLMGroupVersacom& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator==(right);
 }
 
@@ -374,7 +374,7 @@ int CtiLMGroupVersacom::operator==(const CtiLMGroupVersacom& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMGroupVersacom::operator!=(const CtiLMGroupVersacom& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return CtiLMGroupBase::operator!=(right);
 }
 
@@ -395,7 +395,7 @@ CtiLMGroupBase* CtiLMGroupVersacom::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLMGroupBase::restore(rdr);
 }
@@ -408,7 +408,7 @@ void CtiLMGroupVersacom::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::restoreVersacomSpecificDatabaseEntries(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["utilityaddress"] >> _utilityaddress;
     rdr["sectionaddress"] >> _sectionaddress;

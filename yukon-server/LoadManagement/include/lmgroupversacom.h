@@ -82,8 +82,6 @@ private:
     RWCString _relayusage;
     ULONG _routeid;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
     void restore(RWDBReader& rdr);
 };
 #endif

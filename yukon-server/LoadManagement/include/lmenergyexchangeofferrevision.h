@@ -86,8 +86,6 @@ private:
     RWCString _additionalinfo;
 
     RWOrdered _lmenergyexchangehourlyoffers;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
 

@@ -56,7 +56,7 @@ CtiLMProgramControlWindow::~CtiLMProgramControlWindow()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramControlWindow::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoid;
 }
 
@@ -68,7 +68,7 @@ ULONG CtiLMProgramControlWindow::getPAOId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramControlWindow::getWindowNumber() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _windownumber;
 }
 
@@ -80,7 +80,7 @@ ULONG CtiLMProgramControlWindow::getWindowNumber() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramControlWindow::getAvailableStartTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _availablestarttime;
 }
 
@@ -92,7 +92,7 @@ ULONG CtiLMProgramControlWindow::getAvailableStartTime() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMProgramControlWindow::getAvailableStopTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _availablestoptime;
 }
 
@@ -103,7 +103,7 @@ ULONG CtiLMProgramControlWindow::getAvailableStopTime() const
 ---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(ULONG devid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = devid;
     //do not notify observers of this !
     return *this;
@@ -116,7 +116,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setPAOId(ULONG devid)
 ---------------------------------------------------------------------------*/    
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(ULONG winnum)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _windownumber = winnum;
 
     return *this;
@@ -130,7 +130,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setWindowNumber(ULONG winn
 ---------------------------------------------------------------------------*/    
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(ULONG availstarttime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _availablestarttime = availstarttime;
 
     return *this;
@@ -144,7 +144,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStartTime(ULON
 ---------------------------------------------------------------------------*/    
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(ULONG availstoptime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _availablestoptime = availstoptime;
 
     return *this;
@@ -158,7 +158,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::setAvailableStopTime(ULONG
 void CtiLMProgramControlWindow::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -177,7 +177,7 @@ void CtiLMProgramControlWindow::restoreGuts(RWvistream& istrm)
 void CtiLMProgramControlWindow::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     RWCollectable::saveGuts( ostrm );
 
@@ -194,7 +194,7 @@ void CtiLMProgramControlWindow::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramControlWindow& CtiLMProgramControlWindow::operator=(const CtiLMProgramControlWindow& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -212,7 +212,7 @@ CtiLMProgramControlWindow& CtiLMProgramControlWindow::operator=(const CtiLMProgr
 ---------------------------------------------------------------------------*/
 int CtiLMProgramControlWindow::operator==(const CtiLMProgramControlWindow& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return (getPAOId() == right.getPAOId() && getWindowNumber() == right.getWindowNumber());
 }
 
@@ -221,7 +221,7 @@ int CtiLMProgramControlWindow::operator==(const CtiLMProgramControlWindow& right
 ---------------------------------------------------------------------------*/
 int CtiLMProgramControlWindow::operator!=(const CtiLMProgramControlWindow& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() != right.getPAOId();
 }
 
@@ -242,7 +242,7 @@ CtiLMProgramControlWindow* CtiLMProgramControlWindow::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramControlWindow::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["deviceid"] >> _paoid;//will be paobjectid
     rdr["windownumber"] >> _windownumber;
