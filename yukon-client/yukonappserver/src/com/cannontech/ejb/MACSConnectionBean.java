@@ -218,9 +218,6 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
 	public void disconnect() throws java.io.IOException
 	{
 		getMACSConnection().disconnect();
-		
-		//this clears the connection out for all
-		macsConn = null;		
 	}
 
 }
