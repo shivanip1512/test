@@ -2023,6 +2023,56 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return hwList;
 	}
 	
+	/**
+	 * Search the inventory by alternate tracking #. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
+	 */
+	public ArrayList searchInventoryByAltTrackNo(String altTrackNo, boolean searchMembers) {
+		ArrayList invList = new ArrayList();
+		
+		if (isInventoryLoaded()) {
+			ArrayList inventory = getAllInventory();
+			
+			for (int i = 0; i < inventory.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+				if (liteInv.getAlternateTrackingNumber() != null &&
+					liteInv.getAlternateTrackingNumber().equalsIgnoreCase( altTrackNo ))
+				{
+					if (searchMembers)
+						invList.add( new Pair(liteInv, this) );
+					else
+						invList.add( liteInv );
+				}
+			}
+		}
+		else {
+			int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAltTrackingNo( altTrackNo, getLiteID() );
+			if (invIDs == null) return null;
+			
+			for (int i = 0; i < invIDs.length; i++) {
+				LiteInventoryBase liteInv = getInventoryBrief( invIDs[i], true );
+				if (searchMembers)
+					invList.add( new Pair(liteInv, this) );
+				else
+					invList.add( liteInv );
+			}
+		}
+		
+		if (searchMembers) {
+			ArrayList children = getChildren();
+			synchronized (children) {
+				for (int i = 0; i < children.size(); i++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+					ArrayList memberList = company.searchInventoryByAltTrackNo( altTrackNo, searchMembers );
+					invList.addAll( memberList );
+				}
+			}
+		}
+		
+		return invList;
+	}
+	
 	public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {
 		try {
 			LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();

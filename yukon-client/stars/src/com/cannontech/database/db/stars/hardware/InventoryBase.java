@@ -242,6 +242,49 @@ public class InventoryBase extends DBPersistent {
 		
 		return null;
 	}
+    
+	public static int[] searchByAltTrackingNo(String altTrackNo, int energyCompanyID) {
+		String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
+				"WHERE UPPER(inv.AlternateTrackingNumber) = UPPER(?) AND inv.InventoryID >= 0 " +
+				"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
+    	
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
+    	
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, altTrackNo);
+			stmt.setInt(2, energyCompanyID);
+			
+			rset = stmt.executeQuery();
+    		
+			java.util.ArrayList rstList = new java.util.ArrayList();
+			while (rset.next())
+				rstList.add( new Integer(rset.getInt(1)) );
+    		
+			int[] invIDs = new int[ rstList.size() ];
+			for (int i = 0; i < rstList.size(); i++)
+				invIDs[i] = ((Integer)rstList.get(i)).intValue();
+			
+			return invIDs;
+		}
+		catch (java.sql.SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+    	
+		return null;
+	}
 	
 	public static void resetInstallationCompany(int companyID) {
 		String sql = "UPDATE " + TABLE_NAME + " SET InstallationCompanyID = 0 WHERE InstallationCompanyID = " + companyID;

@@ -1168,6 +1168,9 @@ public class InventoryManager extends HttpServlet {
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
 			invList = energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
 		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ALT_TRACK_NO) {
+			invList = energyCompany.searchInventoryByAltTrackNo( searchValue, searchMembers );
+		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
 			ArrayList accounts = energyCompany.searchAccountByAccountNo( searchValue, searchMembers );
 			invList = getInventoryByAccounts( accounts, energyCompany );
