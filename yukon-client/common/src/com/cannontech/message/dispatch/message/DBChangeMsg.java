@@ -38,7 +38,6 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_TAG_DB						= 16;
 	public static final int CHANGE_CI_CUSTOMER_DB				= 17;
 	public static final int CHANGE_LMCONSTRAINT_DB				= 18;
-	public static final int CHANGE_LMSCENARIO_DB				= 19;
 	public static final int CHANGE_SEASON_DB					= 20;
 
 
