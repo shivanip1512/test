@@ -36,6 +36,16 @@ public boolean equals(Object o)
 	else
 		return false;
 }
+
+/**
+ * keep this consistent with .equals() pleez
+ * o1.equals(o2) => o1.hashCode() == o2.hashCode()
+ * @see java.lang.Object#hashCode()
+ */
+public int hashCode() {
+	return liteID;
+}
+	
 /**
  * This method was created by Cannon Technologies Inc.
  */
@@ -60,4 +70,5 @@ protected void setLiteID(int newValue) {
 protected void setLiteType(int newValue) {
 	this.liteType = newValue;
 }
+
 }
