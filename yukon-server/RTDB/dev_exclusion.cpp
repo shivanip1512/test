@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/08 23:15:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/08/18 22:05:43 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.7  2004/08/18 22:05:43  cplender
+* Changed hasTimeExclusion to be correct fro commented out funcparams.
+*
 * Revision 1.6  2004/07/08 23:15:37  cplender
 * Added get/setMinTimeInSec()
 *
@@ -403,7 +406,7 @@ bool CtiDeviceExclusion::hasTimeExclusion() const
 {
     bool b = false;
 
-    if(_cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime)
+    if(_cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0)
     {
         b = true;
     }
@@ -467,7 +470,7 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
 {
     bool bstatus = false;
 
-    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0)
     {
         if(_cycleTimeExclusion.getFunctionId() == (CtiTablePaoExclusion::ExFunctionCycleTime))
         {
