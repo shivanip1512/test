@@ -94,10 +94,14 @@ public class FileVersion
 	{
 		try
 		{
-			int indx = getFile().getName().indexOf('_') + 1;
+			int startIndx = getFile().getName().indexOf('_') + 1;
+			int endIndx =
+				(getFile().getName().endsWith(DBMSDefines.NAME_VALID)
+					? getFile().getName().length() - DBMSDefines.NAME_VALID.length()
+				    : getFile().getName().length() - DBMSDefines.SQL_EXT.length() );
+			
 			return Integer.parseInt( getFile().getName().substring(
-					indx,
-					getFile().getName().length() - DBMSDefines.SQL_EXT.length()) );
+						startIndx, endIndx) );
 		}
 		catch( Exception e )
 		{

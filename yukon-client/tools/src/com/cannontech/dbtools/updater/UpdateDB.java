@@ -33,14 +33,7 @@ public class UpdateDB
 	public UpdateDB( IMessageFrame output_ )
 	{
 		super();
-		output = output_;
-		
-		getIMessageFrame().addOutput("");
-		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-		getIMessageFrame().addOutput( "Current DB Version : " + getDBVersion() );
-		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-		getIMessageFrame().addOutput("");
-		
+		output = output_;		
 	}
 
 

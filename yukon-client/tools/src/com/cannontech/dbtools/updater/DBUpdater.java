@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
 
@@ -145,10 +147,14 @@ public class DBUpdater extends MessageFrameAdaptor
 
 		try
 		{
+			CTIDatabase db = VersionTools.getDBVersionRefresh();
+			getIMessageFrame().addOutput("CONNECTING TO THE FOLLOWING DATABASE:");
+			getIMessageFrame().addOutput("   DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
+			getIMessageFrame().addOutput("   DB Alias     : " + CtiUtilities.getDatabaseAlias() );			
+			
 			getUpdateCommands();
 			
-			getIMessageFrame().addOutput("");
-			getIMessageFrame().addOutput("		Lines read from files successfully, starting DB transactions..." );
+			getIMessageFrame().addOutput("   Lines read from files successfully, starting DB transactions..." );
 			getIMessageFrame().addOutput("");			
 
 			if( executeCommands() )
