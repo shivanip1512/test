@@ -113,7 +113,7 @@
 	</xs:complexType>
 	<xs:complexType name="stars-App">
 		<xs:sequence>
-			<xs:element name="CategoryName" type="xs:string" minOccurs="0"/>
+			<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			<xs:element name="YearManufactured" type="xs:string"/>
 			<xs:element name="Manufacturer" type="stars-CustListEntry"/>
 			<xs:element name="Location" type="stars-CustListEntry"/>
@@ -371,8 +371,6 @@
 				<xs:element ref="stars-UpdateThermostatScheduleResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOption" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOptionResponse" minOccurs="0"/>
-				<xs:element ref="stars-GetExitInterviewQuestions" minOccurs="0"/>
-				<xs:element ref="stars-GetExitInterviewQuestionsResponse" minOccurs="0"/>
 				<xs:element ref="stars-SendExitInterviewAnswers" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettings" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettingsResponse" minOccurs="0"/>
@@ -475,7 +473,7 @@
 				<xs:element ref="stars-CallReportHistory" minOccurs="0"/>
 				<xs:element ref="stars-ServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-ThermostatSettings" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0"/>
+				
 				<xs:element ref="stars-User" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -836,7 +834,7 @@
 			<xs:sequence>
 				<xs:element name="ProgramName" type="xs:string" minOccurs="0"/>
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
-			</xs:sequence>
+			<xs:element name="AddressingGroup" minOccurs="0" maxOccurs="unbounded" type="stars-CustListEntry"/></xs:sequence>
 			<xs:attribute name="programID" type="xs:int"/>
 			<xs:attribute name="chanceOfControlID" type="xs:int"/>
 		</xs:complexType>
@@ -1038,14 +1036,8 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ExitInterviewQuestion" type="stars-QuestionAnswer"/>
-	<xs:element name="stars-GetExitInterviewQuestions">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="EnergyCompanyID" type="xs:int" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetExitInterviewQuestionsResponse">
+	
+	<xs:element name="stars-ExitInterviewQuestions">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-ExitInterviewQuestion" minOccurs="0" maxOccurs="unbounded"/>
@@ -1118,7 +1110,7 @@
 				<xs:element ref="stars-EnrollmentPrograms" minOccurs="0"/>
 				<xs:element ref="stars-CustomerSelectionLists" minOccurs="0"/>
 				<xs:element ref="stars-CustomerFAQs" minOccurs="0"/>
-			<xs:element ref="stars-ServiceCompanies" minOccurs="0"/></xs:sequence>
+			<xs:element ref="stars-ServiceCompanies" minOccurs="0"/><xs:element ref="stars-ExitInterviewQuestions" minOccurs="0"/><xs:element ref="stars-DefaultThermostatSettings" minOccurs="0"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateControlNotification">

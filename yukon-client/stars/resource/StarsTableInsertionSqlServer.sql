@@ -342,6 +342,8 @@ insert into YukonUser values (100,'super','super',0,'1970-01-01','Enabled')
 insert into YukonUserGroup values (100,-210)
 insert into YukonRole values (-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(none)')
 insert into YukonUserRole values (100,-1000,'(none)')
+insert into YukonRole values (-1001,'NEW_ACCOUNT_WIZARD','WebClient','(none)','(none)')
+insert into YukonUserRole values (100,-1001,'(none)')
 insert into energycompanyoperatorloginlist values(1,100)
 
 
@@ -386,7 +388,7 @@ insert into InventoryBase values (2,1,1,1011,'18-May-02','01-Jun-02','1970-01-01
 
 /* lmhardware base */
 insert into LMHardwareBase values (1,'550000034',1013)	/* LCR-5000 */
-insert into LMHardwareBase values (2,'600000328',1018)	/* thermostat */
+insert into LMHardwareBase values (2,'600000066',1018)	/* thermostat */
 
 /* appliance category */
 insert into ApplianceCategory values (1, 'Air Conditioner', 1019, 2)
