@@ -150,11 +150,11 @@
                         <td width="66" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         
                         
-                        <td width="72" class="TableCell">                         
-							<select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
-							  <option value="subs.jsp">Sub kVar</option>
+                        <td width="72" class="TableCell">
+							<select name="selectGraph" onchange="showGraphWin(this.options[this.selectedIndex].value);">
 							  <option value="subs.jsp">Feeder kVar</option>
-							  <option value="oneline\<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
+							  <option value="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph&pointid=<%=subBusMdl.getRowAt(i).getCurrentVarLoadPointID().intValue()%>&period=<%=ServletUtil.PREVTHIRTYDAYS%>">Sub kVAR</option>
+							  <option value="oneline/<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
 							</select>
                         </td>
                         

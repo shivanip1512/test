@@ -198,10 +198,10 @@
                         <td width="33" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
-							<select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
-							  <option value="subs.jsp">Sub kVar</option>
+							<select name="selectGraph" onchange="showGraphWin(this.options[this.selectedIndex].value);">
 							  <option value="subs.jsp">Feeder kVar</option>
-							  <option value="oneline\<%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
+							  <option value="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph&pointid=<%=subBus.getCurrentVarLoadPointID().intValue()%>&period=<%=ServletUtil.PREVTHIRTYDAYS%>">Sub kVAR</option>
+							  <option value="oneline/<%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
 							</select>
                         </td>
                         <td width="80" class="TableCell"> 
@@ -264,9 +264,9 @@
                         <td width="45" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.WATTS_COLUMN) %></td>
                         <td width="36" class="TableCell"><%= feederMdl.getValueAt(i, FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="71" class="TableCell"> 
-                          <select name="select5">
-                            <option>Feeder kVar</option>
+						  <select name="selectGraph" onchange ="showGraphWin(this.options[this.selectedIndex].value);">
                             <option>Graph B</option>
+							<option value="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph&pointid=<%=feederMdl.getRowAt(i).getCurrentVarLoadPointID().intValue()%>&period=<%=ServletUtil.PREVTHIRTYDAYS%>">Feeder kVAR</option>
                           </select>
                         </td>
                         <td width="80" class="TableCell"> 

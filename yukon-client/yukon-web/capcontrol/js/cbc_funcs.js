@@ -3,6 +3,21 @@
 //view types
 var currentMenu;
 var selectedItem;
+
+function showGraphWin( theURL )
+{
+	//alert( theURL );
+
+	var width = 640;
+	var height = 580;
+	var winl = (screen.width - width) / 2; 
+	var wint = (screen.height - height) / 2; 
+			  	
+	var w = window.parent.open(theURL, "CapControl_Graphs",
+				"width="+width+",height="+height+",top="+wint+",left="+winl+",resizable=yes,status,scrollbars");
+
+} //end showControlWin
+
 function init()
 {
 	
@@ -93,4 +108,5 @@ function menuAppear(event, divId)
 		}
 	}
 }
+
 </SCRIPT> <!--end javascript for trend/view menus-->
