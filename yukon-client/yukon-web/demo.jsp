@@ -1,3 +1,15 @@
+<%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%
+	LiteYukonUser savedUser = (LiteYukonUser) session.getAttribute(LoginController.SAVED_YUKON_USER);
+	if (savedUser == null) {
+		savedUser = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+		if (savedUser == null) {
+			response.sendRedirect(request.getContextPath() + "/login.jsp");
+		}
+		session.setAttribute(LoginController.SAVED_YUKON_USER, savedUser);
+	}
+%>
 <HTML>
 <HEAD>
   <META NAME="GENERATOR" CONTENT="Adobe PageMill 3.0 Win">
@@ -8,9 +20,6 @@
   <TITLE>Cannon Tour</TITLE>
 </HEAD>
 <BODY BGCOLOR="#ffffff" LINK="#000000" VLINK="#000000" ALINK="#000000">
-
-
-
 <CENTER>
   <table width="740" border="0" cellspacing="0" cellpadding="0">
     <tr>
