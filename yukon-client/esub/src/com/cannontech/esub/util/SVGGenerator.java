@@ -33,22 +33,25 @@ public class SVGGenerator {
 	
 	private static final String svgFooter = 
 		"</svg>";
-		
-	/**
+	
+	public SVGGenerator() {
+	}
+	/** 
 	 * Writes an svg document to the given write based on the graph passed.
 	 * @param writer
 	 * @param graph
 	 * @throws IOException
 	 */
 	public void generate(Writer writer, LxGraph graph) throws IOException {
-		
-		int width = graph.getView(0).getWidth();
-		
+	 	
+		int width = 800; //graph.getView(0).getWidth();
+		int height = 600;
 		LxComponent[] c	= graph.getComponents();
 		
 		writer.write(svgHeader);
-		writer.write("<svg width=\"" + width + ".0px\" height=\"" + graph.getView(0).getHeight() + ".0px\" >\n");		
-		
+				 
+		writer.write("<svg width=\"" + width + ".0px\" height=\"" + height + ".0px\" >\n");		
+	 	
 		// Force the background black, perhaps pick up the views background color in the future
 		writer.write("<rect width=\"100%\" height=\"100%\" color=\"#000000\" />\n");
 		
@@ -59,7 +62,7 @@ public class SVGGenerator {
 				
 				generateStartLink(writer, (DrawingElement) c[i]);
 			}
-			
+			 
 			if( c[i] instanceof LxLine ) {
 				generateLine(writer, (LxLine) c[i]);
 			}
@@ -92,6 +95,7 @@ public class SVGGenerator {
 		}
 		
 		writer.write(svgFooter);
+		
 		writer.flush();
 	}
 	

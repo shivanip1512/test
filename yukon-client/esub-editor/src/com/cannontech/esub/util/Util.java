@@ -123,7 +123,6 @@ public static Image findImage(String imageName)
   	imageName = "/" + imageName;
   }
  
-    
   URL imageURL = Util.class.getResource(imageName);
   
   if( imageURL == null ) {
