@@ -25,7 +25,7 @@ public class CacheDBChangeListener implements Runnable
 /**
  * CacheDBChangeListener constructor comment.
  */
-protected CacheDBChangeListener() 
+public CacheDBChangeListener() 
 {
 	super();
 
