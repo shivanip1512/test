@@ -89,21 +89,24 @@ public class LMHardwareBase extends DBPersistent {
     /**
      * Return map from serial number (String) to inventory id (Integer)
      */
-    public static java.util.Hashtable searchBySNRange(
+    public static java.util.TreeMap searchBySNRange(
     	int deviceType, String serialNoLB, String serialNoUB, int energyCompanyID, java.sql.Connection conn)
     	throws java.sql.SQLException
     {
 		String sql = "SELECT inv.InventoryID, ManufacturerSerialNumber FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
-				"WHERE LMHardwareTypeID = " + deviceType + " AND ManufacturerSerialNumber >= ? AND ManufacturerSerialNumber <= ?" +
-				" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
+				"WHERE LMHardwareTypeID = " + deviceType + " AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID " +
+				"AND map.EnergyCompanyID = " + energyCompanyID;
 		
-		java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setString(1, serialNoLB);
-		stmt.setString(2, serialNoUB);
-		stmt.setInt(3, energyCompanyID);
-		java.sql.ResultSet rset = stmt.executeQuery();
+		if (serialNoLB != null)
+			sql += " AND ManufacturerSerialNumber >= " + serialNoLB;
 		
-		java.util.Hashtable snTable = new java.util.Hashtable();
+		if (serialNoUB != null)
+			sql += " AND ManufacturerSerialNumber <= " + serialNoUB;
+		
+		java.sql.Statement stmt = conn.createStatement();
+		java.sql.ResultSet rset = stmt.executeQuery( sql );
+		
+		java.util.TreeMap snTable = new java.util.TreeMap();
 		while (rset.next()) {
 			int invID = rset.getInt(1);
 			String serialNo = rset.getString(2);
