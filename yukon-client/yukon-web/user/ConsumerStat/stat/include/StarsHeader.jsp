@@ -133,15 +133,13 @@
                                   " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
                                   " WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID "+
                                   " AND GCL.CUSTOMERID = " + account.getCustomerID()+ " ORDER BY GDEF.NAME";
-System.out.println( "**********" + account.getCustomerID());    
-	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types );
-%>
 
-	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
-		<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="graphBean" property="viewType" value="<%=GraphRenderers.LINE%>"/>
-	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(ServletUtil.getToday())%>"/>
-	<jsp:setProperty name="graphBean" property="period" value="<%=ServletUtil.historicalPeriods[0]%>"/>
-	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
-	    <%-- intialize bean properties --%>
-	</jsp:useBean>
+	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types );
+	
+	com.cannontech.graph.GraphBean graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+	if(graphBean == null)
+	{
+		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
+		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+	}
+%>
