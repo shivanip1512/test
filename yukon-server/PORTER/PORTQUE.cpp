@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2003/12/22 21:45:03 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/01/26 21:31:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1526,6 +1526,10 @@ BuildLGrpQ (CtiDevice *Dev)
             }
             else  /* this has to be a write or function so check if arm needed */
             {
+                //  the ARMC isn't actually handled here any more, it's handled right at
+                //    dev_dlcbase - Q_ARMC should never be set at this level;  perhaps
+                //    all ARM commands should be handled by dev_dlcbase, so that they're
+                //    always sent regardless of queued/nonqueued
                 if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
                     OutMessage->Buffer.OutMessage[Offset++] = 2;
                 else
