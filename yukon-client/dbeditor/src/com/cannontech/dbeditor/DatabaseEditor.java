@@ -40,7 +40,10 @@ import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
 import com.cannontech.debug.gui.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.application.BillingRole;
 import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.roles.application.TDCRole;
+import com.cannontech.roles.yukon.SystemRole;
 
 import java.awt.Dimension;
 
@@ -1437,12 +1440,13 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 		int port = 1510;
 		try
 		{
-         host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-                  com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE, 
+         host = ClientSession.getInstance().getRolePropertyValue(
+                  SystemRole.DISPATCH_MACHINE, 
                   "127.0.0.1");
             
-			port = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-                  com.cannontech.common.util.CtiProperties.KEY_DISPATCH_PORT, 
+			port = (new Integer( 
+						ClientSession.getInstance().getRolePropertyValue(
+                  SystemRole.DISPATCH_PORT, 
                   "1510"))).intValue();			
 		}
 		catch( Exception e)
@@ -2227,8 +2231,8 @@ private void readConfigParameters()
 	try
 	{	 			
 		decimalPlaces = (new Integer(
-			com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_DECIMAL_PLACES,
+		ClientSession.getInstance().getRolePropertyValue(
+				TDCRole.DECIMAL_PLACES,
 				"3")) ).intValue();
 	}
 	catch( Exception e )
@@ -2241,8 +2245,9 @@ private void readConfigParameters()
 
 	try
 	{
-		activateBilling = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_ACTIVATE_BILLING, "FALSE").trim().equalsIgnoreCase("TRUE");
+		activateBilling = 
+			ClientSession.getInstance().getRolePropertyValue(
+				BillingRole.WIZ_ACTIVATE, "FALSE").trim().equalsIgnoreCase("TRUE");
 	}
 
 	catch( Exception e )
@@ -2261,8 +2266,8 @@ private void readConfigParameters()
 	
 	try
 	{
-		showCore = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_EDITOR_CORE, "FALSE").trim().equalsIgnoreCase("TRUE");
+		showCore = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.DBEDITOR_CORE, "FALSE").trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2271,8 +2276,8 @@ private void readConfigParameters()
 	
 	try
 	{
-		showLm = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_EDITOR_LM, "FALSE").trim().equalsIgnoreCase("TRUE");
+		showLm = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.DBEDITOR_LM, "FALSE").trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2281,8 +2286,8 @@ private void readConfigParameters()
 	
 	try
 	{
-		showCapControl = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_EDITOR_CAPCONTROL, "FALSE").trim().equalsIgnoreCase("TRUE");
+		showCapControl = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.DBEDITOR_CAP_CONTROL, "FALSE").trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2291,8 +2296,8 @@ private void readConfigParameters()
 	
 	try
 	{
-		showSystem = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_EDITOR_SYSTEM, "FALSE").trim().equalsIgnoreCase("TRUE");
+		showSystem = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.DBEDITOR_SYSTEM, "FALSE").trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{

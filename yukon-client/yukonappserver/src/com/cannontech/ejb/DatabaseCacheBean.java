@@ -58,28 +58,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {  
    	if( dbCache == null )
    	{
-	   	try
-	   	{
-		      Hashtable props = new Hashtable();		
-		      props.put(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
-		      props.put(InitialContext.PROVIDER_URL, "jnp://127.0.0.1:1099");
-	   		
-
-	   		//get the context of the current VM (We should be inside an App Server!)
-				InitialContext rootCtx = new InitialContext(props);
-				
-				// Get the Cache instance MBean by using JNDI
-				dbCache = (IDatabaseCache)rootCtx.lookup(
-										"com/cannontech/DatabaseCache");
-
-				CTILogger.debug( "CACHE: Found DB_Cache instance in AppServer, using it" );
-	   	}
-	   	catch( Exception e )
-	   	{
-	   		//we must not be inside of an App Server, just create a new cache by ourself
-	   		CTILogger.debug( "CACHE: Unable to find AppServer, creating Cache independently" );
-	   		dbCache = ServerDatabaseCache.getInstance();
-	   	}
+   		dbCache = ServerDatabaseCache.getInstance();
    	}
    	
    	return dbCache;      
@@ -488,6 +467,15 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
       getCache().releaseAllCache();
    }
+
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized void releaseAllYukonUsers()
+	{
+		getCache().releaseAllYukonUsers();
+	}
 
    /**
     * @ejb:interface-method

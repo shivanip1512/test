@@ -31,6 +31,7 @@ import com.cannontech.database.db.user.IDefinedYukonRole;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.user.UserUtils;
 
 
@@ -387,7 +388,7 @@ private javax.swing.JTree getJTreeRoles() {
 					{
 						tmpCat = role.getCategory();
 						
-						if( UserUtils.isHiddenCategory(tmpCat) )
+						if( UserUtils.isReadOnlyCategory(tmpCat) )
 						{
 							DBTreeNode d = new DBTreeNode( tmpCat + " [SYSTEM]" );
 							d.setIsSystemReserved( true );
@@ -405,7 +406,7 @@ private javax.swing.JTree getJTreeRoles() {
 
 					//set this to tell the GUI if this node is editable or not					
 					lbNode.setIsSystemReserved( 
-							UserUtils.isHiddenCategory(tmpCat) );
+							UserUtils.isReadOnlyCategory(tmpCat) );
 
 
 					categoryParent.add( lbNode );					
@@ -662,6 +663,9 @@ private void initConnections()
 	{
 		public void mousePressed(final MouseEvent e) 
 		{
+			if( getJTableProperties().isEditing() )
+				getJTableProperties().getCellEditor().stopCellEditing();
+			
 			int selRow = getJTreeRoles().getRowForLocation(e.getX(), e.getY());
 			
 			if(selRow != -1) 
@@ -690,9 +694,31 @@ private void initConnections()
 								getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
 				
 
-					//only allow edits for the non reserved roles
-					getJTableProperties().setEnabled( 
-						!((LiteBaseNode)node).isSystemReserved() );
+
+					//if we are read only, dont do any enabling/disabling
+					if( isReadOnlyTree() )
+					{
+						//do nothing
+					}					
+					else if( !((CheckNode)node).isSelected() )
+					{
+						//always disable the property if the role is NOT selected
+						getJTableProperties().setEnabled( false );
+					}
+					else if( getRoleContainer() instanceof YukonGroup
+						  && getRoleContainer().getID().intValue() == YukonGroupRoleDefs.GRP_YUKON )
+					{
+						//allow the Yukon Group to edit any properties
+						getJTableProperties().setEnabled( true );
+					}
+					else
+					{
+						//if the ROLE_CATEGORY is SystemReserved, dont allow editing
+						getJTableProperties().setEnabled( 
+							!((LiteBaseNode)node).isSystemReserved() );
+					}
+
+
 				}
 				else
 				{
@@ -700,12 +726,28 @@ private void initConnections()
 					getJTextPaneDescription().setText("");  //clear out any text
 				}
 			}
+
 		}
 		
 		public void mouseClicked(final MouseEvent e) 
 		{
 			updateSelectionCountNodes();
-			fireInputUpdate();			
+			
+			int selRow = getJTreeRoles().getRowForLocation(e.getX(), e.getY());
+			
+			if(selRow != -1) 
+			{
+				TreeNode node = 
+					(TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
+
+				//this must fire here because the NodeCheckBox only fires these events
+				if( node instanceof CheckNode && !isReadOnlyTree() )
+					getJTableProperties().setEnabled( 
+								((CheckNode)node).isSelected() );
+
+				fireInputUpdate();
+			}
+
 		}
 		
 
@@ -714,9 +756,6 @@ private void initConnections()
 
 
 }
-
-
-
 
 /**
  * This method was created in VisualAge.
@@ -762,6 +801,18 @@ public static void main(java.lang.String[] args) {
 		return nodeListener;
 	}
 
+
+	private boolean isReadOnlyTree()
+	{
+		MouseListener[] lists = getJTreeRoles().getMouseListeners();
+		for( int i = 0; i < lists.length; i++ )
+			if( lists[i] == getNodeListener() )
+				return false;
+				
+		return true;
+	}
+	
+	
 	public void setRoleTabledEnabled( boolean val_ )
 	{
 		getJTableProperties().setEnabled( val_ );

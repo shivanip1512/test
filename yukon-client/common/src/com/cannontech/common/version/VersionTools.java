@@ -1,5 +1,6 @@
 package com.cannontech.common.version;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 
@@ -9,7 +10,12 @@ import com.cannontech.database.PoolManager;
  * @author: 
  */
 public final class VersionTools 
-{
+{	
+	public static final String KEY_YUKON_VERSION = "Yukon-Version";
+	public static final String COMMON_JAR = "common.jar";
+	public static String yukonVersion = null;
+
+
 /**
  * VersionTools constructor comment.
  */
@@ -45,7 +51,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -59,7 +65,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 		
@@ -122,9 +128,28 @@ public final static boolean tableExists( String tableName_ )
  * Creation date: (6/26/2001 2:43:28 PM)
  * @return java.lang.String
  */
-public final static java.lang.String getYUKON_VERSION() 
+public synchronized final static java.lang.String getYUKON_VERSION() 
 {
-	return com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_YUKON_VERSION, "XX.xx" ).toString();
+	if( yukonVersion == null )
+	{
+		try
+		{
+			java.util.jar.JarFile jf = new java.util.jar.JarFile( COMMON_JAR );
+	
+			yukonVersion =
+					jf.getManifest().getMainAttributes().getValue( KEY_YUKON_VERSION );
+	
+			jf.close();			
+		}
+		catch( Exception e )
+		{
+			CTILogger.info("*** PROPERTY TRANSLATION ERROR: " + KEY_YUKON_VERSION + " key/value not stored." );
+		}
+		
+		if( yukonVersion == null )
+			yukonVersion = "XX.xx";		
+	}
+	
+	return yukonVersion;
 }
 }

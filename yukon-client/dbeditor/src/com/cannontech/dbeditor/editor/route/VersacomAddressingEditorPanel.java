@@ -1,5 +1,9 @@
 package com.cannontech.dbeditor.editor.route;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.roles.application.DBEditorRole;
+
 /**
  * This type was created in VisualAge.
  */
@@ -208,9 +212,11 @@ private javax.swing.JTextField getJTextFieldUtilRange() {
 			ivjJTextFieldUtilRange.setEnabled(false);
 			// user code begin {1}
 
-			ivjJTextFieldUtilRange.setText("(Util range: " + com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_UTILITYID_RANGE, "1-" +
-				com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID ) +")" );
+			ivjJTextFieldUtilRange.setText(
+				"(Util range: " + 
+				ClientSession.getInstance().getRolePropertyValue(
+				DBEditorRole.UTILITY_ID_RANGE,
+				"1-" + CtiUtilities.MAX_UTILITY_ID ) +")" );
 
 			ivjJTextFieldUtilRange.setToolTipText( ivjJTextFieldUtilRange.getText() );
 			ivjJTextFieldUtilRange.setBackground( getBackground() );
@@ -465,9 +471,10 @@ private void initialize() {
 public boolean isInputValid() 
 {
 
-	String idRange = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-		com.cannontech.common.util.CtiProperties.KEY_UTILITYID_RANGE, "1-" +
-		com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID );
+	String idRange =
+	ClientSession.getInstance().getRolePropertyValue(
+		DBEditorRole.UTILITY_ID_RANGE,
+		"1-" + CtiUtilities.MAX_UTILITY_ID );
 
 	int res = java.util.Arrays.binarySearch( 
 				com.cannontech.common.util.CtiUtilities.decodeRangeIDString( idRange, com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID ),

@@ -8,13 +8,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.roles.yukon.SystemRole;
 
 /**
  * Replays the point changes of a given day in the past.
@@ -43,8 +44,13 @@ public class PointChangePlayer {
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
 		ClientConnection conn = new ClientConnection();
-		conn.setHost(CtiProperties.getInstance().get(CtiProperties.KEY_DISPATCH_MACHINE).toString());
-		conn.setPort(Integer.parseInt(CtiProperties.getInstance().get(CtiProperties.KEY_DISPATCH_PORT).toString()));
+		conn.setHost(
+			ClientSession.getInstance().getRolePropertyValue(
+				SystemRole.DISPATCH_MACHINE).toString());
+				
+		conn.setPort(Integer.parseInt
+				(ClientSession.getInstance().getRolePropertyValue(
+					SystemRole.DISPATCH_PORT).toString()));
 		try {
 			conn.connect();
 		} catch (IOException e) {

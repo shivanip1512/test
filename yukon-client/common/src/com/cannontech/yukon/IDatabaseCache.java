@@ -123,6 +123,8 @@ public interface IDatabaseCache
    public void releaseAllStateGroups();
    public void releaseAllUnitMeasures();
    public void releaseAllYukonPAObjects();
+	public void releaseAllYukonUsers();   
+   
    public void removeDBChangeListener(DBChangeListener listener);
    public void setDatabaseAlias(String newAlias);
 

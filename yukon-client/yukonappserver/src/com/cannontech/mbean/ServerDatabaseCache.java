@@ -1085,7 +1085,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	private void addRolesAndPropertiesToLookupMap(final Map roleMap, final Map roleIDMap, final Map rolePropertyIDMap) {
 		Iterator roleIter = roleMap.keySet().iterator();
 		while(roleIter.hasNext()) {
-			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();	
+			LiteYukonRole groupRole = (LiteYukonRole) roleIter.next();
 			roleIDMap.put(new Integer(groupRole.getRoleID()), groupRole);						
 						
 			// add roleproperties for this role
@@ -1147,9 +1147,9 @@ public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
 {
 	if( cache == null )
 	{
-		com.cannontech.clientutils.CTILogger.info("CACHE: CREATING NEW CACHE REFERENCE OBJECT");
 		cache = new ServerDatabaseCache();
 		cache.setDbChangeListener( new CacheDBChangeListener() );
+		com.cannontech.clientutils.CTILogger.info("CACHE: CREATED NEW CACHE REFERENCE OBJECT");
 	}
 
 	return cache;

@@ -133,6 +133,14 @@
     <servlet-class>
     com.cannontech.servlet.PWordRequest</servlet-class>
   </servlet>  
+  <servlet>
+    <servlet-name>SetupServlet</servlet-name>
+    <display-name>SetupServlet</display-name>
+    <description>Allows a user to configure Yukon specific settings.</description>
+    <servlet-class>
+    com.cannontech.servlet.SetupServlet</servlet-class>
+  </servlet>  
+
 
 
   

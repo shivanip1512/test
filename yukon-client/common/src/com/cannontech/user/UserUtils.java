@@ -35,7 +35,7 @@ public final class UserUtils
 	
 	
 	
-	public static final boolean isHiddenCategory( String cat_ )
+	public static final boolean isReadOnlyCategory( String cat_ )
 	{
 		for( int i = 0; i < ALL_CATEGORIES.length; i++ )
 		{

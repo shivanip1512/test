@@ -6,14 +6,14 @@ package com.cannontech.loadcontrol.datamodels;
 import java.awt.Color;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
+import com.cannontech.roles.application.TDCRole;
 
 public class ProgramTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, IProgramTableModel
 {
@@ -60,8 +60,8 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	   {
 	      showRedCol = 
 	         Boolean.valueOf(
-	            CtiProperties.getInstance().getProperty(
-	               CtiProperties.KEY_LC_REDUCTION_COL, 
+	            ClientSession.getInstance().getRolePropertyValue(
+	               TDCRole.LC_REDUCTION_COL, 
 	               "true") );
 	   }
 	   catch( Exception e)

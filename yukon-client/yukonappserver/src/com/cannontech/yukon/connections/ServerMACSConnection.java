@@ -2,6 +2,7 @@ package com.cannontech.yukon.connections;
 
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IConnectionBase;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
@@ -10,6 +11,7 @@ import com.cannontech.message.util.Message;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.cannontech.message.macs.message.MACSCategoryChange;
+import com.cannontech.roles.yukon.SystemRole;
 
 public class ServerMACSConnection extends ClientConnection implements IMACSConnection
 {
@@ -58,13 +60,13 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	
 	   try
 	   {
-			host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-						com.cannontech.common.util.CtiProperties.KEY_MACS_MACHINE, "127.0.0.1" );
+			host = ClientSession.getInstance().getRolePropertyValue(
+						SystemRole.MACS_MACHINE, "127.0.0.1" );
 	
 			try
 			{
-				portStr = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-						com.cannontech.common.util.CtiProperties.KEY_MACS_PORT, "1900");
+				portStr = ClientSession.getInstance().getRolePropertyValue(
+								SystemRole.MACS_PORT, "1900");
 				port = new Integer(portStr);
 			}
 			catch (Exception e)

@@ -9,8 +9,9 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.message.porter.ClientConnection;
+import com.cannontech.roles.yukon.SystemRole;
 
 public class PILConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 
@@ -58,10 +59,11 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 {
 	super.init(config);
 
-	CtiProperties props = CtiProperties.getInstance();
-		
-	String host = props.getProperty(CtiProperties.KEY_PORTER_MACHINE,"127.0.0.1");
-	int port = Integer.parseInt(props.getProperty(CtiProperties.KEY_PORTER_PORT,"1540"));
+	String host = ClientSession.getInstance().getRolePropertyValue(
+							SystemRole.PORTER_MACHINE,"127.0.0.1");
+	int port = Integer.parseInt(
+						ClientSession.getInstance().getRolePropertyValue(
+							SystemRole.PORTER_PORT,"1540"));
 	
 	CTILogger.info("Will attempt to connect to porter @" + host + ":" + port);
 	conn = new ClientConnection();

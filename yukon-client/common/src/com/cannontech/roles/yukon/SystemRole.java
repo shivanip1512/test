@@ -5,7 +5,8 @@ import com.cannontech.roles.*;
 /**
  * @author aaron
  */
-public interface SystemRole {
+public interface SystemRole 
+{
 	public static final int ROLEID = YukonRoleDefs.SYSTEM_ROLEID;
 	
 	public static final int DISPATCH_MACHINE = YukonRoleDefs.YUKON_PROPERTYID_BASE;
@@ -18,4 +19,10 @@ public interface SystemRole {
 	public static final int CAP_CONTROL_PORT = YukonRoleDefs.YUKON_PROPERTYID_BASE - 7;
 	public static final int LOADCONTROL_MACHINE = YukonRoleDefs.YUKON_PROPERTYID_BASE - 8;
 	public static final int LOADCONTROL_PORT = YukonRoleDefs.YUKON_PROPERTYID_BASE - 9;
+	
+	public static final int SMTP_HOST = YukonRoleDefs.YUKON_PROPERTYID_BASE - 10;
+	public static final int MAIL_FROM_ADDRESS = YukonRoleDefs.YUKON_PROPERTYID_BASE - 11;	
+	public static final int PRINT_INSERTS_SQL = YukonRoleDefs.YUKON_PROPERTYID_BASE - 12;
+	public static final int STARS_SOAP_SERVER = YukonRoleDefs.YUKON_PROPERTYID_BASE - 13;
+	
 }

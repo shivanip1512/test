@@ -1,5 +1,9 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.roles.application.DBEditorRole;
+
 /**
  * This type was created in VisualAge.
  */
@@ -657,9 +661,10 @@ private javax.swing.JTextField getJtextFieldUtilRange() {
 			ivjJtextFieldUtilRange.setEnabled(false);
 			// user code begin {1}
 
-			ivjJtextFieldUtilRange.setText("(Util range: " + com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_UTILITYID_RANGE, "1-" +
-				com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID ) +")" );
+			ivjJtextFieldUtilRange.setText("(Util range: " + 
+				ClientSession.getInstance().getRolePropertyValue(
+				DBEditorRole.UTILITY_ID_RANGE, 
+				"1-" + CtiUtilities.MAX_UTILITY_ID ) +")" );
 
 			ivjJtextFieldUtilRange.setToolTipText( ivjJtextFieldUtilRange.getText() );
 			ivjJtextFieldUtilRange.setBackground( getJPanelUtilSec().getBackground() );
@@ -1177,9 +1182,10 @@ public boolean isInputValid()
 	//only check the UtilAddress if it's parent panel is visible
 	if( getJPanelUtilSec().isVisible() )
 	{
-		String idRange = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_UTILITYID_RANGE, "1-" +
-			com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID );
+		String idRange = 
+			ClientSession.getInstance().getRolePropertyValue(
+				DBEditorRole.UTILITY_ID_RANGE, 
+				"1-" + CtiUtilities.MAX_UTILITY_ID );
 
 		int res = java.util.Arrays.binarySearch( 
 					com.cannontech.common.util.CtiUtilities.decodeRangeIDString( idRange, com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID ),

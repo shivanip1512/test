@@ -7,13 +7,14 @@ import java.awt.Color;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.roles.application.TDCRole;
 
 public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, ISelectableLMTableModel
 {
@@ -47,9 +48,8 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 	   {
 	      showRedCol = 
 	         Boolean.valueOf(
-	            CtiProperties.getInstance().getProperty(
-	               CtiProperties.KEY_LC_REDUCTION_COL, 
-	               "true") );
+	            ClientSession.getInstance().getRolePropertyValue(
+	               TDCRole.LC_REDUCTION_COL, "true") );
 	   }
 	   catch( Exception e)
 	   {}

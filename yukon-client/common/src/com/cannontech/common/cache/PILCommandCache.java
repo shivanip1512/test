@@ -15,7 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.Pair;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.porter.ClientConnection;
@@ -23,6 +23,7 @@ import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.roles.yukon.SystemRole;
 
 /**
  * PILCommandCache provides stateless clients a way to have a converstation with PIL.
@@ -193,15 +194,19 @@ public class PILCommandCache implements MessageListener, Observer {
 	 * Connect to PIL
 	 *
 	 */
-	private void connect() {
-		String host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_MACHINE, "127.0.0.1");
-		String portStr = CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_PORT, "1540");
+	private void connect() 
+	{
+		String host = ClientSession.getInstance().getRolePropertyValue(
+							SystemRole.PORTER_MACHINE, "127.0.0.1");
+		String portStr = ClientSession.getInstance().getRolePropertyValue(
+								SystemRole.PORTER_PORT, "1540");
+
 		int port = 1510;
 	
 		try {
 			port = Integer.parseInt(portStr);
 		} catch(NumberFormatException nfe) {
-			CTILogger.warn("Bad value for " + CtiProperties.KEY_PORTER_PORT);		
+			CTILogger.warn("Bad value for PORTER_PORT property");		
 		}			
 
 		CTILogger.debug("attempting to connect to porter @" + host + ":" + port);

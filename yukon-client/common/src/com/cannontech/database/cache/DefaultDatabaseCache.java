@@ -364,6 +364,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
       getDBCache().releaseAllAlarmCategories();
    }
 
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized void releaseAllYukonUsers()
+	{
+		getDBCache().releaseAllYukonUsers();
+	}
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 

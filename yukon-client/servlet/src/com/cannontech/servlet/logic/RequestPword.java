@@ -3,7 +3,7 @@ package com.cannontech.servlet.logic;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.tools.email.EmailMessage;
 
 /**
@@ -65,7 +66,9 @@ public class RequestPword
 		allParams = new String[] { userName, email, fName, lName };
 
 
-		Object o = CtiProperties.getInstance().get(CtiProperties.KEY_LOGIN_PAGE_HELP_EMAIL);
+		Object o = ClientSession.getInstance().getRolePropertyValue(
+							WebClientRole.LOG_IN_URL );
+
 		if( o != null )
 			masterMail = o.toString();
 	}

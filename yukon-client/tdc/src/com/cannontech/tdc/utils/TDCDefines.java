@@ -5,7 +5,9 @@ package com.cannontech.tdc.utils;
  * @author: 
  */
 
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.ClientRights;
+import com.cannontech.roles.application.TDCRole;
 
 public final class TDCDefines 
 {
@@ -35,8 +37,8 @@ public final class TDCDefines
 
    //hex value representing the privelages of the user on this machine
    public static final long USER_RIGHTS = Long.parseLong( 
-         CtiProperties.getInstance().getProperty(
-         CtiProperties.KEY_TDC_RIGHTS, "0"), 16 );
+			ClientSession.getInstance().getRolePropertyValue(
+         TDCRole.TDC_RIGHTS, "0"), 16 );
 
 
 /**
@@ -116,4 +118,57 @@ public static int createValidDisplayNumber ( String query )
 	}
 
 	return com.cannontech.tdc.data.Display.BEGINNING_USER_DISPLAY_NUMBER; // j is too large, return the starting number!!
-}}
+}
+
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/5/2001 11:32:59 AM)
+ * @return boolean
+ */
+public static boolean isHiddenCapControl( final long readOnlyInteger )
+{
+	return (readOnlyInteger & ClientRights.HIDE_CAPCONTROL) != 0;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/5/2001 11:32:59 AM)
+ * @return boolean
+ */
+public static boolean isHiddenLoadControl( final long readOnlyInteger )
+{
+	return (readOnlyInteger & ClientRights.HIDE_LOADCONTROL) != 0;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/5/2001 11:32:59 AM)
+ * @return boolean
+ */
+public static boolean isHiddenMACS( final long readOnlyInteger )
+{
+	return (readOnlyInteger & ClientRights.HIDE_MACS) != 0;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/5/2001 11:32:59 AM)
+ * @return boolean
+ */
+public static boolean isAlarmColorHidden( final long readOnlyInteger )
+{
+	return (readOnlyInteger & ClientRights.HIDE_ALARM_COLORS) != 0;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/5/2001 11:32:59 AM)
+ * @return boolean
+ */
+public static boolean isClientEnabled( final long readOnlyInteger )
+{
+	return (readOnlyInteger & ClientRights.ENABLE_SERVICES) != 0;
+}
+
+
+}

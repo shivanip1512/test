@@ -16,8 +16,10 @@ import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.roles.application.TDCRole;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.common.login.ClientSession;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -471,8 +473,8 @@ private String getPowerFactorText( double value, boolean compute )
    {
       decPlaces = 
          Integer.parseInt(
-            com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-               com.cannontech.common.util.CtiProperties.KEY_PFACTOR_FORMAT, 
+				ClientSession.getInstance().getRolePropertyValue(
+               TDCRole.PFACTOR_DECIMAL_PLACES, 
                "1") );
    }
    catch( Exception e)

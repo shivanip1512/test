@@ -3,10 +3,12 @@ package com.cannontech.tdc;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.functions.AlarmCatFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.bookmark.BookMarkSelectionListener;
@@ -33,8 +35,8 @@ class SignalAlarmHandler
    private java.util.Vector alarmVector = null;
    
    public static final int ALARMS_DISPLAYED = Integer.parseInt(
-         com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-                  com.cannontech.common.util.CtiProperties.KEY_TDC_ALARM_COUNT, 
+			ClientSession.getInstance().getRolePropertyValue(
+                  TDCRole.TDC_ALARM_COUNT, 
                   "3") );
 
    

@@ -24,7 +24,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.yukon.SystemRole;
 
 /**
  * @author snebben
@@ -154,7 +155,9 @@ public class EmailMessage
 	public void send() throws AddressException, MessagingException
 	{
 		java.util.Properties systemProps = System.getProperties();
-		systemProps.put(CtiProperties.KEY_SMTP_HOST, getSmtpServer());
+		
+		//a property used internally by the JavaMail API
+		systemProps.put("mail.smtp.host", getSmtpServer());
 
 		
 		Session session = Session.getInstance(systemProps);
@@ -227,13 +230,14 @@ public class EmailMessage
 	{
 		if( from == null)
 		{
-			from = CtiProperties.getInstance().getProperty(CtiProperties.KEY_MAIL_FROM_ADDRESS);
+			from = ClientSession.getInstance().getRolePropertyValue(
+						SystemRole.MAIL_FROM_ADDRESS);
 
 			//still dont have a value, nothing will work then!
 			if( from == null )
 				CTILogger.error( 
-					"Unable to find the FROM address key: " 
-					+ CtiProperties.KEY_MAIL_FROM_ADDRESS + ", be sure this is defined correctly" );
+					"Unable to find the MAIL_FROM address, " +
+					"be sure this is defined correctly" );
 		}
 			
 		return from;
@@ -246,13 +250,14 @@ public class EmailMessage
 	{
 		if( smtpServer == null)
 		{
-			smtpServer = CtiProperties.getInstance().getProperty(CtiProperties.KEY_SMTP_HOST);
+			smtpServer = ClientSession.getInstance().getRolePropertyValue(
+								SystemRole.SMTP_HOST);
 
 			//still dont have a value, nothing will work then!
 			if( smtpServer == null )
 				CTILogger.error( 
-					"Unable to find the SMTP server defined for the key: " 
-					+ CtiProperties.KEY_SMTP_HOST + ", be sure this is defined correctly" );
+					"Unable to find the SMTP_HOST server defined, " +
+					"be sure this is defined correctly" );
 		}
 
 		return smtpServer;

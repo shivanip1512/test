@@ -2,6 +2,9 @@ package com.cannontech.tdc.windows;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.yukon.SystemRole;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/9/2002 9:47:26 PM)
@@ -348,9 +351,8 @@ private void initialize() {
 		// user code begin {1}
       
       JNTServices.getInstance().setMachineName(
-         com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-            com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE,
-            "localhost") );
+         ClientSession.getInstance().getRolePropertyValue(
+            SystemRole.DISPATCH_MACHINE, "localhost") );
       
       getServicePopUpMenu().addPropertyChangeListener( "PopUpChange", getJTableModel() );
       

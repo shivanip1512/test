@@ -1,10 +1,12 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.mbean.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.ClientConnection;
+import com.cannontech.roles.yukon.SystemRole;
 /**
  * @author rneuharth
  * Sep 25, 2002 at 4:07:47 PM
@@ -35,12 +37,12 @@ public class CacheChangeListener implements DBChangeListener
          int port = 1510;
          try
          {
-            host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-                     com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE, 
+            host = ClientSession.getInstance().getRolePropertyValue(
+                     SystemRole.DISPATCH_MACHINE, 
                      "127.0.0.1");
                
-            port = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-                     com.cannontech.common.util.CtiProperties.KEY_DISPATCH_PORT, 
+            port = (new Integer( ClientSession.getInstance().getRolePropertyValue(
+                     SystemRole.DISPATCH_PORT, 
                      "1510"))).intValue();         
          }
          catch( Exception e)

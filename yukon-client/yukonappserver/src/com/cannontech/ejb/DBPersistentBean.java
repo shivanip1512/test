@@ -4,11 +4,15 @@ import java.rmi.RemoteException;
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IDBPersistent;
 
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 
 /* Add this to DBPersistentHome class */
@@ -176,10 +180,18 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
 
 	public void setSQLFileName( String fileName )
 	{
-		sqlFileName = 
-			com.cannontech.common.util.CtiUtilities.getLogDirPath() + 
-			System.getProperty("file.separator") +
-			fileName;
+		if( fileName == null )
+		{
+			sqlFileName = null;
+		}		
+		else
+		{
+			sqlFileName = 
+				com.cannontech.common.util.CtiUtilities.getLogDirPath() + 
+				System.getProperty("file.separator") +
+				fileName;
+		}
+		
 	}
 	
    /**
@@ -603,14 +615,12 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          pstmt.executeUpdate();
    
          //everything went well, print the SQL to a file if desired
-         if( isPrintSQL() )
-            printSQLToFile( pSql.toString(), values, null );
+         printSQLToFile( pSql.toString(), values, null );
       }
       catch( SQLException e )
       {
          //something bad happened, print the SQL with the Exception to a file if desired
-         if( isPrintSQL() )
-            printSQLToFile( pSql.toString(), values, e );
+         printSQLToFile( pSql.toString(), values, e );
          
          throw e;
       }
@@ -681,7 +691,23 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
     * Creation date: (5/21/2001 11:20:05 AM)
     * @return boolean
     */
-   public static boolean isPrintSQL() {
+   public static boolean isPrintSQL() 
+   {
+		//some other startup init properties
+		String printSQLfile = ClientSession.getInstance().getRolePropertyValue(
+										SystemRole.PRINT_INSERTS_SQL, CtiUtilities.STRING_NONE );
+
+		try
+		{
+			//#File that logs SQL inserts into the database
+			if( CtiUtilities.STRING_NONE.equalsIgnoreCase(printSQLfile) )
+				sqlFileName =  null;
+			else
+				sqlFileName = printSQLfile;
+		}
+		catch (Exception e)
+		{}
+   	
       return (sqlFileName != null);
    }
    

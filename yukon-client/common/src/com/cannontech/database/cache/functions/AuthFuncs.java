@@ -229,6 +229,28 @@ public class AuthFuncs {
         
         return null;
 	}
+
+	/**
+	 * Return a particular lite yukon group given the group ID
+	 * @param groupName
+	 * @return LiteYukonGroup
+	 */
+	public static LiteYukonGroup getGroup(int grpID_) 
+	{
+		  DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        
+		  synchronized (cache) 
+		  {
+			java.util.Iterator it = cache.getAllYukonGroups().iterator();
+			while (it.hasNext()) {
+				LiteYukonGroup group = (LiteYukonGroup) it.next();
+				if (group.getGroupID() == grpID_ )
+					return group;
+			}
+		  }
+        
+		  return null;
+	}
 	
 	/**
 	 * Dont let anyone instantiate me

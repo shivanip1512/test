@@ -13,7 +13,7 @@
     <classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
     <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
     <classpathentry kind="lib" path="/third-party/led.jar"/>
-    <classpathentry kind="lib" path="/third-party/rwav.jar"/>
+    <classpathentry kind="lib" path="/third-party/rwav.jar" sourcepath="D:/rwav-src.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="src" path="/macs"/>
     <classpathentry kind="src" path="/trending"/>

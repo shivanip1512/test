@@ -11,7 +11,9 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
@@ -94,10 +96,16 @@ public class SOAPClient extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		
-		// If "stars_soap_server" is defined in config.properties, it means SOAPServer is running remotely
+		// If "stars_soap_server" is not (none), it means SOAPServer is running remotely
 		// For now, always consider SOAPServer is running locally
-		SOAP_SERVER_URL = CtiProperties.getInstance().getProperty( CtiProperties.KEY_STARS_SOAP_SERVER );
+		SOAP_SERVER_URL =
+			ClientSession.getInstance().getRolePropertyValue( SystemRole.STARS_SOAP_SERVER );
 		
+		//keep the URL string null if it is not set
+		if( SOAP_SERVER_URL.equals(CtiUtilities.STRING_NONE) )
+			SOAP_SERVER_URL = null;
+
+
 		if (SOAP_SERVER_URL != null) {
 			CTILogger.info( "SOAP Server resides remotely at " + SOAP_SERVER_URL );
 
@@ -212,37 +220,20 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
-			destURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp";
+			destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
-			
 			if (req.getParameter("Wizard") != null) {
-				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );;
-				if (actions == null) actions = new MultiAction();
-				if (!actions.addAction( clientAction, req, session)) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true" );
-					return;
-				}
-				
-				session.setAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD, actions );
-				resp.sendRedirect( req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true" );
-				return;
+				session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true");
+				errorURL = req.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true";
 			}
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
 			clientAction = new ProgramSignUpAction();
 			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
 			errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
-			
 			if (req.getParameter("Wizard") != null) {
-				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
-				if (!actions.addAction( clientAction, req, session)) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true" );
-					return;
-				}
-				
-				destURL = errorURL = req.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
-				session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
-				clientAction = actions;
+				session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/Update.jsp");
+				errorURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
 			}
 		}
 		else if (action.equalsIgnoreCase("SearchCustAccount")) {
@@ -277,10 +268,9 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("OptOutProgram")) {
 			MultiAction actions = new MultiAction();
-			if (!actions.addAction( new ProgramOptOutAction(), req, session )) {
-				resp.sendRedirect( req.getRequestURI() );
-				return;
-			}
+			actions.addAction( new ProgramOptOutAction(), req, session );
+			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         	
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsExitInterviewQuestions questions = null;
@@ -290,30 +280,21 @@ public class SOAPClient extends HttpServlet {
 				if (ecSettings != null)
 					questions = ecSettings.getStarsExitInterviewQuestions();
 			}
-            
+            	
 			if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
 				session.setAttribute( ServletUtils.ATT_OVER_PAGE_ACTION, actions );
 				resp.sendRedirect( req.getParameter(ServletUtils.ATT_REDIRECT2) );
 				return;
 			}
 			else {	// if no exit interview questions, then skip the next page and send out the command immediately
-				if (!actions.addAction( new SendOptOutNotificationAction(), req, session )) {
-					resp.sendRedirect( req.getRequestURI() );
-					return;
-				}
-				
+				actions.addAction( new SendOptOutNotificationAction(), req, session );
 				clientAction = actions;
-				destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-				errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 			}
 		}
 		else if (action.equalsIgnoreCase("SendOptOutNotification")) {
 			MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
-			if (!actions.addAction( new SendOptOutNotificationAction(), req, session )) {
-				resp.sendRedirect( req.getRequestURI() );
-				return;
-			}
 			session.removeAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
+			actions.addAction( new SendOptOutNotificationAction(), req, session );
         	
 			clientAction = actions;
 			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
@@ -398,16 +379,9 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new CreateLMHardwareAction();
 			destURL = req.getContextPath() + "/operator/Consumer/Inventory.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
-			
 			if (req.getParameter("Wizard") != null) {
-				MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
-				if (!actions.addAction( clientAction, req, session )) {
-					resp.sendRedirect( req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true" );
-					return;
-				}
-				
-				resp.sendRedirect( req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true" );
-				return;
+				session.setAttribute(ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true");
+				errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
 			}
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardware")) {

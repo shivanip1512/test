@@ -35,16 +35,19 @@ public class ConnectionPool
 	  this.timeOut = timeOut > 0 ? timeOut : 5;
 	  this.initConns = initConns;
 	  
-	  initPool();
-
-	  CTILogger.debug("New pool created");
 	  String lf = System.getProperty("line.separator");
+	  CTILogger.info("Creating new DB connection pool...");
 	  CTILogger.debug(lf +
 					" url=" + URL + lf +
 					" user=" + user + lf +
 					" initconns=" + initConns + lf +
 					" maxconns=" + maxConns + lf +
 					" logintimeout=" + this.timeOut );
+
+	  //create the pools
+	  initPool();
+
+
 	  CTILogger.debug( getStats() );
    }            
    public synchronized void freeConnection(Connection conn)
@@ -58,16 +61,19 @@ public class ConnectionPool
    }   
    public Connection getConnection() throws SQLException 
    {
-	  CTILogger.debug( "Request for connection received" );
-
-	  //The below line lets you find any connections that are not
-	  //   releasing the connection to the DB!!  (Creates a lot of output!!)
-	  //CTILogger.debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
 
 	  try
 	  {
 		 Connection conn = getConnection(timeOut * 1000);
-		 return new ConnectionWrapper(conn, this);
+		 ConnectionWrapper cw = new ConnectionWrapper(conn, this);
+
+		 CTILogger.debug( "Request for a DB connection granted" );
+	  
+		  //The below line lets you find any connections that are not
+		  //   releasing the connection to the DB!!  (Creates a lot of output!!)
+		  //CTILogger.debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
+
+		 return cw;
 	  }
 	  catch (SQLException e)
 	  {
@@ -90,7 +96,7 @@ public class ConnectionPool
 	  {
 		 try
 		 {
-			CTILogger.debug("Waiting for connection. Timeout=" + remaining );
+			CTILogger.debug("Waiting for connection. Timeout=" + remaining + " millis");
 
 			wait(remaining);
 		 }
@@ -241,17 +247,20 @@ public class ConnectionPool
 	  p.put("user", user);
 	  p.put("password", password);
 	  p.put("programname", System.getProperty("cti.app.name", "YukonClient"));
-
+	  //p.put("timeout", "5");
+	  
 	  try
 	  {
 	  	  conn = DriverManager.getConnection(URL, p);
+	  	  
+
 	  	  CTILogger.debug("Opened a new connection" );
 	  }
 	  catch( Exception e )
 	  {
 	  	  //try to connect the old way!
-		  conn = DriverManager.getConnection(URL, user, password);
-		  CTILogger.debug("Opened a new connection using an out dated connection method" );	  	
+		  //conn = DriverManager.getConnection(URL, user, password);
+		  //CTILogger.debug("Opened a new connection using an out dated connection method" );	  	
 	  }
 
 	  return conn;

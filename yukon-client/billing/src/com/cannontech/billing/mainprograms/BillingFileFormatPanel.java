@@ -876,7 +876,8 @@ private String getInputFileText()
 	{
 		try
 		{
-			inputFileText = com.cannontech.common.util.CtiProperties.getInstance().getProperty( com.cannontech.common.util.CtiProperties.KEY_BILLING_INPUT);
+			inputFileText = ClientSession.getInstance().getRolePropertyValue(
+					BillingRole.INPUT_FILE );
 		}
 		catch( Exception e)
 		{

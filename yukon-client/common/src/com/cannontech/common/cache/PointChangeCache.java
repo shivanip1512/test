@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
@@ -17,6 +17,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.roles.yukon.SystemRole;
 
 /**
  * PointChangeCache provides the current dynamic info for all Yukon points.
@@ -79,14 +80,14 @@ protected PointChangeCache()
  */
 public synchronized void connect() 
 {
-	String host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
-	String portStr = CtiProperties.getInstance().getProperty(CtiProperties.KEY_DISPATCH_PORT, "1510");
+	String host = ClientSession.getInstance().getRolePropertyValue(SystemRole.DISPATCH_MACHINE, "127.0.0.1");
+	String portStr = ClientSession.getInstance().getRolePropertyValue(SystemRole.DISPATCH_PORT, "1510");
 	int port = 1510;
 	
 	try {
 		port = Integer.parseInt(portStr);
 	} catch(NumberFormatException nfe) {
-		CTILogger.warn("Bad value for " + CtiProperties.KEY_DISPATCH_PORT);		
+		CTILogger.warn("Bad value for DISPATCH-PORT");		
 	}			
 
 	

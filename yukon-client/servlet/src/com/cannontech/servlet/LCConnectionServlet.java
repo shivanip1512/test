@@ -9,11 +9,12 @@ package com.cannontech.servlet;
  */
  
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.roles.yukon.SystemRole;
 
 public class LCConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {
 		
@@ -72,10 +73,24 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 {
 	super.init(config);
 
-	CtiProperties props = CtiProperties.getInstance();
 
-	String lcHost = props.getProperty("loadcontrol_machine","127.0.0.1");
-	int lcPort = Integer.parseInt(props.getProperty("loadcontrol_port","1920"));
+	String lcHost = "127.0.0.1";
+	int lcPort = 1920;
+
+	try {
+		lcHost =
+			ClientSession.getInstance().getRolePropertyValue(
+				SystemRole.LOADCONTROL_MACHINE,
+				"127.0.0.1");
+		lcPort =
+			Integer.parseInt(
+		ClientSession.getInstance().getRolePropertyValue(
+					SystemRole.LOADCONTROL_PORT,
+					"1920"));
+
+	} catch (Exception e) {
+		com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+	}
 
 	CTILogger.info("Will attempt to connect to loadcontrol @" + lcHost + ":" + lcPort);
 	conn = LoadControlClientConnection.getInstance();
@@ -118,13 +133,13 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 			try {
 				host =
-					com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-						com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE,
+					ClientSession.getInstance().getRolePropertyValue(
+						SystemRole.DISPATCH_MACHINE,
 						"127.0.0.1");
 				port =
 					Integer.parseInt(
-						CtiProperties.getInstance().getProperty(
-							CtiProperties.KEY_DISPATCH_PORT,
+				ClientSession.getInstance().getRolePropertyValue(
+							SystemRole.DISPATCH_PORT,
 							"1510"));
 
 			} catch (Exception e) {

@@ -11,7 +11,9 @@ import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.roles.application.TDCRole;
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.common.login.ClientSession;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -396,9 +398,8 @@ private String getPowerFactorText( double value, boolean compute )
    {
       decPlaces = 
          Integer.parseInt(
-            com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-               com.cannontech.common.util.CtiProperties.KEY_PFACTOR_FORMAT, 
-               "1") );
+				ClientSession.getInstance().getRolePropertyValue(
+               TDCRole.PFACTOR_DECIMAL_PLACES, "1") );
    }
    catch( Exception e)
    {}

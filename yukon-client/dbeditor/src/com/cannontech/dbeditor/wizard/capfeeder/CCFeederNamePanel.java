@@ -5,7 +5,9 @@ package com.cannontech.dbeditor.wizard.capfeeder;
 import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.roles.application.TDCRole;
  
 public class CCFeederNamePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private Integer originalMapLocID = null;
@@ -486,9 +488,8 @@ private void initialize() {
 	boolean amfmInterface = false;
 	try
 	{	
-		amfmInterface = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_CC_INTERFACE, "NotFound").trim().equalsIgnoreCase(
-				com.cannontech.common.util.CtiProperties.VALUE_CC_INTERFACE_AMFM );
+		amfmInterface = ClientSession.getInstance().getRolePropertyValue(
+			TDCRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
 	}
 	catch( java.util.MissingResourceException e )
 	{}

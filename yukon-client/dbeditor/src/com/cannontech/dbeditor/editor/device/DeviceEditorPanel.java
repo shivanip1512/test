@@ -1,8 +1,9 @@
 package com.cannontech.dbeditor.editor.device;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.roles.application.DBEditorRole;
 
 /**
  * This type was created in VisualAge.
@@ -170,7 +171,8 @@ public Object[] createNewPanel(int panelIndex)
 
 		case 9:
 			String showIt = 
-					CtiProperties.getInstance().getProperty(CtiProperties.KEY_EDITOR_EXCLUSION, "false");
+				ClientSession.getInstance().getRolePropertyValue(
+					DBEditorRole.TRANS_EXCLUSION, "false");
 	
 			if( "TRUE".equalsIgnoreCase(showIt) )
 			{

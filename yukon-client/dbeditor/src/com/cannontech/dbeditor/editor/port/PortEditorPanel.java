@@ -8,10 +8,11 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.dbeditor.wizard.port.PooledPortListPanel;
+import com.cannontech.roles.application.DBEditorRole;
  
 public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {
@@ -106,6 +107,20 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "Pooled Ports";
 			break;
 
+		case 6:
+			String showIt = 
+				ClientSession.getInstance().getRolePropertyValue(
+						DBEditorRole.TRANS_EXCLUSION, "false");
+
+			if( "TRUE".equalsIgnoreCase(showIt) )
+			{
+				objs[0] = new com.cannontech.dbeditor.editor.device.PAOExclusionEditorPanel();
+				objs[1] = "Exclusion List";
+			}
+			else
+				objs = null;
+
+			break;
 	}
 		
 	return objs;

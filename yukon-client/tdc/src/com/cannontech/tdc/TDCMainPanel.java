@@ -27,7 +27,6 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
-import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -2248,13 +2247,13 @@ public void initializeTable()
 				boolean enabled = true;
             
 				if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
+					enabled = !TDCDefines.isHiddenCapControl(TDCDefines.USER_RIGHTS);
 				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
+					enabled = !TDCDefines.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
 				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
-					enabled = !CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
+					enabled = !TDCDefines.isHiddenMACS(TDCDefines.USER_RIGHTS);
 				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
-					enabled = CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
+					enabled = TDCDefines.isClientEnabled(TDCDefines.USER_RIGHTS);
 
 				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
 			}

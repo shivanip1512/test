@@ -8,7 +8,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JRootPane;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.ClientRights;
 import com.cannontech.message.macs.message.MACSCategoryChange;
+import com.cannontech.roles.application.TDCRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.ResourceFactory;
 
@@ -320,8 +323,9 @@ private void initialize()
    try
    {
 		//hex value representing the privelages of the user on this machine
-		userRightsInt = Integer.parseInt( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_MACS_EDIT, "0"), 16 );
+		userRightsInt = Integer.parseInt( 
+				ClientSession.getInstance().getRolePropertyValue(
+				TDCRole.MACS_EDIT, "0"), 16 );
 	}
    catch (java.util.MissingResourceException e)
    {
@@ -337,8 +341,9 @@ private void initialize()
  */
 public static boolean isCreateable() 
 {
-	return com.cannontech.common.util.CtiProperties.isCreateable(userRightsInt);	
+	return ( (userRightsInt & ClientRights.CREATABLE) == ClientRights.CREATABLE);	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
@@ -346,7 +351,7 @@ public static boolean isCreateable()
  */
 public static boolean isEnableable() 
 {
-	return com.cannontech.common.util.CtiProperties.isEnableable(userRightsInt);
+	return ( (userRightsInt & ClientRights.ENABLEABLE) == ClientRights.ENABLEABLE);
 }
 /**
  * Insert the method's description here.
@@ -355,7 +360,7 @@ public static boolean isEnableable()
  */
 public static boolean isStartable() 
 {
-	return com.cannontech.common.util.CtiProperties.isStartable(userRightsInt);
+	return ( (userRightsInt & ClientRights.STARTABLE) == ClientRights.STARTABLE);
 }
 /**
  * This method was created in VisualAge.

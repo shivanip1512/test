@@ -7,6 +7,7 @@ package com.cannontech.clientutils;
  * @Version: <version>
  */
 
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -14,6 +15,7 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.roles.yukon.SystemRole;
 
 
 public abstract class ClientBase extends java.util.Observable implements Runnable, ClientBaseInterface
@@ -100,12 +102,12 @@ private void getExternalResources()
 {
 	try
 	{
-      HOST = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-               com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE, 
+      HOST = ClientSession.getInstance().getRolePropertyValue(
+               SystemRole.DISPATCH_MACHINE, 
                "127.0.0.1");
          
-      PORT = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-               com.cannontech.common.util.CtiProperties.KEY_DISPATCH_PORT, 
+      PORT = (new Integer( ClientSession.getInstance().getRolePropertyValue(
+               SystemRole.DISPATCH_PORT, 
                "1510"))).intValue();         
    }
    catch( Exception e)

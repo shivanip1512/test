@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -24,6 +24,7 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.PointSelectionPanel;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.roles.yukon.SystemRole;
 
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
@@ -353,13 +354,13 @@ public class Util {
 
 			try {
 				host =
-					com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-						com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE,
+					ClientSession.getInstance().getRolePropertyValue(
+						SystemRole.DISPATCH_MACHINE,
 						"127.0.0.1");
 				port =
 					Integer.parseInt(
-						CtiProperties.getInstance().getProperty(
-							CtiProperties.KEY_DISPATCH_PORT,
+						ClientSession.getInstance().getRolePropertyValue(
+							SystemRole.DISPATCH_PORT,
 							"1510"));
 
 			} catch (Exception e) {

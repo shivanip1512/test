@@ -11,6 +11,7 @@ import javax.swing.table.TableModel;
 
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.JDialogWait;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -29,6 +30,8 @@ import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
+import com.cannontech.roles.application.TDCRole;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.tdc.observe.ObservableJPopupMenu;
 
 public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, 
@@ -1046,13 +1049,14 @@ private void initClientConnection()
 	Integer port = new Integer("1920");
 
 	//figure out where the LoadControl server is
-	String host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_LOADCONTROL_MACHINE, "127.0.0.1" );
+	String host = 
+		ClientSession.getInstance().getRolePropertyValue(
+				SystemRole.LOADCONTROL_MACHINE, "127.0.0.1" );
 
 	try
 	{
-		String portStr = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-				com.cannontech.common.util.CtiProperties.KEY_LOADCONTROL_PORT, "1920");
+		String portStr = ClientSession.getInstance().getRolePropertyValue(
+				SystemRole.LOADCONTROL_PORT, "1920");
 		port = new Integer(portStr);
 	}
 	catch (Exception e)
@@ -1061,8 +1065,9 @@ private void initClientConnection()
 	}
 
 	//hex value representing the privelages of the user on this machine
-	userRightsInt = Integer.parseInt( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_LOADCONTROL_EDIT, "0"), 16 );
+	userRightsInt = Integer.parseInt( 
+			ClientSession.getInstance().getRolePropertyValue(
+				TDCRole.LOADCONTROL_EDIT, "0"), 16 );
 
 
    LoadControlClientConnection.getInstance().setHost(host);

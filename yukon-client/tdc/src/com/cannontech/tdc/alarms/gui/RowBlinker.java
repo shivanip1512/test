@@ -8,7 +8,6 @@ package com.cannontech.tdc.alarms.gui;
  */
  
 import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.common.util.CtiProperties;
 import com.cannontech.clientutils.CTILogger;
 
 
@@ -240,7 +239,7 @@ public void run()
 		{
 			int size = 0;
 			
-         if( !CtiProperties.isAlarmColorHidden(TDCDefines.USER_RIGHTS) )
+         if( !TDCDefines.isAlarmColorHidden(TDCDefines.USER_RIGHTS) )
          {
    			synchronized( alarmedRows )
    			{

@@ -1,4 +1,8 @@
 package com.cannontech.dbeditor.editor.capsubbus;
+
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.application.TDCRole;
+
 /**
  * This type was created in VisualAge.
  */
@@ -615,9 +619,8 @@ private void initialize() {
 	boolean amfmInterface = false;
 	try
 	{	
-		amfmInterface = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-			com.cannontech.common.util.CtiProperties.KEY_CC_INTERFACE, "NotFound").trim().equalsIgnoreCase(
-				com.cannontech.common.util.CtiProperties.VALUE_CC_INTERFACE_AMFM );
+		amfmInterface = ClientSession.getInstance().getRolePropertyValue(
+			TDCRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
 	}
 	catch( java.util.MissingResourceException e )
 	{}

@@ -1137,4 +1137,78 @@ public static String getExtension(java.io.File f) {
 	}
  }
 
+
+
+
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (3/5/2001 11:32:59 AM)
+	 * @return String
+	 * 
+	 * This method returns the String that represents the key_ as a method.
+	 * We search for a method of the vlaue_ object that returns a String
+	 * and has a the name:
+	 *   get(key_);
+	 * If anything goes wrong, we print out all possible getters that return
+	 * a String and use the default_ as our value.
+	 * At most we accept 1 getter method. The percent(%) sign is used as a
+	 * token seperator.  key_ may look like this:
+	 *   CBC %PAOName%
+	 * A call to getPAOName() will replace the %PAOName%.
+	 */
+	public static String getReflectiveProperty( 
+			final Object value_, String key_, final String default_ )
+	{
+		if( value_ == null )
+			return default_;
+
+
+		java.lang.reflect.Method[] methods = value_.getClass().getMethods();
+      
+		try
+		{
+			StringBuffer buf = new StringBuffer(key_);
+			String methodName = methodName = buf.substring( key_.indexOf("%")+1, key_.lastIndexOf("%") );
+         
+			for( int i = 0; i < methods.length; i++ )
+			{
+				if( methods[i].getName().toLowerCase().startsWith("get") 
+						&& methods[i].getReturnType().equals(String.class)
+						&& methods[i].getName().toLowerCase().endsWith(methodName.toLowerCase()) )
+				{
+					String s = (String)methods[i].invoke( value_, null );
+               
+					buf.replace( key_.indexOf("%")+1, key_.lastIndexOf("%"), s );
+               
+					//remove all % signs
+					while( buf.toString().indexOf("%") != -1 )
+						buf.deleteCharAt( buf.toString().indexOf("%") );
+                  
+					return (buf.toString() == null ? default_ : buf.toString());
+				}         
+			}
+		}
+		catch( Exception e )
+		{} //no biggy, print some info and use the default_ value
+
+
+		/******************  ERROR HANDLING BELOW *****************/
+		//oops we failed, list the properties for this reflective class
+		com.cannontech.clientutils.CTILogger.info("*** PROPERTY REFLECTIVE TRANSLATION ERROR: " + key_ + " key/value not stored.");
+		com.cannontech.clientutils.CTILogger.debug("Available REFLECTIVE properties for: " + value_.getClass().getName());
+
+		for( int i = 0; i < methods.length; i++ )
+		{
+			if( methods[i].getName().toLowerCase().startsWith("get") 
+					&& methods[i].getReturnType().equals(String.class) )
+			{
+				com.cannontech.clientutils.CTILogger.info( "   " +
+						methods[i].getName().substring(3) );
+			}         
+		}
+    
+		return default_;
+	}
+
 }
