@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   pilserver
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2003/09/24 16:07:48 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2003/09/25 13:28:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -852,29 +853,18 @@ void CtiPILServer::nexusWriteThread()
         {
             if(PorterNexus.NexusState != CTINEXUS_STATE_NULL) /* And send them to porter */
             {
-                if((OutMessage->TargetID != 0 || OutMessage->DeviceID != 0) && OutMessage->Port > 0)
-                {
-                    if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        DumpOutMessage(OutMessage);
-
-                        if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
-                        {
-                            PorterNexus.CTINexusClose();
-                        }
-                    }
-                }
-                else
+                if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Error **** Improperly formed OUTMESS discarded " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     DumpOutMessage(OutMessage);
+
+                    if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
+                    {
+                        PorterNexus.CTINexusClose();
+                    }
                 }
             }
 
@@ -1568,6 +1558,5 @@ void CtiPILServer::putQueue(CtiMessage *Msg)
 {
     MainQueue_.putQueue( Msg );
 }
-
 
 
