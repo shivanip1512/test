@@ -18,7 +18,6 @@ import java.util.Hashtable;
 import org.apache.commons.fileupload.FileItem;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -33,7 +32,6 @@ import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.util.ImportManagerUtil;
 import com.cannontech.tools.email.EmailMessage;
@@ -130,7 +128,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private static final int COL_APP_TYPE = hw_col++;
 	private static final int COL_APP_KW = hw_col++;
 	
-	StarsYukonUser user = null;
+	LiteStarsEnergyCompany energyCompany = null;
 	FileItem custFile = null;
 	FileItem hwFile = null;
 	String email = null;
@@ -151,8 +149,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	int numHwUpdated = 0;
 	int numHwRemoved = 0;
 	
-	public ImportCustAccountsTask (StarsYukonUser user, FileItem custFile, FileItem hwFile, String email, boolean preScan) {
-		this.user = user;
+	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, FileItem custFile, FileItem hwFile, String email, boolean preScan) {
+		this.energyCompany = energyCompany;
 		this.custFile = custFile;
 		this.hwFile = hwFile;
 		this.email = email;
@@ -187,7 +185,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		}
         
         File logFile = null;
-		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		ArrayList custFieldsList = null;
 		ArrayList hwFieldsList = null;
@@ -992,7 +989,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 		String action = custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION];
 		if (action.equalsIgnoreCase( "INSERT" )) {
-			liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, user, energyCompany, false, problem );
+			liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
 			numAcctAdded++;
 		}
 		else if (action.equalsIgnoreCase( "UPDATE" )) {

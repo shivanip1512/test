@@ -236,16 +236,16 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		if (status == STATUS_FINISHED) {
 			return "DSM database has been converted successfully. Please check the \"_import.log\" for detailed information.";
 		}
-		else if (status == STATUS_ERROR) {
-			String msg = getImportProgress();
-			if (msg.length() == 0) msg = null;
-			return msg;
-		}
-		else {
+		else if (status == STATUS_RUNNING){
 			if (progressMsg != null)
 				return progressMsg + NEW_LINE + NEW_LINE + getImportProgress();
 			else
 				return "Converting DSM database...";
+		}
+		else {
+			String msg = getImportProgress();
+			if (msg.length() == 0) msg = null;
+			return msg;
 		}
 	}
 

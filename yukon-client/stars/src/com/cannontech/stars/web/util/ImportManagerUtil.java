@@ -31,7 +31,6 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
@@ -564,7 +563,7 @@ public class ImportManagerUtil {
 		return login;
 	}
 	
-	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user,
+	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields,
 		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
 	{
 		// Build the request message

@@ -51,7 +51,8 @@
 			
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
 			  <input type="hidden" name="action" value="ImportStarsData">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportSTARS.jsp">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportSTARS.jsp?Done">
+			  <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Consumer/ImportSTARS.jsp">
               <table width="300" border="0" cellspacing="0" cellpadding="3" align="center" class="MainText">
 <%
 	for (int i = 0; i < ImportManagerUtil.LIST_NAMES.length; i++) {
