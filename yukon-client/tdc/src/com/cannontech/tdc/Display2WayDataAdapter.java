@@ -2139,7 +2139,14 @@ private Vector setRowForEventViewer( Signal signal )
 
 	LitePoint lPoint = PointFuncs.getLitePoint( signal.getPointID() );
 	LiteYukonPAObject lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
-	
+
+	//a little debug to help us
+	if( lPoint == null )
+		CTILogger.debug("Unable to find the lite point with pointID = " + signal.getPointID() );
+	else if( lDevice == null )
+		CTILogger.debug("Unable to find the lite device with deviceID = " + lPoint.getPaobjectID() );
+
+
 
 	// set DeviceName
 	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) )
