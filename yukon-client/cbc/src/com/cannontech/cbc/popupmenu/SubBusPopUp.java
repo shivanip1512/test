@@ -52,6 +52,9 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJMenuItemConfirm()) 
 		connEtoC3(e);
 	// user code begin {2}
+	
+	if( e.getSource() == getJMenuItemResetOpCount() )
+		jMenuItemResetOpCount_ActionPerformed( e );
 
 	// user code end
 }
@@ -233,7 +236,8 @@ private void handleException(java.lang.Throwable exception) {
  */
 private void initConnections() throws java.lang.Exception 
 {
-
+	getJMenuItemResetOpCount().addActionListener(this);
+	
 	getJMenuItemSubBusData().addActionListener(this);
 	getJMenuItemEnableDisable().addActionListener(this);
 	getJMenuItemConfirm().addActionListener(this);

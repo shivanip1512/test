@@ -193,10 +193,10 @@ private void handleException(java.lang.Throwable exception) {
  * Initializes connections
  * @exception java.lang.Exception The exception description.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
+private void initConnections() throws java.lang.Exception 
+{
+	getJMenuItemResetOpCount().addActionListener(this);
+	
 	getJMenuItemFeederData().addActionListener(this);
 	getJMenuItemEnableDisable().addActionListener(this);
 }
