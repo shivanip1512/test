@@ -14,6 +14,11 @@
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
 %>
+<% if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL)
+	{
+		response.sendRedirect("Command410.jsp?InvNo="+invNo); return;
+	}
+%>
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.gui.YC" scope="session">
 	<jsp:setProperty name="YC_BEAN" property="*"/>
