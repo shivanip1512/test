@@ -122,7 +122,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						msg += numAppImported + " appliances imported successfully";
 					else
 						msg += numAppImported + " of " + appFieldsList.size() + " appliances imported";
-					msg += " (" + numACImported + " ac, " +
+					msg += " (" + numACImported + " ac," +
 							numWHImported + " wh," +
 							numGenImported + " gen," +
 							numIrrImported + " irr," +
@@ -575,7 +575,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				msg = numAppImported + " appliances imported successfully";
 			else
 				msg = numAppImported + " of " + appFieldsList.size() + " appliances imported";
-			msg += " (" + numACImported + " ac, " +
+			msg += " (" + numACImported + " ac," +
 					numWHImported + " wh," +
 					numGenImported + " gen," +
 					numIrrImported + " irr," +
