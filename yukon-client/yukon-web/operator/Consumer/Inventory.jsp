@@ -306,9 +306,13 @@ function changeAppSelection(chkBox) {
                             <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
                               <tr> 
                                 <td valign = "top" align = "center" class = "TableCell"> 
+<% if (company == null) { %>
+								  None
+<% } else { %>
                                   <b><%= company.getCompanyName() %><br>
                                   <%= ServletUtils.getFormattedAddress( company.getCompanyAddress() ) %><br>
                                   <%= company.getMainPhoneNumber() %></b> </td>
+<% } %>
                               </tr>
                             </table>
                           </td>
