@@ -60,6 +60,10 @@ public final static FileFormatBase createFileFormat(int type)
 			retFFB =  new NISCFormat();
 			break;
 
+		case FileFormatTypes.NISC_SINGLEPHASE:
+			retFFB =  new NISC_SinglePhaseFormat();
+			break;
+
 /*		case FileFormatTypes.MVRS:
 			retFFB =  new MVRSFormat();
 			break;
