@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/03/19 15:56:16 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/04/29 20:00:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -368,6 +368,7 @@ typedef enum
     VersacomRouteType,
     TapRouteType,
     WCTPRouteType,
+    RTCRouteType,
 
     MaxRouteType
 
