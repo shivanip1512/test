@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.AbstractButton;
 import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.event.TreeSelectionEvent;
