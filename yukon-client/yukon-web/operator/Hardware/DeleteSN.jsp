@@ -5,7 +5,15 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
+<script language="JavaScript">
+function confirmSubmit(form) {
+	if (form.From.value == "") {
+		alert("The 'From' value cannot be empty");
+		return false;
+	}
+	return confirm("Are you sure you want to delete the SN range from " + form.From.value + " to " + form.To.value);
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -37,7 +45,7 @@
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="confirmSubmit(this)">
 			    <input type="hidden" name="action" value="DeleteSNRange">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
