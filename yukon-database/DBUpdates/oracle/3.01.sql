@@ -911,8 +911,8 @@ alter table TOURateOffset
 
 create table Command  (
    CommandID            NUMBER                           not null,
-   Command              VARCHAR2(128)                    not null,
-   Label                VARCHAR2(64)                     not null,
+   Command              VARCHAR2(256)                    not null,
+   Label                VARCHAR2(256)                    not null,
    Category             CHAR(32)                         not null
 );
 alter table Command

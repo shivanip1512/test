@@ -1030,8 +1030,8 @@ go
 
 create table Command (
 CommandID            numeric              not null,
-Command              varchar(128)         not null,
-Label                varchar(64)          not null,
+Command              varchar(256)         not null,
+Label                varchar(256)         not null,
 Category             char(32)             not null
 );
 go
