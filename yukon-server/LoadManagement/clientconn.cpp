@@ -27,7 +27,7 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getsockname() << endl;
+        dout << RWTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getpeername() << endl;
     }
 
     try
@@ -121,8 +121,8 @@ void CtiLMConnection::close()
     //unblock the in and out thread
     RWCollectable* unblocker = new RWCollectable();
     _queue.write(unblocker);
-    _recvrunnable.requestCancellation();
     _sendrunnable.requestCancellation();
+    _recvrunnable.requestCancellation();
 
     _recvrunnable.join();
     _sendrunnable.join();
