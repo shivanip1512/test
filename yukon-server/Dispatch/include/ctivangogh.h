@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/10 22:29:23 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/14 21:07:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,7 +120,7 @@ private:
     void verifyControlTimesValid( CtiPendingPointOperations &ppc );
     RWCString resolveEmailMsgDescription( const CtiEmailMsg &aMail );
 
-    void analyzeNumericReasonability(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    int analyzeNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void analyzeNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void analyzeNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void analyzeLimitViolationReset(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
@@ -128,13 +128,14 @@ private:
     void analyzeStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void analyzeStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void tagSignalAsAlarm(CtiPointDataMsg *pData, CtiSignalMsg *&pSig, int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point);
 
 public:
 
     typedef CtiServer Inherited;
 
-    CtiVanGogh();// :_signalMsgQueue(100),CtiServer(1000);
-    CtiVanGogh(int QueueSize);// :_signalMsgQueue(100),CtiServer(QueueSize);
+    CtiVanGogh();
+    CtiVanGogh(int QueueSize);
     virtual ~CtiVanGogh();
 
     virtual void  clientShutdown(CtiConnectionManager *&CM);
