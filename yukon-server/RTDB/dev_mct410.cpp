@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/05/18 21:23:28 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/06/01 15:12:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1084,7 +1084,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, DemandAccumulatorPointType, resultString);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
 
             if(pData != NULL)
             {
