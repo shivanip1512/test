@@ -300,7 +300,7 @@ function confirmCancel() {
                           <div align="right">Address 1:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SAddr1" maxlength="30" size="24">
+                          <input type="text" name="SAddr1" maxlength="40" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -308,7 +308,7 @@ function confirmCancel() {
                           <div align="right">Address 2:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="SAddr2" maxlength="30" size="24">
+                          <input type="text" name="SAddr2" maxlength="40" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -375,7 +375,7 @@ function confirmCancel() {
                           <div align="right">Address 1:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="BAddr1" maxlength="30" size="24">
+                          <input type="text" name="BAddr1" maxlength="40" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -383,7 +383,7 @@ function confirmCancel() {
                           <div align="right">Address 2:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="BAddr2" maxlength="30" size="24">
+                          <input type="text" name="BAddr2" maxlength="40" size="24">
                         </td>
                       </tr>
                       <tr> 
