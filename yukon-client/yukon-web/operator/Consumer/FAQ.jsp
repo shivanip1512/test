@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String invNoStr = request.getParameter("InvNo");
 	int invNo = -1;

@@ -16,6 +16,7 @@
 						  {"Privileges.jsp", "Privileges"},
 						  {"CreateWizard.jsp", "Create"},
 						  {"PrintExport.jsp", "Print/Export"},
+						  {"FAQ.jsp", "FAQ"},
 						  {"CreateAppliances.jsp", "New"},
 						  {"CreateHardware.jsp", "New"},
 						  {"ThermSchedule.jsp", "Schedule"},
@@ -205,6 +206,7 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_NOT_IMPLEMENTED %>">
         <%= links.get("Privileges.jsp")%><br>
 		<%= links.get("PrintExport.jsp")%><br>
+		<%= links.get("FAQ.jsp")%><br>
 </cti:checkRole>
 	  </div>
     </td>
