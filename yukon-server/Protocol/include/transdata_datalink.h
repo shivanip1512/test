@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/02/02 16:59:30 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -35,7 +35,8 @@ class IM_EX_PROT CtiTransdataDatalink
       CtiTransdataDatalink();
       ~CtiTransdataDatalink();
 
-      void buildMsg( CtiXfer &xfer );
+//      RWCString buildMsg( CtiXfer &xfer, RWCString wantToGet );
+      RWCString buildMsg( RWCString command, RWCString wantToGet );
       bool readMsg( CtiXfer &xfer, int status );
       bool isTransactionComplete( void );
 
@@ -56,15 +57,23 @@ class IM_EX_PROT CtiTransdataDatalink
          Storage_size   = 4500
       };
 
-      int      _failCount;
-      int      _error;
+      int         _failCount;
+      int         _error;
+      int         _offset;
+      int         _index;
 
-      bool     _finished;
+      bool        _finished;
+      bool        _firstTime;
 
-      BYTE     *_storage;
+      BYTE        *_storage;
+//      BYTE        _received;
+//      BYTE        _lookFor;
 
-      ULONG    _bytesReceived;
-      ULONG    _bytesExpected;
+      ULONG       _bytesReceived;
+      ULONG       _bytesExpected;
+
+      RWCString   _received;
+      RWCString   _lookFor;
 };
 
 #endif // #ifndef __TRANSDATA_DATALINK_H__

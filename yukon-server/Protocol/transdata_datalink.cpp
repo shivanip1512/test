@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/02/02 16:59:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,10 +57,12 @@ void CtiTransdataDatalink::reinitalize( void )
 {
    _failCount           = 0;
    _error               = 0;
-   _bytesExpected       = 0;
    _bytesReceived       = 0;
+   _index               = 0;
+   _offset              = 0;
 
    _finished            = false;
+   _firstTime           = true;
 
    if( _storage != NULL )
    {
@@ -70,37 +72,60 @@ void CtiTransdataDatalink::reinitalize( void )
 }
 
 //=====================================================================================================================
+//gotta send the commands one char at a time so the meter hears us
 //=====================================================================================================================
 
-void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
+RWCString CtiTransdataDatalink::buildMsg( RWCString command, RWCString wantToGet )
 {
+   RWCString cmd;
    memset( _storage, '\0', Storage_size );
+   _lookFor = wantToGet;
    _finished = false;
-   _bytesExpected = xfer.getInCountExpected();
+
+   if( _index < command.length() )
+   {
+      cmd = RWCString(command.data()[_index]);
+      _index++;
+   }
+   else
+   {
+      _index = 0;
+   }
+    
+   return( cmd );
 }
 
 //=====================================================================================================================
+//read in one char at a time, tack 'em all together, see if they match what we're looking for
 //=====================================================================================================================
 
 bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 {
-   if(( xfer.getInCountActual() + _bytesReceived ) >= _bytesExpected )
+   if( xfer.getInCountActual() > 0 )
    {
-      _finished = true;
-      _bytesExpected = 333;
-      _failCount = 0;
-   }
-   else
-   {
-      setError();
-   }
+      //tack on the new byte(s) we got from the meter
+      _received.insert( _offset, ( const char*)xfer.getInBuffer(), xfer.getInCountActual() );
+      _offset += xfer.getInCountActual();
+   
+      if( _received.contains( ( const char*)_lookFor, RWCString::exact ) )
+      {
+         memcpy( _storage, _received, _received.length() );
+         _bytesReceived += _received.length();
 
-   if( xfer.getInCountActual() )
-   {
-      memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
-      _bytesReceived += xfer.getInCountActual();
-   }
+         //clear what we've got in there
+         _received.remove( 0, _received.length() );
+         _offset = 0;
+         _index = 0;
 
+         _finished = true;
+         _failCount = 0;
+      }
+      else
+      {
+         setError();
+      }
+   }
+   
    return( _finished );
 }
 
@@ -124,7 +149,6 @@ void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 
       memset( _storage, '\0', Storage_size );
 
-      _bytesExpected = 0;
       _bytesReceived = 0;
       _finished = false;
    }
