@@ -48,6 +48,7 @@ insert into YukonRoleProperty values(-20114,-201,'Work Orders','false','Controls
 insert into YukonRoleProperty values(-20115,-201,'Admin Change Login','true','Controls whether to enable the changing customer login feature');
 insert into YukonRoleProperty values(-20116,-201,'Admin FAQ','false','Controls whether to show customer FAQs');
 insert into YukonRoleProperty values(-20117,-201,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
+insert into YukonRoleProperty values(-20118,-201,'Create Trend','false','Controls whether to allow new trends to assigned to the customer');
 insert into YukonRoleProperty values(-20150,-201,'Super Operator','false','Used for some testing functions (not recommended)');
 insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 insert into YukonRoleProperty values(-20152,-201,'Import Customer Account','(none)','Controls whether to enable the customer account importing feature');
@@ -215,6 +216,7 @@ insert into yukongrouprole values (734,-301,-201,-20114,'true');
 insert into yukongrouprole values (735,-301,-201,-20115,'true');
 insert into yukongrouprole values (736,-301,-201,-20116,'true');
 insert into yukongrouprole values (737,-301,-201,-20117,'true');
+insert into yukongrouprole values (738,-301,-201,-20118,'true');
 insert into yukongrouprole values (750,-301,-201,-20150,'true');
 insert into yukongrouprole values (751,-301,-201,-20151,'true');
 insert into yukongrouprole values (752,-301,-201,-20152,'(none)');
