@@ -186,7 +186,7 @@ void CtiLoadManager::controlLoop()
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-		RWDBDateTime prevDateTime = currentDateTime;
+        RWDBDateTime prevDateTime = currentDateTime;
                 currentDateTime.now();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
@@ -238,14 +238,14 @@ void CtiLoadManager::controlLoop()
 
                         try
                         {
-			    currentControlArea->handleNotification(secondsFrom1901, multiPilMsg, multiDispatchMsg);
-			    
+                currentControlArea->handleNotification(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+            
                             if( currentControlArea->isManualControlReceived() )
                             {
                                 currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg);
                             }
 
-			    currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg);
+                currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg);
 
                             if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(secondsFromBeginningOfDay) )
                             {
@@ -369,6 +369,7 @@ void CtiLoadManager::controlLoop()
                             dout << RWTime() << " - Sending multi message to Dispatch." << endl;
                         }*/
 
+                        multiDispatchMsg->resetTime();                              // CGP 5/21/04 Update its time to current time.
                         getDispatchConnection()->WriteConnQue(multiDispatchMsg);
                         multiDispatchMsg = new CtiMultiMsg();
                     }
@@ -384,6 +385,7 @@ void CtiLoadManager::controlLoop()
                     if( multiPilMsg->getCount() > 0 )
                     {
                         multiPilMsg->setMessagePriority(13);
+                        multiPilMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
                         getPILConnection()->WriteConnQue(multiPilMsg);
                         multiPilMsg = new CtiMultiMsg();
                     }
@@ -399,7 +401,7 @@ void CtiLoadManager::controlLoop()
                     if( controlAreaChanges.entries() > 0 )
                     {
                         store->dumpAllDynamicData();
-                        CtiLMExecutorFactory f; 
+                        CtiLMExecutorFactory f;
                         CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
 
                         try
@@ -499,7 +501,7 @@ CtiConnection* CtiLoadManager::getDispatchConnection()
             {
                 //Connect to Dispatch
                 _dispatchConnection = new CtiConnection( dispatch_port, dispatch_host );
-    
+
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("LoadManagement", 0, false );
                 _dispatchConnection->WriteConnQue( registrationMsg );
@@ -577,7 +579,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
             {
                 //Connect to Pil
                 _pilConnection = new CtiConnection( pil_port, pil_host );
-    
+
                 //Send a registration message to Pil
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("LoadManagement", 0, false );
                 _pilConnection->WriteConnQue( registrationMsg );
@@ -844,7 +846,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
             }
             break;
         case MSG_TAG:
-	    break; //we don't care.
+        break; //we don't care.
         default:
             {
                 char tempstr[64] = "";
@@ -1152,6 +1154,7 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
+        message->resetTime();                       // CGP 5/21/04 Update its time to current time.
         getPILConnection()->WriteConnQue(message);
     }
     catch(...)

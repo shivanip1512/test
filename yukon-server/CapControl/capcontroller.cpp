@@ -111,7 +111,7 @@ void CtiCapController::stop()
         if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
         {
             _substationBusThread.terminate();
-    
+
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Forced to terminate." << endl;
@@ -193,7 +193,7 @@ void CtiCapController::controlLoop()
                 currentDateTime.now();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
-    
+
                 {
                     if( (secondsFrom1901%900) == 0 && secondsFrom1901 != lastThreadPulse )
                     {//every thirty minutes tell the user if the control thread is still alive
@@ -210,11 +210,11 @@ void CtiCapController::controlLoop()
                         lastDailyReset = secondsFrom1901;
                     }
                 }
-    
+
                 rwRunnable().serviceCancellation();
-    
+
                 RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
-    
+
                 try
                 {
                     if( store->getReregisterForPoints() )
@@ -228,7 +228,7 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-    
+
                 try
                 {
                     checkDispatch(secondsFrom1901);
@@ -239,13 +239,13 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-    
+
                 RWOrdered& pointChanges = multiDispatchMsg->getData();
                 RWOrdered& pilMessages = multiPilMsg->getData();
                 for(LONG i=0;i<ccSubstationBuses.entries();i++)
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-    
+
                     try
                     {
                         currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
@@ -304,7 +304,7 @@ void CtiCapController::controlLoop()
                                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
-    
+
                             try
                             {
                                 //so we don't do this over and over we need to clear out
@@ -327,7 +327,7 @@ void CtiCapController::controlLoop()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
-    
+
                     try
                     {
                         //accumulate all buses with any changes into msg for all clients
@@ -343,12 +343,13 @@ void CtiCapController::controlLoop()
                         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
-    
+
                 try
                 {
                     //send point changes to dispatch
                     if( pointChanges.entries() > 0 )
                     {
+                        multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         getDispatchConnection()->WriteConnQue(multiDispatchMsg);
                         multiDispatchMsg = new CtiMultiMsg();
                     }
@@ -358,12 +359,13 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-    
+
                 try
                 {
                     //send pil commands to porter
                     if( multiPilMsg->getCount() > 0 )
                     {
+                        multiPilMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         getPILConnection()->WriteConnQue(multiPilMsg);
                         multiPilMsg = new CtiMultiMsg();
                     }
@@ -373,7 +375,7 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-    
+
                 try
                 {
                     if( substationBusChanges.entries() > 0 )
@@ -392,7 +394,7 @@ void CtiCapController::controlLoop()
                             dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                         delete executor;
-    
+
                         substationBusChanges.clear();
                     }
                 }
@@ -561,7 +563,7 @@ CtiConnection* CtiCapController::getPILConnection()
                 dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
             }
 
-            //throw away the old connection if there was one that couldn't be 
+            //throw away the old connection if there was one that couldn't be
             if( _pilConnection != NULL && _pilConnection->verifyConnection() )
             {
                 {
@@ -683,7 +685,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
         {
             regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
         }
-        
+
         RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
 
         for(LONG j=0;j<ccFeeders.entries();j++)
@@ -796,7 +798,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Command Message received from Dispatch" << endl;
                     }
-    
+
                     cmdMsg = (CtiCommandMsg *)message;
                     if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                     {
