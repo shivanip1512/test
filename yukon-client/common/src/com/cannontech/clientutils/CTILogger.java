@@ -80,7 +80,19 @@ public class CTILogger
          catch( Exception e )
          {}
    
+
+
          //add all appenders below
+			try
+			{
+//				logger.addAppender( new SocketAppender(
+//						"127.0.0.1",
+//						11111) );
+			}
+			catch( Exception e )
+			{}
+
+
          
          
          logger.info( "Logging started..." );
