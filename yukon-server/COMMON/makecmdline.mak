@@ -84,8 +84,8 @@ cmdopts.obj:	dlldefs.h argkey.h argval.h cmdopts.h yukon.h ctidbgmem.h \
 		guard.h
 cmdparse.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h cmdparse.h \
-		parsevalue.h devicetypes.h logger.h thread.h numstr.h \
-		pointdefs.h utility.h
+		parsevalue.h cparms.h devicetypes.h logger.h thread.h \
+		numstr.h pointdefs.h utility.h
 counter.obj:	counter.h guard.h dlldefs.h mutex.h
 ctdpcptrq.obj:	ctdpcptrq.h dlldefs.h
 cticalls.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dllbase.h dsm2.h \
@@ -144,8 +144,8 @@ point_change.obj:	point_change.h yukon.h ctidbgmem.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h
 portsup.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
-		mutex.h guard.h portsup.h dllbase.h color.h dupreq.h \
-		devicetypes.h logger.h thread.h
+		mutex.h guard.h dllbase.h color.h dupreq.h devicetypes.h \
+		logger.h thread.h
 psup.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dllbase.h \
 		dsm2.h mutex.h guard.h dsm2err.h drp.h device.h devicetypes.h \
 		elogger.h alarmlog.h lm_auto.h group.h routes.h porter.h \

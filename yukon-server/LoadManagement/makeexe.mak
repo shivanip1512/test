@@ -156,9 +156,20 @@ executor.obj:	executor.h lmmessage.h message.h ctidbgmem.h \
 		lmprogramcurtailment.h lmprogramenergyexchange.h \
 		lmenergyexchangeoffer.h lmenergyexchangeofferrevision.h \
 		lmenergyexchangehourlyoffer.h lmenergyexchangecustomer.h \
-		lmenergyexchangecustomerreply.h \
+		lmcicustomerbase.h lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h lmprogramdirect.h \
 		lmprogramdirectgear.h devicetypes.h lmcurtailcustomer.h
+lmcicustomerbase.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
+		lmcicustomerbase.h observe.h msg_pcrequest.h message.h \
+		ctidbgmem.h collectable.h lmid.h logger.h thread.h \
+		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h msg_cmd.h pointtypes.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmgroupbase.h lmcontrolareatrigger.h executor.h lmmessage.h \
+		ctdpcptrq.h ctibase.h ctinexus.h device.h devicetypes.h \
+		resolvers.h db_entry_defines.h
 lmcontrolarea.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmcontrolarea.h \
 		connection.h exchange.h logger.h thread.h message.h \
@@ -177,18 +188,19 @@ lmcontrolareastore.obj:	lmcontrolareastore.h observe.h types.h \
 		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
 		msg_reg.h queue.h lmprogrambase.h lmgroupbase.h \
 		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h lmid.h \
-		lmcurtailcustomer.h lmenergyexchangecustomer.h \
-		lmenergyexchangecustomerreply.h \
+		lmcurtailcustomer.h lmcicustomerbase.h \
+		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
 		lmenergyexchangeofferrevision.h lmenergyexchangeoffer.h \
 		lmenergyexchangehourlyoffer.h \
 		lmenergyexchangehourlycustomer.h lmprogramcurtailment.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
-		lmprogramenergyexchange.h lmgroupversacom.h lmgroupemetcon.h \
-		lmgroupexpresscom.h lmgroupripple.h lmgrouppoint.h \
-		lmprogramcontrolwindow.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h devicetypes.h dbaccess.h \
-		sema.h ctibase.h ctinexus.h configparms.h cparms.h \
-		msg_dbchg.h loadmanager.h executor.h lmmessage.h ctdpcptrq.h
+		lmprogramthermostatgear.h lmprogramenergyexchange.h \
+		lmgroupversacom.h lmgroupemetcon.h lmgroupexpresscom.h \
+		lmgroupripple.h lmgrouppoint.h lmprogramcontrolwindow.h \
+		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		devicetypes.h dbaccess.h sema.h ctibase.h ctinexus.h \
+		configparms.h cparms.h msg_dbchg.h loadmanager.h executor.h \
+		lmmessage.h ctdpcptrq.h
 lmcontrolareatrigger.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmcontrolareatrigger.h observe.h lmid.h lmprogrambase.h \
@@ -202,7 +214,19 @@ lmcontrolareatrigger.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 lmcurtailcustomer.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmcurtailcustomer.h observe.h msg_pcrequest.h message.h \
-		ctidbgmem.h collectable.h lmid.h logger.h thread.h \
+		ctidbgmem.h collectable.h lmcicustomerbase.h lmid.h logger.h \
+		thread.h loadmanager.h connection.h exchange.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h msg_cmd.h pointtypes.h configparms.h \
+		cparms.h lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmgroupbase.h lmcontrolareatrigger.h executor.h lmmessage.h \
+		ctdpcptrq.h ctibase.h ctinexus.h device.h devicetypes.h \
+		resolvers.h db_entry_defines.h
+lmenergyexchangecustomer.obj:	dbaccess.h dlldefs.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
+		lmenergyexchangecustomer.h observe.h lmcicustomerbase.h \
+		msg_pcrequest.h message.h ctidbgmem.h collectable.h \
+		lmenergyexchangecustomerreply.h lmid.h logger.h thread.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
 		queue.h msg_cmd.h pointtypes.h configparms.h cparms.h \
@@ -210,18 +234,6 @@ lmcurtailcustomer.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		lmgroupbase.h lmcontrolareatrigger.h executor.h lmmessage.h \
 		ctdpcptrq.h ctibase.h ctinexus.h device.h devicetypes.h \
 		resolvers.h db_entry_defines.h
-lmenergyexchangecustomer.obj:	dbaccess.h dlldefs.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
-		lmenergyexchangecustomer.h observe.h \
-		lmenergyexchangecustomerreply.h lmid.h logger.h thread.h \
-		loadmanager.h connection.h exchange.h message.h ctidbgmem.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
-		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
-		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
-		ctibase.h ctinexus.h device.h devicetypes.h resolvers.h \
-		db_entry_defines.h
 lmenergyexchangecustomerreply.obj:	dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmenergyexchangecustomerreply.h observe.h \
@@ -369,7 +381,8 @@ lmprogramcurtailment.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		msg_ptreg.h msg_reg.h queue.h configparms.h cparms.h \
 		lmcontrolareastore.h lmcontrolarea.h lmcontrolareatrigger.h \
 		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h msg_email.h
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
+		msg_email.h
 lmprogramdirect.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmprogramdirect.h \
 		lmprogrambase.h observe.h msg_multi.h collectable.h \
@@ -380,7 +393,7 @@ lmprogramdirect.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		loadmanager.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h configparms.h cparms.h lmcontrolareastore.h \
 		lmcontrolarea.h lmcontrolareatrigger.h executor.h lmmessage.h \
-		ctdpcptrq.h ctibase.h ctinexus.h
+		ctdpcptrq.h ctibase.h ctinexus.h lmprogramthermostatgear.h
 lmprogramdirectgear.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmprogramdirectgear.h observe.h lmid.h lmprogrambase.h \
@@ -402,7 +415,8 @@ lmprogramenergyexchange.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h \
 		lmprogramenergyexchange.h lmenergyexchangeoffer.h \
 		lmenergyexchangeofferrevision.h lmenergyexchangecustomer.h \
-		lmenergyexchangecustomerreply.h msg_email.h
+		lmcicustomerbase.h lmenergyexchangecustomerreply.h \
+		msg_email.h
 lmprogramthermostatgear.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmprogramthermostatgear.h observe.h lmprogramdirectgear.h \

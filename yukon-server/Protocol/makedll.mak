@@ -236,9 +236,10 @@ dnp_transport.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
 		dnp_transport.h dnp_datalink.h dsm2.h xfer.h dialup.h yukon.h \
 		ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dnp_datalink_packet.h
-expresscom.obj:	expresscom.h cmdparse.h dlldefs.h parsevalue.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h numstr.h yukon.h ctidbgmem.h
+expresscom.obj:	cparms.h dlldefs.h expresscom.h cmdparse.h \
+		parsevalue.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h numstr.h yukon.h \
+		ctidbgmem.h
 id_ctiprot.obj:	utility.h dsm2.h mutex.h dlldefs.h guard.h \
 		id_ctiprot.h id_build.h id_vinfo.h
 ion_datastream.obj:	ctidbgmem.h guard.h dlldefs.h logger.h thread.h \

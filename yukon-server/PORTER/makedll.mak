@@ -125,11 +125,10 @@ phlidlc.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h logger.h thread.h port_base.h dev_base.h \
 		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h \
-		tbl_port_base.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h portglob.h tcpsup.h \
-		statistics.h counter.h mgr_port.h smartmap.h hashkey.h \
-		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
-		trx_711.h trx_info.h
+		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h \
+		portglob.h tcpsup.h statistics.h counter.h mgr_port.h \
+		smartmap.h hashkey.h slctprt.h pt_base.h pointdefs.h \
+		pt_dyn_base.h tbl_pt_base.h trx_711.h trx_info.h
 plidlc.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
 		queues.h dsm2.h mutex.h guard.h dsm2err.h device.h \
 		devicetypes.h routes.h porter.h portglob.h tcpsup.h \
@@ -149,9 +148,9 @@ portconf.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h tbl_base.h tbl_2way.h \
 		tbl_stats.h tbl_scanrate.h utility.h portdecl.h port_base.h \
-		tbl_port_base.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h hashkey.h mgr_device.h rtdb.h \
-		slctdev.h mgr_route.h repeaterrole.h smartmap.h
+		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h \
+		hashkey.h mgr_device.h rtdb.h slctdev.h mgr_route.h \
+		repeaterrole.h smartmap.h
 portcont.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h lm_auto.h perform.h scanner.h dllbase.h ilex.h \
@@ -163,9 +162,8 @@ portcont.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h tbl_base.h \
 		tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h \
-		tbl_port_base.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h slctprt.h pt_base.h \
-		pointdefs.h pt_dyn_base.h tbl_pt_base.h
+		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h \
+		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h
 portentry.obj:	os2_2w32.h dlldefs.h types.h cticalls.h connection.h \
 		exchange.h dllbase.h dsm2.h mutex.h guard.h logger.h thread.h \
 		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
@@ -175,16 +173,16 @@ portentry.obj:	os2_2w32.h dlldefs.h types.h cticalls.h connection.h \
 		parsevalue.h ctibase.h ctinexus.h tbl_pao.h tbl_rtcomm.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h port_base.h dev_base.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h master.h ilex.h perform.h portglob.h \
-		tcpsup.h statistics.h counter.h color.h c_port_interface.h \
-		group.h elogger.h alarmlog.h mgr_port.h smartmap.h hashkey.h \
-		slctprt.h pt_base.h pt_dyn_base.h tbl_pt_base.h mgr_device.h \
-		rtdb.h slctdev.h dev_lcu.h ctitypes.h dev_idlc.h dev_remote.h \
-		dev_single.h msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
-		trx_info.h trx_711.h mgr_point.h slctpnt.h prot_emetcon.h
+		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h xfer.h \
+		dialup.h tbl_port_statistics.h master.h ilex.h perform.h \
+		portglob.h tcpsup.h statistics.h counter.h color.h \
+		c_port_interface.h group.h elogger.h alarmlog.h mgr_port.h \
+		smartmap.h hashkey.h slctprt.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h mgr_device.h rtdb.h slctdev.h dev_lcu.h \
+		ctitypes.h dev_idlc.h dev_remote.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h trx_info.h \
+		trx_711.h mgr_point.h slctpnt.h prot_emetcon.h
 porter.obj:	os2_2w32.h dlldefs.h types.h cticalls.h color.h cparms.h \
 		queues.h dsm2.h mutex.h guard.h dsm2err.h device.h \
 		devicetypes.h routes.h porter.h portdecl.h rte_base.h \
@@ -193,15 +191,15 @@ porter.obj:	os2_2w32.h dlldefs.h types.h cticalls.h color.h cparms.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		yukon.h db_entry_defines.h desolvers.h logger.h thread.h \
 		port_base.h dev_base.h tbl_base.h tbl_2way.h tbl_stats.h \
-		tbl_scanrate.h utility.h tbl_port_base.h tbl_port_settings.h \
-		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
-		master.h elogger.h alarmlog.h drp.h perform.h das08.h \
-		portgui.h portglob.h tcpsup.h statistics.h counter.h \
-		c_port_interface.h group.h mgr_port.h smartmap.h hashkey.h \
-		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
-		mgr_device.h rtdb.h slctdev.h mgr_route.h repeaterrole.h \
-		port_shr.h port_shr_ip.h dlldev.h msg_dbchg.h msg_trace.h \
-		eventlog.h configparms.h trx_711.h trx_info.h dllyukon.h
+		tbl_scanrate.h utility.h tbl_port_base.h xfer.h dialup.h \
+		tbl_port_statistics.h master.h elogger.h alarmlog.h drp.h \
+		perform.h das08.h portgui.h portglob.h tcpsup.h statistics.h \
+		counter.h c_port_interface.h group.h mgr_port.h smartmap.h \
+		hashkey.h slctprt.h pt_base.h pointdefs.h pt_dyn_base.h \
+		tbl_pt_base.h mgr_device.h rtdb.h slctdev.h mgr_route.h \
+		repeaterrole.h port_shr.h port_shr_ip.h dlldev.h msg_dbchg.h \
+		msg_trace.h eventlog.h configparms.h trx_711.h trx_info.h \
+		dllyukon.h
 portersu.obj:	os2_2w32.h dlldefs.h types.h cticalls.h color.h \
 		connection.h exchange.h dllbase.h dsm2.h mutex.h guard.h \
 		logger.h thread.h message.h ctidbgmem.h collectable.h \
@@ -213,10 +211,9 @@ portersu.obj:	os2_2w32.h dlldefs.h types.h cticalls.h color.h \
 		cmdparse.h parsevalue.h ctibase.h tbl_pao.h tbl_rtcomm.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h port_base.h dev_base.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h c_port_interface.h group.h rtdb.h \
-		hashkey.h mgr_port.h smartmap.h slctprt.h pt_base.h \
+		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h xfer.h \
+		dialup.h tbl_port_statistics.h c_port_interface.h group.h \
+		rtdb.h hashkey.h mgr_port.h smartmap.h slctprt.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h mgr_device.h slctdev.h \
 		msg_commerrorhistory.h numstr.h
 portfield.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
@@ -227,31 +224,31 @@ portfield.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
 		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h yukon.h db_entry_defines.h desolvers.h logger.h \
 		thread.h port_base.h dev_base.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h tcpsup.h perform.h tapterm.h porttcp.h \
-		portglob.h statistics.h counter.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
-		msg_reg.h queue.h c_port_interface.h group.h elogger.h \
-		alarmlog.h mgr_port.h smartmap.h hashkey.h slctprt.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h mgr_device.h rtdb.h \
-		slctdev.h dev_cbc6510.h dev_remote.h dev_single.h \
+		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h xfer.h \
+		dialup.h tbl_port_statistics.h tcpsup.h perform.h tapterm.h \
+		porttcp.h portglob.h statistics.h counter.h connection.h \
+		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
+		msg_ptreg.h msg_reg.h queue.h c_port_interface.h group.h \
+		elogger.h alarmlog.h mgr_port.h smartmap.h hashkey.h \
+		slctprt.h pt_base.h pt_dyn_base.h tbl_pt_base.h mgr_device.h \
+		rtdb.h slctdev.h dev_cbc6510.h dev_remote.h dev_single.h \
 		msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
 		tbl_dialup.h tbl_direct.h dev_dnp.h prot_dnp.h prot_base.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_object_binaryoutput.h tbl_dv_dnp.h \
-		tbl_dv_idlcremote.h dev_ied.h ctitypes.h tbl_dv_ied.h \
-		dev_schlum.h dev_meter.h tbl_metergrp.h vcomdefs.h \
-		mgr_point.h slctpnt.h dev_kv2.h prot_ansi.h \
-		ansi_application.h ansi_datalink.h ansi_billing_table.h \
-		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
-		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
-		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
-		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
-		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
-		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
-		std_ansi_tbl_five_two.h msg_trace.h msg_cmd.h prot_711.h \
-		trx_info.h trx_711.h
+		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h tbl_dv_dnp.h tbl_dv_idlcremote.h \
+		dev_ied.h ctitypes.h tbl_dv_ied.h dev_schlum.h dev_meter.h \
+		tbl_metergrp.h vcomdefs.h mgr_point.h slctpnt.h dev_kv2.h \
+		prot_ansi.h ansi_application.h ansi_datalink.h \
+		ansi_billing_table.h std_ansi_tbl_zero_zero.h \
+		std_ansi_tbl_zero_one.h std_ansi_tbl_one_zero.h \
+		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
+		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
+		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
+		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
+		std_ansi_tbl_two_three.h std_ansi_tbl_five_two.h msg_trace.h \
+		msg_cmd.h pilserver.h server_b.h con_mgr.h cmdopts.h \
+		mgr_route.h repeaterrole.h prot_711.h trx_info.h trx_711.h
 portfill.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h \
 		queues.h dsm2.h mutex.h guard.h dsm2err.h device.h \
 		devicetypes.h routes.h porter.h portdecl.h rte_base.h \
@@ -260,18 +257,17 @@ portfill.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		yukon.h db_entry_defines.h desolvers.h logger.h thread.h \
 		port_base.h dev_base.h tbl_base.h tbl_2way.h tbl_stats.h \
-		tbl_scanrate.h utility.h tbl_port_base.h tbl_port_settings.h \
-		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
-		master.h portglob.h tcpsup.h statistics.h counter.h \
-		c_port_interface.h group.h elogger.h alarmlog.h rtdb.h \
-		hashkey.h mgr_port.h smartmap.h slctprt.h pt_base.h \
-		pointdefs.h pt_dyn_base.h tbl_pt_base.h mgr_device.h \
-		slctdev.h dev_tcu.h ctitypes.h dev_idlc.h dev_remote.h \
-		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h trx_info.h \
-		trx_711.h mgr_point.h slctpnt.h dev_tap.h tbl_dv_tappaging.h \
-		dev_ied.h tbl_dv_ied.h prot_versacom.h
+		tbl_scanrate.h utility.h tbl_port_base.h xfer.h dialup.h \
+		tbl_port_statistics.h master.h portglob.h tcpsup.h \
+		statistics.h counter.h c_port_interface.h group.h elogger.h \
+		alarmlog.h rtdb.h hashkey.h mgr_port.h smartmap.h slctprt.h \
+		pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
+		mgr_device.h slctdev.h dev_tcu.h ctitypes.h dev_idlc.h \
+		dev_remote.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h msg_signal.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
+		trx_info.h trx_711.h mgr_point.h slctpnt.h dev_tap.h \
+		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h prot_versacom.h
 portglob.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h das08.h tcpsup.h ctinexus.h portglob.h logger.h \
@@ -289,11 +285,10 @@ portload.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		ctibase.h message.h collectable.h tbl_pao.h tbl_rtcomm.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h port_base.h dev_base.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h c_port_interface.h group.h elogger.h \
-		alarmlog.h mgr_port.h smartmap.h hashkey.h slctprt.h \
-		pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
+		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h xfer.h \
+		dialup.h tbl_port_statistics.h c_port_interface.h group.h \
+		elogger.h alarmlog.h mgr_port.h smartmap.h hashkey.h \
+		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
 		mgr_device.h rtdb.h slctdev.h mgr_route.h repeaterrole.h \
 		rte_ccu.h rte_xcu.h msg_pcrequest.h tbl_rtcarrier.h \
 		tbl_rtrepeater.h trx_711.h trx_info.h dev_ccu.h ctitypes.h \
@@ -315,10 +310,10 @@ portperf.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h dsm2.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h port_base.h dev_base.h \
 		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h \
-		tbl_port_base.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h mgr_port.h smartmap.h \
-		hashkey.h slctprt.h pt_base.h pointdefs.h pt_dyn_base.h \
-		tbl_pt_base.h mgr_device.h rtdb.h slctdev.h
+		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h \
+		mgr_port.h smartmap.h hashkey.h slctprt.h pt_base.h \
+		pointdefs.h pt_dyn_base.h tbl_pt_base.h mgr_device.h rtdb.h \
+		slctdev.h
 portpil.obj:	mgr_device.h dlldefs.h rtdb.h hashkey.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \
 		dev_base.h cmdparse.h parsevalue.h rte_base.h dbmemobject.h \
@@ -332,6 +327,19 @@ portpil.obj:	mgr_device.h dlldefs.h rtdb.h hashkey.h dllbase.h \
 		msg_ptreg.h msg_reg.h queue.h cmdopts.h msg_pcrequest.h \
 		dllyukon.h portglob.h tcpsup.h porter.h dsm2err.h \
 		devicetypes.h statistics.h counter.h
+portpool.obj:	connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h mgr_device.h rtdb.h hashkey.h dev_base.h cmdparse.h \
+		parsevalue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
+		tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h tbl_base.h \
+		tbl_2way.h tbl_stats.h tbl_scanrate.h queues.h utility.h \
+		slctdev.h mgr_port.h smartmap.h port_base.h tbl_port_base.h \
+		xfer.h dialup.h tbl_port_statistics.h slctprt.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h portdecl.h dsm2err.h porter.h \
+		devicetypes.h portglob.h tcpsup.h statistics.h counter.h
 portque.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h elogger.h portglob.h tcpsup.h ctinexus.h logger.h \
@@ -340,12 +348,11 @@ portque.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		ctibase.h message.h collectable.h tbl_pao.h tbl_rtcomm.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h port_base.h dev_base.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h c_port_interface.h group.h alarmlog.h \
-		mgr_device.h rtdb.h hashkey.h slctdev.h mgr_port.h smartmap.h \
-		slctprt.h pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
-		trx_711.h trx_info.h
+		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h xfer.h \
+		dialup.h tbl_port_statistics.h c_port_interface.h group.h \
+		alarmlog.h mgr_device.h rtdb.h hashkey.h slctdev.h mgr_port.h \
+		smartmap.h slctprt.h pt_base.h pointdefs.h pt_dyn_base.h \
+		tbl_pt_base.h trx_711.h trx_info.h
 portsvc.obj:	dlldefs.h portsvc.h cservice.h ctibase.h ctinexus.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h portglob.h tcpsup.h porter.h dsm2err.h devicetypes.h \
@@ -359,13 +366,12 @@ porttime.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h logger.h thread.h port_base.h dev_base.h \
 		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h \
-		tbl_port_base.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h ilex.h elogger.h portglob.h \
-		tcpsup.h statistics.h counter.h c_port_interface.h group.h \
-		alarmlog.h mgr_port.h smartmap.h hashkey.h slctprt.h \
-		pt_base.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
-		mgr_device.h rtdb.h slctdev.h mgr_route.h repeaterrole.h \
-		trx_info.h trx_711.h prot_welco.h
+		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h ilex.h \
+		elogger.h portglob.h tcpsup.h statistics.h counter.h \
+		c_port_interface.h group.h alarmlog.h mgr_port.h smartmap.h \
+		hashkey.h slctprt.h pt_base.h pointdefs.h pt_dyn_base.h \
+		tbl_pt_base.h mgr_device.h rtdb.h slctdev.h mgr_route.h \
+		repeaterrole.h trx_info.h trx_711.h prot_welco.h
 port_shr.obj:	ctinexus.h dlldefs.h types.h dsm2.h mutex.h guard.h \
 		port_shr.h thread.h logger.h port_base.h dev_base.h \
 		cmdparse.h parsevalue.h rte_base.h dbmemobject.h ctibase.h \
@@ -373,9 +379,8 @@ port_shr.obj:	ctinexus.h dlldefs.h types.h dsm2.h mutex.h guard.h \
 		collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
-		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
-		tcpsup.h
+		queues.h utility.h tbl_port_base.h xfer.h dialup.h \
+		tbl_port_statistics.h tcpsup.h
 port_shr_ip.obj:	types.h cticalls.h os2_2w32.h dlldefs.h dsm2.h \
 		mutex.h guard.h logger.h thread.h port_shr_ip.h ctinexus.h \
 		port_shr.h port_base.h dev_base.h cmdparse.h parsevalue.h \
@@ -383,10 +388,9 @@ port_shr_ip.obj:	types.h cticalls.h os2_2w32.h dlldefs.h dsm2.h \
 		ctidbgmem.h collectable.h tbl_pao.h tbl_rtcomm.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h yukon.h db_entry_defines.h \
 		desolvers.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
-		queues.h utility.h tbl_port_base.h tbl_port_settings.h \
-		tbl_port_timing.h xfer.h dialup.h tbl_port_statistics.h \
-		prot_welco.h porter.h dsm2err.h devicetypes.h tcpsup.h \
-		numstr.h
+		queues.h utility.h tbl_port_base.h xfer.h dialup.h \
+		tbl_port_statistics.h prot_welco.h porter.h dsm2err.h \
+		devicetypes.h tcpsup.h numstr.h
 ptprint.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h color.h portglob.h tcpsup.h ctinexus.h logger.h \
@@ -395,9 +399,8 @@ ptprint.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		ctibase.h message.h collectable.h tbl_pao.h tbl_rtcomm.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h port_base.h dev_base.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h \
-		tbl_port_settings.h tbl_port_timing.h xfer.h dialup.h \
-		tbl_port_statistics.h
+		tbl_stats.h tbl_scanrate.h utility.h tbl_port_base.h xfer.h \
+		dialup.h tbl_port_statistics.h
 ripple.obj:	os2_2w32.h dlldefs.h types.h cticalls.h connection.h \
 		exchange.h dllbase.h dsm2.h mutex.h guard.h logger.h thread.h \
 		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
@@ -408,15 +411,14 @@ ripple.obj:	os2_2w32.h dlldefs.h types.h cticalls.h connection.h \
 		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h port_base.h dev_base.h \
 		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h \
-		tbl_port_base.h tbl_port_settings.h tbl_port_timing.h xfer.h \
-		dialup.h tbl_port_statistics.h master.h lm_auto.h perform.h \
-		scanner.h elogger.h mpc.h drp.h portglob.h tcpsup.h \
-		statistics.h counter.h c_port_interface.h group.h alarmlog.h \
-		dev_lcu.h ctitypes.h dev_idlc.h dev_remote.h dev_single.h \
-		msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h trx_info.h \
-		trx_711.h mgr_point.h rtdb.h hashkey.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h slctpnt.h mgr_device.h slctdev.h \
-		mgr_port.h smartmap.h slctprt.h
+		tbl_port_base.h xfer.h dialup.h tbl_port_statistics.h \
+		master.h lm_auto.h perform.h scanner.h elogger.h mpc.h drp.h \
+		portglob.h tcpsup.h statistics.h counter.h c_port_interface.h \
+		group.h alarmlog.h dev_lcu.h ctitypes.h dev_idlc.h \
+		dev_remote.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h tbl_dialup.h tbl_direct.h \
+		tbl_dv_idlcremote.h trx_info.h trx_711.h mgr_point.h rtdb.h \
+		hashkey.h pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h \
+		mgr_device.h slctdev.h mgr_port.h smartmap.h slctprt.h
 traceset.obj:	dlldefs.h
 #ENDUPDATE#
