@@ -35,6 +35,8 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	private boolean isValid = false;
 	private boolean autoReconnect = false;
 	private boolean queueMessages = true;
+	private boolean serverSocket = false;
+
 
 	//seconds until an another attempt is made to reconnect
 	//if autoReconenct is true
@@ -77,6 +79,7 @@ public ClientConnection( Socket newSocket )
 	this();
 
 	this.sock = newSocket;
+	serverSocket = true;
 }
 
 
@@ -333,6 +336,12 @@ protected void registerMappings(CollectableStreamer polystreamer) {
 	for( int i = 0; i < mappings.length; i++ )
 		polystreamer.register( mappings[i] );
 }
+
+protected boolean isServerSocket()
+{
+	return serverSocket;
+}
+
 /**
  * This method was created in VisualAge.
  */
@@ -342,8 +351,8 @@ public void run()
 	{		
 		try
 		{
-			// we were not given a Socket, so get one
-			if( this.sock == null )
+			// we were not given a Socket, so create a new one everytime
+			if( !isServerSocket() )
 			{
 				CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
 				this.sock = new Socket( this.host, this.port );
