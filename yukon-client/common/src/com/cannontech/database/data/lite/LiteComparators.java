@@ -149,7 +149,38 @@ public final class LiteComparators
 			return false;
 		}
 	};	
-	
+	/**
+	 * Sort deviceTypeCommands by their displayOrder
+	 */
+	public static java.util.Comparator liteDeviceTypeCommandComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			int thisVal = ((LiteDeviceTypeCommand)o1).getDisplayOrder();
+			int anotherVal = ((LiteDeviceTypeCommand)o2).getDisplayOrder();
+			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+	/**
+	 * Sort Commands by their label
+	 */
+	public static java.util.Comparator liteCommandComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			String thisVal = ((LiteCommand)o1).getLabel();
+			String anotherVal = ((LiteCommand)o2).getLabel();
+			return ( thisVal.compareToIgnoreCase(anotherVal) );
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
 	// this method is used to compare Strings found in ANY lite class
 	//   ADD ALL LIGHT CLASSES YOU WANT TO COMPARE BELOW!!!!!!!!!!!!!
 	public static java.util.Comparator liteStringComparator = new java.util.Comparator()
@@ -234,6 +265,23 @@ public final class LiteComparators
 			{
 				thisVal = ((LiteTOUSchedule)o1).getScheduleName();
 				anotherVal = ((LiteTOUSchedule)o2).getScheduleName();
+			}
+			else if(o1 instanceof LiteDeviceTypeCommand && o2 instanceof LiteDeviceTypeCommand)
+			{
+				thisVal = ((LiteDeviceTypeCommand)o1).getDeviceType();
+				anotherVal = ((LiteDeviceTypeCommand)o2).getDeviceType();
+			}
+			else if(o1 instanceof LiteCommand && o2 instanceof LiteCommand)
+			{
+				thisVal = ((LiteCommand)o1).getLabel();
+				anotherVal = ((LiteCommand)o2).getLabel();
+				
+				if( thisVal.equalsIgnoreCase(anotherVal) )
+				{				
+					//if the labels are equal, we need to sort by commands
+					thisVal = ((LiteCommand)o1).getCommand();
+					anotherVal = ((LiteCommand)o2).getCommand();
+				}					
 			}
 			else if(o1 instanceof LiteTag && o2 instanceof LiteTag)
 			{
