@@ -118,6 +118,8 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	public void add() throws java.sql.SQLException 
 	{
 		super.add();
+		
+		getCiCustomerBase().setCustomerID( getCustomerID() );
 
 		getAddress().add();
 		
