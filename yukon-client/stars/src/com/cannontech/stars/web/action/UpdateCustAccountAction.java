@@ -1,20 +1,43 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteAccountSite;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteCustomer;
+import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteSiteInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.*;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.AdditionalContact;
+import com.cannontech.stars.xml.serialize.BillingAddress;
+import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSiteInformation;
+import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccountResponse;
+import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -95,7 +118,7 @@ public class UpdateCustAccountAction implements ActionBase {
             account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );
 
             StarsUpdateCustomerAccount updateAccount = (StarsUpdateCustomerAccount)
-                    StarsCustAccountFactory.newStarsCustAccount(account, StarsUpdateCustomerAccount.class );
+                    StarsFactory.newStarsCustAccount(account, StarsUpdateCustomerAccount.class );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsUpdateCustomerAccount( updateAccount );
@@ -118,14 +141,14 @@ public class UpdateCustAccountAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -144,7 +167,7 @@ public class UpdateCustAccountAction implements ActionBase {
             if (!StarsLiteFactory.isIdenticalCustomerAddress( liteBillAddr, starsBillAddr )) {
             	com.cannontech.database.db.customer.Address billAddr =
             			(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteBillAddr );
-            	StarsCustomerAddressFactory.setCustomerAddress( billAddr, starsBillAddr );
+            	StarsFactory.setCustomerAddress( billAddr, starsBillAddr );
             	
             	billAddr = (com.cannontech.database.db.customer.Address)
             			Transaction.createTransaction( Transaction.UPDATE, billAddr ).execute();
@@ -157,7 +180,7 @@ public class UpdateCustAccountAction implements ActionBase {
 /*            	account = (com.cannontech.database.db.stars.customer.CustomerAccount)
             			Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();*/
             			
-            	StarsCustAccountFactory.setCustomerAccount( account, updateAccount );
+            	StarsFactory.setCustomerAccount( account, updateAccount );
             	account = (com.cannontech.database.db.stars.customer.CustomerAccount)
             			Transaction.createTransaction( Transaction.UPDATE, account ).execute();
             	
@@ -175,7 +198,7 @@ public class UpdateCustAccountAction implements ActionBase {
             if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
             	com.cannontech.database.data.customer.Contact primContact =
             			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
-            	StarsCustomerContactFactory.setCustomerContact( primContact, starsPrimContact );
+            	StarsFactory.setCustomerContact( primContact, starsPrimContact );
             	primContact = (com.cannontech.database.data.customer.Contact)
             			Transaction.createTransaction( Transaction.UPDATE, primContact ).execute();
             			
@@ -200,7 +223,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			        		// Update the customer contact
 			        		com.cannontech.database.data.customer.Contact contact =
 			        				(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-			            	StarsCustomerContactFactory.setCustomerContact( contact, starsContact );
+			            	StarsFactory.setCustomerContact( contact, starsContact );
 			            	contact = (com.cannontech.database.data.customer.Contact)
 			            			Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
 			            			
@@ -214,7 +237,7 @@ public class UpdateCustAccountAction implements ActionBase {
             	if (liteContact == null) {
             		// Add the new customer contact
             		com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
-		            StarsCustomerContactFactory.setCustomerContact( contact, starsContact );
+		            StarsFactory.setCustomerContact( contact, starsContact );
 		            contact = (com.cannontech.database.data.customer.Contact)
 		            		Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 		            
@@ -259,7 +282,7 @@ public class UpdateCustAccountAction implements ActionBase {
             if (!StarsLiteFactory.isIdenticalCustomerAddress( liteStAddr, starsStAddr )) {
             	com.cannontech.database.db.customer.Address stAddr =
             			(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteStAddr );
-            	StarsCustomerAddressFactory.setCustomerAddress( stAddr, starsStAddr );
+            	StarsFactory.setCustomerAddress( stAddr, starsStAddr );
             	
             	stAddr = (com.cannontech.database.db.customer.Address)
             			Transaction.createTransaction( Transaction.UPDATE, stAddr ).execute();
@@ -272,7 +295,7 @@ public class UpdateCustAccountAction implements ActionBase {
 /*            	acctSite = (com.cannontech.database.db.stars.customer.AccountSite)
             			Transaction.createTransaction( Transaction.RETRIEVE, acctSite ).execute();*/
             	
-            	StarsCustAccountFactory.setAccountSite( acctSite, updateAccount );
+            	StarsFactory.setAccountSite( acctSite, updateAccount );
             	acctSite = (com.cannontech.database.db.stars.customer.AccountSite)
             			Transaction.createTransaction( Transaction.UPDATE, acctSite ).execute();
             	
@@ -289,7 +312,7 @@ public class UpdateCustAccountAction implements ActionBase {
 /*            	siteInfo = (com.cannontech.database.db.stars.customer.SiteInformation)
             			Transaction.createTransaction( Transaction.RETRIEVE, siteInfo ).execute();*/
             	
-            	StarsCustAccountFactory.setSiteInformation( siteInfo, updateAccount );
+            	StarsFactory.setSiteInformation( siteInfo, updateAccount );
             	siteInfo = (com.cannontech.database.db.stars.customer.SiteInformation)
             			Transaction.createTransaction( Transaction.UPDATE, siteInfo ).execute();
             	
@@ -316,7 +339,7 @@ public class UpdateCustAccountAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the customer account information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

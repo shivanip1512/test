@@ -1,6 +1,8 @@
 package com.cannontech.stars.web;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServerUtils;

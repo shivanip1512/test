@@ -1,7 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
-import com.cannontech.database.Transaction;
+
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -19,6 +19,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private LiteCustomer customer = null;
 	private LiteAccountSite accountSite = null;
 	private LiteSiteInformation siteInformation = null;
+	private LiteCustomerResidence customerResidence = null;
 	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
 	private ArrayList appliances = null;	// List of LiteStarsAppliance
 	private ArrayList inventories = null;	// List of IDs of LiteLMHardware
@@ -233,6 +234,22 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setThermostatSettings(LiteStarsThermostatSettings thermostatSettings) {
 		this.thermostatSettings = thermostatSettings;
+	}
+
+	/**
+	 * Returns the customerResidence.
+	 * @return LiteCustomerResidence
+	 */
+	public LiteCustomerResidence getCustomerResidence() {
+		return customerResidence;
+	}
+
+	/**
+	 * Sets the customerResidence.
+	 * @param customerResidence The customerResidence to set
+	 */
+	public void setCustomerResidence(LiteCustomerResidence customerResidence) {
+		this.customerResidence = customerResidence;
 	}
 
 }

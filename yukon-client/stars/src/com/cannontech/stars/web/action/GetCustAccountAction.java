@@ -1,12 +1,9 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -15,8 +12,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccount;
@@ -73,7 +69,7 @@ public class GetCustAccountAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -88,7 +84,7 @@ public class GetCustAccountAction implements ActionBase {
             	/* Get the first customer account after user login */
 				int[] accountIDs = user.getCustomerAccountIDs();
 				if (accountIDs == null || accountIDs.length == 0) {
-	                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	                respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No account information found for this customer") );
 	                return SOAPUtil.buildSOAPMessage( respOper );
 				}
@@ -99,7 +95,7 @@ public class GetCustAccountAction implements ActionBase {
 	            liteAcctInfo = energyCompany.getCustAccountInformation( getAccount.getAccountID(), true );
             
             if (liteAcctInfo == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -125,7 +121,7 @@ public class GetCustAccountAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the customer account information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

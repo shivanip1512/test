@@ -2,7 +2,6 @@ package com.cannontech.database.data.lite.stars;
 
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 
 /**
  * @author yao

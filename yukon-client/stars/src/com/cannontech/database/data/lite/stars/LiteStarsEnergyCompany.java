@@ -1,21 +1,37 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.RoleTypes;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.util.*;
-import com.cannontech.stars.xml.*;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
+import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.StarsWebConfig;
+import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
  * @author yao
@@ -55,9 +71,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	// Cached XML messages
 	private StarsEnergyCompany starsEnergyCompany = null;
-	private StarsCustomerSelectionLists starsCustSelLists = null;
 	private StarsEnrollmentPrograms starsEnrPrograms = null;
 	private StarsCustomerFAQs starsCustFAQs = null;
+	private Hashtable starsCustSelLists = null;	// Map String(list name) to StarsSelectionListEntry
 	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
 	
@@ -989,6 +1005,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
             com.cannontech.database.db.customer.Address billAddr = account.getBillingAddress();
             liteAddr = (LiteAddress) StarsLiteFactory.createLite( billAddr );
             addAddress( liteAddr );
+            
+            com.cannontech.database.db.stars.customer.CustomerResidence residence =
+            		com.cannontech.database.db.stars.customer.CustomerResidence.getCustomerResidence( siteDB.getAccountSiteID() );
+            if (residence != null)
+            	accountInfo.setCustomerResidence( (LiteCustomerResidence) StarsLiteFactory.createLite(residence) );
 			
             Vector applianceVector = account.getApplianceVector();            
             accountInfo.setAppliances( new ArrayList() );
@@ -1056,7 +1077,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 accountInfo.getLmPrograms().add( prog );
             }
             
-			StarsCallReport[] calls = StarsCallReportFactory.getStarsCallReports( accountDB.getAccountID() );
+			StarsCallReport[] calls = StarsFactory.getStarsCallReports( accountDB.getAccountID() );
 			if (calls != null) {
 				accountInfo.setCallReportHistory( new ArrayList() );
 				for (int i = 0; i < calls.length; i++)
@@ -1193,10 +1214,64 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsEnergyCompany;
 	}
 	
-	public StarsCustomerSelectionLists getStarsCustomerSelectionLists() {
-		if (starsCustSelLists == null)
-			starsCustSelLists = StarsLiteFactory.createStarsCustomerSelectionLists( getAllSelectionLists() );
-		return starsCustSelLists;
+	public StarsCustomerSelectionLists getStarsCustomerSelectionLists(LiteYukonUser liteUser) {
+		if (starsCustSelLists == null) {
+			starsCustSelLists = new Hashtable();
+			StarsCustomerSelectionLists lists = StarsLiteFactory.createStarsCustomerSelectionLists( getAllSelectionLists() );
+            for (int i = 0; i < lists.getStarsCustSelectionListCount(); i++) {
+            	StarsCustSelectionList list = lists.getStarsCustSelectionList(i);
+            	starsCustSelLists.put( list.getListName(), list );
+            }
+		}
+		
+		StarsCustomerSelectionLists starsLists = new StarsCustomerSelectionLists();
+		starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
+		
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.LOADCONTROL_CONTROL_ODDS ) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
+		}
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT ) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION) );
+		}
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_ACCOUNT_CALL_TRACKING ) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE) );
+		}
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_APPLIANCES ) != null
+			|| AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_APPLIANCES_CREATE) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_LOCATION) );
+		}
+		boolean serviceCompaniesAdded = false;
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_HARDWARE ) != null
+			|| AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_HARDWARE_CREATE) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY) );
+			serviceCompaniesAdded = true;
+		}
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_WORKORDERS ) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS) );
+			if (!serviceCompaniesAdded)
+				starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY) );
+		}
+		if (AuthFuncs.checkRole( liteUser, RoleTypes.CONSUMERINFO_RESIDENCE ) != null) {
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE) );
+			starsLists.addStarsCustSelectionList( (StarsCustSelectionList) starsCustSelLists.get(YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE) );
+		}
+		
+		return starsLists;
 	}
 	
 	public StarsEnrollmentPrograms getStarsEnrollmentPrograms(String category) {
@@ -1253,13 +1328,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 	}
 	
-	public void updateStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+	public StarsCustAccountInformation updateStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
 		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
 		synchronized (starsCustAcctInfos) {
 			Integer accountID = new Integer(liteAcctInfo.getAccountID());
 			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) starsCustAcctInfos.get( accountID );
 			if (starsAcctInfo != null)
 				StarsLiteFactory.setStarsCustAccountInformation( starsAcctInfo, liteAcctInfo, getLiteID(), true );
+			
+			return starsAcctInfo;
 		}
 	}
 	

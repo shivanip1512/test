@@ -1,20 +1,27 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCallReportFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.CallType;
+import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.serialize.StarsUpdateCallReport;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -53,8 +60,8 @@ public class UpdateCallReportAction implements ActionBase {
 					if (descriptions != null) call.setDescription( descriptions[i] );
 					
 					if (callTypes != null) {
-						CallType callType = (CallType) StarsCustListEntryFactory.newStarsCustListEntry(
-								StarsCustListEntryFactory.getStarsCustListEntryByID(
+						CallType callType = (CallType) StarsFactory.newStarsCustListEntry(
+								ServletUtils.getStarsCustListEntryByID(
 									selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE, Integer.parseInt(callTypes[i])),
 								CallType.class );
 						call.setCallType( callType );
@@ -88,14 +95,14 @@ public class UpdateCallReportAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -117,14 +124,14 @@ public class UpdateCallReportAction implements ActionBase {
         				if (newCall.getCallNumber() != null) {
         					if (!call.getCallNumber().equals( newCall.getCallNumber() )
         						&& ServerUtils.callNumberExists( newCall.getCallNumber(), user.getEnergyCompanyID() )) {
-				            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+				            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 				            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Call number already exists, please choose a different one") );
 				            	return SOAPUtil.buildSOAPMessage( respOper );
         					}
         					call.setCallNumber( newCall.getCallNumber() );
         				}
         				
-        				StarsCallReportFactory.setCallReportBase( callDB, call );
+        				StarsFactory.setCallReportBase( callDB, call );
         				callDB.setCallID( new Integer(call.getCallID()) );
 						Transaction.createTransaction(Transaction.UPDATE, callDB).execute();
         				break;
@@ -142,7 +149,7 @@ public class UpdateCallReportAction implements ActionBase {
         	e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the call reports") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

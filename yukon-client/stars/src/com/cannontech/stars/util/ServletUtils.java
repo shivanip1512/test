@@ -1,9 +1,26 @@
 package com.cannontech.stars.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.TreeMap;
+
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.StarsCustListEntry;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
+import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
+import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
+import com.cannontech.stars.xml.serialize.StarsLMPrograms;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 
 /**
  * <p>Title: </p>
@@ -329,4 +346,29 @@ public class ServletUtils {
     	
     	return sBuf.toString();
     }
+
+	public static StarsCustListEntry getStarsCustListEntry(java.util.Hashtable selectionLists, String listName, int yukonDefID) {
+		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
+		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
+			if (entry.getYukonDefID() == yukonDefID)
+				return entry;
+		}
+		
+		return null;
+	}
+
+	public static StarsCustListEntry getStarsCustListEntryByID(java.util.Hashtable selectionLists, String listName, int entryID) {
+		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
+		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
+			if (entry.getEntryID() == entryID)
+				return entry;
+		}
+		
+		return null;
+	}
+
+	
+
 }

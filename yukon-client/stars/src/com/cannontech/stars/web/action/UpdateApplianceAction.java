@@ -1,19 +1,29 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Hashtable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.*;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.util.*;
-import com.cannontech.stars.xml.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.Location;
+import com.cannontech.stars.xml.serialize.Manufacturer;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.serialize.StarsUpdateAppliance;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -40,14 +50,14 @@ public class UpdateApplianceAction implements ActionBase {
 			updateApp.setNotes( req.getParameter("Notes") );
 			updateApp.setModelNumber( req.getParameter("ModelNo") );
 			
-			Manufacturer manu = (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			Manufacturer manu = (Manufacturer) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
 					Manufacturer.class );
 			updateApp.setManufacturer( manu );
 			
-			Location loc = (Location) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			Location loc = (Location) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_LOCATION, Integer.parseInt(req.getParameter("Location"))),
 					Location.class );
 			updateApp.setLocation( loc );
@@ -76,14 +86,14 @@ public class UpdateApplianceAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -115,7 +125,7 @@ public class UpdateApplianceAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the appliance information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

@@ -1,25 +1,45 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.*;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsCustomerAddressFactory;
-import com.cannontech.stars.xml.StarsCustomerContactFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.AdditionalContact;
+import com.cannontech.stars.xml.serialize.BillingAddress;
+import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMPrograms;
+import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
+import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.stars.xml.serialize.StarsSiteInformation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * <p>Title: NewCustAccountAction.java</p>
@@ -129,7 +149,7 @@ public class NewCustAccountAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -148,14 +168,14 @@ public class NewCustAccountAction implements ActionBase {
             
             /*- Begin create Customer -*/
             com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
-            StarsCustomerContactFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
+            StarsFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
             multiDB.getDBPersistentVector().add( primContact );
             
             ArrayList addContacts = new ArrayList();
             for (int i = 0; i < starsAccount.getAdditionalContactCount(); i++) {
             	com.cannontech.database.data.customer.Contact contact =
             			new com.cannontech.database.data.customer.Contact();
-	            StarsCustomerContactFactory.setCustomerContact( contact, starsAccount.getAdditionalContact(i) );
+	            StarsFactory.setCustomerContact( contact, starsAccount.getAdditionalContact(i) );
 	            multiDB.getDBPersistentVector().add( contact );
 	            addContacts.add( contact );
             }
@@ -172,14 +192,14 @@ public class NewCustAccountAction implements ActionBase {
             /*- End create Customer -*/
             
             com.cannontech.database.db.customer.Address billAddr = account.getBillingAddress();
-            StarsCustomerAddressFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
+            StarsFactory.setCustomerAddress( billAddr, starsAccount.getBillingAddress() );
             
             /*- Begin create AccountSite -*/
             com.cannontech.database.data.stars.customer.AccountSite acctSite = account.getAccountSite();
             com.cannontech.database.db.stars.customer.AccountSite acctSiteDB = acctSite.getAccountSite();
             
             com.cannontech.database.db.customer.Address propAddr = acctSite.getStreetAddress();
-            StarsCustomerAddressFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
+            StarsFactory.setCustomerAddress( propAddr, starsAccount.getStreetAddress() );
 
 			/*-- Begin create SiteInformation --*/
 			com.cannontech.database.data.stars.customer.SiteInformation siteInfo = acctSite.getSiteInformation();
@@ -229,7 +249,7 @@ public class NewCustAccountAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the customer account") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

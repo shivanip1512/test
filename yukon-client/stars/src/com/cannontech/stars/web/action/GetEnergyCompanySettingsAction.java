@@ -1,19 +1,24 @@
 package com.cannontech.stars.web.action;
 
-import java.util.*;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -75,7 +80,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             	if (user != null)
             		energyCompanyID = user.getEnergyCompanyID();
 	            else {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
@@ -89,7 +94,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 	            if (ServerUtils.isOperator( user )) {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
-	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists() );
+	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user.getYukonUser()) );
 	            }
 	            else if (ServerUtils.isResidentialCustomer( user )) {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
@@ -116,20 +121,16 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             else {
             	resp.setStarsEnergyCompany( StarsLiteFactory.createStarsEnergyCompany(energyCompany) );
 	            if (ServerUtils.isOperator( user )) {
-		            resp.setStarsWebConfig( StarsLiteFactory.createStarsWebConfig(
-		            		SOAPServer.getWebConfiguration(energyCompany.getWebConfigID())) );
+		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
-	            	resp.setStarsCustomerSelectionLists( StarsLiteFactory.createStarsCustomerSelectionLists(
-	            			energyCompany.getAllSelectionLists()) );
+	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user.getYukonUser()) );
 	            }
 	            else if (ServerUtils.isResidentialCustomer( user )) {
-		            resp.setStarsWebConfig( StarsLiteFactory.createStarsWebConfig(
-		            		SOAPServer.getWebConfiguration(energyCompany.getWebConfigID())) );
+		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
-	            	resp.setStarsCustomerFAQs( StarsLiteFactory.createStarsCustomerFAQs(
-	            			energyCompany.getAllCustomerFAQs()) );
+	            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
 	            }
             }
             
@@ -140,7 +141,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         	e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the enrollment program list") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -12,14 +11,14 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.util.*;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -78,7 +77,7 @@ public class GetInterviewQuestionsAction implements ActionBase {
 	            if (user != null)
 	            	energyCompanyID = user.getEnergyCompanyID();
 	            else {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
@@ -103,7 +102,7 @@ public class GetInterviewQuestionsAction implements ActionBase {
         	e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get exit interview questions") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

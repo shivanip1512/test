@@ -1,17 +1,111 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.util.*;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsCustomerContactFactory;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.AdditionalContact;
+import com.cannontech.stars.xml.serialize.AnswerType;
+import com.cannontech.stars.xml.serialize.BillingAddress;
+import com.cannontech.stars.xml.serialize.CompanyAddress;
+import com.cannontech.stars.xml.serialize.ConstructionMaterial;
+import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
+import com.cannontech.stars.xml.serialize.CurrentState;
+import com.cannontech.stars.xml.serialize.DecadeBuilt;
+import com.cannontech.stars.xml.serialize.DeviceStatus;
+import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.GeneralCondition;
+import com.cannontech.stars.xml.serialize.InstallationCompany;
+import com.cannontech.stars.xml.serialize.InsulationDepth;
+import com.cannontech.stars.xml.serialize.LMDeviceType;
+import com.cannontech.stars.xml.serialize.Location;
+import com.cannontech.stars.xml.serialize.MainCoolingSystem;
+import com.cannontech.stars.xml.serialize.MainFuelType;
+import com.cannontech.stars.xml.serialize.MainHeatingSystem;
+import com.cannontech.stars.xml.serialize.Manufacturer;
+import com.cannontech.stars.xml.serialize.NumberOfOccupants;
+import com.cannontech.stars.xml.serialize.OwnershipType;
+import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.QuestionType;
+import com.cannontech.stars.xml.serialize.ResidenceType;
+import com.cannontech.stars.xml.serialize.ServiceCompany;
+import com.cannontech.stars.xml.serialize.ServiceType;
+import com.cannontech.stars.xml.serialize.SquareFeet;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
+import com.cannontech.stars.xml.serialize.StarsContactNotification;
+import com.cannontech.stars.xml.serialize.StarsCustAccount;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustListEntry;
+import com.cannontech.stars.xml.serialize.StarsCustResidence;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
+import com.cannontech.stars.xml.serialize.StarsCustomerContact;
+import com.cannontech.stars.xml.serialize.StarsCustomerFAQ;
+import com.cannontech.stars.xml.serialize.StarsCustomerFAQGroup;
+import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
+import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
+import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.StarsLMCustomerEvent;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
+import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
+import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
+import com.cannontech.stars.xml.serialize.StarsLMPrograms;
+import com.cannontech.stars.xml.serialize.StarsQuestionAnswer;
+import com.cannontech.stars.xml.serialize.StarsResidenceInformation;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
+import com.cannontech.stars.xml.serialize.StarsServiceCompany;
+import com.cannontech.stars.xml.serialize.StarsServiceRequest;
+import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.stars.xml.serialize.StarsSiteInformation;
+import com.cannontech.stars.xml.serialize.StarsThermoSettings;
+import com.cannontech.stars.xml.serialize.StarsThermostatManualEvent;
+import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
+import com.cannontech.stars.xml.serialize.StarsThermostatSeason;
+import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsUser;
+import com.cannontech.stars.xml.serialize.StarsWebConfig;
+import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.stars.xml.serialize.Substation;
+import com.cannontech.stars.xml.serialize.ThermostatManualOption;
+import com.cannontech.stars.xml.serialize.Voltage;
+import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
+import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
  * @author yao
@@ -89,6 +183,10 @@ public class StarsLiteFactory {
 		else if (db instanceof com.cannontech.database.data.stars.appliance.ApplianceBase) {
 			lite = new LiteStarsAppliance();
 			setLiteApplianceBase( (LiteStarsAppliance) lite, (com.cannontech.database.data.stars.appliance.ApplianceBase) db );
+		}
+		else if (db instanceof com.cannontech.database.db.stars.customer.CustomerResidence) {
+			lite = new LiteCustomerResidence();
+			setLiteCustomerResidence( (LiteCustomerResidence) lite, (com.cannontech.database.db.stars.customer.CustomerResidence) db );
 		}
 		
 		return lite;
@@ -270,6 +368,22 @@ public class StarsLiteFactory {
 			liteApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
 			liteApp.setAddressingGroupID( app.getLMHardwareConfig().getAddressingGroupID().intValue() );
 		}
+	}
+	
+	public static void setLiteCustomerResidence(LiteCustomerResidence liteRes, com.cannontech.database.db.stars.customer.CustomerResidence res) {
+		liteRes.setAccountSiteID( res.getAccountSiteID().intValue() );
+		liteRes.setResidenceTypeID( res.getResidenceTypeID().intValue() );
+		liteRes.setConstructionMaterialID( res.getConstructionMaterialID().intValue() );
+		liteRes.setDecadeBuiltID( res.getDecadeBuiltID().intValue() );
+		liteRes.setSquareFeetID( res.getSquareFeetID().intValue() );
+		liteRes.setInsulationDepthID( res.getInsulationDepthID().intValue() );
+		liteRes.setGeneralConditionID( res.getGeneralConditionID().intValue() );
+		liteRes.setMainCoolingSystemID( res.getMainCoolingSystemID().intValue() );
+		liteRes.setMainHeatingSystemID( res.getMainHeatingSystemID().intValue() );
+		liteRes.setNumberOfOccupantsID( res.getNumberOfOccupantsID().intValue() );
+		liteRes.setOwnershipTypeID( res.getOwnershipTypeID().intValue() );
+		liteRes.setMainFuelTypeID( res.getMainFuelTypeID().intValue() );
+		liteRes.setNotes( res.getNotes() );
 	}
 	
 	
@@ -559,10 +673,10 @@ public class StarsLiteFactory {
 		starsContact.setWorkPhone( forceNotNull(liteContact.getWorkPhone()) );
 		
 		if (liteContact.getEmail() != null)
-			starsContact.setEmail( (Email) StarsCustomerContactFactory.newStarsContactNotification(
+			starsContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
 					liteContact.getEmail().isEnabled(), forceNotNull(liteContact.getEmail().getNotification()), Email.class) );
 		else
-			starsContact.setEmail( (Email) StarsCustomerContactFactory.newStarsContactNotification(
+			starsContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
 					false, "", Email.class) );
 	}
 	
@@ -682,6 +796,54 @@ public class StarsLiteFactory {
 		//starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
 	}
 	
+	public static void setStarsCustResidence(StarsCustResidence starsRes, LiteCustomerResidence liteRes) {
+		ResidenceType resType = new ResidenceType();
+		setStarsCustListEntry( resType, YukonListFuncs.getYukonListEntry(liteRes.getResidenceTypeID()) );
+		starsRes.setResidenceType( resType );
+		
+		ConstructionMaterial material = new ConstructionMaterial();
+		setStarsCustListEntry( material, YukonListFuncs.getYukonListEntry(liteRes.getConstructionMaterialID()) );
+		starsRes.setConstructionMaterial( material );
+		
+		DecadeBuilt decade = new DecadeBuilt();
+		setStarsCustListEntry( decade, YukonListFuncs.getYukonListEntry(liteRes.getDecadeBuiltID()) );
+		starsRes.setDecadeBuilt( decade );
+		
+		SquareFeet sqrFeet = new SquareFeet();
+		setStarsCustListEntry( sqrFeet, YukonListFuncs.getYukonListEntry(liteRes.getSquareFeetID()) );
+		starsRes.setSquareFeet( sqrFeet );
+		
+		InsulationDepth depth = new InsulationDepth();
+		setStarsCustListEntry( depth, YukonListFuncs.getYukonListEntry(liteRes.getInsulationDepthID()) );
+		starsRes.setInsulationDepth( depth );
+		
+		GeneralCondition condition = new GeneralCondition();
+		setStarsCustListEntry( condition, YukonListFuncs.getYukonListEntry(liteRes.getGeneralConditionID()) );
+		starsRes.setGeneralCondition( condition );
+		
+		MainCoolingSystem coolSys = new MainCoolingSystem();
+		setStarsCustListEntry( coolSys, YukonListFuncs.getYukonListEntry(liteRes.getMainCoolingSystemID()) );
+		starsRes.setMainCoolingSystem( coolSys );
+		
+		MainHeatingSystem heatSys = new MainHeatingSystem();
+		setStarsCustListEntry( heatSys, YukonListFuncs.getYukonListEntry(liteRes.getMainHeatingSystemID()) );
+		starsRes.setMainHeatingSystem( heatSys );
+		
+		NumberOfOccupants number = new NumberOfOccupants();
+		setStarsCustListEntry( number, YukonListFuncs.getYukonListEntry(liteRes.getNumberOfOccupantsID()) );
+		starsRes.setNumberOfOccupants( number );
+		
+		OwnershipType ownType = new OwnershipType();
+		setStarsCustListEntry( ownType, YukonListFuncs.getYukonListEntry(liteRes.getOwnershipTypeID()) );
+		starsRes.setOwnershipType( ownType );
+		
+		MainFuelType fuelType = new MainFuelType();
+		setStarsCustListEntry( fuelType, YukonListFuncs.getYukonListEntry(liteRes.getMainFuelTypeID()) );
+		starsRes.setMainFuelType( fuelType );
+		
+		starsRes.setNotes( liteRes.getNotes() );
+	}
+	
 	public static void setStarsCustAccountInformation(StarsCustAccountInformation starsAcctInfo, LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, boolean isOperator) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 		
@@ -721,6 +883,12 @@ public class StarsLiteFactory {
 			AdditionalContact contact = new AdditionalContact();
 			setStarsCustomerContact( contact, energyCompany.getCustomerContact(contactID.intValue()) );
 			starsAccount.addAdditionalContact( contact );
+		}
+		
+		if (liteAcctInfo.getCustomerResidence() != null) {
+			StarsResidenceInformation residence = new StarsResidenceInformation();
+			setStarsCustResidence( residence, liteAcctInfo.getCustomerResidence() );
+			starsAcctInfo.setStarsResidenceInformation( residence );
 		}
 		
 		ArrayList liteProgs = liteAcctInfo.getLmPrograms();
@@ -1261,15 +1429,24 @@ public class StarsLiteFactory {
 		starsList.setListName( yukonList.getListName() );
 		
 		ArrayList entries = yukonList.getYukonListEntries();
-		for (int i = 0; i < entries.size(); i++) {
-			if (yukonList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID)	// substation list or service company list
-				starsList.addStarsSelectionListEntry( (StarsSelectionListEntry) entries.get(i) );
-			else {
-				StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-				YukonListEntry yukonEntry = (YukonListEntry) entries.get(i);
-				setStarsCustListEntry( starsEntry, yukonEntry );
-				starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
-				starsList.addStarsSelectionListEntry( starsEntry );
+		if (entries.size() == 0) {
+			// Assign the list a "default" entry if the list is empty
+			StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
+			starsEntry.setEntryID( CtiUtilities.NONE_ID );
+			starsEntry.setContent( "(none)" );
+			starsList.addStarsSelectionListEntry( starsEntry );
+		}
+		else {
+			for (int i = 0; i < entries.size(); i++) {
+				if (yukonList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID)	// substation list or service company list
+					starsList.addStarsSelectionListEntry( (StarsSelectionListEntry) entries.get(i) );
+				else {
+					StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
+					YukonListEntry yukonEntry = (YukonListEntry) entries.get(i);
+					setStarsCustListEntry( starsEntry, yukonEntry );
+					starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
+					starsList.addStarsSelectionListEntry( starsEntry );
+				}
 			}
 		}
 		
@@ -1316,7 +1493,7 @@ public class StarsLiteFactory {
 	public static StarsCustomerFAQs createStarsCustomerFAQs(ArrayList liteFAQs) {
 		StarsCustomerFAQs starsCustFAQs = new StarsCustomerFAQs();
 		
-        int lastSubjectID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+        int lastSubjectID = CtiUtilities.NONE_ID;
         StarsCustomerFAQGroup lastGroup = null;
         
         // Group the FAQs by their subjects

@@ -1,23 +1,33 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.db.stars.hardware.*;
-import com.cannontech.stars.util.*;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatManualEvent;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
-import com.cannontech.stars.xml.util.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsThermostatManualEvent;
+import com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOption;
+import com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOptionResponse;
+import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -73,14 +83,14 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -136,7 +146,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update thermostat manual option") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

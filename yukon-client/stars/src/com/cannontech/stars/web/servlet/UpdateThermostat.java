@@ -1,16 +1,22 @@
 package com.cannontech.stars.web.servlet;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.*;
 
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.StarsThermostatScheduleFactory;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
+import com.cannontech.stars.xml.serialize.StarsThermostatSeason;
+import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
  * @author yao
@@ -129,12 +135,12 @@ public class UpdateThermostat extends HttpServlet {
 				season.addStarsThermostatSchedule( schedule );
 				changedSchedules.add( schedule );
 				
-				StarsThermostatSchedule sched = StarsThermostatScheduleFactory.newStarsThermostatSchedule( schedule );
+				StarsThermostatSchedule sched = StarsFactory.newStarsThermostatSchedule( schedule );
 				sched.setDay( StarsThermoDaySettings.SATURDAY );
 				season.addStarsThermostatSchedule( sched );
 				changedSchedules.add( sched );
 				
-				sched = StarsThermostatScheduleFactory.newStarsThermostatSchedule( schedule );
+				sched = StarsFactory.newStarsThermostatSchedule( schedule );
 				sched.setDay( StarsThermoDaySettings.SUNDAY );
 				season.addStarsThermostatSchedule( sched );
 				changedSchedules.add( sched );

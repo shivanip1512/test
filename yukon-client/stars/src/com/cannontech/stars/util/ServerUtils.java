@@ -1,23 +1,36 @@
 package com.cannontech.stars.util;
 
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Properties;
 
-import com.cannontech.common.constants.*;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.RoleTypes;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
  * @author yao

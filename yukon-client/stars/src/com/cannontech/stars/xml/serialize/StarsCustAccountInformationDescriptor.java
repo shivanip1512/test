@@ -11,16 +11,10 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.mapping.ClassDescriptor;
-import org.exolab.castor.mapping.FieldDescriptor;
-import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.handlers.*;
+import org.exolab.castor.xml.NodeType;
+import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
-import org.exolab.castor.xml.validators.*;
 
 /**
  * 
@@ -92,6 +86,38 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
         //-- validation code for: _starsCustomerAccount
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsResidenceInformation
+        desc = new XMLFieldDescriptorImpl(StarsResidenceInformation.class, "_starsResidenceInformation", "stars-ResidenceInformation", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                return target.getStarsResidenceInformation();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                    target.setStarsResidenceInformation( (StarsResidenceInformation) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsResidenceInformation();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsResidenceInformation
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
         //-- _starsLMPrograms

@@ -1,25 +1,26 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Date;
+import java.util.Hashtable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.message.porter.ClientConnection;
-import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
-import com.cannontech.stars.xml.serialize.StarsAppliance;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
@@ -27,20 +28,13 @@ import com.cannontech.stars.xml.serialize.StarsEnableService;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
-import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
-import com.cannontech.stars.xml.serialize.StarsLMPrograms;
-import com.cannontech.stars.xml.serialize.StarsLMProgram;
-import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
-import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.stars.xml.util.XMLUtil;
 
 /**
  * <p>Title: </p>
@@ -114,14 +108,14 @@ public class YukonSwitchCommandAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -147,7 +141,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         		
         		if (liteHw == null) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be disabled") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
@@ -189,7 +183,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         		
         		if (liteHw == null) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be enabled") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
@@ -231,7 +225,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         		
         		if (liteHw == null) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the LM hardware to be enabled") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
@@ -239,7 +233,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
         				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( invID );
         		if (configs == null) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware configuration information") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
@@ -288,7 +282,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the switch command") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -319,12 +313,12 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			DeviceStatus availStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
-						StarsCustListEntryFactory.getStarsCustListEntry(
+			DeviceStatus availStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
+						ServletUtils.getStarsCustListEntry(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL),
 						DeviceStatus.class );
-			DeviceStatus unavailStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
-						StarsCustListEntryFactory.getStarsCustListEntry(
+			DeviceStatus unavailStatus = (DeviceStatus) StarsFactory.newStarsCustListEntry(
+						ServletUtils.getStarsCustListEntry(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL),
 						DeviceStatus.class );
 			

@@ -1,9 +1,9 @@
 package com.cannontech.database.data.lite.stars;
 
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.customer.Contact;
 
 /**
  * @author yao

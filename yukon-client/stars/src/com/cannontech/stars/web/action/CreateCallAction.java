@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Date;
 import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,24 +9,18 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCallReportFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
-import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReport;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetCallReportHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -55,8 +48,8 @@ public class CreateCallAction implements ActionBase {
 				createCall.setCallNumber( req.getParameter("CallNo") );
 			createCall.setCallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("CallDate")) );
 			
-			CallType callType = (CallType) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			CallType callType = (CallType) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE, Integer.parseInt(req.getParameter("CallType"))),
 					CallType.class );
 			createCall.setCallType( callType );
@@ -88,14 +81,14 @@ public class CreateCallAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -103,7 +96,7 @@ public class CreateCallAction implements ActionBase {
             StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
             if (createCall.getCallNumber() != null) {
             	if (ServerUtils.callNumberExists( createCall.getCallNumber(), user.getEnergyCompanyID() )) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Track number already exists, please choose a different one") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
             	}
@@ -116,14 +109,14 @@ public class CreateCallAction implements ActionBase {
             com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();
             com.cannontech.database.db.stars.report.CallReportBase callReportDB = callReport.getCallReportBase();
             
-            StarsCallReportFactory.setCallReportBase( callReportDB, createCall );
+            StarsFactory.setCallReportBase( callReportDB, createCall );
             callReportDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
             callReport.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );
             callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
             
-            StarsCallReport call = (StarsCallReport) StarsCallReportFactory.newStarsCallReport( createCall, StarsCallReport.class );
+            StarsCallReport call = (StarsCallReport) StarsFactory.newStarsCallReport( createCall, StarsCallReport.class );
             call.setCallID( callReport.getCallReportBase().getCallID().intValue() );
             accountInfo.getCallReportHistory().add( 0, call );
             
@@ -137,7 +130,7 @@ public class CreateCallAction implements ActionBase {
         	e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the call report") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

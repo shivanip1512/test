@@ -1,26 +1,38 @@
 package com.cannontech.stars.web.action;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.*;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
+import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
 import com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.util.*;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -81,7 +93,7 @@ public class SendInterviewAnswersAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -188,7 +200,7 @@ public class SendInterviewAnswersAction implements ActionBase {
         	e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out interview answers") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

@@ -1,13 +1,8 @@
 package com.cannontech.database.db.stars;
 
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 
-import com.cannontech.stars.xml.serialize.ControlHistory;
-import com.cannontech.stars.xml.serialize.ControlSummary;
-import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 /**

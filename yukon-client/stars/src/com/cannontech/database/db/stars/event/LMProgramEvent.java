@@ -1,7 +1,6 @@
 package com.cannontech.database.db.stars.event;
 
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
 
 
 /**

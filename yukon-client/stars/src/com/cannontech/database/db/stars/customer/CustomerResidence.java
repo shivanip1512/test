@@ -32,7 +32,7 @@ public class CustomerResidence extends DBPersistent {
 	public static final String[] SETTER_COLUMNS = {
 		"ResidenceTypeID", "ConstructionMaterialID", "DecadeBuiltID", "SquareFeetID",
 		"InsulationDepthID", "GeneralConditionID", "MainCoolingSystemID", "MainHeatingSystemID",
-		"NumberOfOccupantsID", "OwnershipTypeID", "MainFuelSystemID", "Notes"
+		"NumberOfOccupantsID", "OwnershipTypeID", "MainFuelTypeID", "Notes"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "AccountSiteID" };
@@ -97,13 +97,61 @@ public class CustomerResidence extends DBPersistent {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = {
-			getConstructionMaterialID(), getDecadeBuiltID(), getSquareFeetID(), getInsulationDepthID(),
-			getGeneralConditionID(), getMainCoolingSystemID(), getMainHeatingSystemID(),
+			getResidenceTypeID(), getConstructionMaterialID(), getDecadeBuiltID(), getSquareFeetID(),
+			getInsulationDepthID(), getGeneralConditionID(), getMainCoolingSystemID(), getMainHeatingSystemID(),
 			getNumberOfOccupantsID(), getOwnershipTypeID(), getMainFuelTypeID(), getNotes()
 		};
 		Object[] constraintValues = { getAccountSiteID() };
 		
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+	}
+	
+	public static CustomerResidence getCustomerResidence(Integer accountSiteID) {
+		String sql = "SELECT AccountSiteID, " +
+				SETTER_COLUMNS[0] + ", " +
+				SETTER_COLUMNS[1] + ", " +
+				SETTER_COLUMNS[2] + ", " +
+				SETTER_COLUMNS[3] + ", " +
+				SETTER_COLUMNS[4] + ", " +
+				SETTER_COLUMNS[5] + ", " +
+				SETTER_COLUMNS[6] + ", " +
+				SETTER_COLUMNS[7] + ", " +
+				SETTER_COLUMNS[8] + ", " +
+				SETTER_COLUMNS[9] + ", " +
+				SETTER_COLUMNS[10] + ", " +
+				SETTER_COLUMNS[11] +
+				" FROM " + TABLE_NAME +
+				" WHERE AccountSiteID = " + accountSiteID;
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+				
+		try {
+			stmt.execute();
+			if (stmt.getRowCount() == 0) return null;
+			
+			Object[] row = stmt.getRow(0);
+			CustomerResidence custRes = new CustomerResidence();
+			custRes.setAccountSiteID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+			custRes.setResidenceTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+			custRes.setConstructionMaterialID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+			custRes.setDecadeBuiltID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+			custRes.setSquareFeetID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+			custRes.setInsulationDepthID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+			custRes.setGeneralConditionID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+			custRes.setMainCoolingSystemID( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
+			custRes.setMainHeatingSystemID( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
+			custRes.setNumberOfOccupantsID( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
+			custRes.setOwnershipTypeID( new Integer(((java.math.BigDecimal) row[10]).intValue()) );
+			custRes.setMainFuelTypeID( new Integer(((java.math.BigDecimal) row[11]).intValue()) );
+			custRes.setNotes( (String) row[12] );
+			
+			return custRes;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 	/**

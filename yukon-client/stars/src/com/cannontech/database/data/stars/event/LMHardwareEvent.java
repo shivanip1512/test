@@ -1,7 +1,6 @@
 package com.cannontech.database.data.stars.event;
 
-import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
-import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
+
 
 /**
  * <p>Title: </p>

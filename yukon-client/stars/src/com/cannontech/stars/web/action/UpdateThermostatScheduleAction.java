@@ -1,25 +1,46 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
-import java.util.*;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.db.stars.hardware.*;
-import com.cannontech.message.porter.ClientConnection;
-import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.*;
+import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsThermostatSettings;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.hardware.LMThermostatSeason;
+import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
-import com.cannontech.stars.xml.util.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsThermostatSchedule;
+import com.cannontech.stars.xml.serialize.StarsThermostatSeason;
+import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
+import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
+import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -87,14 +108,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -321,7 +342,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update thermostat schedules") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

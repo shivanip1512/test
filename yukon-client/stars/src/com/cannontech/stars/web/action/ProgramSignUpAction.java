@@ -1,23 +1,42 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import java.util.*;
-
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.*;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.util.*;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.StarsCustomerContactFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
+import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.SULMProgram;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsLMPrograms;
+import com.cannontech.stars.xml.serialize.StarsLogin;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
+import com.cannontech.stars.xml.serialize.StarsProgramSignUpResponse;
+import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -89,7 +108,7 @@ public class ProgramSignUpAction implements ActionBase {
             int energyCompanyID = progSignUp.getEnergyCompanyID();
             if (energyCompanyID <= 0) {
             	if (user == null) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
             	}
@@ -377,7 +396,7 @@ public class ProgramSignUpAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the program signup") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

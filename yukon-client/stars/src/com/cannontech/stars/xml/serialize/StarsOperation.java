@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.29 2003/03/21 00:09:17 zyao Exp $
+ * $Id: StarsOperation.java,v 1.30 2003/03/24 19:55:22 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,19 +11,13 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.*;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Root element
  * 
- * @version $Revision: 1.29 $ $Date: 2003/03/21 00:09:17 $
+ * @version $Revision: 1.30 $ $Date: 2003/03/24 19:55:22 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -173,6 +167,8 @@ public class StarsOperation implements java.io.Serializable {
     private StarsUpdateControlNotification _starsUpdateControlNotification;
 
     private StarsSendOddsForControl _starsSendOddsForControl;
+
+    private StarsUpdateResidenceInformation _starsUpdateResidenceInformation;
 
 
       //----------------/
@@ -788,6 +784,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateLoginResponse;
     } //-- StarsUpdateLoginResponse getStarsUpdateLoginResponse() 
+
+    /**
+     * Returns the value of field
+     * 'starsUpdateResidenceInformation'.
+     * 
+     * @return the value of field 'starsUpdateResidenceInformation'.
+    **/
+    public StarsUpdateResidenceInformation getStarsUpdateResidenceInformation()
+    {
+        return this._starsUpdateResidenceInformation;
+    } //-- StarsUpdateResidenceInformation getStarsUpdateResidenceInformation() 
 
     /**
      * Returns the value of field 'starsUpdateServiceRequest'.
@@ -1551,6 +1558,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateLoginResponse = starsUpdateLoginResponse;
     } //-- void setStarsUpdateLoginResponse(StarsUpdateLoginResponse) 
+
+    /**
+     * Sets the value of field 'starsUpdateResidenceInformation'.
+     * 
+     * @param starsUpdateResidenceInformation the value of field
+     * 'starsUpdateResidenceInformation'.
+    **/
+    public void setStarsUpdateResidenceInformation(StarsUpdateResidenceInformation starsUpdateResidenceInformation)
+    {
+        this._starsUpdateResidenceInformation = starsUpdateResidenceInformation;
+    } //-- void setStarsUpdateResidenceInformation(StarsUpdateResidenceInformation) 
 
     /**
      * Sets the value of field 'starsUpdateServiceRequest'.

@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.Calendar;
+
 import com.cannontech.database.data.lite.LiteBase;
 
 /**

@@ -1,36 +1,33 @@
 package com.cannontech.stars.web.servlet;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Timer;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.messaging.JAXMServlet;
 import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.*;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
+import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.servlet.PILConnectionServlet;
-
-import com.cannontech.stars.util.*;
-import com.cannontech.stars.util.timertask.*;
+import com.cannontech.stars.util.timertask.DailyTimerTask;
+import com.cannontech.stars.util.timertask.LMControlHistoryTimerTask;
+import com.cannontech.stars.util.timertask.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.*;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.stars.xml.util.XMLUtil;
 
 /**
  * <p>Title: </p>
@@ -223,7 +220,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
         try {
         	StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
         	if (reqOper == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -236,7 +233,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
         }
         catch (Exception e) {
         	try {
-	        	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	        	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	        			StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
 	        	return SOAPUtil.buildSOAPMessage( respOper );
         	}

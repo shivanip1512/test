@@ -11,14 +11,8 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.*;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * 
@@ -33,6 +27,8 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     //--------------------------/
 
     private StarsCustomerAccount _starsCustomerAccount;
+
+    private StarsResidenceInformation _starsResidenceInformation;
 
     private StarsLMPrograms _starsLMPrograms;
 
@@ -125,6 +121,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         return this._starsLMPrograms;
     } //-- StarsLMPrograms getStarsLMPrograms() 
+
+    /**
+     * Returns the value of field 'starsResidenceInformation'.
+     * 
+     * @return the value of field 'starsResidenceInformation'.
+    **/
+    public StarsResidenceInformation getStarsResidenceInformation()
+    {
+        return this._starsResidenceInformation;
+    } //-- StarsResidenceInformation getStarsResidenceInformation() 
 
     /**
      * Returns the value of field 'starsServiceCompanies'.
@@ -265,6 +271,17 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         this._starsLMPrograms = starsLMPrograms;
     } //-- void setStarsLMPrograms(StarsLMPrograms) 
+
+    /**
+     * Sets the value of field 'starsResidenceInformation'.
+     * 
+     * @param starsResidenceInformation the value of field
+     * 'starsResidenceInformation'.
+    **/
+    public void setStarsResidenceInformation(StarsResidenceInformation starsResidenceInformation)
+    {
+        this._starsResidenceInformation = starsResidenceInformation;
+    } //-- void setStarsResidenceInformation(StarsResidenceInformation) 
 
     /**
      * Sets the value of field 'starsServiceCompanies'.

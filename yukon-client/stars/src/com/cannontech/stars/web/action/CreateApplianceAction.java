@@ -6,15 +6,27 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsAppFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.util.*;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.Location;
+import com.cannontech.stars.xml.serialize.Manufacturer;
+import com.cannontech.stars.xml.serialize.ServiceCompany;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
+import com.cannontech.stars.xml.serialize.StarsCreateApplianceResponse;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -42,20 +54,20 @@ public class CreateApplianceAction implements ActionBase {
 			newApp.setNotes( req.getParameter("Notes") );
 			newApp.setModelNumber( req.getParameter("ModelNo") );
 			
-			Manufacturer manu = (Manufacturer) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			Manufacturer manu = (Manufacturer) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
 					Manufacturer.class );
 			newApp.setManufacturer( manu );
 			
-			Location loc = (Location) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			Location loc = (Location) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_LOCATION, Integer.parseInt(req.getParameter("Location"))),
 					Location.class );
 			newApp.setLocation( loc );
 			
-			ServiceCompany company = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			ServiceCompany company = (ServiceCompany) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, Integer.parseInt(req.getParameter("Company"))),
 					ServiceCompany.class );
 			newApp.setServiceCompany( company );
@@ -84,14 +96,14 @@ public class CreateApplianceAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -142,7 +154,7 @@ public class CreateApplianceAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the appliance") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

@@ -1,23 +1,23 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.db.stars.customer.*;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.customer.AccountSite;
+import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SearchBy;
 import com.cannontech.stars.xml.serialize.StarsCustAccountBrief;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -25,8 +25,6 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountResponse;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -80,7 +78,7 @@ public class SearchCustAccountAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -176,7 +174,7 @@ public class SearchCustAccountAction implements ActionBase {
 				}
             }
             else {
-            	StarsFailure failure = StarsFailureFactory.newStarsFailure(
+            	StarsFailure failure = StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
             	resp.setStarsFailure( failure );
             }
@@ -189,7 +187,7 @@ public class SearchCustAccountAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the search for customer account") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

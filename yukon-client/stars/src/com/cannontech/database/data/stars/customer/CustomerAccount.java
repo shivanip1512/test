@@ -2,8 +2,8 @@ package com.cannontech.database.data.stars.customer;
 
 import java.util.Vector;
 
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.db.DBPersistent;
 
 
 /**

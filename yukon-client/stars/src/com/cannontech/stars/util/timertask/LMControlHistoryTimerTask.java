@@ -1,8 +1,11 @@
 package com.cannontech.stars.util.timertask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**

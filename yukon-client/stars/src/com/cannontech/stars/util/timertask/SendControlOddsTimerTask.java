@@ -1,10 +1,19 @@
 package com.cannontech.stars.util.timertask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.StringTokenizer;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
+import com.cannontech.database.data.lite.stars.LiteLMProgram;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 

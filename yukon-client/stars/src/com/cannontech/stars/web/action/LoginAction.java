@@ -4,22 +4,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsFailureFactory;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsLogin;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsLoginType;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -74,7 +70,7 @@ public class LoginAction implements ActionBase {
             StarsLogin login = reqOper.getStarsLogin();
             LiteYukonUser user = AuthFuncs.login( login.getUsername(), login.getPassword() );
             if (user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -88,7 +84,7 @@ public class LoginAction implements ActionBase {
             else if (login.getLoginType().getType() == StarsLoginType.CONSUMERLOGIN_TYPE)
         		typeMatch = ServerUtils.isResidentialCustomer( starsUser );
             if (!typeMatch) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
@@ -106,7 +102,7 @@ public class LoginAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot login the customer") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

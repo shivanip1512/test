@@ -1,8 +1,6 @@
 package com.cannontech.database.data.stars.event;
 
 import com.cannontech.database.Transaction;
-import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
-import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 
 
 /**

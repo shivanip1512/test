@@ -1,20 +1,43 @@
 package com.cannontech.stars.web.action;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.common.constants.*;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.*;
+import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.util.*;
-import com.cannontech.stars.xml.*;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.DeviceStatus;
+import com.cannontech.stars.xml.serialize.InstallationCompany;
+import com.cannontech.stars.xml.serialize.LMDeviceType;
+import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
+import com.cannontech.stars.xml.serialize.StarsCreateLMHardwareResponse;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustListEntry;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsServiceCompany;
+import com.cannontech.stars.xml.serialize.Voltage;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * @author yao
@@ -37,26 +60,26 @@ public class CreateLMHardwareAction implements ActionBase {
 
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 			
-			LMDeviceType type = (LMDeviceType) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			LMDeviceType type = (LMDeviceType) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, Integer.parseInt(req.getParameter("DeviceType"))),
 					LMDeviceType.class );
 			createHw.setLMDeviceType( type );
 			
-			Voltage volt = (Voltage) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			Voltage volt = (Voltage) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE, Integer.parseInt(req.getParameter("Voltage"))),
 					Voltage.class );
 			createHw.setVoltage( volt );
 			
-			DeviceStatus status = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			DeviceStatus status = (DeviceStatus) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, Integer.parseInt(req.getParameter("Status"))),
 					DeviceStatus.class );
 			createHw.setDeviceStatus( status );
 			
-			InstallationCompany company = (InstallationCompany) StarsCustListEntryFactory.newStarsCustListEntry(
-					StarsCustListEntryFactory.getStarsCustListEntryByID(
+			InstallationCompany company = (InstallationCompany) StarsFactory.newStarsCustListEntry(
+					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, Integer.parseInt(req.getParameter("ServiceCompany"))),
 					InstallationCompany.class );
 			createHw.setInstallationCompany( company );
@@ -103,14 +126,14 @@ public class CreateLMHardwareAction implements ActionBase {
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
@@ -240,7 +263,7 @@ public class CreateLMHardwareAction implements ActionBase {
             e.printStackTrace();
             
             try {
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the hardware") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }

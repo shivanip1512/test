@@ -3,7 +3,6 @@ package com.cannontech.stars.web.servlet;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,12 +11,47 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.*;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.*;
-import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.web.action.ActionBase;
+import com.cannontech.stars.web.action.CallTrackingAction;
+import com.cannontech.stars.web.action.CreateApplianceAction;
+import com.cannontech.stars.web.action.CreateCallAction;
+import com.cannontech.stars.web.action.CreateLMHardwareAction;
+import com.cannontech.stars.web.action.CreateServiceRequestAction;
+import com.cannontech.stars.web.action.DeleteApplianceAction;
+import com.cannontech.stars.web.action.DeleteCustAccountAction;
+import com.cannontech.stars.web.action.DeleteLMHardwareAction;
+import com.cannontech.stars.web.action.GetCustAccountAction;
+import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
+import com.cannontech.stars.web.action.GetInterviewQuestionsAction;
+import com.cannontech.stars.web.action.GetLMCtrlHistAction;
+import com.cannontech.stars.web.action.GetNextCallNumberAction;
+import com.cannontech.stars.web.action.GetNextOrderNumberAction;
+import com.cannontech.stars.web.action.GetServiceHistoryAction;
+import com.cannontech.stars.web.action.LoginAction;
+import com.cannontech.stars.web.action.MultiAction;
+import com.cannontech.stars.web.action.NewCustAccountAction;
+import com.cannontech.stars.web.action.ProgramOptOutAction;
+import com.cannontech.stars.web.action.ProgramReenableAction;
+import com.cannontech.stars.web.action.ProgramSignUpAction;
+import com.cannontech.stars.web.action.ReloadCustAccountAction;
+import com.cannontech.stars.web.action.SearchCustAccountAction;
+import com.cannontech.stars.web.action.SendInterviewAnswersAction;
+import com.cannontech.stars.web.action.SendOddsForControlAction;
+import com.cannontech.stars.web.action.UpdateApplianceAction;
+import com.cannontech.stars.web.action.UpdateCallReportAction;
+import com.cannontech.stars.web.action.UpdateControlNotificationAction;
+import com.cannontech.stars.web.action.UpdateCustAccountAction;
+import com.cannontech.stars.web.action.UpdateLMHardwareAction;
+import com.cannontech.stars.web.action.UpdateLoginAction;
+import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
+import com.cannontech.stars.web.action.UpdateServiceRequestAction;
+import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
+import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse;
+import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -348,6 +382,11 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new SendOddsForControlAction();
         	destURL = "/operator/Consumer/Odds.jsp";
         	nextURL = errorURL = "/operator/Consumer/Odds.jsp";
+        }
+        else if (action.equalsIgnoreCase("UpdateResidenceInfo")) {
+        	clientAction = new UpdateResidenceInfoAction();
+        	destURL = "/operator/Consumer/Residence.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Residence.jsp";
         }
         else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");
