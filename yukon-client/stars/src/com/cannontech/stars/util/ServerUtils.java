@@ -12,13 +12,13 @@ import java.util.TimeZone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
@@ -102,7 +102,7 @@ public class ServerUtils {
 	}
 	
 	public static boolean isOperator(StarsYukonUser user) {
-		return (AuthFuncs.checkRole(user.getYukonUser(), ConsumerInfoRole.ROLEID) != null);
+		return EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
 	}
 	
 	public static boolean isResidentialCustomer(StarsYukonUser user) {
@@ -273,40 +273,38 @@ public class ServerUtils {
 				addr.append(" ").append( zipCode );
 		}
 		
-		if (addr.length() == 0) addr.append("Address N/A");
+		if (addr.length() == 0) addr.append("(Address N/A)");
 		return addr.toString();
 	}
 	
-	public static ArrayList readFile(File file, boolean addLineNo, boolean returnEmpty) {
+	public static String[] readFile(File file, boolean returnEmpty) {
 		if (file.exists()) {
+			java.io.BufferedReader fr = null;
 			try {
-				java.io.BufferedReader fr = new java.io.BufferedReader(
-						new java.io.FileReader(file) );
+				fr = new java.io.BufferedReader( new java.io.FileReader(file) );
 				
 				ArrayList lines = new ArrayList();
 				String line = null;
-				int lineNo = 0;
 				
 				while ((line = fr.readLine()) != null) {
-					lineNo++;
-					
-					if (line.equals("")) {
-						if (!returnEmpty) continue;
-					}
-					else {
-						if (line.charAt(0) == '#') continue;
-						if (addLineNo) line = lineNo + "," + line;
-					}
-					
+					if (!returnEmpty && (line.trim().equals("") || line.charAt(0) == '#'))
+						continue;
 					lines.add(line);
 				}
 				
-				fr.close();
-				return lines;
+				String[] lns = new String[ lines.size() ];
+				lines.toArray( lns );
+				return lns;
 			}
 			catch (IOException e) {
 				e.printStackTrace();
 				CTILogger.error("Failed to read file \"" + file.getPath() + "\"");
+			}
+			finally {
+				try {
+					fr.close();
+				}
+				catch (IOException e) {}
 			}
 		}
 		else {
@@ -316,20 +314,16 @@ public class ServerUtils {
 		return null;
 	}
 	
-	public static ArrayList readFile(File file, boolean addLineNo) {
-		return readFile( file, addLineNo, false );
+	public static String[] readFile(File file) {
+		return readFile( file, true );
 	}
 	
-	public static ArrayList readFile(File file) {
-		return readFile( file, false, false );
-	}
-	
-	public static void writeFile(File file, ArrayList lines) throws IOException {
+	public static void writeFile(File file, String[] lines) throws IOException {
 		java.io.PrintWriter fw = new java.io.PrintWriter(
 				new java.io.BufferedWriter( new java.io.FileWriter(file) ));
 		
-		for (int i = 0; i < lines.size(); i++)
-			fw.println( (String)lines.get(i) );
+		for (int i = 0; i < lines.length; i++)
+			fw.println( lines[i] );
 		
 		fw.close();
 	}
