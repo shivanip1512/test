@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2003/08/22 21:43:27 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2003/08/25 13:33:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6418,6 +6418,8 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
         pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+        pSigActive->setText("ALM CLR: " + pSigActive->getText());
+        pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
         pSigActive = 0;
