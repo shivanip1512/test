@@ -333,7 +333,7 @@ public boolean retrieveReportData(String dbAlias)
 
 					if( defDailyStartTime < 0 )
 					{
-						defDailyStopTime = 0;
+						defDailyStartTime = 0;
 					}
 					if( defDailyStopTime < 0 )
 					{
@@ -356,7 +356,8 @@ public boolean retrieveReportData(String dbAlias)
 						{
 							controlTimePeakVector.add(new com.cannontech.database.db.point.RawPointHistory( changeId, pointId, timestamp,	quality, value));
 						}
-						else if( nonControlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES )
+						else if( nonControlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES &&
+									( defDailyStartTime >= timeInSeconds && defDailyStopTime < timeInSeconds ) )
 						{
 							nonControlTimePeakVector.add(new com.cannontech.database.db.point.RawPointHistory( changeId, pointId, timestamp,	quality, value));
 						}
