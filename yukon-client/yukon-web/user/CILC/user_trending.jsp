@@ -93,6 +93,12 @@ MM_reloadPage(true);
 					{%>
         	            <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?" >
                 	<%}%>
+
+					<%
+					if( request.getParameter("update") != null && request.getParameter("update").equalsIgnoreCase("now"))
+					{
+						graphBean.getDataNow();
+					}%>
 					<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>                	
 					</center>
                   </td>
