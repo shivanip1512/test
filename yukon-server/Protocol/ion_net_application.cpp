@@ -213,7 +213,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
                         _appIn.header.length.byte1 = 0;
                     }
 
-                    delete tmpData;
+                    delete [] tmpData;
                 }
 
                 break;
