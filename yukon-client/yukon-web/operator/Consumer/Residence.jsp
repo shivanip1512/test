@@ -4,7 +4,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
-<script language="JavaScript">
+
 
 </head>
 
@@ -51,7 +51,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Update.jsp"; %>
+		  <% String pageName = "Residence.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
