@@ -56,6 +56,13 @@ public class CustomDisplay
 		String[] retValues = new String[ types.length ];
 		//find the point and pao
 		LitePoint litePoint = PointFuncs.getLitePoint(pointid);
+		
+		if( litePoint == null )
+		{
+			CTILogger.error(" Unable to find litepoint with a pointid of " + pointid );
+			return retValues;
+		}
+		
 		LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
 		 
 		for( int i = 0; i < types.length; i++ )
