@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/02/16 21:03:54 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/03/02 20:01:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "counter.h"
 #include "pointtypes.h"
 
+#include "msg_notif_email.h"
+#include "msg_notif_email_attachment.h"
+
 BOOL           bQuit = FALSE;
 
 int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
@@ -52,6 +55,7 @@ void tagExecute(int argc, char **argv);
 void tagHelp();
 void defaultExecute(int argc, char **argv);
 void defaultHelp();
+void notifEmailExecute( int argc, char **argv );
 void seasonExecute(int argc, char **argv);
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
@@ -71,6 +75,7 @@ TESTFUNC_t testfunction[] = {
     {"seasonreset", seasonExecute, defaultHelp},
     {"tags", tagExecute, tagHelp},
     {"default", defaultExecute, defaultHelp},
+    {"notif", notifEmailExecute, defaultHelp},
     {"", 0, 0}
 };
 
@@ -233,6 +238,50 @@ void DoTheNasty(int argc, char **argv)
     }
 }
 
+void notifEmailExecute( int argc, char **argv )
+{
+   int i = 123;
+
+   #if 1
+   CtiPointManager PointMgr;
+   PointMgr.refreshList();     // This should give me all the points in the box.
+   PointMgr.DumpList();     // This should give me all the points in the box.
+#else
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
+   Sleep(5000);
+   #endif
+   
+   CtiConnection Connect( 1515, argv[2] );
+
+   CtiNotifEmailMsg  *message = new CtiNotifEmailMsg;
+   message->setSubject( RWCString( "Doom" ) );
+   message->setTo( RWCString( "eric@cannontech.com" ) );
+   message->setBody( RWCString( "Wanted to let you know that the world is ending..." ) );
+   message->setNotifGroupId( 0 );
+   message->setToCC( RWCString( "ericschmit@mn.rr.com" ) );
+   message->setToBCC( RWCString( "ericschmit@mn.rr.com" ) );
+
+   message->setMessagePriority(15);
+   Connect.WriteConnQue( message->replicateMessage() );
+   Connect.WriteConnQue( message );
+
+
+   Sleep( 1000 );
+   
+      
+   Connect.ShutdownConnection();
+   Sleep( 2500 );
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
+   
+   return;
+}
+
 void tagExecute(int argc, char **argv)
 {
     int Op, k;
@@ -255,16 +304,16 @@ void tagExecute(int argc, char **argv)
         srand(1);   // This is replicable.
 
         PointMgr.refreshList();     // This should give me all the points in the box.
-        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+        CtiConnection  Connect(1515, argv[2]);
 
         CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
 
         pM->setMessagePriority(15);
 
-        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
+        //Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
         CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK | REG_ALARMS);
         PtRegMsg->setMessagePriority(15);
-        Connect.WriteConnQue( PtRegMsg );
+        //Connect.WriteConnQue( PtRegMsg );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -287,6 +336,19 @@ void tagExecute(int argc, char **argv)
             dout << RWTime() << " Done reading registration messages" << endl;
         }
 
+        CtiNotifEmailMsg  *message = new CtiNotifEmailMsg;
+        message->setSubject( RWCString( "Doom" ) );
+        message->setTo( RWCString( "eric@cannontech.com" ) );
+        message->setBody( RWCString( "Wanted to let you know that the world is ending..." ) );
+        message->setNotifGroupId( 0 );
+        message->setToCC( RWCString( "ericschmit@mn.rr.com" ) );
+        message->setToBCC( RWCString( "ericschmit@mn.rr.com" ) );
+
+        message->setMessagePriority(15);
+        Connect.WriteConnQue( message->replicateMessage() );
+        Connect.WriteConnQue( message );
+        
+        #if 0
         CtiTagMsg *pTag = 0;
 
         pTag = CTIDBG_new CtiTagMsg;
@@ -379,7 +441,7 @@ void tagExecute(int argc, char **argv)
             Sleep(3000);
         }
 
-
+        #endif
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Reading inbound messages caused by tag message submission." << endl;
@@ -719,8 +781,6 @@ int tagProcessInbounds(CtiMessage *&pMsg, int clientId)
 
     return instance;
 }
-
-
 
 void seasonExecute(int argc, char **argv)
 {
