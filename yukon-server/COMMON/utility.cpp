@@ -56,10 +56,10 @@ using namespace std;
 
 LONG GetMaxLMControl(long pao)
 {
-    RWCString sql("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ");
+    RWCString sql;
     INT id = 0;
 
-    sql += RWCString(CtiNumStr(pao));
+    sql = RWCString(("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")) + CtiNumStr(pao) + RWCString(" AND ACTIVERESTORE != 'N'");
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();

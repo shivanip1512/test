@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/24 18:48:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,8 @@ public:
         stopintervalcrossing,   // This is an interval used to post time remaining in control.
         delayeddatamessage,     // Expected completion occured.  Requires time of new data
         datachange,             // Point went to the alter state either by force, or restore.
-        newcontrol              // Already controlling, but new control arrived.  Requires time of new control
+        newcontrol,             // Any time a control occurs which starts a control.  Requires time.
+        control                 // Already controlling. Deal with new input information. Requires time.
     }
     CtiPendingControlUpdateCause_t;
 

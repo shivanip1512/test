@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/11/07 22:52:50 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/12/24 18:48:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,6 +130,11 @@ private:
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
     bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
+    bool addToPendingSet(CtiPendingPointOperations &pendingControlRequest, RWTime &updatetime = RWTime());
+
+    void insertControlHistoryRow( CtiPendingPointOperations &ppc, const RWTime &now);
+    void postControlHistoryPoints( CtiPendingPointOperations &ppc, const RWTime &now);
+    void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
 
 public:
 
@@ -250,11 +255,6 @@ public:
     void updateControlHistory(  long pendid, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
     void dumpPendingOps();
 
-    void insertAndPostControlHistoryPoints( CtiPendingPointOperations &ppc,
-                                            const RWTime &now,
-                                            bool insertctlhistrow = true,       // A row will be added to table lmcontrolhistory
-                                            bool postctlhistaipts = true,       // Analog points for cumulative control times will be generated
-                                            bool postctlstopaipnt = false);      // Analog point indicating the control remaining will be posted.
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     void adjustDeviceDisableTags(LONG id = 0);

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/12 17:33:46 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/12/24 18:48:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -463,7 +463,11 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
-        setPreviousLogTime( getStopTime() );
+        if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
+            setPreviousLogTime( getStopTime() );
+        else
+            setPreviousLogTime( getStartTime() );
+
         setDirty(false);
         _isNewControl = false;
     }
@@ -491,7 +495,11 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
             }
             else
             {
-                setPreviousLogTime( getStopTime() );
+                if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
+                    setPreviousLogTime( getStopTime() );
+                else
+                    setPreviousLogTime( getStartTime() );
+
                 setDirty(false);
                 _isNewControl = false;
             }
@@ -597,5 +605,9 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setNotNewControl()
 {
     _isNewControl = false;
     return *this;
+}
+bool CtiTableLMControlHistory::isNewControl() const
+{
+    return _isNewControl;
 }
 
