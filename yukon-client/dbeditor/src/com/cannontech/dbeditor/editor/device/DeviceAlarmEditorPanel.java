@@ -469,24 +469,7 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {2}
 	// user code end
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		DeviceAlarmEditorPanel aDeviceAlarmEditorPanel;
-		aDeviceAlarmEditorPanel = new DeviceAlarmEditorPanel();
-		frame.getContentPane().add("Center", aDeviceAlarmEditorPanel);
-		frame.setSize(aDeviceAlarmEditorPanel.getSize());
-		frame.setVisible(true);
-		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object

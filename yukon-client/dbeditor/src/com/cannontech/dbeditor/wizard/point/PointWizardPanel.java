@@ -314,27 +314,5 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 						currentPanel == getPointPhysicalSettingsPanel() ||
 						currentPanel == getPointCalcBaseSettingsPanel() );
 }
-/**
- * This method was created in VisualAge.
- * @param args java.lang.String[]
- */
-public static void main(String args[]) {
-	try
-{
-	javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-	PointWizardPanel p = new PointWizardPanel();
 
-	javax.swing.JFrame f= new javax.swing.JFrame();
-
-	f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-	f.getContentPane().add( p );
-	f.pack();
-
-	f.show();
-}
-catch( Throwable t)
-{
-	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-}
-}
 }

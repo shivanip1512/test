@@ -204,27 +204,4 @@ protected boolean isLastInputPanel(DataInputPanel panel) {
 }
 
 
-/**
- * This method was created in VisualAge.
- * @param args java.lang.String[]
- */
-public static void main(String args[]) {
-try
-{
-	javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	PortWizardPanel p = new PortWizardPanel();
-
-	javax.swing.JFrame f= new javax.swing.JFrame();
-
-	f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-	f.getContentPane().add( p );
-	f.pack();
-
-	f.show();
-}
-catch( Throwable t)
-{
-	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-}
-}
 }

@@ -1103,24 +1103,7 @@ private void initialize() {
 public boolean isDataComplete() {
 	return false;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		PortSettingsEditorPanel aPortSettingsEditorPanel;
-		aPortSettingsEditorPanel = new PortSettingsEditorPanel();
-		frame.getContentPane().add("Center", aPortSettingsEditorPanel);
-		frame.setSize(aPortSettingsEditorPanel.getSize());
-		frame.setVisible(true);
-		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.database.db.setup.gui.SetupPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object

@@ -73,27 +73,5 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 {
 	return true;
 }
-/**
- * This method was created in VisualAge.
- * @param args java.lang.String[]
- */
-public static void main(String args[]) {
-	try
-{
-	javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-	BillingFileWizardPanel p = new BillingFileWizardPanel();
 
-	javax.swing.JFrame f= new javax.swing.JFrame();
-
-	f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-	f.getContentPane().add( p );
-	f.pack();
-
-	f.show();
-}
-catch( Throwable t)
-{
-	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-}
-}
 }

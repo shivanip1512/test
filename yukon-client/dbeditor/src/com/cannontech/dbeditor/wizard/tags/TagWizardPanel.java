@@ -64,27 +64,4 @@ public class TagWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	}
 
 
-	/**
-	 * This method was created in VisualAge.
-	 * @param args java.lang.String[]
-	 */
-	public static void main(String args[]) {
-		try
-	{
-		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-		TagWizardPanel p = new TagWizardPanel();
-
-		javax.swing.JFrame f= new javax.swing.JFrame();
-
-		f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-		f.getContentPane().add( p );
-		f.pack();
-
-		f.show();
-	}
-	catch( Throwable t)
-	{
-		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-	}
-	}
 	}

@@ -153,27 +153,5 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 						( currentPanel == getRouteMacroCommunicationRoutesPanel() ) ||
 						( currentPanel == getRouteType2Panel() && getRouteType2Panel().noRepeaters() )		);
 }
-/**
- * This method was created in VisualAge.
- * @param args java.lang.String[]
- */
-public static void main(String args[]) {
-	try
-{
-	javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-	RouteWizardPanel p = new RouteWizardPanel();
 
-	javax.swing.JFrame f= new javax.swing.JFrame();
-
-	f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
-	f.getContentPane().add( p );
-	f.pack();
-
-	f.show();
-}
-catch( Throwable t)
-{
-	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-}
-}
 }
