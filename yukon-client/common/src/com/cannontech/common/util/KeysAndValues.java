@@ -1,15 +1,16 @@
 package com.cannontech.common.util;
 
+import java.util.Vector;
+
 /**
  * @author snebben
  *
  * KeysAndValues - String keys and their String values.
  * Used to store key and values from KeyAndValuesFile.	
  */
-public class KeysAndValues
+public class KeysAndValues 
 {
-	private String[][] keysAndValues = null;	
-	
+	private Vector keysAndValues = null;	
 	/**
 	 * Constructor for KeysAndValues.
 	 */
@@ -26,9 +27,11 @@ public class KeysAndValues
 	public KeysAndValues(String[] keys, String[] values)
 	{
 		super();
-		keysAndValues = new String[2][keys.length];
-		keysAndValues[0] = keys;
-		keysAndValues[1] = values;
+		keysAndValues = new Vector(keys.length);
+		for (int i = 0; i < keys.length; i++)
+		{
+			keysAndValues.add(new KeyAndValue(keys[i], values[i]));
+		}
 	}
 	
 	/**
@@ -39,26 +42,30 @@ public class KeysAndValues
 	public KeysAndValues(java.util.Vector keys, java.util.Vector values)
 	{
 		super();
-		keysAndValues = new String[2][keys.size()];
-		keys.copyInto(keysAndValues[0]);
-		values.copyInto(keysAndValues[1]);
+		keysAndValues = new Vector(keys.size());
+		for (int i = 0; i < keys.size(); i++)
+		{
+			keysAndValues.add(new KeyAndValue((String)keys.get(i), (String)values.get(i)));
+		}
 	}
 
 	/**
 	 * Returns the keysAndValues.
 	 * @return java.lang.String[][]
 	 */
-	public String[][] getKeysAndValues()
+	public Vector getKeysAndValues()
 	{
+		if( keysAndValues == null )
+			keysAndValues = new Vector(10);
 		return keysAndValues;
 	}
 	/**
 	 * Sets the keysAndValues.
 	 * @param keysAndVals java.lang.String[][]
 	 */
-	public void setKeysAndValues(String[][] keysAndVals)
+	public void setKeysAndValues(Vector keyAndValVector)
 	{
-		keysAndValues = keysAndVals;
+		keysAndValues = keyAndValVector;
 	}
 	
 	/**
@@ -67,7 +74,12 @@ public class KeysAndValues
 	 */
 	public String[] getKeys()
 	{
-		return keysAndValues[0];
+		String [] keysArray = new String[keysAndValues.size()];
+		for (int i = 0; i < keysAndValues.size(); i++)
+		{
+			keysArray[i] = ((KeyAndValue)keysAndValues.get(i)).getKey();
+		}
+		return keysArray;
 	}
 	
 	/**
@@ -76,7 +88,12 @@ public class KeysAndValues
 	 */
 	public String[] getValues()
 	{
-		return keysAndValues[1];
+		String [] valsArray = new String[keysAndValues.size()];
+		for (int i = 0; i < keysAndValues.size(); i++)
+		{
+			valsArray[i] = ((KeyAndValue)keysAndValues.get(i)).getValue();
+		}
+		return valsArray;
 	}
 
 	/**
@@ -88,11 +105,11 @@ public class KeysAndValues
 	{
 		if( keysAndValues != null)
 		{
-			for( int i = 0; i < keysAndValues[0].length; i++ )
+			for( int i = 0; i < keysAndValues.size(); i++ )
 			{
-				if( keysAndValues[0][i].equalsIgnoreCase(key) )
+				if( ((KeyAndValue)keysAndValues.get(i)).getKey().equalsIgnoreCase(key) )
 				{
-					return keysAndValues[1][i];
+					return ((KeyAndValue)keysAndValues.get(i)).getValue();
 				}
 			}
 		}	
@@ -109,11 +126,11 @@ public class KeysAndValues
 		if( keysAndValues != null)
 		{
 			java.util.Vector values = new java.util.Vector();
-			for( int i = 0; i < keysAndValues[0].length; i++ )
+			for( int i = 0; i < keysAndValues.size(); i++ )
 			{
-				if( keysAndValues[0][i].equalsIgnoreCase(key))
+				if( ((KeyAndValue)keysAndValues.get(i)).getKey().equalsIgnoreCase(key))
 				{
-					values.addElement( keysAndValues[1][i] );
+					values.addElement( ((KeyAndValue)keysAndValues.get(i)).getValue() );
 				}
 			}
 		
