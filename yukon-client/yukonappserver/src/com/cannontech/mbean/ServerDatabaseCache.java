@@ -15,9 +15,11 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -27,7 +29,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.*;
 
@@ -117,7 +118,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
     private Map allUserEnergyCompaniesMap = null;
     private Map userPaoOwnersMap = null;
     
-		
+    private ArrayList allDeviceTypeCommands = null;
+	private ArrayList allCommands = null;
+	private Map allCommandsMap = null;		
 /**
  * ServerDatabaseCache constructor comment.
  */
@@ -528,6 +531,30 @@ public synchronized java.util.List getAllGears()
 		GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
 		gearLoader.run();
 		return allGears;
+	}
+}
+
+public synchronized List getAllCommands() {
+	if (allCommands== null)
+	{
+		allCommands = new ArrayList();
+		allCommandsMap = new HashMap();
+		CommandLoader commandLoader = new CommandLoader(allCommands, allCommandsMap, databaseAlias);
+		commandLoader.run();
+	}
+	return allCommands;
+}
+
+public synchronized java.util.Map getAllCommandsMap()
+{
+	if( allCommandsMap != null )
+		return allCommandsMap;
+	else
+	{
+		releaseAllCommands();
+		getAllCommands();
+
+		return allCommandsMap;
 	}
 }
 
@@ -1322,6 +1349,24 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allCustomers;
 	}
 	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (3/14/00 3:19:19 PM)
+	 * @return java.util.Collection
+	 */
+	public synchronized java.util.List getAllDeviceTypeCommands(){
+
+		if( allDeviceTypeCommands != null )
+			return allDeviceTypeCommands;
+		else
+		{
+			allDeviceTypeCommands= new ArrayList();
+			DeviceTypeCommandLoader devTypeCmdLoader = new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
+			devTypeCmdLoader.run();
+			return allDeviceTypeCommands;
+		}
+	}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 2:01:01 PM)
@@ -1679,6 +1724,14 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleLMProgramConstraintChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB)
+	{
+		retLBase = handleDeviceTypeCommandChange(dbType, id);
+	}
+	else if( database == DBChangeMsg.CHANGE_COMMAND_DB )
+	{
+		retLBase = handleCommandChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
 			|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
@@ -1910,6 +1963,65 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 
 	return lBase;
 }
+private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allDeviceTypeCommands == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allDeviceTypeCommands.size();i++)
+				{
+					if( ((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).getDeviceCommandID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allDeviceTypeCommands.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					LiteDeviceTypeCommand ldtc = new LiteDeviceTypeCommand(id);
+					ldtc.retrieve(databaseAlias);
+					allDeviceTypeCommands.add(ldtc);
+					lBase = ldtc;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allDeviceTypeCommands.size();i++)
+				{
+					if( ((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).getDeviceCommandID() == id )
+					{
+						((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allDeviceTypeCommands.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allDeviceTypeCommands.size();i++)
+				{
+					if( ((LiteDeviceTypeCommand)allDeviceTypeCommands.get(i)).getDeviceCommandID() == id )
+					{
+						lBase = (LiteBase)allDeviceTypeCommands.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllDeviceTypeCommands();
+				break;
+	}
+
+	return lBase;
+}
+
+
 private synchronized LiteBase handleBaselineChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2025,7 +2137,6 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 
 	return lBase;
 }
-
 private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2083,6 +2194,64 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 
 	return lBase;
 }
+/**
+ * Insert the method's description here.
+ * Creation date: (12/7/00 12:34:05 PM)
+ */
+private synchronized LiteBase handleCommandChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allCommands == null )
+		return lBase;
+	
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+		
+				lBase = (LiteBase)allCommandsMap.get( new Integer(id) );				
+				if( lBase == null )
+				{
+					LiteCommand lc = new LiteCommand(id);
+					lc.retrieve(databaseAlias);
+					allCommands.add(lc);
+					allCommandsMap.put( new Integer(lc.getCommandID()), lc );
+
+					lBase = lc;
+				}
+				break;
+
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		
+				LiteCommand lc = (LiteCommand)allCommandsMap.get( new Integer(id) );				
+				lc.retrieve( databaseAlias );
+				
+				lBase = lc;
+				break;
+
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+
+				for(int i=0;i<allCommands.size();i++)
+				{
+					if( ((LiteCommand)allCommands.get(i)).getCommandID() == id )
+					{
+						allCommandsMap.remove( new Integer(id) );
+						lBase = (LiteBase)allCommands.remove(i);
+						break;
+					}
+				}
+				break;
+
+		default:
+				releaseAllCommands();
+				break;
+	}
+
+	return lBase;
+}
+
 
 private synchronized LiteBase handleConfigChange( int changeType, int id )
 {
@@ -2786,6 +2955,7 @@ public synchronized void releaseAllCache()
     allTags = null;
     allSeasonSchedules = null;
     allGears = null;
+    allDeviceTypeCommands = null;
     allTOUSchedules = null;
     
     allYukonUsers = null;
@@ -2878,6 +3048,11 @@ public synchronized void releaseAllBaselines()
 public synchronized void releaseAllSeasonSchedules()
 {
 	allSeasonSchedules = null;
+}
+public synchronized void releaseAllCommands()
+{
+	allCommands = null;
+	allCommandsMap = null;
 }
 
 public synchronized void releaseAllTOUSchedules()
@@ -2979,6 +3154,15 @@ public synchronized void releaseAllYukonPAObjects()
 	allYukonPAObjects = null;
 	allPAOsMap = null;
 }
+
+/**
+ * Insert the method's description here.
+ */
+public synchronized void releaseAllDeviceTypeCommands()
+{
+	allDeviceTypeCommands = null;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 1:09:04 PM)

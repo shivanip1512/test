@@ -150,6 +150,14 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       return getCache().getAllDevices();
    }
    
+   /* (non-Javadoc)
+	* @see com.cannontech.yukon.IDatabaseCache#getAllDeviceTypeCommands()
+	*/
+   public List getAllDeviceTypeCommands()
+   {
+	   return getCache().getAllDeviceTypeCommands();
+   }
+   
    /**
 	* @ejb:interface-method
 	* tview-type:"remote"
@@ -189,7 +197,17 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
 	  return getCache().getAllSeasonSchedules();
    }
-
+   
+   public List getAllCommands()
+   {
+	   return getCache().getAllCommands();
+   }
+   
+   public Map getAllCommandsMap()
+   {
+	   return getCache().getAllCommandsMap();
+   }
+   
    public synchronized java.util.List getAllConfigs()
    {
 	  return getCache().getAllConfigs();
@@ -553,6 +571,14 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       getCache().releaseAllDeviceMeterGroups();
    }
 
+   /* (non-Javadoc)
+	* @see com.cannontech.yukon.IDatabaseCache#releaseAllDeviceTypeCommands()
+	*/
+   public void releaseAllDeviceTypeCommands()
+   {
+	   getCache().releaseAllDeviceTypeCommands();
+   }
+   
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -589,6 +615,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
 	  getCache().releaseAllSeasonSchedules();
    }
+
+   public void releaseAllCommands()
+   {
+	   getCache().releaseAllCommands();
+   }   
    
    public synchronized void releaseAllConfigs()
    {
@@ -712,8 +743,4 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	public synchronized Map getYukonUserRolePropertyIDLookupMap() {
 		return getCache().getYukonUserRolePropertyIDLookupMap();
 	}
-	
-
-
-
 }
