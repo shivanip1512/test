@@ -258,7 +258,7 @@ private void initialize() {
 		java.awt.GridBagConstraints constraintsLoadGroupsAddRemovePanel = new java.awt.GridBagConstraints();
 		constraintsLoadGroupsAddRemovePanel.gridx = 0; constraintsLoadGroupsAddRemovePanel.gridy = 0;
 		constraintsLoadGroupsAddRemovePanel.gridwidth = 2;
-constraintsLoadGroupsAddRemovePanel.gridheight = 2;
+		constraintsLoadGroupsAddRemovePanel.gridheight = 2;
 		constraintsLoadGroupsAddRemovePanel.fill = java.awt.GridBagConstraints.BOTH;
 		add(getLoadGroupsAddRemovePanel(), constraintsLoadGroupsAddRemovePanel);
 		initConnections();
@@ -485,7 +485,9 @@ public void setValue(Object val )
 			childID = ((com.cannontech.database.db.macro.GenericMacro)macroGroupsVector.get(i)).getChildID().intValue();
 			for(int j=0;j<allDevices.size();j++)
 			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(j)).getYukonID() == childID )
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(j)).getYukonID() == childID 
+					&& ((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(j)).getLiteID() != 
+				((com.cannontech.database.data.device.lm.MacroGroup)val).getPAObjectID().intValue())
 				{
 					assignedGroups.addElement(allDevices.get(j));
 					break;
@@ -497,7 +499,9 @@ public void setValue(Object val )
 		for(int i=0;i<allDevices.size();i++)
 		{
 			if( com.cannontech.database.data.device.DeviceTypesFuncs.isLmGroup( 
-				((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i)).getType()) )
+				((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i)).getType()) 
+				&& ((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i)).getLiteID() != 
+				((com.cannontech.database.data.device.lm.MacroGroup)val).getPAObjectID().intValue())
 			{
 				availableGroups.addElement(allDevices.get(i));
 			}
