@@ -7,6 +7,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  * @author: 
  */
 public class CheckLoginTag extends BodyTagSupport {
+	private boolean skip;
+	
 /**
  * CheckLoginTag constructor comment.
  */
@@ -25,21 +27,30 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 		
 		if( (session = pageContext.getSession()) != null ) {			 
 			if(session.getAttribute("YUKON_USER") != null ) {
-				return EVAL_PAGE;
+				return EVAL_BODY_INCLUDE;
 			}
 		}
 
 		// Not logged in
+		skip = true;
+		
 		 javax.servlet.http.HttpServletResponse response = 
 		 	(javax.servlet.http.HttpServletResponse) pageContext.getResponse();
-
+	
 		 response.sendRedirect("/login.jsp");
 	}
 	catch(Exception e ) {
 		throw new JspException(e.getMessage());
 	}
 
-	return SKIP_PAGE;
+	return SKIP_BODY;
 	
 }
+	/* 
+	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
+	 */
+	public int doEndTag() throws JspException {
+		return (skip ? SKIP_PAGE : EVAL_PAGE);
+	}
+
 }
