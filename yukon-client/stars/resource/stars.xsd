@@ -90,8 +90,8 @@
 	<xs:complexType name="stars-CustAccount">
 		<xs:sequence>
 			<xs:element name="AccountNumber" type="xs:string"/>
-			<xs:element name="IsCommercial" type="xs:boolean"/>
-			<xs:element name="Company" type="xs:string"/>
+			<xs:element name="IsCommercial" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Company" type="xs:string" minOccurs="0"/>
 			<xs:element name="AccountNotes" type="xs:string"/>
 			<xs:element name="PropertyNumber" type="xs:string"/>
 			<xs:element name="PropertyNotes" type="xs:string"/>

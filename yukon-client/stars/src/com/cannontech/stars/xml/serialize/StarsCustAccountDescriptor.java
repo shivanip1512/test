@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.66 2004/02/20 15:55:27 zyao Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.67 2004/02/27 17:58:02 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.66 $ $Date: 2004/02/20 15:55:27 $
+ * @version $Revision: 1.67 $ $Date: 2004/02/27 17:58:02 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -200,9 +200,11 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
             {
                 try {
                     StarsCustAccount target = (StarsCustAccount) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteIsCommercial();
+                        return;
+                    }
                     target.setIsCommercial( ((Boolean)value).booleanValue());
                 }
                 catch (Exception ex) {
@@ -214,13 +216,11 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _isCommercial
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             BooleanValidator bv = new BooleanValidator();
             fieldValidator.setValidator(bv);
@@ -253,13 +253,11 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _company
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
