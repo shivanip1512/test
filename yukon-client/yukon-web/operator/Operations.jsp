@@ -146,21 +146,30 @@
           </tr>
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
-            <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct 
-                </a></div>
+            <td width="110" class = "Main">
+              <div align = "center" style = "border:solid 1px #666999;">
+<cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_DIRECT_CONTROL %>"> 
+			    <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a>
+</cti:checkRole>
+              &nbsp;</div>
             </td>
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.CURTAILMENT_TEXT %>"/> 
-                </a></div>
+              <div align = "center" style = "border:solid 1px #666999;">
+<cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_CURTAILMENT %>"> 
+			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.CURTAILMENT_TEXT %>"/></a>
+</cti:checkRole>
+			  &nbsp;</div>
             </td>
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> 
-                </a></div>
+              <div align = "center" style = "border:solid 1px #666999;">
+<cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_ENERGY_EXCHANGE %>"> 
+			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/></a>
+</cti:checkRole>
+			  &nbsp;</div>
             </td>
 		  </form>
             <form method="post" action="Consumer/Odds.jsp">
