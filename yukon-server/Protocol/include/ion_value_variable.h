@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:47 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/06 16:12:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,6 +118,11 @@ public:
         CtiIONValueVariable(Variable_StructEnd)
     {
     }
+
+    virtual ~CtiIONStructEnd()
+    {
+    }
+
 };
 
 

@@ -207,16 +207,16 @@ protected:
         *bytesUsed = pos;
     }
 
-    ~CtiIONFixedArrayTemplate( )
-    {
-        delete [] _string;
-    }
-
 public:
 
     CtiIONFixedArrayTemplate( )
     {
         setValid(assignArrayType());
+    }
+
+    virtual ~CtiIONFixedArrayTemplate( )
+    {
+        delete [] _string;
     }
 
     T *operator[]( unsigned long index )

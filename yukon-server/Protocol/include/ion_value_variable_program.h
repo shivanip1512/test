@@ -42,7 +42,7 @@ public:
     CtiIONProgram( CtiIONStatement *initial );
     CtiIONProgram( unsigned char *byteStream, unsigned long streamLength );
 
-    ~CtiIONProgram( );
+    virtual ~CtiIONProgram( );
 
     CtiIONProgram &addStatement( CtiIONStatement *toAdd );
     CtiIONProgram &clearAndDestroy( void );
@@ -72,7 +72,7 @@ public:
 
     CtiIONStatement( );
     CtiIONStatement( unsigned int handle, CtiIONMethod *method );
-    ~CtiIONStatement( );
+    virtual ~CtiIONStatement( );
 
     bool isValid( void );
 
@@ -112,7 +112,7 @@ public:
     CtiIONMethod( );
     CtiIONMethod( IONSimpleMethods method, CtiIONValue *parameter=NULL );
     CtiIONMethod( IONExtendedMethods method, CtiIONValue *parameter=NULL );
-    ~CtiIONMethod( );
+    virtual ~CtiIONMethod( );
 
     int isValid( void );
 

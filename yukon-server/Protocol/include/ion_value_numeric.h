@@ -25,7 +25,7 @@ protected:
 public:
 
     CtiIONNumeric( )  { };
-    ~CtiIONNumeric( ) { };
+    virtual ~CtiIONNumeric( ) { };
 
     virtual double getNumericValue( void ) const;
 };

@@ -70,7 +70,7 @@ protected:
 
 public:
 
-    ~CtiIONValue( );
+    virtual ~CtiIONValue( );
 
     enum ValueTypes
     {

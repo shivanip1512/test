@@ -805,8 +805,6 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
                                        RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, RWCString &returnInfo )
 {
     CtiReturnMsg *retMsg, *vgMsg;
-    RWTPtrSlist<CtiPointDataMsg>::iterator pt_iter;
-    RWTPtrSlist<CtiSignalMsg>::iterator    ev_iter;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -816,14 +814,13 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
     retMsg->setUserMessageId(InMessage->Return.UserID);
     vgMsg->setUserMessageId (InMessage->Return.UserID);
 
-    for( pt_iter = points.begin();  pt_iter != points.end(); ++pt_iter )
+    while( !points.isEmpty() )
     {
-        CtiPointDataMsg *tmpMsg;
+        CtiPointDataMsg *tmpMsg = points.get();
+
         CtiPointBase    *point;
         double           value;
         RWCString        resultString;
-
-        tmpMsg = *pt_iter;
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
@@ -858,14 +855,17 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             retMsg->PointData().append(tmpMsg);
         }
+        else
+        {
+            // 100303 CGP... We must delete it .
+            delete tmpMsg;
+        }
     }
 
-    for( ev_iter = events.begin(); ev_iter != events.end();  ++ev_iter )
+    while( !events.isEmpty() )
     {
-        CtiSignalMsg *tmpSignal;
+        CtiSignalMsg *tmpSignal = events.get();
         CtiPointBase *point;
-
-        tmpSignal = *ev_iter;
 
         if( (point = getDevicePointOffsetTypeEqual(tmpSignal->getId(), AnalogPointType)) != NULL )
         {
@@ -873,6 +873,11 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
             //  only send to Dispatch
             vgList.append(tmpSignal->replicateMessage());
+        }
+        else
+        {
+            // 100303 CGP... We must delete it .
+            delete tmpSignal;
         }
     }
 

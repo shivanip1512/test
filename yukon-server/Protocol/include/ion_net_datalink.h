@@ -143,7 +143,7 @@ protected:
 public:
 
     CtiIONDatalinkLayer( );
-    ~CtiIONDatalinkLayer( );
+    virtual ~CtiIONDatalinkLayer( );
 
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 

@@ -44,7 +44,7 @@ protected:
 public:
 
     CtiIONBoolean( bool initialValue );
-    ~CtiIONBoolean( );
+    virtual ~CtiIONBoolean( );
 
     CtiIONBoolean &setValue( bool value );
     bool           getValue( void ) const;

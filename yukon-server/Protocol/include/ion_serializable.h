@@ -41,7 +41,7 @@ protected:
 public:
 
     CtiIONSerializable( )  { };
-    ~CtiIONSerializable( )  { };
+    virtual ~CtiIONSerializable( )  { };
 };
 
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/06/02 14:55:05 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/06 16:12:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ private:
 protected:
 
     CtiIONStructArray( );
-    ~CtiIONStructArray( );
+    virtual ~CtiIONStructArray( );
 
     typedef vector< CtiIONStruct * > ion_struct_vector;
     ion_struct_vector _structArrayElements;
@@ -149,7 +149,7 @@ public:
         setValid(assignStructArrayType());
     }
 
-    ~CtiIONStructArrayTemplate( )
+    virtual ~CtiIONStructArrayTemplate( )
     {
         clear( );
     }

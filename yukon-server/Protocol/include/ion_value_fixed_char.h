@@ -42,7 +42,7 @@ protected:
 public:
 
     CtiIONChar( unsigned char initialValue );
-    ~CtiIONChar( );
+    virtual ~CtiIONChar( );
 
     CtiIONChar &setValue( unsigned char value );
     unsigned char getValue( void ) const;

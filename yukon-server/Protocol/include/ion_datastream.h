@@ -40,7 +40,7 @@ public:
 
     CtiIONDataStream( unsigned char *buf, unsigned long len );
     CtiIONDataStream( );
-    ~CtiIONDataStream( );
+    virtual ~CtiIONDataStream( );
 
     CtiIONDataStream &initialize( unsigned char *buf, unsigned long len );
 

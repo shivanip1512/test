@@ -42,7 +42,7 @@ protected:
 public:
 
     CtiIONFloat( float initialValue );
-    ~CtiIONFloat( );
+    virtual ~CtiIONFloat( );
 
     CtiIONFloat &setValue( float value );
     float        getValue( void ) const;

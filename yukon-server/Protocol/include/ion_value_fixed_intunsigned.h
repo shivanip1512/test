@@ -42,7 +42,7 @@ protected:
 public:
 
     CtiIONUnsignedInt( unsigned long initialValue );
-    ~CtiIONUnsignedInt( );
+    virtual ~CtiIONUnsignedInt( );
 
     CtiIONUnsignedInt &setValue( unsigned long value );
     unsigned long      getValue( void ) const;

@@ -42,7 +42,7 @@ protected:
 public:
 
     CtiIONSignedInt( long initialValue );
-    ~CtiIONSignedInt( );
+    virtual ~CtiIONSignedInt( );
 
     CtiIONSignedInt &setValue( long value );
     long             getValue( void ) const;

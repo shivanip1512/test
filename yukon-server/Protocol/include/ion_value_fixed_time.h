@@ -35,7 +35,7 @@ protected:
 public:
 
     CtiIONTime( unsigned long seconds, unsigned long fractionalSeconds );
-    ~CtiIONTime( );
+    virtual ~CtiIONTime( );
 
     CtiIONTime    &setSeconds( unsigned long value );
     unsigned long  getSeconds( void ) const;

@@ -108,7 +108,7 @@ protected:
 public:
 
     CtiIONApplicationLayer( );
-    ~CtiIONApplicationLayer( );
+    virtual ~CtiIONApplicationLayer( );
 
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
