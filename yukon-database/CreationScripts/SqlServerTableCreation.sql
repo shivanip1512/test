@@ -3021,7 +3021,7 @@ Axis                 char(1)              not null,
 Color                numeric              not null,
 Type                 numeric              not null,
 Multiplier           float                not null,
-ViewTye              smallint             not null,
+Renderer             smallint             not null,
 MoreData             varchar(100)         not null
 )
 go

@@ -56,11 +56,11 @@ go
 
 insert into billingFileformats values (9, 'CTI2');
 
-alter table GraphDataSeries add viewType smallint;
+alter table GraphDataSeries add renderer smallint;
 go
-update GraphDataSeries set viewType = 0;	/*Line view*/
+update GraphDataSeries set renderer = 0;	/*Line renderer */
 go
-alter table GraphDataSeries alter column viewType smallint not null;
+alter table GraphDataSeries alter column renderer smallint not null;
 go
 
 
