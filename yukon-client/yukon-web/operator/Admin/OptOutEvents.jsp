@@ -38,7 +38,8 @@ function selectAccount(accountID) {
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
-              <span class="TitleHeader">ADMINISTRATION - OPT OUT EVENTS</span><br>
+              <span class="TitleHeader">ADMINISTRATION - SCHEDULED <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN %>" defaultvalue="opt out" format="upper"/> 
+              EVENTS</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <br>
               <table width="450" border="1" cellspacing="0" cellpadding="1" align="center">
@@ -67,14 +68,6 @@ function selectAccount(accountID) {
 <%
 	}
 %>
-              </table>
-              <br>
-              <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                  <td align="center"> 
-                    <input type="button" name="Back" value="Back" onClick="location.href='AdminTest.jsp'">
-                  </td>
-                </tr>
               </table>
             </div>
 			<form name="custForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">

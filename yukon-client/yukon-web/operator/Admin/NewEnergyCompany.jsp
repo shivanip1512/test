@@ -1,6 +1,11 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
+		response.sendRedirect("../Operations.jsp");
+		return;
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

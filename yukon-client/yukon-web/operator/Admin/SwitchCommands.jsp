@@ -121,14 +121,11 @@ function validate(form) {
               <br>
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
-                  <td align="right" width="290"> 
+                  <td align="right" width="47%"> 
                     <input type="submit" name="Submit" value="Send">
                   </td>
-                  <td width="205"> 
+                  <td width="53%"> 
                     <input type="submit" name="Submit2" value="Remove" onclick="this.form.action.value = 'RemoveSwitchCommands'">
-                  </td>
-                  <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onClick="location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>
