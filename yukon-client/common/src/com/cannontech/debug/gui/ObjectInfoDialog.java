@@ -120,6 +120,20 @@ private Object formatSpecialObjects(Object value)
 		value = new com.cannontech.clientutils.commonutils.ModifiedDate(
 				((java.util.Date)value).getTime() );
 	}
+	else if( value instanceof Long )  //show Longs in HEX and Base10
+	{
+		value = value + "  (0x" + Long.toHexString( ((Long)value).longValue() ) +")";
+	}
+	else if( value instanceof Object[] )  //try our best to print the array
+	{
+		Object[] arr = (Object[])value;
+		String s = "";
+		for( int i = 0; i < arr.length; i++ )
+			s += formatSpecialObjects(arr[i]) + ",";
+
+		value = s;	
+	}
+
 
 	return value;
 }
