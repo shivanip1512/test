@@ -38,6 +38,9 @@ public interface IDatabaseCache
    //public java.util.List getAllNotificationGroups();
 
    public java.util.List getAllPoints();
+	//	Map<Integer(ptID), LitePoint>
+	public java.util.Map getAllPointsMap();
+
    public java.util.List getAllPointsUnits();
    public java.util.List getAllPointLimits();
    public java.util.HashMap getAllPointidMultiplierHashMap();

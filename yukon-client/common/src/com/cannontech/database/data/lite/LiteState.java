@@ -5,26 +5,28 @@ package com.cannontech.database.data.lite;
 public class LiteState extends LiteBase
 {
 	private String stateText = null;
+	private int fgColor = 0;
+	private int bgColor = 0;
    private int imageID = 0;
 
 /**
- * LiteDevice
+ * LiteState
  */
 public LiteState( int rawSt ) 
 {
-	super();
-	setLiteID(rawSt);
-	setLiteType(LiteTypes.STATE);
+	this( rawSt, null, 0, 0, 0 );
 }
 /**
- * LiteDevice
+ * LiteState
  */
-public LiteState( int rawSt, String stText, int imgID ) 
+public LiteState( int rawSt, String stText, int fgColor_, int bgColor_, int imgID ) 
 {
 	super();
 	setLiteID(rawSt);
 	stateText = stText;
-	setLiteType(LiteTypes.STATE);
+	setLiteType(LiteTypes.STATE);	
+	setFgColor( fgColor_ );
+	setBgColor( bgColor_ );
    setImageID( imgID );
 }
 /**
@@ -75,6 +77,38 @@ public String toString() {
 	public void setImageID(int imageID)
 	{
 		this.imageID = imageID;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getBgColor()
+	{
+		return bgColor;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getFgColor()
+	{
+		return fgColor;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setBgColor(int i)
+	{
+		bgColor = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setFgColor(int i)
+	{
+		fgColor = i;
 	}
 
 }

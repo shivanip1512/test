@@ -206,6 +206,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllPoints();
    }
 
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.Map getAllPointsMap()
+	{
+		return getDBCache().getAllPointsMap();
+	}
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 

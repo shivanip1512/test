@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -90,6 +91,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	
 	private java.util.HashMap allPointidMultiplierHashMap = null;
 	private java.util.HashMap allPointIDOffsetHashMap = null;
+	private java.util.HashMap allPointsMap = null;
 	
 /**
  * DefaultDatabaseCache constructor comment.
@@ -346,15 +348,15 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 
 					for( int i = 0; i < getAllPoints().size(); i++ )
 					{
-						 com.cannontech.database.data.lite.LitePoint point =((com.cannontech.database.data.lite.LitePoint)getAllPoints().get(i));
+						 LitePoint point =((LitePoint)getAllPoints().get(i));
 						 if( point.getPointID() == pointID )
 						 {
 							  // tags may need to be changed here if there
 										//  are more tags added to this bit field
-							  long tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
+							  long tags = LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
 
 							  if( formula.equalsIgnoreCase("usage"))
-								   tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE;
+								   tags = LitePoint.POINT_UOFM_USAGE;
 
 							  point.setTags( tags );
 							  allGraphTaggedPoints.add(  point );
@@ -364,10 +366,10 @@ public synchronized java.util.List getAllGraphTaggedPoints()
 			   // Grab all status points too...!
 			   for (int i = 0; i < getAllPoints().size(); i++)
 			   {
-					com.cannontech.database.data.lite.LitePoint point = ((com.cannontech.database.data.lite.LitePoint) getAllPoints().get(i));
+					LitePoint point = ((LitePoint) getAllPoints().get(i));
 					if ( point.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 					{
-						 point.setTags( com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH );
+						 point.setTags( LitePoint.POINT_UOFM_GRAPH );
 						 allGraphTaggedPoints.add (point);
 					}
 			   }
@@ -524,11 +526,31 @@ public synchronized java.util.List getAllPoints(){
 	else
 	{
 		allPoints = new java.util.ArrayList();
-		PointLoader pointLoader = new PointLoader(allPoints, databaseAlias);
+		allPointsMap = new HashMap();
+		PointLoader pointLoader = new PointLoader(allPoints, allPointsMap, databaseAlias);
 		pointLoader.run();
 		return allPoints;
 	}
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ * @return java.util.Collection
+ */
+public synchronized java.util.Map getAllPointsMap()
+{
+	if( allPointsMap != null )
+		return allPointsMap;
+	else
+	{
+		releaseAllPoints();
+		getAllPoints();
+
+		return allPointsMap;
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -1803,7 +1825,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 				for(int i=0;i<allPoints.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPointID() == id )
+					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
 					{
 						alreadyAdded = true;
 						lBase = (LiteBase)allPoints.get(i);
@@ -1812,18 +1834,20 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 				}
 				if( !alreadyAdded )
 				{
-					com.cannontech.database.data.lite.LitePoint lp = new com.cannontech.database.data.lite.LitePoint(id);
+					LitePoint lp = new LitePoint(id);
 					lp.retrieve(databaseAlias);
 					allPoints.add(lp);
+					allPointsMap.put( new Integer(lp.getPointID()), lp );
+
 					lBase = lp;
 				}
 				break;
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
 				for(int i=0;i<allPoints.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPointID() == id )
+					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
 					{
-						((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).retrieve(databaseAlias);
+						((LitePoint)allPoints.get(i)).retrieve(databaseAlias);
 						lBase = (LiteBase)allPoints.get(i);
 						break;
 					}
@@ -1832,8 +1856,9 @@ private synchronized LiteBase handlePointChange( int changeType, int id )
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
 				for(int i=0;i<allPoints.size();i++)
 				{
-					if( ((com.cannontech.database.data.lite.LitePoint)allPoints.get(i)).getPointID() == id )
+					if( ((LitePoint)allPoints.get(i)).getPointID() == id )
 					{
+						allPointsMap.remove( new Integer(id) );
 						lBase = (LiteBase)allPoints.remove(i);
 						break;
 					}
@@ -2176,7 +2201,10 @@ public synchronized void releaseAllAlarmCategories()
 public synchronized void releaseAllCache()
 {
 	allYukonPAObjects = null;
+	
 	allPoints = null;
+	allPointsMap = null;
+	
 	allStateGroups = null;
 	allUnitMeasures = null;
 	allNotificationGroups = null;
@@ -2191,7 +2219,7 @@ public synchronized void releaseAllCache()
 	allDeviceMeterGroups = null;
 	allPointsUnits = null;
 	allPointLimits = null;
-    allYukonImages = null;
+   allYukonImages = null;
 	allCICustomers = null;
 
 	allYukonUsers = null;
@@ -2294,9 +2322,10 @@ public synchronized void releaseAllCICustomers()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
-public synchronized void releaseAllPoints(){
-
+public synchronized void releaseAllPoints()
+{
 	allPoints = null;
+	allPointsMap = null;
 }
 /**
  * Insert the method's description here.

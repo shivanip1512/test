@@ -6,6 +6,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteStateGroup;
 
 /**
  * Insert the type's description here.
@@ -30,16 +31,9 @@ public static LitePoint getLitePoint(int pointID)
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List points = cache.getAllPoints();
-		
-		for( int j = 0; j < points.size(); j++ )
-		{
-			if( pointID == ((LitePoint)points.get(j)).getPointID() )
-				return (LitePoint)points.get(j);
-		}
+		return (LitePoint) 
+			cache.getAllPointsMap().get( new Integer(pointID) );
 	}
-
-	return null;
 }
 
 /**
@@ -110,21 +104,22 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 	 * @param id
 	 * @return String
 	 */
-	public static String getPointName(int id) {
+	public static String getPointName(int id) 
+	{
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
-		synchronized(cache) {
-			Iterator iter = cache.getAllPoints().iterator();
-			while(iter.hasNext()) {
-				LitePoint lp = (LitePoint) iter.next();
-				if( lp.getLiteID() == id ) {
-					return lp.getPointName();
-				}							
-			}
+		synchronized(cache) 
+		{
+			LitePoint lp =
+				(LitePoint)cache.getAllPointsMap().get( new Integer(id) );
+				
+			if( lp != null )
+				return lp.getPointName();
+			else
+				return null;
 		}
-		
-		return null;
 	}
+
 	
 	/**
 	 * Finds the lite point limit given a point id
@@ -159,6 +154,29 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 				}
 			}
 		}
+		return null;
+	}
+	
+	/**
+	 * Returns the LiteStateGroup for a certain point by a StateGroupID
+	 * @param id
+	 * @return LiteStateGroup
+	 */
+	public static LiteStateGroup getStateGroup( int stateGroupID ) 
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) 
+		{
+			Iterator iter = cache.getAllStateGroups().iterator();
+			while( iter.hasNext() ) 
+			{
+				LiteStateGroup lsg = (LiteStateGroup)iter.next();
+				if( lsg.getStateGroupID() == stateGroupID )
+					return lsg;
+			}
+		}
+		
 		return null;
 	}
 }

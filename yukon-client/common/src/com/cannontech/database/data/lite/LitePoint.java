@@ -19,7 +19,7 @@ public class LitePoint extends LiteBase
 	public final static LitePoint NONE_LITE_PT = new LitePoint(
 			PointTypes.SYS_PID_SYSTEM, 
 			CtiUtilities.STRING_NONE,
-			PointTypes.CALCULATED_POINT,
+			PointTypes.INVALID_POINT,
 			0,0,0 );
 		
 	// tags is used as a bit represention of data about this point
@@ -306,7 +306,12 @@ public String toString()
 {
 	if (showPointOffsets)
 	{
-		if (!(getPointType() == PointTypes.CALCULATED_POINT))
+		if( getPointType() == PointTypes.CALCULATED_POINT
+			 || getPointType() == PointTypes.INVALID_POINT )
+		{
+			return getPointName();
+		}
+		else
 		{
 			if (getPointOffset() == 0)
 			{
@@ -315,8 +320,7 @@ public String toString()
 			else
 				return "#" + getPointOffset() + " " + pointName;
 		}
-		else
-			return getPointName();
+
 	}
 	else
 		return getPointName();

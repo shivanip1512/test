@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.Map;
+
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -7,15 +9,22 @@ import com.cannontech.database.data.point.PointTypes;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-public class PointLoader implements Runnable {
+public class PointLoader implements Runnable 
+{
+	//Map<Integer(ptID), LitePoint>
+	private Map allPointsMap = null;
+	
 	private java.util.ArrayList allPoints = null;
 	private String databaseAlias = null;
+
 /**
- * DeviceLoader constructor comment.
+ * PointLoader constructor comment.
  */
-public PointLoader(java.util.ArrayList pointArray, String alias) {
+public PointLoader(java.util.ArrayList pointArray, Map pointMap_, String alias) 
+{
 	super();
 	this.allPoints = pointArray;
+	this.allPointsMap = pointMap_;
 	this.databaseAlias = alias;
 }
 
@@ -53,6 +62,8 @@ private void executeNonSQL92Query()
                   paobjectID, pointOffset, stateGroupID );
 
          allPoints.add(lp);
+         allPointsMap.put( new Integer(pointID), lp );
+         
       }
    }
    catch( java.sql.SQLException e )
@@ -128,6 +139,7 @@ timerStart = new java.util.Date();
 																						paobjectID, pointOffset, stateGroupID, tags );
 
 			allPoints.add(lp);
+			allPointsMap.put( new Integer(pointID), lp );
 		}
 	}
    catch( java.sql.SQLException e )

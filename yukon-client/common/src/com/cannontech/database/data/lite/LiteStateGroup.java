@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.db.state.State;
+
 /*
  */
 public class LiteStateGroup extends LiteBase
@@ -84,8 +86,9 @@ public void retrieve(String databaseAlias) {
       groupType = ((String) stmt.getRow(0)[1]);
 
 		stmt = new com.cannontech.database.SqlStatement(
-            "SELECT RawState,Text,ImageID FROM State WHERE StateGroupID = " + Integer.toString(getStateGroupID()) + 
-            " AND RAWSTATE >= 0", databaseAlias);
+            "SELECT RawState, Text, ForegroundColor, BackgroundColor, ImageID " + 
+            "FROM " + State.TABLE_NAME + " WHERE StateGroupID = " + getStateGroupID() + " " + 
+            "AND RAWSTATE >= 0", databaseAlias);
 
 		stmt.execute();
 
@@ -93,10 +96,12 @@ public void retrieve(String databaseAlias) {
 		LiteState ls = null;
 		for(int i=0;i<stmt.getRowCount();i++)
 		{
-			ls = new LiteState( 
+			ls = new LiteState(
                ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue(), 
                ((String) stmt.getRow(i)[1]),
-               ((java.math.BigDecimal)stmt.getRow(i)[2]).intValue() );
+					((java.math.BigDecimal)stmt.getRow(i)[2]).intValue(),
+					((java.math.BigDecimal)stmt.getRow(i)[3]).intValue(),
+               ((java.math.BigDecimal)stmt.getRow(i)[4]).intValue() );
 
 			if( ls.getStateRawState() >= 0 )
 				getStatesList().add(ls);

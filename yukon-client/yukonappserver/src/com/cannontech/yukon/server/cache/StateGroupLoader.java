@@ -1,5 +1,8 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.db.state.State;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -45,29 +48,35 @@ timerStart = new java.util.Date();
 			String stateGroupName = rset.getString(2).trim();
          String groupType = rset.getString(3).trim();
 
-			com.cannontech.database.data.lite.LiteStateGroup lsg =
-				new com.cannontech.database.data.lite.LiteStateGroup(
+			LiteStateGroup lsg =
+				new LiteStateGroup(
                stateGroupID, stateGroupName, groupType );
 
 			allStateGroups.add(lsg);
 		}
 
-		sqlString = "SELECT STATEGROUPID,RAWSTATE,TEXT,ImageID FROM STATE WHERE STATEGROUPID > 0 AND RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
+		sqlString =
+			"SELECT StateGroupID, RawState, Text, ForegroundColor, BackgroundColor, ImageID " + 
+			"FROM " + State.TABLE_NAME + " WHERE STATEGROUPID > 0 " + 
+			"AND RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
+		
 		rset = stmt.executeQuery(sqlString);
 		while (rset.next())
 		{
 			int stateGroupID = rset.getInt(1);
 			int rawState = rset.getInt(2);
 			String text = rset.getString(3);
-         int imgID = rset.getInt(4);
+			int fgColor = rset.getInt(4);
+			int bgColor = rset.getInt(5);
+         int imgID = rset.getInt(6);
 
 			for(int i=0;i<allStateGroups.size();i++)
 			{
-				if( ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
+				if( ((LiteStateGroup)allStateGroups.get(i)).getStateGroupID() == stateGroupID )
 				{
-					((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList().add(
+					((LiteStateGroup)allStateGroups.get(i)).getStatesList().add(
                      new com.cannontech.database.data.lite.LiteState(
-                        rawState, text, imgID));
+                        rawState, text, fgColor, bgColor, imgID));
 					break;
 				}
 			}
