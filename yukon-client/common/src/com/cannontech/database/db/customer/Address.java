@@ -12,7 +12,7 @@ public class Address extends com.cannontech.database.db.DBPersistent
 	private String locationAddress1 = CtiUtilities.STRING_NONE;
 	private String locationAddress2 = CtiUtilities.STRING_NONE;
 	private String cityName = CtiUtilities.STRING_NONE;
-	private String stateCode = CtiUtilities.STRING_NONE;
+	private String stateCode = "MN";
 	private String zipCode = CtiUtilities.STRING_NONE;
 	private String county = CtiUtilities.STRING_NONE;
 
@@ -109,7 +109,8 @@ public static synchronized Integer getNextAddressID( java.sql.Connection conn )
 	try 
 	{		
 	    stmt = conn.createStatement();
-		 rset = stmt.executeQuery( "SELECT Max(AddressID)+1 FROM " + TABLE_NAME );	
+		 rset = stmt.executeQuery( 
+				"SELECT Max(AddressID)+1 FROM " + TABLE_NAME );	
 			
 		 //get the first returned result
 		 rset.next();

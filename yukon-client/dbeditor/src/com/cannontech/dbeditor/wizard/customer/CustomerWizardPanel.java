@@ -9,7 +9,7 @@ public class CustomerWizardPanel extends com.cannontech.common.wizard.WizardPane
 {
 	private CustomerTypePanel customerTypePanel;
 	private CustomerBasePanel customerBasePanel;
-	private CustomerAddressPanel customerAddressPanel;
+	private AddressPanel customerAddressPanel;
 	private CustomerContactPanel customerContactPanel;
 
 	/**
@@ -60,10 +60,10 @@ public class CustomerWizardPanel extends com.cannontech.common.wizard.WizardPane
 	 * Creation date: (3/27/2001 12:41:08 PM)
 	 * @return com.cannontech.dbeditor.wizard.device.customer.CustomerAddressPanel
 	 */
-	public CustomerAddressPanel getCustomerAddressPanel() 
+	public AddressPanel getCustomerAddressPanel() 
 	{
 		if( customerAddressPanel == null )
-			customerAddressPanel = new CustomerAddressPanel();
+			customerAddressPanel = new AddressPanel();
 			
 		return customerAddressPanel;
 	}

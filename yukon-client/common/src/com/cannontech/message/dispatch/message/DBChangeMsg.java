@@ -25,7 +25,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_NOTIFICATION_GROUP_DB		= 3;
 	public static final int CHANGE_NOTIFICATION_RECIPIENT_DB	= 4;
 	public static final int CHANGE_ALARM_CATEGORY_DB			= 5;
-	public static final int CHANGE_CUSTOMER_CONTACT_DB			= 6;
+	public static final int CHANGE_CONTACT_DB						= 6;
 	public static final int CHANGE_GRAPH_DB						= 7;
 	public static final int CHANGE_HOLIDAY_SCHEDULE_DB			= 8;
 	public static final int CHANGE_ENERGY_COMPANY_DB			= 9;

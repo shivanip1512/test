@@ -312,6 +312,11 @@ private javax.swing.JButton getJButtonAddress() {
 			ivjJButtonAddress.setToolTipText("Sets the optional address fields");
 			ivjJButtonAddress.setText("Address...");
 			// user code begin {1}
+			
+			//we do not use this widget for now
+			ivjJButtonAddress.setVisible(false);
+
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1134,6 +1139,9 @@ private void setSelectedLogin( Contact cnt )
  */
 public void setValue(Object val) 
 {
+	if( val == null )
+		return;
+	
 	Contact cnt = (Contact)val;
 
 	getJTextFieldFirstName().setText( cnt.getContact().getContFirstName() );

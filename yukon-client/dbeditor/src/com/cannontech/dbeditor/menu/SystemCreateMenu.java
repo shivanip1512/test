@@ -8,10 +8,10 @@ import com.cannontech.common.gui.util.CommandableMenuItem;
 public class SystemCreateMenu extends javax.swing.JMenu {
 
 	//System wizards
-	public CommandableMenuItem notificationGroupMenuItem;
-
-	public CommandableMenuItem holidayMenuItem;
 	public CommandableMenuItem customerMenuItem;
+	public CommandableMenuItem contactMenuItem;
+	public CommandableMenuItem notificationGroupMenuItem;
+	public CommandableMenuItem holidayMenuItem;
 
 
 /**
@@ -39,13 +39,19 @@ private void initialize() {
 	customerMenuItem = new CommandableMenuItem("Customer...");
 	customerMenuItem.setFont( font );
 	customerMenuItem.setMnemonic('c');
+
+	contactMenuItem = new CommandableMenuItem("Contact...");
+	contactMenuItem.setFont( font );
+	contactMenuItem.setMnemonic('t');
+
 	
 	setText("Create");
 	setFont( font );
 	setMnemonic('c');
 
+	add( customerMenuItem );
+	add( contactMenuItem );
 	add( notificationGroupMenuItem );
 	add( holidayMenuItem );
-	add( customerMenuItem );
 }
 }

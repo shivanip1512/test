@@ -166,11 +166,11 @@ public class DatabaseEditor
 		};
 	private final Integer[] SYSTEM_MODELS =
 		{
-			//new Integer(ModelFactory.NOTIFICATION_LOCATION),
+			new Integer(ModelFactory.CICUSTOMER),
+			new Integer(ModelFactory.CONTACT),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.ALARM_STATES),
-			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
-			new Integer(ModelFactory.CICUSTOMER)
+			new Integer(ModelFactory.HOLIDAY_SCHEDULE)
 		};
 
 	private Vector messageListeners = new Vector();
@@ -620,10 +620,10 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.group.NotificationGroupWizardPanel());
 	}
-//	else if (item == systemCreateMenu.notificationDestination)
-//	{
-//		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.recipients.NotifRecipientWizardPanel());
-//	}
+	else if (item == systemCreateMenu.contactMenuItem)
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.contact.ContactWizardPanel());
+	}
 	else if (item == systemCreateMenu.holidayMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.holidayschedule.HolidayScheduleWizardPanel());
@@ -1937,7 +1937,7 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 							current.fireCancelButtonPressed();
 						}			
 					}		
-					else if( msg.getDatabase() == msg.CHANGE_CUSTOMER_CONTACT_DB 
+					else if( msg.getDatabase() == msg.CHANGE_CONTACT_DB 
 								&& userObject instanceof com.cannontech.database.data.customer.Contact )
 					{
 						com.cannontech.database.data.customer.Contact obj = (com.cannontech.database.data.customer.Contact)userObject;

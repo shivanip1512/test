@@ -2,11 +2,12 @@ package com.cannontech.dbeditor.editor.contact;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.dbeditor.wizard.contact.ContactPanel;
+import com.cannontech.dbeditor.wizard.customer.AddressPanel;
 
 /**
  * This type was created in VisualAge.
  */
-public class CustomerContactEditor extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
+public class ContactEditor extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
@@ -15,7 +16,7 @@ public class CustomerContactEditor extends com.cannontech.common.editor.Property
 	
 
 
-public CustomerContactEditor() 
+public ContactEditor() 
 {
 	super();
 	initialize();
@@ -40,12 +41,12 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "General";
 			break;
 
-/*
+
 		case 1:
-			objs[0] = new YukonUserLoginPanel();
-			objs[1] = "LogIn";
+			objs[0] = new AddressPanel();
+			objs[1] = "Address";
 			break;
-*/
+
 	}
 		
 	return objs;
@@ -120,7 +121,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("RouteEditorPanel");
+		setName("EditorPanel");
 		setPreferredSize(new java.awt.Dimension(400, 350));
 		setLayout(null);
 		setSize(400, 350);
@@ -142,7 +143,7 @@ public void setValue(Object val)
 	java.util.Vector panels = new java.util.Vector();
 	java.util.Vector tabs = new java.util.Vector();
 	DataInputPanel tempPanel;
-	final int PANEL_COUNT = 1;
+	final int PANEL_COUNT = 2;
 
  	for( int i = 0; i < PANEL_COUNT; i++ )
  	{
@@ -167,7 +168,7 @@ public void setValue(Object val)
  * @return java.lang.String
  */
 public String toString() {
-	return "Customer Contact Editor";
+	return "Contact Editor";
 }
 /**
  * 

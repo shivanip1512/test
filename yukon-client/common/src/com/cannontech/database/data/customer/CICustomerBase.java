@@ -9,7 +9,7 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.CustomerBaseLine;
 
-public class CICustomerBase extends Customer implements com.cannontech.common.editor.EditorPanel
+public class CICustomerBase extends Customer implements com.cannontech.common.editor.EditorPanel, IAddress
 {
 	private com.cannontech.database.db.customer.CICustomerBase ciCustomerBase = null;
 
@@ -118,9 +118,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		super.add();
 
-		getCustomerAddress().add();
+		getAddress().add();
 		
-		getCiCustomerBase().setMainAddressID( getCustomerAddress().getAddressID() );
+		getCiCustomerBase().setMainAddressID( getAddress().getAddressID() );
 		
 		getCiCustomerBase().add();
 		getCustomerBaseLine().add();
@@ -167,14 +167,14 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		getCustomerBaseLine().delete();
 		
 		//delete("CustomerAddress", "AddressID", getCiCustomerBase().getAddressID() );
-		getCustomerAddress().setAddressID( 
+		getAddress().setAddressID( 
 				getCiCustomerBase().getMainAddressID() );
 //					com.cannontech.database.db.customer.CICustomerBase.getCICustomerAddressID(
 //							getCustomerID(), getDbConnection()) );
 	
 		getCiCustomerBase().delete();
 	
-		getCustomerAddress().delete();
+		getAddress().delete();
 		
 	
 		super.delete();
@@ -200,7 +200,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	 * Creation date: (3/26/2001 2:47:56 PM)
 	 * @return com.cannontech.database.db.device.customer.CustomerAddress
 	 */
-	public Address getCustomerAddress() 
+	public Address getAddress() 
 	{
 		if( customerAddress == null )
 			customerAddress = new Address();
@@ -254,8 +254,8 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		
 		getCustomerBaseLine().retrieve();
 	
-		getCustomerAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
-		getCustomerAddress().retrieve();
+		getAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
+		getAddress().retrieve();
 	
 	
 		try
@@ -345,7 +345,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		super.setDbConnection(conn);
 		getCiCustomerBase().setDbConnection(conn);
-		getCustomerAddress().setDbConnection(conn);	
+		getAddress().setDbConnection(conn);	
 		getCustomerBaseLine().setDbConnection(conn);
 	
 	//----------------------------------------------------------------------------------
@@ -381,8 +381,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	public void update() throws java.sql.SQLException 
 	{
 	
-		getCustomerAddress().setAddressID(getCiCustomerBase().getMainAddressID());
-		getCustomerAddress().update();
+		getAddress().setAddressID(getCiCustomerBase().getMainAddressID());
+		getAddress().update();
+
 		
 		super.update();
 		getCiCustomerBase().update();

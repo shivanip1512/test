@@ -4,7 +4,11 @@ package com.cannontech.dbeditor.wizard.customer;
  */
 import java.awt.Dimension;
 
-public class CustomerAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.customer.IAddress;
+import com.cannontech.database.db.customer.Address;
+
+public class AddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjJComboBoxState = null;
 	private javax.swing.JLabel ivjJLabelCity = null;
 	private javax.swing.JLabel ivjJLabelState = null;
@@ -23,7 +27,7 @@ public class CustomerAddressPanel extends com.cannontech.common.gui.util.DataInp
  * Constructor
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public CustomerAddressPanel() {
+public AddressPanel() {
 	super();
 	initialize();
 }
@@ -629,24 +633,27 @@ private javax.swing.JTextField getJTextFieldZip() {
  */
 public Object getValue(Object o) 
 {
-	com.cannontech.database.data.customer.CICustomerBase customer = (com.cannontech.database.data.customer.CICustomerBase)o;
+	if( !(o instanceof IAddress) )
+		return o;
 
+	IAddress addy = (IAddress)o;
+	
 	if( getJTextFieldPrimeLocation().getText() != null && getJTextFieldPrimeLocation().getText().length() > 0 )
-		customer.getCustomerAddress().setLocationAddress1( getJTextFieldPrimeLocation().getText() );
+		addy.getAddress().setLocationAddress1( getJTextFieldPrimeLocation().getText() );
 
 	if( getJTextFieldSecLocation().getText() != null && getJTextFieldSecLocation().getText().length() > 0 )
-		customer.getCustomerAddress().setLocationAddress2( getJTextFieldSecLocation().getText() );
+		addy.getAddress().setLocationAddress2( getJTextFieldSecLocation().getText() );
 
 	if( getJTextFieldCity().getText() != null && getJTextFieldCity().getText().length() > 0 )
-		customer.getCustomerAddress().setCityName( getJTextFieldCity().getText() );
+		addy.getAddress().setCityName( getJTextFieldCity().getText() );
 
 	if( getJTextFieldZip().getText() != null && getJTextFieldZip().getText().length() > 0 )
-		customer.getCustomerAddress().setZipCode( getJTextFieldZip().getText() );
+		addy.getAddress().setZipCode( getJTextFieldZip().getText() );
 
 	if( getJTextFieldCounty().getText() != null && getJTextFieldCounty().getText().length() > 0 )
-		customer.getCustomerAddress().setCounty( getJTextFieldCounty().getText() );
+		addy.getAddress().setCounty( getJTextFieldCounty().getText() );
 		
-	customer.getCustomerAddress().setStateCode( getJComboBoxState().getSelectedItem().toString() );
+	addy.getAddress().setStateCode( getJComboBoxState().getSelectedItem().toString() );
 	
 	return o;
 }
@@ -771,21 +778,23 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) 
 {
-	if( o == null )
+	if( o == null || !(o instanceof IAddress) )
 		return;
 	
-	com.cannontech.database.data.customer.CICustomerBase customer = (com.cannontech.database.data.customer.CICustomerBase)o;
+	IAddress addy = (IAddress)o;
 
-	getJTextFieldPrimeLocation().setText( customer.getCustomerAddress().getLocationAddress1() );
+	getJTextFieldPrimeLocation().setText( addy.getAddress().getLocationAddress1() );
 
-	getJTextFieldSecLocation().setText( customer.getCustomerAddress().getLocationAddress2() );
+	getJTextFieldSecLocation().setText( addy.getAddress().getLocationAddress2() );
 
-	getJTextFieldCity().setText( customer.getCustomerAddress().getCityName() );	
+	getJTextFieldCity().setText( addy.getAddress().getCityName() );	
 
-	getJTextFieldZip().setText( customer.getCustomerAddress().getZipCode() );	
+	getJTextFieldZip().setText( addy.getAddress().getZipCode() );	
 
-	getJTextFieldCounty().setText( customer.getCustomerAddress().getCounty() );	
+	getJTextFieldCounty().setText( addy.getAddress().getCounty() );	
 
-	getJComboBoxState().setSelectedItem( customer.getCustomerAddress().getStateCode() );
+	getJComboBoxState().setSelectedItem( addy.getAddress().getStateCode() );
+	
+	
 }
 }

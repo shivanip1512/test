@@ -7,14 +7,14 @@ import com.cannontech.database.data.lite.LiteTypes;
 /**
  * This type was created in VisualAge.
  */
-public class ContactNotificationTreeModel extends DBTreeModel 
+public class ContactTreeModel extends DBTreeModel 
 {
 /**
  * MeterTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
-public ContactNotificationTreeModel() {
-	super( new DBTreeNode("Contact Notifications") );
+public ContactTreeModel() {
+	super( new DBTreeNode("Contacts") );
 }
 /**
  * Insert the method's description here.
@@ -23,43 +23,41 @@ public ContactNotificationTreeModel() {
  */
 public boolean isLiteTypeSupported( int liteType )
 {
-	return ( liteType == LiteTypes.CONTACT_NOTIFICATION );
+	return ( liteType == com.cannontech.database.data.lite.LiteTypes.CONTACT );
 }
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String toString() {
-	return "Contact Notifications";
+	return "Contacts";
 }
 /**
  * This method was created in VisualAge.
  */
 public void update() 
 {
-/*
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 
 	synchronized(cache)
 	{
-		java.util.List cntNotifs = cache.getAllContactNotifications();
+		java.util.List contacts = cache.getAllContacts();
 
-		java.util.Collections.sort( cntNotifs, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		java.util.Collections.sort( 
+					contacts, 
+					com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 		
-		for( int i = 0; i < cntNotifs.size(); i++ )
+		for( int i = 0; i < contacts.size(); i++ )
 		{
-			DBTreeNode notifGroupNode = new DBTreeNode( cntNotifs.get(i));
-
-			if( ((LiteContactNotification)cntNotifs.get(i)).getContactID() != CtiUtilities.NONE_ID )
-				rootNode.add( notifGroupNode );
+			DBTreeNode stateGroupNode = new DBTreeNode( contacts.get(i) );	
+			rootNode.add( stateGroupNode );
 		}
 	}
 
 	reload();
-*/
 }
 }

@@ -36,7 +36,7 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 1:
-			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerAddressPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.AddressPanel();
 			objs[1] = "Address";
 			break;
 

@@ -89,6 +89,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContFirstName( ((LiteContact)liteObject).getContFirstName() );
 				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContLastName( ((LiteContact)liteObject).getContLastName() );
 				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setLogInID( new Integer( ((LiteContact)liteObject).getLoginID() ) );
+				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setAddressID( new Integer(((LiteContact)liteObject).getAddressID()) );				
 				break;
 			case LiteTypes.DEVICE_METERNUMBER:
 				returnObject = new com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase();

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.contact;
 
+import com.cannontech.dbeditor.wizard.customer.AddressPanel;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/22/00 12:18:12 PM)
@@ -7,9 +9,12 @@ package com.cannontech.dbeditor.wizard.contact;
  */
 public class ContactWizardPanel extends com.cannontech.common.wizard.EditorlessWizardPanel
 {
-	private ContactPanel contactPanel = null;
+	private ContactPanel contactPanel;
+	private AddressPanel addressPanel;
+	
+	
 /**
- * DestinationLocationWizardPanel constructor comment.
+ * ContactWizardPanel constructor comment.
  */
 public ContactWizardPanel() {
 	super();
@@ -37,12 +42,21 @@ public ContactPanel getContactPanel()
 		
 	return contactPanel;
 }
+
+public AddressPanel getAddressPanel() 
+{
+	if( addressPanel == null )
+		addressPanel = new AddressPanel();
+		
+	return addressPanel;
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
  */
 protected String getHeaderText() {
-	return "Notification Recipients Setup";
+	return "Contact Setup";
 }
 /**
  * This method was created in VisualAge.
@@ -55,9 +69,14 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	{
 		return getContactPanel();
 	}
+	else if( currentInputPanel == getContactPanel() )
+	{
+		return getAddressPanel();
+	}
 	else
 		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
 }
+
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -65,6 +84,6 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
-	return ( currentPanel == getContactPanel() );
+	return ( currentPanel == getAddressPanel() );
 }
 }

@@ -1294,8 +1294,11 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	{
 		retLBase = handleContactNotificationChange( dbType, id );
 	}
-	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB )
+	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CONTACT_DB )
 	{
+		//clear out the CICustomers as they may have changed
+		allCICustomers = null;
+
 		retLBase = handleCustomerContactChange( dbType, id );		
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_GRAPH_DB )
@@ -1308,7 +1311,6 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	}
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_DB )
 	{
-		//allCICustomers= null;
 		retLBase = handleCICustomerChange( dbType, id );
 	}	
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB ) 

@@ -22,7 +22,7 @@ public final class ModelFactory
 	public static final int CAPBANKCONTROLLER =13;
 	public static final int CAPCONTROLSTRATEGY =14;
 	public static final int NOTIFICATION_GROUP =15;
-	public static final int NOTIFICATION_LOCATION = 16;
+	public static final int CONTACT = 16;
 	public static final int ALARM_STATES = 17;
 	public static final int LMPROGRAM = 18;
 	public static final int EDITABLEVERSACOMSERIAL = 19;
@@ -58,7 +58,7 @@ public final class ModelFactory
 		CapBankControllerModel.class,
 		CapControlSubBusModel.class,
 /*15*/NotificationGroupTreeModel.class,
-		ContactNotificationTreeModel.class,
+		ContactTreeModel.class,
 		AlarmCategoriesTreeModel.class,
 		LMProgramModel.class,
 		EditableVersacomSerialModel.class,

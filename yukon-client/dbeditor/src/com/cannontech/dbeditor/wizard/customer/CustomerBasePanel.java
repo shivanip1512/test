@@ -528,7 +528,11 @@ public Object getValue(Object o)
 		LiteContact cnt = (LiteContact)getJComboBoxPrimaryContact().getSelectedItem();
 		customer.getCustomer().setPrimaryContactID( new Integer(cnt.getContactID()) ); 
 	}
-	
+	else
+		customer.getCustomer().setPrimaryContactID( 
+				new Integer(com.cannontech.database.db.contact.Contact.CONTACTID_INVALID) );
+
+
 	//get the selected Time Zone if there is one
 	if( getJTextFieldTimeZone().getText() != null
 		 && getJTextFieldTimeZone().getText().length() > 0 )

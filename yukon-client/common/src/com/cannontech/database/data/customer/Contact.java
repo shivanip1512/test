@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.user.YukonUser;
@@ -12,9 +13,12 @@ import com.cannontech.database.db.user.YukonUser;
  * This type was created in VisualAge.
  */
 
-public class Contact extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
+public class Contact extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel, IAddress
 {
 	private com.cannontech.database.db.contact.Contact customerContact = null;
+	
+	private Address address = null;
+	
 	
 	//contains com.cannontech.database.db.contact.ContactNotification
 	private Vector contactNotifVect = null;
@@ -47,6 +51,11 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		//be sure all or our objects share the same contactID 
 		setContactID( getContact().getContactID() ); 
 		
+		
+		getAddress().add();		
+		getContact().setAddressID( getAddress().getAddressID() );
+
+		
 		getContact().add();
 		
 		for( int i = 0; i < getContactNotifVect().size(); i++ )
@@ -65,6 +74,12 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 				getDbConnection(),		 
 				getContact().getContactID().intValue() );
 	
+	
+		getAddress().setAddressID( 
+				getContact().getAddressID() );
+	
+		getAddress().delete();
+		
 		getContact().delete();
 	
 	}
@@ -92,7 +107,20 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		
 		return customerContact;
 	}
-	
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (4/3/2001 11:12:12 AM)
+	 * @return Address
+	 */
+	public Address getAddress() 
+	{
+		if( address == null )
+			address = new Address();
+		
+		return address;
+	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (12/19/2001 1:45:25 PM)
@@ -104,7 +132,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		{
 			new com.cannontech.message.dispatch.message.DBChangeMsg(
 						getContact().getContactID().intValue(),
-						com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
+						com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CONTACT_DB,
 						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMERCONTACT,
 						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMERCONTACT,
 						typeOfChange)
@@ -120,6 +148,11 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	public void retrieve() throws java.sql.SQLException 
 	{
 		getContact().retrieve();
+	
+	
+		getAddress().setAddressID( getContact().getAddressID() );
+		getAddress().retrieve();
+
 	
 		ContactNotification[] cntNotifs =
 			ContactNotification.getContactNotifications(
@@ -163,6 +196,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	public void setDbConnection(java.sql.Connection conn) 
 	{
 		super.setDbConnection(conn);
+
+		getAddress().setDbConnection(conn);	
 	
 		getContact().setDbConnection(conn);
 		
@@ -189,8 +224,12 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * @exception java.sql.SQLException The exception description.
 	 */
 	public void update() throws java.sql.SQLException 
-	{	
+	{
+		getAddress().setAddressID( getContact().getAddressID() );
+		getAddress().update();
+	
 
+		
 		//be sure all or our objects share the same contactID 
 		setContactID( getContact().getContactID() ); 
 
