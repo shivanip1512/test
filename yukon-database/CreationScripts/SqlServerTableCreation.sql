@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     4/25/2003 10:37:11 AM                        */
+/* Created on:     4/25/2003 4:57:02 PM                         */
 /*==============================================================*/
 
 
@@ -3043,7 +3043,7 @@ DeviceID             numeric              not null,
 WindowNumber         numeric              not null,
 AvailableStartTime   numeric              not null,
 AvailableStopTime    numeric              not null,
-constraint PK_LMPROGRAMCONTROLWINDOW primary key  (DeviceID)
+constraint PK_LMPROGRAMCONTROLWINDOW primary key  (DeviceID, WindowNumber)
 )
 go
 

@@ -30,6 +30,14 @@ go
 
 
 
+/**** CHANGE THE LMProgramControlWindow PK ****/
+alter table LMProgramControlWindow drop constraint PK_LMPROGRAMCONTROLWINDOW
+go
+alter table LMProgramControlWindow 
+    add constraint PK_LMPROGRAMCNTRLWINDOW primary key (DeviceID, WindowNumber)
+go
+
+
 
 /**** ADD TABLE SeasonSchedule ****/
 create table SeasonSchedule (

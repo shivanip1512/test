@@ -33,6 +33,11 @@ alter table EnergyCompany
       references Contact (ContactID);
 
 
+/**** CHANGE THE LMProgramControlWindow PK ****/
+alter table LMProgramControlWindow drop constraint PK_LMPROGRAMCONTROLWINDOW;
+alter table LMProgramControlWindow 
+    add constraint PK_LMPROGRAMCNTRLWINDOW primary key (DeviceID, WindowNumber);
+
 
 /**** ADD TABLE SeasonSchedule ****/
 create table SeasonSchedule  (

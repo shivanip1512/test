@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     4/25/2003 10:37:43 AM                        */
+/* Created on:     4/25/2003 4:56:08 PM                         */
 /*==============================================================*/
 
 
@@ -1977,7 +1977,7 @@ create table LMProgramControlWindow  (
    WindowNumber         NUMBER                           not null,
    AvailableStartTime   NUMBER                           not null,
    AvailableStopTime    NUMBER                           not null,
-   constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID),
+   constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID, WindowNumber),
    constraint FK_LMPrg_LMPrgCntWind foreign key (DeviceID)
          references LMPROGRAM (DEVICEID)
 )
