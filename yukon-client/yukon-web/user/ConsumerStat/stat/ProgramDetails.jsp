@@ -130,10 +130,10 @@
                       <td class = "TableCell" valign = "top"><%= program.getStarsWebConfig().getDescription() %><br>
                         <table width="210" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                            <td><img src="../../<%= imgNames[1] %>"></td>
-                            <td><img src="../../<%= imgNames[2] %>" ></td>
-                            <td><img src="../../<%= imgNames[3] %>"></td>
-                            <td><img src="../../<%= imgNames[4] %>"></td>
+                            <td><% if (imgNames[1] != null) { %><img src="../<%= imgNames[1] %>"><% } %></td>
+                            <td><% if (imgNames[2] != null) { %><img src="../<%= imgNames[2] %>"><% } %></td>
+                            <td><% if (imgNames[3] != null) { %><img src="../<%= imgNames[3] %>"><% } %></td>
+                            <td><% if (imgNames[4] != null) { %><img src="../<%= imgNames[4] %>"><% } %></td>
                           </tr>
                         </table>
                       </td>
