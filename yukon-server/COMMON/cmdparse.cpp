@@ -1493,7 +1493,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
     RWCRExpr    iedClass("ied +class +[0-9]+ +[0-9]+");
     RWCRExpr    iedScan("ied +scan +[0-9]+ +[0-9]+");
     RWCRExpr    groupAddr("group +(enable)|(disable)");
-    RWCRExpr    address("address +((gold +[0-9]+ +silver +[0-9]+)|(bronze [0-9]+)|(lead +meter +[0-9]+ +load +[0-9]+))");
+    RWCRExpr    address("address +(uniq(ue)? +[0-9]+)|((gold +[0-9]+ +silver +[0-9]+)|(bronze [0-9]+)|(lead +meter +[0-9]+ +load +[0-9]+))");
 
     char *p;
 
@@ -1560,7 +1560,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         {
             if(!(token = CmdStr.match(address)).isNull())
             {
-                _cmd["groupaddress_set"] = CtiParseValue(TRUE);
+                _cmd["address"] = CtiParseValue(TRUE);
 
                 RWCTokenizer cmdtok(token);
 
@@ -1568,6 +1568,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
 
                 token = cmdtok();
 
+                if( !(token.match("uniq(ue)?").isNull()) )
+                {
+                    _cmd["uniqueaddress"] = CtiParseValue(atoi(cmdtok().data()));
+                }
                 if( !(token.match("gold").isNull()) )
                 {
                     _cmd["groupaddress_gold"] = CtiParseValue(atoi(cmdtok().data()));
@@ -2601,7 +2605,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 tok();   // Get us past "eclp" moniker..
 
-                _cmd["gold"] = CtiParseValue(atoi(RWCString(tok())));
+                _cmd["gold"] = CtiParseValue(atoi(tok().data()));
             }
         }
 
@@ -2614,7 +2618,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                 tok();   // Get us past "eclp" moniker..
 
-                _cmd["silver"] = CtiParseValue(atoi(RWCString(tok())));
+                _cmd["silver"] = CtiParseValue(atoi(tok().data()));
             }
         }
     }
