@@ -1042,6 +1042,21 @@ insert into fdrinterfaceoption values (17,'DrivePath',3,'Text','(none)');
 insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
 
 
+/* CICustomer Commercial Metering Role Properties */
+insert into yukonroleproperty values(-30402, -304, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events');
+insert into yukonroleproperty values(-30403, -304, 'Maximum Daily Scans', '2', 'Maximum number of get data now scans available daily');
+
+/* Web Client Customers Commercial Metering role */
+insert into YukonUserRole values (-442, -1, -304, -30402, '(none)');
+insert into YukonUserRole values (-443, -1, -304, -30403, '(none)');
+
+/* Web Client Customers Commercial Metering role */
+insert into YukonGroupRole values (-416, -302, -304, -30402, '(none)');
+insert into YukonGroupRole values (-417, -302, -304, -30403, '(none)');
+
+/* START the Admin role Group */
+insert into YukonGroupRole values (-1132,-2, -304, -30402, '(none)');
+insert into YukonGroupRole values (-1133,-2, -304, -30403, '(none)');
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
