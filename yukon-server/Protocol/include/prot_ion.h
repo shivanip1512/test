@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/06/19 16:13:51 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/07/31 20:23:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,7 @@ private:
         IONCommand command;
         unsigned int unsigned_int_parameter;
         //  double double_parameter;
-    } _currentCommand;
+    } _submittedCommand, _executingCommand;  //  _submittedCommand is for Scanner and PIL, _executingCommand is for Porter
 
     struct ion_outmess_struct
     {
@@ -106,10 +106,17 @@ private:
         char name[20];
     };
 
-    vector< ion_pointdata_struct > _pointData;
-    vector< CtiIONLogArray * >     _eventLogs;
+    //  these are for temporary storage of data collected from the field device (on porter-side)
+    vector< ion_pointdata_struct > _collectedPointData;
+    vector< CtiIONLogArray * >     _collectedEventLogs;
 
-    RWCString _returnInfoString;
+    RWCString _infoString;
+
+    //  these are for temporary storage of data returned in an InMessage (on PIL/Scanner-side)
+    vector< ion_pointdata_struct > _returnedPointData;
+    vector< CtiIONLogArray * >     _returnedEventLogs;
+
+    RWCString _returnedInfoString;
 
     struct ion_result_descriptor_struct
     {
@@ -121,6 +128,8 @@ private:
 
     bool _configRead;
     bool _eventLogsComplete;
+
+    void initializeSets( void );
 
     bool hasConfigBeenRead( void );
     void setConfigRead( bool read );
@@ -147,6 +156,9 @@ private:
 
     unsigned long resultSize( void );
     void putResult( unsigned char *buf );
+
+    void clearReturnedData( void );
+    void clearCollectedData( void );
 
 protected:
 
@@ -352,14 +364,14 @@ public:
 
     CtiProtocolION &operator=(const CtiProtocolION &aRef);
 
-    void initializeSets( void );
-
     void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
     IONCommand getCommand( void );
     void setCommand( IONCommand command );
     void setCommand( IONCommand command, unsigned int unsigned_int_parameter );
-    bool commandRequiresRequeueOnFail( void );
+    void restoreCommand( IONCommand command );
+    void restoreCommand( IONCommand command, unsigned int unsigned_int_parameter );
+    bool commandRequiresRequeueOnFail( IONCommand command );
 //    void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
     void setEventLogLastPosition( unsigned long lastRecord );
     unsigned long getEventLogLastPosition( void );
@@ -377,8 +389,7 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    bool hasInboundData( void ) const;
-    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnInfo );
+    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnedInfo );
     void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/06/19 16:13:50 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/07/31 20:23:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,40 +119,53 @@ void CtiProtocolION::setAddresses( unsigned short masterAddress, unsigned short 
 
 CtiProtocolION::IONCommand CtiProtocolION::getCommand( void )
 {
-    return _currentCommand.command;
+    return _submittedCommand.command;
 }
 
 
 void CtiProtocolION::setCommand( IONCommand command )
 {
-    _currentCommand.command = command;
-    _protocolErrors   = 0;
-    _abortStatus      = NoError;
-    _returnInfoString = "";
-
-    _ionState   = State_Init;
-    _retryState = _ionState;
+    _submittedCommand.command = command;
 }
 
 
 void CtiProtocolION::setCommand( IONCommand command, unsigned int unsigned_int_parameter )
 {
-    _currentCommand.command                 = command;
-    _currentCommand.unsigned_int_parameter  = unsigned_int_parameter;
-    _protocolErrors   = 0;
-    _abortStatus      = NoError;
-    _returnInfoString = "";
+    _submittedCommand.command                = command;
+    _submittedCommand.unsigned_int_parameter = unsigned_int_parameter;
+}
+
+
+void CtiProtocolION::restoreCommand( IONCommand command )
+{
+    _executingCommand.command = command;
+    _protocolErrors = 0;
+    _abortStatus    = NoError;
+    _infoString     = "";
 
     _ionState   = State_Init;
     _retryState = _ionState;
 }
 
 
-bool CtiProtocolION::commandRequiresRequeueOnFail( void )
+void CtiProtocolION::restoreCommand( IONCommand command, unsigned int unsigned_int_parameter )
+{
+    _executingCommand.command                = command;
+    _executingCommand.unsigned_int_parameter = unsigned_int_parameter;
+    _protocolErrors = 0;
+    _abortStatus    = NoError;
+    _infoString     = "";
+
+    _ionState   = State_Init;
+    _retryState = _ionState;
+}
+
+
+bool CtiProtocolION::commandRequiresRequeueOnFail( IONCommand command )
 {
     bool retVal = false;
 
-    switch( _currentCommand.command )
+    switch( command )
     {
         case Command_ExternalPulseTrigger:
         case Command_EventLogRead:
@@ -196,7 +209,7 @@ int CtiProtocolION::generate( CtiXfer &xfer )
         }
         else
         {
-            switch( _currentCommand.command )
+            switch( _executingCommand.command )
             {
                 case Command_ExceptionScan:
                 case Command_ExceptionScanPostControl:
@@ -242,7 +255,7 @@ int CtiProtocolION::generate( CtiXfer &xfer )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Unknown command " << _currentCommand.command << " in CtiProtocolION::generate" << endl;
+                        dout << "Unknown command " << _executingCommand.command << " in CtiProtocolION::generate" << endl;
                     }
 
                     _ionState   = State_Abort;
@@ -294,7 +307,7 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
         }
         else
         {
-            switch( _currentCommand.command )
+            switch( _executingCommand.command )
             {
                 case Command_ExceptionScan:
                 case Command_ExceptionScanPostControl:
@@ -878,11 +891,12 @@ void CtiProtocolION::generateExceptionScan( void )
     switch( _ionState )
     {
         case State_Init:
+        {
+            //  clear this out before ReceiveDigitalInputData and ReceiveDigitalOutputData fill it up
+            clearCollectedData();
+        }
         case State_RequestDigitalInputData:
         {
-            //  clear this out before ReceiveDigicalInputData and Receive DigitalOutputData fill it up
-            _pointData.clear();
-
             _dsOut.clearAndDestroy();
 
             tmpProgram   = CTIDBG_new CtiIONProgram();
@@ -1007,7 +1021,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                         _snprintf(pdata.name, 19, "Digital Input %d", pdata.offset);
                         pdata.name[19] = 0;
 
-                        _pointData.push_back(pdata);
+                        _collectedPointData.push_back(pdata);
                     }
 
                     if( !_digitalOutModules.empty() )
@@ -1033,7 +1047,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                     _ionState   = State_RequestDigitalOutputData;
                     _retryState = _ionState;
 
-                    _returnInfoString += "\nNo digital inputs to return";
+                    _infoString += "\nNo digital inputs to return";
                 }
             }
             else
@@ -1081,7 +1095,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                         _snprintf(pdata.name, 19, "Digital Output %d", pdata.offset);
                         pdata.name[19] = 0;
 
-                        _pointData.push_back(pdata);
+                        _collectedPointData.push_back(pdata);
                     }
 
                     _ionState   = State_Complete;
@@ -1098,7 +1112,7 @@ void CtiProtocolION::decodeExceptionScan( void )
 
                     _ionState   = State_Complete;
                     _retryState = _ionState;
-                    _returnInfoString += "\nNo digital outputs to return";
+                    _infoString += "\nNo digital outputs to return";
                 }
             }
             else
@@ -1141,6 +1155,10 @@ void CtiProtocolION::generateIntegrityScan( void )
     switch( _ionState )
     {
         case State_Init:
+        {
+            //  clear these out before the decodes fill it up
+            clearCollectedData();
+        }
         case State_RequestPowerMeterData:
         {
             tmpProgram   = CTIDBG_new CtiIONProgram();
@@ -1271,7 +1289,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 ion_pointdata_struct pdata;
                 RWTime Now;
 
-                _pointData.clear();
+                _collectedPointData.clear();
 
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW;
                 pdata.time   = Now.seconds();
@@ -1280,7 +1298,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "KW");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA;
                 pdata.time   = Now.seconds();
@@ -1289,7 +1307,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "KVA");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR;
                 pdata.time   = Now.seconds();
@@ -1298,7 +1316,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "KVAR");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE;
                 pdata.time   = Now.seconds();
@@ -1307,7 +1325,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Phase A Volts");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE;
                 pdata.time   = Now.seconds();
@@ -1316,7 +1334,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Phase B Volts");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE;
                 pdata.time   = Now.seconds();
@@ -1325,7 +1343,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Phase C Volts");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_A_CURRENT;
                 pdata.time   = Now.seconds();
@@ -1334,7 +1352,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Phase A Current");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_B_CURRENT;
                 pdata.time   = Now.seconds();
@@ -1343,7 +1361,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Phase B Current");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_C_CURRENT;
                 pdata.time   = Now.seconds();
@@ -1352,7 +1370,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Phase C Current");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 pdata.offset = 100;
                 pdata.time   = Now.seconds();
@@ -1361,7 +1379,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 _snprintf(pdata.name, 19, "Power Factor");
                 pdata.name[19] = 0;
 
-                _pointData.push_back(pdata);
+                _collectedPointData.push_back(pdata);
 
                 if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
                 {
@@ -1372,7 +1390,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     _snprintf(pdata.name, 19, "Notify Delay");
                     pdata.name[19] = 0;
 
-                    _pointData.push_back(pdata);
+                    _collectedPointData.push_back(pdata);
 
                     pdata.offset = 258;
                     pdata.time   = Now.seconds();
@@ -1381,7 +1399,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     _snprintf(pdata.name, 19, "Control Delay");
                     pdata.name[19] = 0;
 
-                    _pointData.push_back(pdata);
+                    _collectedPointData.push_back(pdata);
 
                     pdata.offset = 263;
                     pdata.time   = Now.seconds();
@@ -1390,7 +1408,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     _snprintf(pdata.name, 19, "Notify Remain");
                     pdata.name[19] = 0;
 
-                    _pointData.push_back(pdata);
+                    _collectedPointData.push_back(pdata);
 
                     pdata.offset = 264;
                     pdata.time   = Now.seconds();
@@ -1399,7 +1417,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     _snprintf(pdata.name, 19, "Control Remain");
                     pdata.name[19] = 0;
 
-                    _pointData.push_back(pdata);
+                    _collectedPointData.push_back(pdata);
 
                     if( i < _dsIn.size() )
                     {
@@ -1410,7 +1428,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                         _snprintf(pdata.name, 19, "Program");
                         pdata.name[19] = 0;
 
-                        _pointData.push_back(pdata);
+                        _collectedPointData.push_back(pdata);
                     }
                 }
 
@@ -1461,6 +1479,10 @@ void CtiProtocolION::generateEventLogRead( void )
     switch( _ionState )
     {
         case State_Init:
+        {
+            //  clear these out before the decodes fill it up
+            clearCollectedData();
+        }
         case State_RequestEventLogStatusInfo:
         {
             _dsOut.clearAndDestroy();
@@ -1609,8 +1631,8 @@ void CtiProtocolION::decodeEventLogRead( void )
                     if( _dsIn[0]->getNumericValue() > 0 &&
                         _dsIn[1]->getNumericValue() > 0 )
                     {
-                    _eventLogCurrentPosition = _dsIn[0]->getNumericValue();
-                    _eventLogDepth           = _dsIn[1]->getNumericValue();
+                        _eventLogCurrentPosition = _dsIn[0]->getNumericValue();
+                        _eventLogDepth           = _dsIn[1]->getNumericValue();
 
                         //  Check if _eventLogLastPosition is outside the range defined
                         //    by _eventLogCurrentPosition and _eventLogDepth
@@ -1635,22 +1657,22 @@ void CtiProtocolION::decodeEventLogRead( void )
                         {
                             //  we seem to have gotten all of the event logs
                             _ionState   = State_Complete;
-                        _retryState = _ionState;
+                            _retryState = _ionState;
                         }
-                    else
-                    {
+                        else
+                        {
                             _eventLogSearchSuccessPoint = _eventLogCurrentPosition;   //  must be >= 1
                             _eventLogSearchFailPoint    = _eventLogLastPosition + 1;
                             _eventLogSearchPokePoint    = _eventLogSearchFailPoint;
 
-                        _eventLogSearchCounter = 0;
+                            _eventLogSearchCounter = 0;
 
                             _ionState   = State_RequestEventLogLastPositionSearch;
                             _retryState = _ionState;
                         }
                     }
-                        else
-                        {
+                    else
+                    {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1658,9 +1680,9 @@ void CtiProtocolION::decodeEventLogRead( void )
                         }
 
                         _ionState   = State_Abort;
-                            _retryState = _ionState;
-                        }
+                        _retryState = _ionState;
                     }
+                }
                 else
                 {
                     {
@@ -1788,7 +1810,7 @@ void CtiProtocolION::decodeEventLogRead( void )
 
                     if( tmp->isStructArrayType(CtiIONStructArray::StructArrayType_LogArray) )
                     {
-                        _eventLogs.push_back((CtiIONLogArray *)_dsIn[0]);
+                        _collectedEventLogs.push_back((CtiIONLogArray *)_dsIn[0]);
 
                         _dsIn.erase(0);
 
@@ -1826,7 +1848,7 @@ void CtiProtocolION::decodeEventLogRead( void )
                             {
                                 if( record->getLogValues()->isStructType(CtiIONStruct::StructType_Event) )
                                 {
-                                event = (CtiIONEvent *)(record->getLogValues());
+                                    event = (CtiIONEvent *)(record->getLogValues());
 
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1880,11 +1902,16 @@ void CtiProtocolION::decodeEventLogRead( void )
                                 }
                                 else
                                 {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << "Not an event structure...  life is bad." << endl;
                                 }
-                            }
 
-                            dout << endl;
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << endl;
+                                }
+                            }
                         }
                     }
                 }
@@ -2032,7 +2059,7 @@ void CtiProtocolION::generateExternalPulseTrigger( void )
 
             ion_value_register_map::iterator itr;
 
-            if( (itr = _externalPulseRegisters.find(_currentCommand.unsigned_int_parameter)) != _externalPulseRegisters.end() )
+            if( (itr = _externalPulseRegisters.find(_executingCommand.unsigned_int_parameter)) != _externalPulseRegisters.end() )
             {
                 tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::WriteRegisterValue);
                 tmpStatement = CTIDBG_new CtiIONStatement((*itr).second, tmpMethod);
@@ -2185,7 +2212,7 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 
     if( OutMessage != NULL )
     {
-        tmp_om_struct.cmd_struct                  = _currentCommand;
+        tmp_om_struct.cmd_struct                  = _submittedCommand;
         tmp_om_struct.client_eventLogLastPosition = getEventLogLastPosition();  //  send what the client thinks (may be overridden by
                                                                                 //    porter if there's contention between two clients)
 
@@ -2220,13 +2247,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
     char *tmpStr;
 
     //  clear out the data vectors
-    _pointData.clear();
-
-    while( !_eventLogs.empty() )
-    {
-        delete _eventLogs.back();
-        _eventLogs.pop_back();
-    }
+    clearInboundData();
 
     _eventLogsComplete = false;
 
@@ -2244,7 +2265,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
             tmpStr = CTIDBG_new char[header.resultDescriptorStringLength];
             memcpy(tmpStr, buf + offset, header.resultDescriptorStringLength);
             tmpStr[header.resultDescriptorStringLength-1] = 0;
-            _returnInfoString = tmpStr;
+            _returnedInfoString = tmpStr;
             delete [] tmpStr;
             offset += header.resultDescriptorStringLength;
 
@@ -2252,7 +2273,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 
             for( int i = 0; i < header.numPoints; i++ )
             {
-                _pointData.push_back(points[i]);
+                _returnedPointData.push_back(points[i]);
                 offset += sizeof(ion_pointdata_struct);
             }
 
@@ -2264,7 +2285,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
             {
                 if( tmpDS.itemIsType(0, CtiIONStructArray::StructArrayType_LogArray) )
                 {
-                    _eventLogs.push_back((CtiIONLogArray *)tmpDS[0]);
+                    _returnedEventLogs.push_back((CtiIONLogArray *)tmpDS[0]);
                 }
                 else
                 {
@@ -2288,13 +2309,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 }
 
 
-bool CtiProtocolION::hasInboundData( void ) const
-{
-    return !_pointData.empty() || !_eventLogs.empty() || !_returnInfoString.isNull();
-}
-
-
-void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnInfo )
+void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnedInfo )
 {
     vector< ion_pointdata_struct >::const_iterator p_itr;
     vector< CtiIONLogArray * >::const_iterator       e_itr;
@@ -2304,9 +2319,9 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
     CtiPointDataMsg *pointdata;
     CtiSignalMsg    *signal;
 
-    returnInfo = _returnInfoString;
+    returnedInfo = _returnedInfoString;
 
-    for( p_itr = _pointData.begin(); p_itr != _pointData.end(); p_itr++ )
+    for( p_itr = _returnedPointData.begin(); p_itr != _returnedPointData.end(); p_itr++ )
     {
         //  NOTE:  offsets must be 1-based to work with Yukon
         pointdata = CTIDBG_new CtiPointDataMsg((*p_itr).offset, (*p_itr).value, NormalQuality, (*p_itr).type);
@@ -2317,7 +2332,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
     }
 
     //  ACH/FIX:  this should be moved to porter-side...  he should be the one sending the event logs, and keeping track of current event log position
-    for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
+    for( e_itr = _returnedEventLogs.begin(); e_itr != _returnedEventLogs.end(); e_itr++ )
     {
         CtiIONLogArray  *tmpArray;
         CtiIONLogRecord *tmpRecord;
@@ -2363,8 +2378,6 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
                     signalList.append(signal);
                 }
             }
-
-            delete (*e_itr);
         }
     }
 
@@ -2390,9 +2403,19 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
 void CtiProtocolION::clearInboundData( void )
 {
-    _pointData.clear();
+    clearReturnedData();
+}
 
-    _eventLogs.clear();
+
+void CtiProtocolION::clearReturnedData( void )
+{
+    _returnedPointData.clear();
+
+    while( !_returnedEventLogs.empty() )
+    {
+        delete _returnedEventLogs.back();
+        _returnedEventLogs.pop_back();
+    }
 }
 
 
@@ -2401,7 +2424,7 @@ bool CtiProtocolION::hasPointUpdate( CtiPointType_t type, int offset ) const
     vector< ion_pointdata_struct >::const_iterator p_itr;
     bool found = false;
 
-    for( p_itr = _pointData.begin(); p_itr != _pointData.end() && !found; p_itr++ )
+    for( p_itr = _returnedPointData.begin(); p_itr != _returnedPointData.end() && !found; p_itr++ )
     {
         if( (*p_itr).offset == offset && (*p_itr).type == type )
         {
@@ -2420,7 +2443,7 @@ double CtiProtocolION::getPointUpdateValue( CtiPointType_t type, int offset ) co
     bool   found = false;
     double value = 0.0;
 
-    for( p_itr = _pointData.begin(); p_itr != _pointData.end() && !found; p_itr++ )
+    for( p_itr = _returnedPointData.begin(); p_itr != _returnedPointData.end() && !found; p_itr++ )
     {
         if( (*p_itr).offset == offset && (*p_itr).type == type )
         {
@@ -2449,7 +2472,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 
     memcpy(&tmpOM, OutMessage->Buffer.OutMessage, sizeof(tmpOM));
 
-    setCommand(tmpOM.cmd_struct.command, tmpOM.cmd_struct.unsigned_int_parameter);
+    restoreCommand(tmpOM.cmd_struct.command, tmpOM.cmd_struct.unsigned_int_parameter);
 
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
@@ -2511,11 +2534,11 @@ unsigned long CtiProtocolION::resultSize( void )
     size += sizeof(ion_result_descriptor_struct);
 
     //  ACH:  limit this size?
-    size += _returnInfoString.length() + 1;
+    size += _infoString.length() + 1;
 
-    size += sizeof(ion_pointdata_struct) * _pointData.size();
+    size += sizeof(ion_pointdata_struct) * _collectedPointData.size();
 
-    for( itr = _eventLogs.begin(); itr != _eventLogs.end(); itr++ )
+    for( itr = _collectedEventLogs.begin(); itr != _collectedEventLogs.end(); itr++ )
     {
         if( *itr != NULL )
         {
@@ -2536,13 +2559,13 @@ void CtiProtocolION::putResult( unsigned char *buf )
 
     offset = 0;
 
-    header.numPoints = _pointData.size();
+    header.numPoints = _collectedPointData.size();
 
     //  ACH:  limit this size?
-    header.resultDescriptorStringLength = _returnInfoString.length() + 1;
+    header.resultDescriptorStringLength = _infoString.length() + 1;
 
     eventlog_length = 0;
-    for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
+    for( e_itr = _collectedEventLogs.begin(); e_itr != _collectedEventLogs.end(); e_itr++ )
     {
         if( *e_itr != NULL )
         {
@@ -2563,16 +2586,16 @@ void CtiProtocolION::putResult( unsigned char *buf )
     memcpy(buf + offset, &header, sizeof(header));
     offset += sizeof(header);
 
-    memcpy(buf + offset, _returnInfoString.data(), _returnInfoString.length() + 1);
-    offset += _returnInfoString.length() + 1;
+    memcpy(buf + offset, _infoString.data(), _infoString.length() + 1);
+    offset += _infoString.length() + 1;
 
-    for( p_itr = _pointData.begin(); p_itr != _pointData.end(); p_itr++ )
+    for( p_itr = _collectedPointData.begin(); p_itr != _collectedPointData.end(); p_itr++ )
     {
         memcpy(buf + offset, &(*p_itr), sizeof(*p_itr));
         offset += sizeof(*p_itr);
     }
 
-    for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
+    for( e_itr = _collectedEventLogs.begin(); e_itr != _collectedEventLogs.end(); e_itr++ )
     {
         if( *e_itr != NULL )
         {
@@ -2582,15 +2605,7 @@ void CtiProtocolION::putResult( unsigned char *buf )
         }
     }
 
-    //  clear out the data vectors
-    _pointData.clear();
-
-    while( !_eventLogs.empty() )
-    {
-        delete _eventLogs.back();
-
-        _eventLogs.pop_back();
-    }
+    clearCollectedData();
 }
 
 
@@ -2599,5 +2614,17 @@ bool CtiProtocolION::isTransactionComplete( void )
     //  ACH: factor in application layer retries... ?
 
     return _ionState == State_Complete || _ionState == State_Abort;
+}
+
+
+void CtiProtocolION::clearCollectedData( void )
+{
+    _collectedPointData.clear();
+
+    while( !_collectedEventLogs.empty() )
+    {
+        delete _collectedEventLogs.back();
+        _collectedEventLogs.pop_back();
+    }
 }
 
