@@ -1385,7 +1385,7 @@ void CtiCCSubstationBusStore::doResetThr()
     {
         rwRunnable().serviceCancellation();
 
-        if ( RWDBDateTime() >= nextDatabaseRefresh )
+        if ( RWDBDateTime().seconds() >= nextDatabaseRefresh.seconds() )
         {
             //if( _CC_DEBUG )
             {
