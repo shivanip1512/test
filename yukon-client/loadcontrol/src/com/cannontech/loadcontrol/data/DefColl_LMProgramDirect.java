@@ -75,13 +75,19 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	GregorianCalendar startedRampingOutTime = new java.util.GregorianCalendar(); 
 	startedRampingOutTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
 
+	Vector directGearVector = (Vector) vstr.restoreObject( polystr );
 	
-	Vector directGearVector = (Vector) vstr.restoreObject( polystr );	
-	Vector groupVector = (Vector) vstr.restoreObject( polystr );
+	// serialize groups one at a time, using a rwordered/vector is trouble for some reason
+	int numGroups = vstr.extractInt();
+	Vector groupVector = new Vector(numGroups);
+	
+	for(int i = 0; i < numGroups; i++) {
+		groupVector.add(vstr.restoreObject(polystr));
+	}
+
 	Vector activeMastersVector = (Vector) vstr.restoreObject(polystr);
 	Vector activeSubordinatesVector = (Vector) vstr.restoreObject(polystr);
 
-	
 	lmProgramDirect.setCurrentGearNumber(currentGearNumber);
 	lmProgramDirect.setLastGroupControlled(lastGroupControlled);
 	lmProgramDirect.setDirectStartTime( directStartTime );
