@@ -78,7 +78,6 @@ public boolean retrieveBillingData(String dbAlias)
 			+ SQLStringBuilder.PT_POINTID + ", " 
 			+ SQLStringBuilder.RPH_TIMESTAMP + " DESC ";
 		
-	
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
@@ -94,7 +93,7 @@ public boolean retrieveBillingData(String dbAlias)
 		}
 		else
 		{
-			pstmt = conn.prepareStatement(sql.toString());
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
 			rset = pstmt.executeQuery();
 			com.cannontech.clientutils.CTILogger.info(" *Start looping through return resultset");
@@ -111,6 +110,7 @@ public boolean retrieveBillingData(String dbAlias)
 					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
 				}
 				
+				inValidTimestamp:
 				if( currentPointID != lastPointID )	//just getting max time for each point
 				{
 					lastPointID = currentPointID;
@@ -122,12 +122,11 @@ public boolean retrieveBillingData(String dbAlias)
 					String ptName = rset.getString(5);
 
 					if( tsDate.compareTo((Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
-						break;
+						break inValidTimestamp;
 						
 					com.cannontech.billing.record.OPURecord opuRec=
 						new com.cannontech.billing.record.OPURecord(name, ptName, reading, ts, "N");
 					getRecordVector().addElement(opuRec);
-
 				}
 			}
 		}
