@@ -10,14 +10,14 @@
 		 
 if( request.getParameter("clearids") != null)
 {
-	ycBean.getRequestMessageIDs().clear();
+	YC_BEAN.getRequestMessageIDs().clear();
 	com.cannontech.clientutils.CTILogger.info("Clearing the RequestMessageIDs, they aren't coming back!");
 }
-//set the deviceID of the YCBean
-ycBean.setDeviceID(deviceID);
+//set the deviceID of the YC_BEAN
+YC_BEAN.setDeviceID(deviceID);
 long maxTime = 3000;	//max sleep time will be 3 seconds
 long totalTime = 0;
-while( ycBean.getPointRegCounter() > 0 && totalTime < maxTime )
+while( YC_BEAN.getPointRegCounter() > 0 && totalTime < maxTime )
 {
 	try
 	{
@@ -61,11 +61,6 @@ String[] disconnectValues = {
 %>
 
 <SCRIPT language="JavaScript">
-function disableButton(x)
-{
-	x.disabled = true;
-	document.commandForm.submit();
-}
 
 function updatePrevious()
 {
@@ -110,14 +105,38 @@ function formatNum(valuein)
 
 function disableAllButtons()
 {
-	document.getElementById('ReadkWhID').disabled = true;
-	document.getElementById('ReadDemandID').disabled = true;
-	document.getElementById('ReadPeakID').disabled = true;
-	document.getElementById('ReadVoltageID').disabled = true;
-	document.getElementById('ReadOutageID').disabled = true;
-	document.getElementById('ReadOutageHistID').disabled = true;
-	document.getElementById('ClearTextID').disabled = true;
-	document.getElementById('RefreshID').disabled = true;
+	document.body.style.cursor = 'wait';
+	document.getElementById('readEnergyID').style.cursor = 'wait';
+	document.getElementById('readEnergyID').href="javascript:;";
+	document.getElementById('readEnergyID').disabled = true;
+	
+	document.getElementById('readDemandID').style.cursor = 'wait';
+	document.getElementById('readDemandID').href="javascript:;";
+	document.getElementById('readDemandID').disabled = true;
+
+	document.getElementById('readVoltageID').style.cursor = 'wait';
+	document.getElementById('readVoltageID').href="javascript:;";
+	document.getElementById('readVoltageID').disabled = true;
+
+	document.getElementById('readOutageID').style.cursor = 'wait';
+	document.getElementById('readOutageID').href="javascript:;";
+	document.getElementById('readOutageID').disabled = true;
+	
+	if( document.getElementById('readDiscID') )
+	{
+		document.getElementById('controlConnID').style.cursor = 'wait';
+		document.getElementById('controlConnID').href="javascript:;";
+		document.getElementById('controlConnID').disabled = true;
+
+		document.getElementById('controlDiscID').style.cursor = 'wait';
+		document.getElementById('controlDiscID').href="javascript:;";
+		document.getElementById('controlDiscID').disabled = true;
+	
+		document.getElementById('readDiscID').style.cursor = 'wait';
+		document.getElementById('readDiscID').href="javascript:;";
+		document.getElementById('readDiscID').disabled = true;
+	}		
+
 	document.commandForm.submit();
 }
 
@@ -145,37 +164,41 @@ function setCommand(cmd)
         </tr>
       </table>
       <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+      <% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>
       <table width="530" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td> 
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td align="right" class="TableCell"> 
                   <input type="checkbox" name="updateDB">
                   Update Database</td>
               </tr>
             </table>
-            <table border="0" cellspacing="5" cellpadding="0" width="100%" height="100%" class="TableCell" align="center">
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="100%"> 
-                  <table border="1" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td height="95%"  bgcolor="888888" class="tableHeader">Energy</td>
+                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
+				onMouseOver="window.status='Read Energy';return true;"
+                onMouseOut="window.status='';return true;">Read</a></td>
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+              </tr>
+              <tr> 
+                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td colspan="2"> 
+                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
                     <tr> 
-					  <td width = "2%" rowspan="3" align="left" valign="middle" class="HeaderCell">E<BR>
-                        N<BR>
-                        E<BR>
-                        R<BR>
-                        G<BR>
-                        Y </td>					
-                      <td width="18%" class="HeaderCell" align="center" height="35">CURRENT</td>
-                      <td width="35%" align="center" height="35"> 
-                        <%pointData = ycBean.getRecentPointData(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);%>
+                      <td width="20%" class="columnHeader">Current</td>
+                      <td width="35%"class="main" align="center"> 
+                        <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);%>
                         <%if( pointData != null){%>
                         <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
                         <% } else {%>
                         --- 
                         <%}%>
                       </td>
-                      <td width="35%" align="right" height="35"> 
+                      <td width="35%" class="main" align="right"> 
                         <div id="currEnergyPD"> 
                           <%if( pointData != null){%>
                           <%=format_nv3.format(pointData.getValue())%> 
@@ -184,17 +207,14 @@ function setCommand(cmd)
                           <%}%>
                         </div>
                       </td>
-                      <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue kwh');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readkWhID" name="readkWh" align="middle">
-                      </td>
                     </tr>
-                    <tr> 
-                      <td width="18%" class="HeaderCell" align="center" height="35">PREVIOUS</td>
-                      <td width="35%" height="49" align="center"> 
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">Previous</td>
+                      <td class="main" align="center"> 
                         <%
-						int xID = ycBean.getPointID(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);
-						java.util.TreeMap tempMap = ycBean.getPrevMonthTSToValueMap(xID);
-						java.util.Date[] keyArray = ycBean.getPrevDateArray(xID);
+						int xID = YC_BEAN.getPointID(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);
+						java.util.TreeMap tempMap = YC_BEAN.getPrevMonthTSToValueMap(xID);
+						java.util.Date[] keyArray = YC_BEAN.getPrevDateArray(xID);
 						String value = "---";
 						if( keyArray.length > 0) { 
 							//save the initial value string to set in the value TD below
@@ -212,341 +232,366 @@ function setCommand(cmd)
                         </select>
                         <%}%>
                       </td>
-                      <td width="35%" align="right" height="35"> 
-                        <div id="prevEnergyPD"><%=value%> </div>
+                      <td class="main" align="right">
+                        <div id="prevEnergyPD"><%=value%></div>
                       </td>
-                      <td width="12%" align="center" height="35" valign="middle">&nbsp; </td>
                     </tr>
                     <tr> 
-                      <td width="18%" class="HeaderCell" align="center" height="49">TOTAL ENERGY</td>
-                      <td width="35%" height="49" align="center">&nbsp;</td>
-                      <td width="35%" align="right" height="49"> 
+                      <td class="columnHeader">Usage</td>
+                      <td class="main">&nbsp;</td>
+                      <td class="main" align="right"> 
                         <div id="totalUsage"> 
                           <script>javascript:updatePrevious()</script>
                         </div>
                       </td>
-                      <td width="12%" align="center" height="49" valign="middle">&nbsp;</td>
                     </tr>
                   </table>
                 </td>
+                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="90%"> 
-                  <table border="0" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
-                    <tr> 
-                      <td width="100%" height="15" class="SubtitleHeader" align="center"></td>
-                    </tr>
-                  </table>
-                </td>
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
+            </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
-                <td width="50%" valign="bottom"  > 
-                  <table border="1" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
-                    <tr> 
-					  <td width = "2%" rowspan="2" align="left" valign="middle" class="HeaderCell">D<BR>
-                        E<BR>
-                        M<BR>
-                        A<BR>
-                        N<BR>
-                        D </td>					
-                      <td width="18%" class="HeaderCell" align="center" height="35">CURRENT</td>
-                      <%--                      <%pointData = (PointData)ycBean.getRPHPointData(deviceID, 1, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                      <td width="17%" align="center" height="35"> 
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
-                      </td>
-                      <td width="17%" align="right" height="35"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
-                        <% }%>
-                      </td>
-					  --%>
-                      <td width="35%" align="center" height="35"> 
-                        <%pointData = ycBean.getRecentPointData(deviceID, 1, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
-                      </td>
-                      <td width="35%" align="right" height="35"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
-                      </td>
-                      <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue demand');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readDemandID" name="readDemand" align="middle">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="18%" class="HeaderCell" align="center" height="35">PEAK</td>
-                      <%--                      <td width="17%" align="center" height="35"> 
-                        <%pointData = (PointData)ycBean.getRPHPointData(deviceID, 11, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
-                      </td>
-                      <td width="17%" align="right" height="35"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
-                        <% }%>
-                      </td>
---%>
-                      <td width="35%" align="center" height="35"> 
-                        <%pointData = ycBean.getRecentPointData(deviceID, 11, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
-                      </td>
-                      <td width="35%" align="right" height="35"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
-                      </td>
-                      <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue peak');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readPeakID" name="readPeak" align="middle">
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr> 
-                <td width="90%"> 
-                  <table border="0" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
-                    <tr> 
-                      <td width="100%" height="15" class="SubtitleHeader" align="center"></td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr> 
-                <td width="100%"> 
-                  <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" class="TableCell">
-                    <tr> 
-                      <td width="68%"> 
-                        <table border="1" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
-                          <tr> 
-							<td width = "2%" rowspan="3" align="left" valign="middle" class="HeaderCell">V<BR>
-								O<BR>
-                              L<BR>
-								T<BR>
-								A<BR>
-								G<BR>
-								E </td>						  
-                            <td width="18%" class="HeaderCell" align="center" height="35">CURRENT</td>
-                            <%--                      <td width="17%" align="center" height="35"> 
-	                        <%pointData = (PointData)ycBean.getRPHPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-    	                    <%if( pointData != null){%>
-        	                <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-            	            <% } else {%>
-                	        --- 
-                    	    <%}%>
-	                      </td>
-    	                  <td width="17%" align="right" height="35"> 
-        	                <%if( pointData != null){%>
-            	            <%=format_nv3.format(pointData.getValue())%> 
-                	        <% } else {%>&nbsp;<%}%>
-                    	  </td>
---%>
-                            <td width="35%" align="center" height="35"> 
-                              <%pointData = ycBean.getRecentPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                              <%if( pointData != null){%>
-                              <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                              <% } else {%>
-                              --- 
-                              <%}%>
-                            </td>
-                            <td width="35%" align="right" height="35"> 
-                              <%if( pointData != null){%>
-                              <%=format_nv3.format(pointData.getValue())%> 
-                              <% } else {%>
-                              &nbsp; 
-                              <%}%>
-                            </td>
-                            <td width="12%" align="center" height="35" valign="middle">&nbsp;</td>
-                          </tr>
-                          <tr> 
-                            <td width="18%" class="HeaderCell" align="center" height="35">MINIMUM</td>
-                            <td width="35%" align="center" height="35"> 
-                              <%pointData = (PointData)ycBean.getRecentPointData(deviceID, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                              <%if( pointData != null){%>
-                              <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                              <% } else {%>
-                              --- 
-                              <%}%>
-                            </td>
-                            <td width="35%" align="right" height="35"> 
-                              <%if( pointData != null){%>
-                              <%=format_nv3.format(pointData.getValue())%> 
-                              <% } else {%>
-                              &nbsp; 
-                              <%}%>
-                            </td>
-                            <td width="12%" align="center" rowspan="2" height="35" valign="middle" > 
-                              <input type="image" onClick="setCommand('getvalue voltage');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readVoltageID" name="readVoltage" align="middle">
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="18%" class="HeaderCell" align="center" height="35">MAXIMUM</td>
-                            <td width="35%" align="center" height="35"> 
-                              <%pointData = (PointData)ycBean.getRecentPointData(deviceID, 14, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
-                              <%if( pointData != null){%>
-                              <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                              <% } else {%>
-                              --- 
-                              <%}%>
-                            </td>
-                            <td width="35%" align="right" height="35"> 
-                              <%if( pointData != null){%>
-                              <%=format_nv3.format(pointData.getValue())%> 
-                              <% } else {%>
-                              &nbsp; 
-                              <%}%>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr> 
-                <td width="90%"> 
-                  <table border="0" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
-                    <tr> 
-                      <td width="100%" height="15" class="SubtitleHeader" align="center"></td>
-                    </tr>
-                  </table>
-                </td>
-              <tr> 
-                <td width="100%"> 
-                  <table border="1" cellspacing="0" cellpadding="5" width="100%" height="100%" class="TableCell">
-					  <td width = "2%" rowspan="2" align="left" valign="middle" class="HeaderCell">O<BR>
-                        U<BR>
-                        T<BR>
-                        A<BR>
-                        G<BR>
-                        E </td>
-                      <td width="18%" class="HeaderCell" align="center" height="35">BLINK COUNT</td>
-                      <td width="35%" align="center" height="35"> 
-                        <%pointData = ycBean.getRecentPointData(deviceID, 20, PointTypes.PULSE_ACCUMULATOR_POINT);%>
-                        <%if( pointData != null){%>
-                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
-                        <% } else {%>
-                        --- 
-                        <%}%>
-                      </td>
-                      <td width="35%" align="right" height="35"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
-                        <% } else {%>
-                        &nbsp; 
-                        <%}%>
-                      </td>
-                      <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue powerfail & getvalue outage 1');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readOutageID" name="readOutage" align="middle">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="18%" class="HeaderCell" align="center" height="35">HISTORY<BR>
-                        (last 6)</td>
-                      <td width="68%" align="left" height="35" colspan="2"> 
-                        <%pointData = (PointData)ycBean.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_1);%>
-                        <%if( pointData != null){%>
-                        1.&nbsp;&nbsp;<%=pointData.getStr()%> 
-                        <%}%>
-                        <%pointData = (PointData)ycBean.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_2);%>
-                        <%if( pointData != null){%>
-                        <br>
-                        2.&nbsp;&nbsp;<%=pointData.getStr()%> 
-                        <%}%>
-                        <%pointData = (PointData)ycBean.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_3);%>
-                        <%if( pointData != null){%>
-                        <br>
-                        3.&nbsp;&nbsp;<%=pointData.getStr()%> 
-                        <%}%>
-                        <%pointData = (PointData)ycBean.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_4);%>
-                        <%if( pointData != null){%>
-                        <br>
-                        4.&nbsp;&nbsp;<%=pointData.getStr()%> 
-                        <%}%>
-                        <%pointData = (PointData)ycBean.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_5);%>
-                        <%if( pointData != null){%>
-                        <br>
-                        5.&nbsp;&nbsp;<%=pointData.getStr()%> 
-                        <%}%>
-                        <%pointData = (PointData)ycBean.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_6);%>
-                        <%if( pointData != null){%>
-                        <br>
-                        6.&nbsp;&nbsp;<%=pointData.getStr()%> 
-                        <%}%>
-                        &nbsp;</td>
-                      <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue outage 3 & getvalue outage 5 & getvalue outage 1');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readOutageHistID" name="readOutageHist" align="middle">
-                      </td>
-                    </tr>
-                  </table>
+                <td><br>
                 </td>
               </tr>
             </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td height="95%"  bgcolor="888888" class="tableHeader">Demand</td>
+                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
+			  onMouseOver="window.status='Read Demand and Peak Demand';return true;"
+              onMouseOut="window.status='';return true;">Read</a></td>
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+              </tr>
+              <tr> 
+                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td colspan="2"> 
+                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                    <tr> 
+                      <td width="20%" class="columnHeader">Current</td>
+                      <td width="35%"class="main" align="center"> 
+                        <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      <td width="35%" class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">Peak</td>
+                      <td class="main" align="center"> 
+                        <%pointData = YC_BEAN.getRecentPointData(deviceID, 11, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      </td>
+                      <td class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+              </tr>
+            </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td> <br>
+                </td>
+              </tr>
+            </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td height="95%"  bgcolor="888888" class="tableHeader">Voltage</td>
+                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue voltage & getvalue demand');disableAllButtons()" id="readVoltageID" name="readVoltage"
+			  onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage';return true;"
+              onMouseOut="window.status='';return true;">Read</a></td>
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+              </tr>
+              <tr> 
+                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td colspan="2"> 
+                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                    <tr> 
+                      <td width="20%" class="columnHeader">Current</td>
+                      <td width="35%"class="main" align="center"> 
+                        <%pointData = YC_BEAN.getRecentPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      <td width="35%" class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">Minimum</td>
+                      <td class="main" align="center"> 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      </td>
+                      <td class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td width="20%" class="columnHeader">Maximum</td>
+                      <td width="35%"class="main" align="center"> 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 14, PointTypes.DEMAND_ACCUMULATOR_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      <td width="35%" class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+              </tr>
+            </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td> <br>
+                </td>
+              </tr>
+            </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td height="95%"  bgcolor="888888" class="tableHeader">Outage</td>
+                <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
+			  onMouseOver="window.status='Read Current Blink Count, Last 6 Outages';return true;"
+              onMouseOut="window.status='';return true;">Read</a></td>
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+              </tr>
+              <tr> 
+                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td colspan="2"> 
+                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                    <tr> 
+                      <td width="20%" class="columnHeader">Blink Count</td>
+                      <td width="35%"class="main" align="center"> 
+                        <%pointData = YC_BEAN.getRecentPointData(deviceID, 20, PointTypes.PULSE_ACCUMULATOR_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      <td width="35%" class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">&nbsp;</td>
+                      <td colspan="2" class="main">&nbsp; 
+					</tr>
+                    <tr> 
+                      <td class="columnHeader">History (Last 6)</td>
+                      <td colspan="2" class="main">1.&nbsp;&nbsp; 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_1);%>
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 
+                        <%} else {%>
+                        ---
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">&nbsp;</td>
+                      <td colspan="2" class="main">2.&nbsp;&nbsp; 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_2);%>
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 
+                        <%} else {%>
+                        ---
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td class="columnHeader">&nbsp;</td>
+                      <td colspan="2" class="main">3.&nbsp;&nbsp; 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_3);%>
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 
+                        <%} else {%>
+                        ---
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">&nbsp;</td>
+                      <td colspan="2" class="main">4.&nbsp;&nbsp; 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_4);%>
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 
+                        <%} else{%>
+                        ---
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr> 
+                      <td class="columnHeader">&nbsp;</td>
+                      <td colspan="2" class="main">5.&nbsp;&nbsp; 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_5);%>
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 
+                        <%} else {%>
+                        ---
+                        <%}%>
+                      </td>
+                    </tr>
+                    <tr bgcolor="EEEEEE"> 
+                      <td class="columnHeader">&nbsp;</td>
+                      <td colspan="2" class="main">6.&nbsp;&nbsp; 
+                        <%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_6);%>
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 
+                        <%} else {%>
+                        ---
+                        <%}%>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+              </tr>
+            </table>
+			
+			
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td> <br>
+                </td>
+              </tr>
+            </table>
+			<% int discAddress = YC_BEAN.getMCT410DisconnectAddress(deviceID); 
+			if( discAddress >= 0 ) {
+			%>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+                <td height="95%"  bgcolor="888888" class="tableHeader">Disconnect</td>
+                <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
+				<a class="Link3" href="javascript:setCommand('control connect');disableAllButtons()" id="controlConnID" name="controlConn"
+				  onMouseOver="window.status='Control Connect';return true;"
+    	          onMouseOut="window.status='';return true;">Connect</a>
+				&nbsp;&nbsp;
+                <a class="Link3" href="javascript:setCommand('control disconnect');disableAllButtons()" id="controlDiscID" name="controlDisc"
+				  onMouseOver="window.status='Control Disconnect';return true;"
+	              onMouseOut="window.status='';return true;">Disconnect</a>
+				&nbsp;&nbsp;
+                <a class="Link3" href="javascript:setCommand('getstatus disconnect');disableAllButtons()" id="readDiscID" name="readDisc"
+				  onMouseOver="window.status='Read Disconnect Status';return true;"
+        	      onMouseOut="window.status='';return true;">Read</a></td>
+                <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
+              </tr>
+              <tr> 
+                <td width="6" background="../WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td colspan="2"> 
+                  <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+                    <tr> 
+                      <td width="20%" class="columnHeader">Status</td>
+                      <td width="35%"class="main" align="center"> 
+                        <%pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.STATUS_POINT);%>
+                        <%if( pointData != null){%>
+                        <%=dateTimeFormat.format(pointData.getPointDataTimeStamp())%> 
+                        <% } else {%>
+                        --- 
+                        <%}%>
+                      <td width="35%" class="main" align="right"> 
+                        <%if( pointData != null){%>
+                        <%=pointData.getStr()%> 						
+                        <%//format_nv3.format(pointData.getValue())%> 
+                        <% } else {%>
+                        &nbsp; 
+                        <%}%>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td width="6" background="../WebConfig/yukon/Side_right.gif">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="../WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+              </tr>
+            </table>
+			<%}%>			
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
               <tr> 
-                <td align="right"><a href='CommandDevice.jsp?deviceID=<%=deviceID%>&manual' name="manualCommander"  class="Link1">
-                  Go To Commander</a></td>
+                <td align="right"><a href='CommandDevice.jsp?deviceID=<%=deviceID%>&manual' name="manualCommander"  class="Link1"> Go To Commander</a></td>
               </tr>
-            </table>			
+              <tr> 
+                <td align="right"><a href='AdvancedCommander410.jsp?deviceID=<%=deviceID%>' name="advCommander410"  class="Link1"> Load Profile 
+                  Options</a></td>
+              </tr>
+            </table>
           </td>
         </tr>
-      </table>
-      <br>
-      <table width="530" border="0" cellspacing="0" cellpadding="3">
-        <%--                  <tr> 
-                    <td width="30%" class="SubtitleHeader" align="right">Execute Command :</td>
-                    <td width="70%"> 
-                      <select name="command">
-                        <%
-                      String tempCommand = ycBean.getCommandString().replaceAll("noqueue", "").trim();
-                      com.cannontech.common.util.KeysAndValues keysAndVals = 
-						new com.cannontech.common.util.KeysAndValues(defaultKeys, defaultValues);
-                      if( DeviceTypesFuncs.isDisconnectMCT(liteYukonPao.getType()))
-						keysAndVals = new com.cannontech.common.util.KeysAndValues(disconnectKeys, disconnectValues);
-                      
-					  for (int i = 0; i < keysAndVals.getKeys().length; i++)
-                  	  {
-                  	    out.print("<OPTION value='" + keysAndVals.getValues()[i] + "' ");
-                  	  	if( keysAndVals.getValues()[i].equalsIgnoreCase(tempCommand))
-                  	  		out.print("SELECTED");
-               	  		out.println(">" + keysAndVals.getKeys()[i] + "</option>");
-                 	  }%>
-                      </select>
-                      <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
-                    </td>
-                  </tr>
---%>
-        <tr align="center"> 
-          <td class="SubtitleHeader"  valign="top">Command Execution Log</td>
+        <tr>
+          <td>&nbsp;</td>
         </tr>
-        <tr> 
-          <td > 
-            <div align="center"> 
-              <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="10" wrap="VIRTUAL"><%= ycBean.getResultText()%></textarea>
-              <input type="submit" name="rlearText" id="clearTextID"  value="Clear Results">
-              <input type="reset" name="refresh" id="refreshID" value="Refresh" onClick="window.location.reload()">
-            </div>
-          </td>
-        </tr>
-        <br>
       </table>
     </div>
     <a href="<%=referrer%>&clearids" class="Link3">.</a> </td>

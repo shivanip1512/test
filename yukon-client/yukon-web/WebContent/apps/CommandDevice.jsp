@@ -7,6 +7,8 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
+<jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
+<%-- Grab the search criteria --%>
 
 <%
 	boolean manual = false;
@@ -21,7 +23,7 @@
 	}
 	else
 	{
-		deviceID = ycBean.getDeviceID();
+		deviceID = YC_BEAN.getDeviceID();
 	}
 
 	//get the liteYukonPao using the deviceID
@@ -33,6 +35,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/yukon/Base.css" type="text/css">
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -89,13 +92,20 @@
 			            <td width="10"></td>
 			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>Back to List</span></a></td>
 			          </tr>
-			          <% for (int i = 0; i < ycBean.getDeviceIDs().size(); i++)
+  					  <tr><td height="3"></td></tr>
+			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
-			          	int id = ((Integer)ycBean.getDeviceIDs().get(i)).intValue();%>
-			          <tr> 
+			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();%>
+			          <tr>
+					  	<% if (id == deviceID) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
+						<%} else {%>
 			            <td width="10"></td>
 			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+						<%}%>						
 			          </tr>
+					  <tr><td height="3"></td></tr>
 			          <%}%>
 			        </table>
 			      </div>

@@ -3,8 +3,8 @@
 <%@ page import="com.cannontech.database.cache.functions.CommandFuncs"%>
 
 <%
-//set the deviceID of the YCBean
-ycBean.setDeviceID(deviceID);
+//set the deviceID of the YC_BEAN
+YC_BEAN.setDeviceID(deviceID);
 %>          
 
 	<SCRIPT language="JavaScript">
@@ -46,10 +46,10 @@ ycBean.setDeviceID(deviceID);
                 <td width="70%">
                   <select name="command">
 				  <%
-                  	String tempCommand = ycBean.getCommandString().replaceAll("noqueue", "").trim();
-					for (int i = 0; i < ycBean.getLiteDeviceTypeCommandsVector().size(); i++)
+                  	String tempCommand = YC_BEAN.getCommandString().replaceAll("noqueue", "").trim();
+					for (int i = 0; i < YC_BEAN.getLiteDeviceTypeCommandsVector().size(); i++)
                   	{
-					LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)ycBean.getLiteDeviceTypeCommandsVector().get(i);
+					LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)YC_BEAN.getLiteDeviceTypeCommandsVector().get(i);
 					LiteCommand lc = CommandFuncs.getCommand(ldtc.getCommandID());
                   		out.print("<OPTION value='" + lc.getCommand() + "' ");
                   	  	if( lc.getCommand().equalsIgnoreCase(tempCommand))
@@ -67,7 +67,7 @@ ycBean.setDeviceID(deviceID);
               <tr> 
                 <td colspan="2"> 
                   <div align="center">
-                  <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="20" wrap="VIRTUAL"><%= ycBean.getResultText()%></textarea>
+                  <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="20" wrap="VIRTUAL"><%= YC_BEAN.getResultText()%></textarea>
                     <input type="submit" name="clearText" value="Clear Results">
                     <input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
                   </div>
