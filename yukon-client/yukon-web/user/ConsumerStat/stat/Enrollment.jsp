@@ -116,6 +116,10 @@ function confirmSubmit(form) {
                       </td>
                     </tr>
 <%
+	boolean savingsIconExists = false;
+	boolean controlIconExists = false;
+	boolean envrnmtIconExists = false;
+	
 	for (int i = 0, idx = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		if (category.getStarsEnrLMProgramCount() == 0) continue;
@@ -204,15 +208,21 @@ function confirmSubmit(form) {
                                     <td class="TableCell" width="49%"><%= ServletUtils.getProgramDisplayNames(prog)[1] %> 
                                     </td>
                                     <td class="TableCell" width="22%" align="right"> 
-                                      <% if (!progIcons[0].equals("")) { %>
+<% if (!progIcons[0].equals("")) {
+	savingsIconExists = true;
+%>
                                       <img src="../../../Images/Icons/<%= progIcons[0] %>"> 
-                                      <% } %>
-                                      <% if (!progIcons[1].equals("")) { %>
+<% } %>
+<% if (!progIcons[1].equals("")) {
+	controlIconExists = true;
+%>
                                       <img src="../../../Images/Icons/<%= progIcons[1] %>"> 
-                                      <% } %>
-                                      <% if (!progIcons[2].equals("")) { %>
+<% } %>
+<% if (!progIcons[2].equals("")) {
+	envrnmtIconExists = true;
+%>
                                       <img src="../../../Images/Icons/<%= progIcons[2] %>"> 
-                                      <% } %>
+<% } %>
                                     </td>
                                     <td class="TableCell" width="20%" align="right"> 
                                       <input type="button" name="Details" value="Details" onclick="location.href='ProgramDetails.jsp?Cat=<%= i %>&Prog=<%= j %>'">
@@ -247,6 +257,37 @@ function confirmSubmit(form) {
                       </tr>
                     </table>
                   </form>
+<% if (savingsIconExists || controlIconExists || envrnmtIconExists) { %>
+                  <table width="320" border="1" cellpadding="3" cellspacing="0">
+                    <tr> 
+                      <td><b class="TableCell">&nbsp;&nbsp;The following symbols 
+                        represent:</b> 
+                        <table width="100%" border="0" cellpadding="0">
+<% if (savingsIconExists) { %>
+                          <tr> 
+                            <td width="10%"><img src="../../../Images/Icons/$$Sm.gif" ></td>
+                            <td width="90%" class="TableCell">Savings: More dollar 
+                              signs means more savings!</td>
+                          </tr>
+<% } %>
+<% if (controlIconExists) { %>
+                          <tr> 
+                            <td width="10%"><img src="../../../Images/Icons/ThirdSm.gif"></td>
+                            <td width="90%" class="TableCell">Percent of Control</td>
+                          </tr>
+<% } %>
+<% if (envrnmtIconExists) { %>
+                          <tr> 
+                            <td width="10%"><img src="../../../Images/Icons/Tree2Sm.gif"></td>
+                            <td width="90%" class="TableCell">Environment: More 
+                              trees means a healthier environment.</td>
+                          </tr>
+<% } %>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+<% } %>
                 </td>
               </tr>
             </table>

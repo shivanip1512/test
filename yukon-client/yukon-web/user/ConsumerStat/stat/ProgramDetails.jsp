@@ -61,53 +61,19 @@
                 </tr>
               </table>
               <br>
-<%
-	if (program.getStarsWebConfig().getURL().length() > 0) {
-%>
+<% if (program.getStarsWebConfig().getURL().length() > 0) { %>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="TableCell"><jsp:include page='<%= "../../../WebConfig/" + program.getStarsWebConfig().getURL() %>'/></td>
                 </tr>
               </table>
-<%
-	} else {
-		String[] progIcons = ServletUtils.getImageNames(program.getStarsWebConfig().getLogoLocation());
-		if (progIcons[0].length() > 0 || progIcons[1].length() > 0 || progIcons[2].length() > 0) {
-%>
-              <table width="80%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
-                <tr valign="middle"> 
-                  <td width="27%">Savings: More dollar signs means more savings!</td>
-                  <td width="8%">
-				    <% if (progIcons[0].length() > 0) { %>
-				    <img src="../../../Images/Icons/<%= progIcons[0] %>" >
-				    <% } else { %>N/A<% } %>
-				  </td>
-                  <td width="19%">Percent of Control</td>
-                  <td width="8%">
-				    <% if (progIcons[1].length() > 0) { %>
-				    <img src="../../../Images/Icons/<%= progIcons[1] %>" >
-				    <% } else { %>N/A<% } %>
-				  </td>
-                  <td width="30%">Environment: More trees means healthier environment.</td>
-                  <td width="8%">
-				    <% if (progIcons[2].length() > 0) { %>
-				    <img src="../../../Images/Icons/<%= progIcons[2] %>" >
-				    <% } else { %>N/A<% } %>
-				  </td>
-                </tr>
-              </table>
-              <br>
-<%
-		}
-%>
+<% } else { %>
               <table width="60%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="TableCell" align="center"><%= program.getStarsWebConfig().getDescription() %></td>
                 </tr>
               </table>
-<%
-	}
-%>
+<% } %>
               <br>
               <input type="button" name="Back" value="Back" onclick="history.back()">
               <p></p>
