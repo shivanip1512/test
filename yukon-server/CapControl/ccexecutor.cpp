@@ -416,7 +416,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                     if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime()) )
+                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -425,7 +425,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime()) )
+                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -589,7 +589,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                     if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime()) )
+                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -598,7 +598,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime()) )
+                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
