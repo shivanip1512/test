@@ -115,7 +115,7 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		serie.setAxis(gds.getAxis());
 		serie.setTypeMask(gds.getType().intValue());
 		serie.setMultiplier(gds.getMultiplier());
-
+		serie.setMoreData(gds.getMoreData());
 		dsVector.add(serie);
 	}
 
@@ -125,8 +125,17 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		dsVector.toArray(trendSeries);
 		hitDatabase_Basic(GraphDataSeries.BASIC_TYPE);
 		hitDatabase_Basic(GraphDataSeries.YESTERDAY_TYPE);
-		hitDatabase_Basic(GraphDataSeries.PEAK_TYPE);
 		hitDatabase_Basic(GraphDataSeries.USAGE_TYPE);
+		
+		//Peak and (specific)Date types
+		for (int i = 0; i < trendSeries.length; i++)
+		{
+			if (GraphDataSeries.isDateType(trendSeries[i].getTypeMask()) ||
+				GraphDataSeries.isPeakType(trendSeries[i].getTypeMask()))
+			{
+				hitDatabase_Date(trendSeries[i].getTypeMask(), i);
+			}
+		}
 	}
 	else
 	{
@@ -706,20 +715,6 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				stopTS = getStopDate().getTime() + day;
 				day = 0;	// we set it back to 0 for our tp setup.
 			}
-			else if (GraphDataSeries.isPeakType(seriesTypeMask))
-			{
-				for (int i = 0; i < trendSeries.length; i++)
-				{
-					if (GraphDataSeries.isPeakType(trendSeries[i].getTypeMask()))
-					{ /*TODO unfortunately, only able to do peak for one point right now*/
-						day = retrievePeakIntervalTranslateMillis(trendSeries[i].getPointId().intValue());
-						startTS = getStartDate().getTime() - day;
-						stopTS = getStartDate().getTime() - day + 86400000;
-						trendSeries[i].setLabel(trendSeries[i].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
-						break;
-					}
-				}
-			}
 			else
 			{
 				startTS = getStartDate().getTime();
@@ -846,8 +841,156 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			
 			if( !dataItemVector.isEmpty())
 			{
+				TimeSeriesDataItem[] dataItemArray = new TimeSeriesDataItem[dataItemVector.size()];
+				dataItemVector.toArray(dataItemArray);
+				dataItemVector.clear();			
+
+				for (int i = 0; i < getTrendSeries().length; i++)
+				{
+					if( trendSeries[i].getPointId().intValue() == lastPointId
+						&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
+					{
+						trendSeries[i].setDataItemArray(dataItemArray);
+					}
+				}
+			}
+			else 
+			{
+				return null;
+			}
+		}
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			e2.printStackTrace();//sometin is up
+			return null;
+		}	
+		java.util.Date timerStop = new java.util.Date();
+		com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
+				" Secs for Trend Data Load ( for type:" + GraphDataSeries.getType(seriesTypeMask) + " )");
+	}
+	return trendSeries;
+}
+private TrendSerie[] hitDatabase_Date(int seriesTypeMask, int serieIndex) 
+{
+	java.util.Date timerStart = new java.util.Date();
+
+	if( trendSeries[serieIndex]== null)
+		return null;
+
+	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE " + 
+	" FROM RAWPOINTHISTORY WHERE POINTID = " + trendSeries[serieIndex].getPointId().intValue() +
+	" AND (TIMESTAMP > ? AND TIMESTAMP <= ? ) ORDER BY POINTID, TIMESTAMP");
+	 
+	if( sql == null)
+		return null;
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	try
+	{
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+
+		if( conn == null )
+		{
+			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
+			return null;
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			long day = 0;			
+			long startTS = 0;
+			long stopTS = 0;
+
+			if (GraphDataSeries.isPeakType(seriesTypeMask))
+			{
+				if (GraphDataSeries.isPeakType(trendSeries[serieIndex].getTypeMask()))
+				{ //TODO unfortunately, only able to do peak for one point right now
+					day = retrievePeakIntervalTranslateMillis(trendSeries[serieIndex].getPointId().intValue());
+					startTS = getStartDate().getTime() - day;
+					stopTS = getStartDate().getTime() - day + 86400000;
+					trendSeries[serieIndex].setLabel(trendSeries[serieIndex].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
+				}
+			}
+			else if (GraphDataSeries.isDateType(seriesTypeMask))
+			{
+				if (GraphDataSeries.isDateType(trendSeries[serieIndex].getTypeMask()))
+				{
+					day = getStartDate().getTime() - trendSeries[serieIndex].getMoreData().longValue();
+					startTS = getStartDate().getTime() - day;
+					stopTS = getStartDate().getTime() - day + 86400000;
+					trendSeries[serieIndex].setLabel(trendSeries[serieIndex].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
+				}
+			}
+
+			com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(startTS) + "  -  STOP DATE <= " + new java.sql.Timestamp(stopTS));
+			pstmt.setTimestamp(1, new java.sql.Timestamp( startTS ));
+			pstmt.setTimestamp(2, new java.sql.Timestamp( stopTS ));
+
+			rset = pstmt.executeQuery();
+			 
+			TimeSeriesDataItem dataItem = null;
+			//contains org.jfree.data.time.TimeSeriesDataItem values.
+			java.util.Vector dataItemVector = new java.util.Vector(0);			
+			int lastPointId = -1;
+
+			boolean addNext = true;
+			boolean firstOne = true;
+			java.util.Date start = getStartDate();
+			java.util.Date stop = new java.util.Date (getStartDate().getTime() + 86400000);
+
+			while( rset.next() )
+			{
+				int pointID = rset.getInt(1);
+
+				if( pointID != lastPointId)
+				{
+					if( lastPointId != -1)	//not the first one!
+					{
+						//Save the data you've collected into the array of models (chartmodelsArray).
+						TimeSeriesDataItem[] dataItemArray = new TimeSeriesDataItem[dataItemVector.size()];
+						dataItemVector.toArray(dataItemArray);
+						dataItemVector.clear();
+						
+						//MAY NOT NEED THIS CAUSE ONLY HAVE ONE POINTID!
+						if( trendSeries[serieIndex].getPointId().intValue() == lastPointId 
+								&& (trendSeries[serieIndex].getTypeMask() & seriesTypeMask) == seriesTypeMask)
+								trendSeries[serieIndex].setDataItemArray(dataItemArray);
+		
+					}
+					lastPointId = pointID;
+				}
+				
+				//new pointid in rset.
+				//init everything, a new freechartmodel will be created with the change of pointid.
+				java.sql.Timestamp ts = rset.getTimestamp(2);
+				RegularTimePeriod tp = new Millisecond(new java.util.Date(ts.getTime() + day));
+
+				double val = rset.getDouble(3);
+			
+				dataItem = new TimeSeriesDataItem(tp, val);
+				dataItemVector.add(dataItem);
+							
+			}	//END WHILE
+			
+			
+			if( !dataItemVector.isEmpty())
+			{
 				// Repeat the interval x # of days with Peak_interval data series.
-				if (GraphDataSeries.isPeakType(seriesTypeMask ))
+				if (GraphDataSeries.isPeakType(seriesTypeMask ) || GraphDataSeries.isDateType(seriesTypeMask))
 				{
 					int size = dataItemVector.size();
 					long numDays = (getStopDate().getTime() - getStartDate().getTime()) / 86400000;
@@ -867,13 +1010,10 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				dataItemVector.toArray(dataItemArray);
 				dataItemVector.clear();			
 
-				for (int i = 0; i < getTrendSeries().length; i++)
+				if( trendSeries[serieIndex].getPointId().intValue() == lastPointId
+					&& (trendSeries[serieIndex].getTypeMask() & seriesTypeMask) == seriesTypeMask)
 				{
-					if( trendSeries[i].getPointId().intValue() == lastPointId
-							&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
-							{
-								trendSeries[i].setDataItemArray(dataItemArray);
-							}
+					trendSeries[serieIndex].setDataItemArray(dataItemArray);
 				}
 			}
 			else 
@@ -1062,7 +1202,7 @@ public JFreeChart refresh()
 	
 	if( getViewType() == TrendModelType.LINE_VIEW|| getViewType() == TrendModelType.SHAPES_LINE_VIEW)
 	{
-		TimeSeriesToolTipGenerator generator = new TimeSeriesToolTipGenerator(dwellValuesDateTimeformat, valueFormat);
+		TimeSeriesToolTipGenerator generator = new TimeSeriesToolTipGenerator(extendedTimeFormat, valueFormat);
 
 		XYItemRenderer rend = null;
 
@@ -1131,7 +1271,7 @@ public JFreeChart refresh()
 			rend = new XYStepRenderer();
 		}
 		TimeSeriesToolTipGenerator generator =
-			 new TimeSeriesToolTipGenerator(dwellValuesDateTimeformat, valueFormat);
+			 new TimeSeriesToolTipGenerator(extendedTimeFormat, valueFormat);
 
 		rend.setToolTipGenerator(generator);
 		
