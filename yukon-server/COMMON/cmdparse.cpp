@@ -3129,17 +3129,31 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
 
     if(CmdStr.contains(" sync"))
     {
-        _cmd["xcsync"] = CtiParseValue( TRUE );    // Temperatures are delta offsets
+        _cmd["xcsync"] = CtiParseValue( TRUE );
     }
 
     if(CmdStr.contains(" time"))
     {
-        _cmd["xctimesync"] = CtiParseValue( TRUE );  // Temperatures are celsius
+        _cmd["xctimesync"] = CtiParseValue( TRUE );
 
         if(CmdStr.contains(" date"))
         {
-            _cmd["xcdatesync"] = CtiParseValue( TRUE );  // Temperatures are celsius
+            _cmd["xcdatesync"] = CtiParseValue( TRUE );
         }
+
+
+        if(!(temp = CmdStr.match(" [0-9]?[0-9]:")).isNull())
+        {
+            int hh = atoi(temp.data());
+            _cmd["xctimesync_hour"] = CtiParseValue( hh );
+
+            if(!(temp = CmdStr.match(":[0-9][0-9]")).isNull())
+            {
+                int mm = atoi(temp.data() + 1);
+                _cmd["xctimesync_minute"] = CtiParseValue( mm );
+            }
+        }
+
     }
 
     if(!(token = CmdStr.match("template +((\"|')[^\"']+(\"|'))")).isNull())
