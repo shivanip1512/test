@@ -101,7 +101,7 @@
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
 
-			  <form name="MForm" method="post" action="SelectMeter.jsp">
+			  <form name="MForm" method="post" action="SelectMCT.jsp">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td>
