@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_devdll.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/06/21 16:54:25 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/06/24 20:02:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 #define MAJORREVISION   2
 #define MINORREVISION   25
-#define BUILDNUMBER     0
+#define BUILDNUMBER     1
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
