@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.print.PageFormat;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -27,6 +28,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.gui.PreviewPanel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 
 /**
@@ -56,7 +58,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	/** TableModel data structure */
 	protected ReportModelBase model = null;
 	/** collection of functions */
-	protected ExpressionCollection functions = null;
+//	protected ExpressionCollection functions = null;
 	/** collection of expressions */
 	protected ExpressionCollection expressions = null;
 	
@@ -64,6 +66,8 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected String PAGE_TOTAL_FUNCTION = "Page Total";
 	protected String PAGE_NUMBER_FUNCTION = "Page Number";
 	protected String PAGE_XOFY_EXPRESSION = "PageXofY";
+	
+	private PageFormat pageFormat= null;
 	
 	 
 	public void showPreviewFrame(ReportModelBase model_) throws Exception
@@ -84,6 +88,17 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		dialog.setVisible(true);
 	}
 	
+	public PreviewPanel getPreviewPanel(ReportModelBase model_) throws Exception
+	{
+//		Boot.start();
+		model = model_;
+		model.collectData();
+		JFreeReport report = createReport();
+		report.setData(model);
+		final PreviewPanel pPanel = new PreviewPanel(report);
+		return pPanel;
+	}
+	
 	public PreviewInternalFrame getPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		Boot.start();
@@ -92,8 +107,18 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		JFreeReport report = createReport();
 		report.setData(model);
 		final PreviewInternalFrame pFrame = new PreviewInternalFrame(report);
-		
 		return pFrame;
+	}	
+	public PreviewDialog getPreviewDialog(ReportModelBase model_) throws Exception
+	{
+		Boot.start();
+		model = model_;
+		model.collectData();
+		JFreeReport report = createReport();
+		report.setData(model);
+		final PreviewDialog pDialog = new PreviewDialog(report);
+		
+		return pDialog;
 	}
 	
 	/**
@@ -111,9 +136,9 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		report.setPageHeader(createPageHeader());
 		report.setGroups(createGroups());
 		report.setItemBand(createItemBand());
-		report.setFunctions(getFunctions());
 		report.setExpressions(getExpressions());
 		report.setPropertyMarked("report.date", true);
+		report.setDefaultPageFormat(getPageFormat());
 		return report;
 	}
 
@@ -143,27 +168,13 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		{
 			expressions = new ExpressionCollection();
 			expressions.add(getPageXofYExpression());
+			expressions.add(getBackgroundTriggerFunction());
+			expressions.add(getPageNumberFunction());
+			expressions.add(getPageTotalFunction());
 		}
 		return expressions;
 	}	
 
-	/**
-	 * Returns the functions, use .add(...) for new functions
-	 * @return ExpressionCollection functions
-	 * @throws FunctionInitializeException
-	 */
-	protected ExpressionCollection getFunctions() throws FunctionInitializeException
-	{
-		if( functions == null)
-		{
-			functions = new ExpressionCollection();
-			functions.add(getBackgroundTriggerFunction());
-			functions.add(getPageNumberFunction());
-			functions.add(getPageTotalFunction());
-		}
-		return functions;
-	}
-	
 	/**
 	 * @return a background element
 	 */
@@ -309,7 +320,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	{
 		final ReportFooter footer = new ReportFooter();
 		footer.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 48));
-		footer.getBandDefaults().setFontDefinitionProperty( new FontDefinition("Serif", 16, true, false, false, false));
+		footer.getBandDefaults().setFontDefinitionProperty( new FontDefinition("Serif", 12, true, false, false, false));
 
 		final LabelElementFactory factory = new LabelElementFactory();
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 0));
@@ -364,6 +375,30 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	public void setModel(ReportModelBase base)
 	{
 		model = base;
+	}
+
+	/**
+	 * @return
+	 */
+	public PageFormat getPageFormat()
+	{
+		if( pageFormat == null)
+		{
+			//Define the report Paper properties and format.
+			java.awt.print.Paper reportPaper = new java.awt.print.Paper();
+			reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
+			pageFormat = new java.awt.print.PageFormat();
+			pageFormat.setPaper(reportPaper);
+		}
+		return pageFormat;
+	}
+
+	/**
+	 * @param format
+	 */
+	public void setPageFormat(PageFormat pageFormat_)
+	{
+		pageFormat = pageFormat_;
 	}
 
 }
