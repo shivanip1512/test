@@ -144,11 +144,8 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 	java.util.ArrayList list = new java.util.ArrayList();
 	
 	String sql = "SELECT EnergyCompanyID," + 
-			SETTER_COLUMNS[0] + ", " +
-			SETTER_COLUMNS[1] + ", " +
-			SETTER_COLUMNS[2] + ", " +
-			SETTER_COLUMNS[3] +
-			" FROM " + TABLE_NAME;
+						"Name, PrimaryContactID, UserID" +
+						" FROM " + TABLE_NAME;
 
 	try
 	{		
