@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDeleteApplianceResponseDescriptor.java,v 1.13 2004/06/25 21:37:02 zyao Exp $
+ * $Id: StarsDeleteApplianceResponseDescriptor.java,v 1.14 2004/07/08 16:21:16 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.13 $ $Date: 2004/06/25 21:37:02 $
+ * @version $Revision: 1.14 $ $Date: 2004/07/08 16:21:16 $
 **/
 public class StarsDeleteApplianceResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

@@ -11,14 +11,20 @@ import java.util.ArrayList;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
@@ -202,13 +208,16 @@ public class ECUtils {
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( deviceTypeID );
 		
-		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000 ||
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM ||
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000 ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000 ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000 ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000 ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
-			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT ||
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205 ||
+			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305)
 		{
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
 		}
@@ -233,6 +242,31 @@ public class ECUtils {
 	public static boolean isMCT(int categoryID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+	}
+	
+	public static boolean isExpressCom(int devTypeID) {
+		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
+		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
+	}
+	
+	public static boolean isVersaCom(int devTypeID) {
+		int devTypeDefID = YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID();
+		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000
+				|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000);
+	}
+	
+	public static boolean isSA205(int devTypeID) {
+		return YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205;
+	}
+	
+	public static boolean isSA305(int devTypeID) {
+		return YukonListFuncs.getYukonListEntry( devTypeID ).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305;
 	}
 	
 	/**
@@ -277,21 +311,49 @@ public class ECUtils {
 	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
 		return company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID;
 	}
-	
-	public static String getPublishedProgramName(LiteLMProgramWebPublishing liteProg, LiteStarsEnergyCompany energyCompany) {
+
+	public static String getNotification(LiteContactNotification liteNotif) {
+		String notification = (liteNotif == null)? null : liteNotif.getNotification();
+		return ServerUtils.forceNotNull(notification);
+	}
+
+	public static String formatName(LiteContact liteContact) {
+		StringBuffer name = new StringBuffer();
+		
+		String firstName = ServerUtils.forceNotNone( liteContact.getContFirstName() ).trim();
+		if (firstName.length() > 0)
+			name.append( firstName );
+		
+		String lastName = ServerUtils.forceNotNone( liteContact.getContLastName() ).trim();
+		if (lastName.length() > 0)
+			name.append(" ").append( lastName );
+		
+		return name.toString();
+	}
+
+	public static String getPublishedProgramName(LiteLMProgramWebPublishing liteProg) {
 		String progName = CtiUtilities.STRING_NONE;
 		
 		if (liteProg.getDeviceID() > 0)
 			progName = PAOFuncs.getYukonPAOName( liteProg.getDeviceID() );
 		
-		StarsWebConfig config = energyCompany.getStarsWebConfig( liteProg.getWebSettingsID() );
-		if (config != null) {
-			String[] dispNames = ServerUtils.splitString( config.getAlternateDisplayName(), "," );
+		LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteProg.getWebSettingsID() );
+		if (liteConfig != null) {
+			String[] dispNames = ServerUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
 			if (dispNames.length > 0 && dispNames[0].length() > 0)
 				progName = dispNames[0];
 		}
 		
 		return progName;
+	}
+
+	public static boolean isOperator(StarsYukonUser user) {
+		return !isResidentialCustomer(user) &&
+				EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
+	}
+
+	public static boolean isResidentialCustomer(StarsYukonUser user) {
+		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 
 }

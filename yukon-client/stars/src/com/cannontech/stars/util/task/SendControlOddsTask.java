@@ -120,7 +120,7 @@ public class SendControlOddsTask implements Runnable {
 					StringBuffer text = new StringBuffer( header );
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
-						String progName = ECUtils.getPublishedProgramName( program.getPublishedProgram(), energyCompany );
+						String progName = ECUtils.getPublishedProgramName( program.getPublishedProgram() );
 						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
 						text.append( progName );

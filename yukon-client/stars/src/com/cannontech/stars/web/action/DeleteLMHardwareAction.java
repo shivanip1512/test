@@ -221,27 +221,19 @@ public class DeleteLMHardwareAction implements ActionBase {
 				LiteInventoryBase liteInvNew = null;
 				
 				if (liteInv instanceof LiteStarsLMHardware) {
-					java.sql.Connection conn = null;
-					try {
-						conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-						
-						com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-								new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-						StarsLiteFactory.setLMHardwareBase( hardware, (LiteStarsLMHardware)liteInv );
-						hardware.setDbConnection( conn );
-						hardware.clearLMHardware();
-						
-						com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
-						invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
-						invDB.setRemoveDate( removeDate );
-						invDB.update();
-						
-						liteInvNew = new LiteStarsLMHardware();
-						StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInvNew, hardware );
-					}
-					finally {
-						if (conn != null) conn.close();
-					}
+					com.cannontech.database.data.stars.hardware.LMHardwareBase.clearLMHardware( liteInv.getInventoryID() );
+					
+					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+					StarsLiteFactory.setLMHardwareBase( hardware, (LiteStarsLMHardware)liteInv );
+					
+					com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
+					invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
+					invDB.setRemoveDate( removeDate );
+					Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+					
+					liteInvNew = new LiteStarsLMHardware();
+					StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInvNew, hardware );
 				}
 				else {
 					com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(

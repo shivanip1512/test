@@ -9,7 +9,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
@@ -116,7 +116,7 @@ public class GetCustAccountAction implements ActionBase {
     		}
         	else
 				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
-					liteAcctInfo, energyCompany, ServerUtils.isOperator(user) );
+					liteAcctInfo, energyCompany, ECUtils.isOperator(user) );
 			
 			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );

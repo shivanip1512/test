@@ -63,7 +63,7 @@ public class DailyTimerTask extends StarsTimerTask {
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			try {
-				InventoryManager.sendSwitchCommands( company, company.getUserID() );
+				InventoryManager.sendSwitchCommands( company );
 			}
 			catch (WebClientException e) {
 				CTILogger.debug( e.getMessage() );

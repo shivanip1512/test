@@ -18,6 +18,7 @@ import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
@@ -447,6 +448,30 @@ public class ServletUtils {
 		
 		return "(none)";
 	}
+	
+	public static String getInventoryLabel(StarsInventory starsInv) {
+		String label = starsInv.getDeviceLabel();
+		if (label.equals("")) {
+			if (starsInv.getLMHardware() != null)
+				label = starsInv.getLMHardware().getManufacturerSerialNumber();
+			else if (starsInv.getMCT() != null)
+				label = starsInv.getMCT().getDeviceName();
+		}
+		
+		return label;
+	}
+	
+	public static StarsEnrLMProgram getEnrollmentProgram(StarsEnrollmentPrograms categories, int programID) {
+		for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+			StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+				if (category.getStarsEnrLMProgram(j).getProgramID() == programID)
+					return category.getStarsEnrLMProgram(j);
+			}
+		}
+		
+		return null;
+	}
     
 	public static String capitalize(String word) {
 		return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
@@ -527,6 +552,28 @@ public class ServletUtils {
 		int len = fullText.lastIndexOf( ' ', limit );
 		if (len < 0) len = limit;
 		return fullText.substring( 0, len ) + " ...";
+	}
+	
+	public static String hideUnsetNum(int num, int unset) {
+		return (num == unset)? "" : String.valueOf(num);
+	}
+	
+	public static int parseNumeric(String str, int unset) throws WebClientException {
+		if (str == null || str.equals("")) return unset;
+		try {
+			return Integer.parseInt( str );
+		}
+		catch (NumberFormatException e) {
+			throw new WebClientException( "Invalid numeric value \"" + str + "\"" );
+		}
+	}
+	
+	public static int checkRange(int value, int lowerLimit, int upperLimit, String fieldName)
+		throws WebClientException
+	{
+		if (value < lowerLimit || value > upperLimit)
+			throw new WebClientException("The value of '" + fieldName + "' must be between " + lowerLimit + " and " + upperLimit);
+		return value;
 	}
 
 }

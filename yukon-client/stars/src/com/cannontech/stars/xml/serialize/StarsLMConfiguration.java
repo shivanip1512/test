@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMConfiguration.java,v 1.1 2004/06/25 21:37:06 zyao Exp $
+ * $Id: StarsLMConfiguration.java,v 1.2 2004/07/08 16:21:21 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2004/06/25 21:37:06 $
+ * @version $Revision: 1.2 $ $Date: 2004/07/08 16:21:21 $
 **/
 public class StarsLMConfiguration implements java.io.Serializable {
 
@@ -39,6 +39,10 @@ public class StarsLMConfiguration implements java.io.Serializable {
     private SA205 _SA205;
 
     private SA305 _SA305;
+
+    private VersaCom _versaCom;
+
+    private ExpressCom _expressCom;
 
 
       //----------------/
@@ -63,6 +67,16 @@ public class StarsLMConfiguration implements java.io.Serializable {
     {
         return this._coldLoadPickup;
     } //-- java.lang.String getColdLoadPickup() 
+
+    /**
+     * Returns the value of field 'expressCom'.
+     * 
+     * @return the value of field 'expressCom'.
+    **/
+    public ExpressCom getExpressCom()
+    {
+        return this._expressCom;
+    } //-- ExpressCom getExpressCom() 
 
     /**
      * Returns the value of field 'SA205'.
@@ -93,6 +107,16 @@ public class StarsLMConfiguration implements java.io.Serializable {
     {
         return this._tamperDetect;
     } //-- java.lang.String getTamperDetect() 
+
+    /**
+     * Returns the value of field 'versaCom'.
+     * 
+     * @return the value of field 'versaCom'.
+    **/
+    public VersaCom getVersaCom()
+    {
+        return this._versaCom;
+    } //-- VersaCom getVersaCom() 
 
     /**
     **/
@@ -142,6 +166,16 @@ public class StarsLMConfiguration implements java.io.Serializable {
     } //-- void setColdLoadPickup(java.lang.String) 
 
     /**
+     * Sets the value of field 'expressCom'.
+     * 
+     * @param expressCom the value of field 'expressCom'.
+    **/
+    public void setExpressCom(ExpressCom expressCom)
+    {
+        this._expressCom = expressCom;
+    } //-- void setExpressCom(ExpressCom) 
+
+    /**
      * Sets the value of field 'SA205'.
      * 
      * @param SA205 the value of field 'SA205'.
@@ -170,6 +204,16 @@ public class StarsLMConfiguration implements java.io.Serializable {
     {
         this._tamperDetect = tamperDetect;
     } //-- void setTamperDetect(java.lang.String) 
+
+    /**
+     * Sets the value of field 'versaCom'.
+     * 
+     * @param versaCom the value of field 'versaCom'.
+    **/
+    public void setVersaCom(VersaCom versaCom)
+    {
+        this._versaCom = versaCom;
+    } //-- void setVersaCom(VersaCom) 
 
     /**
      * 

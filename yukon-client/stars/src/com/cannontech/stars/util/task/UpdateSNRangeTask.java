@@ -13,8 +13,11 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -202,6 +205,11 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 				return;
 			}
 		}
+		
+		String logMsg = "Serial Range:" + snFrom + " - " + snTo
+				+ ",Old Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText()
+				+ ",New Device Type:" + YukonListFuncs.getYukonListEntry(newDevTypeID.intValue()).getEntryText();
+		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_UPDATE_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;
 		session.removeAttribute( InventoryManager.INVENTORY_SET );

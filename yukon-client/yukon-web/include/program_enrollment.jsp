@@ -3,7 +3,7 @@
  * inWizard: boolean
  * needMoreInfo: boolean
  */
-	boolean isOperator = ServerUtils.isOperator(user);
+	boolean isOperator = com.cannontech.stars.util.ECUtils.isOperator(user);
 	String inWizardStr = (inWizard)? "&Wizard=true" : "";
 %>
 

@@ -71,7 +71,6 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
-import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 /**
@@ -204,7 +203,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private StarsCustomerSelectionLists starsCustSelLists = null;
 	
 	private Hashtable starsSelectionLists = null;	// Map String(list name) to StarsSelectionListEntry
-	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
 	private Hashtable starsLMCtrlHists = null;		// Map Integer(group ID) to StarsLMControlHistory
 	
@@ -410,22 +408,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	
-	public synchronized boolean isInitiated() {
-		return initiated;
-	}
-	
 	public synchronized void init() {
 		if (initiated) return;
 		
-		getAllSelectionLists();
-		
+		// Load the inventory when energy company is initiated
 		if (!ECUtils.isDefaultEnergyCompany( this )) {
-			getAllApplianceCategories();
-			getAllServiceCompanies();
-			getAllInterviewQuestions();
-			getAllCustomerFAQs();
-			
-			// Load the inventory when energy company is initiated
 			if (!inventoryLoaded && loadInvTask == null) {
 				loadInvTask = new LoadInventoryTask( this );
 				new Thread( loadInvTask ).start();
@@ -497,7 +484,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsCustSelLists = null;
 		
 		starsSelectionLists = null;
-		starsWebConfigs = null;
 		starsCustAcctInfos = null;
 		starsLMCtrlHists = null;
 		
@@ -583,6 +569,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     				
 			for (int i = 0; i < appCats.length; i++) {
 				LiteApplianceCategory appCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCats[i] );
+				appCat.setDirectOwner( this );
     			
 				com.cannontech.database.db.stars.LMProgramWebPublishing[] pubProgs =
 						com.cannontech.database.db.stars.LMProgramWebPublishing.getAllLMProgramWebPublishing( appCats[i].getApplianceCategoryID().intValue() );
@@ -597,6 +584,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 	    	
 			CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
+		}
+		
+		if (getParent() != null) {
+			// Inherite appliance categories and programs from the parent company
+			// May need to add a role property to control this in the future
+			appCategories.addAll( 0, getParent().getAllApplianceCategories() );
+			pubPrograms.addAll( 0, getParent().getAllPrograms() );
 		}
     	
 		return appCategories;
@@ -646,7 +640,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ArrayList userLists = new ArrayList();
 		
 		synchronized (selectionLists) {
-			if (ServerUtils.isOperator( user )) {
+			if (ECUtils.isOperator( user )) {
 				TreeMap listMap = new TreeMap();
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
 						getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE, true) );
@@ -834,7 +828,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				while (it.hasNext())
 					userLists.add( it.next() );
 			}
-			else if (ServerUtils.isResidentialCustomer( user )) {
+			else if (ECUtils.isResidentialCustomer( user )) {
 				userLists.add( getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true) );
 				
 				if (AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)) {
@@ -1286,6 +1280,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addApplianceCategory(LiteApplianceCategory appCat) {
+		appCat.setDirectOwner( this );
 		ArrayList appCats = getAllApplianceCategories();
 		synchronized (appCats) { appCats.add( appCat ); }
 	}
@@ -1531,8 +1526,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public void setInventoryLoaded() {
-		inventoryLoaded = true;
+	public void setInventoryLoaded(boolean inventoryLoaded) {
+		this.inventoryLoaded = inventoryLoaded;
 	}
 	
 	public synchronized ArrayList loadAllInventory() {
@@ -2022,7 +2017,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (workOrders) {
 			for (int i = 0; i < workOrders.size(); i++) {
 				LiteWorkOrderBase lOrder = (LiteWorkOrderBase) workOrders.get(i);
-				if (liteOrder.getOrderNumber().equalsIgnoreCase( orderNo )) {
+				if (lOrder.getOrderNumber().equalsIgnoreCase( orderNo )) {
 					liteOrder = lOrder;
 					break;
 				}
@@ -2716,7 +2711,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	/* The following methods are only used when SOAPClient exists locally */
 	
 	public synchronized StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
-		if (ServerUtils.isOperator(user)) {
+		if (ECUtils.isOperator(user)) {
 			if (starsOperECSettings == null) {
 				starsOperECSettings = new StarsEnergyCompanySettings();
 				starsOperECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -2731,7 +2726,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsOperECSettings;
 		}
-		else if (ServerUtils.isResidentialCustomer(user)) {
+		else if (ECUtils.isResidentialCustomer(user)) {
 			if (starsCustECSettings == null) {
 				starsCustECSettings = new StarsEnergyCompanySettings();
 				starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -2825,7 +2820,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
 		LiteYukonUser liteUser = starsUser.getYukonUser();
 		
-		if (ServerUtils.isOperator( starsUser )) {
+		if (ECUtils.isOperator( starsUser )) {
 			if (starsOperSelLists == null) {
 				starsOperSelLists = new StarsCustomerSelectionLists();
 				updateOperSelectionLists();
@@ -2833,7 +2828,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsOperSelLists;
 		}
-		else if (ServerUtils.isResidentialCustomer( starsUser )) {
+		else if (ECUtils.isResidentialCustomer( starsUser )) {
 			if (starsCustSelLists == null) {
 				starsCustSelLists = new StarsCustomerSelectionLists();
 				updateCustSelectionLists();
@@ -2940,39 +2935,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (starsDftThermSchedules == null)
 			updateStarsDefaultThermostatSchedules();
 		return starsDftThermSchedules;
-	}
-	
-	private Hashtable getStarsWebConfigs() {
-		if (starsWebConfigs == null)
-			starsWebConfigs = new Hashtable();
-		return starsWebConfigs;
-	}
-	
-	public StarsWebConfig getStarsWebConfig(int webConfigID) {
-		Hashtable starsWebConfigs = getStarsWebConfigs();
-		synchronized (starsWebConfigs) {
-			Integer configID = new Integer(webConfigID);
-			StarsWebConfig starsWebConfig = (StarsWebConfig) starsWebConfigs.get( configID );
-			if (starsWebConfig == null) {
-				LiteWebConfiguration liteWebConfig = SOAPServer.getWebConfiguration( webConfigID );
-				starsWebConfig = StarsLiteFactory.createStarsWebConfig( liteWebConfig );
-				starsWebConfigs.put( configID, starsWebConfig );
-			}
-			
-			return starsWebConfig;
-		}
-	}
-	
-	public void updateStarsWebConfig(int webConfigID) {
-		Hashtable starsWebConfigs = getStarsWebConfigs();
-		LiteWebConfiguration liteWebConfig = SOAPServer.getWebConfiguration( webConfigID );
-		StarsWebConfig starsWebConfig = StarsLiteFactory.createStarsWebConfig( liteWebConfig );
-		synchronized (starsWebConfigs) { starsWebConfigs.put(new Integer(webConfigID), starsWebConfig); }
-	}
-	
-	public void deleteStarsWebConfig(int webConfigID) {
-		Hashtable starsWebConfigs = getStarsWebConfigs();
-		synchronized (starsWebConfigs) { starsWebConfigs.remove( new Integer(webConfigID) ); }
 	}
 
 	private Hashtable getStarsCustAcctInfos() {

@@ -95,9 +95,8 @@ public class LMConfigurationBase extends DBPersistent {
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setConfigurationID( (Integer) results[0] );
-			setColdLoadPickup( (String) results[1] );
-			setTamperDetect( (String) results[2] );
+			setColdLoadPickup( (String) results[0] );
+			setTamperDetect( (String) results[1] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect number of results retrieved");

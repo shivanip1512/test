@@ -151,7 +151,7 @@
 		LiteContact liteContact = liteEC.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		
-		String name = ServerUtils.formatName(liteContact);
+		String name = ECUtils.formatName(liteContact);
 		if (name.length() == 0) name = "(none)";
 		
 		StreetAddress starsAddr = new StreetAddress();

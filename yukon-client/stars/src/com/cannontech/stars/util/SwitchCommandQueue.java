@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 
@@ -93,14 +92,14 @@ public class SwitchCommandQueue {
 		public String toString() {
 			StringBuffer line = new StringBuffer();
 			line.append( getEnergyCompanyID() )
-				.append( " " )
+				.append( "," )
 				.append( getAccountID() )
-				.append( " " )
+				.append( "," )
 				.append( getInventoryID() )
-				.append( " " )
+				.append( "," )
 				.append( getCommandType() );
 			if (getInfoString() != null)
-				line.append( " " ).append( getInfoString() );
+				line.append( "," ).append( getInfoString() );
 			
 			return line.toString();
 		}
@@ -110,6 +109,9 @@ public class SwitchCommandQueue {
 	public static final String SWITCH_COMMAND_ENABLE = "Enable";
 	public static final String SWITCH_COMMAND_DISABLE = "Disable";
 	public static final String SWITCH_COMMAND_CONFIGURE = "Configure";
+	
+	public static final String GROUP_ADDRESSING = "Group Addressing";
+	public static final String HARDWARE_ADDRESSING = "Hardware Addressing";
 	
 	private File diskFile = null;
 	private ArrayList switchCommands = new ArrayList();
@@ -144,14 +146,16 @@ public class SwitchCommandQueue {
 			fr = new BufferedReader( new FileReader(diskFile) );
 			String line = null;
 			while ((line = fr.readLine()) != null) {
-				StringTokenizer st = new StringTokenizer( line );
+				String[] fields = ServerUtils.splitString( line, "," );
+				
 				SwitchCommand cmd = new SwitchCommand();
-				cmd.setEnergyCompanyID( Integer.parseInt(st.nextToken()) );
-				cmd.setAccountID( Integer.parseInt(st.nextToken()) );
-				cmd.setInventoryID( Integer.parseInt(st.nextToken()) );
-				cmd.setCommandType( st.nextToken() );
-				if (st.hasMoreTokens())
-					cmd.setInfoString( st.nextToken() );
+				cmd.setEnergyCompanyID( Integer.parseInt(fields[0]) );
+				cmd.setAccountID( Integer.parseInt(fields[1]) );
+				cmd.setInventoryID( Integer.parseInt(fields[2]) );
+				cmd.setCommandType( fields[3] );
+				if (fields.length > 4)
+					cmd.setInfoString( fields[4] );
+				
 				switchCommands.add( cmd );
 			}
 		}

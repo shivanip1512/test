@@ -100,7 +100,7 @@ public class LMHardwareConfiguration extends DBPersistent {
         }
     }
 
-    public static void deleteAllLMHardwareConfiguration(Integer inventoryID) {
+    public static void deleteAllLMHardwareConfiguration(int inventoryID) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
         

@@ -201,8 +201,8 @@ function prepareSubmit(form) {
 							  onClick="selectHardware(<%= i %>, <%= j %>)" <%= (checked)?"checked":"" %>>
                           </td>
                           <td width="50%"><%= label %></td>
-                          <td width="45%">Load# 
-                            <select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
+                          <td width="45%">Relay
+<select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
                               <option value="0">(none)</option>
 <%
 			for (int ln = 1; ln <= 8; ln++) {

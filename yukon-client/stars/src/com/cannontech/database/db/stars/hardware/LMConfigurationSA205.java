@@ -64,13 +64,12 @@ public class LMConfigurationSA205 extends DBPersistent {
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setConfigurationID( (Integer) results[0] );
-			setSlot1( (Integer) results[1] );
-			setSlot2( (Integer) results[2] );
-			setSlot3( (Integer) results[3] );
-			setSlot4( (Integer) results[4] );
-			setSlot5( (Integer) results[5] );
-			setSlot6( (Integer) results[6] );
+			setSlot1( (Integer) results[0] );
+			setSlot2( (Integer) results[1] );
+			setSlot3( (Integer) results[2] );
+			setSlot4( (Integer) results[3] );
+			setSlot5( (Integer) results[4] );
+			setSlot6( (Integer) results[5] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect number of results retrieved");

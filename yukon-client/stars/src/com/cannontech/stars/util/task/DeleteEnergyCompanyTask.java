@@ -263,7 +263,15 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				for (int i = 0; i < energyCompany.getAllApplianceCategories().size(); i++) {
 					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) energyCompany.getAllApplianceCategories().get(i);
 					
-					com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( liteAppCat.getApplianceCategoryID() );
+					// No need to delete inherited appliance categoreis
+					if (liteAppCat.getDirectOwner() != energyCompany) continue;
+					
+					com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+							new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+					StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
+					
+					Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
+					SOAPServer.deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 					
 					for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
 						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
@@ -272,13 +280,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 						cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
 						
 						Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
+						SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
 					}
-					
-					com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
-							new com.cannontech.database.data.stars.appliance.ApplianceCategory();
-					StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
-					
-					Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
 				}
 				
 				// Delete all interview questions

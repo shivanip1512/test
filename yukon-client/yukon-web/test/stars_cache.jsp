@@ -1,17 +1,19 @@
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ page import="java.io.StringWriter" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.stars.util.*" %>
+<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <cti:checklogin/>
 <%
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (!ServerUtils.isOperator(user)) {
+	if (!ECUtils.isOperator(user)) {
 		response.sendRedirect(request.getContextPath() + "/login.jsp");
 		return;
 	}
+	
+	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 	
 	String cache = "";
 	
@@ -28,7 +30,6 @@
 	}
 	else if (request.getParameter("ShowAcct") != null) {
 		String acctNo = request.getParameter("AcctNo");
-		LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.searchAccountByAccountNo( acctNo );
 		if (liteAcctInfo == null) {
 			cache = "<font color='red'>No customer account found for account #" + acctNo + "!</font>";
@@ -39,6 +40,11 @@
 			starsAcctInfo.marshal(sw);
 			cache = sw.toString();
 		}
+	}
+	else if (request.getParameter("ReloadInv") != null) {
+		liteEC.setInventoryLoaded(false);
+		liteEC.loadAllInventory();
+		cache = "Inventory has been reloaded";
 	}
 %>
 <html>
@@ -63,6 +69,12 @@
       <td width="70"> 
         <input type="submit" name="ShowAcct" value="Show"
 		  onclick="if (this.form.AcctNo.value == '') { alert('Account # cannot be empty!'); return false; }">
+      </td>
+    </tr>
+    <tr> 
+      <td width="230">Inventory:</td>
+      <td width="70"> 
+        <input type="submit" name="ReloadInv" value="Reload">
       </td>
     </tr>
   </table>

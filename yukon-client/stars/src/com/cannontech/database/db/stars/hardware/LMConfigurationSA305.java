@@ -67,14 +67,13 @@ public class LMConfigurationSA305 extends DBPersistent {
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setConfigurationID( (Integer) results[0] );
-			setUtility( (Integer) results[1] );
-			setGroupAddress( (Integer) results[2] );
-			setDivision( (Integer) results[3] );
-			setSubstation( (Integer) results[4] );
-			setRateFamily( (Integer) results[5] );
-			setRateMember( (Integer) results[6] );
-			setRateHierarchy( (Integer) results[7] );
+			setUtility( (Integer) results[0] );
+			setGroupAddress( (Integer) results[1] );
+			setDivision( (Integer) results[2] );
+			setSubstation( (Integer) results[3] );
+			setRateFamily( (Integer) results[4] );
+			setRateMember( (Integer) results[5] );
+			setRateHierarchy( (Integer) results[6] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect number of results retrieved");

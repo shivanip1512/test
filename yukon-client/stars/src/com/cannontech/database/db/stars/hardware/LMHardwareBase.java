@@ -20,9 +20,10 @@ public class LMHardwareBase extends DBPersistent {
     private String manufacturerSerialNumber = "";
     private Integer lmHardwareTypeID = new Integer( CtiUtilities.NONE_ID );
     private Integer routeID = new Integer( CtiUtilities.NONE_ID );
+    private Integer configurationID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
-        "ManufacturerSerialNumber", "LMHardwareTypeID", "RouteID"
+        "ManufacturerSerialNumber", "LMHardwareTypeID", "RouteID", "ConfigurationID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "InventoryID" };
@@ -41,7 +42,8 @@ public class LMHardwareBase extends DBPersistent {
 
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
-            getInventoryID(), getManufacturerSerialNumber(), getLMHardwareTypeID(), getRouteID()
+            getInventoryID(), getManufacturerSerialNumber(), getLMHardwareTypeID(),
+            getRouteID(), getConfigurationID()
         };
 
         add( TABLE_NAME, addValues );
@@ -49,7 +51,7 @@ public class LMHardwareBase extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getManufacturerSerialNumber(), getLMHardwareTypeID(), getRouteID()
+            getManufacturerSerialNumber(), getLMHardwareTypeID(), getRouteID(), getConfigurationID()
         };
 
         Object[] constraintValues = { getInventoryID() };
@@ -66,6 +68,7 @@ public class LMHardwareBase extends DBPersistent {
             setManufacturerSerialNumber( (String) results[0] );
             setLMHardwareTypeID( (Integer) results[1] );
             setRouteID( (Integer) results[2] );
+            setConfigurationID( (Integer) results[3] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -164,7 +167,7 @@ public class LMHardwareBase extends DBPersistent {
     }
     
     public static LMHardwareBase[] searchBySerialNumber(String serialNo, int energyCompanyID) {
-    	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID, hw.RouteID " +
+    	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID, hw.RouteID, hw.ConfigurationID " +
     			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +
     			"WHERE UPPER(hw.ManufacturerSerialNumber) = UPPER(?) AND hw.InventoryID >= 0 " +
     			"AND hw.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
@@ -189,6 +192,7 @@ public class LMHardwareBase extends DBPersistent {
 				hw.setManufacturerSerialNumber( rset.getString(2) );
 				hw.setLMHardwareTypeID( new Integer(rset.getInt(3)) );
 				hw.setRouteID( new Integer(rset.getInt(4)) );
+				hw.setConfigurationID( new Integer(rset.getInt(5)) );
 				
 				hwList.add( hw );
 			}
@@ -256,6 +260,20 @@ public class LMHardwareBase extends DBPersistent {
 	 */
 	public void setRouteID(Integer integer) {
 		routeID = integer;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getConfigurationID() {
+		return configurationID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setConfigurationID(Integer integer) {
+		configurationID = integer;
 	}
 
 }

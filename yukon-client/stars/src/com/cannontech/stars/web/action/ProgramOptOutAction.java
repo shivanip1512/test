@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -226,7 +227,7 @@ public class ProgramOptOutAction implements ActionBase {
             	StarsLMProgramHistory progHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo, energyCompany );
             	resp.setStarsLMProgramHistory( progHist );
             	
-		        if (ServerUtils.isOperator( user ))
+		        if (ECUtils.isOperator( user ))
 			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
@@ -308,7 +309,7 @@ public class ProgramOptOutAction implements ActionBase {
             	StarsLMProgramHistory progHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo, energyCompany );
             	resp.setStarsLMProgramHistory( progHist );
             	
-		        if (ServerUtils.isOperator( user ))
+		        if (ECUtils.isOperator( user ))
 			        resp.setDescription( ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully" );
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
@@ -474,7 +475,7 @@ public class ProgramOptOutAction implements ActionBase {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String ruleStr = null;
-		if (ServerUtils.isOperator( user ))
+		if (ECUtils.isOperator( user ))
 			ruleStr = AuthFuncs.getRolePropertyValue(user.getYukonUser(), ConsumerInfoRole.OPT_OUT_RULES);
 		else
 			ruleStr = AuthFuncs.getRolePropertyValue(user.getYukonUser(), ResidentialCustomerRole.OPT_OUT_RULES);

@@ -11,9 +11,12 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
@@ -193,6 +196,10 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 				}
 			}
 		}
+		
+		String logMsg = "Serial Range:" + snFrom + " - " + snTo
+				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
+		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_DELETE_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;
 		session.removeAttribute( InventoryManager.INVENTORY_SET );

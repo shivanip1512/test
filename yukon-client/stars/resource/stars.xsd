@@ -838,6 +838,30 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="VersaCom" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Utility" type="xs:int"/>
+							<xs:element name="Section" type="xs:int"/>
+							<xs:element name="ClassAddress" type="xs:int"/>
+							<xs:element name="Division" type="xs:int"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ExpressCom" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ServiceProvider" type="xs:int"/>
+							<xs:element name="GEO" type="xs:int"/>
+							<xs:element name="Substation" type="xs:int"/>
+							<xs:element name="Feeder" type="xs:int"/>
+							<xs:element name="Zip" type="xs:int"/>
+							<xs:element name="UserAddress" type="xs:int"/>
+							<xs:element name="Program" type="xs:string"/>
+							<xs:element name="Splinter" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -860,6 +884,7 @@
 			</xs:sequence>
 			<xs:attribute name="applianceCategoryID" type="xs:int"/>
 			<xs:attribute name="categoryID" type="xs:int"/>
+			<xs:attribute name="inherited" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-EnrLMProgram">
@@ -1209,6 +1234,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-LMConfiguration" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int"/>
 			<xs:attribute name="saveToBatch" type="xs:boolean"/>

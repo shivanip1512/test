@@ -65,12 +65,9 @@ function confirmSubmit(form) { //v1.0
 			
 			String progNames = "";
 			for (int j = 0; j < event.getProgramIDCount(); j++) {
-				for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
-					if (programs.getStarsLMProgram(k).getProgramID() == event.getProgramID(j)) {
-						progNames += programs.getStarsLMProgram(k).getProgramName() + "<br>";
-						break;
-					}
-				}
+				StarsEnrLMProgram enrProg = ServletUtils.getEnrollmentProgram(categories, event.getProgramID(j));
+				if (enrProg != null)
+					progNames += ServletUtils.getProgramDisplayNames(enrProg)[0] + "<br>";
 			}
 			if (progNames.equals("")) continue;
 %>

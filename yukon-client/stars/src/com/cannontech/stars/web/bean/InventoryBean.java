@@ -481,7 +481,7 @@ public class InventoryBean {
 				LiteContact liteCont = member.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
-				String name = ServerUtils.formatName( liteCont );
+				String name = ECUtils.formatName( liteCont );
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
 				String address = ServletUtils.getOneLineAddress( starsAddr );

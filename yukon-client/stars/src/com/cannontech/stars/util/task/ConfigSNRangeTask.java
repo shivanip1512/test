@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -163,6 +166,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 					cmd.setAccountID( liteHw.getAccountID() );
 					cmd.setInventoryID( invID.intValue() );
 					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
+					
 					cmdQueue.addCommand( cmd, false );
 				}
 				
@@ -181,6 +185,10 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 		}
 		
 		if (!configNow) cmdQueue.addCommand( null, true );
+		
+		String logMsg = "Serial Range:" + snFrom + " - " + snTo
+				+ ",Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
+		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_CONFIG_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;
 		session.removeAttribute( InventoryManager.INVENTORY_SET );

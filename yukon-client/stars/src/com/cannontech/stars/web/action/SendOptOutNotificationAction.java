@@ -172,7 +172,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
 		LiteContact cont = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-		String name = ServerUtils.formatName( cont );
+		String name = ECUtils.formatName( cont );
 		if (name.length() > 0)
 			text.append( name ).append(LINE_SEPARATOR);
         
@@ -191,11 +191,11 @@ public class SendOptOutNotificationAction implements ActionBase {
 			text.append(LINE_SEPARATOR);
 		}
 		
-		String homePhone = ServerUtils.getNotification(
+		String homePhone = ECUtils.getNotification(
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-		String workPhone = ServerUtils.getNotification(
+		String workPhone = ECUtils.getNotification(
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-		String email = ServerUtils.getNotification(
+		String email = ECUtils.getNotification(
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
         
 		if (homePhone.length() > 0)
@@ -221,7 +221,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 					
-					String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram(), energyCompany );
+					String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 					text.append("    Program: ").append( progName );
 					
 					String groupName = "(none)";

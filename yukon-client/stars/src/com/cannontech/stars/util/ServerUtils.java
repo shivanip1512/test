@@ -10,14 +10,8 @@ import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
@@ -73,15 +67,6 @@ public class ServerUtils {
 		else
 			dateTimeFormat.setTimeZone( TimeZone.getDefault() );
 		return dateTimeFormat.format( date );
-	}
-	
-	public static boolean isOperator(StarsYukonUser user) {
-		return !isResidentialCustomer(user) &&
-				EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
-	}
-	
-	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 	
 	public static void handleDBChangeMsg(DBChangeMsg msg) {
@@ -183,25 +168,6 @@ public class ServerUtils {
 	public static String forceNotNone(String str) {
 		String str1 = forceNotNull(str);
 		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
-	}
-	
-	public static String getNotification(LiteContactNotification liteNotif) {
-		String notification = (liteNotif == null)? null : liteNotif.getNotification();
-		return forceNotNull(notification);
-	}
-	
-	public static String formatName(LiteContact liteContact) {
-		StringBuffer name = new StringBuffer();
-		
-		String firstName = forceNotNone( liteContact.getContFirstName() ).trim();
-		if (firstName.length() > 0)
-			name.append( firstName );
-		
-		String lastName = forceNotNone( liteContact.getContLastName() ).trim();
-		if (lastName.length() > 0)
-			name.append(" ").append( lastName );
-		
-		return name.toString();
 	}
 	
 	public static String[] readFile(File file, boolean returnEmpty) {
@@ -315,5 +281,4 @@ public class ServerUtils {
 		
 		return serverBase + fs + STARS_TEMP_DIR;
 	}
-
 }

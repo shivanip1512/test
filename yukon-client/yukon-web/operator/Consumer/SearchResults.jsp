@@ -4,6 +4,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
+<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
@@ -129,9 +130,9 @@ function selectMemberAccount(accountID, memberID) {
 					LiteContact contact = member.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 					LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 					
-					String homePhone = ServerUtils.getNotification(
+					String homePhone = ECUtils.getNotification(
 							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-					String workPhone = ServerUtils.getNotification(
+					String workPhone = ECUtils.getNotification(
 							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 					
 					StringBuffer phoneNo = new StringBuffer();

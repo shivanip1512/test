@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -147,7 +148,7 @@ public class ProgramSignUpAction implements ActionBase {
 			String progEnrBefore = null;
 			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
 				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
-				String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram(), energyCompany );
+				String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 				if (progEnrBefore == null)
 					progEnrBefore = progName;
 				else
@@ -159,24 +160,20 @@ public class ProgramSignUpAction implements ActionBase {
 			try {
 				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany );
 				
+				String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+				boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+				
 				// Send out the config/disable command
 				for (int i = 0; i < hwsToConfig.size(); i++) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
-					boolean toConfig = false;
-					
-					for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-						if (liteApp.getInventoryID() == liteHw.getInventoryID()) {
-							toConfig = true;
-							break;
-						}
-					}
+					boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );
 					
 					if (toConfig) {
 						// Send the reenable command if hardware status is unavailable,
 						// whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-						if (ServerUtils.isOperator(user) && AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-							|| ServerUtils.isResidentialCustomer(user) && AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))
+						if (!useHardwareAddressing
+							&& (ECUtils.isOperator(user) && AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
+								|| ECUtils.isResidentialCustomer(user) && AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION)))
 							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false );
 						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
@@ -200,7 +197,7 @@ public class ProgramSignUpAction implements ActionBase {
 			String progEnrNow = null;
 			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
 				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
-				String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram(), energyCompany );
+				String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 				if (progEnrNow == null)
 					progEnrNow = progName;
 				else
@@ -579,7 +576,7 @@ public class ProgramSignUpAction implements ActionBase {
 					appDB.setLocationID( dftLocationID );
 					appDB.setManufacturerID( dftManufacturerID );
 	        		
-					if (liteHw != null && groupID > 0) {
+					if (liteHw != null) {
 						LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
 						hwConfig.setInventoryID( new Integer(program.getInventoryID()) );
 						hwConfig.setAddressingGroupID( new Integer(groupID) );
@@ -719,7 +716,7 @@ public class ProgramSignUpAction implements ActionBase {
 			String[] invIDs = invIDList[i].split( "," );
 			String[] loadNos = loadNoList[i].split( "," );
 			if (invIDs.length == 0) {
-				String progName = ECUtils.getPublishedProgramName( energyCompany.getProgram(progID), energyCompany );
+				String progName = ECUtils.getPublishedProgramName( energyCompany.getProgram(progID) );
 				throw new WebClientException( "No hardware is assigned to program \"" + progName + "\"" );
 			}
 			

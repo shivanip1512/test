@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMConfigurationDescriptor.java,v 1.1 2004/06/25 21:37:03 zyao Exp $
+ * $Id: StarsLMConfigurationDescriptor.java,v 1.2 2004/07/08 16:21:16 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2004/06/25 21:37:03 $
+ * @version $Revision: 1.2 $ $Date: 2004/07/08 16:21:16 $
 **/
 public class StarsLMConfigurationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -201,6 +201,70 @@ public class StarsLMConfigurationDescriptor extends org.exolab.castor.xml.util.X
         addFieldDescriptor(desc);
         
         //-- validation code for: _SA305
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _versaCom
+        desc = new XMLFieldDescriptorImpl(VersaCom.class, "_versaCom", "VersaCom", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMConfiguration target = (StarsLMConfiguration) object;
+                return target.getVersaCom();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMConfiguration target = (StarsLMConfiguration) object;
+                    target.setVersaCom( (VersaCom) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new VersaCom();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _versaCom
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _expressCom
+        desc = new XMLFieldDescriptorImpl(ExpressCom.class, "_expressCom", "ExpressCom", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMConfiguration target = (StarsLMConfiguration) object;
+                return target.getExpressCom();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMConfiguration target = (StarsLMConfiguration) object;
+                    target.setExpressCom( (ExpressCom) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new ExpressCom();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _expressCom
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

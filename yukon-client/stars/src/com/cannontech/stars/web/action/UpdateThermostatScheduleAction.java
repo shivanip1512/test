@@ -142,7 +142,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							"The thermostat is currently out of service, schedule is not sent." :
 							"The thermostat \"" + liteHw.getDeviceLabel() + "\" is currently out of service, schedule is not sent.";
 					
-					if (ServerUtils.isOperator( user )) {
+					if (ECUtils.isOperator( user )) {
 						respOper.setStarsFailure( StarsFactory.newStarsFailure(
 								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					}
@@ -155,7 +155,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					if (ServerUtils.isOperator( user )) {
+					if (ECUtils.isOperator( user )) {
 						String errorMsg = (invIDs.length == 1)?
 								"The serial # of the thermostat cannot be empty, schedule is not sent." :
 								"The serial # of thermostat \"" + liteHw.getDeviceLabel() + "\" is empty, schedule is not sent.";

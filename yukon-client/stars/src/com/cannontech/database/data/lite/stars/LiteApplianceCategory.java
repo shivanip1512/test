@@ -23,6 +23,9 @@ public class LiteApplianceCategory extends LiteBase {
 	// Array of published programs
 	private ArrayList publishedPrograms = null;
 	
+	// Direct owner of this appliance category, used to tell if it is inherited from the parent company
+	private LiteStarsEnergyCompany directOwner = null;
+	
 	public LiteApplianceCategory() {
 		super();
 	}
@@ -114,6 +117,20 @@ public class LiteApplianceCategory extends LiteBase {
 	 */
 	public void setPublishedPrograms(ArrayList publishedPrograms) {
 		this.publishedPrograms = publishedPrograms;
+	}
+
+	/**
+	 * @return
+	 */
+	public LiteStarsEnergyCompany getDirectOwner() {
+		return directOwner;
+	}
+
+	/**
+	 * @param company
+	 */
+	public void setDirectOwner(LiteStarsEnergyCompany company) {
+		directOwner = company;
 	}
 
 }

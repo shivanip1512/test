@@ -6,7 +6,7 @@
  * allTherm: boolean
  * thermNoStr: String
  */
-	boolean isOperator = ServerUtils.isOperator(user);
+	boolean isOperator = com.cannontech.stars.util.ECUtils.isOperator(user);
 	
 	StarsThermostatManualEvent lastEvent = null;
 	int lastTemp = 72;

@@ -46,21 +46,23 @@ public class CustomerAccount extends DBPersistent {
         // delete from the mapping table
         delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
     	
-        com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
-        		new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 		for (int i = 0; i < getInventoryVector().size(); i++) {
 			Integer invID = (Integer) getInventoryVector().get(i);
-			hw.setInventoryID( invID );
-			hw.setDbConnection( getDbConnection() );
 			
 			// Don't delete hardware information from the database
-			hw.clearLMHardware();
+			com.cannontech.database.data.stars.hardware.LMHardwareBase.clearLMHardware( invID.intValue() );
 			
-			com.cannontech.database.db.stars.hardware.InventoryBase invDB = hw.getInventoryBase();
+			com.cannontech.database.db.stars.hardware.InventoryBase invDB =
+					new com.cannontech.database.db.stars.hardware.InventoryBase();
+			invDB.setInventoryID( invID );
+			invDB.setDbConnection( getDbConnection() );
 			invDB.retrieve();
+			
 			invDB.setAccountID( new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID) );
 			invDB.setRemoveDate( new java.util.Date() );
 			invDB.update();
+			
+			getDbConnection().commit();	// commit it often to avoid deadlock
 		}
 		
 		// Delete program events
@@ -75,6 +77,8 @@ public class CustomerAccount extends DBPersistent {
         	app.setApplianceID( appID );
             app.setDbConnection( getDbConnection() );
             app.delete();
+            
+            getDbConnection().commit();	// commit it often to avoid deadlock
         }
     	
     	// Delete work orders

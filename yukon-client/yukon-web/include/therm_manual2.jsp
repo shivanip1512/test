@@ -6,7 +6,7 @@
  * allTherm: boolean
  * thermNoStr: String
  */
-	boolean isOperator = ServerUtils.isOperator(user);
+	boolean isOperator = com.cannontech.stars.util.ECUtils.isOperator(user);
 	
 	int setpoint = 72;
 	int coolSetpoint = 72;

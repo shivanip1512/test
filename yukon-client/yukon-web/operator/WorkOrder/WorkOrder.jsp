@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%@ page import="com.cannontech.stars.util.ECUtils" %>
 <%
 	int orderID = Integer.parseInt(request.getParameter("OrderId"));
 	LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(orderID, true);
@@ -338,9 +339,9 @@ function init() {
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
-		String name = ServerUtils.formatName(liteContact);
-		String homePhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-		String workPhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+		String name = ECUtils.formatName(liteContact);
+		String homePhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+		String workPhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = ServerUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();

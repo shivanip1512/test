@@ -47,8 +47,7 @@ public class InventoryBase extends DBPersistent {
     	LMHardwareBase hw = new LMHardwareBase();
     	hw.setInventoryID( getInventoryBase().getInventoryID() );
     	hw.setDbConnection( getDbConnection() );
-    	hw.clearLMHardware();
-    	hw.getLMHardwareBase().delete();
+    	hw.deleteLMHardwareBase();
     	
     	deleteInventoryBase();
     }

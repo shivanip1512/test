@@ -253,14 +253,7 @@
 	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
 		StarsInventory inv = inventories.getStarsInventory(i);
 		
-		String linkLabel = inv.getDeviceLabel();
-		if (linkLabel.equals("")) {
-			if (inv.getLMHardware() != null)
-				linkLabel= inv.getLMHardware().getManufacturerSerialNumber();
-			else if (inv.getMCT() != null)
-				linkLabel = inv.getMCT().getDeviceName();
-		}
-		
+		String linkLabel = ServletUtils.getInventoryLabel(inv);
 		String linkHtml = null;
 		String linkImgExp = null;
 		

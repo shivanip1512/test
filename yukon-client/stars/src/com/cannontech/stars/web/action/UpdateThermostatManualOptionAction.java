@@ -140,7 +140,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-					String errorMsg = ServerUtils.isOperator(user) ?
+					String errorMsg = ECUtils.isOperator(user) ?
 							((invIDs.length == 1)?
 								"The thermostat is currently out of service" :
 								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service") :
@@ -152,7 +152,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					String errorMsg = ServerUtils.isOperator(user) ?
+					String errorMsg = ECUtils.isOperator(user) ?
 							"The serial # of the thermostat cannot be empty." :
 							"Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					

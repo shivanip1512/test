@@ -20,8 +20,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -146,7 +147,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 				origInvID = deleteHw.getInventoryID();
 				
 				// Send out the configuration command if necessary
-				if (createHw.getLMHardware() != null &&
+				String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+				boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+				
+				if (!useHardwareAddressing &&
+					createHw.getLMHardware() != null &&
 					createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
 					AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
 				{
@@ -163,7 +168,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				if (ServerUtils.isOperator(user)) {
+				if (ECUtils.isOperator(user)) {
 					try {
 						updateInventory( updateHw, liteInv, energyCompany );
 					}
@@ -337,7 +342,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 		}
 	}
 	
-	private void parseResponse(int origInvID, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
+	public static void parseResponse(int origInvID, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
 		StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
 		
 		for (int i = 0; i < starsInvs.getStarsInventoryCount(); i++) {
@@ -356,10 +361,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 			}
 		}
 		
+		String deviceLabel = ServletUtils.getInventoryLabel( starsInv );
 		int invNo = 0;
 		for (; invNo < starsInvs.getStarsInventoryCount(); invNo++) {
-			StarsInventory inv = starsInvs.getStarsInventory(invNo);
-			if (inv.getDeviceLabel().compareTo(starsInv.getDeviceLabel()) > 0)
+			String label = ServletUtils.getInventoryLabel( starsInvs.getStarsInventory(invNo) );
+			if (label.compareTo(deviceLabel) > 0)
 				break;
 		}
 		

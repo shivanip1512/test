@@ -219,6 +219,38 @@ public class StarsUpdateLMHardwareConfigDescriptor extends org.exolab.castor.xml
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
+        //-- _starsLMConfiguration
+        desc = new XMLFieldDescriptorImpl(StarsLMConfiguration.class, "_starsLMConfiguration", "stars-LMConfiguration", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUpdateLMHardwareConfig target = (StarsUpdateLMHardwareConfig) object;
+                return target.getStarsLMConfiguration();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUpdateLMHardwareConfig target = (StarsUpdateLMHardwareConfig) object;
+                    target.setStarsLMConfiguration( (StarsLMConfiguration) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsLMConfiguration();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsLMConfiguration
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigDescriptor()
 
 

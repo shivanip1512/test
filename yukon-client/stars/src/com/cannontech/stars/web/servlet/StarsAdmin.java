@@ -436,13 +436,13 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
-			ec.setMainPhoneNumber( ServerUtils.getNotification(liteNotifPhone) );
+			ec.setMainPhoneNumber( ECUtils.getNotification(liteNotifPhone) );
 			
 			LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
-			ec.setMainFaxNumber( ServerUtils.getNotification(liteNotifFax) );
+			ec.setMainFaxNumber( ECUtils.getNotification(liteNotifFax) );
 			
 			LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-			ec.setEmail( ServerUtils.getNotification(liteNotifEmail) );
+			ec.setEmail( ECUtils.getNotification(liteNotifEmail) );
 			
 			String compName = req.getParameter("CompanyName");
 			if (newContact || !energyCompany.getName().equals( compName )) {
@@ -569,7 +569,7 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void updateApplianceCategory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		StarsEnrollmentPrograms starsAppCats = energyCompany.getStarsEnrollmentPrograms();
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 		
 		try {
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
@@ -606,6 +606,11 @@ public class StarsAdmin extends HttpServlet {
 			}
 			else {
 				liteAppCat = energyCompany.getApplianceCategory( appCatID );
+				if (liteAppCat.getDirectOwner() != energyCompany) {
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Cannot update an inherited appliance category" );
+					return;
+				}
+				
 				appCat.setApplianceCategoryID( new Integer(appCatID) );
 				appCatDB.setWebConfigurationID( new Integer(liteAppCat.getWebConfigurationID()) );
 				
@@ -615,7 +620,6 @@ public class StarsAdmin extends HttpServlet {
 				StarsLiteFactory.setLiteApplianceCategory( liteAppCat, appCat.getApplianceCategory() );
 				LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( appCat.getWebConfiguration().getConfigurationID().intValue() );
 				StarsLiteFactory.setLiteWebConfiguration( liteConfig, appCat.getWebConfiguration() );
-				energyCompany.updateStarsWebConfig( liteConfig.getConfigID() );
 			}
 			
 			ArrayList pubProgList = new ArrayList( liteAppCat.getPublishedPrograms() );
@@ -683,25 +687,27 @@ public class StarsAdmin extends HttpServlet {
 						liteProg.setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
 						liteProg.setProgramOrder( pubProg.getLMProgramWebPublishing().getProgramOrder().intValue() );
 						
-						String oldDispName = ECUtils.getPublishedProgramName( liteProg, energyCompany );
+						String oldDispName = ECUtils.getPublishedProgramName( liteProg );
 						
 						LiteWebConfiguration liteCfg = SOAPServer.getWebConfiguration( liteProg.getWebSettingsID() );
 						StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
-						energyCompany.updateStarsWebConfig( liteCfg.getConfigID() );
 						
-						// If program display name changed, we need to update all the accounts with this program
+						// If program display name changed, we need to update all the accounts enrolled in this program
 						if (!newDispName.equals( oldDispName )) {
-							int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(liteProg.getProgramID(), energyCompany.getLiteID());
-							
-							for (int j = 0; j < accountIDs.length; j++) {
-								StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( accountIDs[j] );
-								if (starsAcctInfo != null) {
-									StarsLMPrograms starsProgs = starsAcctInfo.getStarsLMPrograms();
-									
-									for (int k = 0; k < starsProgs.getStarsLMProgramCount(); k++) {
-										if (starsProgs.getStarsLMProgram(k).getProgramID() == liteProg.getProgramID()) {
-											starsProgs.getStarsLMProgram(k).setProgramName( newDispName );
-											break;
+							for (int j = 0; j < descendants.size(); j++) {
+								LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+								int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(liteProg.getProgramID(), company.getLiteID());
+								
+								for (int k = 0; k < accountIDs.length; k++) {
+									StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( accountIDs[k] );
+									if (starsAcctInfo != null) {
+										StarsLMPrograms starsProgs = starsAcctInfo.getStarsLMPrograms();
+										
+										for (int l = 0; l < starsProgs.getStarsLMProgramCount(); l++) {
+											if (starsProgs.getStarsLMProgram(l).getProgramID() == liteProg.getProgramID()) {
+												starsProgs.getStarsLMProgram(l).setProgramName( newDispName );
+												break;
+											}
 										}
 									}
 								}
@@ -724,48 +730,54 @@ public class StarsAdmin extends HttpServlet {
 			for (int i = 0; i < pubProgList.size(); i++) {
 				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) pubProgList.get(i);
 				
-				// Delete all events of this program
-				com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-						energyCompany.getLiteID(), liteProg.getProgramID() );
-				
-				// Unenroll the program from all customers currently enrolled in it
-				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(
-						liteProg.getProgramID(), energyCompany.getLiteID() );
-				
-				com.cannontech.database.data.stars.appliance.ApplianceBase app =
-						new com.cannontech.database.data.stars.appliance.ApplianceBase();
-				com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
-				
-				for (int j = 0; j < accountIDs.length; j++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], true );
+				for (int j = 0; j < descendants.size(); j++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
 					
-					for (int k = 0; k < liteAcctInfo.getAppliances().size(); k++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(k);
-						if (liteApp.getProgramID() != liteProg.getProgramID()) continue;
-						
-						StarsLiteFactory.setApplianceBase( app, liteApp );
-						appDB.setProgramID( new Integer(CtiUtilities.NONE_ID) );
-						appDB = (com.cannontech.database.db.stars.appliance.ApplianceBase)
-								Transaction.createTransaction( Transaction.UPDATE, appDB ).execute();
-						
-						liteApp.setProgramID( CtiUtilities.NONE_ID );
-					}
+					// Delete all events of this program
+					com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+							company.getLiteID(), liteProg.getProgramID() );
 					
-					ArrayList programs = liteAcctInfo.getPrograms();
-					for (int k = 0; k < programs.size(); k++) {
-						if (((LiteStarsLMProgram) programs.get(k)).getProgramID() == liteProg.getProgramID()) {
-							programs.remove(k);
-							break;
+					// Unenroll the program from all customers currently enrolled in it
+					int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(
+							liteProg.getProgramID(), company.getLiteID() );
+					
+					com.cannontech.database.data.stars.appliance.ApplianceBase app =
+							new com.cannontech.database.data.stars.appliance.ApplianceBase();
+					com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
+					
+					for (int k = 0; k < accountIDs.length; k++) {
+						LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation( accountIDs[k], true );
+						
+						for (int l = 0; l < liteAcctInfo.getAppliances().size(); l++) {
+							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(l);
+							if (liteApp.getProgramID() != liteProg.getProgramID()) continue;
+							
+							liteApp.setProgramID( CtiUtilities.NONE_ID );
+							liteApp.setInventoryID( CtiUtilities.NONE_ID );
+							liteApp.setAddressingGroupID( CtiUtilities.NONE_ID );
+							liteApp.setLoadNumber( 0 );
+							
+							StarsLiteFactory.setApplianceBase( app, liteApp );
+							app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
+									Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 						}
+						
+						ArrayList programs = liteAcctInfo.getPrograms();
+						for (int l = 0; l < programs.size(); l++) {
+							if (((LiteStarsLMProgram) programs.get(l)).getProgramID() == liteProg.getProgramID()) {
+								programs.remove(l);
+								break;
+							}
+						}
+						
+						Iterator it = liteAcctInfo.getProgramHistory().iterator();
+						while (it.hasNext()) {
+							if (((LiteLMProgramEvent) it.next()).getProgramID() == liteProg.getProgramID())
+								it.remove();
+						}
+						
+						company.updateStarsCustAccountInformation( liteAcctInfo );
 					}
-					
-					Iterator it = liteAcctInfo.getProgramHistory().iterator();
-					while (it.hasNext()) {
-						if (((LiteLMProgramEvent) it.next()).getProgramID() == liteProg.getProgramID())
-							it.remove();
-					}
-					
-					energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
 				}
 				
 				com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
@@ -777,23 +789,30 @@ public class StarsAdmin extends HttpServlet {
 				
 				energyCompany.deleteProgram( liteProg.getProgramID() );
 				SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
-				energyCompany.deleteStarsWebConfig( liteProg.getWebSettingsID() );
 			}
 			
-			StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
-			if (newAppCat) {
-				starsAppCats.addStarsApplianceCategory( starsAppCat );
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category is created successfully");
-			}
-			else {
-				for (int i = 0; i < starsAppCats.getStarsApplianceCategoryCount(); i++) {
-					if (starsAppCats.getStarsApplianceCategory(i).getApplianceCategoryID() == appCatID) {
-						starsAppCats.setStarsApplianceCategory( i, starsAppCat );
-						break;
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+				StarsEnrollmentPrograms starsAppCats = company.getStarsEnrollmentPrograms();
+				StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, company );
+				
+				if (newAppCat) {
+					starsAppCats.addStarsApplianceCategory( starsAppCat );
+				}
+				else {
+					for (int j = 0; j < starsAppCats.getStarsApplianceCategoryCount(); j++) {
+						if (starsAppCats.getStarsApplianceCategory(j).getApplianceCategoryID() == appCatID) {
+							starsAppCats.setStarsApplianceCategory( j, starsAppCat );
+							break;
+						}
 					}
 				}
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category information updated successfully");
 			}
+			
+			if (newAppCat)
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category is created successfully");
+			else
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category information updated successfully");
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -804,49 +823,73 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void deleteApplianceCategory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
         
 		try {
 			ArrayList liteAppCats = new ArrayList( energyCompany.getAllApplianceCategories() );
-			StarsEnrollmentPrograms starsAppCats = energyCompany.getStarsEnrollmentPrograms();
 			
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
 			boolean deleteAll = (appCatID == -1);
 			
 			for (int i = 0; i < liteAppCats.size(); i++) {
 				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-				if (!deleteAll && liteAppCat.getApplianceCategoryID() != appCatID) continue;
-				
-				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( liteAppCat.getApplianceCategoryID() );
+				if (!deleteAll && liteAppCat.getApplianceCategoryID() != appCatID
+					|| liteAppCat.getDirectOwner() != energyCompany)
+					continue;
 				
 				int[] programIDs = new int[ liteAppCat.getPublishedPrograms().size() ];
-				
-				for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
-					LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
-					programIDs[j] = liteProg.getProgramID();
-					
-					com.cannontech.database.db.web.YukonWebConfiguration cfg =
-							new com.cannontech.database.db.web.YukonWebConfiguration();
-					cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
-					Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
-					
-					SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
-					energyCompany.deleteStarsWebConfig( liteProg.getWebSettingsID() );
-					
-					// Delete all program events
-					com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-							energyCompany.getLiteID(), liteProg.getProgramID() );
-				}
-				
+				for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++)
+					programIDs[j] = ((LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j)).getProgramID();
 				Arrays.sort( programIDs );
 				
-				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithCategory( liteAppCat.getApplianceCategoryID() );
-				int[] applianceIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllApplianceIDsWithCategory( liteAppCat.getApplianceCategoryID() );
-				
-				com.cannontech.database.data.stars.appliance.ApplianceBase app =
-						new com.cannontech.database.data.stars.appliance.ApplianceBase();
-				for (int j = 0; j < applianceIDs.length; j++) {
-					app.setApplianceID( new Integer(applianceIDs[j]) );
-					Transaction.createTransaction( Transaction.DELETE, app ).execute();
+				for (int j = 0; j < descendants.size(); j++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+					
+					// Delete all program events
+					for (int k = 0; k < programIDs.length; k++) {
+						com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+								company.getLiteID(), programIDs[k] );
+					}
+					
+					int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithCategory(
+							liteAppCat.getApplianceCategoryID(), company.getLiteID() );
+					int[] applianceIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllApplianceIDsWithCategory(
+							liteAppCat.getApplianceCategoryID(), company.getLiteID() );
+					
+					com.cannontech.database.data.stars.appliance.ApplianceBase app =
+							new com.cannontech.database.data.stars.appliance.ApplianceBase();
+					for (int k = 0; k < applianceIDs.length; k++) {
+						app.setApplianceID( new Integer(applianceIDs[k]) );
+						Transaction.createTransaction( Transaction.DELETE, app ).execute();
+					}
+					
+					for (int k = 0; k < accountIDs.length; k++) {
+						LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation( accountIDs[k], true );
+						
+						Iterator appIt = liteAcctInfo.getAppliances().iterator();
+						while (appIt.hasNext()) {
+							LiteStarsAppliance liteApp = (LiteStarsAppliance) appIt.next();
+							if (liteApp.getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
+								appIt.remove();
+							}
+						}
+						
+						Iterator progIt = liteAcctInfo.getPrograms().iterator();
+						while (progIt.hasNext()) {
+							int progID = ((LiteStarsLMProgram) progIt.next()).getProgramID();
+							if (Arrays.binarySearch(programIDs, progID) >= 0)
+								progIt.remove();
+						}
+						
+						Iterator it = liteAcctInfo.getProgramHistory().iterator();
+						while (it.hasNext()) {
+							int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
+							if (Arrays.binarySearch(programIDs, progID) >= 0)
+								it.remove();
+						}
+						
+						company.updateStarsCustAccountInformation( liteAcctInfo );
+					}
 				}
 				
 				com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
@@ -854,43 +897,29 @@ public class StarsAdmin extends HttpServlet {
 				StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
 				Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
 				
+				energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
 				SOAPServer.deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
-				energyCompany.deleteStarsWebConfig( liteAppCat.getWebConfigurationID() );
 				
-				for (int j = 0; j < accountIDs.length; j++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], true );
+				for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
+					LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
 					
-					Iterator appIt = liteAcctInfo.getAppliances().iterator();
-					while (appIt.hasNext()) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) appIt.next();
-						if (liteApp.getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
-							appIt.remove();
-							
-							Iterator progIt = liteAcctInfo.getPrograms().iterator();
-							while (progIt.hasNext()) {
-								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) progIt.next();
-								if (liteProg.getProgramID() == liteApp.getProgramID())
-									progIt.remove();
-							}
-						}
-					}
+					com.cannontech.database.db.web.YukonWebConfiguration cfg =
+							new com.cannontech.database.db.web.YukonWebConfiguration();
+					cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
+					Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
 					
-					Iterator it = liteAcctInfo.getProgramHistory().iterator();
-					while (it.hasNext()) {
-						int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
-						if (Arrays.binarySearch(programIDs, progID) >= 0)
-							it.remove();
-					}
-					
-					energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
+					SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
 				}
 				
-				energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
-				
-				for (int j = 0; j < starsAppCats.getStarsApplianceCategoryCount(); j++) {
-					if (starsAppCats.getStarsApplianceCategory(j).getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
-						starsAppCats.removeStarsApplianceCategory( j );
-						break;
+				for (int j = 0; j < descendants.size(); j++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+					StarsEnrollmentPrograms starsAppCats = company.getStarsEnrollmentPrograms();
+					
+					for (int k = 0; k < starsAppCats.getStarsApplianceCategoryCount(); k++) {
+						if (starsAppCats.getStarsApplianceCategory(k).getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
+							starsAppCats.removeStarsApplianceCategory( k );
+							break;
+						}
 					}
 				}
 			}

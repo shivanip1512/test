@@ -310,10 +310,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		synchronized (companies) {
     		for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-    			if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-    				if (!company.isInitiated()) company.init();
+    			if (company.getEnergyCompanyID().intValue() == energyCompanyID)
 					return company;
-    			}
     		}
 		}
     	
@@ -667,7 +665,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					CTILogger.error( e.getMessage(), e );
 				}
 				
-				String newProgName = ECUtils.getPublishedProgramName( liteProg, energyCompany );
+				String newProgName = ECUtils.getPublishedProgramName( liteProg );
 				
 				ArrayList accounts = energyCompany.getActiveAccounts();
 				for (int i = 0; i < accounts.size(); i++) {

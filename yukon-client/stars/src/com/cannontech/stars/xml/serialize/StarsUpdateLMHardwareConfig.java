@@ -57,6 +57,8 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
 
     private java.util.Vector _starsLMHardwareConfigList;
 
+    private StarsLMConfiguration _starsLMConfiguration;
+
 
       //----------------/
      //- Constructors -/
@@ -152,6 +154,16 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     {
         return this._saveToBatch;
     } //-- boolean getSaveToBatch() 
+
+    /**
+     * Returns the value of field 'starsLMConfiguration'.
+     * 
+     * @return the value of field 'starsLMConfiguration'.
+    **/
+    public StarsLMConfiguration getStarsLMConfiguration()
+    {
+        return this._starsLMConfiguration;
+    } //-- StarsLMConfiguration getStarsLMConfiguration() 
 
     /**
      * 
@@ -297,6 +309,17 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
         this._saveToBatch = saveToBatch;
         this._has_saveToBatch = true;
     } //-- void setSaveToBatch(boolean) 
+
+    /**
+     * Sets the value of field 'starsLMConfiguration'.
+     * 
+     * @param starsLMConfiguration the value of field
+     * 'starsLMConfiguration'.
+    **/
+    public void setStarsLMConfiguration(StarsLMConfiguration starsLMConfiguration)
+    {
+        this._starsLMConfiguration = starsLMConfiguration;
+    } //-- void setStarsLMConfiguration(StarsLMConfiguration) 
 
     /**
      * 

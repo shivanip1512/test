@@ -39,7 +39,7 @@ public class ApplianceCategory extends DBPersistent {
         		new String[] {"ItemID", "MappingCategory"},
         		new Object[] {getApplianceCategory().getApplianceCategoryID(), "ApplianceCategory"} );
         
-        // Delete from LMProgramWebPublishing
+		// Delete from LMProgramWebPublishing
         delete( "LMProgramWebPublishing", "ApplianceCategoryID", getApplianceCategory().getApplianceCategoryID() );
         
         getApplianceCategory().delete();

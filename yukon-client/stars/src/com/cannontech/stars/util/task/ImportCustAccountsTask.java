@@ -671,7 +671,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		synchronized (programs) {
 			for (int i = 0; i < programs.size(); i++) {
 				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
-				String progName = ECUtils.getPublishedProgramName( liteProg, energyCompany );
+				String progName = ECUtils.getPublishedProgramName( liteProg );
 				
 				if (progName.equalsIgnoreCase( fields[ImportManager.IDX_PROGRAM_NAME] )) {
 					int[] suProg = new int[3];

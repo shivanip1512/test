@@ -22,7 +22,6 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -47,18 +46,19 @@ import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceType;
+import com.cannontech.stars.xml.serialize.ExpressCom;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
-import com.cannontech.stars.xml.serialize.SULMProgram;
+import com.cannontech.stars.xml.serialize.SA205;
+import com.cannontech.stars.xml.serialize.SA305;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
-import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
-import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponse;
+import com.cannontech.stars.xml.serialize.VersaCom;
 import com.cannontech.stars.xml.serialize.Voltage;
 
 /**
@@ -139,13 +139,8 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
 			deleteLMHardware( user, req, session );
 		}
-		else if (action.equalsIgnoreCase("UpdateInventory")) {
-			String redir = req.getContextPath() + "/servlet/SOAPClient?action=UpdateLMHardware" +
-					"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
-					"&REFERRER=" + req.getParameter(ServletUtils.ATT_REFERRER);
-			session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
+		else if (action.equalsIgnoreCase("UpdateInventory"))
 			updateInventory( user, req, session );
-		}
 		else if (action.equalsIgnoreCase("DeleteInventory")) {
 			String redir = req.getContextPath() + "/servlet/SOAPClient?action=DeleteLMHardware" +
 					"&REDIRECT=" + req.getParameter(ServletUtils.ATT_REDIRECT) +
@@ -153,6 +148,8 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
 			deleteInventory( user, req, session );
 		}
+		else if (action.equalsIgnoreCase("ConfigLMHardware"))
+			configLMHardware( user, req, session );
 		else if (action.equalsIgnoreCase("ConfirmCheck"))
 			confirmCheck( user, req, session );
 		else if (action.equalsIgnoreCase("ConfirmDelete"))
@@ -441,17 +438,24 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			int devTypeID = Integer.parseInt( req.getParameter("DeviceType") );
 			int invID = Integer.parseInt( req.getParameter("InvID") );
 			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 			
 			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
-			if (liteInv.getAccountID() ==  0) {
-				UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );
+			UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );
+			
+			if (req.getParameter("UseHardwareAddressing") != null) {
+				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
+				setStarsLMConfiguration( starsCfg, req );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, (LiteStarsLMHardware)liteInv );
 			}
-			else {
-				session.setAttribute( STARS_INVENTORY_OPERATION, operation );
-				redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+			
+			if (liteInv.getAccountID() > 0) {
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteInv.getAccountID() );
+				if (starsAcctInfo != null) {
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
+					UpdateLMHardwareAction.parseResponse( liteInv.getInventoryID(), starsInv, starsAcctInfo, session );
+				}
 			}
 		}
 		catch (WebClientException e) {
@@ -490,6 +494,40 @@ public class InventoryManager extends HttpServlet {
 			StarsOperation operation = DeleteLMHardwareAction.getRequestOperation( req, energyCompany.getDefaultTimeZone() );
 			session.setAttribute( STARS_INVENTORY_OPERATION, operation );
 			redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+		}
+	}
+	
+	/**
+	 * The config button is clicked on InventoryDetail.jsp
+	 */
+	private void configLMHardware(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			int invID = Integer.parseInt( req.getParameter("InvID") );
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventoryBrief( invID, true );
+			
+			if (req.getParameter("UseHardwareAddressing") != null) {
+				StarsLMConfiguration starsCfg = new StarsLMConfiguration();
+				setStarsLMConfiguration( starsCfg, req );
+				UpdateLMHardwareConfigAction.updateLMConfiguration( starsCfg, liteHw );
+			}
+			
+			YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
+			
+			if (liteHw.getAccountID() > 0) {
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+				if (starsAcctInfo != null) {
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+					UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, session );
+				}
+			}
+			
+			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
+		}
+		catch (WebClientException e) {
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 	}
 	
@@ -845,7 +883,7 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			sendSwitchCommands( energyCompany, user.getUserID() );
+			sendSwitchCommands( energyCompany );
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Batched switch commands sent out successfully");
 		}
 		catch (WebClientException e) {
@@ -1026,7 +1064,7 @@ public class InventoryManager extends HttpServlet {
 		return devList;
 	}
 	
-	public static void sendSwitchCommands(LiteStarsEnergyCompany energyCompany, int userID) throws WebClientException {
+	public static void sendSwitchCommands(LiteStarsEnergyCompany energyCompany) throws WebClientException {
 		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
 		if (queue == null)
 			throw new WebClientException( "Failed to retrieve the batched switch commands" );
@@ -1043,40 +1081,16 @@ public class InventoryManager extends HttpServlet {
 				if (liteHw.getAccountID() > 0)
 					starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 				
-				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ) &&	commands[i].getInfoString() != null) {
-					// The config command is submitted from the hardware configuration page
-					// The info string is in the form of "program_id1,group_id1,program_id2,group_id2,..."
-					String[] tokens = commands[i].getInfoString().split(",");
-					StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-					progSignUp.setStarsSULMPrograms( new StarsSULMPrograms() );
-					
-					for (int j = 0; j < tokens.length / 2; j++) {
-						SULMProgram suProg = new SULMProgram();
-						suProg.setProgramID( Integer.parseInt(tokens[j*2]) );
-						suProg.setAddressingGroupID( Integer.parseInt(tokens[j*2+1]) );
-						progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
-					}
-					
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( commands[i].getAccountID(), true );
-					
-					StarsUpdateLMHardwareConfigResponse resp = UpdateLMHardwareConfigAction.updateLMHardwareConfig(
-							progSignUp, true, liteHw, liteAcctInfo, userID, energyCompany );
-					
-					if (starsAcctInfo != null)
-						UpdateLMHardwareConfigAction.parseResponse( starsAcctInfo, resp );
-				}
-				else {
-					if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
-					else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-						YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
-					else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-						YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
-					
-					if (starsAcctInfo != null) {
-						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-						YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
-					}
+				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
+				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
+					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
+					YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
+				
+				if (starsAcctInfo != null) {
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+					YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
 				}
 			}
 			catch (WebClientException e) {
@@ -1084,6 +1098,148 @@ public class InventoryManager extends HttpServlet {
 						System.getProperty( "line.separator" ) + e.getMessage();
 				CTILogger.error( errorMsg, e );
 			}
+		}
+	}
+	
+	public static void setStarsLMConfiguration(StarsLMConfiguration starsCfg, HttpServletRequest req) throws WebClientException {
+		String[] clps = req.getParameterValues( "ColdLoadPickup" );
+		String[] tds = req.getParameterValues( "TamperDetect" );
+		
+		String clp = "";
+		if (clps != null) {
+			if (clps.length > 0) clp += clps[0];
+			for (int i = 1; i < clps.length; i++)
+				clp += "," + clps[i];
+		}
+		starsCfg.setColdLoadPickup( clp );
+		
+		String td = "";
+		if (tds != null) {
+			if (tds.length > 0) td += tds[0];
+			for (int i = 1; i < tds.length; i++)
+				td += "," + tds[i];
+		}
+		starsCfg.setTamperDetect( td );
+		
+		if (req.getParameter("SA205_Slot1") != null) {
+			SA205 sa205 = new SA205();
+			
+			sa205.setSlot1( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA205_Slot1"), 0),
+					0, 4095, "Slot Address") );
+			sa205.setSlot2( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA205_Slot2"), 0),
+					0, 4095, "Slot Address") );
+			sa205.setSlot3( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA205_Slot3"), 0),
+					0, 4095, "Slot Address") );
+			sa205.setSlot4( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA205_Slot4"), 0),
+					0, 4095, "Slot Address") );
+			sa205.setSlot5( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA205_Slot5"), 0),
+					0, 4095, "Slot Address") );
+			sa205.setSlot6( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA205_Slot6"), 0),
+					0, 4095, "Slot Address") );
+			
+			starsCfg.setSA205( sa205 );
+		}
+		else if (req.getParameter("SA305_Utility") != null) {
+			SA305 sa305 = new SA305();
+			
+			sa305.setUtility( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_Utility"), 0),
+					0, 15, "Utility") );
+			sa305.setGroup( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_Group"), 0),
+					0, 63, "Group") );
+			sa305.setDivision( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_Division"), 0),
+					0, 63, "Division") );
+			sa305.setSubstation( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_Substation"), 0),
+					0, 1023, "Substation") );
+			sa305.setRateFamily( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_RateFamily"), 0),
+					0, 7, "Rate Family") );
+			sa305.setRateMember( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_RateMember"), 0),
+					0, 15, "Rate Member") );
+			sa305.setRateHierarchy( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("SA305_RateHierarchy"), 0),
+					0, 1, "Rate Hierarchy") );
+			
+			starsCfg.setSA305( sa305 );
+		}
+		else if (req.getParameter("VCOM_Utility") != null) {
+			VersaCom vcom = new VersaCom();
+			
+			vcom.setUtility( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("VCOM_Utility"), 0),
+					0, 255, "Utility") );
+			vcom.setSection( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("VCOM_Section"), 0),
+					0, 254, "Section") );
+			
+			String[] classAddrs = req.getParameterValues( "VCOM_Class" );
+			int classAddr = 0;
+			for (int i = 0; i < classAddrs.length; i++)
+				classAddr += Integer.parseInt( classAddrs[i] );
+			vcom.setClassAddress( classAddr );
+			
+			String[] divisions = req.getParameterValues( "VCOM_Division" );
+			int division = 0;
+			for (int i = 0; i < divisions.length; i++)
+				division += Integer.parseInt( divisions[i] );
+			vcom.setDivision( division );
+			
+			starsCfg.setVersaCom( vcom );
+		}
+		else if (req.getParameter("XCOM_SPID") != null) {
+			ExpressCom xcom = new ExpressCom();
+			
+			xcom.setServiceProvider( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("XCOM_SPID"), 0),
+					0, 65534, "SPID") );
+			xcom.setGEO( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("XCOM_GEO"), 0),
+					0, 65534, "GEO") );
+			xcom.setSubstation( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("XCOM_SUB"), 0),
+					0, 65534, "SUB") );
+			xcom.setZip( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("XCOM_ZIP"), 0),
+					0, 16777214, "ZIP") );
+			xcom.setUserAddress( ServletUtils.checkRange(
+					ServletUtils.parseNumeric(req.getParameter("XCOM_USER"), 0),
+					0, 65534, "USER") );
+			
+			String[] feeders = req.getParameterValues( "XCOM_FEED" );
+			int feeder = 0;
+			for (int i = 0; i < feeders.length; i++)
+				feeder += Integer.parseInt( feeders[i] );
+			xcom.setFeeder( feeder );
+			
+			String[] programs = req.getParameterValues("XCOM_Program");
+			String program = "";
+			for (int i = 0; i < programs.length; i++) {
+				ServletUtils.checkRange( ServletUtils.parseNumeric(programs[i], 0), 0, 254, "Program" );
+				program += programs[i];
+				if (i < programs.length - 1) program += ",";
+			}
+			xcom.setProgram( program );
+			
+			String[] splinters = req.getParameterValues("XCOM_Splinter");
+			String splinter = "";
+			for (int i = 0; i < splinters.length; i++) {
+				ServletUtils.checkRange( ServletUtils.parseNumeric(splinters[i], 0), 0, 254, "Splinter" );
+				splinter += String.valueOf( splinters[i] );
+				if (i < splinters.length - 1) splinter += ",";
+			}
+			xcom.setSplinter( splinter );
+			
+			starsCfg.setExpressCom( xcom );
 		}
 	}
 

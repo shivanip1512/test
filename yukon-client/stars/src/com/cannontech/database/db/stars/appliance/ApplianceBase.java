@@ -189,8 +189,9 @@ public class ApplianceBase extends DBPersistent {
 		return null;
 	}
     
-	public static int[] getAllAccountIDsWithCategory(int appCatID) {
-		String sql = "SELECT DISTINCT AccountID FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
+	public static int[] getAllAccountIDsWithCategory(int appCatID, int energyCompanyID) {
+		String sql = "SELECT DISTINCT app.AccountID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
+				"WHERE ApplianceCategoryID = " + appCatID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     	
@@ -210,8 +211,9 @@ public class ApplianceBase extends DBPersistent {
 		return null;
 	}
     
-	public static int[] getAllApplianceIDsWithCategory(int appCatID) {
-		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
+	public static int[] getAllApplianceIDsWithCategory(int appCatID, int energyCompanyID) {
+		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
+				"WHERE ApplianceCategoryID = " + appCatID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     	

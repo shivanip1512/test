@@ -1,6 +1,9 @@
 package com.cannontech.stars.web.action;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -13,14 +16,15 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.util.task.SendConfigCommandTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -294,32 +298,25 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 	}
 	
-	public static void sendConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService) throws WebClientException {
+	public static void sendConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService)
+		throws WebClientException
+	{
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
-        
+		
 		Integer invID = new Integer( liteHw.getInventoryID() );
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 		Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
 		java.util.Date now = new java.util.Date();
         
-        int routeID = liteHw.getRouteID();
-        if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
+        final int routeID = (liteHw.getRouteID() > 0)?
+        		liteHw.getRouteID() : energyCompany.getDefaultRouteID();
         
-		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
-				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( invID );
-		
 		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService) {
-			if (configs.length > 0) {
-				// Send an in service command followed by a config command
-				new Thread( new SendConfigCommandTask(energyCompany, liteHw) ).start();
-			}
-			else {
-				// Only send an in service command
-				String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
-				ServerUtils.sendSerialCommand( cmd, routeID );
-			}
+			// Send an in service command first
+			String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
+			ServerUtils.sendSerialCommand( cmd, routeID );
 			
 			// Add "Activation Completed" to hardware events
 			try {
@@ -343,42 +340,150 @@ public class YukonSwitchCommandAction implements ActionBase {
 			catch (TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
 			}
+			
+			final String[] cfgCmds = getConfigCommands( liteHw, energyCompany );
+			if (cfgCmds == null) return;
+			
+			// Send the config command a while later
+			TimerTask sendCfgTask = new TimerTask() {
+				public void run() {
+					for (int i = 0; i < cfgCmds.length; i++)
+						ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
+					CTILogger.info( "*** Config command sent ***" );
+				}
+			};
+			
+			new Timer().schedule( sendCfgTask, 5 * 1000 );
+			CTILogger.info( "*** Send config command a while later ***" );
 		}
 		else {
-			// Only send a config command
-			for (int i = 0; i < configs.length; i++) {
-				if (configs[i].getAddressingGroupID().intValue() == 0) continue;
+			// Only send the config command
+			String[] cfgCmds = getConfigCommands( liteHw, energyCompany );
+			if (cfgCmds == null) return;
+			
+			for (int i = 0; i < cfgCmds.length; i++)
+				ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
+		}
+		
+		// Add "Config" to hardware events
+		try {
+			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+			
+			eventDB.setInventoryID( invID );
+			eventBase.setEventTypeID( hwEventEntryID );
+			eventBase.setActionID( configEntryID );
+			eventBase.setEventDateTime( now );
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+			liteHw.getInventoryHistory().add( liteEvent );
+		}
+		catch (TransactionException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
+	
+	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
+		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+		
+		ArrayList commands = new ArrayList();
+		
+		if (useHardwareAddressing) {
+			if (liteHw.getLMConfiguration() == null)
+				return null;
+			
+			if (liteHw.getLMConfiguration().getExpressCom() != null) {
+				String program = null;
+				String splinter = null;
+				String load = null;
+				String[] programs = liteHw.getLMConfiguration().getExpressCom().getProgram().split( "," );
+				String[] splinters = liteHw.getLMConfiguration().getExpressCom().getSplinter().split( "," );
 				
-				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
-				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
-	            
-	            ServerUtils.sendSerialCommand( cmd, routeID );
+				for (int loadNo = 1; loadNo <= 8; loadNo++) {
+					int prog = 0;
+					if (programs.length >= loadNo && programs[loadNo-1].length() > 0)
+						prog = Integer.parseInt( programs[loadNo-1] );
+					int splt = 0;
+					if (splinters.length >= loadNo && splinters[loadNo-1].length() > 0)
+						splt = Integer.parseInt( splinters[loadNo-1] );
+					
+					if (prog > 0 || splt > 0) {
+						if (program == null)
+							program = String.valueOf( prog );
+						else
+							program += "," + String.valueOf( prog );
+						if (splinter == null)
+							splinter = String.valueOf( splt );
+						else
+							splinter += "," + String.valueOf( splt );
+						if (load == null)
+							load = String.valueOf( loadNo );
+						else
+							load += "," + String.valueOf( loadNo );
+					}
+				}
+				
+				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " xcom assign" +
+						" s " + liteHw.getLMConfiguration().getExpressCom().getServiceProvider() +
+						" g " + liteHw.getLMConfiguration().getExpressCom().getGEO() +
+						" b " + liteHw.getLMConfiguration().getExpressCom().getSubstation() +
+						" f " + liteHw.getLMConfiguration().getExpressCom().getFeeder() +
+						" z " + liteHw.getLMConfiguration().getExpressCom().getZip() +
+						" u " + liteHw.getLMConfiguration().getExpressCom().getUserAddress();
+				if (load != null)
+					cmd += " p " + program + " r " + splinter + " load " + load;
+				commands.add( cmd );
+			}
+			else if (liteHw.getLMConfiguration().getVersaCom() != null) {
+				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " vcom assign" +
+						" u " + liteHw.getLMConfiguration().getVersaCom().getUtilityID() +
+						" s " + liteHw.getLMConfiguration().getVersaCom().getSection() +
+						" c 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getClassAddress() ) +
+						" d 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getDivisionAddress() );
+				commands.add( cmd );
+			}
+			else if (liteHw.getLMConfiguration().getSA205() != null) {
+				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " sa205 assign" +
+						" 1," + liteHw.getLMConfiguration().getSA205().getSlot1() +
+						",2," + liteHw.getLMConfiguration().getSA205().getSlot2() +
+						",3," + liteHw.getLMConfiguration().getSA205().getSlot3() +
+						",4," + liteHw.getLMConfiguration().getSA205().getSlot4() +
+						",5," + liteHw.getLMConfiguration().getSA205().getSlot5() +
+						",6," + liteHw.getLMConfiguration().getSA205().getSlot6();
+				commands.add( cmd );
+			}
+			else if (liteHw.getLMConfiguration().getSA305() != null) {
+				//TODO: command to be defined yet
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			if (liteHw.getAccountID() > 0) {
+				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
+				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+					if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) {
+						String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteApp.getAddressingGroupID() );
+						String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
+						commands.add( cmd );
+					}
+				}
 			}
 		}
 		
-		if (configs.length > 0) {
-			// Add "Config" to hardware events
-			try {
-				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-				com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-				
-				eventDB.setInventoryID( invID );
-				eventBase.setEventTypeID( hwEventEntryID );
-				eventBase.setActionID( configEntryID );
-				eventBase.setEventDateTime( now );
-				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				
-				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
-				
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getInventoryHistory().add( liteEvent );
-			}
-			catch (TransactionException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
+		if (commands.size() == 0) return null;
+		
+		String[] cfgCmds = new String[ commands.size() ];
+		commands.toArray( cfgCmds );
+		return cfgCmds;
 	}
 	
 	public static void parseResponse(StarsCustAccountInformation starsAcctInfo, StarsInventory starsInv) {

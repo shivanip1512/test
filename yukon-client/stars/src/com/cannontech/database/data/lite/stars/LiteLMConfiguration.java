@@ -221,12 +221,200 @@ public class LiteLMConfiguration extends LiteBase {
 
 	}
 	
+	public static class ExpressCom {
+		private int serviceProvider = 0;
+		private int geo = 0;
+		private int substation = 0;
+		private int feeder = 0;
+		private int zip = 0;
+		private int userAddress = 0;
+		private String program = null;
+		private String splinter = null;
+		
+		/**
+		 * @return
+		 */
+		public int getFeeder() {
+			return feeder;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getGEO() {
+			return geo;
+		}
+
+		/**
+		 * @return
+		 */
+		public String getProgram() {
+			return program;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getServiceProvider() {
+			return serviceProvider;
+		}
+
+		/**
+		 * @return
+		 */
+		public String getSplinter() {
+			return splinter;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getSubstation() {
+			return substation;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getUserAddress() {
+			return userAddress;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getZip() {
+			return zip;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setFeeder(int i) {
+			feeder = i;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setGEO(int i) {
+			geo = i;
+		}
+
+		/**
+		 * @param string
+		 */
+		public void setProgram(String string) {
+			program = string;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setServiceProvider(int i) {
+			serviceProvider = i;
+		}
+
+		/**
+		 * @param string
+		 */
+		public void setSplinter(String string) {
+			splinter = string;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setSubstation(int i) {
+			substation = i;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setUserAddress(int i) {
+			userAddress = i;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setZip(int i) {
+			zip = i;
+		}
+	}
+	
+	public static class VersaCom {
+		private int utilityID = 0;
+		private int section = 0;
+		private int classAddress = 0;
+		private int divisionAddress = 0;
+		
+		/**
+		 * @return
+		 */
+		public int getClassAddress() {
+			return classAddress;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getDivisionAddress() {
+			return divisionAddress;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getSection() {
+			return section;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getUtilityID() {
+			return utilityID;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setClassAddress(int i) {
+			classAddress = i;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setDivisionAddress(int i) {
+			divisionAddress = i;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setSection(int i) {
+			section = i;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setUtilityID(int i) {
+			utilityID = i;
+		}
+	}
+	
 	private int configurationID = CtiUtilities.NONE_ID;
 	private String coldLoadPickup = null;
 	private String tamperDetect = null;
 	
 	private SA205 sa205_ = null;
 	private SA305 sa305_ = null;
+	private ExpressCom xcom_ = null;
+	private VersaCom vcom_ = null;
 	
 	public LiteLMConfiguration() {
 		super();
@@ -289,6 +477,34 @@ public class LiteLMConfiguration extends LiteBase {
 	
 	public void setSA305(SA305 sa305) {
 		sa305_ = sa305;
+	}
+
+	/**
+	 * @return
+	 */
+	public VersaCom getVersaCom() {
+		return vcom_;
+	}
+
+	/**
+	 * @return
+	 */
+	public ExpressCom getExpressCom() {
+		return xcom_;
+	}
+
+	/**
+	 * @param com
+	 */
+	public void setVersaCom(VersaCom com) {
+		vcom_ = com;
+	}
+
+	/**
+	 * @param com
+	 */
+	public void setExpressCom(ExpressCom com) {
+		xcom_ = com;
 	}
 
 }

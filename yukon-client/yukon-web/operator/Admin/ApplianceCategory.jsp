@@ -44,18 +44,8 @@
     ArrayList availPrograms = new ArrayList();
 	for (int i = 0; i < ourPrograms.size(); i++) {
 		int id = ((LMProgramDirect) ourPrograms.get(i)).getYukonID().intValue();
-		boolean assigned = false;
-		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
-			for (int k = 0; k < appCat.getStarsEnrLMProgramCount(); k++) {
-				if (appCat.getStarsEnrLMProgram(k).getProgramID() == id) {
-					assigned = true;
-					break;
-				}
-			}
-			if (assigned) break;
-		}
-		if (!assigned) availPrograms.add( ourPrograms.get(i) );
+		StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram(categories, id);
+		if (program == null) availPrograms.add( ourPrograms.get(i) );
 	}
 %>
 <html>

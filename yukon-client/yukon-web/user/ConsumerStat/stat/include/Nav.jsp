@@ -94,12 +94,10 @@
 		for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
 			StarsInventory inv = thermostats.getStarsInventory(i);
 			
-			String linkLabel = inv.getDeviceLabel();
-			if (linkLabel.equals(""))
-				linkLabel= inv.getLMHardware().getManufacturerSerialNumber();
-			
+			String linkLabel = ServletUtils.getInventoryLabel(inv);
 			String linkHtml = null;
 			String linkImgExp = null;
+			
 			if (i == selectedItemNo) {
 				linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
 				linkImgExp = bulletImg;

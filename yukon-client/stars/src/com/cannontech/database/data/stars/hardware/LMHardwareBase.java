@@ -27,33 +27,34 @@ public class LMHardwareBase extends InventoryBase {
 	}
     
 	/**
-	 * Clear entries in other tables related with LMhardwareBase
+	 * Clear hardware information related with customer account
 	 */
-	public void clearLMHardware() throws java.sql.SQLException {
+	public static void clearLMHardware(int inventoryID) {
 		// delete from LMHardwareConfiguration
-		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration(
-				getInventoryBase().getInventoryID() );
+		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration( inventoryID );
 		
 		// delete from LMThermostatSchedule
-		com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
-				com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule(
-					getInventoryBase().getInventoryID().intValue() );
-		
-		if (scheduleDB != null) {
-			LMThermostatSchedule schedule = new LMThermostatSchedule();
-			schedule.setScheduleID( scheduleDB.getScheduleID() );
-			schedule.setDbConnection( getDbConnection() );
-			schedule.delete();
-		}
+		LMThermostatSchedule.deleteThermostatSchedule( inventoryID );
 		
 		// delete from LMThermostatManualEvent
-		com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents(
-				getInventoryBase().getInventoryID().intValue() );
+		com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( inventoryID );
+	}
+	
+	public void deleteLMHardwareBase() throws java.sql.SQLException {
+		clearLMHardware( getInventoryBase().getInventoryID().intValue() );
+		
+		// delete from LMConfigurationBase
+		com.cannontech.database.data.stars.hardware.LMConfigurationBase config =
+				new com.cannontech.database.data.stars.hardware.LMConfigurationBase();
+		config.setConfigurationID( getLMHardwareBase().getConfigurationID() );
+		config.setDbConnection( getDbConnection() );
+		config.delete();
+		
+		getLMHardwareBase().delete();
 	}
 
 	public void delete() throws java.sql.SQLException {
-		clearLMHardware();
-		getLMHardwareBase().delete();
+		deleteLMHardwareBase();
 		super.deleteInventoryBase();
 	}
 

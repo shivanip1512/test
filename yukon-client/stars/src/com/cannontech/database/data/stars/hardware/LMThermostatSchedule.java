@@ -122,6 +122,22 @@ public class LMThermostatSchedule extends DBPersistent {
 		}
 	}
 	
+	public static void deleteThermostatSchedule(int inventoryID) {
+		try {
+			com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
+					com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule( inventoryID );
+			
+			if (scheduleDB != null) {
+				LMThermostatSchedule schedule = new LMThermostatSchedule();
+				schedule.setScheduleID( scheduleDB.getScheduleID() );
+				Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
+			}
+		}
+		catch (TransactionException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
+	
 	public static void deleteAllThermostatSchedules(int accountID) {
 		try {
 			com.cannontech.database.db.stars.hardware.LMThermostatSchedule[] schedules =

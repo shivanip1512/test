@@ -8,7 +8,11 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.stars.LiteLMConfiguration;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -18,6 +22,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.InventoryManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SULMProgram;
@@ -25,11 +30,11 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -55,8 +60,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 
 			StarsUpdateLMHardwareConfig updateHwConfig = new StarsUpdateLMHardwareConfig();
 			updateHwConfig.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
-			updateHwConfig.setSaveToBatch( req.getParameter("action").equalsIgnoreCase("SaveLMHardwareConfig") );
-			updateHwConfig.setSaveConfigOnly( req.getParameter("action").equalsIgnoreCase("UpdateLMHardwareConfig") );
+			updateHwConfig.setSaveToBatch( Boolean.valueOf(req.getParameter("SaveToBatch")).booleanValue() );
+			updateHwConfig.setSaveConfigOnly( Boolean.valueOf(req.getParameter("SaveConfigOnly")).booleanValue() );
 			
 			String[] progIDs = req.getParameterValues( "ProgID" );
 			String[] grpIDs = req.getParameterValues( "GroupID" );
@@ -76,6 +81,12 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 					config.setLoadNumber( loadNo );
 					updateHwConfig.addStarsLMHardwareConfig( config );
 				}
+			}
+			
+			if (req.getParameter("UseHardwareAddressing") != null) {
+				StarsLMConfiguration config = new StarsLMConfiguration();
+				InventoryManager.setStarsLMConfiguration( config, req );
+				updateHwConfig.setStarsLMConfiguration( config );
 			}
 			
 			StarsOperation operation = new StarsOperation();
@@ -109,44 +120,16 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
-            
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			if (liteAcctInfo == null) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
         	
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
             
 			StarsUpdateLMHardwareConfig updateHwConfig = reqOper.getStarsUpdateLMHardwareConfig();
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( updateHwConfig.getInventoryID(), true );
             
-			StarsProgramSignUp progSignUp = new StarsProgramSignUp();
-			progSignUp.setStarsSULMPrograms( new StarsSULMPrograms() );
-            
-			for (int i = 0; i < updateHwConfig.getStarsLMHardwareConfigCount(); i++) {
-				StarsLMHardwareConfig starsConfig = updateHwConfig.getStarsLMHardwareConfig(i);
-				
-				SULMProgram suProg = new SULMProgram();
-				suProg.setProgramID( starsConfig.getProgramID() );
-				suProg.setAddressingGroupID( starsConfig.getGroupID() );
-				suProg.setLoadNumber( starsConfig.getLoadNumber() );
-				progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
-			}
-            
 			try {
-				if (updateHwConfig.getSaveToBatch()) {
-					saveLMHardwareConfig( progSignUp, liteHw, energyCompany );
-					StarsSuccess success = new StarsSuccess();
-					success.setDescription( "Configuration command saved to batch successfully" );
-					respOper.setStarsSuccess( success );
-				}
-				else {
-					StarsUpdateLMHardwareConfigResponse resp = updateLMHardwareConfig(
-							progSignUp, !updateHwConfig.getSaveConfigOnly(), liteHw, liteAcctInfo, user.getUserID(), energyCompany );
-					respOper.setStarsUpdateLMHardwareConfigResponse( resp );
-				}
+				StarsUpdateLMHardwareConfigResponse resp = updateLMHardwareConfig(
+						updateHwConfig, liteHw, user.getUserID(), energyCompany );
+				respOper.setStarsUpdateLMHardwareConfigResponse( resp );
 			}
 			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -161,7 +144,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send out the hardware configuration") );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the hardware configuration") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
@@ -185,11 +168,6 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			if (operation.getStarsSuccess() != null) {
-				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, operation.getStarsSuccess().getDescription() );
-				return 0;
-			}
-			
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
@@ -206,96 +184,246 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	}
 	
 	/**
+	 * Update the hardware addressing information
+	 */
+	public static void updateLMConfiguration(StarsLMConfiguration starsHwConfig, LiteStarsLMHardware liteHw) throws WebClientException {
+		com.cannontech.database.data.stars.hardware.LMConfigurationBase config =
+				new com.cannontech.database.data.stars.hardware.LMConfigurationBase();
+		com.cannontech.database.db.stars.hardware.LMConfigurationBase configDB = config.getLMConfigurationBase();
+		
+		if (starsHwConfig.getColdLoadPickup().length() > 0)
+			configDB.setColdLoadPickup( starsHwConfig.getColdLoadPickup() );
+		else
+			configDB.setColdLoadPickup( CtiUtilities.STRING_NONE );
+		if (starsHwConfig.getTamperDetect().length() > 0)
+			configDB.setTamperDetect( starsHwConfig.getTamperDetect() );
+		else
+			configDB.setTamperDetect( CtiUtilities.STRING_NONE );
+		
+		if (starsHwConfig.getSA205() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationSA205 sa205 =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationSA205();
+			sa205.setSlot1( new Integer(starsHwConfig.getSA205().getSlot1()) );
+			sa205.setSlot2( new Integer(starsHwConfig.getSA205().getSlot2()) );
+			sa205.setSlot3( new Integer(starsHwConfig.getSA205().getSlot3()) );
+			sa205.setSlot4( new Integer(starsHwConfig.getSA205().getSlot4()) );
+			sa205.setSlot5( new Integer(starsHwConfig.getSA205().getSlot5()) );
+			sa205.setSlot6( new Integer(starsHwConfig.getSA205().getSlot6()) );
+			config.setSA205( sa205 );
+		}
+		else if (starsHwConfig.getSA305() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationSA305 sa305 =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationSA305();
+			sa305.setUtility( new Integer(starsHwConfig.getSA305().getUtility()) );
+			sa305.setGroupAddress( new Integer(starsHwConfig.getSA305().getGroup()) );
+			sa305.setDivision( new Integer(starsHwConfig.getSA305().getDivision()) );
+			sa305.setSubstation( new Integer(starsHwConfig.getSA305().getSubstation()) );
+			sa305.setRateFamily( new Integer(starsHwConfig.getSA305().getRateFamily()) );
+			sa305.setRateMember( new Integer(starsHwConfig.getSA305().getRateMember()) );
+			sa305.setRateHierarchy( new Integer(starsHwConfig.getSA305().getRateHierarchy()) );
+			config.setSA305( sa305 );
+		}
+		else if (starsHwConfig.getVersaCom() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom vcom =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom();
+			vcom.setUtilityID( new Integer(starsHwConfig.getVersaCom().getUtility()) );
+			vcom.setSection( new Integer(starsHwConfig.getVersaCom().getSection()) );
+			vcom.setClassAddress( new Integer(starsHwConfig.getVersaCom().getClassAddress()) );
+			vcom.setDivisionAddress( new Integer(starsHwConfig.getVersaCom().getDivision()) );
+			config.setVersaCom( vcom );
+		}
+		else if (starsHwConfig.getExpressCom() != null) {
+			com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom xcom =
+					new com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom();
+			xcom.setServiceProvider( new Integer(starsHwConfig.getExpressCom().getServiceProvider()) );
+			xcom.setGEO( new Integer(starsHwConfig.getExpressCom().getGEO()) );
+			xcom.setSubstation( new Integer(starsHwConfig.getExpressCom().getSubstation()) );
+			xcom.setFeeder( new Integer(starsHwConfig.getExpressCom().getFeeder()) );
+			xcom.setZip( new Integer(starsHwConfig.getExpressCom().getZip()) );
+			xcom.setUserAddress( new Integer(starsHwConfig.getExpressCom().getUserAddress()) );
+			xcom.setProgram( starsHwConfig.getExpressCom().getProgram() );
+			xcom.setSplinter( starsHwConfig.getExpressCom().getSplinter() );
+			config.setExpressCom( xcom );
+		}
+		
+		try {
+			if (liteHw.getConfigurationID() == 0) {
+				config = (com.cannontech.database.data.stars.hardware.LMConfigurationBase)
+						Transaction.createTransaction( Transaction.INSERT, config ).execute();
+				
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+				StarsLiteFactory.setLMHardwareBase( hw, liteHw );
+				hwDB.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
+				
+				hwDB = (com.cannontech.database.db.stars.hardware.LMHardwareBase)
+						Transaction.createTransaction( Transaction.UPDATE, hwDB ).execute();
+				
+				liteHw.setConfigurationID( hwDB.getConfigurationID().intValue() );
+				LiteLMConfiguration liteCfg = new LiteLMConfiguration();
+				StarsLiteFactory.setLiteLMConfiguration( liteCfg, config );
+				liteHw.setLMConfiguration( liteCfg );
+			}
+			else {
+				config.setConfigurationID( new Integer(liteHw.getConfigurationID()) );
+				
+				// Check to see if the configuration is in both the parent and the child table
+				if (config.getSA205() != null && liteHw.getLMConfiguration().getSA205() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getSA205() ).execute();
+					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+				}
+				else if (config.getSA305() != null && liteHw.getLMConfiguration().getSA305() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getSA305() ).execute();
+					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+				}
+				else if (config.getVersaCom() != null && liteHw.getLMConfiguration().getVersaCom() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getVersaCom() ).execute();
+					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+				}
+				else if (config.getExpressCom() != null && liteHw.getLMConfiguration().getExpressCom() == null) {
+					Transaction.createTransaction( Transaction.INSERT, config.getExpressCom() ).execute();
+					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
+				}
+				else {
+					config = (com.cannontech.database.data.stars.hardware.LMConfigurationBase)
+							Transaction.createTransaction( Transaction.UPDATE, config ).execute();
+				}
+				
+				if (liteHw.getLMConfiguration() == null)
+					liteHw.setLMConfiguration( new LiteLMConfiguration() );
+				StarsLiteFactory.setLiteLMConfiguration( liteHw.getLMConfiguration(), config );
+			}
+		}
+		catch (TransactionException e) {
+			CTILogger.error( e.getMessage(), e );
+			throw new WebClientException( "Failed to update the hardware addressing tables" );
+		}
+	}
+	
+	/**
 	 * @return Hardwares that have been configured
 	 */
-	public static StarsUpdateLMHardwareConfigResponse updateLMHardwareConfig(StarsProgramSignUp progSignUp, boolean sendConfig, LiteStarsLMHardware liteHw,
-		LiteStarsCustAccountInformation liteAcctInfo, int userID, LiteStarsEnergyCompany energyCompany) throws WebClientException
+	public static StarsUpdateLMHardwareConfigResponse updateLMHardwareConfig(StarsUpdateLMHardwareConfig updateHwConfig,
+		LiteStarsLMHardware liteHw, int userID, LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
-		ArrayList hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, energyCompany );
+		LiteStarsCustAccountInformation liteAcctInfo = null;
+		ArrayList hwsToConfig = null;
 		
-		if (!hwsToConfig.contains( liteHw ))
-			hwsToConfig.add( 0, liteHw );
+		if (liteHw.getAccountID() > 0) {
+			liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
+			
+			StarsProgramSignUp progSignUp = new StarsProgramSignUp();
+			progSignUp.setStarsSULMPrograms( new StarsSULMPrograms() );
+			
+			for (int i = 0; i < updateHwConfig.getStarsLMHardwareConfigCount(); i++) {
+				StarsLMHardwareConfig starsConfig = updateHwConfig.getStarsLMHardwareConfig(i);
+				
+				SULMProgram suProg = new SULMProgram();
+				suProg.setProgramID( starsConfig.getProgramID() );
+				suProg.setAddressingGroupID( starsConfig.getGroupID() );
+				suProg.setLoadNumber( starsConfig.getLoadNumber() );
+				progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
+			}
+			
+			hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, energyCompany );
+			
+			if (!hwsToConfig.contains( liteHw ))
+				hwsToConfig.add( 0, liteHw );
+		}
+		
+		if (updateHwConfig.getStarsLMConfiguration() != null) {
+			updateLMConfiguration( updateHwConfig.getStarsLMConfiguration(), liteHw );
+			
+			hwsToConfig = new ArrayList();
+			hwsToConfig.add( liteHw );
+		}
 		
 		StarsInventories starsInvs = new StarsInventories();
+		boolean disabled = false;
 		
 		for (int i = 0; i < hwsToConfig.size(); i++) {
 			LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
 			
-			if (sendConfig) {
-				// Send out config/disable command
-				boolean toConfig = false;
+			if (!updateHwConfig.getSaveConfigOnly()) {
+				boolean toConfig = (liteAcctInfo != null)? isToConfig(lHw, liteAcctInfo) : true;
+				if (lHw.equals( liteHw )) disabled = !toConfig;
 				
-				for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-					if (liteApp.getInventoryID() == lHw.getInventoryID()) {
-						toConfig = true;
-						break;
-					}
+				if (updateHwConfig.getSaveToBatch()) {
+					String commandType = (toConfig)?
+							SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE : SwitchCommandQueue.SWITCH_COMMAND_DISABLE;
+					saveSwitchCommand( lHw, commandType, energyCompany );
 				}
-				
-				if (toConfig)
-					YukonSwitchCommandAction.sendConfigCommand( energyCompany, lHw, true );
-				else
-					YukonSwitchCommandAction.sendDisableCommand( energyCompany, lHw );
+				else {
+					if (toConfig)
+						YukonSwitchCommandAction.sendConfigCommand( energyCompany, lHw, true );
+					else
+						YukonSwitchCommandAction.sendDisableCommand( energyCompany, lHw );
+				}
 			}
 			
-			StarsInventory starsInv = StarsLiteFactory.createStarsInventory( lHw, energyCompany );
-			starsInvs.addStarsInventory( starsInv );
+			if (liteAcctInfo != null) {
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( lHw, energyCompany );
+				starsInvs.addStarsInventory( starsInv );
+			}
 		}
-        
-		StarsUpdateLMHardwareConfigResponse resp = new StarsUpdateLMHardwareConfigResponse();
-		resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
-		resp.setStarsAppliances( StarsLiteFactory.createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
-		resp.setStarsInventories( starsInvs );
         
 		// Log activity
 		String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber();
-		for (int i = 0; i < hwsToConfig.size(); i++) {
-			LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
-			if (!lHw.equals( liteHw ))
-				logMsg += "," + lHw.getManufacturerSerialNumber();
+		if (!disabled) {
+			for (int i = 0; i < hwsToConfig.size(); i++) {
+				LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+				if (!lHw.equals( liteHw ))
+					logMsg += "," + lHw.getManufacturerSerialNumber();
+			}
 		}
 		
-		String action = (sendConfig)? ActivityLogActions.HARDWARE_CONFIGURATION_ACTION
-									: ActivityLogActions.HARDWARE_SAVE_CONFIGURATION_ACTION;
-		ActivityLogger.logEvent(userID, liteAcctInfo.getAccountID(), energyCompany.getLiteID(),
-				liteAcctInfo.getCustomer().getCustomerID(), action, logMsg );
+		String action = null;
+		if (updateHwConfig.getSaveConfigOnly())
+			action = ActivityLogActions.HARDWARE_CONFIGURATION_ACTION_SAVE_ONLY;
+		else if (disabled)
+			action = ActivityLogActions.HARDWARE_DISABLE_ACTION;
+		else
+			action = ActivityLogActions.HARDWARE_CONFIGURATION_ACTION;
+		 
+		int customerID = (liteAcctInfo != null)? liteAcctInfo.getCustomer().getCustomerID() : 0;
+		ActivityLogger.logEvent(userID, liteHw.getAccountID(), energyCompany.getLiteID(), customerID, action, logMsg );
+	    
+	    if (liteAcctInfo != null) {
+			StarsUpdateLMHardwareConfigResponse resp = new StarsUpdateLMHardwareConfigResponse();
+			resp.setStarsInventories( starsInvs );
+			resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
+			resp.setStarsAppliances( StarsLiteFactory.createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
+			return resp;
+		}
 		
-		return resp;
+		return null;
 	}
 	
-	public static void saveLMHardwareConfig(StarsProgramSignUp progSignUp, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany)
-		throws WebClientException
+	public static boolean isToConfig(LiteStarsLMHardware liteHw, LiteStarsCustAccountInformation liteAcctInfo) {
+		for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+			if (liteApp.getInventoryID() == liteHw.getInventoryID())
+				return true;
+		}
+		
+		return false;
+	}
+	
+	private static void saveSwitchCommand(LiteStarsLMHardware liteHw, String commandType,
+		LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
 		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
 		if (queue == null)
 			throw new WebClientException( "Failed to save the configuration command to batch" );
 		
-		if (progSignUp.getStarsSULMPrograms().getSULMProgramCount() > 0) {
-			SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-			cmd.setEnergyCompanyID( energyCompany.getLiteID() );
-			cmd.setAccountID( liteHw.getAccountID() );
-			cmd.setInventoryID( liteHw.getInventoryID() );
-			cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
-			
-			SULMProgram suProg = progSignUp.getStarsSULMPrograms().getSULMProgram(0);
-			String infoStr = suProg.getProgramID() + "," + suProg.getAddressingGroupID();
-			for (int i = 1; i < progSignUp.getStarsSULMPrograms().getSULMProgramCount(); i++) {
-				suProg = progSignUp.getStarsSULMPrograms().getSULMProgram(i);
-				infoStr += "," + suProg.getProgramID() + "," + suProg.getAddressingGroupID();
-			}
-			cmd.setInfoString( infoStr );
-			
-			queue.addCommand( cmd, true );
-		}
-		else {
-			SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-			cmd.setEnergyCompanyID( energyCompany.getLiteID() );
-			cmd.setAccountID( liteHw.getAccountID() );
-			cmd.setInventoryID( liteHw.getInventoryID() );
-			cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_DISABLE );
-			queue.addCommand( cmd, true );
-		}
+		SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
+		cmd.setEnergyCompanyID( energyCompany.getLiteID() );
+		cmd.setAccountID( liteHw.getAccountID() );
+		cmd.setInventoryID( liteHw.getInventoryID() );
+		cmd.setCommandType( commandType );
+		
+		queue.addCommand( cmd, true );
 	}
 	
 	public static void parseResponse(StarsCustAccountInformation starsAcctInfo, StarsUpdateLMHardwareConfigResponse resp) {

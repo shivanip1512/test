@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategory.java,v 1.82 2004/06/25 21:37:05 zyao Exp $
+ * $Id: StarsApplianceCategory.java,v 1.83 2004/07/08 16:21:18 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.82 $ $Date: 2004/06/25 21:37:05 $
+ * @version $Revision: 1.83 $ $Date: 2004/07/08 16:21:18 $
 **/
 public class StarsApplianceCategory implements java.io.Serializable {
 
@@ -47,6 +47,13 @@ public class StarsApplianceCategory implements java.io.Serializable {
      * keeps track of state for field: _categoryID
     **/
     private boolean _has_categoryID;
+
+    private boolean _inherited;
+
+    /**
+     * keeps track of state for field: _inherited
+    **/
+    private boolean _has_inherited;
 
     private java.lang.String _description;
 
@@ -108,6 +115,13 @@ public class StarsApplianceCategory implements java.io.Serializable {
 
     /**
     **/
+    public void deleteInherited()
+    {
+        this._has_inherited= false;
+    } //-- void deleteInherited() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateStarsEnrLMProgram()
     {
         return _starsEnrLMProgramList.elements();
@@ -142,6 +156,16 @@ public class StarsApplianceCategory implements java.io.Serializable {
     {
         return this._description;
     } //-- java.lang.String getDescription() 
+
+    /**
+     * Returns the value of field 'inherited'.
+     * 
+     * @return the value of field 'inherited'.
+    **/
+    public boolean getInherited()
+    {
+        return this._inherited;
+    } //-- boolean getInherited() 
 
     /**
      * 
@@ -201,6 +225,13 @@ public class StarsApplianceCategory implements java.io.Serializable {
     {
         return this._has_categoryID;
     } //-- boolean hasCategoryID() 
+
+    /**
+    **/
+    public boolean hasInherited()
+    {
+        return this._has_inherited;
+    } //-- boolean hasInherited() 
 
     /**
     **/
@@ -290,6 +321,17 @@ public class StarsApplianceCategory implements java.io.Serializable {
     {
         this._description = description;
     } //-- void setDescription(java.lang.String) 
+
+    /**
+     * Sets the value of field 'inherited'.
+     * 
+     * @param inherited the value of field 'inherited'.
+    **/
+    public void setInherited(boolean inherited)
+    {
+        this._inherited = inherited;
+        this._has_inherited = true;
+    } //-- void setInherited(boolean) 
 
     /**
      * 
