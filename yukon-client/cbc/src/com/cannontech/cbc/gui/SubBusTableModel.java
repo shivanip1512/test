@@ -19,6 +19,7 @@ import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCStates;
 import com.cannontech.yukon.cbc.CBCSubAreaNames;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
@@ -79,33 +80,6 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		Color.red,
 		//Pending subbus
 		Color.yellow
-	};
-
-	public static final java.util.Comparator SUB_AREA_COMPARATOR = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2)
-		{
-			try
-			{
-				String thisArea = ((SubBus)o1).getCcArea();
-				String anotherArea = ((SubBus)o2).getCcArea();
-				
-				if( !thisArea.equalsIgnoreCase(anotherArea) )
-					return( thisArea.compareToIgnoreCase(anotherArea) );
-				
-				//if the Area Names	are equal, we need to sort by SubName
-				String thisName = ((SubBus)o1).getCcName();
-				String anotherName = ((SubBus)o2).getCcName();
-				
-				return( thisName.compareToIgnoreCase(anotherName) );				
-			}
-			catch( Exception e )
-			{
-				CTILogger.error( "Something went wrong with sorting, ignoring sorting rules", e );
-				return 0; 
-			}
-			
-		}
 	};
 
 /**
@@ -182,7 +156,7 @@ private void clearFilter()
    //always keep our main list in order by the SubBusArea
    java.util.Collections.sort( 
          getAllSubBuses(), 
-         SUB_AREA_COMPARATOR );
+         CBCUtils.SUB_AREA_COMPARATOR );
 }
 
 
@@ -649,7 +623,7 @@ private synchronized void updateSubBuses(SubBus[] newBuses)
 			int indx = java.util.Collections.binarySearch( 
 					getAllSubBuses(), 
 					newBus, 
-					SUB_AREA_COMPARATOR );
+					CBCUtils.SUB_AREA_COMPARATOR );
 
 			if( indx < 0 )
 				getAllSubBuses().add( newBus );
