@@ -9,13 +9,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/03/18 19:56:02 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/19 14:50:33 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786)
+
+#include <rw\re.h>
+#undef mask_
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -38,7 +41,12 @@ _pointId(pointid),
 _value(value),
 _functionId(function),
 _funcName(str),
-_funcRequeue(funcrequeue)
+_funcRequeue(funcrequeue),
+_cycleTime(0),
+_cycleOffset(0),
+_transmitTime(0),
+_maxTransmitTime(0)
+
 {
 
 }
@@ -182,6 +190,21 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["funcname"]         >> _funcName;
     rdr["funcrequeue"]      >> _funcRequeue;
     rdr["funcparams"]       >> _funcParams;
+
+    _funcParams.toLower();
+    RWCString temp;
+    temp = _funcParams.match(RWCRExpr("cycletime:[0-9]+"));
+    temp = temp.match("[0-9]+");
+    _cycleTime = atoi(temp.data());
+    temp = _funcParams.match(RWCRExpr("offset:[0-9]+"));
+    temp = temp.match("[0-9]+");
+    _cycleOffset = atoi(temp.data());
+    temp = _funcParams.match(RWCRExpr("transmittime:[0-9]+"));
+    temp = temp.match("[0-9]+");
+    _transmitTime = atoi(temp.data());
+    temp = _funcParams.match(RWCRExpr("maxtime:[0-9]+"));
+    temp = temp.match("[0-9]+");
+    _maxTransmitTime = atoi(temp.data());
 }
 
 RWDBStatus CtiTablePaoExclusion::Restore()
@@ -292,4 +315,26 @@ void CtiTablePaoExclusion::dump() const
 
     }
 }
+
+int CtiTablePaoExclusion::getCycleTime() const
+{
+    return _cycleTime;
+}
+
+int CtiTablePaoExclusion::getCycleOffset() const
+{
+    return _cycleOffset;
+}
+
+int CtiTablePaoExclusion::getTransmitTime() const
+{
+    return _transmitTime;
+}
+
+int CtiTablePaoExclusion::getMaxTransmitTime() const
+{
+    return _maxTransmitTime;
+}
+
+
 

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/10 21:35:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/19 14:50:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,12 @@ protected:
     long        _funcRequeue;       // This value indicates the requeue behaviour to execute if excluded.
     RWCString   _funcParams;        // a rwcstring which can represent arguments to a function (to be parsed by that function)
 
+    // This is the componentry of the _funcParams, i.f.f. the function is a Time Method
+    int         _cycleTime;
+    int         _cycleOffset;
+    int         _transmitTime;
+    int         _maxTransmitTime;
+
 private:
 
 public:
@@ -47,7 +53,7 @@ public:
                          long excludedpaoid = 0,
                          long pointid = 0,
                          double value = 0.0,
-                         long function = 0,
+                         long function = ExFunctionInvalid,
                          RWCString str = RWCString(),
                          long funcrequeue = 0);
 
@@ -106,9 +112,16 @@ public:
     {
         ExFunctionIdExclusion,          // This is the default and stipulates a non-simultaneous execution.  A cannot execute with B.
         ExFunctionPlaceHolder,          //
-        ExFunctionTimeMethod1           // Excludes based upon an aligned windo offset and duration from aligned window start.
+        ExFunctionCycleTime,          // Excludes based upon an aligned window offset and duration from aligned window start.
+
+        ExFunctionInvalid
 
     } CtiExclusionFunction_t;
+
+    int getCycleTime() const;
+    int getCycleOffset() const;
+    int getTransmitTime() const;
+    int getMaxTransmitTime() const;
 
 };
 #endif // #ifndef __TBL_PAOEXCLUSION_H__
