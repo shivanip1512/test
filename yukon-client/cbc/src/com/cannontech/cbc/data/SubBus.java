@@ -55,6 +55,9 @@ public class SubBus extends StreamableCapObject
    private Double kVarSolution = null;
    private Double estimatedPFValue = null;
 
+   private Integer currentVarPtQuality = null;
+
+
 	//should only contain objects of type Feeder
 	private java.util.Vector ccFeeders = null;
 
@@ -84,6 +87,16 @@ public boolean isPowerFactorControlled()
 {
    return( CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(getControlUnits())
             || CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(getControlUnits()) );
+}
+
+public Integer getCurrentVarPtQuality()
+{
+   return currentVarPtQuality;   
+}
+
+public void setCurrentVarPtQuality( Integer ptQ_ )
+{
+   currentVarPtQuality = ptQ_;
 }
 
 /**

@@ -86,6 +86,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
    feeder.setKVarSolution( new Double( vstr.extractDouble() ) );
    feeder.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
+   feeder.setCurrentVarPtQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
+
 
 
 
@@ -142,6 +144,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
    vstr.insertDouble( feeder.getKVarSolution().doubleValue() );
    vstr.insertDouble( feeder.getEstimatedPFValue().doubleValue() );
+   vstr.insertUnsignedInt( feeder.getCurrentVarPtQuality().intValue() );
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */

@@ -36,6 +36,9 @@ public class Feeder extends StreamableCapObject
    private Double kVarSolution = null;
    private Double estimatedPFValue = null;
    
+   private Integer currentVarPtQuality = null;
+   
+
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
 /**
@@ -55,6 +58,17 @@ public Feeder( Integer paoId_, String paoCategory_, String paoClass_,
 				paoType_, paoDescription_, paoDisableFlag_ );
 
 }
+
+public Integer getCurrentVarPtQuality()
+{
+   return currentVarPtQuality;   
+}
+
+public void setCurrentVarPtQuality( Integer ptQ_ )
+{
+   currentVarPtQuality = ptQ_;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 1:11:48 PM)

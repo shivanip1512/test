@@ -112,6 +112,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
    subBus.setKVarSolution( new Double( vstr.extractDouble() ) );
    subBus.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
+   subBus.setCurrentVarPtQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
 
 
 
@@ -185,7 +186,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
    vstr.insertDouble( subBus.getKVarSolution().doubleValue() );
    vstr.insertDouble( subBus.getEstimatedPFValue().doubleValue() );
-
+   vstr.insertUnsignedInt( subBus.getCurrentVarPtQuality().intValue() );
 
    
 	vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
