@@ -179,7 +179,7 @@ private javax.swing.JTextField getJTextFieldOpAddress() {
 			ivjJTextFieldOpAddress = new javax.swing.JTextField();
 			ivjJTextFieldOpAddress.setName("JTextFieldOpAddress");
 			// user code begin {1}
-			ivjJTextFieldOpAddress.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 4095) );
+			ivjJTextFieldOpAddress.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 999999) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -200,10 +200,10 @@ private javax.swing.JComboBox getRelayCombosJComboBox() {
 			ivjRelayCombosJComboBox = new javax.swing.JComboBox();
 			ivjRelayCombosJComboBox.setName("RelayCombosJComboBox");
 			// user code begin {1}
+			ivjRelayCombosJComboBox.addItem("(none)");
 			ivjRelayCombosJComboBox.addItem("Load 1");
 			ivjRelayCombosJComboBox.addItem("Load 2");
-			ivjRelayCombosJComboBox.addItem("Load 3 (ALL restore)");
-			ivjRelayCombosJComboBox.addItem("Load 3 (No restore)");
+			ivjRelayCombosJComboBox.addItem("Load 3");
 			ivjRelayCombosJComboBox.addItem("Load 4");
 			ivjRelayCombosJComboBox.addItem("Load 1,2");
 			ivjRelayCombosJComboBox.addItem("Load 1,2,3");
