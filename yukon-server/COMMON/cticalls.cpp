@@ -1038,11 +1038,35 @@ APIRET IM_EX_CTIBASE CTISetPriority  (ULONG   ulScope,
                              ulID));
 #elif defined(_WIN32)
 
-   if(ulPriClass == 0) ulPriClass = GetPriorityClass((HANDLE)ulID);
+    // Make some priority decisions for the poor OS/2 programmers.
+    int tPri;
+
+    if(lPriDelta < -10)
+    {
+        tPri = THREAD_PRIORITY_LOWEST;
+    }
+    else if(lPriDelta < 0)
+    {
+        tPri = THREAD_PRIORITY_BELOW_NORMAL;
+    }
+    else if(lPriDelta == 0)
+    {
+        tPri = THREAD_PRIORITY_NORMAL;
+    }
+    else if(lPriDelta < 30)
+    {
+        tPri = THREAD_PRIORITY_ABOVE_NORMAL;
+    }
+    else if(lPriDelta < 32)
+    {
+        tPri = THREAD_PRIORITY_HIGHEST;
+    }
+
+    if(ulPriClass == 0) ulPriClass = GetPriorityClass(GetCurrentProcess());
 
     if(SetPriorityClass(GetCurrentProcess(), ulPriClass) )
     {
-        return(!SetThreadPriority((HANDLE)GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL));
+        return(!SetThreadPriority((HANDLE)GetCurrentThread(), tPri));
     }
    else
    {
