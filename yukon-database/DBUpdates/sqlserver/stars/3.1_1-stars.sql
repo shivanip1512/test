@@ -220,3 +220,8 @@ alter table InventoryBase
    add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
       references YukonListEntry (EntryID);
 go
+
+alter table CustomerAccount
+   add constraint FK_CustAcc_Add foreign key (BillingAddressID)
+      references Address (AddressID);
+go
