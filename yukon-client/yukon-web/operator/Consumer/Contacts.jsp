@@ -8,6 +8,7 @@
 		contacts[i].setFirstName("");
 		contacts[i].setHomePhone("");
 		contacts[i].setWorkPhone("");
+		contacts[i].setEmail("");
 	}
 	
 	for (int i = 0; i < 3; i++) {
@@ -19,6 +20,7 @@
 		contacts[i].setFirstName( contact.getFirstName() );
 		contacts[i].setHomePhone( contact.getHomePhone() );
 		contacts[i].setWorkPhone( contact.getWorkPhone() );
+		contacts[i].setEmail( contact.getEmail() );
 	}
 %>
 
