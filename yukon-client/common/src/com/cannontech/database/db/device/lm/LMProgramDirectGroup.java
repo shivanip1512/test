@@ -64,6 +64,29 @@ public static final void deleteAllDirectGroups(Integer deviceID, java.sql.Connec
 	}
 
 }
+
+/**
+ * Deletes a group from all the programs it may belong to
+ * @return com.cannontech.database.db.point.State[]
+ * @param stateGroup java.lang.Integer
+ */
+public static final void deleteGroupsFromProgram(Integer groupID, java.sql.Connection conn ) throws java.sql.SQLException
+{
+	com.cannontech.database.SqlStatement sql = 
+		new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME +
+			" WHERE LMGroupDeviceID = " + groupID, conn );
+
+	try
+	{
+		sql.execute();
+	}
+	catch( com.cannontech.common.util.CommandExecutionException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+
+}
+
 /**
  * This method was created in VisualAge.
  * @return LMProgramDirectGear[]

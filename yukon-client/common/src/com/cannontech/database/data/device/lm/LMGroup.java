@@ -4,6 +4,7 @@ package com.cannontech.database.data.device.lm;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 
 public abstract class LMGroup extends DeviceBase
 {
@@ -42,6 +43,9 @@ public void delete() throws java.sql.SQLException
 		com.cannontech.database.db.macro.GenericMacro.TABLE_NAME,
 		"childID", 
 		getDevice().getDeviceID());
+
+	LMProgramDirectGroup.deleteGroupsFromProgram(
+		getDevice().getDeviceID(), getDbConnection() );
 	
 	getLmGroup().delete();
 	super.delete();
