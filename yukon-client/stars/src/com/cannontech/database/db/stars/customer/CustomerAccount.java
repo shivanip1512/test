@@ -177,6 +177,9 @@ public class CustomerAccount extends DBPersistent {
 			while (rset.next())
 				contactIDList.add( new Integer(rset.getInt(1)) );
 			
+			if (contactIDList.size() == 0)
+				return new int[0];
+			
 			int[] contactIDs = new int[ contactIDList.size() ];
 			for (int i = 0; i < contactIDs.length; i++)
 				contactIDs[i] = ((Integer) contactIDList.get(i)).intValue();
