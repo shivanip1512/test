@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
@@ -33,7 +32,7 @@ public class AuthFuncs {
 	public static LiteYukonUser login(String username, String password) {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		String radiusAddr = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SERVER_ADDRESS);
-		if( !radiusAddr.equalsIgnoreCase("(none)"))	//value is something other than '(none)'
+		if(radiusAddr != null && !radiusAddr.equalsIgnoreCase("(none)"))	//value is something other than '(none)'
 		{
 			CTILogger.info("Attempting a RADIUS login");
 			return RadiusLogin.login(username, password);
