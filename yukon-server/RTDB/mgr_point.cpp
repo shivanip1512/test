@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/08/25 13:32:21 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/09/12 21:42:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -704,7 +704,7 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     CtiTablePointAlarming::getSQL( db, keyTable, selector );
 
     if(pntID) selector.where( keyTable["pointid"] == pntID && selector.where() );
-    if(paoID) selector.where( keyTable["paobjectid"] == paoID && selector.where() );
+    // There is no pao in this table!// if(paoID) selector.where( keyTable["paobjectid"] == paoID && selector.where() );
 
     rdr = selector.reader( conn );
 
