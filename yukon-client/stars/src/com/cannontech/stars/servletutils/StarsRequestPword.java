@@ -8,6 +8,7 @@ import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -145,5 +146,18 @@ public class StarsRequestPword extends RequestPword
 
 	}
 
+	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
+		LiteCustomer liteCust = ContactFuncs.getCustomer( lCont_.getContactID() );
+		if (!liteCust.isExtended())
+			liteCust.retrieve( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		if (liteCust.getEnergyCompanyID() != -1) {
+			LiteEnergyCompany liteComp = EnergyCompanyFuncs.getEnergyCompany( liteCust.getEnergyCompanyID() );
+			return new LiteEnergyCompany[] { liteComp };
+		}
+		
+		// Try the parent's functionality
+		return super.processContact( lCont_ );
+	}
 
 }

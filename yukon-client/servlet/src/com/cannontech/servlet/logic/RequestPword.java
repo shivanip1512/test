@@ -246,7 +246,7 @@ public class RequestPword
 	}
 	
 	
-	private LiteEnergyCompany[] processContact( LiteContact lCont_ )
+	protected LiteEnergyCompany[] processContact( LiteContact lCont_ )
 	{
 		LiteCICustomer lCust = ContactFuncs.getCICustomer( lCont_.getContactID() );
 
