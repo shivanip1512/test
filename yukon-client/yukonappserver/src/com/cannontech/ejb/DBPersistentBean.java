@@ -1,19 +1,32 @@
 package com.cannontech.ejb;
 
+import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.yukon.IDBPersistent;
-
-import java.sql.SQLException;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.IDBPersistent;
 
 /* Add this to DBPersistentHome class */
 //public com.cannontech.ejb.DBPersistent create() throws javax.ejb.CreateException, java.rmi.RemoteException;
@@ -25,7 +38,7 @@ import com.cannontech.database.cache.functions.RoleFuncs;
 **/
 public class DBPersistentBean implements SessionBean, IDBPersistent
 {
-	protected static final int ORACLE_FLOAT_PRECISION = 126;
+	protected static final int ORACLE_FLOAT_PRECISION = SqlUtils.ORACLE_FLOAT_PRECISION;
 	
    public static String sqlFileName = null; 
    //com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
@@ -42,14 +55,13 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
     * @ejb:interface-method
     * tview-type="remote" 
    **/
-   public com.cannontech.database.db.DBPersistent execute( int operation, com.cannontech.database.db.DBPersistent obj ) throws TransactionException
+   public DBPersistent execute( int operation, DBPersistent obj ) throws TransactionException
    {
       return internalExecute( operation, obj );
    }   
 
 
-   private com.cannontech.database.db.DBPersistent internalExecute(
-         int operation, com.cannontech.database.db.DBPersistent object ) throws TransactionException
+   private DBPersistent internalExecute(int operation, DBPersistent object ) throws TransactionException
    {
       boolean autoCommit = false;
       java.sql.Connection conn = null;
@@ -59,8 +71,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          conn = object.getDbConnection();
          
          if( conn == null )
-            setDbConnection( com.cannontech.database.PoolManager.getInstance().getConnection( 
-                              com.cannontech.common.util.CtiUtilities.getDatabaseAlias() ) );         
+            setDbConnection( PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() ) );         
          else
             setDbConnection( conn );
 
@@ -157,7 +168,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
             }
             catch( java.sql.SQLException e )
             {
-               com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+               CTILogger.error( e.getMessage(), e );
             }         
             
             //DO NOT LET THE DBPERSISTENT OBJECT HOLD ONTO A REFERENCE TO THE CONNECTION
@@ -172,7 +183,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    }   
    
    
-   public java.sql.Connection getDbConnection() throws SQLException 
+   public Connection getDbConnection() throws SQLException 
    {
       return dbConnection;
    }
@@ -187,7 +198,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
 		else
 		{
 			sqlFileName = 
-				com.cannontech.common.util.CtiUtilities.getLogDirPath() + 
+				CtiUtilities.getLogDirPath() + 
 				System.getProperty("file.separator") +
 				fileName;
 		}
@@ -275,8 +286,8 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          for (int j = 1; j < constraintColumns.length; j++)
             selectString += " AND " + constraintColumns[j] + "=" + constraintValues[j];
       }
-      java.sql.Statement stmt = null;
-      java.sql.ResultSet rset = null;
+      Statement stmt = null;
+      ResultSet rset = null;
       Object returnObjects[][] = null;
       try
       {
@@ -284,10 +295,10 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          rset = stmt.executeQuery(selectString);
    
          //Get all the rows
-         java.util.Vector rows = new java.util.Vector();
+         Vector rows = new Vector();
          while (rset.next())
          {
-            java.util.Vector columns = new java.util.Vector();
+            Vector columns = new Vector();
             for (int i = 1; i <= rset.getMetaData().getColumnCount(); i++)
                   columns.addElement( rset.getObject(i) );
             
@@ -297,9 +308,15 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          for (int i = 0; i < rows.size(); i++)
             for (int j = 0; j < rset.getMetaData().getColumnCount(); j++)
             {
-               Object temp = ((java.util.Vector) rows.elementAt(i)).elementAt(j);
-               if (temp instanceof java.math.BigDecimal)
-                  temp = new Integer(((java.math.BigDecimal) temp).intValue());
+				Object temp = ((java.util.Vector) rows.elementAt(i)).elementAt(j);
+				if (temp instanceof BigDecimal)
+				{
+					// >>>>>>>>>> Watch this - synchronize with above!
+					if (rset.getMetaData().getPrecision(j + 1) == ORACLE_FLOAT_PRECISION )
+						temp = new Double(((BigDecimal) temp).doubleValue());
+					else
+						temp = new Integer(((BigDecimal) temp).intValue());
+				}
                   
                returnObjects[i][j] = temp;
             }
@@ -342,8 +359,8 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
             selectString += " AND " + keyColumnNames[j] + "=" + keyColumnValues[j];
       }
       
-      java.sql.Statement stmt = null;
-      java.sql.ResultSet rset = null;
+      Statement stmt = null;
+      ResultSet rset = null;
       Object returnObjects[] = null;
    
       try
@@ -351,7 +368,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          stmt = getDbConnection().createStatement(); //PROB!!!
          rset = stmt.executeQuery(selectString);
 
-         java.util.Vector v = new java.util.Vector();
+         Vector v = new Vector();
          int columns = rset.getMetaData().getColumnCount();
          if (rset.next())
             for (int k = 0; k < columns; k++)
@@ -390,13 +407,13 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          for (int n = 0; n < returnObjects.length; n++)
          {
             Object temp = v.elementAt(n);
-            if (temp instanceof java.math.BigDecimal)
+            if (temp instanceof BigDecimal)
             {
                // >>>>>>>>>> Watch this - synchronize with above!
                if (rset.getMetaData().getPrecision(n + 1) == ORACLE_FLOAT_PRECISION )
-                  temp = new Double(((java.math.BigDecimal) v.elementAt(n)).doubleValue());
+                  temp = new Double(((BigDecimal) v.elementAt(n)).doubleValue());
                else
-                  temp = new Integer(((java.math.BigDecimal) v.elementAt(n)).intValue());
+                  temp = new Integer(((BigDecimal) v.elementAt(n)).intValue());
             }
    /* Cant remember why this is here??? 7-29-2002 */
    /*       else
@@ -473,7 +490,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          }
       }
       
-      java.sql.PreparedStatement pstmt = null;
+      PreparedStatement pstmt = null;
       
       try
       {
@@ -486,13 +503,9 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
              *  length > 4k.  */
             if( setColumnValue[i] instanceof byte[] )
             {
-               java.io.ByteArrayInputStream bs = new java.io.ByteArrayInputStream( 
-                        (byte[])setColumnValue[i] );
+               ByteArrayInputStream bs = new ByteArrayInputStream( (byte[])setColumnValue[i] );
    
-               pstmt.setBinaryStream(
-                  i+1, 
-                  bs,
-                  ((byte[])setColumnValue[i]).length );
+               pstmt.setBinaryStream( i+1, bs, ((byte[])setColumnValue[i]).length );
             }
             else
                pstmt.setObject(i+1, setColumnValue[i]);
@@ -531,7 +544,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    
       pSql.append(")");
       
-      java.sql.PreparedStatement pstmt = null;
+      PreparedStatement pstmt = null;
    
       try
       {
@@ -598,18 +611,12 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
              *  length > 4k.  */
             if( values[k] instanceof byte[] )
             {
-               java.io.ByteArrayInputStream bs = new java.io.ByteArrayInputStream( 
-                        (byte[])values[k] );
+               ByteArrayInputStream bs = new ByteArrayInputStream( (byte[])values[k] );
    
-               pstmt.setBinaryStream(
-                  k+1, 
-                  bs,
-                  ((byte[])values[k]).length );
+               pstmt.setBinaryStream( k+1, bs, ((byte[])values[k]).length );
             }
             else
-               pstmt.setObject(
-                  k+1, 
-                  values[k] );         
+               pstmt.setObject( k+1, values[k] );         
          }
    
          pstmt.executeUpdate();
@@ -641,7 +648,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       else
       if( o instanceof Character )
       {
-      	String str = com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
+      	String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
       		CTILogger.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
@@ -651,27 +658,26 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          return str;
       }
       else
-      if( o instanceof java.util.GregorianCalendar )
+      if( o instanceof GregorianCalendar )
       {
-         java.sql.Timestamp ts = new java.sql.Timestamp(
-               ((java.util.GregorianCalendar)o).getTime().getTime());
+         Timestamp ts = new Timestamp( ((GregorianCalendar)o).getTime().getTime());
 
          return ts;
       }
-      else if( o instanceof java.util.Date )
+      else if( o instanceof Date )
       {
-         java.sql.Timestamp ts = new java.sql.Timestamp( ((java.util.Date)o).getTime() );
+         Timestamp ts = new Timestamp( ((Date)o).getTime() );
          return ts;
       }
       else
       if( o instanceof Long )
       {
-         return new java.math.BigDecimal( ((Long) o).longValue() );
+         return new BigDecimal( ((Long) o).longValue() );
       }
       else
       if( o instanceof String )
       {
-      	String str = com.cannontech.common.util.StringUtils.trimSpaces(o.toString());
+      	String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
       		CTILogger.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
@@ -748,7 +754,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       catch (Exception e) //catch everything and write the Exception to the log file
       {
          if( e instanceof java.io.IOException )
-            com.cannontech.clientutils.CTILogger.info("*** Cant find SQL Log file named : " + sqlFileName +
+            CTILogger.info("*** Cant find SQL Log file named : " + sqlFileName +
                   " : " + e.getMessage() );
          else
          {
@@ -766,8 +772,6 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    
    }
    
-   
-   
    private static String prepareObjectForSQLStatement( Object o ) 
    {
       if( o == null )
@@ -776,7 +780,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
       if( o instanceof Integer ||
           o instanceof Double ||
           o instanceof Long || 
-          o instanceof java.math.BigDecimal )
+          o instanceof BigDecimal )
          return o.toString();
       else
       if( o instanceof Character ||
@@ -789,16 +793,16 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
          return new String("NULL").trim();
       }
       else
-      if( o instanceof java.util.GregorianCalendar || o instanceof java.util.Date )
+      if( o instanceof GregorianCalendar || o instanceof Date )
       {
-         if( o instanceof java.util.GregorianCalendar )
-            o = ((java.util.GregorianCalendar)o).getTime();
+         if( o instanceof GregorianCalendar )
+            o = ((GregorianCalendar)o).getTime();
    
-          return "'" + new java.sql.Timestamp( ((java.util.Date)o).getTime() ).toString() + "'";
+          return "'" + new Timestamp( ((java.util.Date)o).getTime() ).toString() + "'";
       }
       else
       {
-         com.cannontech.clientutils.CTILogger.info("prepareObjectForSQLStatement - warning unhandled type");
+         CTILogger.info("prepareObjectForSQLStatement - warning unhandled type");
          return o.toString();
       }
       
