@@ -8,9 +8,12 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
@@ -67,13 +70,24 @@ public class DailyTimerTask extends StarsTimerTask {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
-			try {
-				SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands( company.getLiteID(), false );
-				for (int j = 0; j < commands.length; j++)
-					InventoryManagerUtil.sendSwitchCommand( commands[j] );
-			}
-			catch (WebClientException e) {
-				CTILogger.debug( e.getMessage() );
+			SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands( company.getLiteID(), false );
+			if (commands != null && commands.length > 0) {
+				int numCmdSent = 0;
+				for (int j = 0; j < commands.length; j++) {
+					try {
+						InventoryManagerUtil.sendSwitchCommand( commands[j] );
+						numCmdSent++;
+					}
+					catch (WebClientException e) {
+						CTILogger.debug( e.getMessage() );
+					}
+				}
+				
+				String msg = numCmdSent + " of " + commands.length + " switch commands sent successfully";
+				ActivityLogger.logEvent(-1, -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
+				
+				Hashtable batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+				batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
 			}
 			
 			// Clear all the *active* account information

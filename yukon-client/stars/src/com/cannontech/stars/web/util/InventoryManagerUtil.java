@@ -8,16 +8,21 @@ package com.cannontech.stars.web.util;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
@@ -97,6 +102,8 @@ public class InventoryManagerUtil {
 		PAOGroups.STRING_MCT_213[0],
 		PAOGroups.STRING_MCT_210[0],
 	};
+	
+	private static Hashtable batchCfgSubmission = null;
 	
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
@@ -496,5 +503,41 @@ public class InventoryManagerUtil {
 		else {
 			throw new WebClientException("Unrecognized search type");
 		}
+	}
+	
+	public synchronized static Hashtable getBatchConfigSubmission() {
+		if (batchCfgSubmission == null) {
+			batchCfgSubmission = new Hashtable();
+			
+			String sql = "SELECT TimeStamp, EnergyCompanyID, Description FROM ActivityLog " +
+				"WHERE TimeStamp > ? AND Action = '" + ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION + "'";
+			java.sql.Connection conn = null;
+			
+			try {
+				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+				
+				java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+				stmt.setDate( 1, new java.sql.Date(ServletUtil.getToday().getTime() - 600 * 1000) );	// set the time to be a bit earlier than midnight today
+				java.sql.ResultSet rset = stmt.executeQuery();
+				
+				while (rset.next()) {
+					long timeStamp = rset.getTimestamp(1).getTime();
+					int energyCompanyID = rset.getInt(2);
+					String description = rset.getString(3);
+					batchCfgSubmission.put( new Integer(energyCompanyID), new Object[]{new Date(timeStamp), description} );
+				}
+			}
+			catch (java.sql.SQLException e) {
+				CTILogger.error( e.getMessage(), e );
+			}
+			finally {
+				try {
+					if (conn != null) conn.close();
+				}
+				catch (java.sql.SQLException e) {}
+			}
+		}
+		
+		return batchCfgSubmission;
 	}
 }

@@ -409,7 +409,9 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		
 		String action = null;
 		if (updateHwConfig.getSaveConfigOnly())
-			action = ActivityLogActions.HARDWARE_CONFIGURATION_ACTION_SAVE_ONLY;
+			action = ActivityLogActions.HARDWARE_SAVE_CONFIG_ONLY_ACTION;
+		else if (updateHwConfig.getSaveToBatch())
+			action = ActivityLogActions.HARDWARE_SAVE_TO_BATCH_ACTION;
 		else if (disabled)
 			action = ActivityLogActions.HARDWARE_DISABLE_ACTION;
 		else

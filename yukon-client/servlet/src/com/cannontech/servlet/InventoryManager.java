@@ -3,6 +3,8 @@ package com.cannontech.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
@@ -17,6 +20,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -1094,6 +1098,8 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
+			Hashtable batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+			
 			if (req.getParameter("All") != null) {
 				int memberID = Integer.parseInt(req.getParameter("All"));
 				
@@ -1103,16 +1109,41 @@ public class InventoryManager extends HttpServlet {
 					if (memberID >= 0 && company.getLiteID() != memberID) continue;
 					
 					SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands( company.getLiteID(), false );
-					for (int j = 0; j < commands.length; j++)
-						InventoryManagerUtil.sendSwitchCommand( commands[j] );
+					if (commands != null && commands.length > 0) {
+						for (int j = 0; j < commands.length; j++)
+							InventoryManagerUtil.sendSwitchCommand( commands[j] );
+						
+						String msg = commands.length + " switch commands sent successfully";
+						ActivityLogger.logEvent(user.getUserID(), -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
+						batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
+					}
 				}
 			}
 			else {
 				String[] values = req.getParameterValues( "InvID" );
+				Hashtable numCmdSentMap = new Hashtable();
+				
 				for (int i = 0; i < values.length; i++) {
 					int invID = Integer.parseInt( values[i] );
 					SwitchCommandQueue.SwitchCommand cmd = SwitchCommandQueue.getInstance().getCommand( invID, false );
 					InventoryManagerUtil.sendSwitchCommand( cmd );
+					
+					Integer energyCompanyID = new Integer(cmd.getEnergyCompanyID());
+					Integer numCmdSent = (Integer) numCmdSentMap.get( energyCompanyID );
+					if (numCmdSent == null)
+						numCmdSent = new Integer(1);
+					else
+						numCmdSent = new Integer(numCmdSent.intValue() + 1);
+					numCmdSentMap.put( energyCompanyID, numCmdSent );
+				}
+				
+				Iterator it = numCmdSentMap.keySet().iterator();
+				while (it.hasNext()) {
+					Integer energyCompanyID = (Integer) it.next();
+					Integer numCmdSent = (Integer) numCmdSentMap.get( energyCompanyID );
+					String msg = numCmdSent + " switch commands sent successfully";
+					ActivityLogger.logEvent(user.getUserID(), -1, energyCompanyID.intValue(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
+					batchConfig.put( energyCompanyID, new Object[]{new Date(), msg} );
 				}
 			}
 			

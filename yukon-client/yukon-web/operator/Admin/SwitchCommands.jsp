@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.stars.util.SwitchCommandQueue" %>
 <%
 	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
+	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
 	
 	int memberID = -1;
 	LiteStarsEnergyCompany member = null;
@@ -105,7 +106,6 @@ function validate(form) {
                     <select name="Member" onchange="changeMember(this.form)">
                       <option value="-1">All</option>
                       <%
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		String selected = (member != null && company.equals(member))? "selected" : "";
@@ -133,7 +133,6 @@ function validate(form) {
 <% } %>
                 </tr>
 <%
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		if (member != null && !company.equals(member)) continue;
@@ -189,6 +188,44 @@ function validate(form) {
                 </tr>
               </table>
               </form>
+            <div align="center"><span class="TitleHeader">Last Batch Submission</span><br>
+<%
+	Hashtable batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+	if (showEnergyCompany) {
+%>
+              <table border="0" cellspacing="0" cellpadding="3" class="MainText">
+                <%
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			Object[] lastSubmission = (Object[]) batchConfig.get(company.getEnergyCompanyID());
+			if (lastSubmission == null) continue;
+%>
+                <tr>
+                  <td width="150" align="right"><%= company.getName() %>:</td>
+                  <td width="100" align="center"><%= ServletUtils.formatDate((Date)lastSubmission[0], dateTimeFormat) %></td>
+                  <td width="250"><%= (String)lastSubmission[1] %></td>
+                </tr>
+<%
+		}
+%>
+              </table>
+<%
+	}
+	else {
+		Object[] lastSubmission = (Object[]) batchConfig.get(liteEC.getEnergyCompanyID());
+		if (lastSubmission != null) {
+%>
+              <table border="0" cellspacing="0" cellpadding="3" class="MainText">
+                <tr> 
+                  <td width="100"><%= ServletUtils.formatDate((Date)lastSubmission[0], dateTimeFormat) %></td>
+                  <td width="250"><%= (String)lastSubmission[1] %></td>
+                </tr>
+              </table>
+<%
+		}
+	}
+%>
+            </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
