@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/29/2004 4:11:32 PM                         */
+/* Created on:     9/30/2004 10:25:06 AM                        */
 /*==============================================================*/
 
 
@@ -5853,6 +5853,185 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 alter table YukonWebConfiguration
    add constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
+go
+
+
+/*==============================================================*/
+/* View: DISPLAY2WAYDATA_VIEW                                   */
+/*==============================================================*/
+go
+create view DISPLAY2WAYDATA_VIEW (POINTID, POINTNAME , POINTTYPE , POINTSTATE , DEVICENAME, DEVICETYPE, DEVICECURRENTSTATE, DEVICEID, POINTVALUE, POINTQUALITY, POINTTIMESTAMP, UofM, TAGS) as
+select POINTID, POINTNAME, POINTTYPE, SERVICEFLAG, YukonPAObject.PAOName, YukonPAObject.Type, YukonPAObject.Description, YukonPAObject.PAObjectID, '**DYNAMIC**', '**DYNAMIC**', '**DYNAMIC**', (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid), '**DYNAMIC**'
+from YukonPAObject, POINT
+where YukonPAObject.PAObjectID = POINT.PAObjectID
+go
+
+
+/*==============================================================*/
+/* View: ExpressComAddress_View                                 */
+/*==============================================================*/
+go
+create view ExpressComAddress_View  as
+select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
+g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
+x.ZipCodeAddress, x.UDAddress, p.Address as programaddress, x.SplinterAddress, x.AddressUsage, x.RelayUsage
+from LMGroupExpressCom x, LMGroupExpressComAddress s, 
+LMGroupExpressComAddress g, LMGroupExpressComAddress b, LMGroupExpressComAddress f,
+LMGroupExpressComAddress p
+where ( x.ServiceProviderID = s.AddressID and ( s.AddressType = 'SERVICE' or s.AddressID = 0 ) )
+and ( x.FeederID = f.AddressID and ( f.AddressType = 'FEEDER' or f.AddressID = 0 ) )
+and ( x.GeoID = g.AddressID and ( g.AddressType = 'GEO' or g.AddressID = 0 ) )
+and ( x.ProgramID = p.AddressID and ( p.AddressType = 'PROGRAM' or p.AddressID = 0 ) )
+and ( x.SubstationID = b.AddressID and ( b.AddressType = 'SUBSTATION' or b.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: FeederAddress_View                                     */
+/*==============================================================*/
+go
+create view FeederAddress_View  as
+select x.LMGroupID, a.Address as FeederAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.FeederID = a.AddressID and ( a.AddressType = 'FEEDER' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: FullEventLog_View                                      */
+/*==============================================================*/
+go
+create view FullEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
+select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
+from YukonPAObject y, POINT p, SYSTEMLOG s
+where s.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID
+go
+
+
+/*==============================================================*/
+/* View: FullPointHistory_View                                  */
+/*==============================================================*/
+go
+create view FullPointHistory_View (PointID, DeviceName, PointName, DataValue, DataTimeStamp, DataQuality) as
+select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
+from YukonPAObject y, POINT p, RAWPOINTHISTORY r
+where r.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID
+go
+
+
+/*==============================================================*/
+/* View: GeoAddress_View                                        */
+/*==============================================================*/
+go
+create view GeoAddress_View  as
+select x.LMGroupID, a.Address as GeoAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.GeoID = a.AddressID and ( a.AddressType = 'GEO' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: LMCurtailCustomerActivity_View                         */
+/*==============================================================*/
+go
+create view LMCurtailCustomerActivity_View  as
+select cust.CustomerID, prog.CurtailmentStartTime, prog.CurtailReferenceID, prog.CurtailmentStopTime, cust.AcknowledgeStatus, cust.AckDateTime, cust.NameOfAckPerson, cust.AckLateFlag
+from LMCurtailProgramActivity prog, LMCurtailCustomerActivity cust
+where prog.CurtailReferenceID = cust.CurtailReferenceID
+go
+
+
+/*==============================================================*/
+/* View: LMGroupMacroExpander_View                              */
+/*==============================================================*/
+go
+create view LMGroupMacroExpander_View  as
+select distinct PAObjectID, Category, PAOClass, PAOName, Type, Description, DisableFlag, 
+ALARMINHIBIT, CONTROLINHIBIT, KWCapacity, dg.DeviceID, 
+LMGroupDeviceID, GroupOrder, OwnerID, ChildID, ChildOrder
+from YukonPAObject y, DEVICE d, LMGroup g,
+LMProgramDirectGroup dg, GenericMacro m
+where y.PAObjectID = d.DEVICEID 
+and d.DEVICEID = g.DeviceID
+and dg.lmgroupdeviceid *= m.ownerid
+go
+
+
+/*==============================================================*/
+/* View: LMProgram_View                                         */
+/*==============================================================*/
+go
+create view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
+select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
+from LMPROGRAM t, LMProgramConstraints u
+where u.ConstraintID = t.ConstraintID
+go
+
+
+/*==============================================================*/
+/* View: Peakpointhistory_View                                  */
+/*==============================================================*/
+go
+create view Peakpointhistory_View  as
+select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
+from RAWPOINTHISTORY rph1
+where value in ( select max ( value ) from rawpointhistory rph2 where rph1.pointid = rph2.pointid )
+group by pointid, value
+go
+
+
+/*==============================================================*/
+/* View: PointEventLog_View                                     */
+/*==============================================================*/
+go
+create view PointEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, PointName, EventDescription, AdditionalInfo, EventUserName) as
+select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
+from POINT p, SYSTEMLOG s
+where s.POINTID = p.POINTID
+go
+
+
+/*==============================================================*/
+/* View: PointHistory_View                                      */
+/*==============================================================*/
+go
+create view PointHistory_View (PointID, PointName, DataValue, DataTimeStamp, DataQuality) as
+select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
+from POINT p, RAWPOINTHISTORY r
+where r.POINTID = p.POINTID
+go
+
+
+/*==============================================================*/
+/* View: ProgramAddress_View                                    */
+/*==============================================================*/
+go
+create view ProgramAddress_View  as
+select x.LMGroupID, a.Address as ProgramAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.ProgramID = a.AddressID and ( a.AddressType = 'PROGRAM' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: ServiceAddress_View                                    */
+/*==============================================================*/
+go
+create view ServiceAddress_View  as
+select x.LMGroupID, a.Address as ServiceAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.ServiceProviderID = a.AddressID and ( a.AddressType = 'SERVICE' or a.AddressID = 0 ) )
+go
+
+
+/*==============================================================*/
+/* View: SubstationAddress_View                                 */
+/*==============================================================*/
+go
+create view SubstationAddress_View  as
+select x.LMGroupID, a.Address as SubstationAddress
+from LMGroupExpressCom x, LMGroupExpressComAddress a
+where ( x.SubstationID = a.AddressID and ( a.AddressType = 'SUBSTATION' or a.AddressID = 0 ) )
 go
 
 
