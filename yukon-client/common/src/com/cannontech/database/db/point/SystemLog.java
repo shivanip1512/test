@@ -15,6 +15,10 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent
 	private String description = null;
 	private String userName = null;
 
+
+	public static final int TYPE_ALARM = 8;
+
+
 	public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
 	public static final String COLUMNS[] = { "PointID", 
 		"DateTime", "SOE_Tag", "Type",
