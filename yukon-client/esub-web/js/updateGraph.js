@@ -16,7 +16,7 @@ function updateGraphChange(evt) {
     var view = svgElement.getAttribute('view');
     var period = svgElement.getAttribute('period');
     var start = svgElement.getAttribute('start'); 
-    var url = 	"../jsp/GraphSettings.jsp" +
+    var url = 	"/jsp/GraphSettings.jsp" +
     		  	"?view=" + view +
     		  	"&period=" + period +
     		  	"&start=" + start;
