@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:55 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/04/15 22:10:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,6 +132,7 @@ CtiDeviceLCU::~CtiDeviceLCU()
     if(_lastControlMessage)
     {
         delete _lastControlMessage;
+        _lastControlMessage = 0;
     }
 }
 
@@ -1473,6 +1474,7 @@ CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
     if(_lastControlMessage != NULL)
     {
         delete _lastControlMessage;
+        _lastControlMessage = 0;
     }
 
     _lastControlMessage = CTIDBG_new OUTMESS( *pOutMessage );
