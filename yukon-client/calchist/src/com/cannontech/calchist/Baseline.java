@@ -15,7 +15,7 @@ import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class Baseline
+public class Baseline implements Cloneable
 {
 	//contains com.cannontech.database.db.point.calculation.CalcComponent values.
 	public Vector returnPointDataMsgVector = new Vector();
@@ -25,8 +25,8 @@ public class Baseline
 	private Integer baselineCalcTime = null;//time to start calcs in seconds from midnight (14400 = 4am)
 	private Integer daysPreviousToCollect = null;//time to start calcs in seconds from midnight (14400 = 4am)
 
-//	private HoursAndValues baselineDataArray = null;
-	private HoursAndValues averageDataArray = null;
+	private HoursAndValues baselineHoursAndValues = null;
+	private HoursAndValues percentHoursAndValues = null;
 
 	private int[] skipDaysArray = {java.util.Calendar.SATURDAY, java.util.Calendar.SUNDAY};
 	
@@ -128,28 +128,26 @@ public class Baseline
 	 * @param calcComponent com.cannontech.database.db.point.calculation.CalcComponent
 	 * @param baselineCalDatesVector java.util.Vector
 	 */
-	public Vector getBaselinePointDataMsgVector(Integer pointID, HoursAndValues dataArray)
+	public Vector getBaselinePointDataMsgVector(Integer pointID, HoursAndValues data)
 	{
 		Vector pointDataVector= new Vector();
 		
-		if( dataArray != null)
+		if( data != null)
 		{
 			PointData pointDataMsg = null;
-			for (int i = 0; i < dataArray.length(); i++)
+			for (int i = 0; i < data.length(); i++)
 			{
 				// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
 				// Begining Timestamp 00:00:01
 				pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
 				pointDataMsg.setId(pointID.intValue());
 		
-				pointDataMsg.setValue( dataArray.getValues()[i].doubleValue());
+				pointDataMsg.setValue( data.getValues()[i].doubleValue());
 		
 				GregorianCalendar cal = new GregorianCalendar();
-//				cal.setTime(getNextBaselineCalcTime().getTime());
-//				cal.setTime(CalcHistorical.getCalcHistoricalLastUpdateTimeStamp(pointID.intValue()).getTime());
 				cal.setTime(lastUpdateTimestamp.getTime());
 		
-				cal.set(GregorianCalendar.HOUR_OF_DAY, dataArray.getHours()[i].intValue() + 1);
+				cal.set(GregorianCalendar.HOUR_OF_DAY, data.getHours()[i].intValue() + 1);
 				cal.set(GregorianCalendar.MINUTE, 0);
 				cal.set(GregorianCalendar.SECOND, 0);
 				
@@ -205,7 +203,7 @@ public class Baseline
 	 */
 	public Vector main(Integer calcBasePointID)
 	{
-		averageDataArray = null;	//reset for each point.
+		percentHoursAndValues = null;	//reset for each point.
 			
 		CalcComponent calcComponent = null;
 		CalcComponent percentCalcComponent = null;
@@ -243,9 +241,9 @@ public class Baseline
 						break;		
 				}
 
-				HoursAndValues dataArray = retrieveHoursAndValues(calcComponent, percentCalcComponent);
-				if( dataArray != null)
-					returnPointDataMsgVector.addAll(getBaselinePointDataMsgVector( calcBasePointID, dataArray));
+				baselineHoursAndValues  = retrieveHoursAndValues(calcComponent, percentCalcComponent);
+				if( baselineHoursAndValues != null)
+					returnPointDataMsgVector.addAll(getBaselinePointDataMsgVector( calcBasePointID, baselineHoursAndValues ));
 			}				
 		}
 		return returnPointDataMsgVector;
@@ -257,7 +255,7 @@ public class Baseline
 	private HoursAndValues retrieveHoursAndValues(CalcComponent calcComponent, CalcComponent percentCalcComponent)
 	{
 		CTILogger.info("PROCESSING POINTID " + calcComponent.getPointID());
-		HoursAndValues dataArray = null;
+		HoursAndValues returnData = null;
 		//contains java.util.Date values
 		Vector validTimestampsVector = new Vector();
 		
@@ -320,18 +318,28 @@ public class Baseline
 				else if(baselineProps.getPercentWindow().intValue() > 0 
 						&& percentCalcComponent != null)
 				{	
-					//0 is default for of % for x days comparison.  Defalut x to 30.
-					if( averageDataArray == null)
+					if( percentHoursAndValues == null)
 					{
 						Vector tempTimestamp = new Vector(1);
 						tempTimestamp.add(lastUpdateTimestamp.getTime());
-						//Attempt to first load data from the database.
-						averageDataArray = retrieveData(percentCalcComponent.getComponentPointID(), tempTimestamp);
-						if( averageDataArray == null)
-							main(percentCalcComponent.getComponentPointID());											
 
-						// Get the data values for the percent componenet.
-						// if data values are empty call retrieveHoursAndValues on 
+						//Attempt to first load data from the database.
+						percentHoursAndValues = retrieveData(percentCalcComponent.getComponentPointID(), tempTimestamp);
+						if( percentHoursAndValues == null)
+						{
+							try
+							{
+								Baseline baselineClass = (Baseline)this.clone();
+								returnPointDataMsgVector.addAll(baselineClass.main(percentCalcComponent.getComponentPointID()));
+								percentHoursAndValues = baselineClass.baselineHoursAndValues;
+							}
+							catch (CloneNotSupportedException e)
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}											
+
 //						load30Average(calcComponent.getComponentPointID());
 //						print30DayAverageValues(calcComponent.getComponentPointID());
 					}
@@ -356,9 +364,9 @@ public class Baseline
 			for (int i = 0; i < validTimestampsVector.size(); i++)
 				System.out.println((java.util.Date)validTimestampsVector.get(i));
 			
-			dataArray = retrieveData(calcComponent.getComponentPointID(), validTimestampsVector);
+			returnData = retrieveData(calcComponent.getComponentPointID(), validTimestampsVector);
 		}
-		return dataArray;
+		return returnData;
 	}
 	
 	
@@ -410,15 +418,15 @@ public class Baseline
 	
 	private boolean isLessThanAverage(GregorianCalendar cal, HoursAndValues data)
 	{
-		if( data != null && averageDataArray != null)
+		if( data != null && percentHoursAndValues != null)
 		{
 			for (int i = 0; i < data.length(); i ++)
 			{
-				if( ((Integer)data.getHours()[i]).intValue() == ((Integer)averageDataArray.getHours()[i]).intValue())
+				if( ((Integer)data.getHours()[i]).intValue() == ((Integer)percentHoursAndValues.getHours()[i]).intValue())
 				{
-					if( ((Double)data.getValues()[i]).doubleValue() <  ((Double)averageDataArray.getValues()[i]).doubleValue() * .75d)
+					if( ((Double)data.getValues()[i]).doubleValue() <  ((Double)percentHoursAndValues.getValues()[i]).doubleValue() * .75d)
 					{
-						CTILogger.info("DATA IS < 75% for: " + cal.getTime() + " - " + data.getValues()[i] + " < " +averageDataArray.getValues()[i]);
+						CTILogger.info("DATA IS < 75% for: " + cal.getTime() + " - " + data.getValues()[i] + " < " + percentHoursAndValues.getValues()[i]);
 						return true;
 					}
 				}
@@ -479,7 +487,7 @@ public class Baseline
 	 */
 	public HoursAndValues retrieveData(Integer pointID, Vector validTimestampsVector)
 	{
-		HoursAndValues hoursAndValues = null;
+		HoursAndValues returnData = null;
 		long DAY = 86400000;
 		com.cannontech.message.dispatch.message.PointData pointDataMsg = null;
 	
@@ -538,8 +546,8 @@ public class Baseline
 					java.util.Collection keyVals = treeMap.values();
 
 					Object [] tempArray = new Double[keyVals.size()];
-					hoursAndValues = new HoursAndValues(keySet.size(), keyVals.size());
-					keySet.toArray(hoursAndValues.getHours());
+					returnData = new HoursAndValues(keySet.size(), keyVals.size());
+					keySet.toArray(returnData.getHours());
 					tempArray = keyVals.toArray();
 		
 					for (int i = 0; i < keyVals.size(); i++)
@@ -547,7 +555,7 @@ public class Baseline
 						Double[] v = (Double[])tempArray[i];
 						double counter = v[0].doubleValue();
 						double totalVal = v[1].doubleValue();
-						hoursAndValues.values[i] = new Double(totalVal/counter);
+						returnData.values[i] = new Double(totalVal/counter);
 					}
 				}
 			}
@@ -573,7 +581,7 @@ public class Baseline
 			}
 		}
 	
-		return hoursAndValues; //hours and values of the retreived data.
+		return returnData; //hours and values of the retreived data.
 	}
 	
 	private int getAdjustedHour(java.sql.Timestamp ts)
@@ -802,7 +810,6 @@ public class Baseline
 			baselineProps.setCalcDays(new Integer(5));
 			baselineProps.setExcludedWeekDays("YNNNNNY");
 			baselineProps.setHolidaysUsed(new Integer(0));
-			baselineProps.setBaselineName("Baseline");
 		}
 		return baselineProps;
 	}
