@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 18:21:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/25 19:10:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,8 @@ using namespace std;
 #include "dev_710.h"
 #include "dsm2.h"
 #include "prot_emetcon.h"
+#include "cti_asmc.h"
+#include "pt_base.h"
 
 #if 0
 #include <rw\rwtime.h>
@@ -74,27 +76,57 @@ INT CtiDeviceCCU710::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
+    int retVal = NORMAL;
 
     switch(InMessage->Sequence)
     {
         case (CtiProtocolEmetcon::Command_Loop):
         {
-            char temp[10];
+            unsigned char expectedAck;
             RWCString cmd(InMessage->Return.CommandStr);
+            CtiReturnMsg *retMsg = new CtiReturnMsg(getID(),
+                                                    cmd,
+                                                    RWCString(),
+                                                    InMessage->EventCode & 0x7fff,
+                                                    InMessage->Return.RouteID,
+                                                    InMessage->Return.MacroOffset,
+                                                    InMessage->Return.Attempt,
+                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.UserID);
 
             resetScanPending();
 
-            if( getDebugLevel() & 0x01 )
+            //  expect two ACK characters
+            expectedAck = Parity_C( 0x40 | (getAddress() & 0x03) );
+
+            if( InMessage->Buffer.InMessage[0] == expectedAck &&
+                InMessage->Buffer.InMessage[1] == expectedAck )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                if( getDebugLevel() & 0x01 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                if( retMsg != NULL )
+                {
+                    retMsg->setResultString("Loopback successful");
+                }
+            }
+            else
+            {
+                if( retMsg != NULL)
+                {
+                    retMsg->setResultString("Loopback failed");
+                    retVal = FRAMEERR;
+                    retMsg->setStatus(retVal);
+                }
             }
 
-            CtiReturnMsg   *pLoop = new CtiReturnMsg(getID(), cmd, RWCString("Loopback Successful"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
-
-            if(pLoop != NULL)
+            if( retMsg != NULL )
             {
-                retList.insert(pLoop);
+                retList.insert(retMsg);
+                retMsg = NULL;
             }
 
             break;
@@ -111,7 +143,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         }
     }
 
-    return(NORMAL);
+    return retVal;
 }
 
 
