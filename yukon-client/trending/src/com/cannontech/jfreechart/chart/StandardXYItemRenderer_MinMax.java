@@ -96,12 +96,13 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          ValueAxis domainAxis,
                          ValueAxis rangeAxis,
                          XYDataset data,
+                         int datasetIndex,
                          int series,
                          int item,
                          CrosshairInfo crosshairInfo)
 	{
 
-		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, data, series, item, crosshairInfo );
+		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, data, datasetIndex, series, item, crosshairInfo );
 		
 		// get the data point...
 		Number x1n = data.getXValue(series, item);

@@ -62,9 +62,9 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
      */
     public void drawItem(Graphics2D g2, Rectangle2D dataArea, ChartRenderingInfo info,
                           XYPlot plot, ValueAxis horizontalAxis, ValueAxis verticalAxis,
-                          XYDataset data, int series, int item,
+                          XYDataset data, int datasetIndex, int series, int item,
                           CrosshairInfo crosshairInfo) {
-		super.drawItem(g2, dataArea, info, plot, horizontalAxis, verticalAxis, data, series, item, crosshairInfo);
+		super.drawItem(g2, dataArea, info, plot, horizontalAxis, verticalAxis, data, datasetIndex, series, item, crosshairInfo);
 
         // get the data point...
         Number x1 = data.getXValue(series, item);
