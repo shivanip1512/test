@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/dllvg.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:28 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/08 23:18:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@
 
 IM_EX_CTIVANGOGH extern UINT gDispatchDebugLevel;
 IM_EX_CTIVANGOGH extern UINT gDispatchReloadRate;
+IM_EX_CTIVANGOGH extern INT gCommErrorDays;
 
 
 IM_EX_CTIVANGOGH void InitDispatchGlobals(void);

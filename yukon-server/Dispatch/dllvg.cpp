@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dllvg.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:23 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/08/08 23:18:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,8 @@ using namespace std;
 
 IM_EX_CTIVANGOGH UINT gDispatchDebugLevel = 0x00000000;
 IM_EX_CTIVANGOGH UINT gDispatchReloadRate = 3600;
+IM_EX_CTIVANGOGH INT gCommErrorDays = 7;
+
 
 
 
@@ -68,6 +70,12 @@ IM_EX_CTIVANGOGH void InitDispatchGlobals(void)
    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
    {
       gDispatchReloadRate = atoi (str.data());
+   }
+
+   strcpy(var, "DISPATCH_COMMERROR_DAYS");
+   if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+   {
+      gCommErrorDays = atoi (str.data());
    }
 
    strcpy(var, "DISPATCH_DEBUGLEVEL");
