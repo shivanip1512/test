@@ -1,12 +1,11 @@
 <html>
-<%@ include file="../oper_header.jsp" %>
-<%@ include file="../oper_trendingheader.jsp" %>
+<%@ include file="metering_header.jsp" %>
+<%@ include file="../../trending_functions.jsp" %>
 
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
-
 <title>Metering</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../Calendar1-82.js"></SCRIPT>
 
 <!-- JavaScript needed for jump menu--->
 <SCRIPT LANGUAGE = "JavaScript">
@@ -16,18 +15,6 @@ function MakeArray()
 	for (var i = 0; i < this.length; i++)
 		this[i+1] = MakeArray.arguments[i];
 }
-var siteopt = new MakeArray("",
-                            "CSV");
-                            //"PDF");
-							//"XLS");
-var userFriendlyName = new MakeArray("Select Format",
-                            "Comma Separated(.csv)");
-                            //"Adobe Acrobat(.pdf)");
-							//"Microsoft Excel(.xls)");
-//var url = new MakeArray("",
-//						"/servlet/Download?",
-//						"/servlet/Download?",
-//                        "/servlet/Download?");
 function jumpPage(form)
 {
         i = form.ext.selectedIndex;
@@ -39,7 +26,6 @@ function jumpPage(form)
         //window.location.href = url[i+1];
 }
 </SCRIPT>
-
 
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" onload = "init()">
@@ -275,7 +261,7 @@ function jumpPage(form)
 				</div>
 				<div id="trendMenu" class = "bgmenu" style = "width:75px"> 
 					<div id = "LINEID" name = "view"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "jumpPage(document.exportForm)">&nbsp;&nbsp;&nbsp;Export</div>
-					<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='/operator/oper_print_trend.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+					<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='../../trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
 				</div>
 				
 				<script language = "JavaScript">
