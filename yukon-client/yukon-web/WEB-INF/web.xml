@@ -5,34 +5,105 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
- <display-name>STARS Web Demo</display-name>
- <description>Yukon STARS Web Services</description>
+    <display-name>STARS Web Demo</display-name>
+    <description>Yukon STARS Web Services</description>
 
-<servlet><servlet-name>LoginController</servlet-name><display-name>LoginController</display-name><description>Handles user authentication.</description><servlet-class>com.cannontech.servlet.LoginController</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>3</load-on-startup></servlet>
-<servlet><servlet-name>MACSConnectionServlet</servlet-name><display-name>MACSConnectionServlet</display-name><description>Maintains a connection to MACS</description><servlet-class>com.cannontech.servlet.MACSConnectionServlet</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>1</load-on-startup></servlet>
-<servlet><servlet-name>GraphGenerator</servlet-name><display-name>GraphGenerator</display-name><description>Dynamically generates graphs in gif format</description><servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>4</load-on-startup></servlet>
-<servlet><servlet-name>PeakDataGenerator</servlet-name><display-name>PeakDataGenerator</display-name><description>Generates peak data html</description><servlet-class>com.cannontech.servlet.PeakDataGenerator</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>5</load-on-startup></servlet>
-<servlet><servlet-name>PILConnectionServlet</servlet-name><display-name>PILConnectionServlet</display-name><description>Maintains a connection to PIL(PORTER)</description><servlet-class>com.cannontech.servlet.PILConnectionServlet</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>2</load-on-startup></servlet>
-<servlet><servlet-name>TabularDataGenerator</servlet-name><display-name>TabularDataGenerator</display-name><description>Generates tabular data html</description><servlet-class>com.cannontech.servlet.TabularDataGenerator</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>6</load-on-startup></servlet>
-<servlet><servlet-name>ScheduleController</servlet-name><display-name>ScheduleController</display-name><description>Handles start/stop requests to MACS</description><servlet-class>com.cannontech.servlet.ScheduleController</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>7</load-on-startup></servlet>
-<servlet><servlet-name>SwitchCommand</servlet-name><display-name>SwitchCommand</display-name><description>Handles commands by serial number.</description><servlet-class>com.cannontech.servlet.YukonSwitchCommand</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>8</load-on-startup></servlet>
-<servlet><servlet-name>CurtailmentServlet</servlet-name><display-name>CurtailmentServlet</display-name><description>Handles acknowledging of mandatory curtailments.</description><servlet-class>com.cannontech.servlet.CurtailmentServlet</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>9</load-on-startup></servlet>
-<servlet><servlet-name>LCConnectionServlet</servlet-name><display-name>LCConnectionServlet</display-name><description>Maintains a connection with loadcontrol server.</description><servlet-class>com.cannontech.servlet.LCConnectionServlet</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>11</load-on-startup></servlet>
-<servlet><servlet-name>Download</servlet-name><display-name>Download</display-name><description>Handles downloading of tabular data in various formats.</description><servlet-class>com.cannontech.servlet.Download</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>12</load-on-startup></servlet>
-<servlet><servlet-name>SOAPServer</servlet-name><display-name>SOAPServer</display-name><description>Parse the request SOAP message and send back SOAP response.</description><servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>13</load-on-startup></servlet>
-<servlet><servlet-name>SOAPClient</servlet-name><display-name>SOAPClient</display-name><description>Send SOAP request to server and parse respones from server.</description><servlet-class>com.cannontech.stars.web.servlet.SOAPClient</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>14</load-on-startup></servlet>
-<servlet><servlet-name>UpdateContacts</servlet-name><display-name>UpdateContacts</display-name><description>UpdateContacts</description><servlet-class>com.cannontech.stars.web.servlet.UpdateContacts</servlet-class><init-param><param-name>initParam1</param-name><param-value>value1</param-value></init-param><init-param><param-name>initParam2</param-name><param-value>value2</param-value></init-param><load-on-startup>15</load-on-startup></servlet>
+    <servlet>
+        <servlet-name>LoginController</servlet-name>
+        <display-name>LoginController</display-name>
+        <description>Handles user authentication.</description>
+        <servlet-class>com.cannontech.servlet.LoginController</servlet-class>
+    </servlet>
 
-<session-config>
-  <session-timeout>30</session-timeout>
- </session-config>
-<mime-mapping>
-  <extension>txt</extension>
-  <mime-type>text/plain</mime-type>
- </mime-mapping>
- <mime-mapping>
-  <extension>html</extension>
-  <mime-type>text/html</mime-type>
- </mime-mapping>
-<welcome-file-list><welcome-file>login.jsp</welcome-file></welcome-file-list>
+    <servlet>
+        <servlet-name>MACSConnectionServlet</servlet-name>
+        <display-name>MACSConnectionServlet</display-name>
+        <description>Maintains a connection to MACS</description>
+        <servlet-class>com.cannontech.servlet.MACSConnectionServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GraphGenerator</servlet-name>
+        <display-name>GraphGenerator</display-name>
+        <description>Dynamically generates graphs in gif format</description>
+        <servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>PILConnectionServlet</servlet-name>
+        <display-name>PILConnectionServlet</display-name>
+        <description>Maintains a connection to PIL(PORTER)</description>
+        <servlet-class>com.cannontech.servlet.PILConnectionServlet</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>ScheduleController</servlet-name>
+        <display-name>ScheduleController</display-name>
+        <description>Handles start/stop requests to MACS</description>
+        <servlet-class>com.cannontech.servlet.ScheduleController</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SwitchCommand</servlet-name>
+        <display-name>SwitchCommand</display-name>
+        <description>Handles commands by serial number.</description>
+        <servlet-class>com.cannontech.servlet.YukonSwitchCommand</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>CurtailmentServlet</servlet-name>
+        <display-name>CurtailmentServlet</display-name>
+        <description>Handles acknowledging of mandatory curtailments.</description>
+        <servlet-class>com.cannontech.servlet.CurtailmentServlet</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>LCConnectionServlet</servlet-name>
+        <display-name>LCConnectionServlet</display-name>
+        <description>Maintains a connection with loadcontrol server.</description>
+        <servlet-class>com.cannontech.servlet.LCConnectionServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Download</servlet-name>
+        <display-name>Download</display-name>
+        <description>Handles downloading of tabular data in various formats.</description>
+        <servlet-class>com.cannontech.servlet.Download</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SOAPServer</servlet-name>
+        <display-name>SOAPServer</display-name>
+        <description>Parse the request SOAP message and send back SOAP response.</description>
+        <servlet-class>com.cannontech.stars.web.servlet.SOAPServer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SOAPClient</servlet-name>
+        <display-name>SOAPClient</display-name>
+        <description>Send SOAP request to server and parse respones from server.</description>
+        <servlet-class>com.cannontech.stars.web.servlet.SOAPClient</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>UpdateContacts</servlet-name>
+        <display-name>UpdateContacts</display-name>
+        <description>UpdateContacts</description>
+        <servlet-class>com.cannontech.stars.web.servlet.UpdateContacts</servlet-class>
+    </servlet>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    <mime-mapping>
+        <extension>txt</extension>
+        <mime-type>text/plain</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>html</extension>
+        <mime-type>text/html</mime-type>
+    </mime-mapping>
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
 </web-app>
