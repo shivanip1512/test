@@ -5,7 +5,7 @@
 
 #define MAJORREVISION   2
 #define MINORREVISION   23
-#define BUILDNUMBER     0
+#define BUILDNUMBER     2
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/id_ctimsg.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/06/07 13:37:35 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/06/07 22:39:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 
 #define MAJORREVISION   2
 #define MINORREVISION   23
-#define BUILDNUMBER     0
+#define BUILDNUMBER     1
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
