@@ -457,20 +457,21 @@ public class StarsAdmin extends HttpServlet {
 			}
 			
 			// Update energy company role DEFAULT_TIME_ZONE if necessary
-			LiteYukonGroup liteGroup = energyCompany.getOperatorDefaultGroup();
-			String value = AuthFuncs.getRolePropValueGroup(liteGroup, EnergyCompanyRole.DEFAULT_TIME_ZONE, CtiUtilities.STRING_NONE);
+			LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
+			String value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.DEFAULT_TIME_ZONE, CtiUtilities.STRING_NONE);
+			boolean adminGroupUpdated = false;
 	        
 			String timeZone = req.getParameter("TimeZone");
 			if (!value.equalsIgnoreCase( timeZone )) {
 				String sql = "UPDATE YukonGroupRole SET Value = '" + timeZone + "'" +
-						" WHERE GroupID = " + liteGroup.getGroupID() +
+						" WHERE GroupID = " + adminGroup.getGroupID() +
 						" AND RoleID = " + EnergyCompanyRole.ROLEID +
 						" AND RolePropertyID = " + EnergyCompanyRole.DEFAULT_TIME_ZONE;
 				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 						sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 	        	
-				ServerUtils.handleDBChange( liteGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+	        	adminGroupUpdated = true;
 				ec.setTimeZone( timeZone );
 			}
         	
@@ -522,8 +523,83 @@ public class StarsAdmin extends HttpServlet {
 				}
 				
 				energyCompany.setDefaultRouteID( routeID );
-				ec.setRouteID( routeID );
 			}
+			
+			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
+			String operGroupIDs = "";
+			for (int i = 0; i < operGroupNames.length; i++) {
+				String groupName = operGroupNames[i].trim();
+				if (groupName.equals("")) continue;
+				
+				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				if (group == null)
+					throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
+				
+				if (i == 0)
+					operGroupIDs += String.valueOf( group.getGroupID() );
+				else
+					operGroupIDs += "," + String.valueOf( group.getGroupID() );
+			}
+			
+			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
+			String custGroupIDs = "";
+			for (int i = 0; i < custGroupNames.length; i++) {
+				String groupName = custGroupNames[i].trim();
+				if (groupName.equals("")) continue;
+				
+				LiteYukonGroup group = AuthFuncs.getGroup( groupName );
+				if (group == null)
+					throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
+				
+				if (i == 0)
+					custGroupIDs += String.valueOf( group.getGroupID() );
+				else
+					custGroupIDs += "," + String.valueOf( group.getGroupID() );
+			}
+			
+			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.OPERATOR_GROUP_IDS, CtiUtilities.STRING_NONE);
+			if (!value.equalsIgnoreCase( operGroupIDs )) {
+				String sql = "UPDATE YukonGroupRole SET Value = '" + operGroupIDs + "'" +
+						" WHERE GroupID = " + adminGroup.getGroupID() +
+						" AND RoleID = " + EnergyCompanyRole.ROLEID +
+						" AND RolePropertyID = " + EnergyCompanyRole.OPERATOR_GROUP_IDS;
+				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+						sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+	        	
+				adminGroupUpdated = true;
+			}
+			
+			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.CUSTOMER_GROUP_IDS, CtiUtilities.STRING_NONE);
+			if (!value.equalsIgnoreCase( custGroupIDs )) {
+				String sql = "UPDATE YukonGroupRole SET Value = '" + custGroupIDs + "'" +
+						" WHERE GroupID = " + adminGroup.getGroupID() +
+						" AND RoleID = " + EnergyCompanyRole.ROLEID +
+						" AND RolePropertyID = " + EnergyCompanyRole.CUSTOMER_GROUP_IDS;
+				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+						sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+	        	
+				adminGroupUpdated = true;
+			}
+			
+			String optOutNotif = req.getParameter( "OptOutNotif" );
+			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, CtiUtilities.STRING_NONE);
+			
+			if (!value.equalsIgnoreCase( optOutNotif )) {
+				String sql = "UPDATE YukonGroupRole SET Value = '" + optOutNotif + "'" +
+						" WHERE GroupID = " + adminGroup.getGroupID() +
+						" AND RoleID = " + EnergyCompanyRole.ROLEID +
+						" AND RolePropertyID = " + EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS;
+				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+						sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+	        	
+				adminGroupUpdated = true;
+			}
+			
+			if (adminGroupUpdated)
+				ServerUtils.handleDBChange( adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
         	
 			session.removeAttribute( ENERGY_COMPANY_TEMP );
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");

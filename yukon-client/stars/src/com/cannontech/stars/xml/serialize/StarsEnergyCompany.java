@@ -32,13 +32,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _routeID;
-
-    /**
-     * keeps track of state for field: _routeID
-    **/
-    private boolean _has_routeID;
-
     private java.lang.String _companyName;
 
     private java.lang.String _mainPhoneNumber;
@@ -64,13 +57,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-    **/
-    public void deleteRouteID()
-    {
-        this._has_routeID= false;
-    } //-- void deleteRouteID() 
 
     /**
      * Returns the value of field 'companyAddress'.
@@ -123,16 +109,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
     } //-- java.lang.String getMainPhoneNumber() 
 
     /**
-     * Returns the value of field 'routeID'.
-     * 
-     * @return the value of field 'routeID'.
-    **/
-    public int getRouteID()
-    {
-        return this._routeID;
-    } //-- int getRouteID() 
-
-    /**
      * Returns the value of field 'timeZone'.
      * 
      * @return the value of field 'timeZone'.
@@ -141,13 +117,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
     {
         return this._timeZone;
     } //-- java.lang.String getTimeZone() 
-
-    /**
-    **/
-    public boolean hasRouteID()
-    {
-        return this._has_routeID;
-    } //-- boolean hasRouteID() 
 
     /**
     **/
@@ -235,17 +204,6 @@ public class StarsEnergyCompany implements java.io.Serializable {
     {
         this._mainPhoneNumber = mainPhoneNumber;
     } //-- void setMainPhoneNumber(java.lang.String) 
-
-    /**
-     * Sets the value of field 'routeID'.
-     * 
-     * @param routeID the value of field 'routeID'.
-    **/
-    public void setRouteID(int routeID)
-    {
-        this._routeID = routeID;
-        this._has_routeID = true;
-    } //-- void setRouteID(int) 
 
     /**
      * Sets the value of field 'timeZone'.

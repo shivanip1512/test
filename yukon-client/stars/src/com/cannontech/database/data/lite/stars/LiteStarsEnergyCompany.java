@@ -536,7 +536,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return operGroups;
 	}
 	
-	public LiteYukonGroup getOperatorDefaultGroup() {
+	public LiteYukonGroup getOperatorAdminGroup() {
 		if (operDftGroupID < com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID) {
 			LiteYukonUser dftUser = YukonUserFuncs.getLiteYukonUser( getUserID() );
 			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();

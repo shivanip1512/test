@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: VersaCom.java,v 1.3 2004/07/28 22:59:03 yao Exp $
+ * $Id: VersaCom.java,v 1.4 2004/08/06 17:35:05 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.3 $ $Date: 2004/07/28 22:59:03 $
+ * @version $Revision: 1.4 $ $Date: 2004/08/06 17:35:05 $
 **/
 public class VersaCom implements java.io.Serializable {
 

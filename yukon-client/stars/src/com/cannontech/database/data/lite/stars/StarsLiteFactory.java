@@ -1578,8 +1578,6 @@ public class StarsLiteFactory {
 		starsCompany.setEmail( "" );
 		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
 		starsCompany.setTimeZone( liteCompany.getDefaultTimeZone().getID() );
-		if (liteCompany.getDefaultRouteID() >= 0)
-			starsCompany.setRouteID( liteCompany.getDefaultRouteID() );
 		
 		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
 			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );

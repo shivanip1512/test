@@ -372,7 +372,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				}
 				
 				// Get the privilege group before the default login is deleted
-				LiteYukonGroup liteGroup = energyCompany.getOperatorDefaultGroup();
+				LiteYukonGroup liteGroup = energyCompany.getOperatorAdminGroup();
 				
 				// Delete the default operator login
 				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
