@@ -158,7 +158,42 @@ drop table portstatistics;
 go
 
 
-
+alter table LMProgramDirect add NotifiyInterval numeric;
+go
+update LMProgramDirect set NotifiyInterval = 0;
+go
+alter table LMProgramDirect alter column NotifiyInterval numeric not null;
+go
+alter table LMProgramDirect add Heading varchar(40);
+go
+update LMProgramDirect set Heading = '(none)';
+go
+alter table LMProgramDirect alter column Heading varchar(40) not null;
+go
+alter table LMProgramDirect add MessageHeader varchar(160);
+go
+update LMProgramDirect set MessageHeader = '(none)';
+go
+alter table LMProgramDirect alter column MessageHeader varchar(160) not null;
+go
+alter table LMProgramDirect add MessageFooter varchar(160);
+go
+update LMProgramDirect set MessageFooter = '(none)';
+go
+alter table LMProgramDirect alter column MessageFooter varchar(160) not null;
+go
+alter table LMProgramDirect add CancelMsg varchar(80);
+go
+update LMProgramDirect set CancelMsg = '(none)';
+go
+alter table LMProgramDirect alter column CancelMsg varchar(80) not null;
+go
+alter table LMProgramDirect add StoppedEarlyMsg varchar(80);
+go
+update LMProgramDirect set StoppedEarlyMsg = '(none)';
+go
+alter table LMProgramDirect alter column StoppedEarlyMsg varchar(80) not null;
+go
 
 
 

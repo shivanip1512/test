@@ -130,15 +130,33 @@ alter table LMProgram drop column HolidayScheduleID;
 alter table LMProgram drop column SeasonScheduleID;
 
 
-
-
-
-
 /* @error ignore */
 drop table portstatistics;
 
 
+alter table LMProgramDirect add NotifiyInterval number;
+update LMProgramDirect set NotifiyInterval = 0;
+alter table LMProgramDirect modify NotifiyInterval numeric not null;
 
+alter table LMProgramDirect add Heading varchar2(40);
+update LMProgramDirect set Heading = '(none)';
+alter table LMProgramDirect modify Heading varchar2(40) not null;
+
+alter table LMProgramDirect add MessageHeader varchar2(160);
+update LMProgramDirect set MessageHeader = '(none)';
+alter table LMProgramDirect modify MessageHeader varchar2(160) not null;
+
+alter table LMProgramDirect add MessageFooter varchar2(160);
+update LMProgramDirect set MessageFooter = '(none)';
+alter table LMProgramDirect modify MessageFooter varchar2(160) not null;
+
+alter table LMProgramDirect add CancelMsg varchar2(80);
+update LMProgramDirect set CancelMsg = '(none)';
+alter table LMProgramDirect modify CancelMsg varchar2(80) not null;
+
+alter table LMProgramDirect add StoppedEarlyMsg varchar2(80);
+update LMProgramDirect set StoppedEarlyMsg = '(none)';
+alter table LMProgramDirect modify StoppedEarlyMsg varchar2(80) not null;
 
 
 
