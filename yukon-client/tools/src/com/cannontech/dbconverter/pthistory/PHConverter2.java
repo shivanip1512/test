@@ -26,6 +26,8 @@ class PHConverter2 {
 	private int changeID = 0;
 	private boolean forceInsert = false;
 	
+	private java.util.Vector pointVector = null;
+	
 /**
  * PHConverter constructor comment.
  */
@@ -68,7 +70,8 @@ public void convert(String dsm2Root) throws Exception {
 	 	
 		int id = stripID(entries[i].getName());
 
-		if( id == -1 ) {
+		if( id == -1 || !exists(id))
+		{
 			System.out.println(" ...skipping");
 			continue;
 		}
@@ -417,5 +420,35 @@ private boolean initYukonStuff() {
 	}	
 	
 	return false;
+}
+
+private boolean exists(int pointID)
+{
+	for (int i = 0; i < pointVector.size(); i++)
+	{
+		if( ((Integer)pointVector.get(i)).intValue() == pointID)
+			return true;
+	}
+	return false;
+}
+private java.util.Vector getPointVector()
+{
+	if( pointVector == null)
+	{
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized (cache)
+		{
+			java.util.List points = cache.getAllPoints();
+			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator);
+
+			pointVector = new java.util.Vector(points.size());
+			for (int i = 0; i < points.size(); i++)
+			{
+				com.cannontech.database.data.lite.LitePoint litePoint = ((com.cannontech.database.data.lite.LitePoint) points.get(i));
+				pointVector.add(new Integer(litePoint.getLiteID()));
+			}
+		} //synch
+	}
+	return pointVector;
 }
 }
