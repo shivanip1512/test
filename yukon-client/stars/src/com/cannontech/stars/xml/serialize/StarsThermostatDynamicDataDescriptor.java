@@ -86,13 +86,11 @@ public class StarsThermostatDynamicDataDescriptor extends org.exolab.castor.xml.
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _lastUpdatedTime
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _displayedTemperature

@@ -1001,7 +1001,8 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setStarsThermostatDynamicData(StarsThermostatDynamicData starsDynData, LiteStarsGatewayEndDevice liteDynData, LiteStarsEnergyCompany energyCompany) {
-		starsDynData.setLastUpdatedTime( new Date(liteDynData.getTimestamp()) );
+		if (liteDynData.getTimestamp() != 0)
+			starsDynData.setLastUpdatedTime( new Date(liteDynData.getTimestamp()) );
 		starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
 		if (liteDynData.getDisplayedTempUnit() != null)
 			starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit().equalsIgnoreCase("C") ? "Celsius" : "Fahrenheit" );
