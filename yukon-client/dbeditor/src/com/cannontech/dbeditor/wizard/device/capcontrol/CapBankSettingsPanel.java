@@ -472,11 +472,18 @@ public Object getValue(Object val)
 {
 	CapBank capBank = (CapBank) val;
 
-	capBank.getCapBank().setBankSize( 
-      (getJComboBoxBankSize().getSelectedItem().toString().length() <= 0
-      ? new Integer(150)
-      : (Integer)getJComboBoxBankSize().getSelectedItem()) );
-
+   try
+   {
+   	capBank.getCapBank().setBankSize( 
+         (getJComboBoxBankSize().getSelectedItem().toString().length() <= 0
+         ? new Integer(150)
+         : new Integer(getJComboBoxBankSize().getSelectedItem().toString()) ) );
+   }
+   catch( NumberFormatException e )
+   {
+      capBank.getCapBank().setBankSize( new Integer(150) );
+   }
+   
 	capBank.getCapBank().setSwitchManufacture( getJComboBoxSwitchManufacture().getSelectedItem().toString() );
 
 	capBank.getCapBank().setTypeOfSwitch( getJComboBoxTypeSwitch().getSelectedItem().toString() );
