@@ -7,6 +7,7 @@
 package com.cannontech.analysis;
 
 import com.cannontech.analysis.data.SystemLog;
+import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.analysis.data.device.MissedMeter;
 import com.cannontech.analysis.data.lm.LGAccounting;
@@ -41,6 +42,8 @@ public class ReportTypes
 	public static final int POWER_FAIL_DATA =9;
 	public static final int DISCONNECT_DATA =10;
 	
+	public static final int ENERGY_COMPANY_ACTIVITY_LOG_DATA = 11;
+	
 	private static Class[] typeToClassMap =
 	{	
 		CarrierCommData.class,
@@ -55,7 +58,9 @@ public class ReportTypes
 		MissedMeter.class,
 		Carrier.class,
 		PowerFail.class,
-		Disconnect.class
+		Disconnect.class,
+		
+		ActivityLog.class
 	};
 	
 	public static Object create(int type) {
