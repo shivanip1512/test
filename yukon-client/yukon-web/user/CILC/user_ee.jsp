@@ -31,7 +31,7 @@
 
     java.text.NumberFormat hourFormat = new java.text.DecimalFormat();
     hourFormat.setMinimumIntegerDigits(2);
-  	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("#,###.00");
+  	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("$#,##0.00");
 	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###");	//Value can only be in whole KW, therefore decimal places are not needed
                    
     // has this customer accepted any current revisions?

@@ -48,7 +48,7 @@
 	java.text.SimpleDateFormat eeDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat eeTimeFormat = new java.text.SimpleDateFormat("HH:mm");
 	java.text.SimpleDateFormat eeDateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("#,###.00");
+	java.text.DecimalFormat priceFormat = new java.text.DecimalFormat("\u00A4#,##0.00");
 	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###");	//Value can only be in whole KW, therefore decimal places are not needed	
 
 	eeDateFormat.setTimeZone(tz);
@@ -140,7 +140,9 @@
 			{
 				try {
 					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
-					double priceVal = Double.parseDouble(newPriceStrs[i]);
+					double priceVal = 0;
+					if( !newPriceStrs[i].equalsIgnoreCase("0"))
+					  priceVal = priceFormat.parse(newPriceStrs[i]).doubleValue();
 					totAmount += amountVal;
 
 					if (amountVal == 0)
@@ -220,7 +222,9 @@ System.out.println("sending: " + expireDateTime);
 				for (int i = 0; i < 24; i++)
 				{
 					amount[i] = new Double(numberFormat.parse(amountStrs[i]).doubleValue());
-					int centVal = (int) (Double.parseDouble(priceStrs[i]) * 100);
+					int centVal = 0;
+					if( !priceStrs[i].equalsIgnoreCase("0"))
+					  centVal = (int) (priceFormat.parse(priceStrs[i]).doubleValue() * 100);
 					prices[i] = new Integer(centVal);
 				}
 
@@ -300,7 +304,11 @@ System.out.println("sending: " + expireDateTime);
 			{
 				try {
 					double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
-					double priceVal = Double.parseDouble(newPriceStrs[i]);
+					
+					double priceVal = 0;
+					if( !newPriceStrs[i].equalsIgnoreCase("0"))
+					  priceVal = priceFormat.parse(newPriceStrs[i]).doubleValue();
+
 					totAmount += amountVal;
 
 					if (amountVal == 0)
@@ -376,7 +384,9 @@ System.out.println("sending: " + expireDateTime);
 				for (int i = 0; i < 24; i++)
 				{
 					amount[i] = new Double(numberFormat.parse(amountStrs[i]).doubleValue());
-					int centVal = (int) (Double.parseDouble(priceStrs[i]) * 100);
+					int centVal = 0;
+					if( !priceStrs[i].equalsIgnoreCase("0"))
+					  centVal = (int) Math.rint(priceFormat.parse(priceStrs[i]).doubleValue() * 100);
 					prices[i] = new Integer(centVal);
 				}
 
