@@ -1,16 +1,15 @@
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.db.stars.report.CallReportBase;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -19,9 +18,10 @@ import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsUpdateCallReport;
+import com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -34,8 +34,6 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateCallReportAction implements ActionBase {
-	
-	private static final String TO_BE_DELETED = "TO_BE_DELETED";
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -44,44 +42,32 @@ public class UpdateCallReportAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
-			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			String[] changed = req.getParameterValues( "Changed" );
-			String[] deleted = req.getParameterValues( "Deleted" );
-			String[] callIDs = req.getParameterValues( "CallID" );
-			String[] callNos = req.getParameterValues( "CallNo" );
-			String[] callTypes = req.getParameterValues( "CallType" );
-			String[] descriptions = req.getParameterValues( "Description" );
+			StarsGetEnergyCompanySettingsResponse ecSettings =
+					(StarsGetEnergyCompanySettingsResponse) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
+			if (tz == null) tz = TimeZone.getDefault();
 			
-			StarsUpdateCallReport updateCalls = new StarsUpdateCallReport();
-			for (int i = 0; i < callIDs.length; i++) {
-				if (Boolean.valueOf(deleted[i]).booleanValue()) {
-					StarsCallReport call = new StarsCallReport();
-					call.setCallID( Integer.parseInt(callIDs[i]) );
-					call.setCallNumber( TO_BE_DELETED );	// Set the call # to this special string to indicate that it's going to be deleted
-					updateCalls.addStarsCallReport( call );
-				}
-				else if (Boolean.valueOf(changed[i]).booleanValue()) {
-					StarsCallReport call = new StarsCallReport();
-					call.setCallID( Integer.parseInt(callIDs[i]) );
-					
-					if (callNos != null) call.setCallNumber( callNos[i] );
-					if (descriptions != null) call.setDescription( descriptions[i].replaceAll("\r\n", "<br>") );
-					
-					if (callTypes != null) {
-						CallType callType = (CallType) StarsFactory.newStarsCustListEntry(
-								ServletUtils.getStarsCustListEntryByID(
-									selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE, Integer.parseInt(callTypes[i])),
-								CallType.class );
-						call.setCallType( callType );
-					}
-					
-					updateCalls.addStarsCallReport( call );
-				}
+			StarsUpdateCallReport updateCall = new StarsUpdateCallReport();
+			updateCall.setCallID( Integer.parseInt(req.getParameter("CallID")) );
+			if (req.getParameter("CallNo") != null)
+				updateCall.setCallNumber( req.getParameter("CallNo") );
+			if (req.getParameter("CallDate") != null) {
+				String dateTime = req.getParameter("CallDate") + " " + req.getParameter("CallTime");
+				updateCall.setCallDate( ServerUtils.parseDate(dateTime, tz) );
 			}
+			if (req.getParameter("CallType") != null) {
+				CallType callType = new CallType();
+				callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );
+				updateCall.setCallType( callType );
+			}
+			if (req.getParameter("TakenBy") != null)
+				updateCall.setTakenBy( req.getParameter("TakenBy") );
+			if (req.getParameter("Description") != null)
+				updateCall.setDescription( req.getParameter("Description") );
 			
 			StarsOperation operation = new StarsOperation();
-			operation.setStarsUpdateCallReport( updateCalls );
+			operation.setStarsUpdateCallReport( updateCall );
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
@@ -110,58 +96,41 @@ public class UpdateCallReportAction implements ActionBase {
             }
             
         	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	if (accountInfo == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
         	
-        	ArrayList callHist = accountInfo.getCallReportHistory();
-        	StarsUpdateCallReport updateCalls = reqOper.getStarsUpdateCallReport();
+        	StarsUpdateCallReport updateCall = reqOper.getStarsUpdateCallReport();
+        	
+        	StarsCallReport starsCall = null;
+			for (int i = 0; i < accountInfo.getCallReportHistory().size(); i++) {
+				StarsCallReport call = (StarsCallReport) accountInfo.getCallReportHistory().get(i);
+				if (call.getCallID() == updateCall.getCallID()) {
+					starsCall = call;
+					break;
+				}
+			}
+        	
+        	if (updateCall.getCallNumber() != null &&
+        		!updateCall.getCallNumber().equals( starsCall.getCallNumber() ) &&
+        		CallReportBase.callNumberExists( updateCall.getCallNumber(), new Integer(user.getEnergyCompanyID()) ))
+        	{
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Call # already exists, please enter a different one") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+        	}
         	
 			com.cannontech.database.db.stars.report.CallReportBase callDB = new com.cannontech.database.db.stars.report.CallReportBase();
+			StarsFactory.setCallReportBase( callDB, starsCall );
+			callDB.setCallID( new Integer(starsCall.getCallID()) );
 			callDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
-        	
-        	for (int i = 0; i < updateCalls.getStarsCallReportCount(); i++) {
-        		StarsCallReport newCall = updateCalls.getStarsCallReport(i);
-        		for (int j = 0; j < callHist.size(); j++) {
-        			StarsCallReport starsCall = (StarsCallReport) callHist.get(j);
-        			if (starsCall.getCallID() != newCall.getCallID()) continue;
-        			
-    				if (newCall.getCallNumber() != null && newCall.getCallNumber().equals( TO_BE_DELETED )) {
-    					com.cannontech.database.data.stars.report.CallReportBase call =
-    							new com.cannontech.database.data.stars.report.CallReportBase();
-    					call.setCallID( new Integer(starsCall.getCallID()) );
-    					Transaction.createTransaction( Transaction.DELETE, call ).execute();
-    					
-    					callHist.remove( j );
-    				}
-    				else {
-        				if (newCall.getCallNumber() != null) {
-        					if (!starsCall.getCallNumber().equals( newCall.getCallNumber() )
-        						&& CallReportBase.callNumberExists( newCall.getCallNumber(), new Integer(user.getEnergyCompanyID()) )) {
-				            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-				            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Call # already exists, please enter a different one") );
-				            	return SOAPUtil.buildSOAPMessage( respOper );
-        					}
-        					starsCall.setCallNumber( newCall.getCallNumber() );
-        				}
-        				
-        				if (newCall.getCallType() != null) starsCall.setCallType( newCall.getCallType() );
-        				if (newCall.getDescription() != null) starsCall.setDescription( newCall.getDescription() );
-        				
-        				StarsFactory.setCallReportBase( callDB, starsCall );
-        				callDB.setCallID( new Integer(starsCall.getCallID()) );
-						Transaction.createTransaction(Transaction.UPDATE, callDB).execute();
-        			}
-        			break;
-        		}
-        	}
+			StarsFactory.setCallReportBase( callDB, updateCall );
+			
+			callDB = (com.cannontech.database.db.stars.report.CallReportBase)
+					Transaction.createTransaction(Transaction.UPDATE, callDB).execute();
             
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription("Call reports updated successfully");
+            StarsCallReport call = StarsFactory.newStarsCallReport( callDB );
+            StarsUpdateCallReportResponse resp = new StarsUpdateCallReportResponse();
+            resp.setStarsCallReport( call );
             
-            respOper.setStarsSuccess( success );
+            respOper.setStarsUpdateCallReportResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -186,34 +155,23 @@ public class UpdateCallReportAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-
+            
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
 			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			StarsUpdateCallReport updateCalls = reqOper.getStarsUpdateCallReport();
-			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			StarsCallReportHistory callHist = accountInfo.getStarsCallReportHistory();
 			
-			for (int i = 0; i < updateCalls.getStarsCallReportCount(); i++) {
-				StarsCallReport newCall = updateCalls.getStarsCallReport(i);
-				for (int j = 0; j < callHist.getStarsCallReportCount(); j++) {
-					StarsCallReport call = callHist.getStarsCallReport(j);
-					if (call.getCallID() != newCall.getCallID()) continue;
-					
-					if (newCall.getCallNumber() != null && newCall.getCallNumber().equals( TO_BE_DELETED ))
-						callHist.removeStarsCallReport( j );
-					else {
-						if (newCall.getCallNumber() != null) call.setCallNumber( newCall.getCallNumber() );
-						if (newCall.getCallType() != null) call.setCallType( newCall.getCallType() );
-						if (newCall.getDescription() != null) call.setDescription( newCall.getDescription() );
-					}
+			StarsCallReportHistory callHist = accountInfo.getStarsCallReportHistory();
+			StarsCallReport call = operation.getStarsUpdateCallReportResponse().getStarsCallReport();
+			
+			for (int i = 0; i < callHist.getStarsCallReportCount(); i++) {
+				if (callHist.getStarsCallReport(i).getCallID() == call.getCallID()) {
+					callHist.setStarsCallReport(i, call);
 					break;
 				}
 			}

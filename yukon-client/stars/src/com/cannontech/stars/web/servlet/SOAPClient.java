@@ -20,13 +20,13 @@ import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteApplianceAction;
+import com.cannontech.stars.web.action.DeleteCallReportAction;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteServiceRequestAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
-import com.cannontech.stars.web.action.GetNextCallNumberAction;
 import com.cannontech.stars.web.action.LoginAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
@@ -322,18 +322,18 @@ public class SOAPClient extends HttpServlet {
 			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
 			errorURL = referer;
 		}
-		else if (action.equalsIgnoreCase("GetNextCallNo")) {
-			clientAction = new GetNextCallNumberAction();
-			destURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp";
-			errorURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp?GetCallNo=failed";
-		}
 		else if (action.equalsIgnoreCase("CreateCall")) {
 			clientAction = new CreateCallAction();
 			destURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp";
 		}
-		else if (action.equalsIgnoreCase("UpdateCalls")) {
+		else if (action.equalsIgnoreCase("UpdateCall")) {
 			clientAction = new UpdateCallReportAction();
+			destURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
+			errorURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
+		}
+		else if (action.equalsIgnoreCase("DeleteCall")) {
+			clientAction = new DeleteCallReportAction();
 			destURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
 			errorURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
 		}

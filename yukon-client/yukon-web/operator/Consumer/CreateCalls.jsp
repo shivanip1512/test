@@ -1,49 +1,12 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
-<%
-	String callNo = (String) user.getAttribute(ServletUtils.ATT_CALL_TRACKING_NUMBER);
-	if (callNo == null) {
-		if (request.getParameter("GetCallNo") == null)
-			response.sendRedirect(request.getContextPath() + "/servlet/SOAPClient?action=GetNextCallNo");
-		else
-			callNo = "";
-	}
-%>
-
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
-  <!-- Hide the script from older browsers
-  
-function goBack() {
- document.location = "CreateWizard.jsp";
-}  
-  
-function getCurrentDateFormatted() {
-	
-	var strDate;
-	var myDate = new Date();
-	
-	var month = myDate.getMonth() + 1;
-	var day = myDate.getDate();
-	var year = myDate.getFullYear();
-	
-	if (month < 10)
-		month = "0" + month;
-	if (day < 10)
-		day = "0" + day;
-	
-	strDate = month+"/"+day+"/"+year;
-	
-	return strDate;
-}
-
 function checkCallNo(form) {
 	if (form.CallNoTxt.value == '') {
 		alert("Tracking# cannot be empty");
@@ -53,20 +16,6 @@ function checkCallNo(form) {
 	form.CallNo.value = form.CallNoTxt.value;
 	return true;
 }
-
-function enableCallNo(txt, enabled) {
-	if (enabled) {
-		txt.disabled = false;
-		txt.value = "";
-		txt.focus();
-	}
-	else {
-		txt.disabled = true;
-		txt.value = "<%= callNo %>";
-	}
-}
-
-  //End hiding script -->
 </SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
@@ -118,45 +67,43 @@ function enableCallNo(txt, enabled) {
               
               <form name = "MForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateCall">
-                <span class="SubtitleHeader">&nbsp;</span> 
                 <table width="350" border="0" height="179" cellspacing = "0">
                   <tr>
                     <td>
                       <table class = "TableCell" width="100%" border="0" cellspacing = "0" cellpadding = "1" height="174">
-                        <tr>
-                          <td colspan = "2"><span class="SubtitleHeader">CALL INFORMATION</span> 
+                        <tr> 
+                          <td colspan = "2"><span class="SubtitleHeader">CALL 
+                            INFORMATION</span> 
                             <hr>
                           </td>
-                          </tr>
+                        </tr>
+						<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CALL_NUMBER_AUTO_GEN %>">
+                        <tr> 
+                          <td width = "75" align = "right">Tracking #:</td>
+                          <td width="269"> 
+                            <input type="text" name="CallNo" size="14" maxlength="20">
+                          </td>
+                        </tr>
+						</cti:checkNoProperty>
                         <tr> 
                           <td width = "75" align = "right">Date:</td>
                           <td width="269" > 
-                            <input type="text" name="CallDate" size = "10" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
-                            <a href="javascript:show_calendar('MForm.CallDate')"
-						onMouseOver="window.status='Pop Calendar';return true;"
-						onMouseOut="window.status='';return true;"> <img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
+                            <input type="text" name="CallDate" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>">
+                            - 
+                            <input type="text" name="CallTime" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>">
                           </td>
                         </tr>
                         <tr> 
-                          <td width = "75" align = "right">Tracking #:</td>
-                          <input type="hidden" name="CallNo" value="<%= callNo %>">
-                          <td width="269"> 
-							<input type="text" name="CallNoTxt" size="14" maxlength="20" value="<%= callNo %>" disabled>
-							<input type="checkbox" name="EnableCallNo" value="true" onClick="enableCallNo(this.form.CallNoTxt, this.checked)">
-							Enter your own tracking #
-                          </td>
-                        </tr>
-						<tr> 
                           <td width = "75" align = "right">Type:</td>
                           <td width="269"> 
                             <select name="CallType">
-<%
+                              <%
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(i);
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                              <%
 	}
 %>
                             </select>
@@ -171,7 +118,7 @@ function enableCallNo(txt, enabled) {
                         <tr> 
                           <td width = "75" align = "right">Description:</td>
                           <td width="269"> 
-                            <textarea name="Description" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"></textarea>
                           </td>
                         </tr>
                       </table>

@@ -148,16 +148,22 @@ public class StarsFactory {
 	
 	/* StarsCallRprt factory methods */
 
-	public static StarsCallRprt newStarsCallReport(StarsCallRprt call, Class type) {
+	public static StarsCallReport newStarsCallReport(CallReportBase callDB) {
 		try {
-			StarsCallRprt starsCall = (StarsCallRprt) type.newInstance();
+			StarsCallReport starsCall = new StarsCallReport();
 			
-			starsCall.setCallID( call.getCallID() );
-			starsCall.setCallNumber( call.getCallNumber() );
-			starsCall.setCallDate( call.getCallDate() );
-			starsCall.setCallType( call.getCallType() );
-			starsCall.setDescription( call.getDescription() );
-			starsCall.setTakenBy( call.getTakenBy() );
+			String callNo = callDB.getCallNumber();
+			if (callNo.startsWith( ServerUtils.AUTO_GEN_NUM_PREC ))
+				callNo = callNo.substring( ServerUtils.AUTO_GEN_NUM_PREC.length() );
+			
+			YukonListEntry callType = YukonListFuncs.getYukonListEntry( callDB.getCallTypeID().intValue() );
+			
+			starsCall.setCallID( callDB.getCallID().intValue() );
+			starsCall.setCallNumber( callNo );
+			starsCall.setCallDate( callDB.getDateTaken() );
+			starsCall.setCallType( (CallType)newStarsCustListEntry(callType, CallType.class) );
+			starsCall.setDescription( callDB.getDescription() );
+			starsCall.setTakenBy( callDB.getTakenBy() );
 			
 			return starsCall;
 		}
@@ -169,11 +175,16 @@ public class StarsFactory {
 	}
 
 	public static void setCallReportBase(CallReportBase callDB, StarsCallRprt call) {
-		callDB.setCallNumber( call.getCallNumber() );
-		callDB.setCallTypeID( new Integer(call.getCallType().getEntryID()) );
-		callDB.setDateTaken( call.getCallDate() );
-		callDB.setDescription( call.getDescription() );
-		callDB.setTakenBy( call.getTakenBy() );
+		if (call.getCallNumber() != null)
+			callDB.setCallNumber( call.getCallNumber() );
+		if (call.getCallType() != null)
+			callDB.setCallTypeID( new Integer(call.getCallType().getEntryID()) );
+		if (call.getCallDate() != null)
+			callDB.setDateTaken( call.getCallDate() );
+		if (call.getDescription() != null)
+			callDB.setDescription( call.getDescription() );
+		if (call.getTakenBy() != null)
+			callDB.setTakenBy( call.getTakenBy() );
 	}
 
 	public static StarsCallReport[] getStarsCallReports(Integer accountID) {
@@ -556,30 +567,6 @@ public class StarsFactory {
 	
 	
 	/* StarsSrvReq factory methods */
-
-	public static StarsSrvReq newStarsServiceRequest(StarsSrvReq order, Class type) {
-		try {
-			StarsSrvReq starsOrder = (StarsSrvReq) type.newInstance();
-			
-			starsOrder.setOrderNumber( order.getOrderNumber() );
-			starsOrder.setServiceType( order.getServiceType() );
-			starsOrder.setDateReported( order.getDateReported() );
-			starsOrder.setServiceCompany( order.getServiceCompany() );
-			starsOrder.setOrderedBy( order.getOrderedBy() );
-			starsOrder.setDescription( order.getDescription() );
-			starsOrder.setCurrentState( order.getCurrentState() );
-			starsOrder.setDateScheduled( order.getDateScheduled() );
-			starsOrder.setDateCompleted( order.getDateCompleted() );
-			starsOrder.setActionTaken( order.getActionTaken() );
-			
-			return starsOrder;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
 	
 	public static void setWorkOrderBase(WorkOrderBase orderDB, StarsSrvReq order) {
 		//orderDB.setOrderID( new Integer(order.getOrderID()) );

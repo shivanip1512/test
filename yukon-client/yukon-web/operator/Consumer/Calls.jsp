@@ -8,32 +8,37 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-var changed = false;
-
-function setChanged(idx) {
-	document.getElementsByName("Changed")[idx].value = 'true';
-	changed = true;
-}
-
-function setDeleted(idx, deleted) {
-	document.getElementsByName("Deleted")[idx].value = deleted;
-	changed = true;
-}
-
-function checkCallNo(form) {
-	if (!changed) return false;
-	for (i = 0; i < form.Changed.length; i++) {
-		if (form.Deleted[i].value == 'false' && form.Changed[i].value == 'true' && form.CallNo[i].value == '') {
-			alert("Call # cannot be empty");
-			return false;
+function validate(form) {
+	var radioBtns = document.getElementsByName("CallID_");
+	var idx = -1;
+	for (i = 0; i < radioBtns.length; i++)
+		if (radioBtns[i].checked) {
+			idx = i;
+			break;
 		}
-	}
+	if (idx == -1) return false;
+	
+	form.CallID.value = document.getElementsByName("CallID_")[idx].value;
+	form.CallType.value = document.getElementsByName("CallType_")[idx].value;
+	form.Description.value = document.getElementsByName("Description_")[idx].value;
 	return true;
+}
+
+function deleteCall(form) {
+	if (!validate(form)) return;
+	form.action.value = "DeleteCall";
+	form.submit();
+}
+
+function init() {
+<% if (callHist.getStarsCallReportCount() > 0) { %>
+	document.getElementsByName("CallID_")[0].checked = true;
+<% } %>
 }
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -86,34 +91,33 @@ function checkCallNo(form) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
-			    <input type="hidden" name="action" value="UpdateCalls">
+			    <input type="hidden" name="action" value="UpdateCall">
+				<input type="hidden" name="CallID">
+				<input type="hidden" name="CallType">
+				<input type="hidden" name="Description">
                 <table width="600" border="1" cellspacing="0" align="center" cellpadding="2">
                   <tr> 
-                    <td class="HeaderCell" width="35">Delete</td>
-                    <td class="HeaderCell" width="60">Call #</td>
-                    <td class="HeaderCell" width="50">Date</td>
-                    <td class="HeaderCell" width="50">Type</td>
-                    <td class="HeaderCell" width="288">Description</td>
-                    <td class="HeaderCell" width="60" nowrap>Taken By</td>
+                    <td class="HeaderCell" width="5%">&nbsp;</td>
+                    <td class="HeaderCell" width="15%">Call #</td>
+                    <td class="HeaderCell" width="15%">Date/Time</td>
+                    <td class="HeaderCell" width="15%">Type</td>
+                    <td class="HeaderCell" width="40%">Description</td>
+                    <td class="HeaderCell" width="10%" nowrap>Taken By</td>
                   </tr>
 <%
 	for (int i = 0; i < callHist.getStarsCallReportCount(); i++) {
 		StarsCallReport call = callHist.getStarsCallReport(i);
 %>
-                  <input type="hidden" name="CallID" value="<%= call.getCallID() %>">
-				  <input type="hidden" name="CallNo" value="<%= call.getCallNumber() %>">
-                  <input type="hidden" name="Changed" value="false">
-                  <input type="hidden" name="Deleted" value="false">
                   <tr> 
-                    <td class="TableCell" width="35"> 
+                    <td class="TableCell" width="5%"> 
                       <div align="center">
-                        <input type="checkbox" name="DeleteCall" value="true" onclick="setDeleted(<%= i %>, this.checked)">
+                        <input type="radio" name="CallID_" value="<%= call.getCallID() %>">
                       </div>
                     </td>
-                    <td class="TableCell" width="60"><%= call.getCallNumber() %></td>
-                    <td class="TableCell" width="50"><%= datePart.format( call.getCallDate() ) %></td>
-                    <td class="TableCell" width="50"> 
-                      <select name="CallType" class="TableCell" onchange="setChanged(<%= i %>)">
+                    <td class="TableCell" width="15%"><%= call.getCallNumber() %></td>
+                    <td class="TableCell" width="15%"><%= ServletUtils.formatDate(call.getCallDate(), dateTimeFormat) %></td>
+                    <td class="TableCell" width="15%"> 
+                      <select name="CallType_" class="TableCell">
 <%
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
@@ -126,10 +130,10 @@ function checkCallNo(form) {
 %>
                       </select>
                     </td>
-                    <td class="TableCell" width="288"> 
-                      <textarea name="Description" rows="3" wrap="soft" cols="50" class="TableCell" onchange="setChanged(<%= i %>)"><%= call.getDescription().replaceAll("<br>", "\r\n") %></textarea>
+                    <td class="TableCell" width="40%"> 
+                      <textarea name="Description_" rows="3" wrap="soft" cols="35" class="TableCell"><%= call.getDescription().replaceAll("<br>", "\r\n") %></textarea>
                     </td>
-                    <td class="TableCell" width="60"><%= call.getTakenBy() %></td>
+                    <td class="TableCell" width="10%"><%= call.getTakenBy() %></td>
                   </tr>
 <%
 	}
@@ -138,12 +142,17 @@ function checkCallNo(form) {
                 <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td width="186"> 
+                    <td width="43%"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit" value="Submit" onclick="return checkCallNo(this.form)">
+                        <input type="submit" name="Submit" value="Submit" onclick="return validate(this.form)">
                       </div>
                     </td>
-                    <td width="194"> 
+					<td width="15%">
+					  <div align="center">
+					    <input type="button" name="Delete" value="Delete" onclick="deleteCall(this.form)">
+					  </div>
+					</td>
+                    <td width="42%"> 
                       <div align="left"> 
                         <input type="reset" name="Cancel" value="Cancel">
                       </div>
