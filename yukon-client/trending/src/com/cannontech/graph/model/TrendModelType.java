@@ -28,8 +28,9 @@ public final class TrendModelType
 	
 	// ** NOTE ** Add more int model values here with the addition of new models.	
 
-	// Optional model/chart choices.
+	// ** OPTIONS ** Optional model/chart choices.
 	// Additional Graph Plotting
+	public final static int NONE_MASK = 0x0000;
 	public final static int BASIC_MASK= 0x0001;
 	public final static int LOAD_DURATION_MASK= 0x0002;
 	public final static int GRAPH_MULTIPLIER = 0x0004;
