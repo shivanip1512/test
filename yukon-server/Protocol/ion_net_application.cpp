@@ -130,7 +130,7 @@ int CtiIONApplicationLayer::generate( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             _ioState = Failed;
@@ -148,38 +148,36 @@ int CtiIONApplicationLayer::generate( CtiXfer &xfer )
 
 int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 {
-    int retVal = -1;
-    int nlStatus;
+    int retVal;
 
-    nlStatus = _networkLayer.decode(xfer, status);
+    retVal = _networkLayer.decode(xfer, status);
 
-    switch( _ioState )
+    if( _networkLayer.errorCondition() )
     {
-        case Input:
         {
-            retVal = nlStatus;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint -- _networkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-            if( _networkLayer.errorCondition() )
+        //  error conditions propagate back up to the protocol object
+        _ioState = Failed;
+    }
+    else
+    {
+        switch( _ioState )
+        {
+            case Input:
             {
+                if( _networkLayer.isTransactionComplete() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                    unsigned char *tmpData;
 
-                _ioState = Failed;
-            }
-            else if( _networkLayer.isTransactionComplete() )
-            {
-                unsigned char *tmpData;
+                    freeInPacketMemory();
 
-                freeInPacketMemory();
+                    _ioState = Complete;
 
-                _ioState = Complete;
+                    tmpData = CTIDBG_new unsigned char[_networkLayer.getPayloadLength()];
 
-                tmpData = CTIDBG_new unsigned char[_networkLayer.getPayloadLength()];
-
-                if( tmpData != NULL )
-                {
                     int headerLen = sizeof(_appIn.header);
 
                     _networkLayer.putPayload(tmpData);
@@ -190,19 +188,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 
                         _appIn.IONData = CTIDBG_new unsigned char[_networkLayer.getPayloadLength() - headerLen];
 
-                        if( _appIn.IONData != NULL )
-                        {
-                            memcpy(_appIn.IONData, tmpData + headerLen, _networkLayer.getPayloadLength() - headerLen);
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            _ioState = Failed;
-                        }
+                        memcpy(_appIn.IONData, tmpData + headerLen, _networkLayer.getPayloadLength() - headerLen);
                     }
                     else
                     {
@@ -214,46 +200,28 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 
                     delete tmpData;
                 }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
 
-                    _ioState = Failed;
-                }
+                break;
             }
 
-            break;
-        }
+            case Output:
+            {
+                if( _networkLayer.isTransactionComplete() )
+                {
+                    _ioState = Complete;
+                }
 
-        case Output:
-        {
-            retVal = nlStatus;
+                break;
+            }
 
-            if( _networkLayer.errorCondition() )
+            default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _ioState = Failed;
-            }
-            else if( _networkLayer.isTransactionComplete() )
-            {
-                _ioState = Complete;
-            }
-
-            break;
-        }
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
