@@ -17,7 +17,7 @@ CtiExecutor* CtiPILExecutorFactory::getExecutor(CtiMessage* msg)
    case MSG_PCREQUEST:
    case MSG_MULTI:
       {
-         Ex = new CtiRequestExecutor(msg);
+         Ex = CTIDBG_new CtiRequestExecutor(msg);
          break;
       }
    default:

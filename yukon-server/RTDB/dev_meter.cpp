@@ -184,7 +184,7 @@ INT CtiDeviceMeter::ExecuteRequest(CtiRequestMsg              *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert(new CtiReturnMsg(getID(),
+        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
                                         RWCString(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,

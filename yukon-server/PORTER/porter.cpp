@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2002/11/07 22:52:24 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2002/11/15 14:08:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,10 +164,10 @@ using namespace std;
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
 #define DO_VCONFIGTHREAD               1
-#define DO_PORTERGUICONNECTIONTHREAD   1
-#define DO_PORTERCONNECTIONTHREAD      1     // Probably a must....
+#define DO_PORTERGUICONNECTIONTHREAD   0    // CODE INCOMPLETE AS OF 11/13/02 CGP
+#define DO_PORTERCONNECTIONTHREAD      1
 #define DO_TIMESYNCTHREAD              1
-#define DO_PERFTHREAD                  0
+#define DO_PERFTHREAD                  0    // DONT RUN THIS AS OF 11/13/02 CGP
 #define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
@@ -281,7 +281,7 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
 {
     if( (ptPort->getSharedPortType() == "acs") || (ptPort->getSharedPortType() == "ilex" ) )
     {
-        CtiPortShare *tmpPortShare = new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size());
+        CtiPortShare *tmpPortShare = CTIDBG_new CtiPortShareIP(ptPort, PORTSHARENEXUS + PortShareManager.size());
         if( tmpPortShare != NULL )
         {
             ((CtiPortShareIP *)tmpPortShare)->setIPPort(ptPort->getSharedSocketNumber());
@@ -451,28 +451,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     DWORD             Count;
     CHAR              Char;
 
-#ifdef PORTERMEMDEBUG
-
-    // Send all reports to STDOUT
-    _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-    _CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
-    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-    _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
-    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-    _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
-
-    // Get current flag
-    int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
-
-    // Turn on leak-checking bit, and always check on alloc/dealloc
-    // tmpFlag |= _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF;
-    tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
-
-    _CrtSetDbgFlag( tmpFlag );
-
-#endif
-
-
     /* Print out the program name and revison */
     identifyProject(CompileInfo);
 
@@ -597,6 +575,10 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         return -1;
     }
 
+    SET_CRT_OUTPUT_MODES;
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
+        ENABLE_CRT_SHUTDOWN_CHECK;
+
     /* A new guy with Yukon,  start a thread to handle GUI requests.  */
     /* This is a future project as of 070799, allowing a GUI to interface with Porter
      * to tweak parameters
@@ -607,7 +589,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _guiThread.start();
     }
 
-    /* Another new Yukon Thread:
+    /* Another CTIDBG_new Yukon Thread:
      * This thread manages connections to iMacs and other RWCollectable message senders
      * This guy is the PIL
      */
@@ -1180,6 +1162,8 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         PortManager.haltLogs();
     }
 
+    Sleep(3000);
+
     // Make sure all the logs get output and done!
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1666,3 +1650,5 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
         traceList.clearAndDestroy();
     }
 }
+
+

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 14:28:04 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -406,8 +406,8 @@ BOOL CtiDeviceSchlumberger::verifyAndAddPointToReturnMsg (USHORT        aPointId
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a new message
-        pData = new CtiPointDataMsg(aPointId,
+        //create a CTIDBG_new message
+        pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,
                                     AnalogPointType,
@@ -547,8 +547,8 @@ INT CtiDeviceSchlumberger::ErrorDecode (INMESS *InMessage,
     }
 
     INT retCode = NORMAL;
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -713,7 +713,7 @@ CtiDeviceSchlumberger& CtiDeviceSchlumberger::operator=(const CtiDeviceSchlumber
    {
 //         if (_dataBuffer != NULL)
 //         {
-//            aRef._dataBuffer = ((BYTE *) new BYTE (sizeof (FulcrumScanData_t)));
+//            aRef._dataBuffer = ((BYTE *) CTIDBG_new BYTE (sizeof (FulcrumScanData_t)));
 //            memcpy (&aRef._dataBuffer, &_dataBuffer, sizeof (FulcrumScanData_t));
 //         }
 //         else

@@ -1407,15 +1407,15 @@ INT CtiDeviceDR87::allocateDataBins(OUTMESS *outMess)
 {
     if (iPorterSide == NULL)
     {
-        iPorterSide = new CtiDR87PorterSide;
+        iPorterSide = CTIDBG_new CtiDR87PorterSide;
     }
     if (iDataBuffer == NULL)
     {
-        iDataBuffer = new BYTE[sizeof (DR87ScanData_t)];
+        iDataBuffer = CTIDBG_new BYTE[sizeof (DR87ScanData_t)];
     }
     if (iLoadProfileBuffer == NULL)
     {
-        iLoadProfileBuffer = new BYTE[sizeof (DR87LoadProfile_t)];
+        iLoadProfileBuffer = CTIDBG_new BYTE[sizeof (DR87LoadProfile_t)];
 
         if (iLoadProfileBuffer != NULL)
         {
@@ -1562,8 +1562,8 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
     }
 
     INT retCode = NORMAL;
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1632,7 +1632,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1652,7 +1652,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
             (InMessage->EventCode != 0))
         {
 
-            CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+            CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
             if (pMsg != NULL)
             {
@@ -1748,7 +1748,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
 
     int               dataQuality = NormalQuality;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1830,7 +1830,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                         pLastLPIntervals = NULL;
                     }
 
-                    pLastLPIntervals = new CtiReturnMsg(getID(),
+                    pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
                                                         RWCString(InMessage->Return.CommandStr),
                                                         RWCString(),
                                                         InMessage->EventCode & 0x7fff,
@@ -2151,8 +2151,8 @@ BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (USHORT aPointId,
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a new message
-        pData = new CtiPointDataMsg(aPointId,
+        //create a CTIDBG_new message
+        pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,
                                     AnalogPointType,
@@ -2248,19 +2248,19 @@ USHORT  CtiDeviceDR87::calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd)
         0104001,
         042000};
 
-    BYTEUSHORT newCRC;
+    BYTEUSHORT CTIDBG_CTIDBG_newCRC;
     USHORT j0,j1,j2;
 
-    newCRC.sh = 0;
+    CTIDBG_CTIDBG_newCRC.sh = 0;
 
     for (int x=1; x < length; x++)
     {
-        j0 = newCRC.sh ^ (buffer[x] & 0377);
+        j0 = CTIDBG_CTIDBG_newCRC.sh ^ (buffer[x] & 0377);
         j1 = j0 & 017;
         j2 = (j0 >> 4) & 017;
         j0 = lowNib[j1] ^ highNib[j2];
 
-        newCRC.sh = (newCRC.sh >> 8) ^ j0;
+        CTIDBG_CTIDBG_newCRC.sh = (CTIDBG_CTIDBG_newCRC.sh >> 8) ^ j0;
     }
 
     /*******************
@@ -2271,11 +2271,11 @@ USHORT  CtiDeviceDR87::calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd)
     if (bAdd)
     {
         // low byte first
-        buffer[length]     = newCRC.ch[0];
-        buffer[length + 1] = newCRC.ch[1];
+        buffer[length]     = CTIDBG_CTIDBG_newCRC.ch[0];
+        buffer[length + 1] = CTIDBG_CTIDBG_newCRC.ch[1];
     }
 
-    return newCRC.sh;
+    return CTIDBG_CTIDBG_newCRC.sh;
 }
 
 INT CtiDeviceDR87::checkCRC(BYTE *InBuffer,ULONG InCount)

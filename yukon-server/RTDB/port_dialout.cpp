@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/05 19:36:46 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -873,7 +873,7 @@ INT CtiPortDialout::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG T
                 break; // the while
             }
 
-            // look for new message
+            // look for CTIDBG_new message
             Response[0] = '\0';
             i = 0;
         }

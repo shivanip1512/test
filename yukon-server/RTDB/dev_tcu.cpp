@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 14:28:05 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -232,7 +232,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
       }
    case MASTERLOOPBACK:
       {
-         CtiReturnMsg   *pLoop = new CtiReturnMsg(getID(),
+         CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                   RWCString(InMessage->Return.CommandStr),
                                                   RWCString("Loopback Successful"),
                                                   InMessage->EventCode & 0x7fff,
@@ -292,7 +292,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          // Get a control request done maybe?
          if((nRet = TCUControl(OutMessage, &VSt)) != 0)
          {
-            vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
                                            getDescription(parse),
                                            RWCString("Control Request for TCU failed"),
@@ -300,7 +300,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                            SignalEvent,
                                            pReq->getUser()));
 
-            CtiReturnMsg* eMsg = new CtiReturnMsg(getID(),
+            CtiReturnMsg* eMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                   RWCString(OutMessage->Request.CommandStr),
                                                   RWCString("Control Request for TCU failed"),
                                                   nRet,
@@ -338,7 +338,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                dout << RWTime() << " error scanning " << getName()<< endl;
             }
 
-            vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
                                            getDescription(parse),
                                            RWCString("Scan All Request for TCU failed"),
@@ -346,7 +346,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                            SignalEvent,
                                            pReq->getUser()));
 
-            retList.insert( new CtiReturnMsg(getID(),
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                              RWCString(OutMessage->Request.CommandStr),
                                              RWCString("Scan All Request for TCU failed"),
                                              nRet,
@@ -378,7 +378,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
 
          for(int i = 0; i < cnt; i++)
          {
-            OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
+            OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
 
             if(OutMTemp != NULL)
             {
@@ -389,7 +389,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                      CtiLockGuard<CtiLogger> doubt_guard(dout);
                      dout << RWTime() << " error looping " << getName()<< endl;
                   }
-                  retList.insert( new CtiReturnMsg(getID(),
+                  retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                                    RWCString(OutMessage->Request.CommandStr),
                                                    RWCString("Loopback Request for TCU failed"),
                                                    nRet,
@@ -420,7 +420,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
          nRet = NoExecuteRequestMethod;
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
-         retList.insert( new CtiReturnMsg(getID(),
+         retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                           RWCString(OutMessage->Request.CommandStr),
                                           RWCString("TCU Devices do not support this command (yet?)"),
                                           nRet,
@@ -497,7 +497,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
 
    CtiPointDataMsg   *pData    = NULL;
 
-   CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+   CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                            RWCString(InMessage->Return.CommandStr),
                                            RWCString("TCU status request complete"),
                                            InMessage->EventCode & 0x7fff,
@@ -540,7 +540,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
          }
 #endif
 
-         pData = new CtiPointDataMsg(PointRecord->getPointID(),
+         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                      PValue,
                                      NormalQuality,
                                      StatusPointType,

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_cmd.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:07:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,10 +92,10 @@ void CtiCommandMsg::dump() const
 
 }
 
-// Return a new'ed copy of this message!
+// Return a CTIDBG_new'ed copy of this message!
 CtiMessage* CtiCommandMsg::replicateMessage() const
 {
-   CtiCommandMsg *ret = new CtiCommandMsg(*this);
+   CtiCommandMsg *ret = CTIDBG_new CtiCommandMsg(*this);
 
    return( (CtiMessage*)ret );
 }

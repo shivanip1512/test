@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scansup.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:36 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,7 +149,7 @@ IM_EX_SCANSUP INT TracePrint (PBYTE Message, USHORT  Length)
    {
       if(width + 2 > SCREEN_WIDTH)
       {
-         /* yes so goto new line */
+         /* yes so goto CTIDBG_new line */
          printf ("\n");
          width = 1;
       }

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/31 17:56:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-
+#include "ctidbgmem.h" // defines CTIDBG_new
 #include "cmdparse.h"
 #include "prot_versacom.h"
 #include "master.h"
@@ -1312,7 +1312,7 @@ INT CtiProtocolVersacom::primeVStruct(const VSTRUCT &VstTemplate)
 {
     INT      status = NORMAL;
 
-    VSTRUCT  *Vst = new VSTRUCT;
+    VSTRUCT  *Vst = CTIDBG_new VSTRUCT;
 
     if(Vst != NULL)
     {
@@ -1435,7 +1435,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         isGroupConfig = true;
     }
 
-    primeVStruct(aVst);  // Get a new one in the system
+    primeVStruct(aVst);  // Get a CTIDBG_new one in the system
     VersacomAddress(sn, fuid, fsec, fcls, fdiv);
 
     /*
@@ -1451,7 +1451,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         if(!VersacomServiceCommand(iNum & VC_SERVICE_MASK))
@@ -1462,7 +1462,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         if(!VersacomConfigLEDCommand( iNum ))
@@ -1473,7 +1473,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigColdLoadCommand( 1, iNum ))
             firstOneDone = TRUE;
@@ -1483,7 +1483,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigColdLoadCommand( 2, iNum ))
             firstOneDone = TRUE;
@@ -1493,7 +1493,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigColdLoadCommand( 3, iNum ))
             firstOneDone = TRUE;
@@ -1503,7 +1503,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigScramTimeCommand( 1, iNum ))
             firstOneDone = TRUE;
@@ -1512,7 +1512,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigScramTimeCommand( 2, iNum ))
             firstOneDone = TRUE;
@@ -1521,7 +1521,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigScramTimeCommand( 3, iNum ))
             firstOneDone = TRUE;
@@ -1531,7 +1531,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigCycleRepeatsCommand( 1, iNum ))
             firstOneDone = TRUE;
@@ -1540,7 +1540,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigCycleRepeatsCommand( 2, iNum ))
             firstOneDone = TRUE;
@@ -1549,7 +1549,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigCycleRepeatsCommand( 3, iNum ))
             firstOneDone = TRUE;
@@ -1560,7 +1560,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomConfigPropagationTimeCommand( iNum ))
             firstOneDone = TRUE;
@@ -1570,7 +1570,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomCountResetCommand( iNum ))
             firstOneDone = TRUE;
@@ -1580,7 +1580,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         if(!VersacomDataCommand( (BYTE *)parse.getsValue("raw").data() ), parse.getsValue("raw").length())
             firstOneDone = TRUE;
@@ -1590,7 +1590,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         if(!VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").data() ))
@@ -1601,7 +1601,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {  // We have a utility id to configure
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         memset(config, 0, 6);      // Blank the bytes
@@ -1614,7 +1614,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {  // We have a utility id to configure
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         memset(config, 0, 6);      // Blank the bytes
@@ -1630,7 +1630,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         memset(config, 0, 6);      // Blank the bytes
@@ -1655,7 +1655,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {  // We have a utility id to configure
             if(firstOneDone)
             {
-                advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+                advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
             }
 
             memset(config, 0, 6);      // Blank the bytes
@@ -1668,7 +1668,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {  // We have a utility id to configure
             if(firstOneDone)
             {
-                advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+                advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
             }
 
             memset(config, 0, 6);      // Blank the bytes
@@ -1686,7 +1686,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         {  // We have a utility id to configure
             if(firstOneDone)
             {
-                advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+                advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
             }
 
             memset(config, 0, 6);      // Blank the bytes
@@ -1713,9 +1713,9 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
 
 void CtiProtocolVersacom::advanceAndPrime(const VSTRUCT &vTemp)
 {
-    VSTRUCT *newvst = new VSTRUCT;
-    *newvst = vTemp;
-    _vst.insert(newvst);
+    VSTRUCT *CTIDBG_newvst = CTIDBG_new VSTRUCT;
+    *CTIDBG_newvst = vTemp;
+    _vst.insert(CTIDBG_newvst);
     _last = _vst.entries() - 1;
 
     return;
@@ -1743,7 +1743,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         {
             // Control time is in the parsers iValue!
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
-            primeVStruct(aVst);  // Get a new one in the system
+            primeVStruct(aVst);  // Get a CTIDBG_new one in the system
             VersacomShedCommand(parse.getiValue("shed"));
         }
         else
@@ -1761,7 +1761,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a new one in the system
+                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
                         VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
                     }
                 }
@@ -1774,7 +1774,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a new one in the system
+                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
                         VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
                     }
                 }
@@ -1792,7 +1792,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         {
             parse.Map()["control_interval"]  = CtiParseValue( 60 * 30 * 8 );    // Assume a bit here!
 
-            primeVStruct(aVst);  // Get a new one in the system
+            primeVStruct(aVst);  // Get a CTIDBG_new one in the system
             VersacomCycleCommand(parse.getiValue("cycle"));
         }
         else
@@ -1815,7 +1815,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a new one in the system
+                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
                         VersacomCycleCommandEx(parse.getiValue("cycle"), (i+1), period, repeat, delay);
                     }
                 }
@@ -1828,7 +1828,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                 {
                     if( relay & (0x01 << i) )
                     {
-                        primeVStruct(aVst);  // Get a new one in the system
+                        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
                         VersacomCycleCommandEx(parse.getiValue("cycle"), (i+1), period, repeat, delay);
                     }
                 }
@@ -1837,24 +1837,24 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
-        primeVStruct(aVst);  // Get a new one in the system
+        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
         VersacomRestoreCommand();
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
-        primeVStruct(aVst);  // Get a new one in the system
+        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
         VersacomTerminateCommand();
     }
     else if(CtlReq == CMD_FLAG_CTL_OPEN)
     {
         parse.Map()["control_reduction"] = CtiParseValue( 100 );
 
-        primeVStruct(aVst);  // Get a new one in the system
+        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
         VersacomCapacitorControlCommand(TRUE);
     }
     else if(CtlReq == CMD_FLAG_CTL_CLOSE)
     {
-        primeVStruct(aVst);  // Get a new one in the system
+        primeVStruct(aVst);  // Get a CTIDBG_new one in the system
         VersacomCapacitorControlCommand(FALSE);
     }
     else
@@ -1899,7 +1899,7 @@ INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRU
         sn = 0;
     }
 
-    primeVStruct(aVst);  // Get a new one in the system
+    primeVStruct(aVst);  // Get a CTIDBG_new one in the system
     VersacomAddress(sn, uid, sec, cls, div);
 
     /*
@@ -1912,7 +1912,7 @@ INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         VersacomPropagationCommand(iNum & 0x07);
         firstOneDone = TRUE;
@@ -1922,7 +1922,7 @@ INT CtiProtocolVersacom::assemblePutStatus(CtiCommandParser  &parse, const VSTRU
     {
         if(firstOneDone)
         {
-            advanceAndPrime(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(VStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
         VersacomVoltageControlCommand((BOOL)iNum);
         firstOneDone = TRUE;

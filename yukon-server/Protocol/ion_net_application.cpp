@@ -85,7 +85,7 @@ void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
     _appOut.header.length.byte0 =  dataLength & 0x00FF;
 
     //  copy in the serialized datastream values
-    _appOut.IONData = new unsigned char[dataLength];
+    _appOut.IONData = CTIDBG_new unsigned char[dataLength];
 
     if( _appOut.IONData != NULL )
     {

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/11 21:26:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -683,63 +683,63 @@ int CtiDNPObjectBlock::restoreObject( unsigned char *buf, int len, CtiDNPObject 
     switch( _group )
     {
         case CtiDNPAnalogInput::Group:
-            obj = new CtiDNPAnalogInput(_variation);
+            obj = CTIDBG_new CtiDNPAnalogInput(_variation);
             break;
 
         case CtiDNPAnalogInputChange::Group:
-            obj = new CtiDNPAnalogInputChange(_variation);
+            obj = CTIDBG_new CtiDNPAnalogInputChange(_variation);
             break;
 
         case CtiDNPAnalogInputFrozen::Group:
-            obj = new CtiDNPAnalogInputFrozen(_variation);
+            obj = CTIDBG_new CtiDNPAnalogInputFrozen(_variation);
             break;
 
         case CtiDNPAnalogInputFrozenEvent::Group:
-            obj = new CtiDNPAnalogInputFrozenEvent(_variation);
+            obj = CTIDBG_new CtiDNPAnalogInputFrozenEvent(_variation);
             break;
 
         case CtiDNPAnalogOutput::Group:
-            obj = new CtiDNPAnalogOutput(_variation);
+            obj = CTIDBG_new CtiDNPAnalogOutput(_variation);
             break;
 
         case CtiDNPAnalogOutputBlock::Group:
-            obj = new CtiDNPAnalogOutputBlock(_variation);
+            obj = CTIDBG_new CtiDNPAnalogOutputBlock(_variation);
             break;
 
         case CtiDNPBinaryInput::Group:
-            obj = new CtiDNPBinaryInput(_variation);
+            obj = CTIDBG_new CtiDNPBinaryInput(_variation);
             break;
 
         case CtiDNPBinaryInputChange::Group:
-            obj = new CtiDNPBinaryInputChange(_variation);
+            obj = CTIDBG_new CtiDNPBinaryInputChange(_variation);
             break;
 
         case CtiDNPBinaryOutput::Group:
-            obj = new CtiDNPBinaryOutput(_variation);
+            obj = CTIDBG_new CtiDNPBinaryOutput(_variation);
             break;
 
         case CtiDNPBinaryOutputControl::Group:
-            obj = new CtiDNPBinaryOutputControl(_variation);
+            obj = CTIDBG_new CtiDNPBinaryOutputControl(_variation);
             break;
 
         case CtiDNPCounter::Group:
-            obj = new CtiDNPCounter(_variation);
+            obj = CTIDBG_new CtiDNPCounter(_variation);
             break;
 
         case CtiDNPCounterChange::Group:
-            obj = new CtiDNPCounterChange(_variation);
+            obj = CTIDBG_new CtiDNPCounterChange(_variation);
             break;
 
         case CtiDNPCounterFrozen::Group:
-            obj = new CtiDNPCounterFrozen(_variation);
+            obj = CTIDBG_new CtiDNPCounterFrozen(_variation);
             break;
 
         case CtiDNPCounterFrozenEvent::Group:
-            obj = new CtiDNPCounterFrozenEvent(_variation);
+            obj = CTIDBG_new CtiDNPCounterFrozenEvent(_variation);
             break;
 
         case CtiDNPTime::Group:
-            obj = new CtiDNPTime(_variation);
+            obj = CTIDBG_new CtiDNPTime(_variation);
             break;
 
         default:
@@ -774,15 +774,15 @@ int CtiDNPObjectBlock::restoreBitObject( unsigned char *buf, int bitoffset, int 
     switch( _group )
     {
         case CtiDNPBinaryInput::Group:
-            obj = new CtiDNPBinaryInput(_variation);
+            obj = CTIDBG_new CtiDNPBinaryInput(_variation);
             break;
 
         case CtiDNPBinaryOutput::Group:
-            obj = new CtiDNPBinaryOutput(_variation);
+            obj = CTIDBG_new CtiDNPBinaryOutput(_variation);
             break;
 
         case CtiDNPBinaryOutputControl::Group:
-            obj = new CtiDNPBinaryOutputControl(_variation);
+            obj = CTIDBG_new CtiDNPBinaryOutputControl(_variation);
             break;
 
         default:

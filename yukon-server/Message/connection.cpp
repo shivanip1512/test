@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/11/14 15:39:32 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/11/15 14:07:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,8 @@ void CtiConnection::cleanConnection()
         delete _ptRegMsg;
         _ptRegMsg = 0;
     }
+
+    outQueue.clearAndDestroy();
 }
 
 int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleaniftimedout)
@@ -598,7 +600,7 @@ INT CtiConnection::ConnectPortal()
                 else
                 {
                     cleanExchange();
-                    Ex = new CtiExchange(psck);
+                    Ex = CTIDBG_new CtiExchange(psck);
 
                     if(!Ex->In().bad() && !Ex->Out().bad())
                     {
@@ -1064,7 +1066,7 @@ void CtiConnection::doConnect( const INT &Port, const RWCString &Host, InQ_t *in
 
         if(inQueue == NULL)
         {
-            inQueue = new InQ_t;
+            inQueue = CTIDBG_new InQ_t;
             _localQueueAlloc = TRUE;
         }
 

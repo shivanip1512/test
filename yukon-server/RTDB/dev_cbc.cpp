@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/09/03 14:33:48 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/15 14:08:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,14 +185,14 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             else
                 resultString += "CLOSED";
 
-            vgList.insert(new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+            vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
          }
          else
          {
             RWCString actn = parse.getActionItems()[0];
             RWCString desc = getDescription(parse);
 
-            vgList.insert(new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
          }
       }
       else
@@ -201,7 +201,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
          dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
       }
 
-      CtiReturnMsg* pRet = new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
       // Start the control request on its route(s)
       if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
       {
@@ -221,7 +221,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
 
       resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
-      CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(OutMessage->Request.CommandStr),
                                             resultString,
                                             nRet,
@@ -300,14 +300,14 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
             else
                 resultString += "CLOSED";
 
-            vgList.insert(new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+            vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
          }
          else
          {
             RWCString actn = parse.getActionItems()[0];
             RWCString desc = getDescription(parse);
 
-            vgList.insert(new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
          }
       }
       else
@@ -320,7 +320,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
        *  Form up the reply here since the ExecuteRequest funciton will consume the
        *  OutMessage.
        */
-      CtiReturnMsg* pRet = new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
       // Start the control request on its route(s)
       if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
       {
@@ -341,7 +341,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
 
       resultString = " ERROR: Route or Route Transmitter not available for CBC device " + getName();
 
-      CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+      CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(OutMessage->Request.CommandStr),
                                             resultString,
                                             nRet,

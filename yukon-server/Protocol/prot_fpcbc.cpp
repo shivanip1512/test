@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,9 +74,9 @@ INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPS
 
 void CtiProtocolFisherPierceCBC::advanceAndPrime(const FPSTRUCT &fTemp)
 {
-    FPSTRUCT *newfpst = new FPSTRUCT;
-    *newfpst = fTemp;
-    _fst.insert(newfpst);
+    FPSTRUCT *CTIDBG_newfpst = CTIDBG_new FPSTRUCT;
+    *CTIDBG_newfpst = fTemp;
+    _fst.insert(CTIDBG_newfpst);
     _last = _fst.entries() - 1;
 
     return;
@@ -99,7 +99,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
     BYTE  config[6];
 
 
-    primeFPStruct(aFPSt);  // Get a new one in the system
+    primeFPStruct(aFPSt);  // Get a CTIDBG_new one in the system
 
     /*
      * This should be the original with only the addressing copied into it,
@@ -111,7 +111,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
     {
         if(firstOneDone)
         {
-            advanceAndPrime(FPStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+            advanceAndPrime(FPStTemplate);    // Get a CTIDBG_new one in the list that looks like the original in terms of addressing
         }
 
         /*
@@ -156,12 +156,12 @@ INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const 
 
     if(CtlReq == CMD_FLAG_CTL_OPEN)
     {
-        primeFPStruct(aFPSt);  // Get a new one in the system
+        primeFPStruct(aFPSt);  // Get a CTIDBG_new one in the system
         capacitorControlCommand(TRUE);
     }
     else if(CtlReq == CMD_FLAG_CTL_CLOSE)
     {
-        primeFPStruct(aFPSt);  // Get a new one in the system
+        primeFPStruct(aFPSt);  // Get a CTIDBG_new one in the system
         capacitorControlCommand(FALSE);
     }
     else
@@ -177,7 +177,7 @@ INT CtiProtocolFisherPierceCBC::primeFPStruct(const FPSTRUCT &FPstTemplate)
 {
     INT      status = NORMAL;
 
-    FPSTRUCT  *fpst = new FPSTRUCT;
+    FPSTRUCT  *fpst = CTIDBG_new FPSTRUCT;
 
     if(fpst != NULL)
     {

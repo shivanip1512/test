@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/03 14:33:51 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             {
                 if(pRoute->getType() != MacroRouteType)
                 {
-                    OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
+                    OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
 
                     if(NewOMess)
                     {
@@ -121,7 +121,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ERROR!!!! new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 else
@@ -153,7 +153,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
             if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
             {
-                OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
+                OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
 
                 if(NewOMess)
                 {
@@ -171,7 +171,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ERROR!!!! new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }

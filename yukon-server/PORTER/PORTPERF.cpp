@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/10/23 21:11:47 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/11/15 14:08:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <malloc.h>
 
 #include "cparms.h"
 #include "dsm2.h"
@@ -247,7 +246,7 @@ VOID PerfThread (VOID *Arg)
                         }
 
                         /* Poke at this remote with a sharp stick to see if it is still alive */
-                        if((OutMessage = new OUTMESS) == NULL)
+                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                         {
                             continue;
                         }

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:31 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
 
+#include "ctidbgmem.h"  // CTIDBG_new
 #include "dlldefs.h"
 
 class IM_EX_PNTDB CtiDynamicPointBase : public RWMonitor< RWRecursiveLock< RWMutexLock > >
@@ -51,7 +52,7 @@ public:
 
    virtual CtiDynamicPointBase*  replicate() const
    {
-      return (new CtiDynamicPointBase(*this));
+      return (CTIDBG_new CtiDynamicPointBase(*this));
    }
 
 };

@@ -102,7 +102,7 @@ void CtiIONNetworkLayer::setOutPayload( CtiIONSerializable &payload )
 
     _netOut.header.msgType = 0;  //  ION message
 
-    _netOut.data = new unsigned char[payloadSize];
+    _netOut.data = CTIDBG_new unsigned char[payloadSize];
 
     if( _netOut.data != NULL )
     {

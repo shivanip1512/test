@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/18 16:22:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "cparms.h"
 #include "queues.h"
@@ -110,7 +109,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                     if(xcu->getSendFiller())
                     {
                         /* Allocate some memory */
-                        if((OutMessage = new OUTMESS) == NULL)
+                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                         {
                             return;
                         }
@@ -226,7 +225,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                             for(j = 0; j < Versacom.entries(); j++)
                             {
-                                OUTMESS *NewOutMessage = new OUTMESS( OutMessage );  // Create and copy
+                                OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
 
                                 if(NewOutMessage != NULL)
                                 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONT.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/18 16:22:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:07:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,6 @@
 // #include "btrieve.h"
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "queues.h"
 #include "dsm2.h"
@@ -225,7 +224,7 @@ RemoteControl (OUTMESS *OutMessage)
    }
 
    /* Allocate some memory for the message out */
-   if((MyOutMessage = new OUTMESS) == NULL)
+   if((MyOutMessage = CTIDBG_new OUTMESS) == NULL)
    {
       printf ("Error Allocating Memory\n");
       return(MEMORY);
@@ -302,7 +301,7 @@ RemoteControl (OUTMESS *OutMessage)
       }
 
       /* Now send an execute */
-      if((MyOutMessage = new OUTMESS) == NULL)
+      if((MyOutMessage = CTIDBG_new OUTMESS) == NULL)
       {
          printf ("Error Allocating Memory\n");
          return(MEMORY);
@@ -523,7 +522,7 @@ RemoteControl (OUTMESS *OutMessage)
       }
 
       /* Now send an execute */
-      if((MyOutMessage = new OUTMESS) == NULL)
+      if((MyOutMessage = CTIDBG_new OUTMESS) == NULL)
       {
          printf ("Error Allocating Memory\n");
          return(MEMORY);

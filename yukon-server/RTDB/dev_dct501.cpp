@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/18 21:27:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -287,7 +287,7 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
         {
             if( _nextLPTime[i] <= Now )
             {
-                tmpOutMess = new OUTMESS(*OutMessage);
+                tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
                 lpBlockStartTime = _lastLPTime[i];
 
@@ -440,7 +440,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -476,7 +476,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                 {
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                 }
                 else
                 {
@@ -486,7 +486,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                     }
 
                     resultString = "Error indicated on DCT " + getName() + " / " + pPoint->getName() + ";  Error " + CtiNumStr(Error);
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, UnknownQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, UnknownQuality, AnalogPointType, resultString);
                 }
 
                 if(pData != NULL)
@@ -567,7 +567,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -621,7 +621,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                     Value = 0.0;
                 }
 
-                pData = new CtiPointDataMsg(pPoint->getPointID(),
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                             Value,
                                             pointQuality,
                                             AnalogPointType,
@@ -652,7 +652,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             //    note that timeStamp, Value, and pointQuality are set in the final iteration of the above for loop
             valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                   ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = new CtiPointDataMsg(pPoint->getPointID(),
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                         Value,
                                         pointQuality,
                                         AnalogPointType,
@@ -747,7 +747,7 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
             options+= RWCString("  Capacitor control\n");
         }
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

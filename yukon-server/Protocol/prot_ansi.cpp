@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/03 17:27:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 14:08:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,8 @@
 
 CtiProtocolANSI::CtiProtocolANSI()
 {
-   _inBuff = new BYTE[512];
-//   _outBuff = new BYTE[300];
+   _inBuff = CTIDBG_new BYTE[512];
+//   _outBuff = CTIDBG_new BYTE[300];
    _weDone = false;
    _index = 0;
 
@@ -56,7 +56,7 @@ void CtiProtocolANSI::getGeneralScanTables( BYTE *ptrToOutmessageBuffer )
 {
    int   temp;
 
-   _tables = new ANSI_TABLE_WANTS[2];
+   _tables = CTIDBG_new ANSI_TABLE_WANTS[2];
 
    _tables[0].tableID = 0;
    _tables[0].tableOffset = 0;
@@ -78,7 +78,7 @@ void CtiProtocolANSI::getTables( BYTE *ptrToOutmessageBuffer )
 {
    int   temp;
 
-   _tables = new ANSI_TABLE_WANTS[3];
+   _tables = CTIDBG_new ANSI_TABLE_WANTS[3];
 
    _tables[0].tableID = 0;
    _tables[0].tableOffset = 0;
@@ -107,20 +107,20 @@ void CtiProtocolANSI::getTables( BYTE *ptrToOutmessageBuffer )
 int CtiProtocolANSI::recvOutbound( OUTMESS  *OutMessage )
 {
    BYTE  *bufptr = OutMessage->Buffer.OutMessage;
-   BYTE  *request = new BYTE[256];
+   BYTE  *request = CTIDBG_new BYTE[256];
    BYTE  *ptr = request;
    int   index = 0;
 
    //refill our structs
 
-   _header = new WANTS_HEADER;
+   _header = CTIDBG_new WANTS_HEADER;
 
    if( _header != NULL )
    {
       memcpy( ( void *)_header, bufptr, sizeof( WANTS_HEADER ) );
       bufptr += sizeof( WANTS_HEADER );
 
-      _tables = new ANSI_TABLE_WANTS[_header->numTablesRequested];
+      _tables = CTIDBG_new ANSI_TABLE_WANTS[_header->numTablesRequested];
 
       if( _tables != NULL )
       {
@@ -190,14 +190,14 @@ void CtiProtocolANSI::convertToTable( BYTE *data )
    {
    case 0:
       {
-         _tableZeroZero = new TABLE_00_GEN_CONFIG;
+         _tableZeroZero = CTIDBG_new TABLE_00_GEN_CONFIG;
          memcpy( _tableZeroZero, data, sizeof( TABLE_00_GEN_CONFIG ) );
       }
       break;
 
    case 1:
       {
-         _tableZeroOne = new TABLE_01_GEN_MFG_ID;
+         _tableZeroOne = CTIDBG_new TABLE_01_GEN_MFG_ID;
          memcpy( _tableZeroOne, data, sizeof( TABLE_01_GEN_MFG_ID ) );
 
          delete _tableZeroOne;
@@ -206,7 +206,7 @@ void CtiProtocolANSI::convertToTable( BYTE *data )
 
    case 21:
       {
-         _tableTwoOne = new TABLE_21_ACTUAL_REGISTER;
+         _tableTwoOne = CTIDBG_new TABLE_21_ACTUAL_REGISTER;
          memcpy( _tableTwoOne, data, sizeof( TABLE_21_ACTUAL_REGISTER ) );
       }
       break;

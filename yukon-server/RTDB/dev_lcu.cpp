@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/08 14:28:03 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,7 +147,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             setScanPending();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
 
-            OUTMESS *pNewOutMessage = new OUTMESS(*OutMessage);
+            OUTMESS *pNewOutMessage = CTIDBG_new OUTMESS(*OutMessage);
 
             status = lcuScanInternalStatus(OutMessage);
 
@@ -364,7 +364,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                     setLastFreezeNumber(getLastFreezeNumber() + 1);
 
                     /* then force a scan */
-                    OUTMESS *OutMessage = new OUTMESS;
+                    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
                     if(OutMessage != NULL)
                     {
@@ -499,7 +499,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
             }
         case MASTERLOOPBACK:
             {
-                CtiReturnMsg   *pLoop = new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("Loopback Successful"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+                CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("Loopback Successful"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
 
                 if(pLoop != NULL)
                 {
@@ -549,8 +549,8 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         {
             if((pOM = lcuControl(OutMessage)) == 0)
             {
-                vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), RWCString("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  RWOrdered()) );
+                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), RWCString("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  RWOrdered()) );
             }
             else
             {
@@ -570,8 +570,8 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     dout << RWTime() << " error scanning " << getName()<< endl;
                 }
 
-                vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), RWCString("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
-                retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), RWCString("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
             }
             else
             {
@@ -590,7 +590,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " error looping " << getName()<< endl;
                 }
-                retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),  RWCString("Loopback Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),  RWCString("Loopback Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
             }
             else
             {
@@ -611,7 +611,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered()));
             break;
         }
     }
@@ -774,7 +774,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
     {
         if(InMessage->Buffer.InMessage[3] >= 4)
         {
-            pPIL = new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+            pPIL = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
 
             /*
              *  Due to the T3026's unique nature of connector order determines data order, and a lack of any way to tell
@@ -803,7 +803,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
                     else
                         resultString += "INACTIVE";
 
-                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
                     if(pData != NULL)
                     {
                         if(pPIL != NULL)
@@ -851,7 +851,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
     }
     else
     {
-        pPIL = new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+        pPIL = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
 
         /* Rebuild the status word */
         USHORT lcuDigital = MAKEUSHORT (InMessage->Buffer.InMessage[6], InMessage->Buffer.InMessage[17]);
@@ -876,7 +876,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
                     resultString = "Error " + RWCString(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
                 }
 
-                pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
+                pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
                 if(pData != NULL)
                 {
                     if(pPIL != NULL)
@@ -919,7 +919,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
 
     CtiPointDataMsg *pData = NULL;
 
-    CtiReturnMsg    *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg    *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                              RWCString(InMessage->Return.CommandStr),
                                              RWCString("LCU status request complete"),
                                              InMessage->EventCode & 0x7fff,
@@ -959,7 +959,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
                         resultString = "Error " + RWCString(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
                     }
 
-                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
                     if(pData != NULL)
                     {
                         if(pPIL != NULL)
@@ -1046,7 +1046,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
     }
     else if(isScanFrozen())
     {
-        pPIL  = new CtiReturnMsg(getID(),
+        pPIL  = CTIDBG_new CtiReturnMsg(getID(),
                                  RWCString(InMessage->Return.CommandStr),
                                  RWCString("LCU accumulator request complete"),
                                  InMessage->EventCode & 0x7fff,
@@ -1086,7 +1086,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
 
                 #endif
 
-                pData = new CtiPointDataMsg(pAccumPoint->getPointID(),
+                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(),
                                             PValue, NormalQuality,
                                             DemandAccumulatorPointType,
                                             RWCString( getName() + " point " + pAccumPoint->getName() + " " + CtiNumStr(PValue) ));
@@ -1112,7 +1112,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
 
             /* Apply offset */
             PValue += pAccumPoint->getDataOffset();
-            pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, RWCString( getName() + " point " + pAccumPoint->getName() + " " + CtiNumStr(PValue) ));
+            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, RWCString( getName() + " point " + pAccumPoint->getName() + " " + CtiNumStr(PValue) ));
             if(pData != NULL)
             {
                 pPIL->PointData().insert(pData);
@@ -1124,7 +1124,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
         resetScanFreezeFailed();
 
         // Need to perform an lcuReset here!
-        OUTMESS *OutMessage = new OUTMESS;
+        OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
         if(OutMessage != NULL)
         {
@@ -1152,7 +1152,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
     DOUBLE     PValue;
 
     CtiPointDataMsg *pData = NULL;
-    CtiReturnMsg     *pPIL = new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("LCU analog request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(), RWCString(InMessage->Return.CommandStr), RWCString("LCU analog request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
 
 
     switch(_lcuType)
@@ -1193,7 +1193,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                     }
                     #endif
 
-                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
                     {
                         if(pPIL != NULL)
@@ -1247,7 +1247,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
                         resultString = "Error " + RWCString(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
                     }
 
-                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
                     {
                         if(pPIL != NULL)
@@ -1465,7 +1465,7 @@ void CtiDeviceLCU::initLCUGlobals()
     }
 }
 
-// delete and set to new val.
+// delete and set to CTIDBG_new val.
 CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
 {
     LockGuard guard(monitor());
@@ -1475,7 +1475,7 @@ CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
         delete _lastControlMessage;
     }
 
-    _lastControlMessage = new OUTMESS( *pOutMessage );
+    _lastControlMessage = CTIDBG_new OUTMESS( *pOutMessage );
 
     _lastCommand = RWCString( _lastControlMessage->Request.CommandStr );
 
@@ -1619,7 +1619,7 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
             if(getStageTime() != rwEpoch )  // This check prevents us from repeating the send operation repeatedly..
             {
                 /* Allocate the memory for the queue entry */
-                if((MyOutMessage =  new OUTMESS(*OutMessage) ) != NULL)
+                if((MyOutMessage =  CTIDBG_new OUTMESS(*OutMessage) ) != NULL)
                 {
                     /* Load up all the goodies */
                     EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
@@ -2061,7 +2061,7 @@ void CtiDeviceLCU::dumpStatus(BYTE Byte4, BYTE Byte5)
 bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a valid MASTERCOM message
 {
     bool bStatus = false;
-    bool bnewminute = false;
+    bool bCTIDBG_CTIDBG_newminute = false;
     static int currentminute = 0;                  // What minute was it last?
     int nextinterval = DUTYCYCLESIZE;
     RWTime now;                             // Current Time.
@@ -2093,7 +2093,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
 
         if(currentminute != (now.minute() % DUTYCYCLESIZE))
         {
-            bnewminute = true;
+            bCTIDBG_CTIDBG_newminute = true;
             currentminute = now.minute() % DUTYCYCLESIZE;
             if(currentminute > 0) nextinterval = currentminute - 1;
             _honktime[currentminute] = make_pair( now.seconds() - now.seconds() % 60, 0.0 );
@@ -2115,7 +2115,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
         {
             bStatus = true;
 
-            if( bnewminute )
+            if( bCTIDBG_CTIDBG_newminute )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " DUTY CYCLE PAUSE: ";

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/08/28 14:56:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ private:
       {
       case TYPE_CCU711:
          {
-            CtiTransmitter711Info *p711 = new CtiTransmitter711Info;
+            CtiTransmitter711Info *p711 = CTIDBG_new CtiTransmitter711Info;
 
             p711->Type = getType();
 
@@ -183,7 +183,7 @@ private:
          }
       default:
          {
-            _trxInfo = new CtiTransmitterInfo;
+            _trxInfo = CTIDBG_new CtiTransmitterInfo;
             _trxInfo->Type = getType();
             break;
          }

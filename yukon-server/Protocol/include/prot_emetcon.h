@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/24 14:38:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@ using namespace std;
 
 #include <rw/tpslist.h>
 
+#include "ctidbgmem.h" // defines CTIDBG_new
 #include "dsm2.h"
 #include "cmdparse.h"
 
@@ -258,7 +259,7 @@ public:
             {
                 _ied = getIED();
 
-                OUTMESS *Out = new OUTMESS(aRef.getOutMessage(i));
+                OUTMESS *Out = CTIDBG_new OUTMESS(aRef.getOutMessage(i));
                 if(Out != NULL)
                 {
                     _out.insert( Out );

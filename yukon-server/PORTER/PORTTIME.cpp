@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/19 15:54:22 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/11/15 14:08:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,6 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <malloc.h>
 
 #include "queues.h"
 #include "dsm2.h"
@@ -140,7 +139,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 }
 
                 /* Allocate some memory */
-                if((OutMessage = new OUTMESS) == NULL)
+                if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                 {
                     return;
                 }
@@ -194,7 +193,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                     {
                     case TYPE_CCU711:
                         /* Allocate some memory */
-                        if((OutMessage = new OUTMESS) == NULL)
+                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                         {
                             continue;
                         }
@@ -278,7 +277,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                                 if(CTIScanEnv ("DSM2_LEADTSYNCS", &LeadTimeSyncs))
                                 {
                                     /* Allocate some memory */
-                                    if((OutMessage = new OUTMESS) == NULL)
+                                    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                                     {
                                         continue;
                                     }
@@ -345,7 +344,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                                         }
 
                                         /* This one is ok so send it */
-                                        if((OutMessage = new OUTMESS) == NULL)
+                                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                                         {
                                             continue;
                                         }
@@ -429,7 +428,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                     {
                     case TYPE_TDMARKV:
                         /* Allocate some memory */
-                        if((OutMessage = new OUTMESS) == NULL)
+                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                         {
                             continue;
                         }
@@ -524,7 +523,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 {
                 case TYPE_ILEXRTU:
                     /* Allocate some memory */
-                    if((OutMessage = new OUTMESS) == NULL)
+                    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                     {
                         continue;
                     }
@@ -578,7 +577,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 case TYPE_WELCORTU:
                 case TYPE_VTU:
                     /* Allocate some memory */
-                    if((OutMessage = new OUTMESS) == NULL)
+                    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                     {
                         continue;
                     }

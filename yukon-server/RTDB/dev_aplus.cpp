@@ -86,7 +86,7 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
     // allocate this to as big as we can possible get
     if (_dataBuffer == NULL)
     {
-        _dataBuffer = new BYTE[sizeof (AlphaPPlusScanData_t)];
+        _dataBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusScanData_t)];
 
         if (_dataBuffer != NULL)
         {
@@ -104,7 +104,7 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
 
     if (_loadProfileBuffer == NULL)
     {
-        _loadProfileBuffer = new BYTE[sizeof (AlphaPPlusLoadProfile_t)];
+        _loadProfileBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusLoadProfile_t)];
 
         if (_loadProfileBuffer != NULL)
         {
@@ -446,7 +446,7 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 setReadFunction(0);
 
                                 // allocate this on the fly
-                                _workBuffer = new BYTE[sizeof (AlphaPPlusClass0Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass0Raw_t)];
 
                                 setClassReadComplete (FALSE);
                                 setPreviousState (StateScanValueSet7);
@@ -639,7 +639,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                             {
                                 delete []_workBuffer;
                                 _workBuffer = NULL;
-                                _workBuffer = new BYTE[sizeof (AlphaPPlusClass6Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass6Raw_t)];
                             }
 
                             // moving to load profile next, reset parameters
@@ -681,7 +681,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                             {
                                 delete []_workBuffer;
                                 _workBuffer = NULL;
-                                _workBuffer = new BYTE[sizeof (AlphaPPlusClass2Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass2Raw_t)];
                             }
 
                             // moving to load profile next, reset parameters
@@ -729,7 +729,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                             {
                                 delete []_workBuffer;
                                 _workBuffer = NULL;
-                                _workBuffer = new BYTE[sizeof (AlphaPPlusClass14Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass14Raw_t)];
                             }
 
                             // moving to load profile next, reset parameters
@@ -797,7 +797,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                                     *   of the next day record
                                     ***********************
                                     */
-                                    _workBuffer = new BYTE[ptr->class14.dayRecordSize + 100];
+                                    _workBuffer = CTIDBG_new BYTE[ptr->class14.dayRecordSize + 100];
 
                                 }
 
@@ -1015,11 +1015,11 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                 {
                     // Got one last read.. get two crcs at end, minus the data byte we got last read and viola, add only one.
                     setBytesToRetrieve((Transfer.getInBuffer()[4] & ~0x80) + 1);
-    
+
                     // Copy in our solo data byte here .
                     _dataBuffer[getTotalByteCount()] = Transfer.getInBuffer()[5];
                     setTotalByteCount (getTotalByteCount() + 1);
-    
+
                     //                        DUPRep->Status = InBuffer[3];
                     if (Transfer.getInBuffer()[4] & 0x80)
                     {
@@ -1030,7 +1030,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                     {
                         setClassReadComplete (FALSE);
                     }
-    
+
                     setPreviousState (StateScanDecode4);
                     setCurrentState (StateScanValueSet5FirstScan);
                 }
@@ -1507,7 +1507,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1530,7 +1530,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
             (tmpCurrentState == StateHandshakeAbort) ||
             (InMessage->EventCode != 0))
         {
-            CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+            CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
             if (pMsg != NULL)
             {
@@ -1599,8 +1599,8 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
             // set pvalue
             PValue = (FLOAT) (DUPRep->Status & ALPHA_POWER_FAIL ? CLOSED : OPENED);
 
-            // add new message with plugged
-            pData = new CtiPointDataMsg(pNumericPoint->getPointID(),
+            // add CTIDBG_new message with plugged
+            pData = CTIDBG_new CtiPointDataMsg(pNumericPoint->getPointID(),
                                         PValue,
                                         NonUpdatedQuality,
                                         AnalogPointType);
@@ -1686,7 +1686,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1695,7 +1695,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.Attempt,
                                             InMessage->Return.TrxID,
                                             InMessage->Return.UserID);
-    CtiReturnMsg   *pLastLPIntervals = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
                                                         RWCString(InMessage->Return.CommandStr),
                                                         RWCString(),
                                                         InMessage->EventCode & 0x7fff,
@@ -1812,7 +1812,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                             pLastLPIntervals = NULL;
                                         }
 
-                                        pLastLPIntervals = new CtiReturnMsg(getID(),
+                                        pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
                                                                             RWCString(InMessage->Return.CommandStr),
                                                                             RWCString(),
                                                                             InMessage->EventCode & 0x7fff,

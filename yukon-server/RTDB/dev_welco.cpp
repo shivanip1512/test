@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/08 23:24:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:08:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -392,7 +392,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         return(NORMAL);
     }
 
-    if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -427,7 +427,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                 if(MyInMessage[2] & (EW_FMW_BIT))
                 {
                     result += RWCString("Firmware error is indicated by RTU\n");
-                    OutMessage = new OUTMESS;
+                    OutMessage = CTIDBG_new OUTMESS;
 
                     if(OutMessage != NULL)
                     {
@@ -496,7 +496,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                     setLastFreezeNumber(TRUE);
 
                     /* then force a scan */
-                    OutMessage = new OUTMESS;
+                    OutMessage = CTIDBG_new OUTMESS;
 
                     if(OutMessage != NULL)
                     {
@@ -626,7 +626,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                                 _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
+                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().insert(pData);
@@ -652,7 +652,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                             _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
                             if(pData != NULL)
                             {
@@ -772,7 +772,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                                 _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
+                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().insert(pData);
@@ -812,7 +812,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                             _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
                             if(pData != NULL)
                             {
                                 ReturnMsg->PointData().insert(pData);
@@ -880,7 +880,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
-                        pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().insert(pData);
@@ -894,7 +894,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                             _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
-                            pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
                             if(pData != NULL)
                             {
@@ -952,7 +952,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
-                        pData = new CtiPointDataMsg(PointRecord->getPointID(),
+                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                     PValue,
                                                     NormalQuality,
                                                     StatusPointType,
@@ -968,7 +968,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
                             _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
-                            pData = new CtiPointDataMsg(PointRecord->getPointID(),
+                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                         PValue,
                                                         NormalQuality,
                                                         StatusPointType,
@@ -1039,7 +1039,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         _snprintf(tStr, 126, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
-                        pData = new CtiPointDataMsg(NumericPoint->getPointID(),
+                        pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(),
                                                     PValue,
                                                     NormalQuality,
                                                     AnalogPointType,
@@ -1131,7 +1131,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                         _snprintf(tStr, 126, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
-                        pData = new CtiPointDataMsg(NumericPoint->getPointID(),
+                        pData = CTIDBG_new CtiPointDataMsg(NumericPoint->getPointID(),
                                                     PValue,
                                                     NormalQuality,
                                                     AnalogPointType,
@@ -1171,7 +1171,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     /* Check if we need to do a continue */
     if(!((*(InMessage->Buffer.InMessage - 3)) & 0x01))
     {
-        OutMessage = new OUTMESS;
+        OutMessage = CTIDBG_new OUTMESS;
 
         if(OutMessage != NULL)
         {
@@ -1303,7 +1303,7 @@ INT CtiDeviceWelco::WelCoTimeSync(INMESS *InMessage, RWTPtrSlist< OUTMESS > &out
 {
     INT   status = NORMAL;
 
-    OUTMESS *OutMessage = new OUTMESS;
+    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
     if(OutMessage != NULL)
     {
@@ -1393,7 +1393,7 @@ INT CtiDeviceWelco::WelCoDeadBands(INMESS *InMessage, RWTPtrSlist< OUTMESS > &ou
 {
     INT status = NORMAL;
 
-    OUTMESS *OutMessage = new OUTMESS;
+    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
     if(OutMessage != NULL)
     {
@@ -1469,7 +1469,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
         if(AnalogFirst <= AnalogLast)
         {
 
-            MyOutMessage = new OUTMESS( *OutMessage );      // Use the copy constructor...
+            MyOutMessage = CTIDBG_new OUTMESS( *OutMessage );      // Use the copy constructor...
 
 
             if(MyOutMessage != NULL)
@@ -1553,7 +1553,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
 
                         if(ByteCount >= 250 && Position != (AnalogLast + 1))
                         {
-                            MyOutMessage = new OUTMESS( *OutMessage );
+                            MyOutMessage = CTIDBG_new OUTMESS( *OutMessage );
 
                             if(MyOutMessage == NULL)
                             {
@@ -1686,7 +1686,7 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
     }
 #else
 
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
     if(pMsg != NULL)
     {
@@ -1736,7 +1736,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
 
             for(int i = 0; i < cnt; i++)
             {
-                OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
+                OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
 
                 if(OutMTemp != NULL)
                 {
@@ -1775,7 +1775,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( new CtiReturnMsg(getID(),
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                              RWCString(OutMessage->Request.CommandStr),
                                              RWCString("Welco Devices do not support this command (yet?)"),
                                              nRet,
@@ -1858,7 +1858,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         if(!OutMessage->TargetID) OutMessage->TargetID = getID();
                         if(!OutMessage->DeviceID) OutMessage->DeviceID = getID();
 
-                        OUTMESS *MyOutMessage = new OUTMESS(*OutMessage);
+                        OUTMESS *MyOutMessage = CTIDBG_new OUTMESS(*OutMessage);
 
                         MyOutMessage->OutLength = 3;
 
@@ -1905,7 +1905,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         outList.insert( OutMessage );
                         OutMessage = 0;
 
-                        CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, RWTime(), -1, 100 );
+                        CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( ctlPoint->getDeviceID(), ctlPoint->getPointID(), controlState, RWTime(), -1, 100 );
 
                         hist->setMessagePriority( hist->getMessagePriority() + 1 );
                         vgList.insert( hist );
@@ -1913,7 +1913,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         if(ctlPoint->isPseudoPoint())
                         {
                             // There is no physical point to observe and respect.  We lie to the control point.
-                            CtiPointDataMsg *pData = new CtiPointDataMsg(ctlPoint->getID(),
+                            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(ctlPoint->getID(),
                                                                          (DOUBLE)controlState,
                                                                          NormalQuality,
                                                                          StatusPointType,
@@ -1922,7 +1922,7 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                             vgList.insert(pData);
                         }
 
-                        retList.insert( new CtiReturnMsg(getID(), parse.getCommandStr(), RWCString("Command submitted to port control")) );
+                        retList.insert( CTIDBG_new CtiReturnMsg(getID(), parse.getCommandStr(), RWCString("Command submitted to port control")) );
                     }
                 }
                 else

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2002/11/07 22:52:50 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2002/11/15 14:07:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -392,7 +392,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
         try
         {
             /*
-             *  This next bit blocks on a connect and creates a new
+             *  This next bit blocks on a connect and creates a CTIDBG_new
              */
 
             /*
@@ -422,8 +422,8 @@ void CtiVanGogh::VGConnectionHandlerThread()
             {
                 CtiLockGuard<CtiMutex> guard(server_mux);
 
-                XChg                                = new CtiExchange(sock);
-                CtiVanGoghConnectionManager *ConMan = new CtiVanGoghConnectionManager(XChg, &MainQueue_);
+                XChg                                = CTIDBG_new CtiExchange(sock);
+                CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
 
                 clientConnect( ConMan );
                 ConMan->ThreadInitiate();     // Kick off the connection's communication threads.
@@ -637,7 +637,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     {
                                         // Message is no longer reportable to any clients...
 
-                                        pSigNew = new CtiSignalMsg(pSig->getPointID(),
+                                        pSigNew = CTIDBG_new CtiSignalMsg(pSig->getPointID(),
                                                                    pSig->getSOE(),
                                                                    pSig->getText(),
                                                                    pSig->getAdditionalInfo(),
@@ -678,7 +678,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                         if(pSigNew != NULL)
                         {
-                            // Make sure that anyone who cared about the first one gets the new state of the tag!
+                            // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
                             postMessageToClients(pSigNew);
                             _signalMsgQueue.putQueue(pSigNew);
                         }
@@ -731,7 +731,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 if(pSig != NULL)
                                 {
                                     // Message is no longer reportable to any clients...
-                                    pSigNew = new CtiSignalMsg(pSig->getPointID(),
+                                    pSigNew = CTIDBG_new CtiSignalMsg(pSig->getPointID(),
                                                                pSig->getSOE(),
                                                                pSig->getText(),
                                                                pSig->getAdditionalInfo(),
@@ -759,7 +759,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                     if(pSigNew != NULL)
                     {
-                        // Make sure that anyone who cared about the first one gets the new state of the tag!
+                        // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
                         postMessageToClients(pSigNew);
                         _signalMsgQueue.putQueue(pSigNew);
                     }
@@ -831,7 +831,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pendingControlRequest.getControl().setPAOID( did );
                                 pendingControlRequest.getControl().setStartTime(RWTime(YUKONEOT));
 
-                                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
                                 pendingControlRequest.setSignal( pFailSig );
 
@@ -866,7 +866,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                             }
                                             else
                                             {
-                                                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);         // It is a new
+                                                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);         // It is a CTIDBG_new
                                                 updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol );
                                             }
 
@@ -881,7 +881,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     }
                                 }
 
-                                CtiSignalMsg *pCRP = new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
                                 MainQueue_.putQueue( pCRP );
                                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
@@ -922,7 +922,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                     try
                     {
-                        CtiMultiMsg *pMulti = new CtiMultiMsg;
+                        CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
 
                         if(pMulti)
                         {
@@ -1068,7 +1068,7 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
             RWCString desc = RWCString(temp) + resolveDBChangeType(Msg.getTypeOfChange()) + resolveDBChanged(Msg.getDatabase());
 
-            CtiSignalMsg *pSig = new CtiSignalMsg(0, 0, desc, "DATABASE CHANGE");
+            CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(0, 0, desc, "DATABASE CHANGE");
 
             pSig->setUser(Msg.getUser());
 
@@ -1290,13 +1290,13 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                     // This is a forced reading, which must be written, it should not
                     // however cause any change in normal pending scanned readings
 
-                    _archiverQueue.putQueue( new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime()));
+                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime()));
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew))
                 {
-                    _archiverQueue.putQueue( new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime()));
+                    _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime()));
                     TempPoint->setArchivePending(FALSE);
                 }
             }
@@ -1311,7 +1311,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                 dout << RWTime() << " " << temp << endl;
             }
 
-            CtiSignalMsg *pSig = new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Point Data Relay");
+            CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Point Data Relay");
             pSig->setUser(aPD.getUser());
             _signalMsgQueue.putQueue(pSig);
 
@@ -1366,7 +1366,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
                     dout << RWTime() << " " << temp << endl;
                 }
 
-                pSig = new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Signal Relay");
+                pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, temp, "FAIL: Signal Relay");
                 pSig->setUser(aSig.getUser());
                 status = IDNF; // Error is ID not found!
             }
@@ -1398,7 +1398,7 @@ INT CtiVanGogh::archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCE
         if(aCEHM.getPAOId() > 0)
         {
             // See if I know about this PAO (Device) ID
-            _commErrorHistoryQueue.putQueue( new CtiTableCommErrorHistory(aCEHM.getPAOId(),
+            _commErrorHistoryQueue.putQueue( CTIDBG_new CtiTableCommErrorHistory(aCEHM.getPAOId(),
                                                                           aCEHM.getDateTime(),
                                                                           aCEHM.getSOE(),
                                                                           aCEHM.getErrorType(),
@@ -1595,7 +1595,7 @@ CtiMultiMsg* CtiVanGogh::generateMultiMessageForConnection(const CtiVanGoghConne
 {
     INT            status   = NORMAL;
 
-    CtiMultiMsg    *pMulti  = new CtiMultiMsg;
+    CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
 
 
     if(pMulti != NULL)
@@ -1977,7 +1977,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg.getControl().setStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
                 pendingControlLMMsg.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
 
-                CtiSignalMsg *pFailSig = new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), pMsg->getUser());
+                CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
                 pendingControlLMMsg.setSignal( pFailSig );
 
@@ -2005,7 +2005,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                             }
                             else if( pendingControlLMMsg.getControl().getControlType() == ppo.getControl().getControlType() )    // Same types?  Then this is a continuation of the old command!
                             {
-                                ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);         // It is a new
+                                ppo.getControl().setActiveRestore(LMAR_CONT_CONTROL);         // It is a CTIDBG_new
                                 pendingControlLMMsg.getControl().setStartTime(ppo.getControl().getStartTime());
                                 updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol, pMsg->getMessageTime() );
                                 pendingControlLMMsg.getControl().setPreviousLogTime(ppo.getControl().getPreviousLogTime());
@@ -2013,7 +2013,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                             }
                             else
                             {
-                                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);         // It is a new
+                                ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);         // It is a CTIDBG_new
                                 updateControlHistory( pPoint->getPointID(), CtiPendingPointOperations::newcontrol, pMsg->getMessageTime() );
                             }
                         }
@@ -2113,7 +2113,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
     INT status = NORMAL;
 
     CtiTableSignal *pSig;
-    CtiMultiMsg    *pMulti  = new CtiMultiMsg;
+    CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
 
 
     if(pMulti != NULL)
@@ -2136,7 +2136,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                     {
                         if( pPC->getManagerList().contains(&VGCM) || (VGCM.isRegForChangeType(TempPoint->getType())))
                         {
-                            CtiPointDataMsg *pDat = new CtiPointDataMsg(TempPoint->getID(),
+                            CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
                                                                         pDyn->getValue(),
                                                                         pDyn->getQuality(),
                                                                         TempPoint->getType(),
@@ -2162,7 +2162,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                             {
                                 if((pSig = _signalsPending.getMap().findValue(&CtiHashKey(TempPoint->getID()))) != NULL)
                                 {
-                                    CtiSignalMsg *pNewSig = new CtiSignalMsg(TempPoint->getID(),
+                                    CtiSignalMsg *pNewSig = CTIDBG_new CtiSignalMsg(TempPoint->getID(),
                                                                              pSig->getSOE(),
                                                                              pSig->getText(),
                                                                              pSig->getAdditionalInfo(),
@@ -2273,7 +2273,7 @@ INT CtiVanGogh::loadPendingSignals()
                         {
                             /*
                              *  The point just returned from the rdr already was in my list.  We need to
-                             *  update my list entry to the new settings!
+                             *  update my list entry to the CTIDBG_new settings!
                              */
 
                             pSig->DecodeDatabaseReader(rdr);     // Fills himself in from the reader
@@ -2288,12 +2288,12 @@ INT CtiVanGogh::loadPendingSignals()
                         }
                         else
                         {
-                            pSig = new CtiTableSignal;  // Use the reader to get me an object of the proper type
+                            pSig = CTIDBG_new CtiTableSignal;  // Use the reader to get me an object of the proper type
 
                             if(pSig)
                             {
                                 pSig->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
-                                _signalsPending.getMap().insert( new CtiHashKey(pSig->getPointID()), pSig ); // Stuff it in the list
+                                _signalsPending.getMap().insert( CTIDBG_new CtiHashKey(pSig->getPointID()), pSig ); // Stuff it in the list
                             }
                         }
                     }
@@ -2360,7 +2360,7 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
 
                                 if( Msg->getSignalGroup() > SignalEvent && !(Msg->getTags() & TAG_REPORT_MSG_TO_ALARM_CLIENTS) )
                                 {
-                                    CtiHashKey *pKey = new CtiHashKey(sig.getPointID());
+                                    CtiHashKey *pKey = CTIDBG_new CtiHashKey(sig.getPointID());
                                     CtiTableSignal *pNewSig = sig.replicate();
 
                                     if(pKey != NULL && pNewSig != NULL)
@@ -3148,7 +3148,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap)
 
                 if(!nonUpdated)
                 {
-                    CtiSignalMsg *pSig = new CtiSignalMsg(point.getID(), 0, "Non Updated", getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm));
+                    CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(point.getID(), 0, "Non Updated", getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm));
 
                     if(point.getAlarming().getAlarmStates(alarm) > SignalEvent)
                     {
@@ -3159,7 +3159,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap)
                     aWrap.getMulti()->insert( pSig );
                 }
 
-                CtiPointDataMsg *pDat = new CtiPointDataMsg(point.getID(), pDyn->getValue(), pDyn->getQuality(), point.getType(), "Non Updated", pDyn->getDispatch().getTags());
+                CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point.getID(), pDyn->getValue(), pDyn->getQuality(), point.getType(), "Non Updated", pDyn->getDispatch().getTags());
                 pDat->setTime(pDyn->getTimeStamp());
 
                 aWrap.getMulti()->insert( pDat );
@@ -3456,7 +3456,7 @@ INT CtiVanGogh::analyzeForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &
                     addn = "Manual Update";
                 }
 
-                pSig = new CtiSignalMsg(point.getID(), pData->getSOE(), txt, addn);
+                pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), txt, addn);
                 if(pSig != NULL)
                 {
                     pSig->setUser(pData->getUser());
@@ -3493,7 +3493,7 @@ INT CtiVanGogh::analyzeForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper 
                 _snprintf(tstr, sizeof(tstr), "Value set to %.3f", pData->getValue());
                 RWCString addn = "Manual Update";
 
-                pSig = new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, addn);
+                pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, addn);
                 if(pSig != NULL)
                 {
                     pSig->setUser(pData->getUser());
@@ -3786,7 +3786,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                         Mgr->setClientQuestionable(TRUE);      // Mark the old guy as needing confirmation (also causes eventual cleanup if he doesn't respond.)
                         Mgr->setClientRegistered(TRUE);        // Mark the old guy as having been previously registered
 
-                        Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15), 500);   // Ask the old guy to respond to us..
+                        Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15), 500);   // Ask the old guy to respond to us..
                         CM->setClientRegistered(FALSE);                                         // New guy is not quite kosher yet...
 
                         questionedEntry = TRUE;
@@ -3830,7 +3830,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
             dout << NowTime.now() << " Connection rejected, entry will be deleted." << endl;
         }
 
-        CM->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the new guy to blow off..
+        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the CTIDBG_new guy to blow off..
 
         clientShutdown(CM);
     }
@@ -3884,7 +3884,7 @@ int  CtiVanGogh::clientArbitrationWinner(CtiConnectionManager *CM)
                 dout << Now << " Dispatch will shut it down now." << endl;
             }
 
-            Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the new guy to blow off..
+            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15), 500);  // Ask the CTIDBG_new guy to blow off..
 
             clientShutdown(Mgr);
             break;
@@ -4061,7 +4061,7 @@ void CtiVanGogh::doPendingOperations()
                         else if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress &&
                                 now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
                         {
-                            // We have accumulated enough time against this control to warrant a new log entry!
+                            // We have accumulated enough time against this control to warrant a CTIDBG_new log entry!
                             updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalcrossing, now);
                         }
                         else if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress &&
@@ -4758,7 +4758,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
             if(pDyn != NULL)
             {
                 UINT currtags  = (pDyn->getDispatch().getTags() & (tagmask & MASK_ANY_DISABLE));        // All (dev & pnt) ablement tags.
-                UINT newpttags = (setmask & (tagmask & MASK_ANY_DISABLE));
+                UINT CTIDBG_newpttags = (setmask & (tagmask & MASK_ANY_DISABLE));
 
                 UINT currpttags = (currtags & (tagmask & MASK_ANY_POINT_DISABLE));                      // Point only ablement tags.
                 UINT pttags   = (setmask & (tagmask & MASK_ANY_POINT_DISABLE));
@@ -4766,7 +4766,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
                 UINT currdvtags = (currtags & (tagmask & MASK_ANY_DEVICE_DISABLE));                     // Device only ablement tags.
                 UINT dvtags   = (setmask & (tagmask & MASK_ANY_DEVICE_DISABLE));
 
-                if( currtags != newpttags )      // Is anything different?
+                if( currtags != CTIDBG_newpttags )      // Is anything different?
                 {
                     different = true;
 
@@ -4790,7 +4790,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
                     }
 
                     pDyn->getDispatch().resetTags(tagmask);
-                    pDyn->getDispatch().setTags(newpttags);
+                    pDyn->getDispatch().setTags(CTIDBG_newpttags);
                 }
             }
         }
@@ -5175,7 +5175,7 @@ void CtiVanGogh::establishListener()
         NetPort  = RWInetPort(VANGOGHNEXUS);
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
-        Listener = new RWSocketListener(NetAddr);
+        Listener = CTIDBG_new RWSocketListener(NetAddr);
 
         if(!Listener)
         {
@@ -5286,7 +5286,7 @@ void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
 
     cmdstr += RWCString(" select pointid " + CtiNumStr(pPoint->getPointID()));
 
-    if(pReq = new CtiRequestMsg( deviceid, cmdstr ))
+    if(pReq = CTIDBG_new CtiRequestMsg( deviceid, cmdstr ))
     {
         pReq->setUser( Cmd->getUser() );
         writeMessageToPIL((CtiMessage*&)pReq);
@@ -5344,7 +5344,7 @@ void CtiVanGogh::bumpDeviceToAlternateRate(CtiPointBase *pPoint)
 {
     if(!pPoint->isPseudoPoint())
     {
-        CtiCommandMsg *pAltRate = new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
+        CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
         if(pAltRate)
         {
             pAltRate->insert(-1); // token
@@ -5604,7 +5604,7 @@ void CtiVanGogh::insertAndPostControlHistoryPoints( CtiPendingPointOperations &p
                         ctltime = pPoint->computeValueForUOM((double)ppc.getControl().getCurrentAnnualTime());
                     }
 
-                    MainQueue_.putQueue( new CtiPointDataMsg(pPoint->getPointID(), ctltime, NormalQuality, pPoint->getType(), pPoint->getName() + " control history"));
+                    MainQueue_.putQueue( CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ctltime, NormalQuality, pPoint->getType(), pPoint->getName() + " control history"));
                 }
             }
         }
@@ -5636,7 +5636,7 @@ void CtiVanGogh::insertAndPostControlHistoryPoints( CtiPendingPointOperations &p
 #endif
 
                 double ai = pPoint->computeValueForUOM((double)remainingseconds);
-                MainQueue_.putQueue( new CtiPointDataMsg(pPoint->getPointID(), ai, NormalQuality, pPoint->getType(), pPoint->getName() + " control remaining"));
+                MainQueue_.putQueue( CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ai, NormalQuality, pPoint->getType(), pPoint->getName() + " control remaining"));
 
                 ppc.getControl().setPreviousStopReportTime(now);
             }
@@ -5688,7 +5688,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
         }
     }
 
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(did, ChangePAODb, "Device", objtype, ChangeTypeUpdate);
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(did, ChangePAODb, "Device", objtype, ChangeTypeUpdate);
     dbChange->setUser(user);
     dbChange->setSource(DISPATCH_APPLICATION_NAME);
     sigList.insert(dbChange);
@@ -5736,7 +5736,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
         }
     }
 
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
     dbChange->setUser(user);
     dbChange->setSource(DISPATCH_APPLICATION_NAME);
     Multi.insert(dbChange);
@@ -5758,7 +5758,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id)
         UINT tagmask = TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_CONTROL_BY_DEVICE;
 
         {
-            CtiMultiMsg *pMulti = new CtiMultiMsg;
+            CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
 
             if(pMulti)
             {
@@ -5965,7 +5965,7 @@ int CtiVanGogh::analyzeNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrap
                             dout << RWTime() << " **** HIGH REASONABILITY Violation ****  Point: " << pointNumeric.getName() << " " << text << endl;
                         }
 
-                        pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability), pData->getUser());
+                        pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::highReasonability), pData->getUser());
                     }
 
                     pDyn->setLastSignal(CtiTablePointAlarming::highReasonability);
@@ -6004,7 +6004,7 @@ int CtiVanGogh::analyzeNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrap
                             dout << RWTime() << " **** LOW REASONABILITY Violation ****  Point: " << pointNumeric.getName() << " " << text << endl;
                         }
 
-                        pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability), pData->getUser());
+                        pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(CtiTablePointAlarming::lowReasonability), pData->getUser());
                     }
 
                     pDyn->setLastSignal(CtiTablePointAlarming::lowReasonability);
@@ -6066,7 +6066,7 @@ void CtiVanGogh::analyzeNumericRateOfChange(int alarm, CtiPointDataMsg *pData, C
 
                 pDyn->setLastSignal(alarm);
                 // OK, we have an actual alarm condition to gripe about!
-                pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), tstr, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(alarm), pData->getUser());
+                pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), tstr, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(alarm), pData->getUser());
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
                 if(pointNumeric.getAlarming().getAlarmStates(alarm) > SignalEvent)
                 {
@@ -6189,7 +6189,7 @@ void CtiVanGogh::analyzeNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMult
                     dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " " << text << endl;
                 }
 
-                pSig = new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(alarm), pData->getUser());
+                pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmStates(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmStates(alarm), pData->getUser());
 
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
                 if(pointNumeric.getAlarming().getAlarmStates(alarm) > SignalEvent)
@@ -6271,7 +6271,7 @@ void CtiVanGogh::analyzeStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWr
 
                 pDyn->setLastSignal(alarm);
                 // OK, we have an actual alarm condition to gripe about!
-                pSig = new CtiSignalMsg(point.getID(), pData->getSOE(), ResolveStateName(point.getStateGroupID(), (int)pData->getValue()), getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), ResolveStateName(point.getStateGroupID(), (int)pData->getValue()), getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
 
                 pSig->setAdditionalInfo("UCOS");
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
@@ -6360,7 +6360,7 @@ void CtiVanGogh::analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
             pDyn->setLastSignal(alarm);
             // OK, we have an actual alarm condition to gripe about!
-            pSig = new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+            pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, getAlarmStateName( point.getAlarming().getAlarmStates(alarm) ), GeneralLogType, point.getAlarming().getAlarmStates(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
             // This is an alarm if the alarm state indicates anything other than SignalEvent.
             if(point.getAlarming().getAlarmStates(alarm) > SignalEvent)
             {

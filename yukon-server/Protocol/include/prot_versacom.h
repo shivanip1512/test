@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/21 22:10:32 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -178,7 +178,7 @@ public:
 
          for( int i = 0; i < aRef.entries(); i++ )
          {
-            VSTRUCT *Vst = new VSTRUCT;
+            VSTRUCT *Vst = CTIDBG_new VSTRUCT;
             memcpy((void*)Vst, &aRef.getVStruct(i), sizeof(VSTRUCT));
 
             _vst.insert( Vst );

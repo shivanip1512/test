@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/14 15:42:43 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:07:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,39 +17,7 @@
 #ifndef __YUKON_H__
 #define __YUKON_H__
 
-
-#define _CRTDBG_MAP_ALLOC
-
-#include <windows.h>
-#include <crtdbg.h>
-using namespace std;
-
-#ifdef   _DEBUG
- #define SET_CRT_OUTPUT_MODES \
-           _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE ); \
-           _CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT ); \
-           _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE ); \
-           _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT ); \
-           _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE ); \
-           _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT ); \
-           _CrtSetDbgFlag((_CRTDBG_LEAK_CHECK_DF) | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
- #define SET_CRT_DEBUG_FIELD(a) \
-            _CrtSetDbgFlag((a) | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
- #define CLEAR_CRT_DEBUG_FIELD(a) \
-            _CrtSetDbgFlag(~(a) & _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
-
- #define CTIDBG_new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-
-#else
-
- #define SET_CRT_OUTPUT_MODES
- #define SET_CRT_DEBUG_FIELD(a)   ((void) 0)
- #define CLEAR_CRT_DEBUG_FIELD(a) ((void) 0)
- #define CTIDBG_new new
-
-#endif
-
-
+#include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 
 #include <rw\thr\mutex.h>
 #include "dlldefs.h"

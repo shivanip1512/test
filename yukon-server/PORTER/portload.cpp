@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/10/23 21:10:53 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:08:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,6 @@
 // #include "btrieve.h"
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "queues.h"
 #include "dsm2.h"
@@ -138,7 +137,7 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
                             break;
 
                         /* Allocate some memory */
-                        if( (OutMessage = new OUTMESS) == NULL )
+                        if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                         {
                             return(MEMORY);
                         }
@@ -273,7 +272,7 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
                 }
 
                 /* Allocate some memory for additional functions */
-                if( (OutMessage = new OUTMESS) == NULL )
+                if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                 {
                     return(MEMORY);
                 }

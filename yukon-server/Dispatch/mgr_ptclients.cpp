@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/24 19:54:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:07:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ void verifyInitialDynamicData(CtiPoint *&pTempPoint)
 
     if(pDyn == NULL)
     {
-        if(NULL != (pDyn = new CtiDynamicPointDispatch(pTempPoint->getID())))
+        if(NULL != (pDyn = CTIDBG_new CtiDynamicPointDispatch(pTempPoint->getID())))
         {
             UINT statictags = pDyn->getDispatch().getTags();
             pTempPoint->adjustStaticTags(statictags);
@@ -105,7 +105,7 @@ void verifyInitialDynamicData(CtiPoint *&pTempPoint)
 
             if(pDyn->getAttachment() == NULL)
             {
-                pDyn->setAttachment((VOID*)(new CtiPointConnection));
+                pDyn->setAttachment((VOID*)(CTIDBG_new CtiPointConnection));
             }
 
             pTempPoint->setDynamic(pDyn);
@@ -382,7 +382,7 @@ void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTable
                             {
                             case ArchiveTypeOnTimer:
                                 {
-                                    Que.putQueue(new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now));
+                                    Que.putQueue(CTIDBG_new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now));
                                     break;
                                 }
                             case ArchiveTypeOnTimerAndUpdated:

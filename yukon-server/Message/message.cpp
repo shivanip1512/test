@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 17:46:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:07:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,7 @@ void CtiMessage::restoreGuts(RWvistream& aStream)
 
 CtiMessage* CtiMessage::replicateMessage() const
 {
-   return (new CtiMessage(*this));
+   return (CTIDBG_new CtiMessage(*this));
 }
 
 void CtiMessage::dump() const

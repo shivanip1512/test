@@ -7,8 +7,8 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/06/18 15:49:06 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 14:08:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ INT CtiDeviceDavis::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 {
     INT nRet = NoError;
 
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
     if(pMsg != NULL)
     {
@@ -133,7 +133,7 @@ INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
         {
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
-            retList.insert( new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr),
                                              RWCString("Davis Devices do not support this command (yet?)"),
                                              nRet,
                                              OutMessage->Request.RouteID,
@@ -209,7 +209,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
 
-    if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -289,7 +289,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
             tStr = getName() + " point " + getPointOffsetName( i ) + " = " + CtiNumStr(PValue);
 
-            pData = new CtiPointDataMsg(pAnalog->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
+            pData = CTIDBG_new CtiPointDataMsg(pAnalog->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
             if(pData != NULL)
             {
                 ReturnMsg->PointData().insert(pData);
@@ -417,7 +417,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
             tStr = getName() + " point " + getPointOffsetName( i ) + " = " + CtiNumStr(PValue);
 
-            pData = new CtiPointDataMsg(pAnalog->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
+            pData = CTIDBG_new CtiPointDataMsg(pAnalog->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
             if(pData != NULL)
             {
                 ReturnMsg->PointData().insert(pData);

@@ -1870,7 +1870,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     CtiPointDataMsg *pData         = NULL;
     CtiPointNumeric *pNumericPoint = NULL;
 
-    CtiReturnMsg    *pPIL          = new CtiReturnMsg( getID( ),
+    CtiReturnMsg    *pPIL          = CTIDBG_new CtiReturnMsg( getID( ),
                                                        RWCString( InMessage->Return.CommandStr ),
                                                        RWCString( ),
                                                        InMessage->EventCode & 0x7fff,
@@ -1884,7 +1884,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
     QuantumScanData_t    *processedScanData;
     RWTime peakTime;
 
-    processedScanData = new QuantumScanData_t;
+    processedScanData = CTIDBG_new QuantumScanData_t;
 
 
     if( processedScanData == NULL )
@@ -1906,7 +1906,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                 (tmpCurrentState == StateHandshakeAbort) ||
                 (InMessage->EventCode != 0) )
             {
-                CtiCommandMsg *pMsg = new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
+                CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
 
                 if( pMsg != NULL )
                 {
@@ -2037,7 +2037,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
     ULONG                       lpTimestamp;
     CtiPointNumeric             **pNumericPoint;
     RWTime                      peakTime;
-    CtiReturnMsg                *pPIL = new CtiReturnMsg( getID( ),
+    CtiReturnMsg                *pPIL = CTIDBG_new CtiReturnMsg( getID( ),
                                                           RWCString( InMessage->Return.CommandStr ),
                                                           RWCString( ),
                                                           InMessage->EventCode & 0x7fff,
@@ -2060,7 +2060,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
 
 
     //  allocate an array of pointers for the points
-    pNumericPoint = new CtiPointNumeric *[lpCfg.numChannels];
+    pNumericPoint = CTIDBG_new CtiPointNumeric *[lpCfg.numChannels];
 
     for( i = 0; i < lpCfg.numChannels; i++ )
     {
@@ -2232,11 +2232,11 @@ INT CtiDeviceQuantum::allocateDataBins( OUTMESS *outMess )
 {
     //  _dataBuffer holds other things as well, but memory records are the biggest
     if( _dataBuffer == NULL )
-        _dataBuffer = new BYTE[sizeof(QuantumScanData_t)];
+        _dataBuffer = CTIDBG_new BYTE[sizeof(QuantumScanData_t)];
 
     if( _loadProfileTimeDate == NULL )
     {
-        _loadProfileTimeDate = new BYTE[sizeof(ULONG)];
+        _loadProfileTimeDate = CTIDBG_new BYTE[sizeof(ULONG)];
 
         if( _loadProfileTimeDate != NULL )
         {
@@ -2253,12 +2253,12 @@ INT CtiDeviceQuantum::allocateDataBins( OUTMESS *outMess )
 
     if( _loadProfileBuffer == NULL )
     {
-        _loadProfileBuffer = new BYTE[sizeof(QuantumLoadProfileMessage_t)];
+        _loadProfileBuffer = CTIDBG_new BYTE[sizeof(QuantumLoadProfileMessage_t)];
     }
 
     if( _massMemoryConfig == NULL )
     {
-        _massMemoryConfig = new BYTE[sizeof(QuantumConfigData_t)];
+        _massMemoryConfig = CTIDBG_new BYTE[sizeof(QuantumConfigData_t)];
     }
 
     /* NOTE:  The massMemoryLoadProfile block is initialized in the state machine

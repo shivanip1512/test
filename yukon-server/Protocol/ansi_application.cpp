@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/03 17:27:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 14:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,7 @@
 
 CtiANSIApplication::CtiANSIApplication()
 {
-   _storage = new BYTE[1024];
+   _storage = CTIDBG_new BYTE[1024];
    _ptr = _storage;
    _totalBytesRec = 0;
 }

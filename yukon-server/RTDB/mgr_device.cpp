@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/10/23 21:08:30 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/11/15 14:08:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,7 +150,7 @@ void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new settings!
+             *  update my list entry to the CTIDBG_new settings!
              */
 
             pTempCtiDevice->DecodeDatabaseReader(rdr);         // Fills himself in from the reader
@@ -165,7 +165,7 @@ void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
                 pSp->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
 
                 pSp->setUpdatedFlag();                              // Mark it updated
-                Map.insert( new CtiHashKey(pSp->getID()), pSp );    // Stuff it in the list
+                Map.insert( CTIDBG_new CtiHashKey(pSp->getID()), pSp );    // Stuff it in the list
             }
         }
     }
@@ -527,7 +527,7 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
                     }
 
                     // I don't know who the old guy is anymore!
-                    refreshList(Factory, removeFunc, d, paoID);     // This should accomplish a minimal reload, getting the "new" guy.
+                    refreshList(Factory, removeFunc, d, paoID);     // This should accomplish a minimal reload, getting the "CTIDBG_new" guy.
                 }
             }
             else

@@ -63,7 +63,7 @@ void CtiIONDataLinkLayer::setToOutput( CtiIONSerializable &payload )
     _retries   = IONRetries;
 
     _dataLength = payload.getSerializedLength( );
-    _data = new unsigned char[_dataLength];
+    _data = CTIDBG_new unsigned char[_dataLength];
 
     if( _data != NULL )
     {
@@ -101,7 +101,7 @@ void CtiIONDataLinkLayer::freeMemory( void )
 
     while( !_inputFrameVector.empty( ) )
     {
-        //  delete all new'd instances
+        //  delete all CTIDBG_new'd instances
         delete _inputFrameVector.back();
 
         _inputFrameVector.pop_back();
@@ -153,7 +153,7 @@ int CtiIONDataLinkLayer::inFrame( unsigned char *data, unsigned long dataLength 
 {
     CtiIONFrame *tmpFrame;
 
-    tmpFrame = new CtiIONFrame();
+    tmpFrame = CTIDBG_new CtiIONFrame();
 
     if( tmpFrame != NULL )
     {
@@ -254,7 +254,7 @@ CtiIONFrame *CtiIONDataLinkLayer::outFrame( void )
     //  all fields in here are set as master-oriented parameters (always setting frame to be
     //    from master to slave, etc)
 
-    tmpFrame = new CtiIONFrame();
+    tmpFrame = CTIDBG_new CtiIONFrame();
 
     if( tmpFrame != NULL )
     {

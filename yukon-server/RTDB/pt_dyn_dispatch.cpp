@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ CtiTablePointDispatch& CtiDynamicPointDispatch::getDispatch()
 
 CtiDynamicPointBase*  CtiDynamicPointDispatch::replicate() const
 {
-    CtiDynamicPointBase *pNew = new CtiDynamicPointDispatch(*this);
+    CtiDynamicPointBase *pNew = CTIDBG_new CtiDynamicPointDispatch(*this);
 
     return((CtiDynamicPointBase*)pNew);
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/09/30 15:02:15 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/11/15 14:08:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,11 +81,11 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
 
     if(OutTemplate != NULL)
     {
-        OutMessageTemplate = new OUTMESS(*OutTemplate);
+        OutMessageTemplate = CTIDBG_new OUTMESS(*OutTemplate);
     }
     else
     {
-        OutMessageTemplate = new OUTMESS;
+        OutMessageTemplate = CTIDBG_new OUTMESS;
     }
 
     if(OutMessageTemplate != NULL)
@@ -105,7 +105,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
             {
                 status = ControlInhibitedOnDevice;
 
-                CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+                CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                       RWCString(OutMessageTemplate->Request.CommandStr),
                                                       getName() + RWCString(": ") + FormatError(status),
                                                       status,
@@ -187,7 +187,7 @@ INT CtiDeviceBase::RefreshDevicePoints()
 
     if(_pointMgr == NULL)
     {
-        _pointMgr = new CtiPointManager();
+        _pointMgr = CTIDBG_new CtiPointManager();
     }
 
     if(_pointMgr != NULL)
@@ -315,7 +315,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     resultString = getName() + " has no type specific ExecuteRequest Method";
 
-    CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+    CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                           RWCString(tempOut->Request.CommandStr),
                                           resultString,
                                           NoExecuteRequestMethod,
@@ -731,7 +731,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
     {
         status = DEVICEINHIBITED;
 
-        CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                               RWCString(OutMessage->Request.CommandStr),
                                               getName() + RWCString(": ") + FormatError(status),
                                               status,

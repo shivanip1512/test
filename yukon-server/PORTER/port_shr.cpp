@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/18 16:22:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:07:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,10 +118,10 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
 void CtiPortShare::createNexus(RWCString nexusName)
 {
    INT nRet;
-   CTINEXUS newNexus;
+   CTINEXUS CTIDBG_CTIDBG_newNexus;
 
    /*
-    *  4/8/99 This is the server side of a new Nexus
+    *  4/8/99 This is the server side of a CTIDBG_new Nexus
     *  This thread listens only once and then may shutdown the listener?????
     *
     *  The socket connection created here is then used to communicate to porter
@@ -146,9 +146,9 @@ void CtiPortShare::createNexus(RWCString nexusName)
    }
 
    /*
-    *  Blocking wait on the listening nexus.  Will return a new nexus for the connection
+    *  Blocking wait on the listening nexus.  Will return a CTIDBG_new nexus for the connection
     */
-   nRet = _listenNexus.CTINexusConnect(&newNexus);
+   nRet = _listenNexus.CTINexusConnect(&CTIDBG_CTIDBG_newNexus);
 
    if(nRet)
    {
@@ -174,7 +174,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
       dout << RWTime() << " closed " << nexusName << endl;
    }
 
-   _listenNexus = newNexus;
+   _listenNexus = CTIDBG_CTIDBG_newNexus;
 
    return;
 }

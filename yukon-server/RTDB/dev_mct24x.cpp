@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/11/13 21:02:09 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/11/15 14:08:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -446,7 +446,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -490,7 +490,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                     Value = 0.0;
                 }
 
-                pData = new CtiPointDataMsg(pPoint->getPointID(),
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                             Value,
                                             pointQuality,
                                             DemandAccumulatorPointType,
@@ -510,7 +510,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
             valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                   ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = new CtiPointDataMsg(pPoint->getPointID(),
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                         Value,
                                         pointQuality,
                                         DemandAccumulatorPointType,
@@ -567,7 +567,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
         double Value;
         RWCString rwtemp;
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -619,7 +619,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
                     }
 
 
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -671,7 +671,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
             {
                 rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
 
-                pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
 
                 if(pData != NULL)
                 {
@@ -712,7 +712,7 @@ INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
         double Value;
         RWCString rwtemp;
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -754,7 +754,7 @@ INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
         {
             rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
 
-            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
             if(pData != NULL)
             {
                 ReturnMsg->PointData().insert(pData);
@@ -787,7 +787,7 @@ INT CtiDeviceMCT24X::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -881,7 +881,7 @@ INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
          options+= RWCString("  Capacitor control\n");
       }
 
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

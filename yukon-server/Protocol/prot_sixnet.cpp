@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ int CtiProtocolSixnet::NextSeq(void)
 // Assemble the message for TX to the serial port
 //
 //    Assemble() sends the message out the serial port using the selected
-//    format. It always uses the new (simplified) 2-byte length and
+//    format. It always uses the CTIDBG_new (simplified) 2-byte length and
 //    station numbers.
 //
 int CtiProtocolSixnet::assemble()
@@ -196,7 +196,7 @@ int CtiProtocolSixnet::assemble()
 // Receive a message from the serial port
 //
 //    Receive() check the serial for incoming data.
-//    It always uses the new (simplified) 2-byte length and station numbers.
+//    It always uses the CTIDBG_new (simplified) 2-byte length and station numbers.
 //    Once a message is started, if more than 5 successive calls detect
 //    no incoming data the message times out.
 //
@@ -269,7 +269,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                 {
                     if(!isxdigit(*pNextRx) || !isxdigit(*(pNextRx+1)))
                     {
-                        // may be new lead char, but is NOT valid here in message
+                        // may be CTIDBG_new lead char, but is NOT valid here in message
                         if(getDebugLevel() & 0x20000000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -340,8 +340,8 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                     else
                     {
                         /*
-                         *  This is a new protocol feature not in the documentation. (7/1/01)
-                         *  If the length byte is zero or one, it indicates the new fixed length
+                         *  This is a CTIDBG_new protocol feature not in the documentation. (7/1/01)
+                         *  If the length byte is zero or one, it indicates the CTIDBG_new fixed length
                          *  format is to be used.  As indicated by _rxAddrLen = ADDR_FIXED
                          */
                         _rxLength = n * 256;  // got first byte of length
@@ -360,7 +360,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                             dout << RWTime() << "receive message length bad " << _rxLength << endl << flush;
                         }
                         _state = GETLEAD;
-                        pNextRx = pRx + 1; // look for new start of message
+                        pNextRx = pRx + 1; // look for CTIDBG_new start of message
                     }
                     else
                         _state = GETDEST1;
@@ -525,7 +525,7 @@ int CtiProtocolSixnet::SpecialLen(int n)
 //////////////////////////////////////////////////////////////////////
 // set my station number
 //
-//    returns true iff new station is valid (0-16383 or ANY_STATION)
+//    returns true iff CTIDBG_new station is valid (0-16383 or ANY_STATION)
 //    otherwise returns false and leaves station number unchanged
 //
 bool CtiProtocolSixnet::setStationNumber(int station)
@@ -541,7 +541,7 @@ bool CtiProtocolSixnet::setStationNumber(int station)
 //////////////////////////////////////////////////////////////////////
 // set message source station number
 //
-//    returns true iff new station is valid (0-16383 or ANY_STATION)
+//    returns true iff CTIDBG_new station is valid (0-16383 or ANY_STATION)
 //    otherwise returns false and leaves station number unchanged
 //
 bool CtiProtocolSixnet::setSource(int station)
@@ -557,7 +557,7 @@ bool CtiProtocolSixnet::setSource(int station)
 //////////////////////////////////////////////////////////////////////
 // set message destination station number
 //
-//    returns true iff new station is valid (0-16383 or ANY_STATION)
+//    returns true iff CTIDBG_new station is valid (0-16383 or ANY_STATION)
 //    otherwise returns false and leaves station number unchanged
 //
 bool CtiProtocolSixnet::setDestination(int station)
@@ -573,7 +573,7 @@ bool CtiProtocolSixnet::setDestination(int station)
 //////////////////////////////////////////////////////////////////////
 // set message format
 //
-//    returns true iff new format is valid (HEX, BIN or NOCRC)
+//    returns true iff CTIDBG_new format is valid (HEX, BIN or NOCRC)
 //    otherwise returns false and leaves format unchanged
 //
 bool CtiProtocolSixnet::setFormat(int format)
@@ -590,7 +590,7 @@ bool CtiProtocolSixnet::setFormat(int format)
 //////////////////////////////////////////////////////////////////////
 // set message format, including length byte format
 //
-//    returns true iff new format is valid
+//    returns true iff CTIDBG_new format is valid
 //    otherwise returns false and leaves format unchanged
 //
 bool CtiProtocolSixnet::setFormat(int format, int len)
@@ -607,7 +607,7 @@ bool CtiProtocolSixnet::setFormat(int format, int len)
 //////////////////////////////////////////////////////////////////////
 // set message session
 //
-//    returns true iff new session is valid
+//    returns true iff CTIDBG_new session is valid
 //    otherwise returns false and leaves session unchanged
 //
 bool CtiProtocolSixnet::setSession(int session)
@@ -623,7 +623,7 @@ bool CtiProtocolSixnet::setSession(int session)
 //////////////////////////////////////////////////////////////////////
 // set message sequence number
 //
-//    returns true iff new sequence is valid
+//    returns true iff CTIDBG_new sequence is valid
 //    otherwise returns false and leaves sequence unchanged
 //
 bool CtiProtocolSixnet::setSequence(int sequence)
@@ -1028,10 +1028,10 @@ int CtiProtocolSixnet::DlMoveTailProcess()
     {
 
         status = _error = get8(0);
-        uint32 newtail = get32(1);
+        uint32 CTIDBG_newtail = get32(1);
 
         if(getDebugLevel() & 0x20000000)
-            cerr << "tail moved to: " << newtail << endl << flush;
+            cerr << "tail moved to: " << CTIDBG_newtail << endl << flush;
 
 
         setAcked(true);

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/09/18 21:37:38 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:08:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -178,10 +178,10 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg,
                         //  only allocate this object if you need to
                         if( tmpVGRetMsg == NULL )
                         {
-                            tmpVGRetMsg = new CtiReturnMsg(*((CtiReturnMsg *)retMsg));
+                            tmpVGRetMsg = CTIDBG_new CtiReturnMsg(*((CtiReturnMsg *)retMsg));
                         }
 
-                        tmpMsg = new CtiPointDataMsg( *((CtiPointDataMsg *)(subMsgs[i])) );
+                        tmpMsg = CTIDBG_new CtiPointDataMsg( *((CtiPointDataMsg *)(subMsgs[i])) );
 
                         tmpVGRetMsg->PointData().append(tmpMsg);
                     }
@@ -248,7 +248,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
     //  check for communication failure
     if(ErrReturn)
     {
-        retMsg = new CtiReturnMsg(getID(),
+        retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                   RWCString(InMessage->Return.CommandStr),
                                   RWCString(),
                                   InMessage->EventCode & 0x7fff,
@@ -261,7 +261,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
         if( retMsg != NULL )
         {
             //  send a Device Failed/Point Failed message to dispatch, if applicable
-            pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+            pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
             if( pMsg != NULL )
             {
@@ -333,7 +333,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
                 dout << "  We should be filling out an OutMessage here if there is a MacroOffset > 0 specified! " << endl;
             }
 
-            OUTMESS *NewOutMessage = new OUTMESS;
+            OUTMESS *NewOutMessage = CTIDBG_new OUTMESS;
 
             if(NewOutMessage)
             {

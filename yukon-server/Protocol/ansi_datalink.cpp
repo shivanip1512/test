@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/03 17:27:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 14:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,8 +34,8 @@ CtiANSIDatalink::CtiANSIDatalink()
    _currentState = identified;
    _currentPos = ack;
    _tableIndex = 0;
-   _tempMsgStorage = new BYTE[512];
-   _ptrFromAppLayer = new BYTE[512];
+   _tempMsgStorage = CTIDBG_new BYTE[512];
+   _ptrFromAppLayer = CTIDBG_new BYTE[512];
    _toggle = false;
    _authenticate = false;
    _connected = false;
@@ -1001,10 +1001,10 @@ void CtiANSIDatalink::doAck( CtiXfer &xfer )
 void CtiANSIDatalink::passRequest( BYTE *request, int len )
 {
    int index = 0;
-   _whatsRequested = new BYTE[256];
+   _whatsRequested = CTIDBG_new BYTE[256];
 
    //refill our structs
-   _header = new WANTS_HEADER;
+   _header = CTIDBG_new WANTS_HEADER;
    memcpy( _whatsRequested, request, len );
 
    if( _header != NULL )
@@ -1012,7 +1012,7 @@ void CtiANSIDatalink::passRequest( BYTE *request, int len )
       memcpy( ( void *)_header, _whatsRequested, sizeof( WANTS_HEADER ) );
       _whatsRequested += sizeof( WANTS_HEADER );
 
-      _tables = new ANSI_TABLE_WANTS[_header->numTablesRequested];
+      _tables = CTIDBG_new ANSI_TABLE_WANTS[_header->numTablesRequested];
 
       if( _tables != NULL )
       {
@@ -1190,7 +1190,7 @@ int CtiANSIDatalink::getNextState( States current )
 }
 
 //=========================================================================================================================================
-//this method simply lops off the end of the message where the crc is and compares it to a new calculation that is done
+//this method simply lops off the end of the message where the crc is and compares it to a CTIDBG_new calculation that is done
 //=========================================================================================================================================
 
 bool CtiANSIDatalink::checkCRC( void )

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/05 17:41:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/15 14:08:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,7 +204,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     USHORT  State3;
     FLOAT   PValue;
 
-    if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -229,7 +229,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 resetScanFreezeFailed();
 
                 /* then force a scan */
-                OutMessage = new OUTMESS;
+                OutMessage = CTIDBG_new OUTMESS;
 
                 if(OutMessage != NULL)
                 {
@@ -311,7 +311,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCANPARTIAL)
             {
                 /* do an exception scan */
-                OutMessage = new OUTMESS;
+                OutMessage = CTIDBG_new OUTMESS;
 
                 if(OutMessage != NULL)
                 {
@@ -539,7 +539,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                             sprintf(tStr, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
 
-                            pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
+                            pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
                             if(pData != NULL)
                             {
@@ -561,7 +561,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         if( getScanRate(ScanRateGeneral) < getScanRate(ScanRateAccum) )
                         {
                             /* Force a continuation to clean that mother out */
-                            OutMessage = new OUTMESS;
+                            OutMessage = CTIDBG_new OUTMESS;
 
                             if(OutMessage != NULL)
                             {
@@ -720,7 +720,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                                 sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                                pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
+                                pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
                                 if(pData != NULL)
                                 {
                                     ReturnMsg->PointData().insert(pData);
@@ -749,7 +749,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                             sprintf(tStr, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
-                            pData = new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+                            pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
 
                             if(pData != NULL)
                             {
@@ -774,7 +774,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                             /* Move the pulse counts */
                             PointRecord.PreviousPulses = PointRecord.PresentPulses;
 
-                            /* Calculate the new pulses */
+                            /* Calculate the CTIDBG_new pulses */
                             PointRecord.PresentPulses = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], InMessage->Buffer.InMessage[Offset + 1]);
 
                             /* Check if we have two reads */
@@ -828,7 +828,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                 /* Move the pulse counts */
                                 PointRecord.PreviousPulses = PointRecord.PresentPulses;
 
-                                /* Calculate the new pulses */
+                                /* Calculate the CTIDBG_new pulses */
                                 PointRecord.PresentPulses = MAKEUSHORT (InMessage->Buffer.InMessage[Offset],
                                                                         InMessage->Buffer.InMessage[Offset + 1]);
 
@@ -911,7 +911,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                         sprintf(tStr, "%s point %s = %f", getName(), NumericPoint->getName(), PValue );
 
-                        pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
+                        pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, tStr);
 
                         if(pData != NULL)
                         {
@@ -935,7 +935,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 setLastFreezeNumber( 0 );
 
                 /* now force another scan */
-                OutMessage = new OUTMESS;
+                OutMessage = CTIDBG_new OUTMESS;
 
                 if(OutMessage != NULL)
                 {

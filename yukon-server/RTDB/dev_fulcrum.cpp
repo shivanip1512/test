@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/16 16:00:00 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -724,7 +724,7 @@ INT CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, RWTPtrSlis
                         // allocate the mass memory profile
                         if (_massMemoryLoadProfile == NULL)
                         {
-                            _massMemoryLoadProfile = new BYTE[(MMMaxRecord + 1) * sizeof(SchlLoadProfile_t)];
+                            _massMemoryLoadProfile = CTIDBG_new BYTE[(MMMaxRecord + 1) * sizeof(SchlLoadProfile_t)];
                         }
 
                         // reset this so it points to where massMemoryLoadProfile points
@@ -1871,7 +1871,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1892,7 +1892,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
             (tmpCurrentState == StateHandshakeAbort) ||
             (InMessage->EventCode != 0))
         {
-            CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+            CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
             if (pMsg != NULL)
             {
@@ -2004,7 +2004,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -2262,14 +2262,14 @@ INT CtiDeviceFulcrum::ResultDisplay (INMESS *InMessage)
 INT CtiDeviceFulcrum::allocateDataBins  (OUTMESS *outMess)
 {
     if (_dataBuffer == NULL)
-        _dataBuffer = new BYTE[sizeof (FulcrumScanData_t)];
+        _dataBuffer = CTIDBG_new BYTE[sizeof (FulcrumScanData_t)];
 
     if (_loadProfileTimeDate == NULL)
-        _loadProfileTimeDate = new BYTE[sizeof (FulcrumRealTimeRegister_t)];
+        _loadProfileTimeDate = CTIDBG_new BYTE[sizeof (FulcrumRealTimeRegister_t)];
 
     if (_loadProfileBuffer == NULL)
     {
-        _loadProfileBuffer = new BYTE[sizeof (FulcrumLoadProfileMessage_t)];
+        _loadProfileBuffer = CTIDBG_new BYTE[sizeof (FulcrumLoadProfileMessage_t)];
 
         if (_loadProfileBuffer != NULL)
         {
@@ -2288,7 +2288,7 @@ INT CtiDeviceFulcrum::allocateDataBins  (OUTMESS *outMess)
     }
 
     if (_massMemoryRequestInputs == NULL)
-        _massMemoryRequestInputs = new BYTE[sizeof (SchlumbergerLProfileInput_t)];
+        _massMemoryRequestInputs = CTIDBG_new BYTE[sizeof (SchlumbergerLProfileInput_t)];
 
 
     /* NOTE:  The massMemoryLoadProfile block is initialized in the state machine

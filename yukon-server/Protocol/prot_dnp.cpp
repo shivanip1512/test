@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/10/09 19:31:37 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:08:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
 
                 CtiDNPObjectBlock dob(CtiDNPObjectBlock::NoIndex_NoRange);
 
-                dob.addObject(new CtiDNPClass(CtiDNPClass::Class0));
+                dob.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
 
                 _appLayer.addObjectBlock(dob);
 
@@ -91,9 +91,9 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
                                   dob2(CtiDNPObjectBlock::NoIndex_NoRange),
                                   dob3(CtiDNPObjectBlock::NoIndex_NoRange);
 
-                dob1.addObject(new CtiDNPClass(CtiDNPClass::Class1));
-                dob2.addObject(new CtiDNPClass(CtiDNPClass::Class2));
-                dob3.addObject(new CtiDNPClass(CtiDNPClass::Class3));
+                dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
+                dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
+                dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
 
                 _appLayer.addObjectBlock(dob1);
                 _appLayer.addObjectBlock(dob2);
@@ -108,7 +108,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
                     _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
                     CtiDNPObjectBlock dob(CtiDNPObjectBlock::ShortIndex_ShortQty);
-                    CtiDNPAnalogOutputBlock *aout = new CtiDNPAnalogOutputBlock(CtiDNPAnalogOutputBlock::AOB16Bit);
+                    CtiDNPAnalogOutputBlock *aout = CTIDBG_new CtiDNPAnalogOutputBlock(CtiDNPAnalogOutputBlock::AOB16Bit);
 
                     aout->setControl(points[0].aout.value);
 
@@ -135,7 +135,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
                     _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
                     CtiDNPObjectBlock dob(CtiDNPObjectBlock::ByteIndex_ByteQty);
-                    CtiDNPBinaryOutputControl *bout = new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
+                    CtiDNPBinaryOutputControl *bout = CTIDBG_new CtiDNPBinaryOutputControl(CtiDNPBinaryOutputControl::ControlRelayOutputBlock);
 
                     bout->setControlBlock(points[0].dout.on_time,
                                           points[0].dout.off_time,
@@ -253,7 +253,7 @@ int CtiProtocolDNP::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 
     if( _appLayer.hasOutput() )
     {
-        OUTMESS *OutMessage = new CtiOutMessage();
+        OUTMESS *OutMessage = CTIDBG_new CtiOutMessage();
 
         InEchoToOut(InMessage, OutMessage);
         //  copy over the other stuff we need

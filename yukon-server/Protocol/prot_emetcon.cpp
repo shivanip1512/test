@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/11 16:50:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,7 +45,7 @@ INT CtiProtocolEmetcon::primeOut(const OUTMESS &OutTemplate)
 {
    INT      status = NORMAL;
 
-   OUTMESS  *Out = new OUTMESS(OutTemplate);
+   OUTMESS  *Out = CTIDBG_new OUTMESS(OutTemplate);
 
    if(Out != NULL)
    {

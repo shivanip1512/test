@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/09/30 14:55:30 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/11/15 14:08:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -282,7 +282,7 @@ void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBas
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new settings!
+             *  update my list entry to the CTIDBG_new settings!
              */
 
             pTempCtiRoute->DecodeDatabaseReader(rdr);  // Fills himself in from the reader
@@ -529,7 +529,7 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist<
                         dout << "  It will be skipped. for role generation." << endl;
                     }
 
-                    retList.insert( new CtiReturnMsg( Req.DeviceId(),
+                    retList.insert( CTIDBG_new CtiReturnMsg( Req.DeviceId(),
                                                       Req.CommandString(),
                                                       resStr,
                                                       BADPARAM,

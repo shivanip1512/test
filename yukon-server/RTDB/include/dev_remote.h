@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/29 16:36:43 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/15 14:08:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ public:
             if(aRef.isDialup())
             {
                 // Copy the dialup stuff
-                pDialup = new CtiTableDeviceDialup;
+                pDialup = CTIDBG_new CtiTableDeviceDialup;
                 *pDialup = aRef.getDialup();
             }
         }
@@ -167,7 +167,7 @@ public:
             // allocate only if we haven't been here before
             if(pDialup == NULL)
             {
-                pDialup = new CtiTableDeviceDialup;
+                pDialup = CTIDBG_new CtiTableDeviceDialup;
             }
             pDialup->DecodeDatabaseReader(rdr);
         }

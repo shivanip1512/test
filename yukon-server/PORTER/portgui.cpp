@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,6 @@
 // #include "btrieve.h"
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "queues.h"
 #include "dsm2.h"
@@ -85,11 +84,11 @@ VOID PorterGUIConnectionThread (VOID *Arg)
    strcpy(ListenNexus.Name, "PortControl GUI Connection Server: Listener");
 
    /*
-    *  4/7/99 This is the server side of a new Port Control Nexus
-    *  This thread rolls off new instances of this connection on an as needed basis.
+    *  4/7/99 This is the server side of a CTIDBG_new Port Control Nexus
+    *  This thread rolls off CTIDBG_new instances of this connection on an as needed basis.
     *
     *  1. Create a listener on PORTGUINEXUS for incoming connections
-    *  2. Pop off a new thread to manage the returned connection.
+    *  2. Pop off a CTIDBG_new thread to manage the returned connection.
     */
 
    if(!ListenNexus.CTINexusCreate(PORTGUINEXUS))
@@ -100,7 +99,7 @@ VOID PorterGUIConnectionThread (VOID *Arg)
 
          if(NewNexus == NULL)
          {
-            fprintf(stderr,"Unable to acquire memory for a new connection to port control\n");
+            fprintf(stderr,"Unable to acquire memory for a CTIDBG_new connection to port control\n");
 
             Sleep(1000);
             continue;
@@ -108,7 +107,7 @@ VOID PorterGUIConnectionThread (VOID *Arg)
          sprintf(NewNexus->Name, "PortControl GUI Nexus #%d", iNexus++);
 
          /*
-          *  Blocking wait on the listening nexus.  Will return a new nexus for the connection
+          *  Blocking wait on the listening nexus.  Will return a CTIDBG_new nexus for the connection
           */
          nRet = ListenNexus.CTINexusConnect(NewNexus);
 

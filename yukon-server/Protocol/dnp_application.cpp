@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/18 20:21:47 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/11/15 14:08:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,7 +216,7 @@ void CtiDNPApplication::processInput( void )
 
     while( processed < _appRspBytesUsed )
     {
-        CtiDNPObjectBlock *tmpDOB = new CtiDNPObjectBlock();
+        CtiDNPObjectBlock *tmpDOB = CTIDBG_new CtiDNPObjectBlock();
 
         processed += tmpDOB->restore(&(_appRsp.buf[processed]), _appRspBytesUsed - processed);
 

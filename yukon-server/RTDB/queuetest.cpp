@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/queuetest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,14 +38,14 @@ void main(int argc, char **argv)
 
    CtiQueue<CCTIOMsgQueue> Q(10);
 
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi1"), 15, 10));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi2"), 14, 0));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi3"), 13, 0));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi4"), 15, 1));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi5"), 15, 4));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi6"), 10, 6));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi7"), 0, 7));
-   Q.putQueue(new CCTIOMsgQueue(RWCString("Hi8"), 1, 8));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi1"), 15, 10));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi2"), 14, 0));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi3"), 13, 0));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi4"), 15, 1));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi5"), 15, 4));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi6"), 10, 6));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi7"), 0, 7));
+   Q.putQueue(CTIDBG_new CCTIOMsgQueue(RWCString("Hi8"), 1, 8));
 
    cout << "Just find a tagged entry" << endl;
 

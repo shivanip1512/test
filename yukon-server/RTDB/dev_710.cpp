@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/08/28 14:52:11 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ using namespace std;
 INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
-    CtiCommandParser newParse("loop");
+    CtiCommandParser CTIDBG_CTIDBG_newParse("loop");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -63,7 +63,7 @@ INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     pReq->setCommandString("loop");
 
-    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {
@@ -90,7 +90,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         {
             unsigned char expectedAck;
             RWCString cmd(InMessage->Return.CommandStr);
-            CtiReturnMsg *retMsg = new CtiReturnMsg(getID(),
+            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                     cmd,
                                                     RWCString(),
                                                     InMessage->EventCode & 0x7fff,
@@ -177,7 +177,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
 
          for(int i = 0; i < cnt; i++)
          {
-            OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
+            OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
 
             if(OutMTemp != NULL)
             {
@@ -200,7 +200,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
          nRet = NoExecuteRequestMethod;
          /* Set the error value in the base class. */
          // FIX FIX FIX 092999
-         retList.insert( new CtiReturnMsg(getID(),
+         retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                           RWCString(OutMessage->Request.CommandStr),
                                           RWCString("CCU Devices do not support this command (yet?)"),
                                           nRet,

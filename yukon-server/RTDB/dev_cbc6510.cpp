@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/10/18 14:37:14 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:08:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,7 +159,7 @@ void CtiDeviceCBC6510::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points
     {
         if( tripped >= 0 || closed >= 0 )
         {
-            tmpMsg = new CtiPointDataMsg(point->getID());
+            tmpMsg = CTIDBG_new CtiPointDataMsg(point->getID());
 
             if( tripped == 1 && closed == 0 )
             {

@@ -11,7 +11,8 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
- 
+
+#include "ctidbgmem.h" // defines CTIDBG_new
 #include "ion_valuearraytypes.h"
 #include "ion_valuestructtypes.h"
 
@@ -27,7 +28,7 @@ CtiIONCharArray::CtiIONCharArray( unsigned long itemCount, unsigned long itemLen
     for( unsigned long i = 0; i < itemCount && isValid( ); i++ )
     {
         offset = (i * itemCount);
-        tmpChar = new CtiIONChar( byteStream + offset, itemLength );
+        tmpChar = CTIDBG_new CtiIONChar( byteStream + offset, itemLength );
         if( tmpChar != NULL && tmpChar->isValid( ) )
         {
             appendArrayElement( tmpChar );
@@ -57,7 +58,7 @@ CtiIONBooleanArray::CtiIONBooleanArray( unsigned long itemCount, unsigned long i
     for( unsigned long i = 0; i < itemCount && isValid( ); i++ )
     {
         offset = (i * itemCount);
-        tmpElement = new CtiIONBoolean( byteStream + offset, itemLength );
+        tmpElement = CTIDBG_new CtiIONBoolean( byteStream + offset, itemLength );
         if( tmpElement != NULL && tmpElement->isValid( ) )
         {
             appendArrayElement( tmpElement );
@@ -87,7 +88,7 @@ CtiIONFloatArray::CtiIONFloatArray( unsigned long itemCount, unsigned long itemL
     for( unsigned long i = 0; i < itemCount && isValid( ); i++ )
     {
         offset = (i * itemCount);
-        tmpElement = new CtiIONFloat( byteStream + offset, itemLength );
+        tmpElement = CTIDBG_new CtiIONFloat( byteStream + offset, itemLength );
         if( tmpElement != NULL && tmpElement->isValid( ) )
         {
             appendArrayElement( tmpElement );
@@ -117,7 +118,7 @@ CtiIONSignedIntArray::CtiIONSignedIntArray( unsigned long itemCount, unsigned lo
     for( unsigned long i = 0; i < itemCount && isValid( ); i++ )
     {
         offset = (i * itemCount);
-        tmpElement = new CtiIONSignedInt( byteStream + offset, itemLength );
+        tmpElement = CTIDBG_new CtiIONSignedInt( byteStream + offset, itemLength );
         if( tmpElement != NULL && tmpElement->isValid( ) )
         {
             appendArrayElement( tmpElement );
@@ -147,7 +148,7 @@ CtiIONUnsignedIntArray::CtiIONUnsignedIntArray( unsigned long itemCount, unsigne
     for( unsigned long i = 0; i < itemCount && isValid( ); i++ )
     {
         offset = (i * itemCount);
-        tmpElement = new CtiIONUnsignedInt( byteStream + offset, itemLength );
+        tmpElement = CTIDBG_new CtiIONUnsignedInt( byteStream + offset, itemLength );
         if( tmpElement != NULL && tmpElement->isValid( ) )
         {
             appendArrayElement( tmpElement );
@@ -176,7 +177,7 @@ void CtiIONStruct::init( vector< CtiIONValue * > &structValues )
             setValid( FALSE );
         }
     }
-    
+
     for( int i = 0; i < structValues.size( ) && isValid( ); i++ )
     {
         if( structValues[i]->isValid( ) )
@@ -206,7 +207,7 @@ CtiIONValue *CtiIONStruct::operator[]( Elements index )
 {
     CtiIONValue *retVal;
 
-    retVal = getArrayElement( index ); 
+    retVal = getArrayElement( index );
 
     return retVal;
 }
@@ -216,16 +217,16 @@ CtiIONArray *CtiIONStruct::restoreObject( unsigned char classDescriptor, unsigne
 {
     int error = FALSE;
     unsigned long streamPos;
-    
+
     CtiIONValue *tmpValue;
-    CtiIONArray *newVal;
+    CtiIONArray *CTIDBG_newVal;
 
     vector< CtiIONValue * > structValues;
 
     streamPos = 0;
-        
+
     while( byteStream[streamPos] != 0xF3 &&  //  end of struct
-           !error )  
+           !error )
     {
         tmpValue = CtiIONValue::restoreObject( byteStream, streamLength );
         if( tmpValue == NULL || !tmpValue->isValid( ) )
@@ -238,57 +239,57 @@ CtiIONArray *CtiIONStruct::restoreObject( unsigned char classDescriptor, unsigne
             streamPos += tmpValue->getSerializedLength( );
         }
     }
-    
+
     switch( classDescriptor )
     {
         case IONLogRecord:
-            newVal = new CtiIONLogRecord( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONLogRecord( structValues );
             break;
 
         case IONAlarm:
-            newVal = new CtiIONAlarm( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONAlarm( structValues );
             break;
 
         case IONEvent:
-            newVal = new CtiIONEvent( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONEvent( structValues );
             break;
 
         case IONRange:
-            newVal = new CtiIONRange( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONRange( structValues );
             break;
 
         case IONList:
-            newVal = new CtiIONList( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONList( structValues );
             break;
 /*
         case IONException:
-            newVal = new CtiIONException( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONException( structValues );
             break;
 
         case IONWaveform:
-            newVal = new CtiIONWaveform( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONWaveform( structValues );
             break;
 
         case IONDate:
-            newVal = new CtiIONDate( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONDate( structValues );
             break;
 
         case IONCalendar:
-            newVal = new CtiIONCalendar( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONCalendar( structValues );
             break;
 
         case IONProfile:
-            newVal = new CtiIONProfile( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONProfile( structValues );
             break;
 
         case IONStringArray:
-            newVal = new CtiIONStringArray( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONStringArray( structValues );
   */
         default:
-            newVal = NULL;
+            CTIDBG_newVal = NULL;
     }
 
-    return newVal;
+    return CTIDBG_newVal;
 }
 
 
@@ -296,7 +297,7 @@ CtiIONArray *CtiIONStruct::restoreObject( unsigned char classDescriptor, unsigne
 unsigned char CtiIONStructArray::getStructArrayKey( void )
 {
     unsigned char key;
-    
+
     key  = 0x90;
     key |= getStructArrayType( );
 
@@ -308,13 +309,13 @@ CtiIONArray *CtiIONStructArray::restoreObject( unsigned char classDescriptor, un
 {
     int error = FALSE;
     unsigned long streamPos;
-    
+
     CtiIONValue *tmpValue;
-    CtiIONArray *newVal;
+    CtiIONArray *CTIDBG_newVal;
     vector< CtiIONValue * > structValues;
 
     while( byteStream[streamPos] != 0xF9 &&  //  end of struct array
-           !error )  
+           !error )
     {
         tmpValue = CtiIONValue::restoreObject( byteStream, streamLength );
         if( tmpValue == NULL || !tmpValue->isValid( ) || ((CtiIONStruct *)tmpValue)->getStructType( ) != classDescriptor )
@@ -331,27 +332,27 @@ CtiIONArray *CtiIONStructArray::restoreObject( unsigned char classDescriptor, un
     switch( classDescriptor )
     {
 /*        case IONLogArray:
-            newVal = new CtiIONLogArray( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONLogArray( structValues );
             break;
 
         case IONAlarmArray:
-            newVal = new CtiIONAlarmArray( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONAlarmArray( structValues );
             break;
 
         case IONStringArrayArray:
-            newVal = new CtiIONStringArrayArray( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONStringArrayArray( structValues );
             break;
 
         case IONMultiArray:
-            newVal = new CtiIONMultiArray( structValues );
+            CTIDBG_newVal = CTIDBG_new CtiIONMultiArray( structValues );
             break;
 */
         default:
-            newVal = NULL;
+            CTIDBG_newVal = NULL;
             break;
     }
 
-    return newVal;
+    return CTIDBG_newVal;
 }
 
 

@@ -9,12 +9,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:23 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "ctidbgmem.h"  // CTIDBG_new
 #include "mgr_holiday.h"
 #include "dbaccess.h"
 
@@ -101,7 +102,7 @@ CtiHolidayManager& CtiHolidayManager::getInstance()
     CtiLockGuard<CtiMutex> g(_mux);
 
     if( _instance == NULL )
-        _instance = new CtiHolidayManager;
+        _instance = CTIDBG_new CtiHolidayManager;
 
     return *_instance;
 }

@@ -1385,11 +1385,11 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
 INT CtiDeviceLandisGyrS4::allocateDataBins  (OUTMESS *outMess)
 {
     if (iDataBuffer == NULL)
-        iDataBuffer = new BYTE[sizeof (LGS4ScanData_t)];
+        iDataBuffer = CTIDBG_new BYTE[sizeof (LGS4ScanData_t)];
 
     if (iLoadProfileBuffer == NULL)
     {
-        iLoadProfileBuffer = new BYTE[sizeof (LGS4LoadProfile_t)];
+        iLoadProfileBuffer = CTIDBG_new BYTE[sizeof (LGS4LoadProfile_t)];
 
         if (iLoadProfileBuffer != NULL)
         {
@@ -1531,7 +1531,7 @@ ULONG S4BCDtoBase10(UCHAR* buffer, ULONG len)
 *
 *  s = sign bit
 *
-* Formula for conversion is newFloat = POW (-1,s) * 1.F * POW (2,e-128)
+* Formula for conversion is CTIDBG_CTIDBG_newFloat = POW (-1,s) * 1.F * POW (2,e-128)
 *
 *  NOTE:  Implied 1. added to F and the S4 varies from IEEE by a degree of one
 ************************************************************************************
@@ -1905,8 +1905,8 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
     }
 
     INT retCode = NORMAL;
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1975,7 +1975,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1995,7 +1995,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
             (InMessage->EventCode != 0))
         {
 
-            CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+            CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
             if (pMsg != NULL)
             {
@@ -2089,7 +2089,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -2140,7 +2140,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
         {
             if (pLastLPIntervals == NULL)
             {
-                pLastLPIntervals = new CtiReturnMsg(getID(),
+                pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
                                                     RWCString(InMessage->Return.CommandStr),
                                                     RWCString(),
                                                     InMessage->EventCode & 0x7fff,
@@ -2160,7 +2160,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     pLastLPIntervals = NULL;
                 }
 
-                pLastLPIntervals = new CtiReturnMsg(getID(),
+                pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
                                                     RWCString(InMessage->Return.CommandStr),
                                                     RWCString(),
                                                     InMessage->EventCode & 0x7fff,
@@ -2198,7 +2198,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 }
                 else
                 {
-                    // if new date is empty, we're doing an inter interval power outage
+                    // if CTIDBG_new date is empty, we're doing an inter interval power outage
                     if (getNewDate() == 0)
                     {
                         syncAppropriateTime(secondsSinceMidnight);
@@ -2219,7 +2219,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             * time or date was set back
                             *
                             * currently don't handle updating old readings so just
-                            * set currentlpdate to new date and calculate which interval
+                            * set currentlpdate to CTIDBG_new date and calculate which interval
                             * we are on based on secondsSinceMidnight
                             * and allow the decode routine to work through the data
                             * until it finds what it thinks is the next valid date
@@ -2352,10 +2352,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 // always set this because it gets zeroed out if a data packet comes in
                 setNewDate (RWTime(recordDate).seconds());
 
-                // set previous date only if newDate doesn't exists
+                // set previous date only if CTIDBG_CTIDBG_newDate doesn't exists
                 if (getOldTime() != 0)
                 {
-                    // we have a new date, figure out how long the change is
+                    // we have a CTIDBG_new date, figure out how long the change is
                     setCurrentLPDate (getPreviousLPDate());
                 }
                 else
@@ -2365,7 +2365,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                     setCurrentLPDate (RWTime(recordDate).seconds());
                 }
 
-                // new day start from zero
+                // CTIDBG_new day start from zero
                 setCurrentLPChannel (0);
                 setCurrentLPInterval (0);
             }
@@ -2435,10 +2435,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 *
                                 *****************************
                                 */
-                                ULONG newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
+                                ULONG CTIDBG_CTIDBG_newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
 
-                                // plug data from current to new interval
-                                for (int x = getCurrentLPInterval(); x < newInterval; x++)
+                                // plug data from current to CTIDBG_new interval
+                                for (int x = getCurrentLPInterval(); x < CTIDBG_CTIDBG_newInterval; x++)
                                 {
                                     // fill message with plug data to next interval
                                     for (int y=0; y < localLP->configuration.numberOfChannels;y++)
@@ -2459,7 +2459,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 *  reset this once out of the loop
                                 ****************************
                                 */
-                                setCurrentLPInterval ((ULONG)newInterval);
+                                setCurrentLPInterval ((ULONG)CTIDBG_CTIDBG_newInterval);
 
                                 intervalTime = RWTime (getCurrentLPDate() +
                                                        ((getCurrentLPInterval()+1) * localLP->configuration.intervalLength * 60));
@@ -2673,9 +2673,9 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             *
                             *****************************
                             */
-                            ULONG newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
+                            ULONG CTIDBG_CTIDBG_newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
 
-                            setCurrentLPInterval ((ULONG)newInterval);
+                            setCurrentLPInterval ((ULONG)CTIDBG_CTIDBG_newInterval);
 
                             /********************
                             * must go through all the channels before I reset these guys
@@ -3798,8 +3798,8 @@ BOOL CtiDeviceLandisGyrS4::verifyAndAddPointToReturnMsg (USHORT aPointId,
     // if our offset if valid, add the point
     if (aPointId)
     {
-        //create a new message
-        pData = new CtiPointDataMsg(aPointId,
+        //create a CTIDBG_new message
+        pData = CTIDBG_new CtiPointDataMsg(aPointId,
                                     aValue,
                                     aQuality,
                                     AnalogPointType,

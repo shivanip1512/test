@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_fpcbc.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:55 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:08:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ public:
 
           for( int i = 0; i < aRef.entries(); i++ )
           {
-             FPSTRUCT *Fst = new FPSTRUCT;
+             FPSTRUCT *Fst = CTIDBG_new FPSTRUCT;
              memcpy((void*)Fst, &aRef.getFPStruct(i), sizeof(FPSTRUCT));
 
              _fst.insert( Fst );

@@ -325,13 +325,13 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
 
     if(status == NORMAL)
     {
-        USHORT Told, Tnew, Tmot;
+        USHORT Told, TCTIDBG_CTIDBG_new, Tmot;
 
         /* set the read timeout */
         Told = (USHORT)(Xfer.getInTimeout() + (USHORT)getDelay(EXTRA_DELAY));
-        Tnew = (USHORT)(byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
+        TCTIDBG_CTIDBG_new = (USHORT)(byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
 
-        Tmot = (Told > Tnew) ? Told : Tnew;
+        Tmot = (Told > TCTIDBG_CTIDBG_new) ? Told : TCTIDBG_CTIDBG_new;
 
         setPortReadTimeOut( Tmot );
 

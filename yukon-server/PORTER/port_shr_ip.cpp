@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/29 17:11:22 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:07:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,7 @@ CtiPortShareIP::~CtiPortShareIP()
  * post the INOUTSYNC flag.  Otherwise (no post) we clear the inbound socket and
  * continue on our own.
  *
- * If we do get the post, we read a new message from the socket and write it out
+ * If we do get the post, we read a CTIDBG_new message from the socket and write it out
  * to the appropriate portQueue.
  *-----------------------------------------------------------------------------*/
 void CtiPortShareIP::inThread()
@@ -150,7 +150,7 @@ void CtiPortShareIP::inThread()
                 }
             }
 
-            //  check for new connections if we haven't read anything in the last minute
+            //  check for CTIDBG_new connections if we haven't read anything in the last minute
             //    or if we're not connected
             if( loopsSinceRead > 4 || !_scadaNexus.CTINexusValid())
             {
@@ -162,7 +162,7 @@ void CtiPortShareIP::inThread()
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << FILELINE << endl;
-                        dout << RWTime() << "inThread got a new SCADA connection - copying tmpNexus to _scadaNexus" << endl;
+                        dout << RWTime() << "inThread got a CTIDBG_new SCADA connection - copying tmpNexus to _scadaNexus" << endl;
                     }
                     _scadaNexus.CTINexusClose();  //  make sure the old/invalid socket is closed
                     _scadaNexus = tmpNexus;           //  byte-for-byte copy - no pointers, ...
@@ -177,7 +177,7 @@ void CtiPortShareIP::inThread()
                 if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** waiting for new connection - _scadaNexus is invalid" << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint **** waiting for CTIDBG_new connection - _scadaNexus is invalid" << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 sleep(500);
             }
@@ -202,13 +202,13 @@ void CtiPortShareIP::inThread()
                         if(((readStatus = _scadaNexus.CTINexusRead(&(Buffer[4]), (Buffer[3] + 2), &bytesRead, 15) == NORMAL)) && (bytesRead == (Buffer[3] + 2 + 4)))
                         {
                             // Get an OutMessage.
-                            if( (OutMessage = new OUTMESS) == NULL )
+                            if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
                             {
                                 // This is bad.
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << FILELINE << endl;
-                                    dout << RWTime() << " Could not allocate new OUTMESS for inThread" << endl;
+                                    dout << RWTime() << " Could not allocate CTIDBG_new OUTMESS for inThread" << endl;
                                 }
                                 return;
                             }

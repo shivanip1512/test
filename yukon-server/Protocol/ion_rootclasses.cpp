@@ -14,6 +14,7 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
+#include "ctidbgmem.h" // defines CTIDBG_new
 #include "ion_rootclasses.h"
 #include "ion_valuebasictypes.h"
 #include "guard.h"
@@ -40,7 +41,7 @@ unsigned char *CtiIONSerializable::getSerialized( void ) const
 
     retDataLength = getSerializedLength( );
 
-    retData = new unsigned char[retDataLength];
+    retData = CTIDBG_new unsigned char[retDataLength];
 
     if( retData != NULL )
     {
@@ -184,7 +185,7 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *&byteStream, unsigned lo
 {
     unsigned char ionClass, classDescriptor;
     unsigned long itemLength, streamPos;
-    CtiIONValue *newVal = NULL;
+    CtiIONValue *CTIDBG_newVal = NULL;
 
     ionClass = (byteStream[0] & 0xF0) >> 4;
     classDescriptor = (byteStream[0] & 0x0F);
@@ -211,38 +212,38 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *&byteStream, unsigned lo
 
         switch( ionClass )
         {
-            case 0x1:  newVal = new CtiIONChar( byteStream + streamPos, itemLength );
+            case 0x1:  CTIDBG_newVal = CTIDBG_new CtiIONChar( byteStream + streamPos, itemLength );
                 break;
-            case 0x3:  newVal = new CtiIONFloat( byteStream + streamPos, itemLength );
+            case 0x3:  CTIDBG_newVal = CTIDBG_new CtiIONFloat( byteStream + streamPos, itemLength );
                 break;
-            case 0x4:  newVal = new CtiIONSignedInt( byteStream + streamPos, itemLength );
+            case 0x4:  CTIDBG_newVal = CTIDBG_new CtiIONSignedInt( byteStream + streamPos, itemLength );
                 break;
-            case 0x5:  newVal = new CtiIONTime( byteStream + streamPos, itemLength );
+            case 0x5:  CTIDBG_newVal = CTIDBG_new CtiIONTime( byteStream + streamPos, itemLength );
                 break;
-            case 0x6:  newVal = new CtiIONUnsignedInt( byteStream + streamPos, itemLength );
+            case 0x6:  CTIDBG_newVal = CTIDBG_new CtiIONUnsignedInt( byteStream + streamPos, itemLength );
                 break;
         }
     }
     else if( ionClass == 0x7 )
     {
-        newVal = CtiIONArray::restoreStruct( classDescriptor, byteStream + streamPos, streamLength - streamPos );
+        CTIDBG_newVal = CtiIONArray::restoreStruct( classDescriptor, byteStream + streamPos, streamLength - streamPos );
     }
     else if( ionClass == 0x8 )
     {
-        newVal = CtiIONArray::restoreStructArray( classDescriptor, byteStream + streamPos, streamLength - streamPos );
+        CTIDBG_newVal = CtiIONArray::restoreStructArray( classDescriptor, byteStream + streamPos, streamLength - streamPos );
     }
     else if( ionClass == 0xF )
     {
         switch( classDescriptor )
         {
             case 0x1:
-                newVal = new CtiIONBoolean( FALSE );
+                CTIDBG_newVal = CTIDBG_new CtiIONBoolean( FALSE );
                 break;
             case 0x2:
-                newVal = new CtiIONBoolean( TRUE );
+                CTIDBG_newVal = CTIDBG_new CtiIONBoolean( TRUE );
                 break;
             case 0x6:
-                newVal = new CtiIONProgram( byteStream + streamPos, streamLength - streamPos );
+                CTIDBG_newVal = CTIDBG_new CtiIONProgram( byteStream + streamPos, streamLength - streamPos );
                 break;
             case 0xA:
             case 0xB:
@@ -250,20 +251,20 @@ CtiIONValue *CtiIONValue::restoreObject( unsigned char *&byteStream, unsigned lo
             case 0xD:
             case 0xE:
                 //  fixed size arrays
-                newVal = CtiIONArray::restoreFixedArray( classDescriptor, byteStream, streamLength );
+                CTIDBG_newVal = CtiIONArray::restoreFixedArray( classDescriptor, byteStream, streamLength );
                 break;
         }
     }
 
     //  move the pointer past the object we just retored
-    if( newVal != NULL && newVal->isValid( ) )
+    if( CTIDBG_newVal != NULL && CTIDBG_newVal->isValid( ) )
     {
-        itemLength    = newVal->getSerializedLength( );
+        itemLength    = CTIDBG_newVal->getSerializedLength( );
         byteStream   += itemLength;
         streamLength -= itemLength;
     }
 
-    return newVal;
+    return CTIDBG_newVal;
 }
 
 

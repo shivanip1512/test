@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcrequest.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/07 18:05:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:07:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,10 +144,10 @@ CtiRequestMsg& CtiRequestMsg::setOptionsField(int options_field)
     return *this;
 }
 
-// Return a new'ed copy of this message!
+// Return a CTIDBG_new'ed copy of this message!
 CtiMessage* CtiRequestMsg::replicateMessage() const
 {
-   CtiRequestMsg *ret = new CtiRequestMsg(*this);
+   CtiRequestMsg *ret = CTIDBG_new CtiRequestMsg(*this);
 
    return( (CtiMessage*)ret );
 }

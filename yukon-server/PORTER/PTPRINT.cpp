@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PTPRINT.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/07/23 19:44:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,7 +187,7 @@ TPrint (PBYTE Message,          /* message to print out in hex */
    {
       if(width + 2 > SCREEN_WIDTH)
       {
-         /* yes so goto new line */
+         /* yes so goto CTIDBG_new line */
          dout << endl;
          width = 1;
       }

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/03 16:16:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,6 @@
 // #include "btrieve.h"
 #include <memory.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "connection.h"
 #include "cparms.h"
@@ -1285,7 +1284,7 @@ INT RequeueLCUCommand( CtiDeviceLCU *lcu )
 
                 // Reconnect the OutMessage, it failed to get queued..
                 OutMessage->Sequence++;
-                lcu->setLastControlMessage( OutMessage );    // Makes a new copy, you must delete the detached one.
+                lcu->setLastControlMessage( OutMessage );    // Makes a CTIDBG_new copy, you must delete the detached one.
 
                 if(OutMessage != NULL)
                 {
@@ -1638,7 +1637,7 @@ INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
 
     if(lcu->getAddress() != LCUGLOBAL && mayqueuescans)
     {
-        OUTMESS *ScanOutMessage = new OUTMESS;
+        OUTMESS *ScanOutMessage = CTIDBG_new OUTMESS;
 
         if(ScanOutMessage)
         {
@@ -1745,7 +1744,7 @@ void Send4PartToDispatch(RWCString Source, RWCString MajorName, RWCString MinorN
         dout << RWTime() << " " << sourceandname << " " << fullString << endl;
     }
 
-    CtiSignalMsg *pSig = new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
+    CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
 
     RWTPtrSlist< CtiMessage >  lst;
     lst.insert( pSig );

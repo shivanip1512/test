@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/23 21:10:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/11/15 14:07:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <malloc.h>
 
 #include "queues.h"
 #include "dsm2.h"
@@ -137,7 +136,7 @@ IDLCFunction (CtiDevice *Dev,
 
     OUTMESS *OutMessage;
 
-    if((OutMessage = new OUTMESS) == NULL)
+    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
         return(MEMORY);
@@ -203,7 +202,7 @@ IDLCRCont (CtiDevice *Dev)
     if(p711Info->PortQueueConts)
         return(NORMAL);
 
-    if((OutMessage = new OUTMESS) == NULL)
+    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
         return(MEMORY);
@@ -268,7 +267,7 @@ IDLCRColQ (CtiDevice *Dev, INT priority)
 
     if(!p711Info->GetStatus(INRCOLQ))
     {
-        if((OutMessage = new OUTMESS) == NULL)
+        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
         {
             printf ("Error Allocating Memory\n");
             return(MEMORY);
@@ -370,7 +369,7 @@ IDLCSetTSStores (CtiDevice *Dev, USHORT Priority, USHORT Trigger, USHORT Period)
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     /* Allocate some memory */
-    if((OutMessage = new OUTMESS) == NULL)
+    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
         return(MEMORY);
@@ -451,7 +450,7 @@ IDLCSetBaseSList (CtiDevice *Dev)
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     /* Allocate some memory */
-    if((OutMessage = new OUTMESS) == NULL)
+    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
         return(MEMORY);
@@ -654,7 +653,7 @@ IDLCSetDelaySets (CtiDevice *Dev)
     }
 
     /* Allocate some memory */
-    if((OutMessage = new OUTMESS) == NULL)
+    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
     {
         printf ("Error Allocating Memory\n");
         return(MEMORY);

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/sigsrctest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:07:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,18 +112,18 @@ void main(int argc, char **argv)
 
 
       // Insert a registration message into the multi
-      Connect.WriteConnQue(new CtiRegistrationMsg("SignalSource", rwThreadId(), TRUE));
+      Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("SignalSource", rwThreadId(), TRUE));
 
 
       CtiPointDataMsg   *pDat = NULL;
       CtiSignalMsg      *pSig = NULL;
-      CtiEmailMsg       *pEmail = new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
+      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
 
       Connect.WriteConnQue(pEmail);
 
       for(int s = 0; s < loops; s++)
       {
-         pMulti = new CtiMultiMsg;
+         pMulti = CTIDBG_new CtiMultiMsg;
 
          for(k = min; !bQuit && k <= max; k++)
          {
@@ -132,7 +132,7 @@ void main(int argc, char **argv)
                sprintf(desc, " POINT %d ERROR FORCED BY %s", k, argv[0]);
                sprintf(actn, " POINT ERROR FORCED");
 
-               pSig = new CtiSignalMsg(k, 0, RWTime().asString() + RWCString(desc), RWCString(actn), GeneralLogType, SignalEvent, "sigsrctest.cpp", tag);
+               pSig = CTIDBG_new CtiSignalMsg(k, 0, RWTime().asString() + RWCString(desc), RWCString(actn), GeneralLogType, SignalEvent, "sigsrctest.cpp", tag);
 
                pMulti->insert(pSig);
             }
@@ -150,7 +150,7 @@ void main(int argc, char **argv)
 
       }
 
-      Connect.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+      Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
       Connect.ShutdownConnection();
 
    }

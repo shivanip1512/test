@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/11/07 22:53:08 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/11/15 14:08:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -421,7 +421,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
         {
             if( _nextLPTime[i] <= Now )
             {
-                tmpOutMess = new OUTMESS(*OutMessage);
+                tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
                 lpBlockStartTime = _lastLPTime[i];
 
@@ -621,7 +621,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -672,7 +672,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value);
                             }
 
-                            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultString);
 
                             if(pData != NULL)
                             {
@@ -734,7 +734,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -915,7 +915,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -1059,7 +1059,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -1164,7 +1164,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1204,7 +1204,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1221,7 +1221,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                         resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                                  ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                        pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                         if(pData != NULL)
                         {
                             ReturnMsg->PointData().insert(pData);
@@ -1350,7 +1350,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1395,7 +1395,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -1455,7 +1455,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                                                 CtiNumStr(datestamp.year()).zpad(2)       + " " +
                                                 CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
                                                 CtiNumStr(timestamp.minute()).zpad(2);
-                        pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
+                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, resultString);
                         if(pData != NULL)
                         {
                             pData->setTime( timestamp.seconds() );
@@ -1531,7 +1531,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -1561,7 +1561,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                          ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultString);
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultString);
                 if(pData != NULL)
                 {
                     pData->setTime(pointTime);
@@ -1623,7 +1623,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1662,7 +1662,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                 {
                     resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                              ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                 }
                 else
                 {
@@ -1672,7 +1672,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                     }
 
                     resultString = "Error indicated on MCT " + getName() + " / " + pPoint->getName() + "  Error " + CtiNumStr(Error);
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                 }
 
                 if(pData != NULL)
@@ -1755,7 +1755,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -1808,7 +1808,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                     Value = 0.0;
                 }
 
-                pData = new CtiPointDataMsg(pPoint->getPointID(),
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                             Value,
                                             pointQuality,
                                             DemandAccumulatorPointType,
@@ -1839,7 +1839,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             //    note that timeStamp, Value, and pointQuality are set in the final iteration of the above for loop
             valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                   ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = new CtiPointDataMsg(pPoint->getPointID(),
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                         Value,
                                         pointQuality,
                                         DemandAccumulatorPointType,

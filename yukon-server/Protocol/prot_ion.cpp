@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/07 17:29:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,7 +193,7 @@ void CtiDeviceION::resolveNextState( void )
         setIONState( IONStateInit );
     }
 
-    //  we only compute new states when we're uninitialized or
+    //  we only compute CTIDBG_new states when we're uninitialized or
     //    done sending or receiving a whole message
     if( dllStatus == CtiIONDataLinkLayer::InDataComplete  ||
         dllStatus == CtiIONDataLinkLayer::OutDataComplete ||
@@ -243,10 +243,10 @@ void CtiDeviceION::resolveNextStateScanData( void )
         case IONStateInit:
         case IONStateRequestFeatureManagerInfo:
             {
-                tmpMethod = new CtiIONMethod( CtiIONMethod::ReadModuleSetupHandles );  //  ReadManagedClass
-                tmpStatement = new CtiIONStatement( IONFeatureManagerHandle, tmpMethod );  // ustabeed 132
-                tmpProgram = new CtiIONProgram( tmpStatement );
-                _dsBuf = new CtiIONDataStream( );
+                tmpMethod = CTIDBG_new CtiIONMethod( CtiIONMethod::ReadModuleSetupHandles );  //  ReadManagedClass
+                tmpStatement = CTIDBG_new CtiIONStatement( IONFeatureManagerHandle, tmpMethod );  // ustabeed 132
+                tmpProgram = CTIDBG_new CtiIONProgram( tmpStatement );
+                _dsBuf = CTIDBG_new CtiIONDataStream( );
                 _dsBuf->appendItem( tmpProgram );
                 _appLayer->init( *_dsBuf );
                 _netLayer->init( *_appLayer, 0, 20000, 102 );
@@ -274,10 +274,10 @@ void CtiDeviceION::resolveNextStateScanData( void )
                 _netLayer->init( *_dllLayer );
                 _appLayer->init( *_netLayer );
 
-                if( (tmpBuf = new unsigned char( _appLayer->getPayloadLength( ) )) != NULL )
+                if( (tmpBuf = CTIDBG_new unsigned char( _appLayer->getPayloadLength( ) )) != NULL )
                 {
                     _appLayer->putPayload( tmpBuf );
-                    _dsBuf = new CtiIONDataStream( tmpBuf, _appLayer->getPayloadLength( ) );
+                    _dsBuf = CTIDBG_new CtiIONDataStream( tmpBuf, _appLayer->getPayloadLength( ) );
                     delete tmpBuf;
 
                     for( int i = 0; i < _dsBuf->getItemCount( ); i++ )
@@ -366,7 +366,7 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
 
                 CtiIONObjectBlock dob(CtiIONObjectBlock::NoIndex_NoRange);
 
-                dob.addObject(new CtiIONClass(CtiIONClass::Class0));
+                dob.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class0));
 
                 _appLayer.addObjectBlock(dob);
 
@@ -380,9 +380,9 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
                                   dob2(CtiIONObjectBlock::NoIndex_NoRange),
                                   dob3(CtiIONObjectBlock::NoIndex_NoRange);
 
-                dob1.addObject(new CtiIONClass(CtiIONClass::Class1));
-                dob2.addObject(new CtiIONClass(CtiIONClass::Class2));
-                dob3.addObject(new CtiIONClass(CtiIONClass::Class3));
+                dob1.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class1));
+                dob2.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class2));
+                dob3.addObject(CTIDBG_new CtiIONClass(CtiIONClass::Class3));
 
                 _appLayer.addObjectBlock(dob1);
                 _appLayer.addObjectBlock(dob2);
@@ -397,7 +397,7 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
                     _appLayer.setCommand(CtiIONApplication::RequestDirectOp);
 
                     CtiIONObjectBlock dob(CtiIONObjectBlock::ShortIndex_ShortQty);
-                    CtiIONAnalogOutputBlock *aout = new CtiIONAnalogOutputBlock(CtiIONAnalogOutputBlock::AOB16Bit);
+                    CtiIONAnalogOutputBlock *aout = CTIDBG_new CtiIONAnalogOutputBlock(CtiIONAnalogOutputBlock::AOB16Bit);
 
                     aout->setControl(points[0].aout.value);
 
@@ -424,7 +424,7 @@ void CtiProtocolION::setCommand( IONCommand command, ion_output_point *points, i
                     _appLayer.setCommand(CtiIONApplication::RequestDirectOp);
 
                     CtiIONObjectBlock dob(CtiIONObjectBlock::ByteIndex_ByteQty);
-                    CtiIONBinaryOutputControl *bout = new CtiIONBinaryOutputControl(CtiIONBinaryOutputControl::ControlRelayOutputBlock);
+                    CtiIONBinaryOutputControl *bout = CTIDBG_new CtiIONBinaryOutputControl(CtiIONBinaryOutputControl::ControlRelayOutputBlock);
 
                     bout->setControlBlock(points[0].dout.on_time,
                                           points[0].dout.off_time,
@@ -479,9 +479,9 @@ int CtiProtocolION::generate( CtiXfer &xfer )
             case IONStateInit:
             case IONStateRequestFeatureManagerInfo:
             {
-                tmpMethod    = new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);   //  ReadManagedClass
-                tmpStatement = new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);     //  ustabeed 132
-                tmpProgram   = new CtiIONProgram  (tmpStatement);
+                tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);   //  ReadManagedClass
+                tmpStatement = CTIDBG_new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);     //  ustabeed 132
+                tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
 
                 _dsBuf.clear();
                 _dsBuf.appendItem(tmpProgram);
@@ -539,7 +539,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 /*
     if( _appLayer.hasOutput() )
     {
-        OUTMESS *OutMessage = new CtiOutMessage();
+        OUTMESS *OutMessage = CTIDBG_new CtiOutMessage();
 
         InEchoToOut(InMessage, OutMessage);
         //  copy over the other stuff we need

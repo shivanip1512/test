@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/05 19:35:17 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/15 14:08:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -271,7 +271,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
     BYTE     SomeMessage[300];
     ULONG    DCDCount    = 0;
     ULONG    SomeRead    = 0;
-    ULONG    Told, Tnew, Tmot;
+    ULONG    Told, TCTIDBG_CTIDBG_new, Tmot;
     LONG     byteCount   = 0;
 
     LockGuard gd(monitor());
@@ -325,8 +325,8 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
 
     /* set the read timeout */
     Told = (Xfer.getInTimeout() + getDelay(EXTRA_DELAY));
-    Tnew = (byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
-    Tmot = (Told > Tnew) ? Told : Tnew;
+    TCTIDBG_CTIDBG_new = (byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
+    Tmot = (Told > TCTIDBG_CTIDBG_new) ? Told : TCTIDBG_CTIDBG_new;
 
     if(Xfer.isMessageStart())           // Are we the initial request?
     {

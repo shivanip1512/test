@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/10/03 16:02:22 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/15 14:08:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
                     else
                     {
                         Mgr->setClientQuestionable(TRUE);
-                        Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15));  // Ask the old guy to respond to us..
+                        Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15));  // Ask the old guy to respond to us..
 
                         questionedEntry = TRUE;
 
@@ -164,7 +164,7 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
             dout << NowTime.now() << " Connection rejected, entry will be deleted." << endl;
         }
 
-        CM->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
+        CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
 
         {
             if(mConnectionTable.remove (CM))
@@ -230,9 +230,9 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
         case (CtiCommandMsg::NoOp):
             {
                 // cout << "VGMain: Looping the Client " << endl;
-                // "new" memory is deleted in the connection machinery!.
+                // "CTIDBG_new" memory is deleted in the connection machinery!.
                 // use the copy constructor to return to the client.
-                pConn->WriteConnQue(new CtiCommandMsg(*Cmd));
+                pConn->WriteConnQue(CTIDBG_new CtiCommandMsg(*Cmd));
                 break;
             }
         case (CtiCommandMsg::AreYouThere):
@@ -253,7 +253,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 else  // Client wants to hear from us?
                 {
-                    pConn->WriteConnQue(new CtiCommandMsg(*Cmd));
+                    pConn->WriteConnQue(CTIDBG_new CtiCommandMsg(*Cmd));
                 }
 
                 break;
@@ -337,7 +337,7 @@ int  CtiServer::clientArbitrationWinner(CtiConnectionManager *CM)
                 dout << RWTime() << " Connection " << Mgr->getClientName() << " to " << Mgr->getPeer() << " has been denied, entry will be deleted." << endl;
             }
 
-            Mgr->WriteConnQue(new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
+            Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the CTIDBG_new guy to blow off..
 
             if(mConnectionTable.remove(Mgr))
             {
@@ -378,7 +378,7 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
         {
             Mgr->setClientQuestionable(TRUE);
 
-            CtiCommandMsg *Cmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
+            CtiCommandMsg *Cmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
             Cmd->setOpString("Are You There");
             Mgr->WriteConnQue(Cmd);
         }

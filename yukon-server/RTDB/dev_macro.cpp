@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/04/24 21:37:51 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:14 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,12 +126,12 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
         set< LONG > executedRouteSet;
         deviceIter_t devIter(_deviceList.begin( ));
         size_t vglistsize = vgList.entries();
-        size_t newvglistsize = 0;
+        size_t CTIDBG_CTIDBG_newvglistsize = 0;
 
         for( ; devIter != _deviceList.end( ); devIter++)
         {
             CtiDeviceBase *&pBase = *devIter;
-            OUTMESS *pOutMessage = new OUTMESS(*OutMessage);           // Create a personalized copy for this sub-device.
+            OUTMESS *pOutMessage = CTIDBG_new OUTMESS(*OutMessage);           // Create a personalized copy for this sub-device.
 
             if(pOutMessage)
             {
@@ -144,7 +144,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                     pBase->initTrxID( OutMessage->TrxID, parse, vgList );      // Must init the non-participants so they count too.
                 }
 
-                // It is our job to clean up after any Execute chain which does not consume the new message.
+                // It is our job to clean up after any Execute chain which does not consume the CTIDBG_new message.
                 if(pOutMessage)
                 {
                     delete pOutMessage;
@@ -157,18 +157,18 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
             }
         }
 
-        newvglistsize = vgList.entries();
+        CTIDBG_CTIDBG_newvglistsize = vgList.entries();
 
         CtiPoint *pPoint = 0;
 
         if ((pPoint = (CtiPoint*)getDeviceControlPointOffsetEqual(GRP_CONTROL_STATUS)) != 0)
         {
-            if(newvglistsize > vglistsize)
+            if(CTIDBG_CTIDBG_newvglistsize > vglistsize)
             {
                 /*
                  *  We claim all generated messages as having come from the device macro and not their causal device object here.
                  */
-                for(int i = newvglistsize; i > vglistsize; i-- )
+                for(int i = CTIDBG_CTIDBG_newvglistsize; i > vglistsize; i-- )
                 {
                     CtiMessage *&pMsg = vgList[i-1];
 
@@ -302,8 +302,8 @@ INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< Ct
 
         resString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(val);
 
-        //create a new data message
-        CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
+        //create a CTIDBG_new data message
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
 
         if (pData != NULL)
         {
@@ -346,8 +346,8 @@ INT CtiDeviceMacro::processTrxID( int trx,  RWTPtrSlist< CtiMessage >  &vgList)
                 val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)cnt );
             }
 
-            //create a new data message
-            CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), RWCString(getName() + " / " + pPoint->getName() + " = " + CtiNumStr(val)));
+            //create a CTIDBG_new data message
+            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), RWCString(getName() + " / " + pPoint->getName() + " = " + CtiNumStr(val)));
             if (pData != NULL)
             {
                 vgList.insert( pData );

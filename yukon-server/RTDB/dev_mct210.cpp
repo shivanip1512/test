@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/18 21:28:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,7 +171,7 @@ INT CtiDeviceMCT210::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            CtiRequestMsg newReq(getID(),
+            CtiRequestMsg CTIDBG_CTIDBG_newReq(getID(),
                                  "getstatus disconnect noqueue",
                                  InMessage->Return.UserID,
                                  InMessage->Return.TrxID,
@@ -179,11 +179,11 @@ INT CtiDeviceMCT210::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                  InMessage->Return.MacroOffset,
                                  InMessage->Return.Attempt);
 
-            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+            CTIDBG_CTIDBG_newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-            CtiCommandParser parse(newReq.CommandString());
+            CtiCommandParser parse(CTIDBG_CTIDBG_newReq.CommandString());
 
-            CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+            CtiDeviceBase::ExecuteRequest(&CTIDBG_CTIDBG_newReq, parse, vgList, retList, outList);
 
             break;
         }
@@ -231,7 +231,7 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
 
         decodeStati(disc, MCT_STATUS_DISCONNECT, InMessage->Buffer.DSt.Message);
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -283,7 +283,7 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
             *  Send this value to requestor via retList.
             */
 
-            pData = new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, PulseAccumulatorPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
 
             if(pData != NULL)
             {

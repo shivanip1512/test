@@ -265,7 +265,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert(new CtiReturnMsg(getID(),
+        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
                                         RWCString(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,
@@ -286,7 +286,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
-    CtiCommandParser newParse("scan general");
+    CtiCommandParser CTIDBG_CTIDBG_newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -296,7 +296,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     pReq->setCommandString("scan general");
 
-    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {
@@ -312,7 +312,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
-    CtiCommandParser newParse("scan integrity");
+    CtiCommandParser CTIDBG_CTIDBG_newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -322,7 +322,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     pReq->setCommandString("scan integrity");
 
-    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {
@@ -381,7 +381,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                               RWCString(InMessage->Return.CommandStr),
                                               RWCString(),
                                               InMessage->EventCode & 0x7fff,

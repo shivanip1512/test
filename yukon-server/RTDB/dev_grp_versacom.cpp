@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/03 14:33:49 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,7 +118,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                 CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                 LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
 
-                vgList.insert(new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
         }
 
@@ -126,7 +126,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                               RWCString(OutMessage->Request.CommandStr),
                                               Route->getName(),
                                               nRet,
@@ -158,7 +158,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
 
-        CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                               RWCString(OutMessage->Request.CommandStr),
                                               resultString,
                                               nRet,

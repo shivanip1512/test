@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2002/11/07 22:52:25 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2002/11/15 14:08:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -224,6 +224,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* open the port pipe */
     PortPipeInit (NOWAIT);
 
+    SET_CRT_OUTPUT_MODES;
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
+        ENABLE_CRT_SHUTDOWN_CHECK;
+
+
+
     do
     {
         LoadScannableDevices();
@@ -292,7 +298,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         // Initialize the connection to VanGogh....
         VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
         VanGoghConnection.setName("Dispatch");
-        VanGoghConnection.WriteConnQue(new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
+        VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
 
         if(_beginthread (NexusThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
         {
@@ -841,7 +847,7 @@ VOID ResultThread (VOID *Arg)
                 // Do some device dependent work on this Inbound message!
                 DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
-                // Send any new porter requests to porter
+                // Send any CTIDBG_new porter requests to porter
                 if((ScannerDebugLevel & 0x00000080) && outList.entries() > 0)
                 {
                     {
@@ -867,7 +873,7 @@ VOID ResultThread (VOID *Arg)
                 /* Check if we should kick other thread in the pants */
                 if(DeviceRecord->getScanRate(ScanRateGeneral) == 0)
                 {
-                    // FIX FIX FIX This needs a new IPC with PORTER.. No DB connection anymore!
+                    // FIX FIX FIX This needs a CTIDBG_new IPC with PORTER.. No DB connection anymore!
                     DeviceRecord->setNextScan(ScanRateGeneral, TimeNow.now());
                     SetEvent(hScannerSyncs[S_SCAN_EVENT]);
                 }
@@ -909,7 +915,7 @@ VOID NexusThread (VOID *Arg)
 
     /* Define the pipe variables */
     ULONG       BytesRead;
-    INMESS      *InMessage;
+    INMESS      *InMessage = NULL;
 
     // I want an attitude!
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
@@ -936,7 +942,7 @@ VOID NexusThread (VOID *Arg)
         }
 
         BytesRead = 0;
-        InMessage = new INMESS;
+        InMessage = CTIDBG_new INMESS;
         memset(InMessage, 0, sizeof(*InMessage));
 
         /* get a result off the port pipe */
@@ -966,6 +972,11 @@ VOID NexusThread (VOID *Arg)
             }
         }
     } /* End of for */
+
+    if(InMessage != NULL)
+    {
+        delete InMessage;
+    }
 }
 
 
@@ -974,7 +985,7 @@ VOID ScannerCleanUp ()
     ScannerQuit = TRUE;
 
     ScannerDeviceManager.DeleteList();
-    VanGoghConnection.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     VanGoghConnection.ShutdownConnection();
 
     PortPipeCleanup(0);

@@ -232,7 +232,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << " has just received a new port queue entry.  There are " << QueEntries << " pending." << endl;
+                    dout << RWTime() << " " << getName() << " has just received a CTIDBG_new port queue entry.  There are " << QueEntries << " pending." << endl;
                 }
 
                 ULONG gripemore = QueueGripe * 2;
@@ -626,7 +626,7 @@ INT CtiPort::generateTraces(BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWT
     {
         if(width + 2 > SCREEN_WIDTH)
         {
-            /* yes so goto new line */
+            /* yes so goto CTIDBG_new line */
             trace.setTrace( RWCString( buffer ) );
             traceList.insert(trace.replicateMessage());
 

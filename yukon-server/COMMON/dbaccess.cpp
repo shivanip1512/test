@@ -18,11 +18,13 @@
 -----------------------------------------------------------------------------*/
 
 #include <windows.h>
+#include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 #include "types.h"
 #include "dlldefs.h"
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "logger.h"
+
 
 
 DLLEXPORT CtiSemaphore  gDBAccessSema(gMaxDBConnectionCount, gMaxDBConnectionCount);
@@ -48,7 +50,8 @@ void dbErrorHandler2( const RWDBStatus& aStatus);
 static RWRecursiveLock<RWMutexLock> DbMutex;
 
 // Keep information about a max of 2 databases
-static DBInfo* db_info[2] = { NULL, NULL};
+static const int MAXDBINFO = 2;
+static DBInfo* db_info[MAXDBINFO] = { NULL, NULL};
 
 /**
  For a given dbID, set the necessary information to make a connection
@@ -67,7 +70,7 @@ void setDatabaseParams(unsigned dbID,
     DBInfo* info;
     if( (info = db_info[dbID]) == NULL )
     {
-        db_info[dbID] = info = new DBInfo;
+        db_info[dbID] = info = CTIDBG_new DBInfo;
         info->db = NULL;
     }
 
@@ -144,7 +147,7 @@ RWDBDatabase getDatabase(unsigned dbID)
 
     if(db == NULL)
     {
-        db = new RWDBDatabase;
+        db = CTIDBG_new RWDBDatabase;
     }
 
     if( reconnect == true )

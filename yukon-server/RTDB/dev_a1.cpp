@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/16 15:59:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ INT CtiDeviceAlphaA1::allocateDataBins  (OUTMESS *outMess)
     // allocate this to as big as we can possible get
     if (_dataBuffer == NULL)
     {
-        _dataBuffer = new BYTE[sizeof (AlphaA1ScanData_t)];
+        _dataBuffer = CTIDBG_new BYTE[sizeof (AlphaA1ScanData_t)];
 
         if (_dataBuffer != NULL)
         {
@@ -119,7 +119,7 @@ INT CtiDeviceAlphaA1::allocateDataBins  (OUTMESS *outMess)
 
     if (_loadProfileBuffer == NULL)
     {
-        _loadProfileBuffer = new BYTE[sizeof (AlphaA1LoadProfile_t)];
+        _loadProfileBuffer = CTIDBG_new BYTE[sizeof (AlphaA1LoadProfile_t)];
 
         if (_loadProfileBuffer != NULL)
         {
@@ -435,7 +435,7 @@ INT CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< CtiM
                                 setReadFunction(0);
 
                                 // allocate this on the fly
-                                _workBuffer = new BYTE[sizeof (AlphaA1Class0Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaA1Class0Raw_t)];
 
                                 setClassReadComplete (FALSE);
                                 setPreviousState (StateScanValueSet7);
@@ -637,7 +637,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                             {
                                 delete []_workBuffer;
                                 _workBuffer = NULL;
-                                _workBuffer = new BYTE[sizeof (AlphaA1Class8Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaA1Class8Raw_t)];
                             }
 
                             // moving to load profile next, reset parameters
@@ -691,7 +691,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                                 delete []_workBuffer;
                                 _workBuffer = NULL;
                                 // because this is calculated, the extra 100 is for final date and time, etc
-                                _workBuffer = new BYTE[sizeof (AlphaA1Class14Raw_t)];
+                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaA1Class14Raw_t)];
                             }
 
                             setReadClass(14);
@@ -788,7 +788,7 @@ INT CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrSlis
                                     delete []_workBuffer;
                                     _workBuffer = NULL;
                                     // because this is calculated, the extra 100 is for final date and time, etc
-                                    _workBuffer = new BYTE[ptr->dayRecordSize + 100];
+                                    _workBuffer = CTIDBG_new BYTE[ptr->dayRecordSize + 100];
                                 }
 
                                 // limit in protocol for the byte request is 64k
@@ -1252,7 +1252,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
                             ptr->finalDataFlag = TRUE;
                         }
 
-                        // we'll be grabbing a new pile of info
+                        // we'll be grabbing a CTIDBG_new pile of info
                         setTotalByteCount (0);
 
                         setPreviousState (StateScanValueSet7FirstScan);
@@ -1479,7 +1479,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
     CtiPointDataMsg   *pData    = NULL;
     CtiPointNumeric   *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1502,7 +1502,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
             (tmpCurrentState == StateHandshakeAbort) ||
             (InMessage->EventCode != 0))
         {
-            CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+            CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
             if (pMsg != NULL)
             {
@@ -1572,8 +1572,8 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
             // set pvalue
             PValue = (FLOAT) (DUPRep->Status & ALPHA_POWER_FAIL ? CLOSED : OPENED);
 
-            // add new message with plugged
-            pData = new CtiPointDataMsg(pNumericPoint->getPointID(),
+            // add CTIDBG_new message with plugged
+            pData = CTIDBG_new CtiPointDataMsg(pNumericPoint->getPointID(),
                                         PValue,
                                         NonUpdatedQuality,
                                         AnalogPointType);
@@ -1651,7 +1651,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
 
     int               dataQuality = NormalQuality;
 
-    CtiReturnMsg   *pPIL = new CtiReturnMsg(getID(),
+    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
                                             RWCString(),
                                             InMessage->EventCode & 0x7fff,
@@ -1753,7 +1753,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
                         pLastLPIntervals = NULL;
                     }
 
-                    pLastLPIntervals = new CtiReturnMsg(getID(),
+                    pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
                                                         RWCString(InMessage->Return.CommandStr),
                                                         RWCString(),
                                                         InMessage->EventCode & 0x7fff,

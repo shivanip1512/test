@@ -14,6 +14,7 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
+#include "ctidbgmem.h" // defines CTIDBG_new
 #include "ion_valuebasictypes.h"
 #include "ion_valuestructtypes.h"
 
@@ -398,27 +399,27 @@ void CtiIONArray::putSerializedHeader( unsigned char *buf ) const
 
 CtiIONArray *CtiIONArray::restoreStruct( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength )
 {
-    CtiIONArray *newVal = NULL;
+    CtiIONArray *CTIDBG_newVal = NULL;
 
-    newVal = CtiIONStruct::restoreObject( classDescriptor, byteStream, streamLength );
+    CTIDBG_newVal = CtiIONStruct::restoreObject( classDescriptor, byteStream, streamLength );
 
-    return newVal;
+    return CTIDBG_newVal;
 }
 
 
 CtiIONArray *CtiIONArray::restoreStructArray( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength )
 {
-    CtiIONArray *newVal = NULL;
+    CtiIONArray *CTIDBG_newVal = NULL;
 
-    newVal = CtiIONStructArray::restoreObject( classDescriptor, byteStream, streamLength );
+    CTIDBG_newVal = CtiIONStructArray::restoreObject( classDescriptor, byteStream, streamLength );
 
-    return newVal;
+    return CTIDBG_newVal;
 }
 
 
 CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength )
 {
-    CtiIONArray *newVal = NULL;
+    CtiIONArray *CTIDBG_newVal = NULL;
     unsigned char tmp8b,   //  temp 8 bit value
                   tmp4b;   //  temp 4 bit value
     unsigned long tmp32b,  //  temp 32 bit value
@@ -495,25 +496,25 @@ CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsi
         switch( classDescriptor )
         {
             case IONCharArray:
-                newVal = new CtiIONCharArray( itemCount, itemLength, byteStream );
+                CTIDBG_newVal = CTIDBG_new CtiIONCharArray( itemCount, itemLength, byteStream );
                 break;
             case IONBooleanArray:
-                newVal = new CtiIONBooleanArray( itemCount, itemLength, byteStream );
+                CTIDBG_newVal = CTIDBG_new CtiIONBooleanArray( itemCount, itemLength, byteStream );
                 break;
             case IONFloatArray:
-                newVal = new CtiIONFloatArray( itemCount, itemLength, byteStream );
+                CTIDBG_newVal = CTIDBG_new CtiIONFloatArray( itemCount, itemLength, byteStream );
                 break;
             case IONSignedIntArray:
-                newVal = new CtiIONSignedIntArray( itemCount, itemLength, byteStream );
+                CTIDBG_newVal = CTIDBG_new CtiIONSignedIntArray( itemCount, itemLength, byteStream );
                 break;
             case IONUnsignedIntArray:
-                newVal = new CtiIONUnsignedIntArray( itemCount, itemLength, byteStream );
+                CTIDBG_newVal = CTIDBG_new CtiIONUnsignedIntArray( itemCount, itemLength, byteStream );
                 break;
         }
 
     }
 
-    return newVal;
+    return CTIDBG_newVal;
 }
 
 
@@ -604,14 +605,14 @@ CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLen
         handle  = byteStream[streamPos++];
         handle |= byteStream[streamPos++] << 8;
 
-        tmpMethod = new CtiIONMethod( byteStream, streamLength - streamPos );
+        tmpMethod = CTIDBG_new CtiIONMethod( byteStream, streamLength - streamPos );
 
         //  make sure we read the method out okay
         if( tmpMethod != NULL && tmpMethod->isValid( ) )
         {
             streamPos += tmpMethod->getSerializedValueLength( );
 
-            tmpStatement = new CtiIONStatement( handle, tmpMethod );
+            tmpStatement = CTIDBG_new CtiIONStatement( handle, tmpMethod );
             if( tmpStatement != NULL )
             {
                 _statements.push_back( tmpStatement );

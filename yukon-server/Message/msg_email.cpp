@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_email.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:07:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ CtiEmailMsg& CtiEmailMsg::setText(const RWCString &str)
 
 CtiMessage* CtiEmailMsg::replicateMessage() const
 {
-   CtiEmailMsg *pNew = new CtiEmailMsg;
+   CtiEmailMsg *pNew = CTIDBG_new CtiEmailMsg;
 
    if(pNew != NULL)
    {

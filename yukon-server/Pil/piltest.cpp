@@ -77,12 +77,12 @@ void main(int argc, char **argv)
     dout.setWriteInterval(0);
 
 
-    CtiConnection * _vgConnection = new CtiConnection( VANGOGHNEXUS, argv[1] );
-    _vgConnection->WriteConnQue( new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
+    CtiConnection * _vgConnection = CTIDBG_new CtiConnection( VANGOGHNEXUS, argv[1] );
+    _vgConnection->WriteConnQue( CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
 
-    CtiConnection * _pilConnection = new CtiConnection( PORTERINTERFACENEXUS, argv[1] );
-    _pilConnection->WriteConnQue( new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
-    _pilConnection->WriteConnQue( new CtiRequestMsg( atoi(argv[3]), RWCString(argv[4])) );
+    CtiConnection * _pilConnection = CTIDBG_new CtiConnection( PORTERINTERFACENEXUS, argv[1] );
+    _pilConnection->WriteConnQue( CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
+    _pilConnection->WriteConnQue( CTIDBG_new CtiRequestMsg( atoi(argv[3]), RWCString(argv[4])) );
 
     CtiMessage *pMsg;
     int count = 0;
@@ -113,8 +113,8 @@ void main(int argc, char **argv)
     }
 
 
-    _vgConnection->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15) );
-    _pilConnection->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15) );
+    _vgConnection->WriteConnQue( CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15) );
+    _pilConnection->WriteConnQue( CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15) );
     Sleep(5000);
 
     _vgConnection->ShutdownConnection();

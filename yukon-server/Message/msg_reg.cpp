@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_reg.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/02 19:26:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:07:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,10 +64,10 @@ CtiRegistrationMsg::What() const
    dout << "CtiRegistrationMsg.... " << endl;
 }
 
-// Return a new'ed copy of this message!
+// Return a CTIDBG_new'ed copy of this message!
 CtiMessage* CtiRegistrationMsg::replicateMessage() const
 {
-   CtiRegistrationMsg *ret = new CtiRegistrationMsg(*this);
+   CtiRegistrationMsg *ret = CTIDBG_new CtiRegistrationMsg(*this);
 
    return( (CtiMessage*)ret );
 }

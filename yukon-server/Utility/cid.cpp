@@ -128,7 +128,7 @@ void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
    HANDLE fHandle;
 
    RWCString findthis = path;
-   RWCString newdir;
+   RWCString CTIDBG_newdir;
    RWCString filename;
 
    findthis += "\\*";
@@ -249,7 +249,7 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
    CtiDirBuild   &dinfo = db;
 
    char oldnum[10];
-   char newnum[10];
+   char CTIDBG_newnum[10];
 
    char temp[128];
    char dir[128];
@@ -315,13 +315,13 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
 
             if(gMajorRevision > 0 && dinfo._majorRevision != gMajorRevision)
             {
-               // We need to generate a new buildnumber define!
+               // We need to generate a CTIDBG_new buildnumber define!
                sprintf(oldnum, "%d", dinfo._majorRevision);
 
                dinfo._majorRevision = gMajorRevision;
-               sprintf(newnum, "%d", dinfo._majorRevision);
+               sprintf(CTIDBG_newnum, "%d", dinfo._majorRevision);
 
-               origstr.replace(oldnum,newnum);
+               origstr.replace(oldnum,CTIDBG_newnum);
             }
             else
             {
@@ -343,13 +343,13 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
 
             if(gMinorRevision >= 0 && dinfo._minorRevision != gMinorRevision)
             {
-               // We need to generate a new buildnumber define!
+               // We need to generate a CTIDBG_new buildnumber define!
                sprintf(oldnum, "%d", dinfo._minorRevision);
 
                dinfo._minorRevision = gMinorRevision;
-               sprintf(newnum, "%d", dinfo._minorRevision);
+               sprintf(CTIDBG_newnum, "%d", dinfo._minorRevision);
 
-               origstr.replace(oldnum,newnum);
+               origstr.replace(oldnum,CTIDBG_newnum);
             }
             else
             {
@@ -369,36 +369,36 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
 
             if(gBuildRevision >= 0 && dinfo._buildNumber != gBuildRevision)         // If specified and different.
             {
-               // We need to generate a new buildnumber define!
+               // We need to generate a CTIDBG_new buildnumber define!
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = gBuildRevision;
-               sprintf(newnum, "%d", dinfo._buildNumber);
+               sprintf(CTIDBG_newnum, "%d", dinfo._buildNumber);
 
-               origstr.replace(oldnum,newnum);
+               origstr.replace(oldnum,CTIDBG_newnum);
 
                cout << __LINE__ << " " << gBuildRevision << endl;
             }
             else if(gMinorRevision >= 0 || gMajorRevision >= 0)   // Need to reset this then.
             {
-               // We need to generate a new buildnumber define!
+               // We need to generate a CTIDBG_new buildnumber define!
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = 0;
-               sprintf(newnum, "%d", dinfo._buildNumber);
+               sprintf(CTIDBG_newnum, "%d", dinfo._buildNumber);
 
                cout << __LINE__ << endl;
             }
             else
             {
-               // We need to generate a new buildnumber define!
+               // We need to generate a CTIDBG_new buildnumber define!
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
-               sprintf(newnum, "%d", dinfo._buildNumber);
+               sprintf(CTIDBG_newnum, "%d", dinfo._buildNumber);
 
                cout << __LINE__ << endl;
             }
 
-            origstr.replace(oldnum,newnum);
+            origstr.replace(oldnum,CTIDBG_newnum);
 
             //cout << "BuildNumber " << dinfo._buildNumber << endl;
 

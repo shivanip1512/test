@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/09/09 14:56:04 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/11/15 14:08:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,9 +59,7 @@ using namespace std;
 #include "numstr.h"
 #include "utility.h"
 
-extern CtiDeviceManager    DeviceManager;
-
-IM_EX_CTIBASE extern RWMutexLock  coutMux;
+extern CtiDeviceManager DeviceManager;
 
 HCTIQUEUE*   QueueHandle(LONG pid);
 
@@ -72,17 +70,6 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
     if(OutMessage != 0 && ErrorCode != NORMAL)
     {
         INT ErrorType = GetErrorType(ErrorCode);
-
-        #if 0
-
-        if( ErrorType == ERRTYPEPROTOCOL )      // DSM/2 eliminated DLCERRTYPE from non-DLC addressed devices (remotes actually)...
-        {
-        }
-
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-        CtiDevice *targetDevice =  = DeviceManager.getEqual(OutMessage->TargetID);
-
-        #endif
 
         RWCString cmd(OutMessage->Request.CommandStr);
         RWCString omess;
@@ -95,12 +82,22 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
             traceBuffer(imess, InMessage->Buffer.InMessage, InMessage->InLength);
         }
 
-        CtiCommErrorHistoryMsg *pCommError = new CtiCommErrorHistoryMsg((OutMessage->TargetID > 0 ? OutMessage->TargetID : OutMessage->DeviceID),
+        CtiCommErrorHistoryMsg *pCommError = CTIDBG_new CtiCommErrorHistoryMsg((OutMessage->TargetID > 0 ? OutMessage->TargetID : OutMessage->DeviceID),
                                                                         ErrorType,
                                                                         ErrorCode,
                                                                         cmd,
                                                                         omess,
                                                                         imess);
+        int vgccnt = VanGoghConnection.outQueueCount();
+        if( vgccnt > 0 &&  !(vgccnt % 100))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Dispatch is not getting  messages from me " << VanGoghConnection.outQueueCount() << " queue entries waiting" << endl;
+            }
+        }
+
         VanGoghConnection.WriteConnQue(pCommError);
     }
 
@@ -112,8 +109,6 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 {
     INMESS InMessage;
     ULONG BytesWritten;
-    CtiDeviceBase *RemoteRecord;
-    REMOTEPERF RemotePerf;
     ERRSTRUCT ErrStruct;
     struct timeb TimeB;
 
@@ -129,7 +124,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         InMessage.DeviceID      = OutMessage->DeviceID;
         InMessage.TargetID      = OutMessage->TargetID;
 
-        // 082002 CGP // InMessage.RouteID       = OutMessage->RouteID;
+        // 082002 CGP // InMessage.RouteID = OutMessage->RouteID;
 
         InMessage.Port          = OutMessage->Port;
         InMessage.Remote        = OutMessage->Remote;
@@ -141,10 +136,14 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         InMessage.EventCode     = ErrorCode;
 
         /* get the time into the return message */
-        UCTFTime (&TimeB);
-        InMessage.Time = TimeB.time;
-        InMessage.MilliTime = TimeB.millitm;
-        if(TimeB.dstflag)
+        // UCTFTime (&TimeB);
+
+        RWTime now;
+
+        InMessage.Time = now.seconds() - rwEpoch;
+
+        InMessage.MilliTime = 0; // TimeB.millitm;
+        if(now.isDST())
             InMessage.MilliTime |= DSTACTIVE;
 
         if(OutMessage->EventCode & BWORD)

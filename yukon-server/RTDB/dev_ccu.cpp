@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/30 15:01:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/11/15 14:08:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
             RWCString cmd(InMessage->Return.CommandStr);
 
 
-            CtiReturnMsg   *pLoop = new CtiReturnMsg(getID(),
+            CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                      cmd,
                                                      RWCString("Loopback Successful"),
                                                      InMessage->EventCode & 0x7fff,
@@ -124,7 +124,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     case (CtiProtocolEmetcon::PutStatus_Reset):
         {
-            CtiReturnMsg   *pLoop = new CtiReturnMsg(getID(),
+            CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(),
                                                      InMessage->Return.CommandStr,
                                                      "Reset Submitted",
                                                      InMessage->EventCode & 0x7fff,
@@ -190,7 +190,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             {
                 if(getType() == TYPE_CCU711)
                 {
-                    OUTMESS *OutMTemp = new OUTMESS(*OutMessage);
+                    OUTMESS *OutMTemp = CTIDBG_new OUTMESS(*OutMessage);
 
                     if(OutMTemp != NULL)
                     {
@@ -202,7 +202,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                 else
                 {
                     nRet = NoMethod;
-                    retList.insert( new CtiReturnMsg(getID(),
+                    retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                                      RWCString(OutMessage->Request.CommandStr),
                                                      RWCString("Non-711 CCUs do not support this command"),
                                                      nRet,
@@ -230,7 +230,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( new CtiReturnMsg(getID(),
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                              RWCString(OutMessage->Request.CommandStr),
                                              RWCString("CCU Devices do not support this command (yet?)"),
                                              nRet,

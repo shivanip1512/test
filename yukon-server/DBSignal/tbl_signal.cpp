@@ -341,7 +341,7 @@ void CtiTableSignal::dump() const
 
 CtiTableSignal* CtiTableSignal::replicate() const
 {
-    return(new CtiTableSignal(*this));
+    return(CTIDBG_new CtiTableSignal(*this));
 }
 
 void CtiTableSignal::getSQLMaxID(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, LONG id)

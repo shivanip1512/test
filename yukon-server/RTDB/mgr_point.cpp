@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/10/14 13:20:50 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/11/15 14:08:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 
 #include <rw/db/db.h>
 
+#include "ctidbgmem.h"  // CTIDBG_new
 #include "pt_base.h"
 #include "mgr_point.h"
 #include "dbaccess.h"
@@ -600,32 +601,32 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     {
     case StatusPointType:
         {
-            Point = (CtiPointBase*) new CtiPointStatus;
+            Point = (CtiPointBase*) CTIDBG_new CtiPointStatus;
             break;
         }
     case AnalogPointType:
         {
             if(PseudoPt)
-                Point = (CtiPointBase*) new CtiPointPseudoAnalog;     // Really a numeric!
+                Point = (CtiPointBase*) CTIDBG_new CtiPointPseudoAnalog;     // Really a numeric!
             else
-                Point = (CtiPointBase*) new CtiPointAnalog;
+                Point = (CtiPointBase*) CTIDBG_new CtiPointAnalog;
 
             break;
         }
     case PulseAccumulatorPointType:
     case DemandAccumulatorPointType:
         {
-            Point = (CtiPointBase*) new CtiPointAccumulator;
+            Point = (CtiPointBase*) CTIDBG_new CtiPointAccumulator;
             break;
         }
     case CalculatedPointType:
         {
-            Point = (CtiPointBase*) new CtiPointCalculated;          // This too is really a numeric!
+            Point = (CtiPointBase*) CTIDBG_new CtiPointCalculated;          // This too is really a numeric!
             break;
         }
     case SystemPointType:
         {
-            Point = new CtiPointBase;
+            Point = CTIDBG_new CtiPointBase;
             break;
         }
     default:
@@ -656,7 +657,7 @@ void CtiPointManager::RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new settings!
+             *  update my list entry to the CTIDBG_new settings!
              */
             pTempCtiPoint->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
             pTempCtiPoint->setUpdatedFlag();       // Mark it updated
@@ -670,7 +671,7 @@ void CtiPointManager::RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
             {
                 // Add it to my list....
                 pTempCtiPoint->setUpdatedFlag();               // Mark it updated
-                Map.insert( new CtiHashKey(pTempCtiPoint->getID()), pTempCtiPoint ); // Stuff it in the list
+                Map.insert( CTIDBG_new CtiHashKey(pTempCtiPoint->getID()), pTempCtiPoint ); // Stuff it in the list
             }
             else
             {
@@ -698,7 +699,7 @@ void CtiPointManager::RefreshPointLimits(bool &rowFound, RWDBReader& rdr, BOOL (
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new limit settings!
+             *  update my list entry to the CTIDBG_new limit settings!
              */
 
             ((CtiPointNumeric*)pTempCtiPoint)->DecodeLimitsDatabaseReader(rdr);        // Fills himself in from the reader
@@ -723,7 +724,7 @@ void CtiPointManager::RefreshCalcElements(bool &rowFound, RWDBReader& rdr, BOOL 
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new limit settings!
+             *  update my list entry to the CTIDBG_new limit settings!
              */
 
             ((CtiPointCalculated*)pTempCtiPoint)->DecodeCalcElementsDatabaseReader(rdr);        // Fills himself in from the reader

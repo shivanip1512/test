@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/10/18 14:40:36 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/11/15 14:08:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,7 +171,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
 {
     INT      nRet = 0;
     RWTime   Now;
-    OUTMESS  *OutMessage = new OUTMESS;
+    OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
      *  This method will be called by each accumulator scanning device prior to the
      *  actual device specific code called by that device type.
@@ -181,7 +181,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
     RWTPtrSlist< CtiMessage > vgList;
     RWTPtrSlist< CtiMessage > retList;
 
-    CtiRequestMsg *pReq = new CtiRequestMsg (getID(),
+    CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan accumulator",
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
@@ -293,7 +293,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
 {
     INT      nRet = 0;
     RWTime   Now;
-    OUTMESS  *OutMessage = new OUTMESS;
+    OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
      *  This method will be called by each accumulator scanning device prior to the
      *  actual device specific code called by that device type.
@@ -302,7 +302,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
     RWTPtrSlist< CtiMessage > vgList;
     RWTPtrSlist< CtiMessage > retList;
 
-    CtiRequestMsg *pReq = new CtiRequestMsg (getID(),
+    CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan integrity",
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
@@ -409,12 +409,12 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
 {
     INT      nRet = 0;
     RWTime   Now;
-    OUTMESS  *OutMessage = new OUTMESS;
+    OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
 
     RWTPtrSlist< CtiMessage > vgList;
     RWTPtrSlist< CtiMessage > retList;
 
-    CtiRequestMsg *pReq = new CtiRequestMsg (getID(),
+    CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan general",
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
@@ -541,7 +541,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
 {
     INT      nRet = 0;
     RWTime   Now;
-    OUTMESS  *OutMessage = new OUTMESS;
+    OUTMESS  *OutMessage = CTIDBG_new OUTMESS;
     /*
      *  This method will be called by each load profile device prior to the
      *  actual device specific code called by that device type.
@@ -550,7 +550,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
     RWTPtrSlist< CtiMessage > vgList;
     RWTPtrSlist< CtiMessage > retList;
 
-    CtiRequestMsg *pReq = new CtiRequestMsg (getID(),
+    CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg (getID(),
                                              "scan loadprofile",
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
@@ -686,11 +686,11 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
         if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
         {
-            OUTMESS *OutTemplate = new(OUTMESS);
+            OUTMESS *OutTemplate = CTIDBG_new(OUTMESS);
 
             InEchoToOut( InMessage, OutTemplate );
 
-            CtiRequestMsg *pReq = new CtiRequestMsg(InMessage->TargetID,
+            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID,
                                                     RWCString(InMessage->Return.CommandStr),
                                                     InMessage->Return.UserID,
                                                     InMessage->Return.TrxID,
@@ -705,7 +705,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             {
                 RWCString msg;
-                CtiReturnMsg *Ret = new CtiReturnMsg( getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
@@ -749,14 +749,14 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             //    so we have to send it here
             if( InMessage->DeviceID != InMessage->TargetID )
             {
-                CtiReturnMsg *retMsg = new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
                 //  Log the communication success on this route.
                 if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
                 {
                     if( retMsg != NULL )
                     {
-                        commStatus = new CtiPointDataMsg(commPoint->getPointID(), 1.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
+                        commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 1.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
 
                         if( commStatus != NULL )
                         {
@@ -783,7 +783,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             /* Form up a general FAILURE message for the client to digest as needed. */
             // dout << "Error return is being sent" << endl;
 
-            CtiReturnMsg *Ret = new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
             retList.insert( Ret );
 
@@ -868,14 +868,14 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
         //    so we have to send it here
         if( InMessage->DeviceID != InMessage->TargetID )
         {
-            CtiReturnMsg *retMsg = new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
             //  Log the communication success on this route.
             if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
             {
                 if( retMsg != NULL )
                 {
-                    commStatus = new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
+                    commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
 
                     if( commStatus != NULL )
                     {
@@ -1495,7 +1495,7 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
             if(aRef.isStatValid(i))
             {
                 if(!_statistics[i])
-                    _statistics[i] = new CtiTableDeviceStatistics;
+                    _statistics[i] = CTIDBG_new CtiTableDeviceStatistics;
 
                 if(_statistics[i])    // Make sure we got some.
                     *_statistics[i] = aRef.getStatistics(i);
@@ -1507,7 +1507,7 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
             if(aRef.isRateValid(i))
             {
                 if(!_scanRateTbl[i])
-                    _scanRateTbl[i] = new CtiTableDeviceScanRate;
+                    _scanRateTbl[i] = CTIDBG_new CtiTableDeviceScanRate;
 
                 if(_scanRateTbl[i])
                     *_scanRateTbl[i] = aRef.getRateTable(i);
@@ -1522,7 +1522,7 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
 
         if(aRef.isScanDataValid())
         {
-            _scanData = new CtiTableDeviceScanData( (const)aRef.getScanData());
+            _scanData = CTIDBG_new CtiTableDeviceScanData( (const)aRef.getScanData());
         }
     }
     return *this;
@@ -1640,7 +1640,7 @@ CtiDeviceSingle&     CtiDeviceSingle::setRateTables(const INT i, const CtiTableD
 
     if(_scanRateTbl[i] == NULL)
     {
-        _scanRateTbl[i] = new CtiTableDeviceScanRate;
+        _scanRateTbl[i] = CTIDBG_new CtiTableDeviceScanRate;
     }
 
     if(_scanRateTbl[i])
@@ -1786,23 +1786,23 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 
         if(!found)
         {
-            CtiTableDeviceWindow newWindow;
-            newWindow.setID (getID());
-            newWindow.setType (DeviceWindowSignaledAlternateRate);
-            newWindow.setDuration (aDuration);
-            newWindow.setAlternateDuration (aDuration);
+            CtiTableDeviceWindow CTIDBG_CTIDBG_newWindow;
+            CTIDBG_CTIDBG_newWindow.setID (getID());
+            CTIDBG_CTIDBG_newWindow.setType (DeviceWindowSignaledAlternateRate);
+            CTIDBG_CTIDBG_newWindow.setDuration (aDuration);
+            CTIDBG_CTIDBG_newWindow.setAlternateDuration (aDuration);
 
             if(aOpen == -1)
             {
-                newWindow.setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
-                newWindow.setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
+                CTIDBG_CTIDBG_newWindow.setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
+                CTIDBG_CTIDBG_newWindow.setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
             }
             else
             {
-                newWindow.setOpen (aOpen);
-                newWindow.setAlternateOpen (aOpen);
+                CTIDBG_CTIDBG_newWindow.setOpen (aOpen);
+                CTIDBG_CTIDBG_newWindow.setAlternateOpen (aOpen);
             }
-            _windowVector.push_back (newWindow);
+            _windowVector.push_back (CTIDBG_CTIDBG_newWindow);
         }
 
         if(aOpen == -1)
@@ -1863,7 +1863,7 @@ void CtiDeviceSingle::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
     {
         if(!_statistics[i])
         {
-            _statistics[i] = new CtiTableDeviceStatistics;
+            _statistics[i] = CTIDBG_new CtiTableDeviceStatistics;
         }
 
         if(_statistics[i])
@@ -1896,7 +1896,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
         {
             if(_scanRateTbl[i] == NULL)
             {
-                _scanRateTbl[i] = new CtiTableDeviceScanRate;
+                _scanRateTbl[i] = CTIDBG_new CtiTableDeviceScanRate;
             }
 
             if(_scanRateTbl[i])
@@ -1919,8 +1919,8 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
 
     if(!isNull)
     {
-        CtiTableDeviceWindow newWindow;
-        newWindow.DecodeDatabaseReader(rdr);
+        CtiTableDeviceWindow CTIDBG_CTIDBG_newWindow;
+        CTIDBG_CTIDBG_newWindow.DecodeDatabaseReader(rdr);
 
         /*************************
         * if open and close were equal, duration of the window will be 0
@@ -1928,7 +1928,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         * sounds like a config problem to me, make the window always open
         **************************
         */
-        if(newWindow.getDuration() == 0)
+        if(CTIDBG_CTIDBG_newWindow.getDuration() == 0)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1937,7 +1937,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         }
         else
         {
-            _windowVector.push_back (newWindow);
+            _windowVector.push_back (CTIDBG_CTIDBG_newWindow);
         }
     }
 }
@@ -2031,7 +2031,7 @@ INT CtiDeviceSingle::validateScanData()
 
     if(_scanData == NULL)
     {
-        _scanData = new CtiTableDeviceScanData( getID() );
+        _scanData = CTIDBG_new CtiTableDeviceScanData( getID() );
         if(_scanData != NULL)
         {
             if( !(_scanData->Restore().errorCode() == RWDBStatus::ok ))

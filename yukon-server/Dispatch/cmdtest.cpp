@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/cmdtest.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:21 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/15 14:07:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,11 +101,11 @@ void main(int argc, char **argv)
 
       CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
 
-      Connect.WriteConnQue( new CtiRegistrationMsg("CommandSender", rwThreadId(), FALSE) );
+      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("CommandSender", rwThreadId(), FALSE) );
 
       Sleep(1000);
 
-      CtiCommandMsg *Cmd = new CtiCommandMsg( atoi(argv[2]));
+      CtiCommandMsg *Cmd = CTIDBG_new CtiCommandMsg( atoi(argv[2]));
 
       for(i = 3; i < argc; i++)
       {
@@ -114,7 +114,7 @@ void main(int argc, char **argv)
 
       Connect.WriteConnQue( Cmd );
 
-      Connect.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+      Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
 
       Sleep(3000);
 

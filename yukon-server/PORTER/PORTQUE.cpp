@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/09/16 21:50:50 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/11/15 14:08:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,6 @@
 // #include "btrieve.h"
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "queues.h"
 #include "dsm2.h"
@@ -265,7 +264,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
 
     /* Decode the important contents of message header */
 
-    /* Check if we have a new power fail */
+    /* Check if we have a CTIDBG_new power fail */
     if(InMessage->IDLCStat[6] & STAT_POWER)
     {
         if(!(pInfo->GetStatus(POWERFAILED)))
@@ -301,7 +300,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << tempstr << endl;
             }
-            CtiOutMessage *TimeSyncMessage = new OUTMESS;
+            CtiOutMessage *TimeSyncMessage = CTIDBG_new OUTMESS;
             /* Allocate some memory */
             if(TimeSyncMessage != NULL)
             {
@@ -420,7 +419,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
                 }
                 IDLCFunction (Dev, 0, DEST_BASE, CLCLD);
 
-                /* Assume this could be a new chip */
+                /* Assume this could be a CTIDBG_new chip */
                 pInfo->RColQMin = 0;
 
                 /* Best to flush the queues */
@@ -1337,7 +1336,7 @@ BuildLGrpQ (CtiDevice *Dev)
             /* if this is first in the group get memory for it */
             if(Offset == PREIDL)
             {
-                if((OutMessage = new OUTMESS(*MyOutMessage)) == NULL)
+                if((OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1376,7 +1375,7 @@ BuildLGrpQ (CtiDevice *Dev)
             /*
              *  20020703 CGP
              *  In a perfect world, the loop above will never have NOT found an open slot...  What if we didn't though?
-             *  It is never nice to stomp memory.  The block below will attempt something new and exciting.
+             *  It is never nice to stomp memory.  The block below will attempt something CTIDBG_new and exciting.
              *  This "could" happen if FreeSlots had gone south.
              */
             if(QueTabEnt == MAXQUEENTRIES)
@@ -1598,7 +1597,7 @@ BuildActinShed (CtiDevice *Dev)
             return(QUEUE_READ);
         }
 
-        if((OutMessage = new OUTMESS(*MyOutMessage)) == NULL)
+        if((OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
         {
             _snprintf(tempstr, 99,"Error Allocating Memory\n");
             {

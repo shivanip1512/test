@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/11/13 19:37:49 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2002/11/15 14:07:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,7 +146,7 @@ void CtiPILServer::mainThread()
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
     VanGoghConnection.setName("Dispatch");
-    VanGoghConnection.WriteConnQue(new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
 
     try
     {
@@ -155,7 +155,7 @@ void CtiPILServer::mainThread()
         NetPort  = RWInetPort(PORTERINTERFACENEXUS);
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
-        Listener = new RWSocketListener(NetAddr);
+        Listener = CTIDBG_new RWSocketListener(NetAddr);
 
         if(!Listener)
         {
@@ -318,7 +318,7 @@ void CtiPILServer::mainThread()
         }
     }
 
-    VanGoghConnection.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     VanGoghConnection.ShutdownConnection();
 
 }
@@ -363,11 +363,11 @@ void CtiPILServer::connectionThread()
 
             if( sock.socket().valid() )
             {
-                XChg = new CtiExchange(sock);
+                XChg = CTIDBG_new CtiExchange(sock);
 
                 if(XChg != NULL)
                 {
-                    CtiPILConnectionManager *ConMan = new CtiPILConnectionManager(XChg, &MainQueue_);
+                    CtiPILConnectionManager *ConMan = CTIDBG_new CtiPILConnectionManager(XChg, &MainQueue_);
 
                     if(ConMan != NULL)
                     {
@@ -378,7 +378,7 @@ void CtiPILServer::connectionThread()
                          *  now on.
                          */
 
-                        CmdMsg = new CtiCommandMsg(CtiCommandMsg::NewClient, 15);
+                        CmdMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::NewClient, 15);
 
 
                         if(CmdMsg != NULL)
@@ -393,7 +393,7 @@ void CtiPILServer::connectionThread()
                             ConMan = NULL;
 
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " ERROR Starting new connection! " << rwThreadId() << endl;
+                            dout << RWTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
                         }
                     }
                 }
@@ -696,7 +696,7 @@ void CtiPILServer::nexusThread()
             continue;
         }
 
-        InMessage = new INMESS;
+        InMessage = CTIDBG_new INMESS;
         memset(InMessage, sizeof(*InMessage), 0);
 
         /* get a result off the port pipe */
@@ -742,6 +742,11 @@ void CtiPILServer::nexusThread()
             InMessage = 0;
         }
     } /* End of for */
+
+    if(InMessage)
+    {
+        delete InMessage;
+    }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -799,7 +804,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             if(!pExecReq->getSOE())     // We should attach one if one is not already set...
             {
-                pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
+                pExecReq->setSOE( SystemLogIdGen() );  // Get us a CTIDBG_new number to deal with
             }
 
             tempOutList.clearAndDestroy();              // Just make sure!
@@ -840,7 +845,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             if(CM)
             {
-                CtiReturnMsg *pcRet = new CtiReturnMsg(pExecReq->DeviceId(),
+                CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
                                                        pExecReq->CommandString(),
                                                        "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
                                                        IDNF,
@@ -1073,7 +1078,7 @@ void CtiPILServer::vgConnThread()
 
     } /* End of for */
 
-    VanGoghConnection.WriteConnQue(new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     VanGoghConnection.ShutdownConnection();
 
     {
@@ -1256,21 +1261,21 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              */
 
             RWCString lmgroup = parse.getsValue("template");
-            char newparse[128];
+            char CTIDBG_newparse[128];
 
             Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
             CtiDevice *GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev != NULL)
             {
-                sprintf(newparse, "PutConfig serial %d %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment());
+                sprintf(CTIDBG_newparse, "PutConfig serial %d %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Template putconfig **** " << endl << "   " << newparse << endl;
+                    dout << RWTime() << " **** Template putconfig **** " << endl << "   " << CTIDBG_newparse << endl;
                 }
 
-                pReq->setCommandString(newparse);      // Make the request match our new choices
-                parse = CtiCommandParser(newparse);    // Should create a new actionItem list
+                pReq->setCommandString(CTIDBG_newparse);      // Make the request match our CTIDBG_new choices
+                parse = CtiCommandParser(CTIDBG_newparse);    // Should create a CTIDBG_new actionItem list
             }
         }
         else if(INT_MIN != parse.getiValue("fromutility"))
@@ -1279,22 +1284,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              *  This indicates the user wants to put the devices defined by group addressing defined in the "fromxxx"
              *  keys into the selected versacom group.
              */
-            char newparse[128];
+            char CTIDBG_newparse[128];
 
             CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev;
             // Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
-                _snprintf(newparse, 127, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
+                _snprintf(CTIDBG_newparse, 127, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << newparse << endl;
+                    dout << RWTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << CTIDBG_newparse << endl;
                 }
 
-                pReq->setCommandString(newparse);       // Make the request match our new choices
+                pReq->setCommandString(CTIDBG_newparse);       // Make the request match our CTIDBG_new choices
                 pReq->setRouteId(GrpDev->getRouteID()); // Just on this route.
-                parse = CtiCommandParser(newparse);     // Should create a new actionItem list
+                parse = CtiCommandParser(CTIDBG_newparse);     // Should create a CTIDBG_new actionItem list
             }
         }
     }
@@ -1383,7 +1388,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
             if(roleVector.size() > 0)
             {
-                RWCString newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
+                RWCString CTIDBG_newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
                 RWCString roleStr;
 
                 for(i = 0; i < roleVector.size(); i++)
@@ -1405,19 +1410,19 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
                     roleStr += " " + CtiNumStr((int)roleVector[i].getStages());
                 }
 
-                newReqString += roleStr;
+                CTIDBG_newReqString += roleStr;
 
-                if( parse.isKeyValid("noqueue") && newReqString.subString("noqueue").isNull() )
+                if( parse.isKeyValid("noqueue") && CTIDBG_newReqString.subString("noqueue").isNull() )
                 {
-                    newReqString += " noqueue";
+                    CTIDBG_newReqString += " noqueue";
                 }
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  " << newReqString << endl;
+                    dout << RWTime() << "  " << CTIDBG_newReqString << endl;
                 }
 
-                Req.setCommandString( newReqString );
+                Req.setCommandString( CTIDBG_newReqString );
             }
         }
     }

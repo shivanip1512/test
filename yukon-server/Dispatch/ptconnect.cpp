@@ -49,11 +49,11 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
          LockGuard guard(monitor());
 
          // Copy constructor...
-         CtiPointDataMsg *pData = new CtiPointDataMsg(ChgMsg);
+         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(ChgMsg);
 
          if(pData != NULL)
          {
-            if((ConnMgrMsg = new CtiReturnMsg()) != NULL)
+            if((ConnMgrMsg = CTIDBG_new CtiReturnMsg()) != NULL)
             {
                ConnMgrMsg->PointData().insert(pData);
 
@@ -72,7 +72,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
          ConnMgrMsg = NULL;
          pData = NULL;
 
-         //(ConnectionManagerCollection[i])->WriteConnQue(new CtiReturnMsg(Chg)); // Default priority of 7 is used here!
+         //(ConnectionManagerCollection[i])->WriteConnQue(CTIDBG_new CtiReturnMsg(Chg)); // Default priority of 7 is used here!
 
       }
       catch(RWSockErr& msg )

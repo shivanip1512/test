@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/11/01 21:03:46 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/11/15 14:08:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,23 +91,23 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
     mct_sspec.insert(make_pair(TYPEMCT250,    111));
 
     mct_sspec.insert(make_pair(TYPEMCT310,    153));
-    mct_sspec.insert(make_pair(TYPEMCT310,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT310,   1007));  //  CTIDBG_new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT310ID,  153));
-    mct_sspec.insert(make_pair(TYPEMCT310ID, 1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT310ID, 1007));  //  CTIDBG_new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT310IL, 1007));
 
     mct_sspec.insert(make_pair(TYPEMCT318L,  1007));
 
     mct_sspec.insert(make_pair(TYPEMCT318,    218));
-    mct_sspec.insert(make_pair(TYPEMCT318,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT318,   1007));  //  CTIDBG_new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT360,    218));
-    mct_sspec.insert(make_pair(TYPEMCT360,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT360,   1007));  //  CTIDBG_new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT370,    218));
-    mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  CTIDBG_new Grand Unification sspec
 
 
     reported = make_pair(getType(), sspec);
@@ -475,7 +475,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
     char Temp[80];
 
     bool found = false;
-
+    CtiReturnMsg* pRet = 0;
 
     switch( parse.getCommand( ) )
     {
@@ -546,7 +546,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert( new CtiReturnMsg(getID( ),
+        retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
                                          RWCString(OutMessage->Request.CommandStr),
                                          resultString,
                                          nRet,
@@ -609,7 +609,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                         RWCString actn = parse.getActionItems()[offset];
                         RWCString desc = getDescription(parse);
 
-                        vgList.insert(new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                        vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                     }
                 }
 
@@ -617,18 +617,18 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                CtiReturnMsg* pRet = new CtiReturnMsg(getID(), RWCString(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
+                pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
                 // Start the control request on its route(s)
                 if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
                 {
                     resultString = "ERROR " + CtiNumStr(nRet) + " performing command on route " + Route->getName().data() + "\n" + FormatError(nRet);
                     pRet->setResultString(resultString);
                     pRet->setStatus( nRet );
-                    retList.insert( pRet );
                 }
                 else
                 {
                     delete pRet;
+                    pRet = 0;
                 }
             }
             else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!
@@ -646,7 +646,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
 
                 resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
 
-                CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+                pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                       RWCString(pOut->Request.CommandStr),
                                                       resultString,
                                                       nRet,
@@ -657,7 +657,10 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                                       pOut->Request.UserID,
                                                       pOut->Request.SOE,
                                                       RWOrdered());
+            }
 
+            if(pRet)
+            {
                 retList.insert( pRet );
             }
 
@@ -1000,7 +1003,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *retMsg = new CtiReturnMsg(getID(),
+    CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 RWCString(InMessage->Return.CommandStr),
                                                 RWCString(),
                                                 InMessage->EventCode & 0x7fff,
@@ -1141,7 +1144,7 @@ int CtiDeviceMCT::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int sc
     int failed = FALSE;
     CtiPointBase *pPoint;
 
-    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     pPoint = getDevicePointOffsetTypeEqual( pOffset, pType);
 
     if( pMsg != NULL && pPoint != NULL )
@@ -1201,7 +1204,7 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
 
         for( i = 0; i < parse.getiValue("count"); i++ )
         {
-            tmpOut = new OUTMESS(*OutMessage);
+            tmpOut = CTIDBG_new OUTMESS(*OutMessage);
 
             if( tmpOut != NULL )
                 outList.append(tmpOut);
@@ -1680,7 +1683,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
 
        if( OutMessage->Buffer.BSt.Function == 0x06 )  //  easiest way to tell it's an MCT3xx
        {
-           tmpOutMess = new OUTMESS(*OutMessage);
+           tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
            if( tmpOutMess != NULL )
            {
@@ -1697,7 +1700,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
                 dout << "Unable to allocate OUTMESS for MCT3XX powerfail reset" << endl;
            }
 
-           tmpOutMess = new OUTMESS(*OutMessage);
+           tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
            if( tmpOutMess != NULL )
            {
@@ -1889,7 +1892,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     RWTime NowTime;
     RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
-    CtiReturnMsg *errRet = new CtiReturnMsg(getID( ),
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                             RWCString(OutMessage->Request.CommandStr),
                                             RWCString(),
                                             nRet,
@@ -2298,7 +2301,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2336,7 +2339,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2365,7 +2368,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                 {
                     Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pfCount);
 
-                    pData = new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType);
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType);
                     if(pData != NULL)
                     {
                         ReturnMsg->PointData().insert(pData);
@@ -2405,7 +2408,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2577,7 +2580,7 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2611,7 +2614,7 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2647,7 +2650,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
-        if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -2691,12 +2694,12 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         }
                     }
 
-                    OutTemplate = new(OUTMESS);
+                    OutTemplate = CTIDBG_new(OUTMESS);
 
                     InEchoToOut( InMessage, OutTemplate );
 
                     //  reset the meter
-                    pReq = new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -2708,7 +2711,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     }
 
                     //  enable group addressing
-                    pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -2722,7 +2725,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     //  put the load profile interval if it's a lp device
                     if( getType( ) == TYPEMCT310IL || getType( ) == TYPEMCT318L )
                     {
-                        pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -2735,7 +2738,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     }
 
                     //  put the demand interval
-                    pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {

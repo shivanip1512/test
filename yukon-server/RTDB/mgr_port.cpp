@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/09/19 15:57:57 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/11/15 14:08:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -318,7 +318,7 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new settings!
+             *  update my list entry to the CTIDBG_new settings!
              */
 
             pTempPort->DecodeDatabaseReader(rdr);     // Fills himself in from the reader
@@ -364,7 +364,7 @@ void CtiPortManager::RefreshDialoutEntries(bool &rowFound, RWDBReader& rdr, CtiP
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new settings!
+             *  update my list entry to the CTIDBG_new settings!
              */
 
             pTempPort->DecodeDialoutDatabaseReader(rdr);     // Fills himself in from the reader

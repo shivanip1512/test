@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/09/18 21:33:24 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/11/15 14:08:17 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,7 +127,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
     long  routeID;
 
     bool found = false;
-
+    CtiReturnMsg* pRet = 0;
 
     switch( parse.getCommand() )
     {
@@ -178,7 +178,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
         }
 
         resultString = "NoMethod or invalid command.";
-        retList.insert(new CtiReturnMsg(getID(),
+        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
                                         RWCString(OutMessage->Request.CommandStr),
                                         resultString,
                                         nRet,
@@ -238,7 +238,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                     {
                         RWCString actn = parse.getActionItems()[offset];
                         RWCString desc = getDescription(parse);
-                        vgList.insert(new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                        vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                     }
                 }
 
@@ -246,7 +246,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+                pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                       RWCString(pOut->Request.CommandStr),
                                                       Route->getName(),
                                                       nRet,
@@ -264,11 +264,11 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                     resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName().data();
                     pRet->setStatus(nRet);
                     pRet->setResultString(resultString);
-                    retList.insert( pRet );
                 }
                 else
                 {
                     delete pRet;
+                    pRet = 0;
                 }
             }
             else
@@ -277,7 +277,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 
                 resultString = " ERROR: Route or Route Transmitter not available for device " + getName();
 
-                CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
+                pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                       RWCString(pOut->Request.CommandStr),
                                                       resultString,
                                                       nRet,
@@ -289,6 +289,10 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       pOut->Request.SOE,
                                                       RWOrdered());
 
+            }
+
+            if(pRet)
+            {
                 retList.insert( pRet );
             }
         }
@@ -519,7 +523,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        {
            rolenum = firstrole + (j * 6);       // This is where we begin.
 
-           OUTMESS *pOutMessage = new OUTMESS(*OutMessage);  // Copy construct based upon OutMessage.
+           OUTMESS *pOutMessage = CTIDBG_new OUTMESS(*OutMessage);  // Copy construct based upon OutMessage.
 
            // Ok, multi_role always fills the message (6 roles or bust), unless we are filling the high role(ers)
            if(rolenum > 18)
@@ -726,7 +730,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
       CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
       CtiPointDataMsg      *pData = NULL;
 
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -762,7 +766,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNo
       CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
       CtiPointDataMsg      *pData = NULL;
 
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -813,7 +817,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
       CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
       CtiPointDataMsg      *pData = NULL;
 
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -864,7 +868,7 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, RWTime &TimeNow
 
       CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;

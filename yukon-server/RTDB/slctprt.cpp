@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctprt.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/19 15:57:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/15 14:08:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,22 +45,22 @@ DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
    {
    case PortTypeLocalDirect:
       {
-         pPort = (CtiPort*) new CtiPortDirect;
+         pPort = (CtiPort*) CTIDBG_new CtiPortDirect;
          break;
       }
    case PortTypeLocalDialup:
       {
-         pPort = (CtiPort*) new CtiPortDirect( new CtiPortDialout );
+         pPort = (CtiPort*) CTIDBG_new CtiPortDirect( CTIDBG_new CtiPortDialout );
          break;
       }
    case PortTypeTServerDirect:
       {
-         pPort = (CtiPort*) new CtiPortTCPIPDirect;
+         pPort = (CtiPort*) CTIDBG_new CtiPortTCPIPDirect;
          break;
       }
    case PortTypeTServerDialup:
       {
-         pPort = (CtiPort*) new CtiPortTCPIPDirect( new CtiPortDialout );
+         pPort = (CtiPort*) CTIDBG_new CtiPortTCPIPDirect( CTIDBG_new CtiPortDialout );
          break;
       }
    default:

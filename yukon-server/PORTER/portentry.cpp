@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/09/03 20:57:18 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/11/15 14:08:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,6 @@ using namespace std;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "connection.h"
 #include "queues.h"
@@ -120,7 +119,7 @@ VOID PorterConnectionThread (VOID *Arg)
     INT   iNexus   = 0;
     INT   nRet     = 0;
 
-    CTINEXUS  *NewNexus;
+    CTINEXUS  *NewNexus = NULL;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -130,13 +129,13 @@ VOID PorterConnectionThread (VOID *Arg)
     strcpy(PorterListenNexus.Name, "PorterConnectionThread: Listener");
 
     /*
-     *  4/7/99 This is the server side of a new Port Control Nexus
-     *  This thread rolls off new instances of this connection on an as needed basis.
+     *  4/7/99 This is the server side of a CTIDBG_new Port Control Nexus
+     *  This thread rolls off CTIDBG_new instances of this connection on an as needed basis.
      *
      *  1. Create a listener on PORTCONTROLNEXUS for incoming connections
-     *  2. Pop off a new thread to manage the returned connection.
-     *       NOTE: This deviates in implementation from DSM/2 which spwned a new listener thread
-     *             sockets don't care for new listener sockets.
+     *  2. Pop off a CTIDBG_new thread to manage the returned connection.
+     *       NOTE: This deviates in implementation from DSM/2 which spwned a CTIDBG_new listener thread
+     *             sockets don't care for CTIDBG_new listener sockets.
      */
 
     while(!PorterQuit && PorterListenNexus.CTINexusCreate(PORTCONTROLNEXUS))
@@ -155,7 +154,7 @@ VOID PorterConnectionThread (VOID *Arg)
 
         if(NewNexus == NULL)
         {
-            fprintf(stderr,"Unable to acquire memory for a new connection to port control\n");
+            fprintf(stderr,"Unable to acquire memory for a CTIDBG_new connection to port control\n");
 
             Sleep(1000);
             continue;
@@ -201,7 +200,7 @@ VOID ConnectionThread (VOID *Arg)
 {
     INT            i;
     CTINEXUS       *MyNexus = (CTINEXUS*)Arg;     // This is an established connection with a client!
-    OUTMESS        *OutMessage;
+    OUTMESS        *OutMessage = NULL;
 
     ULONG                   BytesRead;
     RWTPtrSlist< OUTMESS >  outList;
@@ -252,7 +251,7 @@ VOID ConnectionThread (VOID *Arg)
                 }
             }
         }
-        else if((OutMessage = new OUTMESS) == NULL)     // Get a bit of memory for the next else if...
+        else if((OutMessage = CTIDBG_new OUTMESS) == NULL)     // Get a bit of memory for the next else if...
         {
             printf ("Error Allocating Memory for Incoming Block\n");
             CTISleep(5000L);
@@ -340,6 +339,11 @@ VOID ConnectionThread (VOID *Arg)
         }
     } /* and do it all again */
 
+    if(OutMessage != NULL)
+    {
+        delete OutMessage;
+    }
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " ConnectionThread  TID: " << CurrentTID() << " terminating" << endl;
@@ -386,7 +390,6 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
     /*
      * Ok, all checks passed so far, so lets operate on this remote
      */
-
     return RemoteComm(OutMessage);
 }
 
@@ -820,6 +823,7 @@ INT PorterControlCode(OUTMESS *&OutMessage)
                 }
 
                 delete (OutMessage);
+                OutMessage = 0;
 
                 // I must cause my caller (PorterEntryPoint) to return in this case,
                 // even though there is no real error.
@@ -854,7 +858,7 @@ INT ValidateRemote(OUTMESS *&OutMessage)
 
                 if(Port)
                 {
-                    RemoteInitialize(TransmitterDev, Port);             /* This is a new one so initialize it */
+                    RemoteInitialize(TransmitterDev, Port);             /* This is a CTIDBG_new one so initialize it */
                 }
             }
         }
@@ -883,9 +887,9 @@ INT ValidateRemote(OUTMESS *&OutMessage)
 
 INT ValidatePort(OUTMESS *&OutMessage)
 {
-    INT                         j;
-    INT                         status = NORMAL;
-    CtiPortManager::ptr_type    Port;
+    INT j;
+    INT status = NORMAL;
+    CtiPortSPtr Port;
 
     /* Check the memory database to see if a port like this exists */
     if((Port = PortManager.PortGetEqual((LONG)OutMessage->Port)))
@@ -1250,7 +1254,7 @@ INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage )
                 case 0x51:
                 case 0x52:
                     /* We need to generate the appropriate arm command */
-                    if((ArmOutMessage = new OUTMESS) == NULL)
+                    if((ArmOutMessage = CTIDBG_new OUTMESS) == NULL)
                     {
                         printf ("Error Allocating Memory\n");
                         return(MEMORY);
@@ -1465,7 +1469,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
     INT status = NORMAL;
     INT i;
 
-    CtiRequestMsg *pReq = new CtiRequestMsg(OutMessage->DeviceID, OutMessage->Request.CommandStr);
+    CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(OutMessage->DeviceID, OutMessage->Request.CommandStr);
     RWTPtrSlist< CtiMessage >  vgList;
     RWTPtrSlist< CtiMessage >  retList;
 
@@ -1513,6 +1517,9 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
                         dout << NowTime << "   Sending " << outList.entries() << " requests through porter on error condition" << endl;
                     }
                 }
+
+                retList.clearAndDestroy();
+                vgList.clearAndDestroy();
             }
             else
             {
@@ -1558,6 +1565,11 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
     else
     {
         status = MEMORY;
+    }
+
+    if(pReq)
+    {
+        delete pReq;
     }
 
     return status;

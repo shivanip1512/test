@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/03 14:33:48 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         setOutMessageTargetID( OutMessage->TargetID );          // This is the Device which is targeted.
         setOutMessageLMGID( OutMessage->DeviceIDofLMGroup );    // This is the LM Group which started this mess
         setOutMessageTrxID( OutMessage->TrxID );                // This is the LM Group which started this mess
-        initTrxID( OutMessage->TrxID, parse, vgList );                 // Be sure to accept, or create a new TrxID.
+        initTrxID( OutMessage->TrxID, parse, vgList );                 // Be sure to accept, or create a CTIDBG_new TrxID.
 
         OutMessage->EventCode   = RIPPLE | NORESULT;
         OutMessage->Retry       = 2;                            // Default to two tries per route!
@@ -129,14 +129,14 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
 
                 CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                 LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
-                vgList.insert(new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                vgList.insert(CTIDBG_new CtiSignalMsg(pid, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
             }
         }
 
         /*
          *  Form up the reply here since the ExecuteRequest funciton will consume the OutMessage.
          */
-        CtiReturnMsg* pRet = new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
@@ -158,7 +158,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         RWCString Temp (" ERROR: Route or Route Transmitter not available for group device " + getName());
         RWCString Reply = RWCString(Temp);
 
-        CtiReturnMsg* pRet = new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), Reply, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
         if(OutMessage)
@@ -177,7 +177,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
 }
 
 /*
- *  Used by the macro group stuff to generate a new bit pattern comprised of each member RIPPLE GROUP'S
+ *  Used by the macro group stuff to generate a CTIDBG_new bit pattern comprised of each member RIPPLE GROUP'S
  *  bit pattern.
  */
 void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
@@ -215,8 +215,8 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
                 val = ((CtiPointNumeric*)pPoint)->computeValueForUOM( (DOUBLE)count );
             }
 
-            //create a new data message
-            CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), RWCString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) ));
+            //create a CTIDBG_new data message
+            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), RWCString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) ));
 
             if (pData != NULL)
             {
@@ -259,8 +259,8 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSli
 
         RWCString resString( getName() + " / " +  pPoint->getName() + CtiNumStr(val) );
 
-        //create a new data message
-        CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
+        //create a CTIDBG_new data message
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString);
 
         if (pData != NULL)
         {

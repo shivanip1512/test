@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2002/09/09 21:44:07 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2002/11/15 14:07:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,12 +20,15 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.7  2002/11/15 14:07:51  cplender
+      CRTDBG_new is being used in place of new
+
       Revision 1.6  2002/09/09 21:44:07  cplender
       These guys have multiple entries per pao.  Brain cramp on last change.  undid it.
 
       Revision 1.4  2002/05/02 17:02:34  cplender
       DBAccess no longer uses connection Lockguard to limit the number of connections
-      It uses the new CtiSemaphore object to limit them to 5 (default)
+      It uses the CTIDBG_new CtiSemaphore object to limit them to 5 (default)
 
       Revision 1.3  2002/04/16 15:58:01  softwarebuild
       20020416_1031_2_16

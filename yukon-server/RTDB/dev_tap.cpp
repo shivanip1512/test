@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/08/29 16:36:12 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/15 14:08:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.insert( new CtiReturnMsg(getID(),
+            retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                              RWCString(OutMessage->Request.CommandStr),
                                              RWCString("TAP Devices do not support this command (yet?)"),
                                              nRet,
@@ -103,7 +103,7 @@ INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
 {
     if(_pageBuffer == NULL)
     {
-        _pageBuffer = (CHAR*) new CHAR[256];
+        _pageBuffer = (CHAR*) CTIDBG_new CHAR[256];
 
         if(_pageBuffer != NULL && oMess != NULL)
         {
@@ -608,7 +608,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrS
                 // Rely upon the already set up machinery, and just decrement the remaining trys
                 setAttemptsRemaining( getAttemptsRemaining() - 1 );               // Repeat this operation this many times before err-abort
 
-                xfer.setOutCount( 0 );              // Nothing new here..
+                xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
 
                 xfer.setInCountExpected(1);
                 xfer.setInTimeout( TAPTIME_T3 );
@@ -906,7 +906,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< Cti
              *  The page went out and an ESC came back..  we get 2 more bytes
              */
 
-            xfer.setOutCount( 0 );              // Nothing new here..
+            xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
 
             xfer.setInCountExpected(2);
             xfer.setInTimeout( TAPTIME_T3 );    // A nice protocol defined time..
@@ -921,7 +921,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< Cti
              *  The page went out and an ACK, NAK, or RS came back.. we get one more byte
              */
 
-            xfer.setOutCount( 0 );              // Nothing new here..
+            xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
 
             xfer.setInCountExpected(1);
             xfer.setInTimeout( TAPTIME_T3 );    // A nice protocol defined time..
@@ -935,7 +935,7 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< Cti
             /*
              *  This state keeps us pulling off values until Decode3 is satisfied, or the retries fail
              */
-            xfer.setOutCount( 0 );              // Nothing new here..
+            xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
 
             xfer.setInCountExpected(1);
             xfer.setInTimeout( TAPTIME_T3 );    // A nice protocol defined time..
@@ -1184,7 +1184,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xfer, RWTPt
                  * Decode_1 happy.
                  */
 
-                xfer.setOutCount( 0 );              // Nothing new here..
+                xfer.setOutCount( 0 );              // Nothing CTIDBG_new here..
 
                 xfer.setInCountExpected(1);
                 xfer.setInTimeout( TAPTIME_T3 );

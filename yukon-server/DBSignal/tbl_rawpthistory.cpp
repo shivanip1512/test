@@ -26,9 +26,9 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
-        LONG newcid = ChangeIdGen(true);
+        LONG CTIDBG_newcid = ChangeIdGen(true);
 
-        if(newcid != getChangeID())
+        if(CTIDBG_newcid != getChangeID())
         {
             RWTime Now;
 
@@ -38,7 +38,7 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
                 dout << Now << "   ChangeId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
             }
 
-            setChangeID( newcid );
+            setChangeID( CTIDBG_newcid );
             stat = inserter.execute( conn ).status();
 
             if( stat.errorCode() != RWDBStatus::ok )

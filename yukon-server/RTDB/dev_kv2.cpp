@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/04 13:12:13 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/11/15 14:08:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,7 +121,7 @@ INT CtiDeviceKV2::ErrorDecode(   INMESS                     *InMessage,
 
 int CtiDeviceKV2::makeMessageHeader( BYTE *ptr, int cmd )
 {
-   WANTS_HEADER   *header = new WANTS_HEADER;
+   WANTS_HEADER   *header = CTIDBG_new WANTS_HEADER;
    int            length;
 
    switch( cmd )

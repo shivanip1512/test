@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2002/10/09 19:49:32 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2002/11/15 14:08:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,6 @@ using namespace std;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include <rw\thr\mutex.h>
 
@@ -279,7 +278,7 @@ VOID PortThread(void *pid)
             if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " looking for new deviceID..." << endl;
+                dout << RWTime() << " looking for CTIDBG_new deviceID..." << endl;
             }
 
             CtiDeviceBase *tempDev = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
@@ -291,7 +290,7 @@ VOID PortThread(void *pid)
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " assigned new deviceID = " << tempDev->getID() << endl;
+                    dout << RWTime() << " assigned CTIDBG_new deviceID = " << tempDev->getID() << endl;
                 }
             }
             else
@@ -299,7 +298,7 @@ VOID PortThread(void *pid)
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " did not assign new deviceID" << endl;
+                    dout << RWTime() << " did not assign CTIDBG_new deviceID" << endl;
                 }
             }
         }
@@ -576,7 +575,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
             {
                 for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++)
                 {
-                    /* Check the queue 4 times per second for a new entry for this port ... */
+                    /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
                     if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
                     {
                         break;
@@ -589,7 +588,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
             /* do not reinit i since times are non cumulative! */
             for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
             {
-                /* Check the queue 4 times per second for a new entry for this port ... */
+                /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
                 if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
                 {
                     gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID);
@@ -2947,7 +2946,7 @@ void commFail(CtiDeviceBase *Device, INT state)
     {
         sprintf(temp, "Communication status %s", (state == OPENED) ? "GOOD" : "FAILED");
 
-        CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getPointID(), (double)state, NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)state, NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
 
         if(pData != NULL)
         {

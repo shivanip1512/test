@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/18 21:33:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/11/15 14:08:17 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeN
       CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
       CtiPointDataMsg      *pData = NULL;
 
-      if((ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -164,7 +164,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeN
 
          resultString = getName() + " / powerfail count = " + CtiNumStr((int)pfCount);
 
-         pData = new CtiPointDataMsg(20, (double)pfCount, NormalQuality, PulseAccumulatorPointType, resultString);
+         pData = CTIDBG_new CtiPointDataMsg(20, (double)pfCount, NormalQuality, PulseAccumulatorPointType, resultString);
          if(pData != NULL)
          {
             ReturnMsg->PointData().insert(pData);
