@@ -62,9 +62,9 @@
 		}
 	}
 	else if (request.getParameter("Add") != null) {
-		Object invObj = session.getAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
+		Object invObj = session.getAttribute(InventoryManagerUtil.INVENTORY_SELECTED);
 		if (invObj != null) {
-			session.removeAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK);
+			session.removeAttribute(InventoryManagerUtil.INVENTORY_SELECTED);
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware)
 					((invObj instanceof Pair)? ((Pair)invObj).getFirst() : invObj);

@@ -43,6 +43,7 @@ public class DeviceBean {
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
 	private String referer = null;
+	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList deviceList = null;
@@ -147,8 +148,9 @@ public class DeviceBean {
 		
 		StringBuffer htmlBuf = new StringBuffer();
 		htmlBuf.append("<form name='DeviceBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
-		htmlBuf.append("<input type='hidden' name='action' value='SelectDevice'>").append(LINE_SEPARATOR);
 		htmlBuf.append("<input type='hidden' name='CategoryID' value='").append(categoryID).append("'>").append(LINE_SEPARATOR);
+		if (getAction() != null)
+			htmlBuf.append("<input type='hidden' name='action' value='" + getAction() + "'>").append(LINE_SEPARATOR);
 		
 		htmlBuf.append("<table width='50%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
@@ -304,6 +306,20 @@ public class DeviceBean {
 		deviceName = string;
 		// Update the search result
 		deviceList = null;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getAction() {
+		return action;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setAction(String string) {
+		action = string;
 	}
 
 }

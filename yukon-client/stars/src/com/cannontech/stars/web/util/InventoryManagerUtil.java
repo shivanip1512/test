@@ -71,6 +71,8 @@ public class InventoryManagerUtil {
 	public static final String INVENTORY_SET = "INVENTORY_SET";
 	public static final String INVENTORY_SET_DESC = "INVENTORY_SET_DESCRIPTION";
 	public static final String SN_RANGE_TO_CONFIG = "SN_RANGE_TO_CONFIG";
+	public static final String INVENTORY_SELECTED = "INVENTORY_SELECTED";
+	public static final String DEVICE_SELECTED = "DEVICE_SELECTED";
 	
 	public static final String[] MCT_TYPES = {
 		PAOGroups.STRING_MCT_410IL[0],
@@ -162,7 +164,7 @@ public class InventoryManagerUtil {
 					hw.setRouteID( Integer.parseInt(req.getParameter("Route")) );
 				starsInv.setLMHardware( hw );
 			}
-			else if (ECUtils.isMCT(categoryID)) {
+			else if (ECUtils.isMCT(categoryID) && starsInv.getDeviceID() == 0) {
 				MCT mct = new MCT();
 				mct.setDeviceName( req.getParameter("DeviceName") );
 				if (req.getParameter("MCTType") != null)

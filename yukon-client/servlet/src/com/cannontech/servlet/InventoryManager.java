@@ -96,10 +96,10 @@ public class InventoryManager extends HttpServlet {
 		action = req.getParameter( "action" );
 		if (action == null) action = "";
 		
-		if (action.equalsIgnoreCase( "SelectInventory" ))
-			selectInventory( user, req, session );
-		else if (action.equalsIgnoreCase( "SelectDevice" ))
-			selectDevice( user, req, session );
+		if (action.equalsIgnoreCase( "InsertInventory" ))
+			addInventoryToAccount( user, req, session );
+		else if (action.equalsIgnoreCase( "InsertDevice" ))
+			addDeviceToAccount( user, req, session );
 		else if (action.equalsIgnoreCase( "CheckInventory" )) {
 			session.setAttribute( ServletUtils.ATT_REDIRECT, redirect );
 			//session.setAttribute( ServletUtils.ATT_REFERRER, referer );
@@ -149,8 +149,10 @@ public class InventoryManager extends HttpServlet {
 			createLMHardware( user, req, session );
 		else if (action.equalsIgnoreCase("CreateMCT"))
 			createMCT( user, req, session );
-		else if (action.equalsIgnoreCase( "SelectLMHardware" ))
+		else if (action.equalsIgnoreCase("SelectLMHardware"))
 			selectLMHardware( user, req, session );
+		else if (action.equalsIgnoreCase("SelectDevice"))
+			selectDevice( user, req, session );
 		
 		resp.sendRedirect( redirect );
 	}
@@ -160,7 +162,7 @@ public class InventoryManager extends HttpServlet {
 	 * into an account or update an existing hardware in that account. If the selected
 	 * hardware is assigned to another account, go to CheckInv.jsp to ask for confirmation. 
 	 */
-	private void selectInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void addInventoryToAccount(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		int invID = Integer.parseInt( req.getParameter("InvID") );
@@ -227,7 +229,7 @@ public class InventoryManager extends HttpServlet {
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
 					UpdateLMHardwareAction.parseResponse(origInvID, starsInv, starsAcctInfo, session);
 					
-					// REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
+					// REDIRECT set in the UpdateLMHardwareAction.parseResponse() method above
 					redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 				}
 			}
@@ -253,7 +255,7 @@ public class InventoryManager extends HttpServlet {
 	 * (either in warehouse or not in inventory yet), populate the hardware information for the next page.
 	 * Otherwise go to CheckInv.jsp asking for confirmation
 	 */
-	private void selectDevice(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+	private void addDeviceToAccount(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		int categoryID = Integer.parseInt( req.getParameter("CategoryID") );
@@ -351,7 +353,7 @@ public class InventoryManager extends HttpServlet {
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
 					UpdateLMHardwareAction.parseResponse(origInvID, starsInv, starsAcctInfo, session);
 					
-					// REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
+					// REDIRECT set in the UpdateLMHardwareAction.parseResponse() method above
 					redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 				}
 			}
@@ -583,6 +585,7 @@ public class InventoryManager extends HttpServlet {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
 				CreateLMHardwareAction.parseResponse( createHw, starsInv, starsAcctInfo, session );
 				
+				// REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
 				redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 			}
 			else {
@@ -611,19 +614,22 @@ public class InventoryManager extends HttpServlet {
 				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 				deleteHw.setInventoryID( origInvID );
 				
-				StarsOperation operation = new StarsOperation();
-				operation.setStarsUpdateLMHardware( updateHw );
-				operation.setStarsDeleteLMHardware( deleteHw );
-				session.setAttribute( InventoryManagerUtil.STARS_INVENTORY_OPERATION, operation );
+				try {
+					liteInv = UpdateLMHardwareAction.updateInventory( updateHw, deleteHw, liteAcctInfo, user );
+				}
+				catch (WebClientException e) {
+					CTILogger.error( e.getMessage(), e );
+					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+					redirect = req.getContextPath() + "/operator/Consumer/SerialNumber.jsp?InvNo="  + invNo;
+					return;
+				}
 				
-				String redir = req.getContextPath() + "/servlet/SOAPClient?action=UpdateLMHardware"
-						+ "&REDIRECT=" + req.getContextPath() + "/operator/Consumer/Inventory.jsp?InvNo=" + invNo
-						+ "&REFERRER=" + session.getAttribute(ServletUtils.ATT_REFERRER);
-				session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
+				session.setAttribute( ServletUtils.ATT_REDIRECT, req.getContextPath() + "/operator/Consumer/Inventory.jsp?InvNo=" + invNo );
+				StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
+				UpdateLMHardwareAction.parseResponse(origInvID, starsInv, starsAcctInfo, session);
 				
-				LiteInventoryBase liteInvOld = energyCompany.getInventory( origInvID, true );
-				session.setAttribute( InventoryManagerUtil.INVENTORY_TO_DELETE, liteInvOld );
-				redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
+				// REDIRECT set in the UpdateLMHardwareAction.parseResponse() method above
+				redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 			}
 		}
 		else {
@@ -1219,6 +1225,9 @@ public class InventoryManager extends HttpServlet {
 			
 			// Append inventory ID to the redirect URL
 			redirect += String.valueOf( liteInv.getInventoryID() );
+			
+			// Make the "Back to List" link on the inventory details page default to Inventory.jsp
+			session.removeAttribute( ServletUtils.ATT_REFERRER2 );
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -1236,7 +1245,11 @@ public class InventoryManager extends HttpServlet {
 			
 			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
 			
+			// Append inventory ID to the redirect URL
 			redirect += String.valueOf( liteInv.getInventoryID() );
+			
+			// Make the "Back to List" link on the inventory details page default to Inventory.jsp
+			session.removeAttribute( ServletUtils.ATT_REFERRER2 );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
@@ -1254,13 +1267,24 @@ public class InventoryManager extends HttpServlet {
 		int invID = Integer.parseInt( req.getParameter("InvID") );
 		if (req.getParameter("MemberID") == null) {
 			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
-			session.setAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv);
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SELECTED, liteInv);
 		}
 		else {
 			LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( Integer.parseInt(req.getParameter("MemberID")) );
 			LiteInventoryBase liteInv = member.getInventoryBrief( invID, true );
-			session.setAttribute(InventoryManagerUtil.INVENTORY_TO_CHECK, new Pair(liteInv, member));
+			session.setAttribute(InventoryManagerUtil.INVENTORY_SELECTED, new Pair(liteInv, member));
 		}
+		
+		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+	}
+	
+	/**
+	 * Called from Hardware/SelectMCT.jsp to select a MCT to add to the inventory.
+	 */
+	private void selectDevice(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		int deviceID = Integer.parseInt( req.getParameter("DeviceID") );
+		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID );
+		session.setAttribute(InventoryManagerUtil.DEVICE_SELECTED, litePao);
 		
 		redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 	}

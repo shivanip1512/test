@@ -17,6 +17,7 @@
 <jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="selectInvBean" property="action" value="InsertInventory"/>
 </jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>

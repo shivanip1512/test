@@ -14,30 +14,31 @@
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
 %>
 
-<jsp:useBean id="selectInvBean2" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
+<jsp:useBean id="selectHwBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="selectInvBean2" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-	<jsp:setProperty name="selectInvBean2" property="filterBy" value="0"/>
+	<jsp:setProperty name="selectHwBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="selectHwBean" property="action" value="SelectLMHardware"/>
+	<jsp:setProperty name="selectHwBean" property="filterBy" value="0"/>
 </jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
-	<jsp:setProperty name="selectInvBean2" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_LM_HARDWARE %>"/>
-	<jsp:setProperty name="selectInvBean2" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
-	<jsp:setProperty name="selectInvBean2" property="page" value="1"/>
-	<jsp:setProperty name="selectInvBean2" property="referer" value="<%= referer %>"/>
+	<jsp:setProperty name="selectHwBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_LM_HARDWARE %>"/>
+	<jsp:setProperty name="selectHwBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
+	<jsp:setProperty name="selectHwBean" property="page" value="1"/>
+	<jsp:setProperty name="selectHwBean" property="referer" value="<%= referer %>"/>
 <% } %>
 <% if (request.getParameter("SearchBy") == null) { %>
-	<jsp:setProperty name="selectInvBean2" property="searchBy" value="0"/>
-	<jsp:setProperty name="selectInvBean2" property="searchValue" value=""/>
+	<jsp:setProperty name="selectHwBean" property="searchBy" value="0"/>
+	<jsp:setProperty name="selectHwBean" property="searchValue" value=""/>
 <% } %>
 
 <%-- Grab the bean properties --%>
-<jsp:setProperty name="selectInvBean2" property="htmlStyle" param="HtmlStyle"/>
-<jsp:setProperty name="selectInvBean2" property="sortBy" param="SortBy"/>
-<jsp:setProperty name="selectInvBean2" property="page" param="page"/>
-<jsp:setProperty name="selectInvBean2" property="searchBy" param="SearchBy"/>
-<jsp:setProperty name="selectInvBean2" property="searchValue" param="SearchValue"/>
+<jsp:setProperty name="selectHwBean" property="htmlStyle" param="HtmlStyle"/>
+<jsp:setProperty name="selectHwBean" property="sortBy" param="SortBy"/>
+<jsp:setProperty name="selectHwBean" property="page" param="page"/>
+<jsp:setProperty name="selectHwBean" property="searchBy" param="SearchBy"/>
+<jsp:setProperty name="selectHwBean" property="searchValue" param="SearchValue"/>
 
 <html>
 <head>
@@ -83,12 +84,12 @@
                   <tr> 
                     <td class="MainText" align="center"> 
                       <input type="submit" name="ShowAll" value="Show All"
-                      <% if ((selectInvBean2.getHtmlStyle() & InventoryBean.HTML_STYLE_INVENTORY_SET) == 0) { %>disabled<% } %>>
+                      <% if ((selectHwBean.getHtmlStyle() & InventoryBean.HTML_STYLE_INVENTORY_SET) == 0) { %>disabled<% } %>>
                     </td>
                   </tr>
                 </table>
               </form>
-              <%= selectInvBean2.getHTML(request) %>
+              <%= selectHwBean.getHTML(request) %>
 			<p>&nbsp;</p></div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>

@@ -19,6 +19,7 @@
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="mctBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="mctBean" property="categoryID" value="<%= mctCatID %>"/>
+	<jsp:setProperty name="mctBean" property="action" value="InsertDevice"/>
 </jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>

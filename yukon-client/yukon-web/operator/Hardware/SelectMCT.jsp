@@ -23,6 +23,7 @@
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="mctBean2" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="mctBean2" property="categoryID" value="<%= mctCatID %>"/>
+	<jsp:setProperty name="mctBean2" property="action" value="SelectDevice"/>
 </jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>

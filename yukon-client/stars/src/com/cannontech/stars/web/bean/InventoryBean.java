@@ -176,6 +176,7 @@ public class InventoryBean {
 	private int member = -1;
 	private int searchBy = CtiUtilities.NONE_ID;
 	private String searchValue = null;
+	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList inventoryList = null;
@@ -659,11 +660,9 @@ public class InventoryBean {
 		}
         
 		htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0)
-			htmlBuf.append("  <input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
-		else if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
-			htmlBuf.append("  <input type='hidden' name='action' value='SelectLMHardware'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <input type='hidden' name='InvID' value=''>").append(LINE_SEPARATOR);
+		if (getAction() != null)
+			htmlBuf.append("  <input type='hidden' name='action' value='" + getAction() + "'>").append(LINE_SEPARATOR);
 		if (showEnergyCompany)
 			htmlBuf.append("  <input type='hidden' name='MemberID' value=''>").append(LINE_SEPARATOR);
 		htmlBuf.append("</form>").append(LINE_SEPARATOR);
@@ -972,6 +971,20 @@ public class InventoryBean {
 	 */
 	public void setSearchValue(String string) {
 		searchValue = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getAction() {
+		return action;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setAction(String string) {
+		action = string;
 	}
 
 }
