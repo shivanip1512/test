@@ -59,6 +59,7 @@ public class FileFilter extends javax.swing.filechooser.FileFilter {
     private static String TYPE_UNKNOWN = "Type Unknown";
     private static String HIDDEN_FILE = "Hidden File";
 
+	private String firstExt = "";
     private Hashtable filters = null;
     private String description = null;
     private String fullDescription = null;
@@ -121,7 +122,11 @@ public class FileFilter extends javax.swing.filechooser.FileFilter {
      */
     public FileFilter(String extension, String description) {
 	this();
-	if(extension!=null) addExtension(extension);
+	if(extension!=null) 
+	{
+		addExtension(extension);
+		firstExt = extension;
+	}
  	if(description!=null) setDescription(description);
     }
     /**
@@ -207,6 +212,11 @@ public class FileFilter extends javax.swing.filechooser.FileFilter {
 	    };
 	}
 	return null;
+	
+    }	
+	public String getFirstExt()
+	{
+		return firstExt;
     }
     /**
      * Returns whether the extension list (.jpg, .gif, etc) should
