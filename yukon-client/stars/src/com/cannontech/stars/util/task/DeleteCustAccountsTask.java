@@ -45,6 +45,7 @@ public class DeleteCustAccountsTask implements TimeConsumingTask {
 	 */
 	public void cancel() {
 		isCanceled = true;
+		status = STATUS_CANCELING;
 	}
 
 	/* (non-Javadoc)
