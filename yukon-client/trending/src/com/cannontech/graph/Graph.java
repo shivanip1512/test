@@ -26,13 +26,6 @@ import com.jrefinery.chart.JFreeChart;
 
 public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChangeListener
 {
-public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
-{
-	if( event.getSource() == freeChart)
-	{
-		com.cannontech.clientutils.CTILogger.info(" ***** CHART CHANGED EVENT ***** " + event.getType());
-	}
-}
 	private java.lang.String DB_ALIAS = "yukon";
 	private java.lang.String databaseAlias = DB_ALIAS;	//defaults set to yukon! 5/24/01
 	
@@ -66,6 +59,10 @@ public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 	private int options_mask_holder = 0x00;
 	private boolean updateTrend = true;
 	private StringBuffer htmlString = null;
+
+
+
+
 /**
  * Graph constructor comment.
  */
@@ -85,10 +82,24 @@ public Graph()
 		while( iter.hasNext() )
 		{
 			com.cannontech.database.db.point.PeakPointHistory pt = (com.cannontech.database.db.point.PeakPointHistory) iter.next();
-			com.cannontech.clientutils.CTILogger.info(" PEAK POINT TS/VALUE = " + pt.getPointID() + " | " + pt.getTimeStamp().getTime() + " | " + pt.getValue());
+			com.cannontech.clientutils.CTILogger.debug(" PEAK POINT TS/VALUE = " + pt.getPointID() + " | " + pt.getTimeStamp().getTime() + " | " + pt.getValue());
 		}
 	}		*/
 } 
+
+/**
+ * Insert the method's description here.
+ * Creation date: (9/13/2001 3:03:38 PM)
+ * @param value boolean
+ */
+public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
+{
+	if( event.getSource() == freeChart)
+	{
+		com.cannontech.clientutils.CTILogger.info(" ***** CHART CHANGED EVENT ***** " + event.getType());
+	}
+}
+
 
 /**
  * Encodes a gif on the given stream.  This method is used heavily
