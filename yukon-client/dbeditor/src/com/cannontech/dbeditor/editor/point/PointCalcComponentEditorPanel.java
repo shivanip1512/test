@@ -1362,7 +1362,7 @@ public void setValue(Object val)
 				calcComponentEntry.addElement( operand );
 				calcComponentEntry.addElement( singleCalcComponent.getFunctionName() );
 							
-				if(singleCalcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION))
+				if(singleCalcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION))
 				{
 					currentlyMappedBaselineID = calcPoint.getCalcBaselinePoint().getBaselineID();
 				}
