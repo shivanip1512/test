@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/03/10 20:52:05 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/03/11 16:24:56 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ protected:
 
 public:
 
-    Protocol::Interface *getProtocol() const;
+    Protocol::Interface *getProtocol();
 
     virtual INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 

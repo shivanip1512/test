@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/03/10 20:52:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/11 16:24:56 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ private:
 protected:
 
     CtiProtocolLMI _lmi;
-    Protocol::Interface *getProtocol() const;
+    Protocol::Interface *getProtocol();
 
 public:
 
