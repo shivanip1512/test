@@ -40,7 +40,7 @@
                                             "SELECT CURTAILMENTSTARTTIME, CURTAILMENTSTOPTIME, CURTAILREFERENCEID, ACKNOWLEDGESTATUS FROM LMCURTAILCUSTOMERACTIVITY_VIEW WHERE CUSTOMERID = " +  customerID + " AND CURTAILMENTSTOPTIME > '" + sqlNowString + "' ORDER BY CURTAILMENTSTOPTIME", types2);
 
       //let them ack the last one, (should only be 1 actually)     
-      if( curtailData != null && curtailData[curtailData.length-1] != null && curtailData[curtailData.length-1][0] != null )
+      if( curtailData != null && curtailData.length > 0 && curtailData[curtailData.length-1] != null && curtailData[curtailData.length-1][0] != null )
       {
             int last = curtailData.length-1;
 
