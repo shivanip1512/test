@@ -86,11 +86,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 	private StringTokenizer ts;
 	private StringTokenizer ts2;
-	private StringTokenizer ts3;
-	
-	boolean add;
-
-	
+		
 	/**
 	 * CentMaineDBConverter constructor comment.
 	 */
@@ -698,28 +694,11 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 				}
 				String rteID = ts2.nextToken().trim();
 				System.out.println("rteID :" + rteID);
-				try {
-					ts3 =new StringTokenizer(lines.get(i + 2 + count).toString(),"|");
-				} catch (IndexOutOfBoundsException e) {
-					break;
-				}
-
-				for (int k = 0; k < 6; k++) {
-					ts3.nextToken();
-				}
-				String nextRteID = ts3.nextToken().trim();
-				
-				if (name.equalsIgnoreCase(rteID)
-					&& nextRteID.equalsIgnoreCase("")) {
-					System.out.println("       GOT HEREEEEEEEEEEEE");
-					add = false;
-					break;
-				}
+												
 				if (rteID.equalsIgnoreCase("")) {
 					// no more route ids in list
 					break;
 				}
-				System.out.println("gothere");
 				Object myRouteID = routeIDsMap.get(rteID);
 				com.cannontech.database.db.route.MacroRoute MacroRoute =
 					new com.cannontech.database.db.route.MacroRoute();
@@ -730,18 +709,18 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 				MacroRoute.setRouteOrder(new Integer(count + 1));
 
 				RouteMacroVector.addElement(MacroRoute);
-				add = true;
+				
 
 			}
-			if(add){
-				// stuff the repeaters into the CCU Route
-				route.setMacroRouteVector(RouteMacroVector);
-	
-				macroRouteIDsMap.put(route.getRouteName(), route.getRouteID());
-	
-				multi.getDBPersistentVector().add(route);
-				++addCount;
-			}
+			
+			// stuff the repeaters into the CCU Route
+			route.setMacroRouteVector(RouteMacroVector);
+
+			macroRouteIDsMap.put(route.getRouteName(), route.getRouteID());
+
+			multi.getDBPersistentVector().add(route);
+			++addCount;
+			
 		}
 
 		boolean success = writeToSQLDatabase(multi);
