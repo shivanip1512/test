@@ -3,6 +3,7 @@ package com.cannontech.dbeditor;
 import Acme.RefInt;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.user.UserUtils;
 
 /**
  * Insert the type's description here.
@@ -239,7 +240,7 @@ public class DBDeletionFuncs
 	 */
 	private static byte createDeleteStringForLogin(int loginID) throws java.sql.SQLException
 	{
-		if( loginID == 9999999 ) //add the negatives here
+		if( loginID == UserUtils.USER_YUKON_ID ) //this id is the default
 		{
 			theWarning.delete(0, theWarning.length());
 			theWarning.append("\nbecause it is reserved for system use.");
