@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Vector;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,14 +43,13 @@ public class ControlServlet extends HttpServlet {
 		throws ServletException, IOException {
 		
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
+		Writer out = resp.getWriter();
 		
 		if(!AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.CONTROL)) {
 			CTILogger.info("Control request received by user without CONTROL role, ip: " + req.getRemoteAddr());
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+			out.write("error");
 			return;
 		}
-		
-		Writer out = resp.getWriter();
 		
 		String idStr = req.getParameter(ID);
 		String rawstateStr = req.getParameter(RAWSTATE);
@@ -94,7 +94,7 @@ public class ControlServlet extends HttpServlet {
 		opArgList.addElement( new Integer(rawstate) );
 			
 		Command cmd = new Command();
-		cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
+		cmd.setUserName(user.getUsername());
 		cmd.setOperation( Command.CONTROL_REQUEST );
 		cmd.setOpArgList( opArgList );
 		cmd.setTimeStamp( new java.util.Date() );
@@ -109,4 +109,13 @@ public class ControlServlet extends HttpServlet {
 		conn.write(cmd);
 		CTILogger.info("Control request sent, deviceid: " + deviceID + " pointid: " + pointID + " rawstate: " + rawstate);
 	}
+	/* 
+	 * @see javax.servlet.Servlet#init(javax.servlet.ServletConfig)
+	 */
+	public void init(ServletConfig arg0) throws ServletException {
+		//make sure dispatch connection is init'd
+		Util.getConnToDispatch();		
+		super.init(arg0);
+	}
+
 }
