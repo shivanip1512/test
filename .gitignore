@@ -35,6 +35,7 @@ yukon-client/logger/build
 yukon-client/macs/.cvsignore
 yukon-client/macs/bin
 yukon-client/macs/build
+yukon-client/monitor/bin
 yukon-client/palm/.cvsignore
 yukon-client/palm/bin
 yukon-client/palm/build
