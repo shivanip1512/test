@@ -54,7 +54,7 @@
 			<xs:enumeration value="On"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="stars-ThermostatTypes"><xs:restriction base="xs:NMTOKEN"><xs:enumeration value="Basic"/><xs:enumeration value="EnergyPro"/><xs:enumeration value="Commercial"/></xs:restriction></xs:simpleType><xs:complexType name="stars-ContactNotification">
+	<xs:simpleType name="stars-ThermostatTypes"><xs:restriction base="xs:NMTOKEN"><xs:enumeration value="ExpressStat"/><xs:enumeration value="EnergyPro"/><xs:enumeration value="Commercial"/></xs:restriction></xs:simpleType><xs:complexType name="stars-ContactNotification">
 		<xs:sequence>
 			<xs:element name="Enabled" type="xs:boolean"/>
 			<xs:element name="Notification" type="xs:string"/>

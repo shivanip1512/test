@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatTypes.java,v 1.1 2004/02/10 20:21:14 zyao Exp $
+ * $Id: StarsThermostatTypes.java,v 1.2 2004/02/20 15:55:31 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.*;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2004/02/10 20:21:14 $
+ * @version $Revision: 1.2 $ $Date: 2004/02/20 15:55:31 $
 **/
 public class StarsThermostatTypes implements java.io.Serializable {
 
@@ -29,14 +29,14 @@ public class StarsThermostatTypes implements java.io.Serializable {
     //--------------------------/
 
     /**
-     * The Basic type
+     * The ExpressStat type
     **/
-    public static final int BASIC_TYPE = 0;
+    public static final int EXPRESSSTAT_TYPE = 0;
 
     /**
-     * The instance of the Basic type
+     * The instance of the ExpressStat type
     **/
-    public static final StarsThermostatTypes BASIC = new StarsThermostatTypes(BASIC_TYPE, "Basic");
+    public static final StarsThermostatTypes EXPRESSSTAT = new StarsThermostatTypes(EXPRESSSTAT_TYPE, "ExpressStat");
 
     /**
      * The EnergyPro type
@@ -102,7 +102,7 @@ public class StarsThermostatTypes implements java.io.Serializable {
     private static java.util.Hashtable init()
     {
         Hashtable members = new Hashtable();
-        members.put("Basic", BASIC);
+        members.put("ExpressStat", EXPRESSSTAT);
         members.put("EnergyPro", ENERGYPRO);
         members.put("Commercial", COMMERCIAL);
         return members;
