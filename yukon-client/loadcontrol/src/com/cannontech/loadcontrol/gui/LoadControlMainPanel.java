@@ -785,7 +785,7 @@ private javax.swing.JTable getJTableProgram() {
 	if (ivjJTableProgram == null) {
 		try {
 			ivjJTableProgram = new javax.swing.JTable();
-			ivjJTableProgram.setName("JTableBottom");
+			ivjJTableProgram.setName("Load Programs");
 			getJScrollPaneProgramTable().setColumnHeaderView(ivjJTableProgram.getTableHeader());
 			ivjJTableProgram.setBounds(0, 0, 200, 200);
 			// user code begin {1}
@@ -819,7 +819,7 @@ private javax.swing.JTable getJTableGroup() {
 	if (ivjJTableGroup == null) {
 		try {
 			ivjJTableGroup = new javax.swing.JTable();
-			ivjJTableGroup.setName("JTableGroup");
+			ivjJTableGroup.setName("Load Groups");
 			getJScrollPaneProgramTable().setColumnHeaderView(ivjJTableGroup.getTableHeader());
 			ivjJTableGroup.setBounds(0, 0, 200, 200);
 			// user code begin {1}
@@ -852,7 +852,7 @@ private javax.swing.JTable getJTableControlArea() {
 	if (ivjJTableControlArea == null) {
 		try {
 			ivjJTableControlArea = new javax.swing.JTable();
-			ivjJTableControlArea.setName("JTableControlArea");
+			ivjJTableControlArea.setName("Control Areas");
 			getJScrollPaneControlArea().setColumnHeaderView(ivjJTableControlArea.getTableHeader());
 			ivjJTableControlArea.setBounds(0, 0, 200, 200);
 			// user code begin {1}
