@@ -2,6 +2,7 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -11,7 +12,6 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
-import org.jfree.report.TextElement;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -27,6 +27,7 @@ import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.function.ElementVisibilityEvalFunction;
 import com.cannontech.analysis.tablemodel.ProgramDetailModel;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Created on Dec 15, 2003
@@ -90,17 +91,48 @@ public class ProgramDetailReport extends YukonReportBase
 		//Define start and stop parameters for a default 90 day report.
 		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.PROGRAM_DETAIL_DATA);
 		
+		//Define default start and stop parameters for a default year to date report.
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		cal.set(java.util.Calendar.MINUTE, 0);
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
-		cal.add(java.util.Calendar.DATE, -4);
+		cal.add(java.util.Calendar.DATE, 1);	//default stop date is tomorrow
 		long stop = cal.getTimeInMillis();
-//		report.getModel().setStopTime(stop);
 
-		((ProgramDetailModel)report.getModel()).setECIDs(new Integer(0));
-		((ProgramDetailReport)report).showNotEnrolled = true;
+		cal.set(java.util.Calendar.DATE, 1);
+		cal.set(java.util.Calendar.MONTH, 0);
+		long start = cal.getTimeInMillis();	//default start date is begining of year
+
+		report.getModel().setStartTime(start);
+		report.getModel().setStopTime(stop);
+
+		for (int i = 0; i < args.length; i++)
+		{
+			String arg = (String)args[i].toLowerCase();
+				
+			int startIndex = arg.indexOf('=');
+			startIndex += 1;
+			String subString = arg.substring(startIndex);				
+			
+			if( arg.startsWith("ec"))
+				report.getModel().setECIDs(Integer.valueOf(subString));
+			else if( arg.startsWith("start"))
+			{
+				Date startDate = ServletUtil.parseDateStringLiberally(subString);
+				report.getModel().setStartTime(startDate.getTime());
+			}
+			else if( arg.startsWith("stop"))
+			{
+				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
+				report.getModel().setStartTime(stopDate.getTime());
+			}
+			else if( arg.startsWith("notEnroll"))	//when true, show those "Not Enrolled"			
+			{
+				((ProgramDetailReport)report).setShowNotEnrolled(Boolean.valueOf(subString).booleanValue());				
+			}
+		}
+		
 		report.getModel().collectData();
 
 		//Create the report

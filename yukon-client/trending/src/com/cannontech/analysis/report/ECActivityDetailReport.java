@@ -34,6 +34,7 @@ import org.jfree.ui.FloatDimension;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Created on Dec 15, 2003
@@ -85,26 +86,52 @@ public class ECActivityDetailReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		//Define start and stop parameters for a default 90 day report.
 		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.EC_ACTIVITY_DETAIL_DATA);
-		((ActivityDetailModel)report.getModel()).setProgramInfoOnly(true);
-//		((ActivityDetailModel)report.getModel()).setECIDs(new Integer(1010));
-		
+
+		//Define default start and stop parameters for a default year to date report.
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		cal.set(java.util.Calendar.MINUTE, 0);
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
-		cal.add(java.util.Calendar.DATE, 1);
+		cal.add(java.util.Calendar.DATE, 1);	//default stop date is tomorrow
 		long stop = cal.getTimeInMillis();
-//		cal.add(java.util.Calendar.DATE, -30);
+
 		cal.set(java.util.Calendar.DATE, 1);
 		cal.set(java.util.Calendar.MONTH, 0);
-		long start = cal.getTimeInMillis();
+		long start = cal.getTimeInMillis();	//default start date is begining of year
 
 		report.getModel().setStartTime(start);
 		report.getModel().setStopTime(stop);
-//		model.setEnergyCompanyID(new Integer(1004));
+
+		for (int i = 0; i < args.length; i++)
+		{
+			String arg = (String)args[i].toLowerCase();
+				
+			int startIndex = arg.indexOf('=');
+			startIndex += 1;
+			String subString = arg.substring(startIndex);				
+			
+			if( arg.startsWith("ec"))
+				report.getModel().setECIDs(Integer.valueOf(subString));
+			else if( arg.startsWith("program"))
+				((ActivityDetailModel)report.getModel()).setProgramInfoOnly(Boolean.valueOf(subString).booleanValue());
+			else if( arg.startsWith("start"))
+			{
+				Date startDate = ServletUtil.parseDateStringLiberally(subString);
+				report.getModel().setStartTime(startDate.getTime());
+			}
+			else if( arg.startsWith("stop"))
+			{
+				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
+				report.getModel().setStartTime(stopDate.getTime());
+			}			
+			else if( arg.startsWith("detail"))
+			{
+				((ECActivityDetailReport)report).setShowDetail(Boolean.valueOf(subString).booleanValue());
+			}
+		}
+
 		report.getModel().collectData();
 
 		//Create the report
