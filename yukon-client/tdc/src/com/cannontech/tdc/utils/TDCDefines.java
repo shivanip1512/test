@@ -15,8 +15,7 @@ public final class TDCDefines
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath()
 			+ "Tabular Data Console Help.chm";
 
-	public static final String ALARM_SOUND_FILE = 
-			com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "alarm.au";
+	public static final String ALARM_SOUND_FILE = "/alarm.au";
 
 	public static String DBALIAS = "yukon";
 
