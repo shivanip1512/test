@@ -1179,6 +1179,11 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
             }
         }
 
+        if(!(CmdStr.match(" codes")).isNull())
+        {
+            _cmd["codes"] = CtiParseValue(TRUE);
+        }
+
         if(!(CmdStr.match("role")).isNull())
         {
             if(!(token = CmdStr.match(rolenum)).isNull())
