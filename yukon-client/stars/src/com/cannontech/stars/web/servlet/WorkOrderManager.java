@@ -132,7 +132,8 @@ public class WorkOrderManager extends HttpServlet {
 			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
+			ArrayList accounts = energyCompany.searchAccountBySerialNo( searchValue, false );
+			orderIDs = getOrderIDsByAccounts( accounts );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
 			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, false );
