@@ -191,49 +191,49 @@
         if( tab.equalsIgnoreCase("history") )
         {   
         %>
-        <%@ include file="oper_mand_history.jsp" %>
+        <%@ include file="include\oper_mand_history.jsp" %>
         <%
         }
         else
         if( tab.equalsIgnoreCase("historydetail") )
         {
         %>
-        <%@ include file="oper_mand_history_detail.jsp" %>
+        <%@ include file="include\oper_mand_history_detail.jsp" %>
         <%
         }
         else
         if( tab.equalsIgnoreCase("programs") )
         {
         %>
-        <%@ include file="oper_mand_programs.jsp" %>
+        <%@ include file="include\oper_mand_programs.jsp" %>
         <%
         }
         else
         if( tab.equalsIgnoreCase("new") )
         {
         %>
-        <%@ include file="oper_mand_new.jsp" %>
+        <%@ include file="include\oper_mand_new.jsp" %>
         <%
         }
 		else    
 		if( tab.equalsIgnoreCase("newconfirm") )
 		{
 		%>
-        <%@ include file="oper_mand_new_confirm.jsp" %>
+        <%@ include file="include\oper_mand_new_confirm.jsp" %>
         <%
 		}
         else
         if( tab.equalsIgnoreCase("profile") )
         {
         %>
-        <%@ include file="customer_mand_profile.jsp" %>
+        <%@ include file="include\customer_mand_profile.jsp" %>
         <%
         }
         else               
         if( tab.equalsIgnoreCase("current") || true)
         {
         %>
-        <%@ include file="oper_mand_current.jsp" %>
+        <%@ include file="include\oper_mand_current.jsp" %>
         <%
         }
         
