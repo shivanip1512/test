@@ -6,6 +6,14 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
+<script language="Javascript">
+function sendConfig(form) {
+	if (!confirm("Are you sure you want to send out all scheduled configuration?"))
+		return;
+	form.action.value = "SendSwitchCommands";
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -26,10 +34,10 @@
                 <td width="235" height = "30" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 </form>
@@ -67,7 +75,7 @@
 			    <input type="hidden" name="action" value="ConfigSNRange">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
-                    <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Configure 
+                    <td align = "left" class = "MainText" bgcolor="#CCCCCC"><b>Configure 
                       Serial Number Range</b></td>
                   </tr>
                   <tr> 
@@ -116,6 +124,16 @@
                     <td width="239"> 
                       <div align="left"> 
                         <input type="submit" name="ScheduleConfig" value="Schedule Configuration">
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <br>
+                <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
+                  <tr> 
+                    <td>
+                      <div align="center">
+                        <input type="button" name="SendConfig" value="Send Scheduled Configuration" onclick="sendConfig(this.form)">
                       </div>
                     </td>
                   </tr>
