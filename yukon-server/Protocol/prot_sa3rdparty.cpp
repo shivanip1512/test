@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/11/24 17:11:16 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/12/08 21:20:47 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.18  2004/12/08 21:20:47  cplender
+* Worked on the address config code
+* Worked on the repeat count work.. 0 - 7 = 1 - 8.
+*
 * Revision 1.17  2004/11/24 17:11:16  cplender
 * Working on the configuration of SA receivers.
 *
@@ -171,7 +175,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         {
             if( NORMAL == (status = assemblePutConfig( parse, OutMessage )) )
             {
-                if( parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
+                if(  parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
                 {
                     // There has been an assignment request!
                     RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
@@ -183,6 +187,8 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                     _sa._buffer[0] = '/0';
                     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
+                    _sa._function = sac_address_config;
+
                     strncpy(_sa._serial205, serialstr.data(), 33);
 
                     for(int i = 1; i <= 6; i++)     // Look for each slot assignment and add a blurb for it!
@@ -191,12 +197,6 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
 
                         if(parse.isKeyValid(slotstr))
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << " Calling addressAssign " << parse.getsValue(slotstr) << " to slot " << i << " on the receiver" << endl;
-                            }
-
                             strncpy(_sa._codeSimple, parse.getsValue(slotstr).data(), 7);
                             addressAssign(totalLen, i);
 
@@ -221,6 +221,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                     _sa._buffer[0] = '/0';
                     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
+                    _sa._function = sac_toos;
 
                     strncpy(_sa._serial205, serialstr.data(), 33);
 
@@ -388,10 +389,6 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         RWCString mstr;
         RWCString rwsslot;
         RWCString rwsaddr;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
 
         int i;
         for(i = 1; i <= 6; i++)
@@ -563,7 +560,6 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial205, slot, _sa._codeSimple, _sa._transmitterAddress);
-
                 dout << RWTime() << " config205() complete" << endl;
             }
             break;
@@ -581,9 +577,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
         }
     }
 
-
     processResult(retCode);
-
 
     return status;
 }
@@ -1194,7 +1188,7 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
         {
             _sa._cycleTime = ctimes[i];
             _sa._swTimeout = ctimes[i];
-            _sa._repeats = shed_time / ctimes[i];
+            _sa._repeats = (shed_time / ctimes[i]) - 1;
             _cTime = oactime[i];
             _sTime = oastime[i];
             break;
@@ -1202,8 +1196,8 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
         else
         {
             // This one is not a perfect match, so we will try to see how close we can get!
-            int rep = shed_time / ctimes[i] > 8 ? 8 : shed_time / ctimes[i];
-            int delta = shed_time - (rep * ctimes[i]);
+            int rep = shed_time / ctimes[i] > 8 ? 7 : (shed_time / ctimes[i]) - 1;
+            int delta = shed_time - ((rep+1) * ctimes[i]);
 
             if(delta < currentbestdelta)
             {
@@ -1427,6 +1421,11 @@ RWCString CtiProtocolSA3rdParty::strategyAsString() const
     case sac_toos:
         {
             rstr = RWCString( " temporary out of service " + CtiNumStr(_sa._swTimeout) + " hours" );
+            break;
+        }
+    case sac_address_config:
+        {
+            rstr = RWCString( " address configuration: Code " + RWCString(_sa._codeSimple) + " assigned");
             break;
         }
     default:
