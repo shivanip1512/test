@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2004/02/16 20:59:32 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2004/03/18 19:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,6 +211,12 @@ void CtiVanGogh::VGMainThread()
         _dbThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBWriterThread);
         _dbThread.start();
 
+        _dbSigThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBSignalWriterThread);
+        _dbSigThread.start();
+
+        _dbSigEmailThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBSignalEmailThread);
+        _dbSigEmailThread.start();
+
         // all that is good and ready has been started, open up for business from clients
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
         ConnThread_.start();
@@ -353,6 +359,8 @@ void CtiVanGogh::VGMainThread()
         _archiveThread.join();
         _timedOpThread.join();
         _dbThread.join();
+        _dbSigThread.join();
+        _dbSigEmailThread.join();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -382,6 +390,8 @@ void CtiVanGogh::VGMainThread()
         _archiveThread.join();
         _timedOpThread.join();
         _dbThread.join();
+        _dbSigThread.join();
+        _dbSigEmailThread.join();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -5037,6 +5047,8 @@ void CtiVanGogh::VGDBWriterThread()
     {
         for(;!bGCtrlC;)
         {
+            try
+            {
             if(!(++sanity % SANITY_RATE))
             {
                 {
@@ -5048,13 +5060,19 @@ void CtiVanGogh::VGDBWriterThread()
 
             rwSleep(1000);
 
-            writeSignalsToDB();
             writeLMControlHistoryToDB();
             writeCommErrorHistoryToDB();
         }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
 
         // Make sure no one snuck in under the wire..
-        writeSignalsToDB(true);
         writeLMControlHistoryToDB(true);
         writeCommErrorHistoryToDB(true);
     }
@@ -5262,6 +5280,33 @@ void CtiVanGogh::reportOnThreads()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " DBThread is not running " << endl;
+                }
+            }
+
+            aThr = _dbSigThread;
+
+            if( !(aThr.isValid() &&
+                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
+                  aThr.getCompletionState() == RW_THR_PENDING ) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " DB Signal Thread is not running " << endl;
+                }
+            }
+
+
+            aThr = _dbSigEmailThread;
+
+            if( !(aThr.isValid() &&
+                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
+                  aThr.getCompletionState() == RW_THR_PENDING ) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " DB Signal Email Thread is not running " << endl;
                 }
             }
         }
