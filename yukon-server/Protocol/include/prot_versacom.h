@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:55 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/21 22:10:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@
 #define VC_SERVICE_T_OUT               0x01
 #define VC_SERVICE_T_IN                0x02
 #define VC_SERVICE_C_OUT               0x04
-#define VC_SERVICE_C_IN                0x08
+#define VC_SERVICE_C_IN                0x0a
 #define VC_SERVICE_MASK                0x0f
 
 
