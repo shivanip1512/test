@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateCallReportResponseDescriptor.java,v 1.1 2003/12/18 16:43:33 zyao Exp $
+ * $Id: StarsUpdateCallReportResponseDescriptor.java,v 1.2 2003/12/23 21:20:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2003/12/18 16:43:33 $
+ * @version $Revision: 1.2 $ $Date: 2003/12/23 21:20:35 $
 **/
 public class StarsUpdateCallReportResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
