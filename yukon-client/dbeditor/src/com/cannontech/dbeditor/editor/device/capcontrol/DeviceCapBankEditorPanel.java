@@ -1251,17 +1251,17 @@ public void setValue(Object val)
 			LiteYukonPAObject usedDevice = 
 					PAOFuncs.getLiteYukonPAO(controlDeviceID.intValue());
 
-			//we must manually add the currently used device so it is selectable, all used devices are filtered
-			// out at this point including the currently selected one!
-			lstToAdd.add( usedDevice );
-			java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-			for( int i = 0; i < lstToAdd.size(); i++ )
-				getControlDeviceComboBox().addItem( lstToAdd.get(i) );
-				
-
 			//usedDevice is null for all Fixed CapBanks
 			if( usedDevice != null )
 			{
+				//we must manually add the currently used device so it is selectable, all used devices are filtered
+				// out at this point including the currently selected one!
+				lstToAdd.add( usedDevice );
+				java.util.Collections.sort( lstToAdd, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+				for( int i = 0; i < lstToAdd.size(); i++ )
+					getControlDeviceComboBox().addItem( lstToAdd.get(i) );
+					
+
 				getControlDeviceComboBox().setSelectedItem( usedDevice );
 
 				ArrayList pts = (ArrayList)
