@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -74,23 +75,32 @@
                 </tr>
 <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = (StarsLMProgram) programs.getStarsLMProgram(i);
+		StarsLMProgram program = programs.getStarsLMProgram(i);
 		
 		StarsAppliance appliance = null;
 		int appNo = -1;
+		StarsApplianceCategory category = null;
+		
 		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
-			StarsAppliance starsApp = (StarsAppliance) appliances.getStarsAppliance(j);
+			StarsAppliance starsApp = appliances.getStarsAppliance(j);
 			if (starsApp.getLmProgramID() == program.getProgramID()) {
 				appliance = starsApp;
 				appNo = j;
+				
+				for (int k = 0; k < categories.getStarsApplianceCategoryCount(); k++) {
+					StarsApplianceCategory appCat = categories.getStarsApplianceCategory(k);
+					if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+						category = appCat;
+						break;
+					}
+				}
 				break;
 			}
 		}
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="162"> 
-                    <div align="center">
-					  <img src="<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+                    <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>
