@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/08/18 22:05:43 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/08 21:21:39 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.8  2004/12/08 21:21:39  cplender
+* Make certain the CycleTime is > 0 on the "next" calculation
+*
 * Revision 1.7  2004/08/18 22:05:43  cplender
 * Changed hasTimeExclusion to be correct fro commented out funcparams.
 *
@@ -506,7 +509,7 @@ RWTime CtiDeviceExclusion::getNextTimeSlotOpen() const
 {
     RWTime tm;
 
-    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0 )
     {
         RWTime now;
         RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
