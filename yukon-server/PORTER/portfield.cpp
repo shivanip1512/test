@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.138 $
-* DATE         :  $Date: 2005/03/16 23:04:21 $
+* REVISION     :  $Revision: 1.139 $
+* DATE         :  $Date: 2005/03/17 17:50:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1239,6 +1239,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                 //  send text results to Commander here via return string
                                 ds->sendCommResult(InMessage);
+
+                                queue< CtiVerificationBase * > verification_queue;
+
+                                ds->getVerificationObjects(verification_queue);
+
+                                PorterVerificationThread.push(verification_queue);
                             }
                             else
                             {
