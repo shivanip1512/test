@@ -117,7 +117,7 @@ public class LiteCICustomer extends LiteCustomer
 	{
 		return getCompanyName();
 	}
-
+	
 	public void retrieve( String dbalias )
 	{
 		super.retrieve( dbalias );
@@ -148,7 +148,6 @@ public class LiteCICustomer extends LiteCustomer
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-	
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.db.customer.Customer;
 
@@ -20,6 +21,11 @@ public class LiteCustomer extends LiteBase {
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
 	private java.util.Vector additionalContacts = null;
+	
+	// Used for residential customers only
+	private java.util.Vector accountIDs = null;
+	private int energyCompanyID = -1;
+	private boolean extended = false;
 
 	public LiteCustomer() {
 		super();
@@ -42,11 +48,13 @@ public class LiteCustomer extends LiteBase {
 	
 	public void retrieve(String dbAlias) {
 		try {
+			java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
+			
 			com.cannontech.database.SqlStatement stat = new com.cannontech.database.SqlStatement(
 					"SELECT PrimaryContactID, CustomerTypeID, TimeZone" +
 					" FROM " + Customer.TABLE_NAME +
 					" WHERE CustomerID = " + getCustomerID(),
-					dbAlias );
+					conn );
 			
 			stat.execute();
 			
@@ -67,32 +75,43 @@ public class LiteCustomer extends LiteBase {
 					"c.CustomerID=" + getCustomerID() + " " +
 					"AND c.CustomerID=ca.CustomerID " +
 					"ORDER BY c.CustomerID",
-					dbAlias );
+					conn );
 			
 			stat.execute();
 			
 			getAdditionalContacts().removeAllElements();
 			
 			for( int i = 0; i < stat.getRowCount(); i++ ) {
-				//add the LiteContact to this CICustomer
+				//add the LiteContact to this Customer
 				getAdditionalContacts().add(
 					ContactFuncs.getContact(((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
 
 			}
+			
+			if (VersionTools.starsExists()) {
+				stat = new com.cannontech.database.SqlStatement(
+						"SELECT acct.AccountID, map.EnergyCompanyID " +
+						"FROM CustomerAccount acct, ECToAccountMapping map " +
+						"WHERE acct.CustomerID=" + getCustomerID() +
+						" AND acct.AccountID = map.AccountID",
+						conn );
+				
+				stat.execute();
+				
+				getAccountIDs().removeAllElements();
+				
+				for (int i = 0; i < stat.getRowCount(); i++) {
+					getAccountIDs().add(
+						new Integer(((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
+					energyCompanyID = ((java.math.BigDecimal) stat.getRow(i)[1]).intValue();
+				}
+			}
+			
+			extended = true;
 		}
 		catch (Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-	}
-	
-	/**
-	 * Returns the additionalContacts.
-	 * @return java.util.Vector
-	 */
-	public java.util.Vector getAdditionalContacts() {
-		if (additionalContacts == null)
-			additionalContacts = new java.util.Vector(10);
-		return additionalContacts;
 	}
 
 	/**
@@ -149,6 +168,44 @@ public class LiteCustomer extends LiteBase {
 	 */
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
+	}
+	
+	/**
+	 * Returns the additionalContacts.
+	 * @return java.util.Vector
+	 */
+	public java.util.Vector getAdditionalContacts() {
+		if (additionalContacts == null)
+			additionalContacts = new java.util.Vector(10);
+		return additionalContacts;
+	}
+	
+	/**
+	 * Returns the customer account IDs
+	 * @return java.util.Vector
+	 */
+	public java.util.Vector getAccountIDs() {
+		if (accountIDs == null)
+			accountIDs = new java.util.Vector();
+		return accountIDs;
+	}
+	
+	/**
+	 * Used for residential customers only. A residential customer
+	 * should belong to only one energy company.
+	 */
+	public int getEnergyCompanyID() {
+		return energyCompanyID;
+	}
+	
+	/**
+	 * Returns false when the object is an instance of LiteCICustomer,
+	 * and the related residential information has not been retrieved yet.
+	 * The object will become "extended" after the retrieve() method
+	 * has been called. Otherwise, the method will return true.
+	 */
+	public boolean isExtended() {
+		return extended;
 	}
 
 }
