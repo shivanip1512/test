@@ -646,6 +646,7 @@ private LocateRouteDialog getLocateRouteDialog()
 				locRouteDialog.getRouteComboBox().setSelectedIndex(0);
 		}
 		locRouteDialog.getLocateButton().addActionListener(this);
+		locRouteDialog.getRouteComboBox().addActionListener(this);
 	}
 	return locRouteDialog;
 }
