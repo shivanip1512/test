@@ -23,16 +23,16 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
 {
     bool ret_val = true;
     
-    ret_val = (ret_val && checkSeason(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkWeekDays(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMaxHoursDaily(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMaxHoursMonthly(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMaxHoursSeasonal(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMaxHoursAnnually(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMinActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMinRestartTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMaxDailyOps(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
-    ret_val = (ret_val && checkMaxActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results));
+    ret_val = (checkSeason(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkWeekDays(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMaxHoursDaily(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMaxHoursMonthly(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMaxHoursSeasonal(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMaxHoursAnnually(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMinActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMinRestartTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMaxDailyOps(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    ret_val = (checkMaxActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
 
     if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
     {
