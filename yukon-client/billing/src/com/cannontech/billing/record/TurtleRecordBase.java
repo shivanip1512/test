@@ -11,8 +11,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	private String recordIndicator = "M";	//1
 	private String meterNumber = null;	//10
 	private Double readingKWH = null;	//5
-	private String time = "HH:mm";	//HH:mm
-	private String date = "yy/MM/dd";		//yy/MM/dd
+	private String time = null;	//HH:mm
+	private String date = null;		//yy/MM/dd
 
 	private Double readingKW = null;	//7 (modifiable)
 	private String timeKW = null;		//HH:mm
@@ -102,7 +102,7 @@ public class TurtleRecordBase implements BillingRecordBase
 	
 		writeToFile.append(getDate() + ",");
 	
-		if(this instanceof SEDC54Record)
+		if(this instanceof SEDC54Record || this instanceof NISC_SinglePhaseRecord)
 		{
 			writeToFile.append("\r\n");
 			return writeToFile.toString();
@@ -140,7 +140,6 @@ public class TurtleRecordBase implements BillingRecordBase
 			writeToFile.append("\r\n");
 			return writeToFile.toString();
 		}
-			
 		writeToFile.append(',');
 		
 		//Stat
@@ -179,6 +178,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	 */
 	public String getDate()
 	{
+		if( date == null)
+			return getDateFormat().toPattern();
 		return date;
 	}
 	/**
@@ -188,6 +189,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	 */
 	public String getDateKW()
 	{
+		if( dateKW == null)
+			return getDateFormat().toPattern();
 		return dateKW;
 	}
 	/**
@@ -234,6 +237,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	 */
 	public String getTime()
 	{
+		if(time == null)
+			return TIME_FORMAT.toPattern();
 		return time;
 	}
 	/**
@@ -243,6 +248,8 @@ public class TurtleRecordBase implements BillingRecordBase
 	 */
 	public String getTimeKW()
 	{
+		if( timeKW == null)
+			return TIME_FORMAT.toPattern();
 		return timeKW;
 	}
 
