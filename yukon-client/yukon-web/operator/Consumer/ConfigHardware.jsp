@@ -193,7 +193,8 @@ function changeProgSelection(chkBox) {
                       <select id="Load_Prog<%= program.getProgramID() %>" name="LoadNo" disabled="true">
                         <option value="0">(none)</option>
 <%
-		for (int ln = 1; ln <= 8; ln++) {
+		int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+		for (int ln = 1; ln <= numRelays; ln++) {
 %>
                         <option value="<%= ln %>"><%= ln %></option>
 <%
