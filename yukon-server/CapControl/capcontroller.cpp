@@ -66,7 +66,6 @@ CtiCapController* CtiCapController::getInstance()
 ---------------------------------------------------------------------------*/
 CtiCapController::CtiCapController()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _dispatchConnection = NULL;
     _pilConnection = NULL;
 }
@@ -117,7 +116,6 @@ void CtiCapController::stop()
             _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
             _pilConnection->ShutdownConnection();
         }
-        CtiLockGuard<CtiLogger> logger_guard(dout);
         dout.interrupt(CtiThread::SHUTDOWN);
         dout.join();
     }
@@ -158,6 +156,8 @@ void CtiCapController::controlLoop()
         RWOrdered substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+        ULONG lastThreadPulse = 0;
+        ULONG lastDailyReset = 0;
         while(TRUE)
         {
             currentDateTime.now();
@@ -166,13 +166,19 @@ void CtiCapController::controlLoop()
 
             if(_CC_DEBUG)
             {
-                if( (secondsFrom1901%1800) == 0 )
+                if( (secondsFrom1901%900) == 0 && secondsFrom1901 != lastThreadPulse )
                 {//every thirty minutes tell the user if the control thread is still alive
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Controller thread pulse" << endl;
                     }
+                    lastThreadPulse = secondsFrom1901;
                     store->verifySubBusAndFeedersStates();
+                }
+                if( secondsFromBeginningOfDay <= 60 && secondsFrom1901 >= lastDailyReset+61 )
+                {
+                    store->resetDailyOperations();
+                    lastDailyReset = secondsFrom1901;
                 }
             }
 
@@ -302,7 +308,6 @@ void CtiCapController::controlLoop()
                 //send point changes to dispatch
                 if( pointChanges.entries() > 0 )
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
                     getDispatchConnection()->WriteConnQue(multiDispatchMsg);
                     multiDispatchMsg = new CtiMultiMsg();
                 }
@@ -318,7 +323,6 @@ void CtiCapController::controlLoop()
                 //send pil commands to porter
                 if( multiPilMsg->getCount() > 0 )
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
                     getPILConnection()->WriteConnQue(multiPilMsg);
                     multiPilMsg = new CtiMultiMsg();
                 }
@@ -391,7 +395,6 @@ void CtiCapController::controlLoop()
 ---------------------------------------------------------------------------*/
 CtiConnection* CtiCapController::getDispatchConnection()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     if( _dispatchConnection == NULL )
     {
         RWCString str;
@@ -450,7 +453,6 @@ CtiConnection* CtiCapController::getDispatchConnection()
 ---------------------------------------------------------------------------*/
 CtiConnection* CtiCapController::getPILConnection()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     if( _pilConnection == NULL )
     {
         RWCString str;
@@ -509,7 +511,6 @@ CtiConnection* CtiCapController::getPILConnection()
 ---------------------------------------------------------------------------*/
 void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     BOOL done = FALSE;
     do
     {
@@ -533,7 +534,6 @@ void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 void CtiCapController::checkPIL(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     BOOL done = FALSE;
     do
     {
@@ -557,7 +557,6 @@ void CtiCapController::checkPIL(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -628,7 +627,6 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 ---------------------------------------------------------------------------*/
 void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
         CtiMultiMsg* msgMulti;
@@ -683,7 +681,6 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                     if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
                     {
                         {
-                            RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
                             getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
                         }
                         if( _CC_DEBUG )
@@ -741,7 +738,6 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
 ---------------------------------------------------------------------------*/
 void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     if( _CC_DEBUG )
     {
         char tempchar[80];
@@ -818,8 +814,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
             if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
             {
                 currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                if( currentSubstationBus->getControlInterval() == 0 )
-                    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
             }
             else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
             {
@@ -885,8 +879,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                     if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                     {
                         currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
-                        if( currentSubstationBus->getControlInterval() == 0 )
-                            currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                     }
                     else if( currentSubstationBus->getControlUnits() != CtiCCSubstationBus::KVARControlUnits )
                     {
@@ -971,7 +963,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
 ---------------------------------------------------------------------------*/
 void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     /*if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
