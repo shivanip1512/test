@@ -35,10 +35,10 @@
 <% } %>
 
 <%-- Grab the search criteria --%>
+<jsp:setProperty name="selectInvBean" property="htmlStyle" param="HtmlStyle"/>
 <jsp:setProperty name="selectInvBean" property="sortBy" param="SortBy"/>
 <jsp:setProperty name="selectInvBean" property="filterBy" param="FilterBy"/>
 <jsp:setProperty name="selectInvBean" property="location" param="Location"/>
-<jsp:setProperty name="selectInvBean" property="htmlStyle" param="HtmlStyle"/>
 <jsp:setProperty name="selectInvBean" property="page" param="page"/>
 <jsp:setProperty name="selectInvBean" property="searchBy" param="SearchBy"/>
 <jsp:setProperty name="selectInvBean" property="searchValue" param="SearchValue"/>
@@ -51,18 +51,14 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function showAll(form) {
-	form.SortBy.value = <%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>;
 	form.FilterBy.value = 0;
 	form.Location.value = 0;
-	form.HtmlStyle.value = <%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>;
 	form.submit();
 }
 
 function showWarehouse(form) {
-	form.SortBy.value = <%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>;
 	form.FilterBy.value = <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>;
 	form.Location.value = <%= InventoryBean.INV_LOCATION_WAREHOUSE %>;
-	form.HtmlStyle.value = <%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>;
 	form.submit();
 }
 </script>
@@ -93,10 +89,10 @@ function showWarehouse(form) {
               <%@ include file="../Hardware/include/SearchBar2.jsp" %>
 
 			  <form name="MForm" method="post" action="">
-			    <input type="hidden" name="SortBy" value="<%= selectInvBean.getSortBy() %>">
+				<input type="hidden" name="HtmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>">
+			    <input type="hidden" name="SortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>">
 			    <input type="hidden" name="FilterBy" value="<%= selectInvBean.getFilterBy() %>">
 				<input type="hidden" name="Location" value="<%= selectInvBean.getLocation() %>">
-				<input type="hidden" name="HtmlStyle" value="<%= selectInvBean.getHtmlStyle() %>">
 				<input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="1">
                   <tr> 
@@ -114,64 +110,6 @@ function showWarehouse(form) {
                 </table>
               </form>
               <%= selectInvBean.getHTML(request) %> 
-              <!--              <form name='form1' method='post' action='<%= request.getContextPath() %>/servlet/InventoryManager'>
-			    <input type='hidden' name='action' value='SelectInventory'>
-                <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
-                  <tr> 
-                    <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
-                      | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <table width='100%' border='1' cellspacing='0' cellpadding='3'>
-                        <tr> 
-                          <td class='HeaderCell' width='5%'>&nbsp;</td>
-                          <td class='HeaderCell' width='17%'>Serial #</td>
-                          <td class='HeaderCell' width='17%'>Device Type</td>
-                          <td class='HeaderCell' width='17%'>Install Date</td>
-                          <td class='HeaderCell' width='49%'>Location</td>
-                        </tr>
-                        <tr> 
-                          <td class='TableCell' width='5%'><input type='radio' name='InvID' value='0'></td>
-                          <td class='TableCell' width='17%'><a href='InventoryDetail.jsp?InvId=7'>500000000</a></td>
-                          <td class='TableCell' width='17%'>LCR-5000</td>
-                          <td class='TableCell' width='17%'>08/24/2003</td>
-                          <td class='TableCell' width='49%'><a href='' class='Link1' onclick='selectAccount(7); return false;'>Acct 
-						    # 12345</a> Robert Livingston, 8301 Golden Valley Rd, Suite 300...</td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
-                      | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
-                  </tr>
-                </table>
-                <br>
-                <table width='200' border='0' cellspacing='0' cellpadding='3'>
-                  <tr> 
-                    <td align='right'>
-                      <input type='submit' name='Submit' value='Submit'>
-                    </td>
-                    <td>
-                      <input type='button' name='Cancel' value='Cancel' onclick='location.href="<%= referer %>"'>
-                    </td>
-                  </tr>
-                </table>
-              </form>
-			  <form name='cusForm' method='post' action='/servlet/SOAPClient'>
-                <input type='hidden' name='action' value='GetCustAccount'>
-                <input type='hidden' name='AccountID' value=''>
-                <input type='hidden' name='REDIRECT' value='/operator/Consumer/Update.jsp'>
-                <input type='hidden' name='REFERRER' value='/operator/Hardware/Inventory.jsp'>
-			  </form>
-<script language='JavaScript'>
-function selectAccount(accountID) {
-  var form = document.cusForm;
-  form.AccountID.value = accountID;
-  form.submit();
-}
-</script>-->
               <p>&nbsp; </p>
             </div>
           </td>
