@@ -7,7 +7,7 @@ import com.cannontech.database.data.point.PointTypes;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class PointLoader implements Runnable {
+public class PointLoader implements Runnable {
 	private java.util.ArrayList allPoints = null;
 	private String databaseAlias = null;
 /**
@@ -39,7 +39,7 @@ timerStart = new java.util.Date();
 		"left outer join unitmeasure um " +
 		"on pu.uomid = um.uomid " +
 		"where p.POINTID > " + PointTypes.SYS_PID_SYSTEM +
-		" ORDER BY p.PAObjectID, p.POINTOFFSET";
+		"ORDER BY p.PAObjectID, p.POINTOFFSET";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
