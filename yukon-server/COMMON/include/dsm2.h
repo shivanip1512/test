@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/03/26 20:32:34 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/05/09 15:44:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -899,6 +899,11 @@ public:
       }
 
       return *this;
+   }
+
+   bool operator<( const CtiOutMessage &rhs ) const
+   {
+       return Priority > rhs.Priority; // Bigger is sorted first in terms of priority.
    }
 
 } OUTMESS;
