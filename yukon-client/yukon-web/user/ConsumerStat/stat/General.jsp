@@ -3,7 +3,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
 </script>
@@ -188,7 +188,7 @@
                             <p align="center" class="TableCell1"> 
                               <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                              <span class="TableCell3"> I would like to be notified 
+                              <span class="TableCell2"> I would like to be notified 
                               by e-mail<br> of the chance for control:<br>
                               <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
                               <input type="submit" name="Submit" value="Submit">

@@ -2,7 +2,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 
 function confirm_form()
@@ -42,7 +42,7 @@ function decline_form()
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr>
                 <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Buyback</td> 
@@ -266,7 +266,7 @@ function decline_form()
                     </div>
                   </form>
                   <p class="Main" align="center"><br>
-                    If you have questions or problems, call <cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_PHONE_TEXT %>"/></p>
+                    If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/></p>
                  <div align = "center"><a href = "user_ee.jsp" class = "Link1">Back</a></div>
           </p>
                

@@ -1,22 +1,24 @@
 <%@ page import="java.util.Hashtable" %>
 <%
 	// Map of page name / link text
-	String linkMap[][] = {{"user_trending.jsp?model=0", "Line Graph"},
-						  {"user_trending.jsp?model=1", "Bar Graph"},
-						  {"user_trending.jsp?model=2", "Load Duration"},
-						  {"user_ee.jsp", "VBB Offers"},
+	String linkMap[][] = {{"user_ee.jsp", "Peak Day Partner"},
 						  {"user_curtail.jsp", "Notification"},
 						  {"user_lm_control.jsp", "Auto Control"},
 						  {"user_lm_time.jsp", "Time Based"},
 						  {"switch_commands.jsp", "Switch Command"}
 						 };
-						   
+	boolean trendSelected = true;
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"../Bullet.gif\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
+		{
+			links.put(linkMap[i][0], "<img src=\"../../WebConfig/Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
+			trendSelected = false;
+		}
 		else
-			links.put(linkMap[i][0], "<img src=\"../Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+		{
+			links.put(linkMap[i][0], "<img src=\"../../WebConfig/Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+		}
 	}
 %>
 
@@ -35,20 +37,20 @@
     <td height="30" valign="bottom"> 
       <div align="left"><span class="NavHeader">Trending</span><br>
 	    <%   /* Retrieve all the predefined graphs for this user*/                       
-					if( gData != null )
-					{
-						for( int i = 0; i < gData.length; i++ )                                                          
-						{
-							if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid())
-							{%>
-								<img src="../Bullet.gif" width="12" height="12"><span class="NavText2"><%=gData[i][1] %></span><br>
-							<%}
-							else 
-							{%>
-								<img src="../Bullet2.gif" width="12" height="12"><a href="/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
-							<%}
-						}
-					}%></div>
+		if( gData != null )
+		{
+			for( int i = 0; i < gData.length; i++ )                                                          
+			{
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && trendSelected)
+				{%>
+					<img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET_SELECTED%>"/>" width="12" height="12"><span class="Nav"><%=gData[i][1] %></span><br>
+				<%}
+				else 
+				{%>
+					<img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>" width="12" height="12"><a href="/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+				<%}
+			}
+		}%></div>
     </td>
   </tr>
   <tr> 

@@ -10,7 +10,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <SCRIPT LANGUAGE="JavaScript">
 
 <!-- This script and many more are available free online at -->
@@ -126,7 +126,7 @@ function changeProgram(radioBtn, index) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr bgcolor="666699"> 
                 <td width="265" height="28">&nbsp;&nbsp;&nbsp;</td>
@@ -320,7 +320,7 @@ function changeProgram(radioBtn, index) {
                   <tr> 
                     <td height="58"> <p align="center" class="TableCell1"> 
                         <input type="checkbox" name="checkbox3" value="checkbox">
-                        <span class="TableCell3"> I would like to be notified 
+                        <span class="TableCell2"> I would like to be notified 
                         by e-mail prior to control.<br>
                         My e-mail address is:<br>
                         <input type="text" name="textfield2" maxlength="20" size="20">

@@ -3,7 +3,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>"type="text/css">
 <script language="JavaScript" src="../../JavaScript/drag.js">
 </script>
 <script language="JavaScript">
@@ -218,7 +218,7 @@ function MM_popupMsg(msg) { //v1.0
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="265" height="28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;User 
@@ -328,7 +328,7 @@ function MM_popupMsg(msg) { //v1.0
                                                 <input type="radio" name="radiobutton" value="today">
                                             </td>
                                           </tr>
-                                          <tr class = "TableCell3" align = "center"> 
+                                          <tr class = "TableCell2" align = "center"> 
                                               <td width="31%" valign = "top">On</td>
                                               <td width="33%" valign = "top">Off</td>
                                               <td width="36%">Today Only</td>

@@ -20,7 +20,7 @@
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"../../" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
+			links.put(linkMap[i][0], "<img src=\"../../" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
 		else
 			links.put(linkMap[i][0], "<img src=\"../../" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
 	}
