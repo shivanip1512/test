@@ -477,7 +477,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				synchronized (yc) {
 					yc.setRouteID( energyCompany.getDefaultRouteID() );
 					for (int j = 0; j < cmdList.size(); j++) {
-						yc.setCommandFileName( (String)cmdList.get(j) );
+						yc.setCommand( (String)cmdList.get(j) );
 						yc.handleSerialNumber();
 					}
 				}

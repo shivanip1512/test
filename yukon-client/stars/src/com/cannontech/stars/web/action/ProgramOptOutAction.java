@@ -192,6 +192,11 @@ public class ProgramOptOutAction implements ActionBase {
             	event.setCommand( cmd.toString() );
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
+				StarsLMProgramHistory starsProgHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo.getProgramHistory() );
+            	StarsLMProgramEvent starsEvent = StarsLiteFactory.createStarsOptOutEvent( event, liteAcctInfo.getLmPrograms(), energyCompany );
+            	starsProgHist.addStarsLMProgramEvent( starsEvent );
+            	resp.setStarsLMProgramHistory( starsProgHist );
+            	
             	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event has been scheduled" );
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
@@ -202,7 +207,7 @@ public class ProgramOptOutAction implements ActionBase {
 				synchronized (yc) {
 					yc.setRouteID( energyCompany.getDefaultRouteID() );
 					for (int i = 0; i < commands.length; i++) {
-						yc.setCommandFileName( commands[i] );
+						yc.setCommand( commands[i] );
 						yc.handleSerialNumber();
 					}
 				}
@@ -247,7 +252,7 @@ public class ProgramOptOutAction implements ActionBase {
 					synchronized (yc) {
 						yc.setRouteID( energyCompany.getDefaultRouteID() );
 						for (int i = 0; i < commands.length; i++) {
-							yc.setCommandFileName( commands[i] );
+							yc.setCommand( commands[i] );
 							yc.handleSerialNumber();
 						}
 					}
@@ -268,7 +273,7 @@ public class ProgramOptOutAction implements ActionBase {
 				synchronized (yc) {
 					yc.setRouteID( energyCompany.getDefaultRouteID() );
 					for (int i = 0; i < commands.length; i++) {
-						yc.setCommandFileName( commands[i] );
+						yc.setCommand( commands[i] );
 						yc.handleSerialNumber();
 					}
 				}

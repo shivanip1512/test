@@ -109,7 +109,7 @@ public class ProgramReenableAction implements ActionBase {
 			synchronized (yc) {
 				yc.setRouteID( energyCompany.getDefaultRouteID() );
 				for (int i = 0; i < commands.length; i++) {
-					yc.setCommandFileName( commands[i] );
+					yc.setCommand( commands[i] );
 					yc.handleSerialNumber();
 				}
 			}

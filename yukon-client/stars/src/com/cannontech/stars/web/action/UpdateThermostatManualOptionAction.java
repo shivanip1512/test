@@ -193,7 +193,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 				synchronized (yc) {
 					yc.setRouteID( energyCompany.getDefaultRouteID() );
-					yc.setCommandFileName( cmd.toString() );
+					yc.setCommand( cmd.toString() );
 					yc.handleSerialNumber();
 				}
 				
