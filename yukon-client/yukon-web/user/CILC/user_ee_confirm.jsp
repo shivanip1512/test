@@ -75,7 +75,7 @@
           </td>
           <td> <%= checker.get("offer") + " - " + checker.get("rev") %></td>
           <td> 
-            <p align=RIGHT>Date:
+            <p align=RIGHT>Control Date:
           </td>
           <td><%= checker.get("offerdate") %></td>
           <td> 
@@ -107,20 +107,20 @@
                   <td width="75" height="23" valign="TOP" class="HeaderCell"> 
                     Hour</td>
                   <td width="75" height="23" valign="TOP" class="HeaderCell">Offer 
-                    in $ per Kwh</td>
-                  <td width="75" height="23" valign="TOP" class="HeaderCell">SCL 
-                    in Kw</td>
-                  <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>
+                    in $ per kWh</td>
+                  <td width="75" height="23" valign="TOP" class="HeaderCell">CLR 
+                    in kW</td>
+<!--                  <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
                 </tr>
                 <%
                for( int i = 0; i < 12; i++ ) {
-                   String hourStr = hourFormat.format(i) + ":00";
+                   String hourStr = hourFormat.format(i+1) + ":00";
           %>
                 <tr> 
                   <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
                   <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
                   <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
-                  <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>
+<!--                  <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>-->
                 </tr>
                 <%
 		  		}
@@ -133,20 +133,20 @@
               <tr> 
                 <td width="75" height="23" valign="TOP" class="HeaderCell"> Hour</td>
                 <td width="75" height="23" valign="TOP" class="HeaderCell">Offer 
-                  in $ per Kwh</td>
-                <td width="75" height="23" valign="TOP" class="HeaderCell">SCL 
-                  in Kw</td>
-                <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>
+                  in $ per kWh</td>
+                <td width="75" height="23" valign="TOP" class="HeaderCell">CLR 
+                  in kW</td>
+<!--                <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
               </tr>
               <%
                for( int i = 12; i < 24; i++ ) {
-                   String hourStr = hourFormat.format(i) + ":00";
+                   String hourStr = hourFormat.format(i + 1) + ":00";
           %>
               <tr> 
                 <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
                 <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
                 <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
-                <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>
+<!--                <td width="75" height="10" valign="TOP" class="TableCell">&nbsp;</td>-->
               </tr>
               <%
 		  		}
