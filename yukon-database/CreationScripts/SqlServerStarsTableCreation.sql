@@ -558,7 +558,7 @@ AccountNotes         varchar(200)         null
 go
 
 
-INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)',-1);
+INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)');
 
 alter table CustomerAccount
    add constraint PK_CUSTOMERACCOUNT primary key  (AccountID)

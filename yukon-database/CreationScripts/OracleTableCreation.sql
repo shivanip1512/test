@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     4/28/2004 11:58:40 AM                        */
+/* Created on:     5/10/2004 4:26:41 PM                         */
 /*==============================================================*/
 
 
@@ -1124,7 +1124,7 @@ create table CTIDatabase  (
 /
 
 
-insert into CTIDatabase values('3.00', 'Ryan', '22-APR-2004', 'Many changes to a major version jump', 12);
+insert into CTIDatabase values('3.01', 'Ryan', '10-MAY-2004', 'Added many load control and protocol changes', 1);
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key (Version)
@@ -1309,6 +1309,8 @@ create table Customer  (
 )
 /
 
+
+INSERT INTO Customer VALUES (-1,0,0,'(none)');
 
 alter table Customer
    add constraint PK_CUSTOMER primary key (CustomerID)
@@ -2160,6 +2162,7 @@ create table DeviceSeries5RTU  (
    DeviceID             NUMBER                           not null,
    TickTime             NUMBER                           not null,
    TransmitOffset       NUMBER                           not null,
+   SaveHistory          CHAR(1)                          not null,
    PowerValueHighLimit  NUMBER                           not null,
    PowerValueLowLimit   NUMBER                           not null,
    PowerValueMultiplier FLOAT                            not null,
@@ -3520,6 +3523,8 @@ create table LMPROGRAM  (
 /
 
 
+insert into LMProgram values(0, 'Automatic', 0);
+
 alter table LMPROGRAM
    add constraint PK_LMPROGRAM primary key (DeviceID)
 /
@@ -4427,6 +4432,8 @@ create table Route  (
 /
 
 
+INSERT INTO Route VALUES (0,0,'N');
+
 alter table Route
    add constraint SYS_RoutePK primary key (RouteID)
 /
@@ -5013,7 +5020,7 @@ insert into yukongrouprole values (-500,-300,-108,-10800,'/user/ConsumerStat/sta
 insert into yukongrouprole values (-502,-300,-108,-10802,'(none)');
 insert into yukongrouprole values (-503,-300,-108,-10803,'(none)');
 insert into yukongrouprole values (-504,-300,-108,-10804,'(none)');
-insert into yukongrouprole values (-505,-300,-108,-10805,'DemoHeaderCES.gif');
+insert into yukongrouprole values (-505,-300,-108, -10805,'yukon/DemoHeaderCES.gif');
 insert into yukongrouprole values (-506,-300,-108,-10806,'(none)');
 insert into yukongrouprole values (-507,-300,-108,-10807,'(none)');
 insert into yukongrouprole values (-508,-300,-108,-10808,'(none)');
@@ -5798,6 +5805,7 @@ create table YukonRole  (
 /* Default role for all users - yukon category */
 insert into YukonRole values(-1,'Yukon','Yukon','Default Yukon role. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-3,'Logging','Yukon','Settings for how Yukon logs output. Edit this role from the Yukon SetUp page.');
+insert into YukonRole values(-4,'Radius Login','Yukon','Settings for using RADIUS server to login instead of standard yukon login.');
 insert into YukonRole values(-104,'Calc Historical','Yukon','Calc Historical. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-105,'Web Graph','Yukon','Web Graph. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-106,'Billing','Yukon','Billing. Edit this role from the Yukon SetUp page.');
@@ -5888,6 +5896,11 @@ insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File 
 insert into YukonRoleProperty values(-1013,-1,'stars_soap_server','(none)','Where the soap server is running, the default value is the local host');
 insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The logo that is used for the yukon web applications');
 
+insert into YukonRoleProperty values(-1300,-4,'radius_server_address','(none)','Radius server machine address');
+insert into YukonRoleProperty values(-1301,-4,'radius_auth_port','1812','Radius authentication port.');
+insert into YukonRoleProperty values(-1302,-4,'radius_acct_port','1813','Radius accounting port.');
+insert into YukonRoleProperty values(-1303,-4,'radius_secret_key','(none)','Radius clients secret key value, defined by the radius server.');
+insert into YukonRoleProperty values(-1304,-4,'radius_auth_method','PAP','Radius authentication method. Possible values are PAP, [chap, others to follow soon]');
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
@@ -5928,6 +5941,7 @@ insert into YukonRoleProperty values(-1213,-3,'trending_log_level','INFO','Loggi
 insert into YukonRoleProperty values(-1214,-3,'stars_log_level','INFO','Logging level for STARS functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 insert into YukonRoleProperty values(-1215,-3,'general_log_level','INFO','Logging level for all functionality that is not otherwise defined. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 insert into YukonRoleProperty values(-1216,-3,'log_to_file','false','Tells all logging that it needs to go to a file');
+
 
 
 /* TDC Role */
@@ -6053,7 +6067,7 @@ insert into YukonRoleProperty values(-20831,-201,'Label Programs Enrollment','En
 insert into YukonRoleProperty values(-20832,-201,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
 insert into YukonRoleProperty values(-20833,-201,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
 insert into YukonRoleProperty values(-20834,-201,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
-insert into YukonRoleProperty values(-20850,-201,'Title Programs Control History','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-20850,-201,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
 insert into YukonRoleProperty values(-20851,-201,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
 insert into YukonRoleProperty values(-20852,-201,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
 insert into YukonRoleProperty values(-20853,-201,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
@@ -6135,7 +6149,7 @@ insert into YukonRoleProperty values(-40132,-400,'Label Programs Opt Out','Opt O
 insert into YukonRoleProperty values(-40133,-400,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
 insert into YukonRoleProperty values(-40134,-400,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
 insert into YukonRoleProperty values(-40150,-400,'Title General','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
-insert into YukonRoleProperty values(-40151,-400,'Title Programs Control History','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-40151,-400,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
 insert into YukonRoleProperty values(-40152,-400,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
 insert into YukonRoleProperty values(-40153,-400,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
 insert into YukonRoleProperty values(-40154,-400,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
@@ -6149,8 +6163,8 @@ insert into YukonRoleProperty values(-40171,-400,'Description Opt Out','If you w
 insert into YukonRoleProperty values(-40172,-400,'Description Enrollment','Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.','Description on the program enrollment page');
 insert into YukonRoleProperty values(-40173,-400,'Description Utility',' <<COMPANY_ADDRESS>><br><<PHONE_NUMBER>><<FAX_NUMBER>><<EMAIL>>','Description on the contact us page. The special fields will be replaced by real information when displayed on the web.');
 
-insert into YukonRoleProperty values(-40180,-400,'Image Corner','Mom.jpg','Image at the upper-left corner');
-insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','Image on the general page');
+insert into YukonRoleProperty values(-40180,-400,'Image Corner','yukon/Mom.jpg','Image at the upper-left corner');
+insert into YukonRoleProperty values(-40181,-400,'Image General','yukon/Family.jpg','Image on the general page');
 
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
@@ -6535,6 +6549,17 @@ insert into YukonUserRole values (-855,-1,-201,-20855,'(none)');
 insert into YukonUserRole values (-856,-1,-201,-20856,'(none)');
 insert into YukonUserRole values (-870,-1,-201,-20870,'(none)');
 
+insert into YukonUserRole values (-1000, -100, -108, -10800, '/operator/Operations.jsp');
+insert into YukonUserRole values (-1002, -100, -108, -10802, '(none)');
+insert into YukonUserRole values (-1003, -100, -108, -10803, '(none)');
+insert into YukonUserRole values (-1004, -100, -108, -10804, '(none)');
+insert into YukonUserRole values (-1005, -100, -108, -10805, '(none)');
+insert into YukonUserRole values (-1006, -100, -108, -10806, '(none)');
+insert into YukonUserRole values (-1010, -100, -200, -20000, '(none)');
+insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
+insert into YukonUserRole values (-1012, -100, -200, -20002, '(none)');
+insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
+
 alter table YukonUserRole
    add constraint PK_YKONUSRROLE primary key (UserRoleID)
 /
@@ -6555,8 +6580,9 @@ create table YukonWebConfiguration  (
 /
 
 
+INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
+INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
-
 
 alter table YukonWebConfiguration
    add constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
