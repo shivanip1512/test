@@ -1,236 +1,322 @@
 package com.cannontech.database.db.baseline;
 
 /**
- * Creation date: (10/18/2001 1:20:37 PM)
+ * Insert the type's description here.
+ * Creation date: (7/24/2003 11:32:52 AM)
+ * @author: 
  */
-public class BaseLine extends com.cannontech.database.db.DBPersistent 
+public class Baseline extends com.cannontech.database.db.DBPersistent 
 {
-	private Integer baselineID = null;
-	private String baselineName = null;
-	private Integer daysUsed = null;
-	private Integer percentWindow = null;
-	private Integer calcDays = null;
-	private String excludedWeekDays = null;
-	private Integer holidaysUsed = null;
+	private Integer baselineID;
+	private String baselineName;
+	private Integer percentWindow;
+	private Integer daysUsed;
+	private Integer calcDays;
+	private String excludedWeekdays;
+	private Integer holidaysUsed;
 
-	public static final String[] SETTER_COLUMNS = 
+	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"BaselineName", "DaysUsed", "PercentWindow", "CalcDays", 
-		"ExcludedWeekDays" , "HolidaysUsed"
+		"BASELINEID", "BASELINENAME", "DAYSUSED", 
+		"PERCENTWINDOW", "CALCDAYS", "EXCLUDEDWEEKDAYS", "HOLIDAYSUSED" 
 	};
-	
-	public static final String[] CONSTRAINT_COLUMNS = { "BaselineID" };
-	
-	public static final String TABLE_NAME = "BaseLine";
+
+	public static final String CONSTRAINT_COLUMNS[] = { "baselineID" };
+
+	public static final String TABLE_NAME = "Baseline";
+
 /**
- * BaseLine constructor comment.
+ * Baseline constructor comment.
  */
-public BaseLine() {
+public Baseline() {
 	super();
 }
 /**
- * @exception java.sql.SQLException The exception description.
+ * Baseline constructor comment.
  */
-public void add() throws java.sql.SQLException 
+public Baseline(Integer baseID, String name, Integer day, Integer pWindow, Integer cDay, String wDays, Integer holidays) {
+	super();
+	baselineID = baseID;
+	baselineName = name;
+	percentWindow = pWindow;
+	daysUsed = day;
+	calcDays = cDay;
+	excludedWeekdays = wDays;
+	holidaysUsed = holidays;
+	
+}
+
+
+public void add() throws java.sql.SQLException
 {
-	Object[] addValues = 
+	Object addValues[] = 
 	{ 
-		getBaselineID(),
-		getBaselineName(),
-		getDaysUsed(),
-		getPercentWindow(),
-		getCalcDays(), getExcludedWeekDays(),
+		getBaselineID(), getBaselineName(),
+		getDaysUsed(), getPercentWindow(), 
+		getCalcDays(), getExcludedWeekdays(), 
 		getHolidaysUsed()
 	};
 
-	//if any of the values are null, just delete this obj from the DB
-	if( !isValidValues(addValues) )
-		return;
-	
 	add( TABLE_NAME, addValues );
 }
-/**
- */
-public void delete() throws java.sql.SQLException 
-{
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getBaselineID() );
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getCalcDays() {
-	return calcDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getBaselineID() {
-	return baselineID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @return java.lang.String
- */
-public java.lang.String getBaselineName() {
-	return baselineName;
-}
 
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 4:12:59 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getDaysUsed() {
-	return daysUsed;
+
+public void delete() throws java.sql.SQLException
+{
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getBaselineID());
 }
 /**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @return java.lang.String
- */
-public java.lang.String getExcludedWeekDays() {
-	return excludedWeekDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getHolidaysUsed() {
-	return holidaysUsed;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getPercentWindow() {
-	return percentWindow;
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/27/2001 10:30:24 AM)
+ * This method was created by Cannon Technologies Inc.
  * @return boolean
+ * @param deviceID java.lang.Integer
  */
-private boolean isValidValues( Object[] values ) 
+public static boolean deleteAllBaselines(Integer blineID, java.sql.Connection conn)
 {
-	if( values == null )
+	com.cannontech.database.SqlStatement stmt = null;
+
+	if( conn == null )
+		throw new IllegalArgumentException("Database connection should not be (null)");
+
+	try
+	{
+		java.sql.Statement stat = conn.createStatement();
+
+		System.out.println("DELETE FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= " + blineID + " AND WHERE NOT " + SETTER_COLUMNS[1] + "= Default Baseline");
+		stat.execute("DELETE FROM " + TABLE_NAME + " WHERE " + CONSTRAINT_COLUMNS[0] + "= " + blineID + " AND WHERE NOT " + SETTER_COLUMNS[1] + "= Default Baseline");
+		
+		if (stat != null)
+			stat.close();
+	}
+	catch (Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
-
-	for( int i = 0; i < values.length; i++ )
-		if( values[i] == null )
-			return false;
-
+	}
 
 	return true;
 }
 /**
+ * Insert the method's description here.
+ * Creation date: (7/24/2003 1:52:15 PM)
+ * @param baselineID java.lang.Integer
+ * @param dbAlias java.lang.String
  */
-public void retrieve() throws java.sql.SQLException 
+public static final java.util.Vector getAllBaselines(Integer baseID, java.sql.Connection conn)
 {
-	Object[] constraintValues =  { getBaselineID() };
+	java.util.Vector returnVector = new java.util.Vector(5);
+	Integer baselineID = null;
+	String 	baselineName = null;
+	Integer percentWindow = null;
+	Integer daysUsed = null;
+	Integer calcDays = null;
+	String excludedWeekdays = null;
+	Integer holidaysUsed = null;
 
-	Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
-
-	if( results.length == SETTER_COLUMNS.length )
-	{
-		setBaselineName( (String) results[0] );
-		setDaysUsed( (Integer) results[1] );
-		setPercentWindow( (Integer) results[2] );
-		setCalcDays( (Integer) results[3] );
-		setExcludedWeekDays( (String) results[4] );
-		setHolidaysUsed( (Integer)results[5] );
-	}
-	//do not throw the ERROR here if we dont get back any columns!!!!
-
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @param newCalcDays java.lang.Integer
- */
-public void setCalcDays(java.lang.Integer newCalcDays) {
-	calcDays = newCalcDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @param newBaselineID java.lang.Integer
- */
-public void setBaselineID(java.lang.Integer newBaselineID) {
-	baselineID = newBaselineID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @param newBaselineName java.lang.String
- */
-public void setBaselineName(java.lang.String newBaselineName) {
-	baselineName = newBaselineName;
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 4:12:59 PM)
- * @param newDaysUsed java.lang.Integer
- */
-public void setDaysUsed(java.lang.Integer newDaysUsed) {
-	daysUsed = newDaysUsed;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @param newExcludedWeekDays java.lang.String
- */
-public void setExcludedWeekDays(java.lang.String newExcludedWeekDays) {
-	excludedWeekDays = newExcludedWeekDays;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @param newHolidaysUsed java.lang.Integer
- */
-public void setHolidaysUsed(java.lang.Integer newHolidaysUsed) {
-	holidaysUsed = newHolidaysUsed;
-}
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 1:02:50 PM)
- * @param newPercentWindow java.lang.Integer
- */
-public void setPercentWindow(java.lang.Integer newPercentWindow) {
-	percentWindow = newPercentWindow;
-}
-/**
- * @exception java.sql.SQLException The exception description.
- */
-public void update() throws java.sql.SQLException 
-{
-	Object[] setValues = { getBaselineName(), getDaysUsed(),
-			getPercentWindow(), getCalcDays(), 
-			getExcludedWeekDays(), getHolidaysUsed()	};
-
-	if( !isValidValues(setValues) )
-	{
-		//if any of the values are null, just delete this obj from the DB
-		delete();
-		return;
-	}
-
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
 	
-	Object[] constraintValues =  { getBaselineID() };
+	String sql = "SELECT " + SETTER_COLUMNS[1] +"," 
+		+ SETTER_COLUMNS[2] + "," 
+		+ SETTER_COLUMNS[3] + "," 
+		+ SETTER_COLUMNS[4] + ","
+		+ SETTER_COLUMNS[5] + ","
+		+ SETTER_COLUMNS[6] +
+		" FROM " + TABLE_NAME +
+		" WHERE " + CONSTRAINT_COLUMNS[0] + 
+		"=? ORDER BY " + SETTER_COLUMNS[0];
 
-	Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+	try
+	{		
+		if( conn == null )
+		{
+			throw new IllegalStateException("Database connection should not be (null).");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setInt( 1, baseID.intValue() );
+			
+			rset = pstmt.executeQuery();
+	
+			while( rset.next() )
+			{
+				baselineID = baseID;
+				baselineName = rset.getString(SETTER_COLUMNS[1]);
+				percentWindow = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
+				daysUsed = new Integer(rset.getInt(SETTER_COLUMNS[3]));
+				calcDays = new Integer( rset.getInt(SETTER_COLUMNS[4]) );
+				excludedWeekdays = rset.getString(SETTER_COLUMNS[5]);
+				holidaysUsed = new Integer( rset.getInt(SETTER_COLUMNS[6]));				
+				
+				returnVector.addElement( new Baseline(
+						baselineID, 
+						baselineName, 
+						percentWindow, 
+						daysUsed, 
+						calcDays, excludedWeekdays, holidaysUsed) );				
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
 
-	if( results.length > 0 )
-		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+
+	return returnVector;
+}
+
+public static synchronized Integer getNextBaselineID( java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+	
+		
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try 
+		{		
+			stmt = conn.createStatement();
+			 rset = stmt.executeQuery( "SELECT Max(BaselineID)+1 FROM " + TABLE_NAME );	
+				
+			 //get the first returned result
+			 rset.next();
+			return new Integer( rset.getInt(1) );
+		}
+		catch (java.sql.SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				if ( stmt != null) stmt.close();
+			}
+			catch (java.sql.SQLException e2) 
+			{
+				e2.printStackTrace();
+			}
+		}
+		
+		//strange, should not get here
+		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ID);
+	}
+
+public java.lang.Integer getDaysUsed() {
+	return daysUsed;
+}
+
+public java.lang.Integer getPercentWindow() {
+	return percentWindow;
+}
+
+public java.lang.String getBaselineName() {
+	return baselineName;
+}
+
+public java.lang.Integer getBaselineID() {
+	return baselineID;
+}
+
+public java.lang.Integer getCalcDays() {
+	return calcDays;
+}
+
+public String getExcludedWeekdays() {
+	return excludedWeekdays;
+}
+
+public java.lang.Integer getHolidaysUsed() {
+	return holidaysUsed;
+}
+
+public void retrieve() 
+{
+	Integer constraintValues[] = { getBaselineID() };	
+	
+	try
+	{
+		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+	
+		if( results.length == SETTER_COLUMNS.length )
+		{
+			setBaselineName( (String) results[1] );
+			setDaysUsed( (Integer) results[2] );
+			setPercentWindow( (Integer) results[3] );
+			setCalcDays( (Integer) results[4] );
+			setExcludedWeekdays( (String) results[5] );
+			setHolidaysUsed( (Integer) results[6] );
+		}
 	else
-		add();
+		throw new Error(getClass() + " - Incorrect Number of results retrieved");
+	}
+	catch (Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+}
 
+public void setDaysUsed(java.lang.Integer newdaysUsed) {
+	daysUsed = newdaysUsed;
+}
+
+public void setPercentWindow(java.lang.Integer newpercentWindow) {
+	percentWindow = newpercentWindow;
+}
+
+public void setBaselineName(java.lang.String newbaselineName) {
+	baselineName = newbaselineName;
+}
+
+public void setBaselineID(java.lang.Integer newbaselineID) {
+	baselineID = newbaselineID;
+}
+
+public void setCalcDays(java.lang.Integer newcalcDays) {
+	calcDays = newcalcDays;
+}
+
+public void setExcludedWeekdays(java.lang.String newExcludedWeekdays) {
+	excludedWeekdays = newExcludedWeekdays;
+}
+
+public void setHolidaysUsed(java.lang.Integer newUsed) {
+	holidaysUsed = newUsed;
+}
+
+public void update() 
+{
+	Object setValues[] =
+	{ 
+		getBaselineID(),
+		getBaselineName(), getDaysUsed(),
+		getPercentWindow(), getCalcDays(),
+		getExcludedWeekdays(), getHolidaysUsed()
+	};
+	
+	Object constraintValues[] = { getBaselineID() };
+	
+	try
+	{
+		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+	}
+	catch (Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
 }
 }

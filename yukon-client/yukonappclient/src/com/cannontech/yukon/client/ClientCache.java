@@ -283,6 +283,24 @@ public class ClientCache implements IDatabaseCache
       }
          
    }
+   
+   /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   public synchronized java.util.List getAllBaselines()
+   {
+	  try
+	  {
+		 return getCache().getAllBaselines();
+	  }
+	  catch( java.rmi.RemoteException e )
+	  {
+		 com.cannontech.clientutils.CTILogger.info( e );
+		 return new java.util.ArrayList();
+	  }
+         
+   }
 
    /**
     * @ejb:interface-method
@@ -836,6 +854,17 @@ public class ClientCache implements IDatabaseCache
       }
    }
 
+   public synchronized void releaseAllBaselines()
+   {
+	  try
+	  {
+		 getCache().releaseAllBaselines();
+	  }
+	  catch( java.rmi.RemoteException e )
+	  {
+		 com.cannontech.clientutils.CTILogger.info( e );
+	  }
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 

@@ -51,6 +51,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allContacts = null;
 	private ArrayList allGraphDefinitions = null;
 	private ArrayList allHolidaySchedules = null;
+	private ArrayList allBaselines = null;
 	private ArrayList allDeviceMeterGroups = null;
 	private ArrayList allPointsUnits = null;
 	private ArrayList allPointLimits = null;
@@ -423,6 +424,24 @@ public synchronized java.util.List getAllHolidaySchedules()
 		HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
 		holidayScheduleLoader.run();
 		return allHolidaySchedules;
+	}
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ */
+public synchronized java.util.List getAllBaselines()
+{
+
+	if (allBaselines != null)
+		return allBaselines;
+	else
+	{
+		allBaselines = new java.util.ArrayList();
+		BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
+		baselineLoader.run();
+		return allBaselines;
 	}
 }
 /**
@@ -1361,6 +1380,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleHolidayScheduleChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_BASELINE_DB )
+	{
+		retLBase = handleBaselineChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
 	{
 		retLBase = handleCICustomerChange( dbType, id );
@@ -1578,6 +1601,63 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 				break;
 		default:
 				releaseAllHolidaySchedules();
+				break;
+	}
+
+	return lBase;
+}
+private synchronized LiteBase handleBaselineChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allBaselines == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allBaselines.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).getBaselineID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allBaselines.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteBaseline lh = new com.cannontech.database.data.lite.LiteBaseline(id);
+					lh.retrieve(databaseAlias);
+					allBaselines.add(lh);
+					lBase = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allBaselines.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).getBaselineID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allBaselines.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allBaselines.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteBaseline)allBaselines.get(i)).getBaselineID() == id )
+					{
+						lBase = (LiteBase)allBaselines.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllBaselines();
 				break;
 	}
 
@@ -2107,6 +2187,7 @@ public synchronized void releaseAllCache()
 	allContacts = null;
 	allGraphDefinitions = null;
 	allHolidaySchedules = null;
+	allBaselines = null;
 	allDeviceMeterGroups = null;
 	allPointsUnits = null;
 	allPointLimits = null;
@@ -2180,6 +2261,11 @@ public synchronized void releaseAllGraphDefinitions()
 public synchronized void releaseAllHolidaySchedules()
 {
 	allHolidaySchedules = null;
+}
+
+public synchronized void releaseAllBaselines()
+{
+	allBaselines = null;
 }
 /**
  * Insert the method's description here.

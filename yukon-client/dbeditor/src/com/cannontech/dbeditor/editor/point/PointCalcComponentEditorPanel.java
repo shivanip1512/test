@@ -54,12 +54,14 @@ public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.uti
 	private javax.swing.JTextField ivjConstantTextField = null;
 	private javax.swing.JButton ivjEditComponentButton = null;
 	private javax.swing.JComboBox ivjOperationFunctionComboBox = null;
+	private javax.swing.JComboBox selectBaselineComboBox = null;
 	private javax.swing.JLabel ivjOperandLabel = null;
 	private javax.swing.JLabel ivjOperationFunctionLabel = null;
 	private javax.swing.JLabel ivjTypeLabel = null;
 	//private java.util.List points = null;
 	private javax.swing.JCheckBox ivjUsePointCheckBox = null;
 	private javax.swing.JPanel ivjJPanelOperations = null;
+	private java.util.Vector basilHolder = null;
 /**
  * Constructor
  */
@@ -88,6 +90,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC6(e);
 	if (e.getSource() == getAddComponentButton()) 
 		connEtoC5(e);
+	if (e.getSource() == getOperationFunctionComboBox())
+		functionComboBox_ActionPerformed(e);
 	// user code begin {2}
 	// user code end
 }
@@ -233,6 +237,32 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 		revalidate();
 		repaint();
 	}
+
+	return;
+}
+
+public void functionComboBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+
+	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+	{
+
+		for(int i = 0; i < getBasilHolder().size(); i++)
+		{
+			add(getSelectBaselineComboBox(), getBasilHolder().elementAt(i));
+		}
+		getSelectBaselineComboBox().setVisible(true);
+
+		revalidate();
+		repaint();
+	}
+	else
+	{
+		getSelectBaselineComboBox().setVisible(false);
+		
+		revalidate();
+		repaint();
+	}
+	
 
 	return;
 }
@@ -687,6 +717,14 @@ private javax.swing.JPanel getJPanelOperations() {
 			constraintsOperationFunctionComboBox.insets = new java.awt.Insets(5, 5, 5, 3);
 			getJPanelOperations().add(getOperationFunctionComboBox(), constraintsOperationFunctionComboBox);
 
+			java.awt.GridBagConstraints constraintsSelectBaselineComboBox = new java.awt.GridBagConstraints();
+			constraintsSelectBaselineComboBox.gridx = 3; constraintsOperationFunctionComboBox.gridy = 3;
+			constraintsSelectBaselineComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsSelectBaselineComboBox.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsSelectBaselineComboBox.weightx = 1.0;
+			constraintsSelectBaselineComboBox.insets = new java.awt.Insets(5, 5, 5, 3);
+			getJPanelOperations().add(getSelectBaselineComboBox(), constraintsSelectBaselineComboBox);
+			
 			java.awt.GridBagConstraints constraintsEditComponentButton = new java.awt.GridBagConstraints();
 			constraintsEditComponentButton.gridx = 2; constraintsEditComponentButton.gridy = 4;
 			constraintsEditComponentButton.anchor = java.awt.GridBagConstraints.WEST;
@@ -728,6 +766,7 @@ private javax.swing.JPanel getJPanelOperations() {
 			constraintsUsePointCheckBox.insets = new java.awt.Insets(7, 5, 8, 50);
 			getJPanelOperations().add(getUsePointCheckBox(), constraintsUsePointCheckBox);
 			// user code begin {1}
+			getSelectBaselineComboBox().setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -783,6 +822,33 @@ private javax.swing.JComboBox getOperationFunctionComboBox() {
 	}
 	return ivjOperationFunctionComboBox;
 }
+
+private javax.swing.JComboBox getSelectBaselineComboBox() {
+	if (selectBaselineComboBox == null) {
+		try {
+			selectBaselineComboBox = new javax.swing.JComboBox();
+			selectBaselineComboBox.setName("SelectBaselineComboBox");
+			selectBaselineComboBox.setFont(new java.awt.Font("dialog", 0, 14));
+			selectBaselineComboBox.setMinimumSize(new java.awt.Dimension(130, 28));
+			selectBaselineComboBox.setMaximumSize(new java.awt.Dimension(130, 28));
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return selectBaselineComboBox;
+}
+
+private java.util.Vector getBasilHolder()
+{
+	if( basilHolder == null)
+		basilHolder = new java.util.Vector();
+	return basilHolder;
+}
+
 /**
  * Return the OperationFunctionLabel property value.
  * @return javax.swing.JLabel
@@ -989,6 +1055,7 @@ private void initConnections() throws java.lang.Exception {
 	getEditComponentButton().addActionListener(this);
 	getRemoveComponentButton().addActionListener(this);
 	getAddComponentButton().addActionListener(this);
+	getOperationFunctionComboBox().addActionListener(this);
 	getComponentsTable().addMouseListener(this);
 }
 /**
@@ -1188,7 +1255,9 @@ public void setValue(Object val)
 
 		//fill in the calc components of this point
 		java.util.Vector calcComponents = calcPoint.getCalcComponentVector();
-		
+		/*com.cannontech.database.data.baseline.Baseline temp = new com.cannontech.database.data.baseline.Baseline();
+		basilHolder = temp.getAllBaselines(new Integer(0));
+		*/
 		String type = null;
 		Object operand = null;
 		LitePoint litePoint = null;

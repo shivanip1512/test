@@ -32,6 +32,7 @@ public interface IDatabaseCache
    //public java.util.List getAllGraphTaggedPoints();
 
    public java.util.List getAllHolidaySchedules();
+   public java.util.List getAllBaselines();
    public java.util.List getAllLMPrograms();
    public java.util.List getAllLoadManagement();
    //public java.util.List getAllNotificationGroups();
@@ -105,6 +106,7 @@ public interface IDatabaseCache
    public void releaseAllYukonImages();
    public void releaseAllGraphDefinitions();
    public void releaseAllHolidaySchedules();
+   public void releaseAllBaselines();
    public void releaseAllNotificationGroups();
    public void releaseAllContactNotifications();
    public void releaseAllPoints();

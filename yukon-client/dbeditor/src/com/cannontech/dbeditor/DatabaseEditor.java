@@ -125,7 +125,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.LOGIN_GROUPS),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.ALARM_STATES),
-			new Integer(ModelFactory.HOLIDAY_SCHEDULE)
+			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
+			new Integer(ModelFactory.BASELINE)
 		};
 
 	private Vector messageListeners = new Vector();
@@ -446,9 +447,6 @@ private JTreeEditorFrame createInternalEditorFrame()
 		}
 		
 	});
-
-	
-
 	
 	ImageIcon editorIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
 	frame.setFrameIcon(editorIcon);
@@ -594,6 +592,10 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.customer.CustomerWizardPanel());
 	}
+	else if (item == systemCreateMenu.baselineMenuItem)
+		{
+			showWizardPanel(new com.cannontech.dbeditor.wizard.baseline.BaselineWizardPanel());
+		}
 
 }
 /**
@@ -841,7 +843,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 	  else
 		 JOptionPane.showMessageDialog(
 			getParentFrame(),
-			"Can not currently change the type of this Object",
+			"Cannot currently change the type of this Object",
 			"ChangeType Error",
 			JOptionPane.INFORMATION_MESSAGE);
    }
@@ -877,7 +879,7 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 		else
 			JOptionPane.showMessageDialog(
 				getParentFrame(),
-				"Can not currently copy that type of Object", "Copy Error", 
+				"Cannot currently copy that type of Object", "Copy Error", 
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 	else
@@ -2007,8 +2009,7 @@ public static void main(String[] args) {
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );
 
-	
-	
+		
 		//Set the width and height 85% of max
 		java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();	
 		f.setSize( (int) (d.width * .85), (int)( d.height * .85) );

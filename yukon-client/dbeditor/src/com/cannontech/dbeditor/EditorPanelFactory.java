@@ -76,7 +76,11 @@ public final class EditorPanelFactory
 	  	com.cannontech.dbeditor.editor.route.RouteEditorPanel.class},
 
    	{com.cannontech.database.data.holiday.HolidaySchedule.class,
-	   com.cannontech.dbeditor.editor.holidayschedule.HolidayScheduleEditor.class}
+	   com.cannontech.dbeditor.editor.holidayschedule.HolidayScheduleEditor.class},
+	   
+	{com.cannontech.database.data.baseline.Baseline.class,
+		com.cannontech.dbeditor.editor.baseline.BaselineEditorPanel.class}
+	
 
    	//Remove the Schedule editor because of dependency issues
    	//{com.cannontech.message.macs.message.Schedule.class,

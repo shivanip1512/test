@@ -54,11 +54,6 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerMeterListEditorPanel();
 			objs[1] = "Meters";
 			break;
-			
-		case 5:
-			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerBaseLinePanel();
-			objs[1] = "Base Line";
-			break;
 	}
 		
 	return objs;
@@ -161,7 +156,7 @@ public void setValue(Object val)
 	java.util.Vector tabs = new java.util.Vector();
 	
 	DataInputPanel tempPanel;
-	final int PANEL_COUNT = 6;
+	final int PANEL_COUNT = 5;
 	
  	for( int i = 0; i < PANEL_COUNT; i++ )
  	{

@@ -34,6 +34,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_CUSTOMER_DB					= 12;
 	public static final int CHANGE_CUSTOMER_ACCOUNT_DB			= 13;
 	public static final int CHANGE_YUKON_IMAGE					= 14;
+	public static final int CHANGE_BASELINE_DB						= 14;
+
 
 	
 	public static final String CAT_POINT = "Point";
@@ -48,6 +50,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_YUKON_USER = "YukonUser";
 	public static final String CAT_CUSTOMER = "Customer";
 	public static final String CAT_YUKON_USER_GROUP = "YukonUserGroup";
+	public static final String CAT_BASELINE			= "BaseLine";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

@@ -177,6 +177,13 @@ public final class LiteComparators
 				thisVal = ((com.cannontech.database.data.lite.LiteHolidaySchedule)o1).getHolidayScheduleName();
 				anotherVal = ((com.cannontech.database.data.lite.LiteHolidaySchedule)o2).getHolidayScheduleName();
 			}
+			
+			else if(o1 instanceof com.cannontech.database.data.lite.LiteBaseline && o2 instanceof com.cannontech.database.data.lite.LiteBaseline)
+					{
+						thisVal = ((com.cannontech.database.data.lite.LiteBaseline)o1).getBaselineName();
+						anotherVal = ((com.cannontech.database.data.lite.LiteBaseline)o2).getBaselineName();
+					}
+					
 			else if(o1 instanceof LiteGraphDefinition && o2 instanceof LiteGraphDefinition)
 			{
 				thisVal = ((LiteGraphDefinition)o1).getName();

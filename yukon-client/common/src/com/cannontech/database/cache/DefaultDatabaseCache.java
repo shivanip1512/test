@@ -115,6 +115,15 @@ public class DefaultDatabaseCache implements IDatabaseCache
    }
 
    /**
+	* @ejb:interface-method
+	* tview-type="remote" 
+   **/
+   	public synchronized java.util.List getAllBaselines()
+	{
+		return getDBCache().getAllBaselines();
+	}
+
+   /**
     * @ejb:interface-method
     * tview-type="remote" 
    **/
@@ -369,7 +378,10 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
       getDBCache().releaseAllHolidaySchedules();
    }
-
+   public synchronized void releaseAllBaselines()
+   {
+	  getDBCache().releaseAllBaselines();
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 

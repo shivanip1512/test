@@ -101,7 +101,12 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				returnObject = new com.cannontech.database.data.holiday.HolidaySchedule();
 				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleID(new Integer(((LiteHolidaySchedule)liteObject).getHolidayScheduleID()) );
 				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleName( ((LiteHolidaySchedule)liteObject).getHolidayScheduleName() );
-				break;				
+				break;
+			case LiteTypes.BASELINE:
+				returnObject = new com.cannontech.database.data.baseline.Baseline();
+				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineID(new Integer(((LiteBaseline)liteObject).getBaselineID()) );
+				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineName( ((LiteBaseline)liteObject).getBaselineName() );
+				break;					
          case LiteTypes.STATE_IMAGE:
             returnObject = new com.cannontech.database.db.state.YukonImage();
             ((com.cannontech.database.db.state.YukonImage)returnObject).setImageID(new Integer(((LiteYukonImage)liteObject).getImageID()) );
@@ -187,6 +192,13 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteHolidaySchedule(
 			((com.cannontech.database.data.holiday.HolidaySchedule)val).getHolidayScheduleID().intValue(),
 			((com.cannontech.database.data.holiday.HolidaySchedule)val).getHolidayScheduleName() );
+			
+	}
+	else if( val instanceof com.cannontech.database.data.baseline.Baseline )
+	{
+		returnLite = new LiteBaseline(
+			((com.cannontech.database.data.baseline.Baseline)val).getBaselineID().intValue(),
+			((com.cannontech.database.data.baseline.Baseline)val).getBaselineName() );
 			
 	}
 	else if( val instanceof com.cannontech.database.data.graph.GraphDefinition )

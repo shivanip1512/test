@@ -5,6 +5,8 @@
 	<projects>
 		<project>billing</project>
 		<project>common</project>
+		<project>yukonappclient</project>
+		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
