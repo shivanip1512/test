@@ -18,8 +18,8 @@
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
-    <classpathentry kind="lib" path="/third-party/jcommon-0.6.4.jar"/>
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
+    <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

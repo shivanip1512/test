@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
+    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
-    <classpathentry kind="lib" path="/third-party/jcommon-0.6.4.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
@@ -18,7 +18,8 @@
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="src" path="/resource"/>
-    <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
+    <classpathentry kind="src" path="/yukonappserver"/>
+    <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
