@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/06/10 21:06:31 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/06/27 20:54:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1576,7 +1576,7 @@ LONG CtiDeviceSingle::getScanRate(int rate) const
 {
     LockGuard guard(monitor());
 
-    if(_scanRateTbl[rate] != NULL)
+    if(rate >= 0 && rate < ScanRateInvalid && _scanRateTbl[rate] != NULL)
     {
         bool bScanIsScheduled;
         if(isAlternateRateActive(bScanIsScheduled, RWTime(), rate))
@@ -2161,7 +2161,12 @@ bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
         }
         else if(cmd.contains(" accumulator"))
         {
-            scanratetype = ScanRateIntegrity;
+            scanratetype = ScanRateAccum;
+        }
+        else if(cmd.contains(" loadprofile"))
+        {
+            //  not applicable
+            scanratetype = ScanRateInvalid;
         }
         else
         {
@@ -2172,7 +2177,7 @@ bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
             }
         }
 
-        if(getScanRate(scanratetype) > 15) // 3600)
+        if(getScanRate(scanratetype) > 3600)
         {
             bret = true;
         }
