@@ -1,9 +1,12 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
+<%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
+<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
@@ -162,7 +165,7 @@ function removeAllMembers(form) {
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
-			
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return confirmDeleteAccount(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
@@ -186,6 +189,7 @@ function removeAllMembers(form) {
                 </tr>
               </table>
             </form>
+</cti:checkProperty>
             <br>
             <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
               <tr> 
@@ -200,8 +204,8 @@ function removeAllMembers(form) {
                           <input type="hidden" name="action" value="init">
                           <b><font color="#0000FF">Energy Company:</font></b> 
                           <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
-                            <tr>
-                              <td>
+                            <tr> 
+                              <td> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
                                     <td width="5%">&nbsp;</td>
@@ -214,7 +218,57 @@ function removeAllMembers(form) {
                               </td>
                             </tr>
                           </table>
-                          </form>
+                        </form>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><b><font color="#0000FF">Direct Programs:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                          <tr> 
+                            <td> 
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr> 
+                                  <td class="TableCell" width="5%">&nbsp;</td>
+                                  <td class="TableCell" width="70%">
+<%
+    LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
+    LoadcontrolCache lcCache = cs.getCache();
+
+    // list to put this customers programs in, contains LMProgramDirect objects
+    ArrayList ourPrograms = new ArrayList();
+
+    long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
+    java.util.Arrays.sort(programIDs);
+    LMProgramDirect[] allPrograms = lcCache.getDirectPrograms(); 
+
+    // Match our program ids with the actual programs in the cache so we know what to display
+    for( int i = 0; i < allPrograms.length; i++ )
+    {
+        long id = allPrograms[i].getYukonID().longValue();
+        if( java.util.Arrays.binarySearch(programIDs, id ) >= 0 )
+        {
+            // found one
+            ourPrograms.add(allPrograms[i]);
+        }
+    }
+	
+	for (int i = 0; i < ourPrograms.size(); i++) {
+		LMProgramDirect program = (LMProgramDirect) ourPrograms.get(i);
+%>
+								    <%= program.getYukonName() %><br>
+<%
+	}
+%>
+								  </td>
+                                  <td width="25%" class="TableCell"> 
+                                    <input type="button" name="Edit" value="Edit" onClick="location.href='DirectPrograms.jsp'">
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        <br>
                       </td>
                     </tr>
                     <tr> 
@@ -233,15 +287,23 @@ function removeAllMembers(form) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 %>
                                   <tr> 
-                                    <td width="15%" class="TableCell" align="center">
-<%		if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
-									  <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>">
-<%		} %>
-									</td>
+                                    <td width="15%" class="TableCell" align="center"> 
+<%
+		if (!category.getStarsWebConfig().getLogoLocation().equals("")) {
+%>
+                                      <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"> 
+<%
+		}
+%>
+                                    </td>
                                     <td width="60%" class="TableCell" valign="top"><%= category.getDescription() %> 
-<%		if (!category.getStarsWebConfig().getAlternateDisplayName().equals( category.getDescription() )) { %>
+<%
+		if (!category.getStarsWebConfig().getAlternateDisplayName().equals( category.getDescription() )) {
+%>
                                       (<%= category.getStarsWebConfig().getAlternateDisplayName() %>) 
-<%		} %>
+<%
+		}
+%>
                                       <table width="100%" border="0" cellspacing="3" cellpadding="0">
 <%
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
@@ -264,7 +326,9 @@ function removeAllMembers(form) {
                                           <td width="458" class="TableCell"><%= program.getProgramName() %> 
                                             <%= progAlias %></td>
                                         </tr>
-                                        <%		} %>
+<%
+		}
+%>
                                       </table>
                                     </td>
                                     <td width="10%" class="TableCell"> 
@@ -274,7 +338,9 @@ function removeAllMembers(form) {
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.AppCatID.value=<%= category.getApplianceCategoryID() %>; return confirmDeleteAppCat();">
                                     </td>
                                   </tr>
-                                  <%	} %>
+<%
+	}
+%>
                                 </table>
                               </td>
                             </tr>
@@ -322,7 +388,9 @@ function removeAllMembers(form) {
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
                                     </td>
                                   </tr>
-<%		} %>
+<%
+		}
+%>
                                 </table>
                               </td>
                             </tr>
@@ -348,43 +416,55 @@ function removeAllMembers(form) {
 	{
 %>
                     <tr> 
-                      <td width="75%"> 
-                        <form name="form5" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
-                          <b><font color="#0000FF">Customer FAQs:</font></b> 
-                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
-                            <tr> 
-                              <td> 
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                  <tr> 
+                      <td> <b><font color="#0000FF">Customer FAQs:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                          <tr> 
+                            <td> 
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr> 
+                                  <td class="TableCell" width="5%">&nbsp;</td>
 <%
 		String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
 		boolean customizedFAQ = ServerUtils.forceNotNone(faqLink).length() > 0;
 %>
-                                    <td class="TableCell" width="15%">
-                                      <% if (customizedFAQ) { %>FAQ Link:<% } else { %>FAQ Subjects:<% } %>
-									</td>
-                                    <td class="TableCell" width="60%">
-<%		if (customizedFAQ) { %>
-                                      <%= faqLink %>
-<%		} else { %>
-									  <ul>
-<%			for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
+                                  <td class="TableCell" width="15%"> 
+<%
+		if (customizedFAQ) {
+%>
+                                    FAQ Link: 
+<%
+		} else {
+%>
+                                    FAQ Subjects: 
+<%		}
+%>
+                                  </td>
+                                  <td class="TableCell" width="55%"> 
+<%
+		if (customizedFAQ) {
+%>
+                                    <%= faqLink %> 
+<%
+		}
+		else {
+			for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
 				StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
-                                        <li><%= faqGroup.getSubject() %></li>
-<%			} %>
-                                      </ul>
-<%		} %>
-                                    </td>
-                                    <td width="25%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onclick="location.href='CustomerFAQ.jsp'">
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </form>
+                                    <%= faqGroup.getSubject() %><br>
+<%
+			}
+		}
+%>
+                                  </td>
+                                  <td width="25%" class="TableCell"> 
+                                    <input type="button" name="Edit6" value="Edit" onClick="location.href='CustomerFAQ.jsp'">
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        <br>
                       </td>
                     </tr>
 <%
@@ -395,26 +475,27 @@ function removeAllMembers(form) {
 	{
 %>
                     <tr> 
-                      <td> <b><font color="#0000FF">Interview Questions:</font></b> 
+                      <td><b><font color="#0000FF">Interview Questions:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
                           <tr> 
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <tr> 
+                                  <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="15%">Exit Interview:</td>
-                                  <td class="TableCell" width="60%"> 
-                                    <ul>
+                                  <td class="TableCell" width="55%"> 
 <%
 		for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {
 			StarsExitInterviewQuestion question = exitQuestions.getStarsExitInterviewQuestion(i);
 			String qStr = (question.getQuestion().length() <= 50) ? question.getQuestion() : question.getQuestion().substring(0,47).concat("...");
 %>
-                                      <li><%= qStr %></li>
-<%		} %>
-                                    </ul>
+                                    <%= qStr %><br>
+<%
+		}
+%>
                                   </td>
                                   <td width="25%" class="TableCell"> 
-                                    <input type="button" name="Edit" value="Edit" onclick="location.href='InterviewQuestion.jsp?Type=Exit'">
+                                    <input type="button" name="Edit7" value="Edit" onClick="location.href='InterviewQuestion.jsp?Type=Exit'">
                                   </td>
                                 </tr>
                               </table>
@@ -431,11 +512,11 @@ function removeAllMembers(form) {
 		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
 	{
 %>
-                    <tr>
+                    <tr> 
                       <td><b><font color="#0000FF">Default Thermostat Schedule:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
-                          <tr>
-                            <td>
+                          <tr> 
+                            <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
 <%
 		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
@@ -481,7 +562,7 @@ function removeAllMembers(form) {
                           <tr> 
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <%
+<%
 	ArrayList userLists = liteEnergyCompany.getAllSelectionLists(user);
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
@@ -493,18 +574,21 @@ function removeAllMembers(form) {
                                 <tr> 
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="30%"><%= list.getListName() %></td>
-                                  <td class="TableCell" width="40%">
+                                  <td class="TableCell" width="40%"> 
                                     <hr width="90%" align="left">
                                   </td>
                                   <td class="TableCell" width="25%"> 
                                     <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
                                   </td>
                                 </tr>
-                                <%	} %>
+<%
+	}
+%>
                               </table>
                             </td>
                           </tr>
                         </table>
+                        <br>
                       </td>
                     </tr>
                     <tr> 
@@ -548,11 +632,11 @@ function removeAllMembers(form) {
                                     <td width="15%" class="TableCell">&nbsp;</td>
                                   </tr>
                                   <tr> 
-                                    <td class="TableCell" colspan="5">
+                                    <td class="TableCell" colspan="5"> 
                                       <hr>
                                     </td>
                                   </tr>
-                                  <%
+<%
 	ArrayList operLoginIDs = liteEnergyCompany.getOperatorLoginIDs();
 	for (int i = 0; i < operLoginIDs.size(); i++) {
 		int userID = ((Integer) operLoginIDs.get(i)).intValue();
@@ -579,7 +663,7 @@ function removeAllMembers(form) {
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.UserID.value=<%= liteUser.getUserID() %>; return confirmDeleteOperatorLogin();">
                                     </td>
                                   </tr>
-                                  <%
+<%
 	}
 %>
                                 </table>
@@ -599,9 +683,9 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
-<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>">
-					<tr>
-					  <td>
+                    <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
+                    <tr> 
+                      <td> 
                         <form name="form2" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
                           <b><font color="#0000FF">Member Energy Companies:</font></b> 
                           <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -698,8 +782,8 @@ function removeAllMembers(form) {
                           </table>
                         </form>
                       </td>
-					</tr>
-</cti:checkProperty>
+                    </tr>
+                    </cti:checkProperty> 
                   </table>
                 </td>
               </tr>

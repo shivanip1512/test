@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <%
 	String action = request.getParameter("action");
@@ -20,8 +21,9 @@
 		ecTemp.setCompanyName( request.getParameter("CompanyName") );
 		ecTemp.setMainPhoneNumber( request.getParameter("PhoneNo") );
 		ecTemp.setMainFaxNumber( request.getParameter("FaxNo") );
-		ecTemp.setEmail( request.getParameter("Email") + "," + request.getParameter("CustomizedEmail") );
+		ecTemp.setEmail( request.getParameter("Email") );
 		ecTemp.setTimeZone( request.getParameter("TimeZone") );
+		ecTemp.setRouteID( Integer.parseInt(request.getParameter("Route")) );
 		
 		response.sendRedirect("Address.jsp?referer=EnergyCompany.jsp");
 		return;
@@ -82,42 +84,42 @@ function editAddress(form) {
                 <tr> 
                   <td height="67"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
-					  <input type="hidden" name="action" value="UpdateEnergyCompany">
+                      <input type="hidden" name="action" value="UpdateEnergyCompany">
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Email:</td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <input type="text" name="Email" value="<%= ec.getEmail() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell"> Company 
                           Address:</td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                            <tr>
+                            <tr> 
                               <td width="75%"><%= address %></td>
-                              <td width="25%">
+                              <td width="25%"> 
                                 <input type="button" name="EditAddress" value="Edit" onclick="editAddress(this.form)">
                               </td>
                             </tr>
@@ -126,8 +128,38 @@ function editAddress(form) {
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Time Zone:</td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="25%" align="right" class="TableCell">Default 
+                          Route:</td>
+                        <td width="75%" class="TableCell"> 
+                          <select name="Route">
+						    <option value="-1">(none)</option>
+<%
+	TreeMap routeMap = new TreeMap();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	
+	synchronized (cache) {
+		List allRoutes = cache.getAllRoutes();
+		for (int i = 0; i < allRoutes.size(); i++) {
+			LiteYukonPAObject litePao = (LiteYukonPAObject) allRoutes.get(i);
+			routeMap.put(litePao.getPaoName(), litePao);
+		}
+	}
+	
+	Iterator it = routeMap.values().iterator();
+	while (it.hasNext()) {
+		LiteYukonPAObject route = (LiteYukonPAObject) it.next();
+		String selected = (route.getYukonID() == ec.getRouteID())? "selected" : "";
+%>
+						    <option value="<%= route.getYukonID() %>" <%= selected %>><%= route.getPaoName() %></option>
+<%
+	}
+%>
+						  </select>
                         </td>
                       </tr>
                     </table>

@@ -416,7 +416,7 @@ function prepareSubmit(form) {
                               <td> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
-                                    <td width="175" valign="top"> Available Programs<br>
+                                    <td width="175" valign="top"> Available Programs:<br>
                                       <select id="ProgramsAvailable" name="ProgramsAvailable" size="5" style="width:165">
 <%
 	for (int i = 0; i < availPrograms.size(); i++) {
@@ -427,9 +427,9 @@ function prepareSubmit(form) {
                                       </select>
                                     </td>
                                     <td width="50" align="center"> 
-                                      <input type="button" id="RemoveButton" name="Remove" value=">>" onClick="removeProgram(this.form)">
+                                      <input type="button" id="AddButton" name="Remove" value=">>" onClick="addProgram(this.form)">
                                       <br>
-                                      <input type="button" id="AddButton" name="Add" value="<<" onclick="addProgram(this.form)">
+                                      <input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeProgram(this.form)">
                                     </td>
                                     <td width="175" valign="top"> Assigned Programs:<br>
                                       <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165" onClick="showProgramConfig(this.form)">
@@ -584,7 +584,7 @@ function prepareSubmit(form) {
                     <input type="submit" name="Submit" value="Submit">
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="button" name="Reset" value="Reset" onclick="location.reload()">
                   </td>
                   <td width="75" align="right"> 
                     <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">
