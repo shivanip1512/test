@@ -53,6 +53,7 @@ a.Link4:hover {color: #666699}
 .ErrorMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FF0000 }
 .OkMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #339900 }
 .ConfirmMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0000FF }
+.redMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #CC0000 }
 
 .bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #666699 outset; visibility: hidden; cursor:default; width:120 px;}
 .optmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:120 px;}
