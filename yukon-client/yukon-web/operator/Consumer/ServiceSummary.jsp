@@ -78,14 +78,22 @@ function checkOrderNo(form) {
               <%
 	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
 		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
+		
+		String companyName = "";
+		for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
+			if (companies.getStarsServiceCompany(j).getCompanyID() == order.getServiceCompany().getEntryID()) {
+				companyName = companies.getStarsServiceCompany(j).getCompanyName();
+				break;
+			}
+		}
 %>
               <tr valign="middle"> 
                 <td width="13%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= order.getOrderNumber() %></a></td>
                 <td width="13%" class="TableCell"><%= ServletUtils.formatDate(order.getDateReported(), dateTimeFormat) %></td>
-                <td width="10%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getServiceType().getContent()) %></td>
+                <td width="10%" class="TableCell"><%= ServletUtils.forceNotEmpty(ServletUtils.getEntryText(order.getServiceType().getEntryID(), selectionListTable)) %></td>
                 <td width="10%" class="TableCell"><%= order.getCurrentState().getContent() %></td>
                 <td width="8%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getOrderedBy()) %></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(order.getServiceCompany().getContent()) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(companyName) %></td>
                 <td width="34%"> 
                   <textarea name="Description" rows="3" wrap="soft" cols="35" class="TableCell" readonly><%= order.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                 </td>

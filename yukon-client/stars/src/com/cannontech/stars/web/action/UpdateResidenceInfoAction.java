@@ -1,15 +1,13 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteCustomerResidence;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -54,116 +52,71 @@ public class UpdateResidenceInfoAction implements ActionBase {
         	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	if (user == null) return null;
         	
-        	Hashtable selectionLists = (Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
         	StarsUpdateResidenceInformation updateResInfo = new StarsUpdateResidenceInformation();
         	
         	updateResInfo.setResidenceType(
         		(ResidenceType) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE,
-        				Integer.parseInt(req.getParameter("ResidenceType"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("ResidenceType")) ),
         			ResidenceType.class
         		)
         	);
         	updateResInfo.setConstructionMaterial(
         		(ConstructionMaterial) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL,
-        				Integer.parseInt(req.getParameter("ConstMaterial"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("ConstMaterial")) ),
         			ConstructionMaterial.class
         		)
         	);
         	updateResInfo.setDecadeBuilt(
         		(DecadeBuilt) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT,
-        				Integer.parseInt(req.getParameter("DecadeBuilt"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("DecadeBuilt")) ),
         			DecadeBuilt.class
         		)
         	);
         	updateResInfo.setSquareFeet(
         		(SquareFeet) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET,
-        				Integer.parseInt(req.getParameter("SquareFeet"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("SquareFeet")) ),
         			SquareFeet.class
         		)
         	);
         	updateResInfo.setInsulationDepth(
         		(InsulationDepth) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH,
-        				Integer.parseInt(req.getParameter("InsulationDepth"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("InsulationDepth")) ),
         			InsulationDepth.class
         		)
         	);
         	updateResInfo.setGeneralCondition(
         		(GeneralCondition) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION,
-        				Integer.parseInt(req.getParameter("GeneralCondition"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GeneralCondition")) ),
         			GeneralCondition.class
         		)
         	);
         	updateResInfo.setMainCoolingSystem(
         		(MainCoolingSystem) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM,
-        				Integer.parseInt(req.getParameter("CoolingSystem"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("CoolingSystem")) ),
         			MainCoolingSystem.class
         		)
         	);
         	updateResInfo.setMainHeatingSystem(
         		(MainHeatingSystem) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM,
-        				Integer.parseInt(req.getParameter("HeatingSystem"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HeatingSystem")) ),
         			MainHeatingSystem.class
         		)
         	);
         	updateResInfo.setNumberOfOccupants(
         		(NumberOfOccupants) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS,
-        				Integer.parseInt(req.getParameter("OccupantNum"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("OccupantNum")) ),
         			NumberOfOccupants.class
         		)
         	);
         	updateResInfo.setOwnershipType(
         		(OwnershipType) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE,
-        				Integer.parseInt(req.getParameter("OwnershipType"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("OwnershipType")) ),
         			OwnershipType.class
         		)
         	);
         	updateResInfo.setMainFuelType(
         		(MainFuelType) StarsFactory.newStarsCustListEntry(
-        			ServletUtils.getStarsCustListEntryByID(
-        				selectionLists,
-        				YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE,
-        				Integer.parseInt(req.getParameter("FuelType"))
-        			),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("FuelType")) ),
         			MainFuelType.class
         		)
         	);

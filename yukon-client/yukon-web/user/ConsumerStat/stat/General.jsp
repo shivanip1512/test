@@ -83,7 +83,7 @@
 					StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(k);
 					if (enrProg.getProgramID() == program.getProgramID()) {
 						if (enrProg.getChanceOfControl() != null)
-							ctrlOdds = enrProg.getChanceOfControl().getContent();
+							ctrlOdds = ServletUtils.getEntryText(enrProg.getChanceOfControl().getEntryID(), selectionListTable);
 						break;
 					}
 				}

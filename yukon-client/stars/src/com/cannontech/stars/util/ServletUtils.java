@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
@@ -13,7 +15,6 @@ import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
-import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
@@ -97,7 +98,7 @@ public class ServletUtils {
     
 
 	public static String forceNotEmpty(String str) {
-		if (str == null || str.equals(""))
+		if (str == null || str.trim().equals(""))
 			return "&nbsp;";
 		return str;
 	}
@@ -490,27 +491,19 @@ public class ServletUtils {
     	
 		return sb.toString();
 	}
-
-	public static StarsCustListEntry getStarsCustListEntry(java.util.Hashtable selectionLists, String listName, int yukonDefID) {
-		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
-		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
-			if (entry.getYukonDefID() == yukonDefID)
-				return entry;
+	
+	public static String getEntryText(int entryID, Hashtable selectionLists) {
+		Iterator it = selectionLists.values().iterator();
+		while (it.hasNext()) {
+			StarsCustSelectionList list = (StarsCustSelectionList) it.next();
+			for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
+				StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
+				if (entry.getEntryID() == entryID)
+					return entry.getContent();
+			}
 		}
 		
-		return null;
-	}
-
-	public static StarsCustListEntry getStarsCustListEntryByID(java.util.Hashtable selectionLists, String listName, int entryID) {
-		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get( listName );
-		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
-			if (entry.getEntryID() == entryID)
-				return entry;
-		}
-		
-		return null;
+		return "(N/A)";
 	}
 	
 	public static boolean isWeekday(StarsThermoDaySettings day) {

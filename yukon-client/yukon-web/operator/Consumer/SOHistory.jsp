@@ -4,14 +4,10 @@
 	int orderNo = Integer.parseInt(request.getParameter("OrderNo"));
 	StarsServiceRequest order = serviceHist.getStarsServiceRequest(orderNo);
 	
-	int statusPending = ServletUtils.getStarsCustListEntry(
-			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
-	int statusScheduled = ServletUtils.getStarsCustListEntry(
-			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
-	int statusCompleted = ServletUtils.getStarsCustListEntry(
-			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
-	int statusCancelled = ServletUtils.getStarsCustListEntry(
-			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
+	int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
+	int statusScheduled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
+	int statusCompleted = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
+	int statusCancelled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
 %>
 <html>
 <head>

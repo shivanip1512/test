@@ -60,8 +60,7 @@
 		return;
 	}
 	
-	boolean hasMCT = ServletUtils.getStarsCustListEntry(selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null;
+	boolean hasMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null;
 %>
 <html>
 <head>

@@ -888,7 +888,7 @@ function deleteAppliance(form) {
                 </tr>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="75" class="TableCell"><%= hardware.getCategory() %></td>
-                  <td width="75" class="TableCell"><%= hardware.getDeviceType().getContent() %></td>
+                  <td width="75" class="TableCell"><%= ServletUtils.getEntryText(hardware.getDeviceType().getEntryID(), selectionListTable) %></td>
                   <td width="75" class="TableCell"><%= hardware.getLMHardware().getManufacturerSerialNumber() %></td>
                 </tr>
               </table>

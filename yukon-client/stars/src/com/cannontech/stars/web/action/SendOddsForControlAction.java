@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,6 +8,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -47,7 +47,6 @@ public class SendOddsForControlAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			Hashtable selectionLists = (Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
 					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
@@ -68,10 +67,7 @@ public class SendOddsForControlAction implements ActionBase {
 								StarsEnrLMProgram enrProg = new StarsEnrLMProgram();
 								enrProg.setProgramID( program.getProgramID() );
 								ChanceOfControl ctrlOdds = (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-										ServletUtils.getStarsCustListEntryByID(
-											selectionLists,
-											com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
-											Integer.parseInt(controlOdds[i])),
+										YukonListFuncs.getYukonListEntry( Integer.parseInt(controlOdds[i]) ),
 										ChanceOfControl.class );
 								enrProg.setChanceOfControl( ctrlOdds );
 			        			
