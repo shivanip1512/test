@@ -5,10 +5,7 @@ package com.cannontech.yc.gui;
  */
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.util.Observable;
 import java.util.Vector;
 
@@ -97,37 +94,33 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 	class WriteOutput implements java.lang.Runnable
 	{
-		private String output = null;
-		private java.awt.Color textColor = java.awt.Color.black;
+		private YC.OutputMessage message = null; 
 		private javax.swing.JTextPane textPane = null;
-		private boolean isUnderline = false;
-		public WriteOutput(javax.swing.JTextPane textPane, String out)
+		public WriteOutput(javax.swing.JTextPane textPane_, YC.OutputMessage message_)
 		{
-			output = out;
-			this.textPane = textPane;
+			super();
+			this.textPane = textPane_;
+			this.message = message_;
 		}
-			
-		public WriteOutput(javax.swing.JTextPane textPane, String out, java.awt.Color textColor)
+		private java.awt.Color getColor()
 		{
-			this(textPane, out, textColor, false);
-		}
-		public WriteOutput(javax.swing.JTextPane textPane, String out, java.awt.Color textColor, boolean isUnderline)
-		{
-			output = out;
-			this.textColor = textColor;
-			this.textPane = textPane;
-			this.isUnderline = isUnderline;
-		}
+			if( message.getStatus() > 0 )
+				return java.awt.Color.red;
+			else if (message.getStatus() == 0)
+				return java.awt.Color.blue;
+			else
+				return java.awt.Color.black;
+		}		
 		public void run()
 		{
 			try
 			{
 				javax.swing.text.Document doc = textPane.getDocument();
 				javax.swing.text.SimpleAttributeSet attset = new javax.swing.text.SimpleAttributeSet();
-				attset.addAttribute(javax.swing.text.StyleConstants.Foreground, textColor);
-				attset.addAttribute(javax.swing.text.StyleConstants.Underline, new Boolean(isUnderline));
+				attset.addAttribute(javax.swing.text.StyleConstants.Foreground, getColor());
+				attset.addAttribute(javax.swing.text.StyleConstants.Underline, new Boolean(message.isUnderline()));
 //				attset.addAttribute(javax.swing.text.StyleConstants.FontFamily, "rastor fonts");
-				doc.insertString(doc.getLength(), output, attset);
+				doc.insertString(doc.getLength(), message.getText(), attset);
 			}
 			catch (javax.swing.text.BadLocationException ble)
 			{
@@ -1482,18 +1475,18 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private void print(JTextPanePrintable printTextPane)
 	{
-		PrinterJob pj = PrinterJob.getPrinterJob();
 		
-		java.awt.print.PageFormat pf = pj.defaultPage();
-		pf.setOrientation(PageFormat.PORTRAIT);
-		printTextPane.setPageFormat(pf);		
-		Book book = new Book();
-		book.append(printTextPane, pf, printTextPane.getNumberOfPages());
-
-		if( pj.printDialog())
+		java.awt.print.PrinterJob pj = java.awt.print.PrinterJob.getPrinterJob();
+		if (pj.printDialog())
 		{
-			try{
-				pj.setPageable(book);
+			java.awt.print.PageFormat pf = new java.awt.print.PageFormat();
+			try
+			{
+				java.awt.print.Paper paper = new java.awt.print.Paper();
+				pf.setOrientation(java.awt.print.PageFormat.PORTRAIT);
+//				paper.setImageableArea(30, 40, 552, 712);
+				pf.setPaper(paper);
+				pj.setPrintable(printTextPane, pf);
 				pj.print();
 			}
 			catch(PrinterException ex)
@@ -1984,10 +1977,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		if( o instanceof YC && arg instanceof YC.OutputMessage)
 		{
 			YC.OutputMessage outMessage = (YC.OutputMessage)arg;
-			if( outMessage.type == YC.OutputMessage.DEBUG_MESSAGE)
-				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), outMessage.text, outMessage.color, outMessage.isUnderline) );
-			else if( outMessage.type == YC.OutputMessage.DISPLAY_MESSAGE)
-				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage.text, outMessage.color, outMessage.isUnderline) );
+			if( outMessage.getType() == YC.OutputMessage.DEBUG_MESSAGE)
+				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), outMessage) );
+			else if( outMessage.getType() == YC.OutputMessage.DISPLAY_MESSAGE)
+				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage) );
 		}
 	}
 	
