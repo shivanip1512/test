@@ -123,15 +123,17 @@
   </tr>
   <tr> 
     <td width="102" height="102" background="LoadImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="LoadHeader.gif"><br>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top">
+      <div align="left"><img src="LoadHeader.gif"><br>
+      </div>
+      <div align="left"></div>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="110" >&nbsp;</td>
           <td width="110" >&nbsp;</td>
           <td width="110" >&nbsp;</td>
-          <td width="4" >&nbsp;</td>
-         
-        </tr>
+          <td>&nbsp;</td>
+          8 </tr>
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main"> 
@@ -147,21 +149,19 @@
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/>
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> 
                 </a></div>
             </td>
-            <td class = "Main" width="4">&nbsp;</td>
+            <td>&nbsp;</td>
           </form>
           <form name="form1" method="post" action="">
-           
           </form>
         </tr>
-        <tr>
+        <tr> 
           <td width="110" class = "Main">&nbsp;</td>
           <td width="110" class = "Main">&nbsp;</td>
           <td width = "110" class = "Main">&nbsp;</td>
-          <td class = "Main" width="4">&nbsp;</td>
-          
+          <td>&nbsp;</td>
         </tr>
       </table>
     </td>
