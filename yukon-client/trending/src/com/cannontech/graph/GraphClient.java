@@ -11,7 +11,10 @@ import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -204,8 +207,9 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	if( event.getSource() == getRefreshButton() 
 		|| event.getSource() == getViewMenu().getRefreshMenuItem())
 	{
-		getGraph().setUpdateTrend(true);	
-		
+		//Don't force a refresh unless some option or other field has been updated.
+		//The updateTrend flag should be set at the other field's level
+		//getGraph().setUpdateTrend(true);	
 		com.cannontech.clientutils.CTILogger.info(" don't change model");
 		refresh();
 	}
@@ -214,13 +218,9 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		// Need to make sure the date has changed otherwise we are doing a billion updates on the one stateChange.
 		if( getStartDate().compareTo((Object)getStartDateComboBox().getSelectedDate()) != 0 )
 		{
-//			Date testDate = getStartDateComboBox().getSelectedDate();
-//			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-//			cal.setTime(testDate);
-//			cal.set(java.util.GregorianCalendar.HOUR_OF_DAY, 3);
-
 			setStartDate(getStartDateComboBox().getSelectedDate());
-//			setStartDate(cal.getTime());
+			if( currentWeek != NO_WEEK)
+				currentWeek = FIRST_WEEK;
 			refresh();
 		}
 	}
@@ -783,6 +783,9 @@ public void print( )
 			ex.printStackTrace();
 		}
 	}
+	// FIX to keep the GraphClient frame on top after calling the printDialog.
+	// JDK1.4 should have fixed the issue but I(SN) have still seen inconsistencies with focus.
+	getGraphParentFrame().toFront();//keeps the main frame in front focus
 }
 /**
  * Insert the method's description here.
@@ -884,7 +887,7 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 	
 	java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 	int valueSelected = Integer.MIN_VALUE;	//some number not -1 or greater
-	long DAY = 86400000;
+//	long DAY = 86400000;
 
 	setSliderKeysAndValues(model.getStartDate(), model.getStopDate());
 	int valuesCount = sliderValuesArray.length;	//number of days in time period
@@ -927,7 +930,9 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 		if( valueSelected > Integer.MIN_VALUE)
 		{
 			//// temporarily set the end date for only one day's data
-			cal.setTime( new java.util.Date(((java.util.Date)sliderValuesArray[valueSelected]).getTime() + DAY));
+			cal.setTime((Date)(sliderValuesArray[valueSelected]).clone());
+			cal.add(Calendar.DATE, 1);
+
 			htmlData.setTabularEndDate(cal.getTime());
 
 			//// temporarily set the start date for only one day's data
@@ -2219,17 +2224,16 @@ private int setLabelData(int minIndex, int maxIndex, int value)
  */
 public void setSliderKeysAndValues(java.util.Date start, java.util.Date end)
 {
-	long DAY = 86400000;
-	
-	java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
-	int numDays = new Long( (end.getTime() - start.getTime()) / DAY).intValue();
-	sliderValuesArray = new java.util.Date[numDays];
-
-	for (int i = 0; i < sliderValuesArray.length; i++)
+	Vector temp = new Vector();
+	GregorianCalendar tempCal = new GregorianCalendar();
+	tempCal.setTime(start);
+	while (tempCal.getTime().compareTo(end) < 0)
 	{
-		java.util.Date nextDate = new java.util.Date(start.getTime() + (DAY * i));
-		sliderValuesArray[i] = nextDate;
+		temp.add(new Date(tempCal.getTime().getTime()));
+		tempCal.add(Calendar.DATE, 1);
 	}
+	sliderValuesArray = new Date[temp.size()];
+	temp.toArray(sliderValuesArray);
 }
 /**
  * Passed in the min, max time period lengths and a current calendar
@@ -2325,7 +2329,7 @@ public void showPopupMessage(String message, int messageType )
  */
 public void stateChanged(javax.swing.event.ChangeEvent event) 
 {
-	if( event.getSource() == getStartTimeJSlider())
+	/*if( event.getSource() == getStartTimeJSlider())
 	{
 		int val = 0;
 		if( getStartTimeJSlider().getValueIsAdjusting())
@@ -2336,8 +2340,8 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			getStartTimeTestField().setText(format.format(val/4) + ":"+ format.format(val%4* 15));
 		}
 		System.out.println(" UPDATED STARTTIME " + String.valueOf(val));
-	}
-	else
+	}*/
+//	else
 	{	
 		java.awt.Cursor savedCursor = null;
 		try
@@ -2370,13 +2374,15 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				}
 				if (!getTabularSlider().getModel().getValueIsAdjusting())
 				{
+					getTabularSlider().removeChangeListener(this);
 					getGraph().update();
 					StringBuffer buf = new StringBuffer();
 					buf.append( buildHTMLBuffer(new TabularHtml()));
 					getTabularEditorPane().setText( buf.toString() );
 					getTabularEditorPane().setCaretPosition(0);
 					getGraph().setHtmlString(buf);
-				}
+					getTabularSlider().addChangeListener(this);
+				}				
 			}
 			else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 			{
@@ -2429,6 +2435,7 @@ public void updateCurrentPane()
 		}
 		else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 		{
+			getTabularSlider().removeChangeListener(this);
 			getGraph().setViewType(GraphRenderers.TABULAR);
 			getGraph().update();
 			StringBuffer buf =  new StringBuffer();
@@ -2438,6 +2445,7 @@ public void updateCurrentPane()
 			getTabularEditorPane().setText( buf.toString() );
 			getTabularEditorPane().setCaretPosition(0);
 			getGraph().setHtmlString(buf);
+			getTabularSlider().addChangeListener(this);
 		}
 		else if( getTabbedPane().getSelectedComponent() == getSummaryTabScrollPane())
 		{
