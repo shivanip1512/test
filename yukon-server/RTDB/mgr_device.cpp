@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2004/05/10 21:35:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,16 +51,13 @@
 #include "rtdb.h"
 
 
-
 bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void* d)
 {
     bool bstatus = false;
-
     CtiDeviceBase* Device = devsptr.get();
+    CtiDeviceBase *pAnxiousDevice = (CtiDeviceBase *)d;         // This is the port that wishes to execute!
 
-    CtiDeviceBase *pAnxiousDevice = (CtiDeviceBase *)d;       // This is the port that wishes to execute!
-
-    if(pAnxiousDevice->getID() != Device->getID())      // And it is not me...
+    if(pAnxiousDevice->getID() != Device->getID())              // And it is not me...
     {
         bool excluded = pAnxiousDevice->isDeviceExcluded(Device->getID());
 
@@ -74,28 +71,72 @@ bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void*
     return bstatus;
 }
 
-inline void applyClearExclusions(const long unusedkey, CtiDeviceSPtr Device, void* d)
+// prevent any devB (proximity excluded device) which may be seleced to execute from interfereing with devA's next evaluation time.
+static void applyMustCompleteTimeIsEvaluateNext(const long key, CtiDeviceSPtr devB, void* devSelect)
 {
-    Device->clearExclusions();
+    CtiDevice *devA = (CtiDevice *)devSelect;
+
+    if(devA != devB.get() && devA->getExclusion().proximityExcludes(devB->getID()))
+    {
+        // Use the most restrictive of it's current or devA's..
+        if( devB->getExclusion().getMustCompleteBy() > devA->getExclusion().getEvaluateNextAt() ||
+            devB->getExclusion().getMustCompleteBy() < RWTime() )
+        {
+            devB->getExclusion().setMustCompleteBy( devA->getExclusion().getEvaluateNextAt() );                      // prevent any devB  which may be seleced below from taking our entire slot.
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << devA->getName() << " requires " << devB->getName() << " to complete by " << devB->getExclusion().getMustCompleteBy() << " if grant occurs" << endl;
+            }
+        }
+    }
+}
+
+static void applyEvaluateNextByExecutingUntil(const long key, CtiDeviceSPtr devB, void* devSelect)
+{
+    CtiDevice *devA = (CtiDevice *)devSelect;
+
+    if(devA != devB.get() && devA->getExclusion().proximityExcludes(devB->getID()))
+    {
+        // Use the most restrictive of it's current or devA's..
+        if( devB->getExclusion().getEvaluateNextAt() < devA->getExclusion().getExecutingUntil() ||
+            devB->getExclusion().getEvaluateNextAt() < RWTime() )
+        {
+            devB->getExclusion().setEvaluateNextAt(devA->getExclusion().getExecutingUntil());    // mark out all proximity conflicts to when devA will be done.
+            devB->setExecutionProhibited(devA->getID(), devA->getExclusion().getExecutingUntil());
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << devB->getName() << " delayed by " << devA->getName() << " until " << devB->getExclusion().getEvaluateNextAt() << endl;
+            }
+        }
+    }
+}
+
+static void applyClearExclusions(const long unusedkey, CtiDeviceSPtr Device, void* lptrid)
+{
+    LONG id = (LONG)lptrid;
+
+    if((id && id == Device->getID()) || !id)
+    {
+        Device->clearExclusions();
+    }
     return;
 }
 
-inline void applyRemoveProhibit(const long unusedkey, CtiDeviceSPtr Device, void* d)
+static void applyRemoveInfiniteProhibit(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     try
     {
         CtiDevice *pAnxiousDevice = (CtiDevice *)d;       // This is the port that wishes to execute!
         LONG did = (LONG)pAnxiousDevice->getID();         // This is the id which is to be pulled from the prohibition list.
 
-        if(Device->isExecutionProhibited())     // There is at least one entry in the list...
-        {
-            bool found = Device->removeExecutionProhibited( did );
+        bool found = Device->removeInfiniteProhibit( did );
 
-            if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
-            }
+        if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
         }
     }
     catch(...)
@@ -107,6 +148,19 @@ inline void applyRemoveProhibit(const long unusedkey, CtiDeviceSPtr Device, void
     }
 
     return;
+}
+
+bool removeExclusionDevice(CtiDeviceSPtr &Device, void *lptrid)
+{
+    bool bstatus = false;
+    LONG id = (LONG)lptrid;
+
+    if( !id || (id && Device->getID()) )
+    {
+        bstatus = true;
+    }
+
+    return bstatus;
 }
 
 inline RWBoolean isDeviceIdStaticId(CtiDeviceSPtr &pDevice, void* d)
@@ -123,13 +177,13 @@ inline RWBoolean isDeviceNotUpdated(CtiDeviceSPtr &pDevice, void* d)
 }
 
 
-void ApplyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
+static void applyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     Device->resetUpdatedFlag();
     return;
 }
 
-void ApplyInvalidateNotUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
+static void applyInvalidateNotUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     if(!Device->getUpdatedFlag())
     {
@@ -138,17 +192,11 @@ void ApplyInvalidateNotUpdated(const long unusedkey, CtiDeviceSPtr Device, void*
     return;
 }
 
-void ApplyClearMacroDeviceList(const long unusedkey, CtiDeviceSPtr Device, void* d)
+static void applyClearMacroDeviceList(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     if( Device->getType() == TYPE_MACRO )
         ((CtiDeviceMacro *)(Device.get()))->clearDeviceList();
 }
-
-bool removeDevice(CtiDeviceSPtr & Device, void* d)
-{
-    return true;
-}
-
 
 void CtiDeviceManager::dumpList(void)
 {
@@ -169,6 +217,24 @@ void CtiDeviceManager::dumpList(void)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 p->DumpData();
             }
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Exclusions **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        for(itr = _exclusionMap.getMap().begin(); itr != _exclusionMap.getMap().end(); itr++)
+        {
+            p = (itr->second).get();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                p->getExclusion().Dump();
+            }
+        }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Exclusions **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     catch(RWExternalErr e )
@@ -330,12 +396,7 @@ CtiDeviceManager::~CtiDeviceManager()
 
 void CtiDeviceManager::deleteList(void)
 {
-    ptr_type ptr;
-
-    while((ptr = _smartMap.remove(removeDevice, 0)))
-    {
-        // ptr is pulled from the list.  Once we let go of the ptr, it should get cleaned up.
-    }
+    _smartMap.removeAll(NULL, 0);
 }
 
 void CtiDeviceManager::setIncludeScanInfo()
@@ -352,8 +413,8 @@ void CtiDeviceManager::resetIncludeScanInfo()
 
 void CtiDeviceManager::refreshScanRates(LONG id)
 {
-    LONG        lTemp = 0;
-    CtiDeviceBase*   pTempCtiDevice = NULL;
+    LONG lTemp = 0;
+    CtiDeviceBase* pTempCtiDevice = NULL;
 
     LockGuard  dev_guard(getMux());       // Protect our iteration!
 
@@ -644,7 +705,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                 if(paoID == 0)
                 {
-                    apply(ApplyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
+                    apply(applyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
                 }
                 else
                 {
@@ -1496,7 +1557,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                     if(_removeFunc)
                     {
-                        _smartMap.remove(_removeFunc, arg);
+                        _smartMap.removeAll(_removeFunc, arg);
                     }
 
                     stop = stop.now();
@@ -1510,24 +1571,6 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
 
                     start = start.now();
-
-#if 0               // Not sure that anyone(me) knows what valid means for this stuff.
-                    if(paoID == 0)
-                    {
-                        Map.apply(ApplyInvalidateNotUpdated, NULL);
-                    }
-                    else
-                    {
-                        pTempCtiDevice = getEqual(paoID);
-                        if(pTempCtiDevice)
-                        {
-                            if(!pTempCtiDevice->getUpdatedFlag())
-                            {
-                                pTempCtiDevice->setValid(FALSE);   //   NOT NOT NOT Valid
-                            }
-                        }
-                    }
-#endif
 
                     do
                     {
@@ -1548,7 +1591,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply ApplyInvalidateNotUpdated." << endl;
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply applyInvalidateNotUpdated." << endl;
                     }
                 }
             }
@@ -1616,8 +1659,6 @@ bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceSPtr pDev, LONG paoID)
     return status;
 }
 
-
-
 /*
  * ptr_type anxiousDevice has asked to execute.  We make certain that no other device which is in his exclusion list is executing.
  */
@@ -1630,6 +1671,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
         if(anxiousDevice)
         {
             LockGuard  dev_guard(getMux());
+            RWTime now;
 
             // Make sure no other device out there has begun executing and doesn't want us to until they are done.
             // The device may also have logic which prevents it's executing.
@@ -1637,7 +1679,6 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
             {
                 if(anxiousDevice->hasExclusions())
                 {
-                    RWTime now;
                     /*
                      *  Walk the anxiousDevice's exclusion list checking if any of the devices on it indicate that they are
                      *  currently executing.  If any of them are executing, the anxious device cannot start.
@@ -1668,8 +1709,13 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                             dout << RWTime() << " Device " << anxiousDevice->getName() << " cannot execute because " << device->getName() << " is executing" << endl;
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
-                                        exlist.clear();         // Cannot use it!
-                                        break;                  // we cannot go
+                                        exlist.clear();             // Cannot use the list to block other devices.
+                                        bstatus = false;
+                                        break;                      // we cannot go
+                                    }
+                                    else if( !device->isExecutionProhibited(now, anxiousDevice->getID()) )
+                                    {
+                                        bstatus = true;             // Do not remark a device excluded by this id a second time.
                                     }
                                     else
                                     {
@@ -1725,12 +1771,14 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
 
             if(bstatus)
             {
-                if(anxiousDevice->hasExclusions() && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+#if 0
+                if( getDebugLevel() & DEBUGLEVEL_EXCLUSIONS && anxiousDevice->hasExclusions() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
                 }
-                anxiousDevice->setExecuting(true);                    // Mark ourselves as executing!
+#endif
+                anxiousDevice->getExclusion().setExecutingUntil(anxiousDevice->selectCompletionTime());                    // Mark ourselves as executing!
             }
         }
     }
@@ -1746,7 +1794,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
 /*
  * ptr_type anxiousDevice has completed an execution.  We must cleanup his mess.
  */
-bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceSPtr anxiousDevice)
+bool CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 {
     bool bstatus = false;
 
@@ -1756,8 +1804,8 @@ bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceSPtr anxiousDevice)
     {
         if(anxiousDevice)
         {
-            apply( applyRemoveProhibit, (void*)(anxiousDevice.get()));   // Remove prohibit mark from any device.
-            anxiousDevice->setExecuting(false);                               // Mark ourselves as executing!
+            apply( applyRemoveInfiniteProhibit, (void*)(anxiousDevice.get()));  // Remove prohibit mark from any device.
+            anxiousDevice->setExecuting(false);                                 // Mark ourselves as _not_ executing!
         }
     }
     catch(...)
@@ -1776,9 +1824,6 @@ void CtiDeviceManager::refreshExclusions(LONG id)
     CtiDeviceSPtr   pTempCtiDevice;
 
     LockGuard  dev_guard(getMux());       // Protect our iteration!
-
-    // clear the exclusion lists.
-    apply( applyClearExclusions, NULL);
 
     spiterator itr;
 
@@ -1810,6 +1855,13 @@ void CtiDeviceManager::refreshExclusions(LONG id)
 
     RWDBReader rdr = selector.reader(conn);
 
+    if(rdr.status().errorCode() == RWDBStatus::ok)
+    {
+        // clear the exclusion lists.
+        apply( applyClearExclusions, (void*)id);
+        _exclusionMap.removeAll(removeExclusionDevice, (void*)id);    // no known exclusion devices.
+    }
+
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         CtiDeviceBase* pSp = NULL;
@@ -1822,6 +1874,7 @@ void CtiDeviceManager::refreshExclusions(LONG id)
             paox.DecodeDatabaseReader(rdr);
             // Add this exclusion into the list.
             pTempCtiDevice->addExclusion(paox);
+            _exclusionMap.insert(pTempCtiDevice->getID(), pTempCtiDevice);      // May try to do multiple inserts, but is should not mater since the pointer gets in there at least one time.
         }
     }
 
@@ -1964,7 +2017,7 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     if(childcount != 0 && macroResult.status().errorCode() == RWDBStatus::ok)
     {
         rdr = myMacroTable.reader();
-        apply(ApplyClearMacroDeviceList, NULL);
+        apply(applyClearMacroDeviceList, NULL);
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
@@ -2294,5 +2347,139 @@ bool CtiDeviceManager::contains(bool (*findFun)(const long, ptr_type, void*), vo
     }
 
     return found;
+}
+
+CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid )
+{
+    RWTime now;
+    CtiDeviceSPtr devA;           //
+    CtiDeviceSPtr devB;           //
+    CtiDeviceSPtr devS;
+
+    /*
+     *  This function's sole purpose in life is to find devices on this port which are queued with work and to select the very
+     *  very best one from their number to allow execution.  The parameters assigned into the device define when it needs to complete
+     *  and subject itself to a re-evaluation.
+     */
+
+    /*
+     *  The function below walks _all_ devices _on this port_ which have queued work and are time excluded.  During the walk any non-time excluded
+     *  device in their lists are marked with the time at which the TX device needs to be evaluated again.  This time should be in the future
+     *  and should is called
+     */
+    // Find the Best Time Excluded Device
+
+
+    spiterator itr;
+
+    /*
+     * This loop should sweep the devices and examine each for time exclusions.  If a device has time exclusions it will
+     * evaluate whether we are in or out of the time window.  If we are in the window and have work, this device will be selected (if it is the oldest unselected device)
+     * If we are in the window and do not have work, we will allocate a portion of our window to any proximity excluded transmitter.
+     * If we are not in the window, we mark all proximity excluded devices to the time we need to be examined again.
+     */
+    for(itr = _exclusionMap.getMap().begin(); itr != _exclusionMap.getMap().end(); itr++)
+    {
+        devA = itr->second;
+        /*
+         *  Only look at a given device if it has told us that it needs attention.
+         *  This apply function only examines TIME excluded transmitters
+         */
+        if( portid == devA->getPortID() &&
+            devA->getExclusion().getEvaluateNextAt() <= now && devA->getExclusion().hasTimeExclusion() )
+        {
+            // Is this transmitter permitted to transmit right now?
+            if(devA->getExclusion().isTimeExclusionOpen())
+            {
+                // Does this transmitter have any queued work to perform?
+                if(devA->hasQueuedWork())
+                {
+                    // We will preempt transmitter devS if and only if we have been waiting longer than it
+                    if( !devS || (devS && devS->getExclusion().getLastExclusionGrant() > devA->getExclusion().getLastExclusionGrant()) )
+                    {
+                        // Select the transmitter with the oldest LastExclusionGrant.
+                        devS = devA;
+                        devS->getExclusion().setMustCompleteBy(devS->selectCompletionTime());
+                    }
+                    else
+                    {
+                        // Not sure if this case should ever occur.
+                        // I would presume this problem becomes vastly more complex if two devS may be time excluded against one another.
+                        devA->getExclusion().setEvaluateNextAt( devS->getExclusion().getMustCompleteBy() );
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                }
+                else
+                {   // Allocate out some of devA's time window.
+                    devA->getExclusion().setEvaluateNextAt( now + 20 );
+                    _exclusionMap.apply(applyMustCompleteTimeIsEvaluateNext, (void*)(devA.get()));
+                }
+            }
+            else
+            {
+                devA->getExclusion().setEvaluateNextAt( devA->getExclusion().getNextTimeSlotOpen() );  // offset may be the next window open, or the partial allocation given up in the case of no codes.
+                _exclusionMap.apply(applyMustCompleteTimeIsEvaluateNext, (void*)(devA.get()));
+            }
+        }
+    }
+
+
+    if(devS)
+    {
+        devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
+        devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
+        _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
+    }
+    else if(!devS)       // We did not find any time excluded transmitters willing to take the ball.
+    {
+        // Find Best Proximity Excluded Device with queue entries.
+
+        for(itr = _exclusionMap.getMap().begin(); itr != _exclusionMap.getMap().end(); itr++)
+        {
+            devA = itr->second;
+            /*
+             *  Only look at a given device if it has told us that it needs attention.
+             *  This apply function only examines TIME excluded transmitters
+             */
+            /*
+             *  In this case, we should be filtering off all time excluded device which setEvaluateNextAt() into the future up above.
+             *  We will also not evaluate any proximity excluded devices which may have been bumped into the future above.
+             */
+            if(  portid == devA->getPortID() && devA->getExclusion().getEvaluateNextAt() <= now )
+            {
+                if(devA->hasQueuedWork())
+                {
+                    if(!devS || devS->getExclusion().getLastExclusionGrant() > devA->getExclusion().getLastExclusionGrant())
+                    {
+                        devS = devA;    // Select the transmitter with the oldest lastTx.
+                        devS->getExclusion().setMustCompleteBy(devS->selectCompletionTime());
+                    }
+                }
+            }
+        }
+
+        if(devS)
+        {
+            devS->getExclusion().setExecutionGrantExpires(devS->selectCompletionTime());
+            devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
+            _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
+        }
+    }
+
+
+    if(devS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << devS->getName() << " Execution Grant Expires at " << devS->getExclusion().getExecutionGrantExpires() << endl;
+        dout << RWTime() << " " << devS->getName() << " Execution Must Complete by " << devS->getExclusion().getMustCompleteBy() << endl;
+        dout << RWTime() << " " << devS->getName() << " selected to execute!" << endl;
+    }
+
+
+    return devS;
 }
 

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 20:22:38 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/10 21:35:50 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.3  2004/05/10 21:35:50  cplender
+* Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
+*
 * Revision 1.2  2004/04/29 20:22:38  cplender
 * IR
 *
@@ -40,7 +43,8 @@ CtiDeviceExclusion::CtiDeviceExclusion(const CtiDeviceExclusion& aRef)
 }
 
 CtiDeviceExclusion::~CtiDeviceExclusion()
-{}
+{
+}
 
 CtiDeviceExclusion& CtiDeviceExclusion::operator=(const CtiDeviceExclusion& aRef)
 {
@@ -54,6 +58,11 @@ CtiDeviceExclusion& CtiDeviceExclusion::operator=(const CtiDeviceExclusion& aRef
     return *this;
 }
 
+CtiDeviceExclusion& CtiDeviceExclusion::setId(LONG id)
+{
+    _deviceId = id;
+    return *this;
+}
 
 LONG CtiDeviceExclusion::getId() const
 {
@@ -195,7 +204,7 @@ bool CtiDeviceExclusion::isDeviceExcluded(long id) const
 
 bool CtiDeviceExclusion::isExecuting() const
 {
-    return (_executingUntil >= _executingUntil.now());
+    return(_executingUntil > _executingUntil.now());
 }
 
 void CtiDeviceExclusion::setExecuting(bool set)
@@ -203,7 +212,12 @@ void CtiDeviceExclusion::setExecuting(bool set)
     if(set)
         _executingUntil = RWTime(YUKONEOT);
     else
-        _executingUntil = RWTime(rwEpoch);
+    {
+        if(_executingUntil == RWTime(YUKONEOT))
+        {
+            _executingUntil = RWTime(rwEpoch);
+        }
+    }
 
     return;
 }
@@ -219,7 +233,7 @@ void CtiDeviceExclusion::setExecutingUntil(RWTime set)
     return;
 }
 
-bool CtiDeviceExclusion::isExecutionProhibited(const RWTime &now)
+bool CtiDeviceExclusion::isExecutionProhibited(const RWTime &now, LONG did)
 {
     bool prohibited = false;
 
@@ -235,7 +249,10 @@ bool CtiDeviceExclusion::isExecutionProhibited(const RWTime &now)
                 {
                     if((*itr).second > now)
                     {
-                        prohibited = true;
+                        if(!did || (did && (*itr).second == did))
+                        {
+                            prohibited = true;
+                        }
                         itr++;
                     }
                     else
@@ -293,34 +310,53 @@ size_t CtiDeviceExclusion::setExecutionProhibited(unsigned long id, RWTime& rele
     return cnt;
 }
 
-bool CtiDeviceExclusion::removeExecutionProhibited(unsigned long id)
+/*
+ *  This method removes all _infinite_ exclusions against this device from device "id".
+ *  A time based exclusion will not be removed.
+ */
+bool CtiDeviceExclusion::removeInfiniteProhibit(unsigned long id)
 {
+    bool pass = false;          // If this is set to true it means a non-infinite and valid time exclusion exists for id.
     bool removed = false;
+    RWTime eot(YUKONEOT);
     CtiDeviceExclusion::prohibitions::iterator itr;
 
     try
     {
-        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
-        if(guard.isAcquired())
+        if( _executionProhibited.size() > 0 )
         {
-            for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
+            CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
+            if(guard.isAcquired())
             {
-                if((*itr).first == id)
+                for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
                 {
-                    itr = _executionProhibited.erase(itr);
-                    removed = true;
-                }
-                else
-                {
-                    itr++;
+                    if((*itr).first == id)      // Remove the non infinite times
+                    {
+                        RWTime now;
+
+                        if(eot == (*itr).second || (now > (*itr).second))   // infinite time, or now is greater than the exclusion time.
+                        {
+                            itr = _executionProhibited.erase(itr);
+                            removed = true;
+                        }
+                        else
+                        {
+                            pass = true;        // There _still_ exists a valid time exclusion against this device (but no infinite time exclusions)
+                            itr++;
+                        }
+                    }
+                    else
+                    {
+                        itr++;
+                    }
                 }
             }
-        }
-        else
-        {
+            else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getId() << " unable to acquire exclusion mutex: removeExecutionProhibited()" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << getId() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
+                }
             }
         }
     }
@@ -332,12 +368,30 @@ bool CtiDeviceExclusion::removeExecutionProhibited(unsigned long id)
         }
     }
 
-    return removed;
+    return(removed && !pass);
 }
 
 bool CtiDeviceExclusion::hasTimeExclusion() const
 {
-    return false;
+    bool b = false;
+
+    exclusions::const_iterator itr;
+
+    for(itr = _exclusionRecords.begin(); itr != _exclusionRecords.end(); itr++)
+    {
+        const CtiTablePaoExclusion &paox = *itr;
+
+        switch(paox.getFunctionId())
+        {
+        case (CtiTablePaoExclusion::ExFunctionTimeMethod1):
+            {
+                b = true;
+                break;
+            }
+        }
+    }
+
+    return b;
 }
 
 void CtiDeviceExclusion::Dump(void) const
@@ -358,5 +412,99 @@ void CtiDeviceExclusion::Dump(void) const
             }
         }
     }
+}
+
+RWTime CtiDeviceExclusion::getEvaluateNextAt() const
+{
+    return _evalNext;
+}
+
+void CtiDeviceExclusion::setEvaluateNextAt(RWTime set)
+{
+    _evalNext = set;
+    return;
+}
+
+RWTime CtiDeviceExclusion::getMustCompleteBy() const
+{
+    return _mustCompleteBy;
+}
+void CtiDeviceExclusion::setMustCompleteBy(RWTime set)
+{
+    _mustCompleteBy = set;
+    return;
+}
+
+RWTime CtiDeviceExclusion::getExecutionGrantExpires() const
+{
+    return _executeGrantExpires;
+}
+void CtiDeviceExclusion::setExecutionGrantExpires(RWTime set)
+{
+    _executeGrantExpires = set;
+    return;
+}
+
+RWTime CtiDeviceExclusion::getLastExclusionGrant() const
+{
+    return _lastExclusionGrant;
+}
+void CtiDeviceExclusion::setLastExclusionGrant(RWTime set)
+{
+    _lastExclusionGrant = set;
+    return;
+}
+
+
+bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has no time slot, or no is in the timeslot.
+{
+    bool bstatus = false;
+
+    // ACH ACH ACH
+
+    return bstatus;
+}
+
+RWTime CtiDeviceExclusion::getNextTimeSlotOpen() const
+{
+    RWTime tm;
+
+    // ACH ACH ACH
+
+    return tm;
+}
+
+RWTime CtiDeviceExclusion::getNextTimeSlotClose() const
+{
+    RWTime tm(YUKONEOT);
+
+    // ACH ACH ACH
+
+    return tm;
+}
+
+bool CtiDeviceExclusion::proximityExcludes(LONG id) const
+{
+    bool b = false;
+
+    exclusions::const_iterator itr;
+
+    for(itr = _exclusionRecords.begin(); itr != _exclusionRecords.end(); itr++)
+    {
+        const CtiTablePaoExclusion &paox = *itr;
+
+        switch(paox.getFunctionId())
+        {
+        case (CtiTablePaoExclusion::ExFunctionIdExclusion):
+            {
+                if(paox.getExcludedPaoId() == id)
+                    b = true;
+
+                break;
+            }
+        }
+    }
+
+    return b;
 }
 

@@ -467,9 +467,7 @@ _attemptCount(0),
 _attemptCommFailCount(0),
 _attemptOtherFailCount(0),
 _attemptSuccessCount(0),
-_queueSlot(0),
-_devicesQueued(false),
-_devicesQueuedTime(YUKONEOT)
+_queueSlot(0)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
@@ -1107,7 +1105,7 @@ size_t CtiPort::setExecutionProhibited(unsigned long pid)
     return cnt;
 }
 
-bool CtiPort::removeExecutionProhibited(unsigned long pid)
+bool CtiPort::removeInfiniteExclusion(unsigned long pid)
 {
     bool removed = false;
 
@@ -1136,7 +1134,7 @@ bool CtiPort::removeExecutionProhibited(unsigned long pid)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: removeExecutionProhibited()" << endl;
+                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
             }
         }
     }
@@ -1435,49 +1433,26 @@ void CtiPort::setLastOMComplete(RWTime &atime)
 
 bool CtiPort::shouldProcessQueuedDevices() const
 {
-    bool doit = false;
-
-    if( getDevicesQueued() == true && queueCount() == 0 )
-    {
-        RWTime now;
-
-        if(now > _devicesQueuedTime + 30)
-        {
-            doit = true;
-
-            // Think about this a bit
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-
+    bool doit = (getDeviceQueued() && (queueCount() == 0));
 
     return doit;
 }
 
-bool CtiPort::getDevicesQueued() const
+bool CtiPort::getDeviceQueued() const
 {
-    return _devicesQueued;
+    return !_devicesQueued.empty();
 }
-CtiPort& CtiPort::setDevicesQueued(bool set)
-{
-    if(getDevicesQueued() == false && set == true)
-    {
-        setDevicesQueuedTime(RWTime());
-    }
-    else if(getDevicesQueued() == true && set == false)
-    {
-        setDevicesQueuedTime(YUKONEOT);
-    }
 
-    _devicesQueued = set;
-    return *this;
-}
-CtiPort& CtiPort::setDevicesQueuedTime(const RWTime &tme)
+CtiPort& CtiPort::setDeviceQueued(LONG id)
 {
-    _devicesQueuedTime = tme;
+    _devicesQueued.push_back( id );
     return *this;
 }
+
+CtiPort& CtiPort::resetDeviceQueued(LONG id)
+{
+    _devicesQueued.remove( id );
+    return *this;
+}
+
 

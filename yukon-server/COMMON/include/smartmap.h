@@ -85,6 +85,12 @@ public:
         return _map.insert( val_type(key, storeval) );
     }
 
+    insert_pair insert(long key, shared_ptr< T > storeval)
+    {
+        LockGuard  gaurd(monitor());
+        return _map.insert( val_type(key, storeval) );
+    }
+
     /*
      *  This operation will return a value to us by
      *
@@ -133,7 +139,16 @@ public:
 
         for(itr = _map.begin(); itr != _map.end(); ++itr)
         {
-            if(testFun(itr->second, d))
+            if(testFun)
+            {
+                if(testFun(itr->second, d))
+                {
+                    retRef = itr->second;
+                    _map.erase( itr );
+                    break;
+                }
+            }
+            else
             {
                 retRef = itr->second;
                 _map.erase( itr );
@@ -142,6 +157,13 @@ public:
         }
 
         return retRef;
+    }
+
+    void removeAll(bool (*testFun)(ptr_type&, void*), void* d)        // Removes ALL that match this function
+    {
+        LockGuard  gaurd(monitor());
+        while(remove(testFun, d));
+        return;
     }
 
     ptr_type remove(long key)

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/03/23 20:42:44 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/05/10 21:35:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 
 #include <rw/tpslist.h>
 
+#include "cparms.h"
 #include "dev_base.h"
 #include "guard.h"
 #include "logger.h"
@@ -439,8 +440,6 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
 
 
 CtiDeviceBase::CtiDeviceBase() :
-_executeGrantExpires(rwEpoch),
-_executingUntil(rwEpoch),
 _commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
@@ -456,8 +455,6 @@ _currTrxID(0)
 }
 
 CtiDeviceBase::CtiDeviceBase(const CtiDeviceBase& aRef) :
-_executeGrantExpires(rwEpoch),
-_executingUntil(rwEpoch),
 _commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
@@ -499,6 +496,7 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
 
 
         setDeviceBase( aRef.getDeviceBase() );
+        _exclusion = aRef.exclusion();
     }
     return *this;
 }
@@ -811,54 +809,28 @@ bool CtiDeviceBase::isTAP() const
 
 bool CtiDeviceBase::hasExclusions() const
 {
-    bool bstatus = false;
+    return _exclusion.hasExclusions();
+}
 
-    try
-    {
-        CtiLockGuard<CtiMutex> ex_guard(_exclusionMux, 5000);
+CtiDeviceExclusion CtiDeviceBase::exclusion() const
+{
+    return _exclusion;
+}
 
-        if(ex_guard.isAcquired())
-        {
-            bstatus = _excluded.size() != 0;
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "  " << getName() << " unable to acquire exclusion mutex: hasExclusions()" << endl;
-            }
-        }
-    }
-    catch(...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    return bstatus;
+CtiDeviceExclusion& CtiDeviceBase::getExclusion()
+{
+    return _exclusion;
 }
 
 CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 {
-    return _excluded;
+    return _exclusion.getExclusions();
 }
 void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
 {
     try
     {
-        CtiLockGuard<CtiMutex> guard(_exclusionMux, 30000);
-
-        if(guard.isAcquired())
-        {
-            _excluded.push_back(paox);
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: addExclusion()" << endl;
-        }
+        _exclusion.addExclusion(paox);
     }
     catch(...)
     {
@@ -873,17 +845,7 @@ void CtiDeviceBase::clearExclusions()
 {
     try
     {
-        CtiLockGuard<CtiMutex> guard(_exclusionMux, 15000);
-
-        if(guard.isAcquired())
-        {
-            _excluded.clear();
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: clearExclusions()" << endl;
-        }
+        _exclusion.clearExclusions();
     }
     catch(...)
     {
@@ -910,33 +872,7 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
 
     try
     {
-        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
-
-        if(guard.isAcquired())
-        {
-            if(hasExclusions())
-            {
-                exclusions::const_iterator itr;
-
-                for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
-                {
-                    const CtiTablePaoExclusion &paox = *itr;
-
-                    if(paox.getExcludedPaoId() == id)
-                    {
-                        bstatus = true;
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            bstatus = true;
-
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: isDeviceExcluded()" << endl;
-        }
+        bstatus = _exclusion.isDeviceExcluded(id);
     }
     catch(...)
     {
@@ -949,156 +885,28 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
 
 bool CtiDeviceBase::isExecuting() const
 {
-    return (_executingUntil >= _executingUntil.now());
+    return _exclusion.isExecuting();
 }
 
 void CtiDeviceBase::setExecuting(bool set)
 {
-    if(set)
-        _executingUntil = RWTime(YUKONEOT);
-    else
-        _executingUntil = RWTime(rwEpoch);
-
+    _exclusion.setExecuting(set);
     return;
 }
 
-RWTime CtiDeviceBase::getExecutingUntil() const
+bool CtiDeviceBase::isExecutionProhibited(const RWTime &now, LONG did)
 {
-    return _executingUntil;
-}
-
-void CtiDeviceBase::setExecutingUntil(RWTime set)
-{
-    _executingUntil = set;
-    return;
-}
-
-RWTime CtiDeviceBase::getEvaluateNextAt() const
-{
-    return _evalNext;
-}
-
-void CtiDeviceBase::setEvaluateNextAt(RWTime set)
-{
-    _evalNext = set;
-    return;
-}
-
-
-bool CtiDeviceBase::isExecutionProhibited(const RWTime &now)
-{
-    bool prohibited = false;
-
-    if(_executionProhibited.size() != 0)
-    {
-        try
-        {
-            CtiDeviceBase::prohibitions::iterator itr;
-            CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
-            if(guard.isAcquired())
-            {
-                for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
-                {
-                    if((*itr).second > now)
-                    {
-                        prohibited = true;
-                        itr++;
-                    }
-                    else
-                    {
-                        itr = _executionProhibited.erase(itr);      // Removes any time exclusions which have expired.
-                    }
-                }
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: isExecutionProhibited()" << endl;
-                }
-                prohibited = true;
-            }
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-    return prohibited;
+    return _exclusion.isExecutionProhibited(now, did);
 }
 
 size_t CtiDeviceBase::setExecutionProhibited(unsigned long id, RWTime& releaseTime)
 {
-    size_t cnt = 0;
-
-    try
-    {
-        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
-        if(guard.isAcquired())
-        {
-            _executionProhibited.push_back( make_pair(id, releaseTime) );
-            cnt = _executionProhibited.size();
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: setExecutionProhibited()" << endl;
-            }
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return cnt;
+    return _exclusion.setExecutionProhibited(id,releaseTime);
 }
 
-bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
+bool CtiDeviceBase::removeInfiniteProhibit(unsigned long id)
 {
-    bool removed = false;
-    CtiDeviceBase::prohibitions::iterator itr;
-
-    try
-    {
-        CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
-        if(guard.isAcquired())
-        {
-            for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
-            {
-                if((*itr).first == id)
-                {
-                    itr = _executionProhibited.erase(itr);
-                    removed = true;
-                }
-                else
-                {
-                    itr++;
-                }
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " unable to acquire exclusion mutex: removeExecutionProhibited()" << endl;
-            }
-        }
-    }
-    catch(...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    return removed;
+    return _exclusion.removeInfiniteProhibit(id);
 }
 
 bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)
@@ -1116,55 +924,54 @@ bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)
     return false;
 }
 
-bool CtiDeviceBase::hasTimeExclusion() const
-{
-    return false;
-}
-
-bool CtiDeviceBase::isTimeSlotOpen(const RWTime &now) const
-{
-    bool bstatus = true;
-    return bstatus;
-}
-void CtiDeviceBase::setTimeSlotOpen(bool set)
-{
-    return;
-}
-RWTime CtiDeviceBase::getNextTimeSlotOpen(const RWTime &now) const
-{
-    return RWTime();
-}
-
-RWTime CtiDeviceBase::getMustCompleteBy() const
-{
-    return RWTime();
-}
-void CtiDeviceBase::setMustCompleteBy(RWTime set)
-{
-    return;
-}
-
-RWTime CtiDeviceBase::getExecutionGrantExpires() const
-{
-    return _executeGrantExpires;
-}
-void CtiDeviceBase::setExecutionGrantExpires(RWTime set)
-{
-    _executeGrantExpires = set;
-    return;
-}
-
-RWTime CtiDeviceBase::getLastExclusionGrant() const
-{
-    return RWTime();
-}
-void CtiDeviceBase::setLastExclusionGrant(RWTime set)
-{
-    return;
-}
-
 CtiMessage* CtiDeviceBase::rsvpToDispatch(bool clearMessage)
 {
     return 0;
+}
+
+/*
+ *  This method should return the expected completion time for this device.  If the device has no special behavior this
+ *  method may return YUKONEOT.  This is equivalent to saying that it is executing until we say it is not executing.
+ */
+RWTime CtiDeviceBase::selectCompletionTime() const
+{
+    RWTime now;
+    RWTime bestTime(YUKONEOT);
+
+    if( now < _exclusion.getMustCompleteBy() && bestTime > _exclusion.getMustCompleteBy() )
+    {
+        // Must Complete is in the future and less than bestTime.
+        bestTime = _exclusion.getMustCompleteBy();
+    }
+
+    if( now < _exclusion.getNextTimeSlotClose() && _exclusion.getNextTimeSlotClose() < bestTime )
+    {
+        bestTime = _exclusion.getNextTimeSlotClose();
+    }
+
+    LONG queueTime = deviceQueueCommunicationTime();
+    if(queueTime > 0 && now + queueTime < bestTime)
+    {
+        bestTime = now + ((queueTime / 1000) + 1);
+    }
+
+    // Lastly, make certain we do not allocate more than PORTER_MAX_TRANSMITTER_TIME in any one allocation
+    LONG maxtime =  deviceMaxCommunicationTime();
+    if(maxtime && now + maxtime < bestTime)
+    {
+        bestTime = now + maxtime;
+    }
+
+    return bestTime;
+}
+
+LONG CtiDeviceBase::deviceQueueCommunicationTime() const
+{
+    return -1;
+}
+
+LONG CtiDeviceBase::deviceMaxCommunicationTime() const
+{
+    return 0L;
 }
 

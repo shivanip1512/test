@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_paoexclusion
@@ -9,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/03/18 19:56:02 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/10 21:35:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,8 +105,8 @@ public:
     enum
     {
         ExFunctionIdExclusion,          // This is the default and stipulates a non-simultaneous execution.  A cannot execute with B.
+        ExFunctionPlaceHolder,          //
         ExFunctionTimeMethod1           // Excludes based upon an aligned windo offset and duration from aligned window start.
-
 
     } CtiExclusionFunction_t;
 

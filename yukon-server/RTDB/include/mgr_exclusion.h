@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 20:22:38 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/10 21:35:51 $
 * HISTORY      :
 * $Log: mgr_exclusion.h,v $
+* Revision 1.3  2004/05/10 21:35:51  cplender
+* Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
+*
 * Revision 1.2  2004/04/29 20:22:38  cplender
 * IR
 *
@@ -28,23 +31,23 @@
 #define __MGR_EXCLUSION_H__
 
 #include "dlldefs.h"
-#include "dev_exclusion.h"
+#include "dev_base.h"
 #include "smartmap.h"
 
 class IM_EX_DEVDB CtiExclusionManager
 {
 public:
 
-    typedef CtiLockGuard<CtiMutex>                         LockGuard;
-    typedef CtiSmartMap< CtiDeviceExclusion >              coll_type;              // This is the collection type!
-    typedef CtiSmartMap< CtiDeviceExclusion >::ptr_type    ptr_type;
-    typedef CtiSmartMap< CtiDeviceExclusion >::spiterator  spiterator;
-    typedef CtiSmartMap< CtiDeviceExclusion >::insert_pair insert_pair;
+    typedef CtiLockGuard<CtiMutex>      LockGuard;
+    typedef CtiSmartMap< CtiDevice >    coll_type;              // This is the collection type!
+    typedef coll_type::ptr_type         ptr_type;
+    typedef coll_type::spiterator       spiterator;
+    typedef coll_type::insert_pair      insert_pair;
 
 protected:
 
-    CtiSmartMap< CtiDeviceExclusion >   _smartMap;
-    CtiMutex                            _mux;
+    coll_type   _smartMap;
+    CtiMutex    _mux;
 
 private:
 
@@ -64,11 +67,11 @@ public:
 
     CtiMutex & getMux()     { return _mux; }
 
-    void refreshExclusions(LONG id = 0);
+    void addDevice(CtiExclusionManager::ptr_type dev);
     ptr_type getEqual(LONG id);
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
-    void DumpList(void);
+    void dumpList(void);
 
 
 };

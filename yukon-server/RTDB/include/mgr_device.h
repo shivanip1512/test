@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.18 $
- * DATE         :  $Date: 2004/05/05 15:31:41 $
+ * REVISION     :  $Revision: 1.19 $
+ * DATE         :  $Date: 2004/05/10 21:35:51 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -39,12 +39,22 @@ class CtiCommandMsg;
 
 class IM_EX_DEVDB CtiDeviceManager
 {
+public:
+
+    typedef CtiLockGuard<CtiMutex>      LockGuard;
+    typedef CtiSmartMap< CtiDevice >    coll_type;              // This is the collection type!
+    typedef coll_type::ptr_type         ptr_type;
+    typedef coll_type::spiterator       spiterator;
+    typedef coll_type::insert_pair      insert_pair;
+
+
 private:
 
     int _dberrorcode;
 
-    CtiSmartMap< CtiDevice >    _smartMap;
-    CtiMutex                    _mux;
+    coll_type    _smartMap;
+    coll_type    _exclusionMap;         // This is a map of the devices which HAVE exclusions.
+    CtiMutex     _mux;
 
 private:
 
@@ -68,12 +78,6 @@ private:
 
 
 public:
-
-    typedef CtiLockGuard<CtiMutex>                LockGuard;
-    typedef CtiSmartMap< CtiDevice >              coll_type;              // This is the collection type!
-    typedef CtiSmartMap< CtiDevice >::ptr_type    ptr_type;
-    typedef CtiSmartMap< CtiDevice >::spiterator  spiterator;
-    typedef CtiSmartMap< CtiDevice >::insert_pair insert_pair;
 
     CtiDeviceManager();
     virtual ~CtiDeviceManager();
@@ -121,7 +125,8 @@ public:
     void resetIncludeScanInfo();
 
     bool mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, CtiTablePaoExclusion &deviceexclusion);
-    bool removeDeviceExclusionBlocks(CtiDeviceSPtr anxiousDevice);
+    bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
+    ptr_type chooseExclusionDevice(LONG portid);
 
 };
 
@@ -165,9 +170,6 @@ public:
 
     void setIncludeScanInfo();
     void resetIncludeScanInfo();
-
-    bool mayDeviceExecuteExclusionFree(CtiDeviceBase *anxiousDevice, CtiTablePaoExclusion &deviceexclusion);
-    bool removeDeviceExclusionBlocks(CtiDeviceBase *anxiousDevice);
 
 };
 #endif

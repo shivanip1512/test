@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 20:22:38 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/10 21:35:50 $
 *
 * HISTORY      :
 * $Log: mgr_exclusion.cpp,v $
+* Revision 1.3  2004/05/10 21:35:50  cplender
+* Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
+*
 * Revision 1.2  2004/04/29 20:22:38  cplender
 * IR
 *
@@ -30,82 +33,10 @@
 #include "sema.h"
 #include "dbaccess.h"
 
-inline void applyClearExclusions(const long key, CtiExclusionSPtr Exclusion, void* d)
+
+void CtiExclusionManager::addDevice(CtiExclusionManager::ptr_type dev)
 {
-    Exclusion->clearExclusions();
-    return;
-}
-
-void CtiExclusionManager::refreshExclusions(LONG id)
-{
-    LONG        lTemp = 0;
-    ptr_type    pTemp;
-
-    LockGuard  guard(getMux());       // Protect our iteration!
-
-    // clear the exclusion lists.
-    apply( applyClearExclusions, NULL);
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-
-    RWDBTable   keyTable;
-
-    RWDBSelector selector = db.selector();
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Looking for Device Exclusions" << endl;
-    }
-    CtiTablePaoExclusion::getSQL( db, keyTable, selector );
-
-    if(id > 0)
-    {
-        selector.where(keyTable["paoid"] == id && selector.where());
-    }
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << selector.asString() << endl;
-    }
-
-    RWDBReader rdr = selector.reader(conn);
-
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
-    {
-        rdr["paoid"] >> lTemp;            // get the DeviceID
-
-        pTemp = getEqual(lTemp);
-
-        if(!pTemp)
-        {
-            CtiDeviceExclusion *pSp = new CtiDeviceExclusion(lTemp);
-
-            CtiTablePaoExclusion exclusion;
-            exclusion.DecodeDatabaseReader(rdr);
-
-            pSp->addExclusion(exclusion);
-
-            _smartMap.insert( pSp->getId(), pSp );    // Stuff it in the list
-        }
-        else
-        {
-            CtiTablePaoExclusion paox;
-            paox.DecodeDatabaseReader(rdr);
-            // Add this exclusion into the list.
-            pTemp->addExclusion(paox);
-        }
-    }
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Done looking for Device Exclusions" << endl;
-    }
+    insert_pair ip = _smartMap.insert( dev->getID(), dev );    // This may occur multiple times...
 }
 
 CtiExclusionManager::ptr_type CtiExclusionManager::getEqual(LONG id)
@@ -177,7 +108,7 @@ CtiExclusionManager::spiterator CtiExclusionManager::end()
 }
 
 
-void CtiExclusionManager::DumpList(void)
+void CtiExclusionManager::dumpList(void)
 {
     try
     {
@@ -196,7 +127,7 @@ void CtiExclusionManager::DumpList(void)
 
         for(itr = begin(); itr != end(); itr++)
         {
-            itr->second->Dump();
+            itr->second->DumpData();
         }
     }
     catch(...)

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/04/29 19:59:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/10 21:35:50 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.4  2004/05/10 21:35:50  cplender
+* Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
+*
 * Revision 1.3  2004/04/29 19:59:09  cplender
 * Initial sa protocol/load group support
 *
@@ -28,6 +31,7 @@
 
 #pragma warning( disable : 4786)
 
+#include "cparms.h"
 #include "dev_rtc.h"
 
 #include "msg_cmd.h"
@@ -49,6 +53,7 @@ CtiDeviceRTC::CtiDeviceRTC(const CtiDeviceRTC &aRef)
 
 CtiDeviceRTC::~CtiDeviceRTC()
 {
+    _workQueue.clearAndDestroy();
 }
 
 CtiDeviceRTC &CtiDeviceRTC::operator=(const CtiDeviceRTC &aRef)
@@ -291,5 +296,66 @@ const CtiTableDeviceRTC& CtiDeviceRTC::getRTCTable() const
 LONG CtiDeviceRTC::getAddress() const
 {
     return getRTCTable().getRTCAddress();
+}
+
+
+INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage)
+{
+    INT status = NORMAL;
+
+    if(!(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags))
+    {
+        OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
+        _workQueue.putQueue(OutMessage);
+        OutMessage= 0;
+
+        status = QUEUED_TO_DEVICE;
+    }
+
+    return status;
+}
+
+bool CtiDeviceRTC::hasQueuedWork() const
+{
+    return _workQueue.entries() > 0;
+}
+
+bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
+{
+    bool stat = false;
+
+    if( (OutMessage = _workQueue.getQueue( 500 )) != NULL )
+        stat = true;
+
+    return stat;
+}
+
+LONG CtiDeviceRTC::deviceQueueCommunicationTime() const
+{
+    LONG  millis;
+
+
+    millis = _workQueue.entries() * gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_CODE", 222);
+
+    if(millis > 0)
+    {
+        millis += gConfigParms.getValueAsULong("PORTER_RTC_TIME_TRANSMIT", 0);
+    }
+
+    LONG fudge = gConfigParms.getValueAsULong("PORTER_RTC_FUDGE", 0);
+
+    if(fudge > 0)
+    {
+        millis += fudge;
+    }
+
+    return millis;
+}
+
+LONG CtiDeviceRTC::deviceMaxCommunicationTime() const
+{
+    LONG maxtime = gConfigParms.getValueAsULong("PORTER_MAX_TRANSMITTER_TIME", 0);
+
+    return maxtime;
 }
 

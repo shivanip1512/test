@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/05/10 21:35:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 
 
 #include <windows.h>
+#include <list>
 #include <iostream>
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
@@ -194,7 +195,7 @@ public:
     void setExecuting(bool set);
     bool isExecutionProhibited() const;
     size_t setExecutionProhibited(unsigned long pid);
-    bool removeExecutionProhibited(unsigned long pid);
+    bool removeInfiniteExclusion(unsigned long pid);
 
     virtual size_t addPort(CtiPortSPtr port);
     void setParentPort(CtiPortSPtr port);
@@ -232,9 +233,9 @@ public:
 
     bool shouldProcessQueuedDevices() const;
 
-    bool getDevicesQueued() const;
-    CtiPort& setDevicesQueued(bool set = true);
-    CtiPort& setDevicesQueuedTime(const RWTime &tme);
+    bool getDeviceQueued() const;
+    CtiPort& setDeviceQueued(LONG id);
+    CtiPort& resetDeviceQueued(LONG id);
 
 
 
@@ -282,8 +283,7 @@ private:
     RWTime                      _lastOMRead;
     RWTime                      _lastOMComplete;
 
-    bool                        _devicesQueued;
-    RWTime                      _devicesQueuedTime;
+    list< LONG >                _devicesQueued;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 };

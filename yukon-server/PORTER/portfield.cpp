@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2004/05/05 15:31:44 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2004/05/10 21:35:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,7 +93,6 @@ using namespace std;
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
-#include "mgr_exclusion.h"
 #include "dev_base.h"
 #include "dev_cbc6510.h"
 #include "dev_ied.h"
@@ -149,7 +148,6 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessa
 INT verifyConnectedDevice(CtiPortSPtr Port, CtiDeviceSPtr &pDevice, LONG &oldid, LONG &portConnectedUID);
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
-INT ClearExclusions(CtiDeviceSPtr Device);
 BOOL findExclusionFreeOutMessage(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device );
 static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
@@ -157,7 +155,6 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
 INT ProcessPortPooling(CtiPortSPtr Port);
 INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device);
 INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
-INT ChooseExclusionDevice(CtiDeviceSPtr &Device);
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
 static void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId);
@@ -167,16 +164,18 @@ VOID PortThread(void *pid)
 {
     INT            status;
 
+    RWTime         nowTime;
     ULONG          i, j;
     ULONG          BytesWritten;
     INMESS         InMessage;
-    OUTMESS        *OutMessage;
+    OUTMESS        *OutMessage = 0;
     ULONG          MSecs, QueEntries;
 
 
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
     CtiDeviceSPtr  Device;
+    CtiDeviceSPtr  LastExclusionDevice;
 
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
 
@@ -194,6 +193,9 @@ VOID PortThread(void *pid)
     /* and wait for something to come in */
     for(;!PorterQuit;)
     {
+        OutMessage = 0;
+        nowTime = nowTime.now();
+
         if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
         {
             PorterQuit = TRUE;
@@ -209,32 +211,36 @@ VOID PortThread(void *pid)
 
         if( Port->shouldProcessQueuedDevices() )
         {
-            // The OutMessage popped from here must come from a selection amongst devices that have queues...
-            ChooseExclusionDevice(Device);
+            if( LastExclusionDevice &&
+                LastExclusionDevice->hasQueuedWork() &&
+                nowTime < LastExclusionDevice->getExclusion().getExecutingUntil() )
+            {
+                Device = LastExclusionDevice;
+            }
+            else
+            {
+                // The OutMessage popped from here must come from a selection amongst devices that have queues...
+                Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
+                LastExclusionDevice = Device;
+            }
 
             if(Device)
             {
                 Device->getOutMessage(OutMessage);
             }
 
-        /*
+            /*
              *  This block is trying to make us go back to normal processing through readQueue.
-         */
-            if(!OutMessage)
+             */
+            if(Device && !OutMessage)
             {
-                Port->setDevicesQueued(false);
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                continue;
+                Port->resetDeviceQueued(Device->getID());
             }
         }
-        else if((status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
+
+        if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
         {
-            Sleep(50);
+            Sleep(25);
             continue;
         }
         else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
@@ -262,7 +268,7 @@ VOID PortThread(void *pid)
 
         if(Port->getConnectedDevice() != OutMessage->DeviceID)
         {
-            ClearExclusions(Device);
+            DeviceManager.removeInfiniteExclusion(Device);
         }
 
         /*
@@ -810,11 +816,11 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
      */
     if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage)) )
     {
-        Port->setDevicesQueued(true);
+        Port->setDeviceQueued( Device->getID() );
 
         {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << Device->getName() << " enqueuing work. " << endl;
         }
     }
 
@@ -824,21 +830,21 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
     if(status == NORMAL)
     {
-    if( Port->isDialup() )
-    {
-        if(((CtiDeviceRemote *)Device.get())->isDialup())     // Make sure the dialup pointer is NOT null!
+        if( Port->isDialup() )
         {
-            //  init the port to the device's baud rate
-            Port->setBaudRate(((CtiDeviceRemote *)Device.get())->getDialup()->getBaudRate());
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** WARNING **** " << Device->getName() << " is on a dialup port, but has no devicedialupsettings entry" << endl;
+            if(((CtiDeviceRemote *)Device.get())->isDialup())     // Make sure the dialup pointer is NOT null!
+            {
+                //  init the port to the device's baud rate
+                Port->setBaudRate(((CtiDeviceRemote *)Device.get())->getDialup()->getBaudRate());
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** WARNING **** " << Device->getName() << " is on a dialup port, but has no devicedialupsettings entry" << endl;
 
-            status = BADPARAM;
+                status = BADPARAM;
+            }
         }
-    }
 
         switch(Device->getType())
         {
@@ -1165,69 +1171,69 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPE_TDMARKV:
                     {
-                       extern CtiConnection VanGoghConnection;
-                       BYTE   inBuffer[5000];
-                       BYTE   outBuffer[5000];     //smaller?
-                       ULONG  bytesReceived = 0;
-                       int    error = 1;
+                        extern CtiConnection VanGoghConnection;
+                        BYTE   inBuffer[5000];
+                        BYTE   outBuffer[5000];     //smaller?
+                        ULONG  bytesReceived = 0;
+                        int    error = 1;
 
-                       CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device.get();
-                       CtiProtocolTransdata  &transdata = markv->getProtocol();
+                        CtiDeviceMarkV        *markv = ( CtiDeviceMarkV *)Device.get();
+                        CtiProtocolTransdata  &transdata = markv->getProtocol();
 
-                       transdata.recvOutbound( OutMessage );
+                        transdata.recvOutbound( OutMessage );
 
-                       trx.setInBuffer( inBuffer );
-                       trx.setOutBuffer( outBuffer );
-                       trx.setInCountActual( &bytesReceived );
+                        trx.setInBuffer( inBuffer );
+                        trx.setOutBuffer( outBuffer );
+                        trx.setInCountActual( &bytesReceived );
 
-                       transdata.reinitalize();
+                        transdata.reinitalize();
 
-                       while( !transdata.isTransactionComplete() )
-                       {
-                          transdata.generate( trx );
+                        while( !transdata.isTransactionComplete() )
+                        {
+                            transdata.generate( trx );
 
-                          status = Port->outInMess( trx, Device, traceList );
+                            status = Port->outInMess( trx, Device, traceList );
 
-                          error = transdata.decode( trx, status );
+                            error = transdata.decode( trx, status );
 
-                          if( trx.doTrace( status ))
-                          {
-                             Port->traceXfer( trx, traceList, Device, status );
-                          }
+                            if( trx.doTrace( status ))
+                            {
+                                Port->traceXfer( trx, traceList, Device, status );
+                            }
 
-                          DisplayTraceList( Port, traceList, true );
-                       }
+                            DisplayTraceList( Port, traceList, true );
+                        }
 
-                       //debug
-                       if( error != 0 )
-                       {
-                          if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                          {
-                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << RWTime() << " ! comm error !" << endl;
-                          }
-                       }
+                        //debug
+                        if( error != 0 )
+                        {
+                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " ! comm error !" << endl;
+                            }
+                        }
 
-                       CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
+                        CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
-                       //send dispatch lp data directly
-                       markv->processDispatchReturnMessage( retMsg );
+                        //send dispatch lp data directly
+                        markv->processDispatchReturnMessage( retMsg );
 
-                       if( !retMsg->getData().isEmpty() )
-                       {
-                          VanGoghConnection.WriteConnQue( retMsg );
-                       }
-                       else
-                       {
-                          delete retMsg;
-                       }
+                        if( !retMsg->getData().isEmpty() )
+                        {
+                            VanGoghConnection.WriteConnQue( retMsg );
+                        }
+                        else
+                        {
+                            delete retMsg;
+                        }
 
-                       //send the billing data back to scanner
-                       markv->sendCommResult( InMessage );
+                        //send the billing data back to scanner
+                        markv->sendCommResult( InMessage );
 
-                       transdata.destroy();
-                       markv = NULL;
-                       break;
+                        transdata.destroy();
+                        markv = NULL;
+                        break;
                     }
 
                 case TYPE_SIXNET:
@@ -1647,10 +1653,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     case TYPE_RTC:
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << Device->getName() << " RTC Communication complete." << endl;
-                            }
                             if(trx.doTrace(status))
                             {
                                 Port->traceXfer(trx, traceList, Device, status);
@@ -3224,27 +3226,6 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device )
     return protocol;
 }
 
-INT ClearExclusions(CtiDeviceSPtr Device)
-{
-    extern CtiExclusionManager   ExclusionManager;
-    INT status = NORMAL;
-
-    try
-    {
-        CtiLockGuard< CtiMutex > guard(ExclusionManager.getMux());
-        DeviceManager.removeDeviceExclusionBlocks(Device);
-        //ExclusionManager.xyz();
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return status;
-}
-
-
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device )
 {
     bool bSubstitutionMade = false;
@@ -3333,25 +3314,23 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
     try
     {
-        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)     // Indicates an excludable message!
+        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC  ||
+           !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )     // Indicates an excludable message!
         {
-                bool deviceMayExecute;
-
-                CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
-                CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
+            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
+            CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
 
             if(Device)
             {
-                    CtiTablePaoExclusion exclusion;
-                        deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
+                CtiTablePaoExclusion exclusion;
 
-                if( deviceMayExecute )
+                if( DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
                 {
-                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
-                        }
+                    if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
+                    }
                     bStatus = TRUE;     // This device is locked in as executable!!!
                 }
             }
@@ -3366,7 +3345,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** NON-Excludable OM found  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " NON-Excludable OM found for PAOID " << OutMessage->DeviceID << endl;
             }
             bStatus = TRUE; // We can send anything which says it is non-excludable!
         }
@@ -3411,8 +3390,6 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
 INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
 {
     INT status = NORMAL;
-    bool deviceMayExecute;
-
 
     // 030503 CGP Adding Exclusion logic in this location.
     /*
@@ -3432,18 +3409,20 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
         {
             CtiTablePaoExclusion exclusion;
 
-            {
-                CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
-                deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
-            }
-
-            if( !deviceMayExecute )
+            if( !DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
             {
                 // There is an exclusion conflict for this device or port!
-                ClearExclusions(Device);       // Make sure we didn't dirty up the books.
+
+                if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << Device->getName() << " may not execute.  Requeueing the OM" << endl;
+                }
+
+                DeviceManager.removeInfiniteExclusion(Device);
 
                 // Decide how to requeue this port/device combo.
-                switch(exclusion.getFunctionRequeue())
+                switch(exclusion.getFunctionRequeue())              // Determine what to do with this OM based upon the exclusion which BLOCKED us?
                 {
                 case (CtiTablePaoExclusion::RequeueNextExecutableOM):
                     {
@@ -3479,6 +3458,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
                         }
 
                         status = RETRY_SUBMITTED;
+                        break;
                     }
                 case (CtiTablePaoExclusion::RequeueThisCommandNext):
                     {
@@ -3509,6 +3489,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
                         Sleep(100L);
 
                         status = RETRY_SUBMITTED;
+                        break;
                     }
                 }
             }
@@ -3604,9 +3585,9 @@ INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         ProcessPortPooling(Port);
 
         // We need to see if the next Q entry is for this Device... If it is, we should not release our exclusion
-        if(Device && Port->queueCount() == 0)
+        if( Device && !Device->hasQueuedWork() )
         {
-            ClearExclusions( Device );
+            DeviceManager.removeInfiniteExclusion(Device);
         }
     }
 
@@ -3698,119 +3679,14 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
     return status;
 }
 
-
-INT ChooseExclusionDevice(CtiDeviceSPtr &Device)
-{
-    INT status = NORMAL;
-
-    /*
-     *  This function's sole purpose in life is to find devices on this port which are queued with work and to select the very
-     *  very best one from their number to allow execution.  The parameters assigned into the device define when it needs to complete
-     *  and subject itself to a re-evaluation.
-     */
-
-    /*
-     *  The function below walks _all_ devices _on this port_ which have queued work and are time excluded.  During the walk any non-time excluded
-     *  device in their lists are marked with the time at which the TX device needs to be evaluated again.  This time should be in the future
-     *  and should is called
-     */
-    // Find the Best Time Excluded Device
-
-
-    RWTime now;
-    CtiDeviceSPtr devS;           // This is the selected "S" device. -> The Winner!
-    CtiDeviceSPtr devA;           //
-    CtiDeviceSPtr devB;           //
-
-    for( ;false; ) // (each Device = devA which has exclusions) Use the Exclusion Manager so that we need not walk the entire device list for excluded device.
-    {
-        if( devA->getEvaluateNextAt() <= now && devA->hasTimeExclusion() )
-        {
-            if(devA->isTimeSlotOpen())
-            {
-                if(devA->hasQueuedWork())
-                {
-                    if( !devS || (devS && devS->getLastExclusionGrant() > devA->getLastExclusionGrant()) )
-                    {
-                        // Select the transmitter with the oldest LastExclusionGrant.
-                        devS = devA;
-                    }
-                }
-                else
-                {
-                    devA->setEvaluateNextAt(now + 20);
-
-                    for(;false;) // (each devB excluded by this devA)
-                    {
-                        devB->setMustCompleteBy( now+20 );                      // prevent any devB  which may be seleced below from taking our entire slot.
-                    }
-                }
-            }
-            else
-            {
-                devA->setEvaluateNextAt( devA->getNextTimeSlotOpen() );  // offset may be the next window open, or the partial allocation given up in the case of no codes.
-                for(;false;) // (each devB excluded by this devA)
-                {
-                    devB->setMustCompleteBy( devA->getNextTimeSlotOpen() );     // prevent any devB which may be seleced below from interfereing with devA's next evaluation
-                }
-            }
-        }
-    }
-
-    if(devS)
-    {
-        devS = devA;                                            // We will choose the first one in here!
-        devS->setExecutingUntil( devS->getExecutionGrantExpires() );           // Make sure we know who is executing.
-
-        for(;false;) // each devB excluded by this devA)
-        {
-            devB->setEvaluateNextAt(devS->getExecutionGrantExpires());    // mark out all proximity conflicts to when devA will be done.
-        }
-    }
-    else if(!devS)       // We did not find any time excluded transmitters willing to take the ball.
-    {
-        // Find Best Proximity Excluded Device
-        for(;false;) // (each devA which has exclusions)
-        {
-            /*
-             *  In this case, we should be filtering off all time excluded device which setEvaluateNextAt() into the future up above.
-             *  We will also not evaluate any proximity excluded devices which may have been bumped into the future above.
-             */
-            if( devA->getEvaluateNextAt() <= now )
-            {
-                if(devA->hasQueuedWork())
-                {
-                    if(!devS || devS->getLastExclusionGrant() > devA->getLastExclusionGrant())
-                    {
-                        devS = devA;    // Select the transmitter with the oldest lastTx.
-                    }
-                }
-            }
-        }
-
-        if(devS)
-        {
-            devS = devA;                                            // We will choose the first one in here!
-            devS->setExecutingUntil( devS->getExecutionGrantExpires() );           // Make sure we know who is executing.
-
-            for(;false;)   // (each devB excluded by this devA)
-            {
-                devB->setEvaluateNextAt(devS->getExecutionGrantExpires());    // mark out all proximity conflicts to when devA will be done.
-            }
-        }
-    }
-
-
-    return status;
-}
-
-
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 {
     INT status;
     ULONG ReadLength;
     REQUESTDATA ReadResult;
     BYTE ReadPriority;
+
+    OutMessage = 0;         // Don't let us return with a bogus value!
 
     /*
      *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
@@ -3825,11 +3701,11 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
      *  OutMessage pointer, and fills it from it's queue entries!
      */
 
-    if((status = Port->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
+    if((status = Port->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_NOWAIT, &ReadPriority, &QueEntries)) != NORMAL )
     {
         if(status == ERROR_QUE_EMPTY)
         {
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
             {
                 PorterQuit = TRUE;
             }
@@ -3860,5 +3736,3 @@ void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId)
 
     return;
 }
-
-

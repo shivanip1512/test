@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/05/10 21:35:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@ using namespace std;
 #include "dsm2.h"
 
 #include "cmdparse.h"
+#include "dev_exclusion.h"
 #include "rte_base.h"
 #include "tbl_base.h"
 #include "tbl_2way.h"
@@ -212,40 +213,24 @@ public:
     // The methods below are in place to support exclusion logic and will typ. be overridden in load group objects only.
     CtiMutex& getExclusionMux();
     bool hasExclusions() const;
-    exclusions getExclusions() const;
     void addExclusion(CtiTablePaoExclusion &paox);
     void clearExclusions();
+    CtiDeviceExclusion& getExclusion();
+    CtiDeviceExclusion exclusion() const; // New copy.
+    exclusions getExclusions() const;
+    RWTime selectCompletionTime() const;
     bool isDeviceExcluded(long id) const;
     bool isExecuting() const;
     void setExecuting(bool set = true);
-    RWTime getExecutingUntil() const;
-    void setExecutingUntil(RWTime set = RWTime(YUKONEOT));
-    RWTime getEvaluateNextAt() const;
-    void setEvaluateNextAt(RWTime set = RWTime(YUKONEOT));
-    bool isExecutionProhibited(const RWTime &now = RWTime());
+    bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
     size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
-    bool removeExecutionProhibited(unsigned long id);
+    bool removeInfiniteProhibit(unsigned long id);
 
-
-
-    RWTime getMustCompleteBy() const;
-    void setMustCompleteBy(RWTime set = RWTime(YUKONEOT));
-
-    RWTime getLastExclusionGrant() const;
-    void setLastExclusionGrant(RWTime set = RWTime(YUKONEOT));
-
-    RWTime getExecutionGrantExpires() const;
-    void setExecutionGrantExpires(RWTime set);
-
-
-    virtual bool isTimeSlotOpen(const RWTime &now = RWTime()) const;
-    virtual void setTimeSlotOpen(bool set = true);
-    virtual RWTime getNextTimeSlotOpen(const RWTime &now = RWTime()) const;
-
-    virtual bool hasTimeExclusion() const;
     virtual bool hasQueuedWork() const;
     virtual bool isExecutionProhibitedByInternalLogic() const;
     virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage);
+    virtual LONG deviceQueueCommunicationTime() const;          // how many millis of comm time do we have?
+    virtual LONG deviceMaxCommunicationTime() const;            // maximum transmitter transmit time that this device is permitted to grab.  Assigned by db or CPARM "PORTER_MAX_TRANSMITTER_TIME"
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
 
     /*
@@ -285,17 +270,7 @@ private:
     int _responsesOnTrxID;
     RWTime _lastReport;
 
-    mutable CtiMutex _exclusionMux;  // Used when processing the exclusion logic
-    RWTime      _executingUntil;    // Device is currently executing until...
-    RWTime      _executeGrantExpires;  // Device is may execute until...
-    RWTime      _evalNext;          // Device should be looked at again at this time for exclusion purposes
-    RWTime      _mustCompleteBy;
-    RWTime      _lastExclusionGrant;    // This is the last time this device was granted execution priviledges.
-
-
-    exclusions    _excluded;
-    prohibitions  _executionProhibited;   // Device is currently prohibited from executing because of this list of devids.
-
+    CtiDeviceExclusion  _exclusion;
 };
 
 typedef CtiDeviceBase CtiDevice;
@@ -336,7 +311,6 @@ inline INT CtiDeviceBase::getBits() const { return 8; }
 inline INT CtiDeviceBase::getStopBits() const { return ONESTOPBIT; }
 inline INT CtiDeviceBase::getParity() const { return NOPARITY; }
 inline INT CtiDeviceBase::getProtocolWrap() const { return ProtocolWrapNone; }
-inline CtiMutex& CtiDeviceBase::getExclusionMux() { return _exclusionMux; }
 inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
 inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage) { return NORMAL; }
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }

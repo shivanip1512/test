@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 20:22:38 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/05/10 21:35:51 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.3  2004/05/10 21:35:51  cplender
+* Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
+*
 * Revision 1.2  2004/04/29 20:22:38  cplender
 * IR
 *
@@ -55,17 +58,20 @@ protected:
     LONG _deviceId;
 
     mutable CtiMutex    _exclusionMux;            // Used when processing the exclusion logic
-    RWTime              _executingUntil;          // Device is currently executing until...
     exclusions          _exclusionRecords;        // This is the list of database records identifying the exclusions on or against this pao.
     prohibitions        _executionProhibited;     // Device is currently prohibited from executing because of this list of devids.
 
-private:
+    RWTime              _evalNext;                // Device should be looked at again at this time for exclusion purposes
+    RWTime              _executingUntil;          // Device is currently executing until...
+    RWTime              _executeGrantExpires;     // Device is may execute until...
+    RWTime              _mustCompleteBy;          // This is the allotted time if this device were allowed to execute now.
+    RWTime              _lastExclusionGrant;      // This is the last time this device was granted execution priviledges.
 
-    CtiDeviceExclusion() {};
+private:
 
 public:
 
-    CtiDeviceExclusion(LONG id);
+    CtiDeviceExclusion(LONG id = 0);
 
     CtiDeviceExclusion(const CtiDeviceExclusion& aRef);
 
@@ -75,6 +81,7 @@ public:
 
 
     LONG getId() const;
+    CtiDeviceExclusion& setId(LONG id);
 
     CtiMutex& getExclusionMux();
     bool hasExclusions() const;
@@ -82,10 +89,10 @@ public:
     void addExclusion(CtiTablePaoExclusion &paox);
     void clearExclusions();
     bool isDeviceExcluded(long id) const;
-    bool isExecutionProhibited(const RWTime &now = RWTime());
+    bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
 
     size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
-    bool removeExecutionProhibited(unsigned long id);
+    bool removeInfiniteProhibit(unsigned long id);
     bool hasTimeExclusion() const;
 
 
@@ -96,5 +103,19 @@ public:
 
     void Dump(void) const;
 
+    RWTime getEvaluateNextAt() const;
+    void setEvaluateNextAt(RWTime set);
+    RWTime getMustCompleteBy() const;
+    void setMustCompleteBy(RWTime set);
+    RWTime getExecutionGrantExpires() const;
+    void setExecutionGrantExpires(RWTime set);
+    RWTime getLastExclusionGrant() const;
+    void setLastExclusionGrant(RWTime set);
+
+    bool isTimeExclusionOpen() const;          // This device has no time slot, or no is in the timeslot.
+    bool proximityExcludes(LONG id) const;
+
+    RWTime getNextTimeSlotOpen() const;
+    RWTime getNextTimeSlotClose() const;
 };
 #endif // #ifndef __DEV_EXCLUSION_H__
