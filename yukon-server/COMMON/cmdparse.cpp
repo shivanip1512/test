@@ -3286,7 +3286,7 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
 
     if(CmdStr.contains(" rand"))
     {
-        if(!(temp = CmdStr.match(" rand(om)?start +[0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" rand(om)? ?start +[0-9]+")).isNull())
         {
             if(!(valStr = temp.match("[0-9]+")).isNull())
             {
