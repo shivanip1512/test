@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/03/12 16:41:03 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/08/19 14:03:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,7 @@ using namespace std;
 #include "guard.h"
 #include "mutex.h"
 #include "pending_info.h"
+#include "signalmanager.h"
 #include "tbl_state_grp.h"
 #include "tbl_alm_ngroup.h"
 #include "tbl_lm_controlhist.h"
@@ -106,7 +107,6 @@ private:
     CtiQueue< CtiTableCommErrorHistory, less<CtiTableCommErrorHistory> > _commErrorHistoryQueue;
 
     // These are the signals which have not been cleared by a client app
-    CtiRTDB< CtiTableSignal >  _signalsPending;
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
     CtiPendingOpSet_t          _pendingPointInfo;      // This holds temporal information on a per point basis.
     CtiNotificationGroupSet_t  _notificationGroupSet;  // Notification Groups
@@ -114,19 +114,21 @@ private:
     CtiDeviceLiteSet_t         _deviceLiteSet;
     CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
 
+    CtiSignalManager           _signalManager;
+
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
     void verifyControlTimesValid( CtiPendingPointOperations &ppc );
     RWCString resolveEmailMsgDescription( const CtiEmailMsg &aMail );
 
-    int analyzeNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void analyzeNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void analyzeNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void analyzeLimitViolationReset(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void checkForPendingLimitViolation(CtiPointDataMsg *pData, CtiPointNumeric &pointNumeric );
 
-    void analyzeStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void analyzeStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void tagSignalAsAlarm(CtiPointDataMsg *pData, CtiSignalMsg *&pSig, int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point);
+    void checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void tagSignalAsAlarm(CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, CtiPointDataMsg *pData = 0);
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
     bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
@@ -135,6 +137,9 @@ private:
     void insertControlHistoryRow( CtiPendingPointOperations &ppc, const RWTime &now);
     void postControlHistoryPoints( CtiPendingPointOperations &ppc, const RWTime &now);
     void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
+    void bumpDeviceFromAlternateRate(CtiPointBase *pPoint);
+    void bumpDeviceToAlternateRate(CtiPointBase *pPoint);
+
 
 public:
 
@@ -169,8 +174,8 @@ public:
     CtiMessage* messageToConnectionViaPointList(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg);
 
     INT postMessageToClients(CtiMessage *pMsg);
-    INT analyzeMessageData(CtiMessage *pMsg);
-    INT analyzeMultiMessage(CtiMultiMsg *pMulti);
+    INT processMessageData(CtiMessage *pMsg);
+    INT processMultiMessage(CtiMultiMsg *pMulti);
 
     CtiMultiMsg* generateMultiMessageForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg);
 
@@ -207,10 +212,10 @@ public:
     INT   checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap);
     INT   checkPointDataStateQuality(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap);
     INT   checkMultiDataStateQuality(CtiMultiMsg *pMulti, CtiMultiWrapper &aWrap);
-    INT   checkCommandDataStateQuality(CtiCommandMsg *pCmd, CtiMultiWrapper &aWrap);
+    INT   commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapper &aWrap);
     INT   checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aWrap);
-    INT   analyzeForStatusAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, CtiPointBase &point);
-    INT   analyzeForNumericAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, CtiPointBase &point);
+    INT   checkForStatusAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, CtiPointBase &point);
+    INT   checkForNumericAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, CtiPointBase &point);
     INT   markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap);
     CtiVanGoghConnectionManager* getPILConnection();
     CtiVanGoghConnectionManager* getScannerConnection();
@@ -247,7 +252,6 @@ public:
     bool removePointDataFromPending( LONG pID, const CtiPointDataMsg &Data);
     void establishListener();
     void reportOnThreads();
-    void bumpDeviceToAlternateRate(CtiPointBase *pPoint);
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
     void writeMessageToPIL(CtiMessage *&pReq);
     void writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatus *pPoint, const CtiCommandMsg *&Cmd  );
