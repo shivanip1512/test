@@ -131,7 +131,8 @@ public final static boolean isLoopable(int intType)
 		isRepeater(intType) ||
 		intType == DAVISWEATHER ||
 		intType == RTUILEX ||
-		intType == RTUWELCO	) //||
+		intType == RTUWELCO	||
+		intType == MCT410IL) //||
 //		isRTU(intType) ) //FUTURE
 		return true;
 	else
