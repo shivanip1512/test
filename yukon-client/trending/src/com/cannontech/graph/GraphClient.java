@@ -8,6 +8,8 @@ package com.cannontech.graph;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.util.Date;
 
@@ -16,6 +18,7 @@ import javax.swing.JOptionPane;
 import org.jfree.chart.JFreeChart;
 
 import com.cannontech.analysis.tablemodel.StatisticModel;
+import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
@@ -1981,16 +1984,27 @@ private void initializeSwingComponents()
 {
 	getDataViewButtonGroup();	// make sure that the radio buttons get grouped.
 
-	getGraphParentFrame().addKeyListener(new java.awt.event.KeyAdapter()
-	{
-		public void keyPressed( java.awt.event.KeyEvent event)
+	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+		new CTIKeyEventDispatcher()
 		{
-			if( event.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER )
+			public boolean handleKeyEvent(KeyEvent e)
 			{
-				refresh();
+				if( e.getKeyCode() == KeyEvent.VK_ENTER )
+				{
+					refresh();
+					return true;
+				}
+				else if( e.getKeyCode() == KeyEvent.VK_F5)
+				{
+					//FORCE THE TREND TO UPDATE
+					getGraph().setUpdateTrend(true);
+					refresh();
+				}
+				
+				//its this the last handling of the KeyEvent in this KeyboardFocusManager?
+				return false;
 			}
-		}
-	});
+		});	
 	
 	boolean found = getTreeViewPanel().selectByString(getTrendProperties().getGdefName());
 	//Construct a mouse listener that will allow double clicking selection in the tree
