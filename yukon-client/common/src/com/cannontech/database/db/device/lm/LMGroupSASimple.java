@@ -16,9 +16,9 @@ public class LMGroupSASimple extends com.cannontech.database.db.DBPersistent
 {
 	private Integer groupID;
 	private Integer routeID;
-	private String operationalAddress;
-	private Integer nominalTimeout;
-	private Integer virtualTimeout;
+	private String operationalAddress = "000000";
+	private Integer nominalTimeout = new Integer(450); //7.5 minutes
+	private Integer virtualTimeout = new Integer(450); //7.5 minutes
 	
 
 	public static final String SETTER_COLUMNS[] = 
