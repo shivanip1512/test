@@ -32,10 +32,12 @@ class Rat
 	private java.util.ArrayList processNames = new java.util.ArrayList(100);
 	
 	private Address fromAddress = null;
-	private Address toAddress = null;
 	private String userName = null;
 	private String password = null;
 	private String host = "65.165.200.66"; //CTI notesserver address
+
+   //for several email addresses we want to send emails
+   private Address[] toAddresses = null;
 
 /**
  * ProcessRunner constructor comment.
@@ -50,50 +52,57 @@ public Rat() {
  * Creation date: (11/9/2001 1:11:03 AM)
  * @return boolean
  */
-public Message createMailMessage( MailAccount account, String subject, String text )
+public Message[] createMailMessage( MailAccount account, String subject, String text )
 {
 
 	try 
 	{
-		//temp code for testing
-		Session session = Session.getDefaultInstance( System.getProperties() );
-		MimeMessage mm = new MimeMessage(session);
-
-
-		Address from = getFromAddress();
-		Address[] replyto = { getFromAddress() };
-		Address[] sendto = { getToAddress() };
-		Address[] cc = null;
-		Address[] bcc = null;
-		String content = text;
-	
-		if (from == null) 
-		{
-		    System.err.println("No FROM specified");
-		} 
-		else if (sendto.length == 0) 
-		{
-		    System.err.println("No SENDTO specified");
-		} 
-		else 
-		{
-		   // must headers
-		   mm.addHeader("X-Mailer", "CTI Error Detector");
-		   mm.addHeader("X-Priority","3 (Normal)");
-		   mm.addHeader("Organization",account.getOrganization());
-		   mm.setFrom(from);
-		   mm.setReplyTo(replyto);
-		   mm.setRecipients(Message.RecipientType.CC, cc);
-		   mm.setRecipients(Message.RecipientType.BCC, bcc);
-		   mm.setRecipients(Message.RecipientType.TO, sendto);
-		   mm.setSubject(subject);
-			mm.setSentDate(new java.util.Date());			
-			mm.setContent(content,"text/plain");
-		   mm.saveChanges();
-		   
-		   return(mm);
-		}
-
+      MimeMessage[] mMessages = new MimeMessage[ getToAddresses().length ];
+      
+      for( int i = 0; i < getToAddresses().length; i++ )
+      {
+   		//temp code for testing
+   		Session session = Session.getDefaultInstance( System.getProperties() );
+   		MimeMessage mm = new MimeMessage(session);
+   
+   
+   		Address from = getFromAddress();
+   		Address[] replyto = { getFromAddress() };
+   		Address[] sendto = { getToAddresses()[i] };
+   		Address[] cc = null;
+   		Address[] bcc = null;
+   		String content = text;
+   	
+   		if (from == null) 
+   		{
+   		    System.err.println("No FROM specified");
+   		} 
+   		else if (sendto.length == 0) 
+   		{
+   		    System.err.println("No SENDTO specified");
+   		} 
+   		else 
+   		{
+   		   // must headers
+   		   mm.addHeader("X-Mailer", "CTI Error Detector");
+   		   mm.addHeader("X-Priority","3 (Normal)");
+   		   mm.addHeader("Organization",account.getOrganization());
+   		   mm.setFrom(from);
+   		   mm.setReplyTo(replyto);
+   		   mm.setRecipients(Message.RecipientType.CC, cc);
+   		   mm.setRecipients(Message.RecipientType.BCC, bcc);
+   		   mm.setRecipients(Message.RecipientType.TO, sendto);
+   		   mm.setSubject(subject);
+   			mm.setSentDate(new java.util.Date());			
+   			mm.setContent(content,"text/plain");
+   		   mm.saveChanges();
+   		   
+   		   //return(mm);
+            mMessages[i] = mm;
+   		}
+      }
+      
+      return mMessages;
 	}
 	catch (Exception ex) 
 	{
@@ -118,7 +127,7 @@ public void executeCheck()
 			//first check our connection to dispatch
 			if( !executeCheckConnection() )
 			{
-				System.out.println("No connection to " + PROGRAM_NAME );
+				com.cannontech.clientutils.CTILogger.info("No connection to " + PROGRAM_NAME );
 				if( !isEmailSent() )
 				{
 					sendMailMessage( PROGRAM_NAME + " is NOT responding!!", 
@@ -147,8 +156,13 @@ public void executeCheck()
 					sendMailMessage( PROGRAM_NAME + " is running.", 
 							PROGRAM_NAME + " is running now!" );
 				}
-
-				System.out.println( PROGRAM_NAME + " was found!" );
+            
+            com.cannontech.clientutils.CTILogger.info(
+               "***************************************************************");
+				com.cannontech.clientutils.CTILogger.info(
+                  "\t" + PROGRAM_NAME + " was found!" );
+            com.cannontech.clientutils.CTILogger.info(
+               "***************************************************************");
 			}
 			
 
@@ -183,7 +197,7 @@ private boolean executeCheckConnection()
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
-		System.out.println("Trying to connect to:  " + DISPATCH_HOST + " " + DISPATCH_PORT );
+		com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + DISPATCH_HOST + " " + DISPATCH_PORT );
 		com.cannontech.message.dispatch.ClientConnection connection = 
 					new com.cannontech.message.dispatch.ClientConnection();
 
@@ -210,7 +224,7 @@ private boolean executeCheckConnection()
 		Object ret = null;	
 		if( connection.isValid() )
 		{	
-			System.out.println("....Connection & Registration to Server Established.");
+			com.cannontech.clientutils.CTILogger.info("Connection & Registration to Server Established.");
 			com.cannontech.message.dispatch.message.Command cmd = 
 					new com.cannontech.message.dispatch.message.Command();
 
@@ -220,7 +234,7 @@ private boolean executeCheckConnection()
 
 			//wait 60 seconds at most for a response then stop
 			ret = connection.read( 60000 );
-			System.out.println("		loopback returned = " + ret.toString() );
+			com.cannontech.clientutils.CTILogger.info("Loopback returned = " + ret.toString() );
 
 
 			com.cannontech.message.dispatch.message.Command cmd1 = 
@@ -370,16 +384,6 @@ public java.util.ArrayList getProcessNames() {
 
 /**
  * Insert the method's description here.
- * Creation date: (11/15/2001 10:40:12 PM)
- * @return javax.mail.Address
- */
-public javax.mail.Address getToAddress() {
-	return toAddress;
-}
-
-
-/**
- * Insert the method's description here.
  * Creation date: (11/30/2001 2:10:11 PM)
  * @return java.lang.String
  */
@@ -405,9 +409,7 @@ public java.lang.String getUserName() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
-
+	com.cannontech.clientutils.CTILogger.error("--------- UNCAUGHT EXCEPTION ---------", exception);
 }
 
 
@@ -435,12 +437,12 @@ public static void main(String[] args)
 		
 		if( args.length < 3 )  // the user tried to enter some params
 		{
-			System.out.println("Command Syntax : " + Rat.class.getName() +
-				" mailhost=? toaddress=? fromaddress=? [Optional MailUserName=?] [Optional MailPassword=?] [ Optional type=[javamail|qmail] ] [Optional test=y]\r\n" +
+			com.cannontech.clientutils.CTILogger.info("Command Syntax : " + Rat.class.getName() +
+				" mailhost=? toaddress=?;?;? fromaddress=? [Optional MailUserName=?] [Optional MailPassword=?] [ Optional type=[javamail|qmail] ] [Optional test=y]\r\n" +
 				" Parameters:\r\n" +
 				" -----------------\r\n" +
 				"   mailhost = The address of the smtp out server.\r\n" +
-				"   toaddress = Email address to send the email to.\r\n" +
+				"   toaddress = Email address(es) to send the email to.\r\n" +
 				"   fromaddress = Email address that will appear in the From.\r\n" +
             "   MailUserName = [Optional] User name if the smtp server requires it.\r\n" +
             "   MailPassword = [Optional] Password if the smtp server requires it.\r\n" +
@@ -448,7 +450,7 @@ public static void main(String[] args)
 				"   test = [Optional] Y if you want to send a test message.\r\n" +
             " \r\n" +
             " \r\n" +
-            "Example: " + Rat.class.getName() + " mailhost=65.165.200.66 toaddress=ryan@cannontech.com " +
+            "Example: " + Rat.class.getName() + " mailhost=10.100.10.2 toaddress=ryan@cannontech.com;ry@cannontech.com;test@cannontech.com " +
             "fromaddress=rat@ratter.com type=qmail test=y");
 
 			return;
@@ -461,7 +463,15 @@ public static void main(String[] args)
 		
 		Rat ratter = new Rat();
 		ratter.setHost( values[0] );
-		ratter.setToAddress( new InternetAddress(values[1]) );
+      
+      java.util.StringTokenizer token = new java.util.StringTokenizer(values[1], ";");
+      InternetAddress[] iAddy = new InternetAddress[ token.countTokens() ];
+      int i = 0;
+      while( token.hasMoreElements() )
+         iAddy[i++] = new InternetAddress( token.nextElement().toString() );
+         
+		ratter.setToAddresses( iAddy );
+      
 		ratter.setFromAddress( new InternetAddress(values[2]) );
 
 		if( values[3] != null )
@@ -476,12 +486,15 @@ public static void main(String[] args)
 		if( values[6] != null )
 		{
 			if( !ratter.getType().equalsIgnoreCase("javamail") )
-				ratter.tryQSMTP(
-					ratter.getHost(),
-					ratter.getFromAddress().toString(),
-					ratter.getToAddress().toString(),
-					"QSmtp Email test SUCCESS!!!", 
-					"Testing email service" );
+         {
+            for( int j = 0; j < ratter.getToAddresses().length; j++ )
+   				ratter.tryQSMTP(
+   					ratter.getHost(),
+   					ratter.getFromAddress().toString(),
+   					ratter.getToAddresses()[j].toString(),
+   					"QSmtp Email test SUCCESS!!!", 
+   					"Testing email service" );
+         }
 			else
 				ratter.sendMailMessage( "Email test SUCCESS!!!", "Testing email service" );
 
@@ -512,10 +525,11 @@ public void sendMailMessage( String subject, String text )
 {
 	if( !getType().equalsIgnoreCase("javamail") )
 	{
-		tryQSMTP( getHost(), getFromAddress().toString(),
-						getToAddress().toString(),
-						subject, 
-						text );
+      for( int i = 0; i < getToAddresses().length; i++ )
+   		tryQSMTP( getHost(), getFromAddress().toString(),
+   						getToAddresses()[i].toString(),
+   						subject, 
+   						text );
 	}
 	else
 	{
@@ -524,7 +538,7 @@ public void sendMailMessage( String subject, String text )
 		account.setOutPass( getPassword() );
 		account.setOutServer( getHost() );
 		
-		Message[] m = { createMailMessage( account, subject, text ) };
+		Message[] m = createMailMessage( account, subject, text );
 
 
 		//start up the thread to send out the mail
@@ -584,14 +598,23 @@ public void setProcessNames(java.util.ArrayList newProcessNames) {
 	processNames = newProcessNames;
 }
 
+/**
+ * Insert the method's description here.
+ * Creation date: (11/15/2001 10:40:12 PM)
+ * @return newToAddresses[] javax.mail.Address
+ */
+public javax.mail.Address[] getToAddresses() {
+   return toAddresses;
+}
+
 
 /**
  * Insert the method's description here.
  * Creation date: (11/15/2001 10:40:12 PM)
- * @param newToAddress javax.mail.Address
+ * @param newToAddress[] javax.mail.Address
  */
-public void setToAddress(javax.mail.Address newToAddress) {
-	toAddress = newToAddress;
+public void setToAddresses(javax.mail.Address[] newToAddresses) {
+   toAddresses = newToAddresses;
 }
 
 
@@ -654,7 +677,7 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 {
 	try
 	{
-		System.out.println("Started QSMTP..");
+		com.cannontech.clientutils.CTILogger.info("Started QSMTP..");
 
 		//"65.165.200.66") );  //CTI address
 		//Qsmtp q = new Qsmtp( java.net.InetAddress.getByName("10.100.10.1") );
@@ -667,7 +690,7 @@ public void tryQSMTP( String host, String fromAddress, String toAddress, String 
 			message );
 		
 		q.close();
-		System.out.println("Closed QSMTP");
+		com.cannontech.clientutils.CTILogger.info("Closed QSMTP");
 	}
 	catch( java.io.IOException ie )
 	{
