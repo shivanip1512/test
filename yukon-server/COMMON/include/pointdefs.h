@@ -210,7 +210,7 @@ typedef enum
 } PointQuality_t;
 
 // Relatively arbitrary, but should be ok.
-#define MAX_HIGH_REASONABILITY          (1e300)
-#define MIN_LOW_REASONABILITY           (-1e300)
+#define MAX_HIGH_REASONABILITY          (1e30)
+#define MIN_LOW_REASONABILITY           (-1e30)
 
 #endif // #ifndef __POINTDEFS_H__
