@@ -40,6 +40,7 @@ public final class LiteTypes
 	public final static int COMMAND 	= 33;
 	public final static int TOU_SCHEDULE	= 34;
 	public final static int TOU_DAY			= 35;	
+	public final static int RAWPOINTHISTORY = 36;
 	
 	// Stars lite types
 	public final static int STARS_CUST_ACCOUNT_INFO = 100;
