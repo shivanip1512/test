@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/10/27 22:03:37 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/03/08 20:52:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,6 +118,9 @@
 #define TYPE_LMGROUP_EXPRESSCOM              2015
 #define TYPE_LMGROUP_MCT                     2020
 #define TYPE_LMGROUP_ENERGYPRO               2025
+#define TYPE_LMGROUP_SA305                   2026  
+#define TYPE_LMGROUP_SA205OR105              2027
+#define TYPE_LMGROUP_SADIGITALORGOLAY        2028
 
 #define TYPEMCTBCAST                         2050
 
