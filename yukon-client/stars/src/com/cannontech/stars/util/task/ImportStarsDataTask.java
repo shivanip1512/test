@@ -78,9 +78,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 	int numOrderAdded = 0;
 	int numResAdded = 0;
 	
+	int numDuplicateHardware = 0;
 	int numNoDeviceName = 0;
 	int numDeviceNameNotFound = 0;
-	int numDuplicateHardware = 0;
 	int numNoLoadDescription = 0;
 	
 	long startTime = 0;
@@ -264,6 +264,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			
 			File hwConfigMapFile = new File(path, "hwconfig.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(hwConfigMapFile, true), true);
+			
+			Hashtable devCarrSettings = null;
 			first = true;
 			
 			it = invFieldsList.listIterator();
@@ -305,14 +307,30 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						numDeviceNameNotFound++;
 						
 						if (fields[ImportManager.IDX_SERIAL_NO].length() > 0) {
-							String sql = "SELECT DeviceID FROM DeviceCarrierSettings WHERE Address = ?";
-							java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
-							pstmt.setString(1, fields[ImportManager.IDX_SERIAL_NO]);
-							java.sql.ResultSet rset = pstmt.executeQuery();
+							if (devCarrSettings == null) {
+								devCarrSettings = new Hashtable();
+								
+								String sql = "SELECT DeviceID, Address FROM DeviceCarrierSettings";
+								java.sql.Statement stmt = null;
+								java.sql.ResultSet rset = null;
+								try {
+									stmt = conn.createStatement();
+									rset = stmt.executeQuery( sql );
+									while (rset.next()) {
+										int deviceID = rset.getInt(1);
+										int address = rset.getInt(2);
+										devCarrSettings.put( String.valueOf(address), new Integer(deviceID) );
+									}
+								}
+								finally {
+									if (rset != null) rset.close();
+									if (stmt != null) stmt.close();
+								}
+							}
 							
-							if (rset.next()) {
-								int deviceID = rset.getInt(1);
-								LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID );
+							Integer deviceID = (Integer) devCarrSettings.get( fields[ImportManager.IDX_SERIAL_NO] );
+							if (deviceID != null) {
+								LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( deviceID.intValue() );
 								logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",import_acct_id=" + fields[ImportManager.IDX_ACCOUNT_ID] + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") "
 										+ "matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
 							}
