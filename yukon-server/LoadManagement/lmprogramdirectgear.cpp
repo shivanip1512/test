@@ -646,6 +646,7 @@ const RWCString CtiLMProgramDirectGear::SmartCycleMethod = "SmartCycle";
 const RWCString CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
 const RWCString CtiLMProgramDirectGear::RotationMethod = "Rotation";
 const RWCString CtiLMProgramDirectGear::LatchingMethod = "Latching";
+const RWCString CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
 
 //Possible method stop types
 const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";
