@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/02/16 20:57:28 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/04/26 22:45:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -498,6 +498,14 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
         setDirty(false);
         setNotNewControl();
     }
+#if 1
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "   " << inserter.asString() << endl;
+    }
+#else
     else
     {
         LONG newcid = LMControlHistoryIdGen(true);
@@ -547,6 +555,8 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
             }
         }
     }
+#endif
+
     return inserter.status();
 }
 

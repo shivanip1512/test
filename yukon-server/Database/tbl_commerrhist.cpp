@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/12 17:33:46 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/04/26 22:45:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,30 +307,49 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
     {
         setDirty(false);
     }
+#if 1
     else
     {
-        LONG newcid = CommErrorHistoryIdGen(true);
-
-        if(newcid != getCommErrorID())
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
+    }
+#else
+    else
+    {
+        try
         {
-            RWTime Now;
+            LONG newcid = CommErrorHistoryIdGen(true);
 
+            if(newcid > 0 && newcid != getCommErrorID())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << Now << " Insert collision occurred in table " << getTableName() << "." << endl;
-                dout << Now << "   CommErrorId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
+                RWTime Now;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << Now << " Insert collision occurred in table " << getTableName() << "." << endl;
+                    dout << Now << "   CommErrorId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
+                }
+
+                setCommErrorID( newcid );
+
+                if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "   " << inserter.asString() << endl;
+                }
             }
-
-            setCommErrorID( newcid );
-
-            if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok )
+        }
+        catch(...)
+        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   " << inserter.asString() << endl;
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
+#endif
     return inserter.status();
 }
 
