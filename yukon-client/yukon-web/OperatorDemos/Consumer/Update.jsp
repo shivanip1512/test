@@ -130,6 +130,14 @@ function copyAddress(form) {
                           <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>">
                         </td>
                       </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">E-mail Addres:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>">
+                        </td>
+                      </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
