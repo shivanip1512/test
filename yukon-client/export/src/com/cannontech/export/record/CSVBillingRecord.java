@@ -130,7 +130,7 @@ public static  String getColumnHeadingsString()
 		
 		for (int i = 1; i < columnHeadings.length; i++)
 		{
-			dataString += getDelimiter() + columnHeadings[i];
+			dataString += ',' + columnHeadings[i];
 		}
 
 		dataString += "\r\n";
