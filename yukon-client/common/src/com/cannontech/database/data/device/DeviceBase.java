@@ -94,34 +94,38 @@ public Device getDevice()
 		
 	return device;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static boolean hasRoute(Integer deviceID) throws java.sql.SQLException 
-{	
-	return hasRoute(deviceID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-public final static boolean hasRoute(Integer deviceID, String databaseAlias) throws java.sql.SQLException 
+public final static String hasRoute( Integer deviceID ) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT DeviceID FROM " + com.cannontech.database.db.route.Route.TABLE_NAME + " WHERE DeviceID=" + deviceID,
-													databaseAlias );
+		new com.cannontech.database.SqlStatement(
+            "SELECT PAOName FROM " + 
+            com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
+            com.cannontech.database.db.route.Route.TABLE_NAME + " r" +             
+            " WHERE r.DeviceID=" + deviceID +
+            " AND r.RouteID=y.PAObjectID",
+            com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+		if(stmt.getRowCount() > 0 )
+         return stmt.getRow(0)[0].toString();
+      else
+         return null;
 	}
 	catch( Exception e )
 	{
-		return false;
+		return null;
 	}
+
 }
+
 /**
  * This method was created in VisualAge.
  */

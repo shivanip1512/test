@@ -10,16 +10,17 @@ public class PointAlarming extends com.cannontech.database.db.DBPersistent
 	public static final String NONE_VALUE_STRING = "None";
 	public static final String DEFAULT_EXCLUDE_NOTIFY = "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN";
 	private static String tmp = new String();
+
+   
+   public static final int ALARM_STATE_COUNT = 32;
 		
 	// we need to initialize our char mask	
 	static 
 	{
-		for( int i = 0; i < 32; i++ )
+		for( int i = 0; i < ALARM_STATE_COUNT; i++ )
 			tmp += '\u0001';  // Do not have nulls!! This is the Second char in a ASCII list, int value of 1
-	};
-	
+	};	
 	public static final String DEFAULT_ALARM_STATES = tmp;
-
 	
 	
 	private Integer pointID = null;

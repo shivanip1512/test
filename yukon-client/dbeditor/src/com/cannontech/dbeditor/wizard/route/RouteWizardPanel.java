@@ -8,7 +8,7 @@ public class RouteWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private RouteMacroCommunicationRoutesPanel routeMacroCommunicationRoutesPanel;
 	private RouteMacroNamePanel routeMacroNamePanel;
 	private RouteRepeaterQuestionPanel routeRepeaterQuestionPanel;
-	private RouteType2Panel routeType2Panel;
+	private RouteNameDevicePanel routeNameDevicePanel;
 	private RouteTypePanel routeTypePanel;
 /**
  * RouteWizardPanel constructor comment.
@@ -124,12 +124,12 @@ protected RouteRepeaterQuestionPanel getRouteRepeaterQuestionPanel() {
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.route.RouteType2Panel
  */
-protected RouteType2Panel getRouteType2Panel() {
+protected RouteNameDevicePanel getRouteType2Panel() {
 	
-	if( routeType2Panel == null )
-		routeType2Panel = new RouteType2Panel();
+	if( routeNameDevicePanel == null )
+		routeNameDevicePanel = new RouteNameDevicePanel();
 		
-	return routeType2Panel;
+	return routeNameDevicePanel;
 }
 /**
  * This method was created in VisualAge.
@@ -147,7 +147,7 @@ protected RouteTypePanel getRouteTypePanel() {
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
 
-	return (	( currentPanel == getRouteType2Panel() && !(((RouteType2Panel) currentPanel).allowRebroadcast()) ) ||
+	return (	( currentPanel == getRouteType2Panel() && !(((RouteNameDevicePanel) currentPanel).allowRebroadcast()) ) ||
 						( currentPanel == getRouteRepeaterQuestionPanel() && !((RouteRepeaterQuestionPanel) currentPanel).isYesSelected() ) ||
 						( currentPanel == getRepeaterSelectPanel() ) ||
 						( currentPanel == getRouteMacroCommunicationRoutesPanel() ) ||

@@ -7,8 +7,11 @@ import com.cannontech.database.db.route.RepeaterRoute;
 /**
  * This type was created in VisualAge.
  */
-public class CCURoute extends RouteBase {
+public class CCURoute extends RouteBase 
+{
 	private CarrierRoute carrierRoute = null;
+
+   //contains com.cannontech.database.db.route.RepeaterRoute instances
 	private java.util.Vector repeaterVector = null;
 /**
  * CCURoute constructor comment.
@@ -30,12 +33,18 @@ public void add() throws java.sql.SQLException {
 /**
  * This method was created in VisualAge.
  */
-public void delete() throws java.sql.SQLException {
-	getCarrierRoute().delete();
+public void delete() throws java.sql.SQLException 
+{
+   RepeaterRoute rArray[] = RepeaterRoute.getRepeaterRoutes( getRouteID(), getDbConnection() );
+   for( int i = 0; i < rArray.length; i++ )
+   {
+      rArray[i].setDbConnection( getDbConnection() );
+      rArray[i].delete();
+      rArray[i].setDbConnection( null );
+   }
 
-	for( int i = 0; i < getRepeaterVector().size(); i++ )
-		((DBPersistent) getRepeaterVector().elementAt(i)).delete();
-		
+	getCarrierRoute().delete();
+   		
 	super.delete();
 }
 /**
@@ -66,35 +75,36 @@ public java.util.Vector getRepeaterVector() {
 /**
  * This method was created in VisualAge.
  */
-public void retrieve() throws java.sql.SQLException {
+public void retrieve() throws java.sql.SQLException 
+{
 	super.retrieve();
 	getCarrierRoute().retrieve();
 
 	//Need to get all of the  rows.....
-		repeaterVector = new java.util.Vector();
+	repeaterVector = new java.util.Vector();
 
-		try
-		{
-			
-			RepeaterRoute rArray[] = RepeaterRoute.getRepeaterRoutes( getRouteID() );
-
-			for( int i = 0; i < rArray.length; i++ )
-				repeaterVector.addElement( rArray[i] );
-		
-		}
-		catch(java.sql.SQLException e )
-		{
-			//not necessarily an error
-		}
+	try
+	{		
+		RepeaterRoute rArray[] = RepeaterRoute.getRepeaterRoutes( getRouteID(), getDbConnection() );
+		for( int i = 0; i < rArray.length; i++ )
+			repeaterVector.addElement( rArray[i] );
+	
+	}
+	catch(java.sql.SQLException e )
+	{
+		//not necessarily an error
+	}
 	
 	
-	for( int i = 0; i < getRepeaterVector().size(); i++ ) {
+	for( int i = 0; i < getRepeaterVector().size(); i++ ) 
+   {
 		((DBPersistent) getRepeaterVector().elementAt(i)).setDbConnection(getDbConnection());
 		((DBPersistent) getRepeaterVector().elementAt(i)).retrieve();
 		((DBPersistent) getRepeaterVector().elementAt(i)).setDbConnection(null);
 			
-		}
-		}
+   }
+}
+
 /**
  * This method was created in VisualAge.
  * @param newValue com.cannontech.database.db.route.CarrierRoute

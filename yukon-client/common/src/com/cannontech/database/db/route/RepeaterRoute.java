@@ -9,6 +9,8 @@ public class RepeaterRoute extends com.cannontech.database.db.DBPersistent {
 	private Integer variableBits = null;
 	private Integer routeID = null;
 	private Integer repeaterOrder = null;
+   
+   public static final String TABLE_NAME = "RepeaterRoute";
 /**
  * RepeaterRotue constructor comment.
  */
@@ -16,13 +18,8 @@ public RepeaterRoute() {
 	super();
 	initialize( null,  null, null, null );
 }
-/**
- * RepeaterRotue constructor comment.
- */
-public RepeaterRoute(Integer routeID, Integer deviceID) {
-	super();
-	initialize( routeID,  deviceID,  null, null);
-}
+
+
 /**
  * RepeaterRotue constructor comment.
  */
@@ -44,7 +41,7 @@ public void add() throws java.sql.SQLException {
 
 	Object addValues[] = { getRouteID(),  getDeviceID(), getVariableBits(), getRepeaterOrder() };
 
-	add( "RepeaterRoute", addValues );
+	add( TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
@@ -54,7 +51,7 @@ public void delete() throws java.sql.SQLException {
 	String constraintColumns[] = { "RouteID", "DeviceID" };
 	Object constraintValues[] = { getRouteID(), getDeviceID() };
 	
-	delete( "RepeaterRoute", constraintColumns, constraintValues );
+	delete( TABLE_NAME, constraintColumns, constraintValues );
 }
 /**
  * This method deletes all the rows in RepeaterRoute associated with the route identified
@@ -73,8 +70,9 @@ public final static boolean deleteRepeaterRoutes(Integer routeID) throws java.sq
 public final static boolean deleteRepeaterRoutes(Integer routeID, String databaseAlias) throws java.sql.SQLException  {
 
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("DELETE FROM RepeaterRoute WHERE RouteID=" + routeID,
-												 databaseAlias );												 
+		new com.cannontech.database.SqlStatement(
+            "DELETE FROM " + TABLE_NAME + " WHERE RouteID=" + routeID,
+            databaseAlias );												 
 	try
 	{
 		stmt.execute();
@@ -101,38 +99,27 @@ public Integer getDeviceID() {
 public Integer getRepeaterOrder() {
 	return repeaterOrder;
 }
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.route.RepeaterRoute[]
- * @param routeID java.lang.Integer
- */
-public static final RepeaterRoute[] getRepeaterRoutes(Integer routeID) throws java.sql.SQLException{
-	return getRepeaterRoutes( routeID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 
-}
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.route.RepeaterRoute[]
  * @param routeID java.lang.Integer
  */
-public static final RepeaterRoute[] getRepeaterRoutes(Integer routeID, String databaseAlias) throws java.sql.SQLException
+public static final RepeaterRoute[] getRepeaterRoutes(Integer routeID, java.sql.Connection conn) throws java.sql.SQLException
 {
 	java.util.ArrayList tmpList = new java.util.ArrayList(30);
-	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
 	//MAKE SURE THAT THE RESULT IS ORDERED BY RepeaterOrder!	
 	String sql = "SELECT DeviceID,VariableBits,RepeaterOrder " + 
-				 "FROM RepeaterRoute WHERE RouteID= ? ORDER BY RepeaterOrder";
+				 "FROM " + TABLE_NAME + " WHERE RouteID= ? ORDER BY RepeaterOrder";
 
 	try
 	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
-
 		if( conn == null )
 		{
-			throw new IllegalStateException("Error getting database connection.");
+			throw new IllegalStateException("Error getting database connection, connection should not be (null).");
 		}
 		else
 		{
@@ -160,7 +147,6 @@ public static final RepeaterRoute[] getRepeaterRoutes(Integer routeID, String da
 		try
 		{
 			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
 		} 
 		catch( java.sql.SQLException e2 )
 		{
@@ -174,6 +160,37 @@ public static final RepeaterRoute[] getRepeaterRoutes(Integer routeID, String da
 	
 	return retVal;
 }
+
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static String isRepeaterUsed( Integer repeaterID ) throws java.sql.SQLException 
+{
+   com.cannontech.database.SqlStatement stmt =
+      new com.cannontech.database.SqlStatement(
+            "SELECT PAOName FROM " + 
+            com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
+            RepeaterRoute.TABLE_NAME + " r" +
+            " WHERE r.DeviceID=" + repeaterID +
+            " AND r.RouteID=y.PAObjectID",
+            com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+   try
+   {
+      stmt.execute();
+      if(stmt.getRowCount() > 0 )
+         return stmt.getRow(0)[0].toString();
+      else
+         return null;
+   }
+   catch( Exception e )
+   {
+      return null;
+   }
+
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -211,7 +228,7 @@ public void retrieve() throws java.sql.SQLException {
 	String constraintColumns[] = { "RouteID", "DeviceID"  };
 	Object constraintValues[] = { getRouteID(), getDeviceID() };
 
-	Object results[] = retrieve(selectColumns, "RepeaterRoute", constraintColumns, constraintValues );
+	Object results[] = retrieve(selectColumns, TABLE_NAME, constraintColumns, constraintValues );
 
 	if( results.length == selectColumns.length )
 	{
@@ -260,6 +277,6 @@ public void update() throws java.sql.SQLException {
 	String constraintColumns[] = { "RouteID", "DeviceID" };
 	Object constraintValues[] = { getRouteID(), getDeviceID() };
 	
-	update( "RepeaterRoute", setColumns, setValues, constraintColumns, constraintValues );
+	update( TABLE_NAME, setColumns, setValues, constraintColumns, constraintValues );
 }
 }

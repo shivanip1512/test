@@ -68,21 +68,24 @@ import com.cannontech.dbeditor.menu.ToolsMenu;
 import com.cannontech.dbeditor.menu.ViewMenu;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceTypesPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import java.awt.Dimension;
 
 public class DatabaseEditor
 	implements
 		com.cannontech.common.editor.PropertyPanelListener,
 		com.cannontech.common.wizard.WizardPanelListener,
 		ActionListener,
-		ItemListener,
+//		ItemListener,
 		WindowListener,
-		TreeSelectionListener,
+//		TreeSelectionListener,
 		java.util.Observer,
 		com.cannontech.clientutils.popup.PopUpEventListener,
 		javax.swing.event.PopupMenuListener,
 		com.cannontech.database.cache.DBChangeListener 
 {
-
+   //all editor frame sizes
+   private static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 500);
+   
 	//gui elements of the app
 	private DBEditorTreePopUpMenu treeNodePopUpMenu = null;
 
@@ -952,12 +955,14 @@ public void executeDefaultButton_ActionPerformed(ActionEvent event) {
  */
 private void executeDeleteButton_ActionPerformed(ActionEvent event)
 {
-	int confirm = 0;
-	int anID = 0;
-	int deletionType = 0;
-	boolean deleteVerified = false;
+   DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
+   int confirm = 0, anID=0, deletionType = 0;
+   boolean deleteVerified = false;
+
+   if( !(node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase) )
+      return;
+
 	
-	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
 	//a DBPersistent object must be created from the Lite object so you can do a delete
 	com.cannontech.database.db.DBPersistent toDelete =
 		com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase) node.getUserObject());
@@ -966,23 +971,20 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 		
 	if (toDelete instanceof com.cannontech.database.data.point.PointBase)
 	{
-		
 			anID = ((com.cannontech.database.data.point.PointBase) toDelete).getPoint().getPointID().intValue();
 			message = new StringBuffer("Are you sure you want to Permanently Delete '" + ((com.cannontech.database.data.lite.LitePoint)node.getUserObject()).getPointName() + "'?");
 			tmp = "You cannot delete the point '" + ((com.cannontech.database.data.lite.LitePoint)node.getUserObject()).getPointName() + "'";
 			deleteVerified = true;
 			deletionType = DBDeletionWarn.POINT_TYPE;
 	}
-
 	else if (toDelete instanceof com.cannontech.database.data.notification.NotificationRecipient)
 	{
-			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteNotificationRecipient)node.getUserObject()).getRecipientName() + "'?");
+         message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteNotificationRecipient)node.getUserObject()).getRecipientName() + "'?");
 			anID = ((com.cannontech.database.data.notification.NotificationRecipient) toDelete).getNotificationRecipient().getRecipientID().intValue();
 			tmp = "You cannot delete the notification recipient '" + ((com.cannontech.database.data.lite.LiteNotificationRecipient)node.getUserObject()).getRecipientName() + "'";
 			deleteVerified = true;
 			deletionType = DBDeletionWarn.NOTIFICATION_TYPE;
-	}
-			
+	}		
 	else if (toDelete instanceof com.cannontech.database.data.notification.GroupNotification)
 	{
 			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteNotificationGroup)node.getUserObject()).getNotificationGroupName() + "'?");
@@ -991,7 +993,6 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 			deleteVerified = true;
 			deletionType = DBDeletionWarn.NOTIFICATION_TYPE;
 	}
-
 	else if (toDelete instanceof com.cannontech.database.data.state.GroupState)
 	{
 			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.lite.LiteStateGroup)node.getUserObject()).getStateGroupName() + "'?");
@@ -1000,7 +1001,6 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 			deleteVerified = true;
 			deletionType = DBDeletionWarn.STATEGROUP_TYPE;
 	}
-
 	else if (toDelete instanceof com.cannontech.database.data.port.DirectPort)
 	{
 			message = new StringBuffer("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.port.DirectPort) toDelete).getPortName() + "?");
@@ -1009,7 +1009,6 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 			deleteVerified = true;
 			deletionType = DBDeletionWarn.PORT_TYPE;
 	}
-	
 	else if (toDelete instanceof com.cannontech.database.data.device.DeviceBase)
 	{
 			message = new StringBuffer("Are you sure you want to permanently delete '" + node + "?");
@@ -1017,8 +1016,9 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 			tmp = "You cannot delete the device '" + node + "'";
 			deleteVerified = true;
 			deletionType = DBDeletionWarn.DEVICE_TYPE;
-	}	
-
+	}
+   
+   
 	if( deleteVerified )
 	{
 		try
@@ -1061,8 +1061,7 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 					JOptionPane.WARNING_MESSAGE);
 		}
 		
-	}
-			
+	}	
 	else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		confirm =
@@ -1076,7 +1075,6 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);		
 	}
-	
 	else if( toDelete instanceof com.cannontech.database.db.notification.AlarmCategory )
 	{
 		javax.swing.JOptionPane.showMessageDialog(
@@ -1095,6 +1093,8 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 				"Confirm Delete",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);
+
+
 
 	if (confirm == JOptionPane.YES_OPTION)
 	{
@@ -1206,7 +1206,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         frame.setContentPane(panel);
 	         
 	         // sets the size of EVERY editor frame!!!!!!!
-	         frame.setSize(435, 500);
+	         frame.setSize( EDITOR_FRAME_SIZE );
 	         frame.setLocation( getVisibleEditorFrames() * 10, getVisibleEditorFrames() * 20 );
 
 	         frame.setVisible(true);
@@ -1410,6 +1410,7 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 				com.cannontech.database.cache.DefaultDatabaseCache.createDBChangeMessages( 
 					(com.cannontech.database.db.CTIDbChange)object, changeType );
 
+               
 		for( int i = 0; i < dbChange.length; i++ )
 		{
 			//handle the DBChangeMsg locally
@@ -1418,13 +1419,23 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 	
 			//tell our tree we may need to change the display
 			updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
-			
+         
+         //select the newly added device if it is the first in our list
+         if( dbChange[i].getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD
+             && i == 0 )
+         {
+            getTreeViewPanel().selectLiteObject( lBase );			
+         }
+         
+         
 			getConnToDispatch().write(dbChange[i]);
 		}
 	}
 	else
 	{
-		throw new IllegalArgumentException("Non " + com.cannontech.database.db.CTIDbChange.class.getName() + " class tried to generate a " + DBChangeMsg.class.getName() + 
+		throw new IllegalArgumentException("Non " + 
+         com.cannontech.database.db.CTIDbChange.class.getName() + 
+         " class tried to generate a " + DBChangeMsg.class.getName() + 
 			" its class was : " + object.getClass().getName() );
 	}
 		
@@ -1473,8 +1484,8 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 {
 	if( connToDispatch == null )
 	{
-		String host = null;
-		int port;
+		String host = "127.0.0.1";
+		int port = 1510;
 		try
 		{
          host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
@@ -1488,8 +1499,6 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 		catch( Exception e)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			host = "127.0.0.1";
-			port = 1510;
 		}
 
 		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
@@ -1916,7 +1925,7 @@ private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 	{
 		treeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
 		
-		treeViewPanel.addItemListener( this );
+		//treeViewPanel.addItemListener( this );
 		treeViewPanel.getTree().getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 	}
 
@@ -2095,9 +2104,6 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 		} //end of for loop
 
 
-		//refresh our tree
-		//getTreeViewPanel().refresh();
-
 		//tell our tree we may need to change the display
 		updateTreePanel( liteBase, msg.getTypeOfChange() );
 
@@ -2251,95 +2257,7 @@ private boolean isEditorAlreadyShowing(DefaultMutableTreeNode node)
 {
 	return ( getEditorFrame(node) != null );	
 }
-/**
- * This method handles ItemEvents generated by the sortByComboBox
- * @param event java.awt.event.ItemEvent
- */
-public void itemStateChanged(ItemEvent event) 
-{
 
-/*	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(getTree());
-	java.awt.Cursor savedCursor = owner.getCursor();
-	try
-	{
-		if( event.getStateChange() == ItemEvent.SELECTED )
-		{
-			owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-
-			DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
-			lastSelection = node;
-			
-			if( node.getUserObject() instanceof String )
-				return;
-
-			//a DBPersistent must be created from the Lite object so you can do a retrieve
-			com.cannontech.database.db.DBPersistent userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)node.getUserObject());
-			try
-			{
-				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
-				t.execute();
-			}
-			catch( Exception e )
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			}
-		 
-			PropertyPanel panel = userObject.getEditorPanel();
-
-			panel.setValue( userObject );
-			panel.addPropertyPanelListener(this);
-		
-			getEditorFrame().setContentPane( panel );
-			getEditorFrame().setTitle( panel.toString() );
-
-			// sets the size of EVERY editor frame!!!!!!!
-			getEditorFrame().setSize(420,500);
-			try
-			{
-				getEditorFrame().setSelected(true);
-			}
-			catch( java.beans.PropertyVetoException e )
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e ); //when does this happen??
-			}
-		
-			getEditorFrame().setVisible(true);	
-		}
-		else
-		if( event.getStateChange() == ItemEvent.DESELECTED &&
-			getEditorFrame().getContentPane() instanceof PropertyPanel)
-		{
-			PropertyPanel current = (PropertyPanel) getEditorFrame().getContentPane();
-			if( current.hasChanged() )
-			{
-				int confirm = javax.swing.JOptionPane.showInternalConfirmDialog(getEditorFrame(), "Do you want to save changes made to '" + lastSelection + "'?", null, JOptionPane.YES_NO_CANCEL_OPTION  );	
-
-				if( confirm == JOptionPane.CANCEL_OPTION )
-				{
-					getTreeViewPanel().undoLastSelection(true);
-					return;
-				}
-				else
-				if( confirm == JOptionPane.YES_OPTION )
-				{
-					updateObject( (com.cannontech.database.db.DBPersistent) current.getValue(null) );					
-				}
-
-				getEditorFrame().setVisible(false);
-			}		
-		}
-
-	}
-	catch(Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		owner.setCursor( savedCursor );
-	}
-*/
-}
 /**
  * This method was created in VisualAge.
  * @param args java.lang.String[]
@@ -3050,114 +2968,11 @@ private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, i
 				DBChangeMsg.class.getName() +
 				", CHANGE_TYPE received = " + changeType );
 	
+   
+   //have the try 'ask' for Focus
+   getTreeViewPanel().getTree().requestFocus();
 }
-/**
- * This method was created in VisualAge.
- * @param event javax.swing.event.TreeSelectionEvent
- */
-public void valueChanged(TreeSelectionEvent event) {
 
-/*	if( !event.isAddedPath() )
-		return;
-
-	//Grab the current PropertyPanel ( which is the current ContentPane of our EditorFrame )
-	//and check to see whether it has been modified - if so ask the user whether they really
-	//want to switch to a different item
-	
-	if( getEditorFrame().getContentPane() instanceof PropertyPanel )
-	{ 
-		PropertyPanel old = (PropertyPanel) getEditorFrame().getContentPane();
-
-		if( old.hasChanged() )
-		{
-			TreePath oldPath = event.getOldLeadSelectionPath();
-
-			if( oldPath != null )
-			{
-				DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
-			
-				int confirm = javax.swing.JOptionPane.showInternalConfirmDialog(getEditorFrame(), "Do you want to save changes made to '" + oldNode + "'?");	
-	
-				if( confirm == JOptionPane.YES_OPTION )
-				{
-					Object val = old.getValue(null);
-					updateObject((com.cannontech.database.db.DBPersistent) val);
-
-					//Update the tree model to reflect any changes - make sure to remove this as a litener
-					//so that this method isn't called again within the restoreTreeSelection()
-					getTree().getSelectionModel().removeTreeSelectionListener(this);
-					getTree().getSelectionModel().addTreeSelectionListener(this);
-				}
-				else
-				if( confirm == JOptionPane.CANCEL_OPTION )
-				{
-					//Change the tree selection back to what is was - remove this as a TreeSelectionListener
-					//so that we can restore the old selection path in the tree without having this
-					//methed called again
-					getTree().getSelectionModel().removeTreeSelectionListener(this);
-					getTree().setSelectionPath( event.getOldLeadSelectionPath() );
-					getTree().getSelectionModel().addTreeSelectionListener(this);
-					return;
-				}
-			}
-		}
-	}
-		
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(getTree());
-	java.awt.Cursor savedCursor = owner.getCursor();
-	try
-	{
-		owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-
-		DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
-
-		if( node.getUserObject() instanceof String )
-			return;
-
-		com.cannontech.database.db.DBPersistent userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)node.getUserObject());
-		//node.getUserObject() is a DBPersistent that was created with a Lite method
-		//so we need to do a full retrieve before we can init the editor panel with it
-		try
-		{
-			userObject.retrieve();
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		 
-		PropertyPanel panel = userObject.getEditorPanel();
-
-		panel.setValue( userObject );
-		panel.addPropertyPanelListener(this);
-		
-		
-		getEditorFrame().setContentPane( panel );
-		getEditorFrame().setTitle( panel.toString() );
-		
-		getEditorFrame().pack();
-		try
-		{
-			getEditorFrame().setSelected(true);
-		}
-		catch( java.beans.PropertyVetoException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );//when does this happen??
-		}
-		
-		getEditorFrame().setVisible(true);
-
-	}
-	catch(Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		owner.setCursor( savedCursor );
-	}
-*/
-}
 /**
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent

@@ -235,17 +235,17 @@ public boolean insertTreeObject( LiteBase lb )
 
 			updateTreeNodeStructure( rootNode );
 			
-/*			//lock our point list down
-			synchronized( pointTempList )
-			{
-				pointTempList.clear();
-				pointTempList.add( lb );
+/*       //lock our point list down
+         synchronized( pointTempList )
+         {
+            pointTempList.clear();
+            pointTempList.add( lb );
 
-				//add this point and maybe its point type to the deviceNode
-				addPoints( rootNode );
-			}
+            //add this point and maybe its point type to the deviceNode
+            addPoints( rootNode );
+         }
 
-			updateTreeNodeStructure( rootNode );
+         updateTreeNodeStructure( rootNode );
 */
 			return true;
 		}

@@ -8,12 +8,12 @@ import com.cannontech.database.data.pao.PAOGroups;
 /**
  * This type was created in VisualAge.
  */
-public class RouteType2Panel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
+public class RouteNameDevicePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjRouteNameLabel = null;
 	private javax.swing.JTextField ivjRouteNameTextField = null;
 	private javax.swing.JLabel ivjSignalTransmitterLabel = null;
 	private javax.swing.JComboBox ivjSignalTransmitterComboBox = null;
-public RouteType2Panel() {
+public RouteNameDevicePanel() {
 	super();
 	initialize();
 }
@@ -152,6 +152,26 @@ private javax.swing.JComboBox getSignalTransmitterComboBox() {
 			ivjSignalTransmitterComboBox = new javax.swing.JComboBox();
 			ivjSignalTransmitterComboBox.setName("SignalTransmitterComboBox");
 			// user code begin {1}
+         
+         com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+         synchronized(cache)
+         {
+            java.util.List allDevices = cache.getAllDevices();
+            for(int i=0;i<allDevices.size();i++)
+            {
+               com.cannontech.database.data.lite.LiteYukonPAObject litePAO = 
+                        (com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i);
+                        
+               if( litePAO.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER
+                   && !DeviceTypesFuncs.isRepeater(litePAO.getType()) )
+               {
+                  getSignalTransmitterComboBox().addItem( allDevices.get(i) );
+               }
+
+            }
+            
+         }
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -329,8 +349,8 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
 public static void main(java.lang.String[] args) {
 	try {
 		java.awt.Frame frame = new java.awt.Frame();
-		RouteType2Panel aRouteType2Panel;
-		aRouteType2Panel = new RouteType2Panel();
+		RouteNameDevicePanel aRouteType2Panel;
+		aRouteType2Panel = new RouteNameDevicePanel();
 		frame.add("Center", aRouteType2Panel);
 		frame.setSize(aRouteType2Panel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -370,18 +390,8 @@ public boolean noRepeaters() {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
-public void setValue(Object val) {
-	if( getSignalTransmitterComboBox().getModel().getSize() > 0 )
-		getSignalTransmitterComboBox().removeAllItems();
-
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List allDevices = cache.getAllDevices();
-		for(int i=0;i<allDevices.size();i++)
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allDevices.get(i)).getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER )
-				getSignalTransmitterComboBox().addItem(allDevices.get(i));
-	}
+public void setValue(Object val) 
+{
 }
 /**
  * Comment

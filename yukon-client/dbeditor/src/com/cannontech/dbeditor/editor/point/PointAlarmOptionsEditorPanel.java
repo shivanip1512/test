@@ -807,14 +807,21 @@ public void setValue(Object val)
 	
 	//Consider defaultObject an instance of com.cannontech.database.data.point.PointBase
 	com.cannontech.database.data.point.PointBase point = (com.cannontech.database.data.point.PointBase) val;
+   int ptType = com.cannontech.database.data.point.PointTypes.getType( point.getPoint().getPointType() );
 	
 	Character alarmInhibit = point.getPoint().getAlarmInhibit();
 
 	if( alarmInhibit != null )
 		CtiUtilities.setCheckBoxState( getJCheckBoxDisableAllAlarms(), alarmInhibit );
 		
-	String alarmStates = point.getPointAlarming().getAlarmStates();
+   //be sure we have a 32 character string
+	String alarmStates =
+      ( point.getPointAlarming().getAlarmStates().length() != point.getPointAlarming().ALARM_STATE_COUNT
+        ? point.getPointAlarming().DEFAULT_ALARM_STATES
+        : point.getPointAlarming().getAlarmStates() );
+        
 	String excludeNotifyStates = point.getPointAlarming().getExcludeNotifyStates();
+
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )	
 	{
@@ -824,20 +831,24 @@ public void setValue(Object val)
 
 		if( allAlarmStates.size() <= 0 )
 			throw new ArrayIndexOutOfBoundsException("No AlarmStates exist, unable to create alarms, occured in " + this.getClass() );
-			
-		if( point.getPoint().getPointType().equalsIgnoreCase("Status") )
+	   
+      
+		if( ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		{
 			String[] stateNames = null;
 
 			// get all the states the status point may have
 			for( int i = 0; i < allStateGroups.size(); i++ )
 			{			
-				if( point.getPoint().getStateGroupID().intValue() == ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStateGroupID() )
-				{
-					stateNames = new String[((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList().size()];
+            com.cannontech.database.data.lite.LiteStateGroup stateGroup = 
+                  (com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i);
 
-					for( int j = 0; j < ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList().size(); j++ )
-						stateNames[j] = ((com.cannontech.database.data.lite.LiteStateGroup)allStateGroups.get(i)).getStatesList().get(j).toString();
+				if( point.getPoint().getStateGroupID().intValue() == stateGroup.getStateGroupID() )
+				{
+					stateNames = new String[stateGroup.getStatesList().size()];
+
+					for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
+						stateNames[j] = stateGroup.getStatesList().get(j).toString();
 						
 					break; // we have all the states, get out
 				}

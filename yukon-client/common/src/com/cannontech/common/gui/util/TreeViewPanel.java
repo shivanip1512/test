@@ -830,42 +830,16 @@ public void treeObjectDelete( LiteBase lb )
  * Insert the method's description here.
  * Creation date: (4/17/2002 1:55:28 PM)
  * @param changeType int
+ * @return boolean true if the LiteBase object is found in the current model
  */
-public void treeObjectInsert( LiteBase lb )
+public boolean treeObjectInsert( LiteBase lb )
 {
 	if( lb == null )
-		return;
+		return false;
 	
 	LiteBaseTreeModel model = getCurrentTreeModel();
-	
-	boolean inserted = getCurrentTreeModel().insertTreeObject( lb );
 
-	if( !inserted )
-	{
-		for( int i = 0 ; i < getSortByComboBox().getModel().getSize(); i++ )
-		{
-			model = (LiteBaseTreeModel)getSortByComboBox().getModel().getElementAt(i);
-			
-			if( model != getCurrentTreeModel() 
-				 && model.isLiteTypeSupported(lb.getLiteType()) )
-			{
-				model.update();
-				
-				inserted = model.insertTreeObject(lb);
-
-				if( inserted )
-				{
-					getSortByComboBox().setSelectedIndex( i );
-
-					getTree().setModel(model);					
-					break;
-				}
-
-				((DefaultMutableTreeNode)model.getRoot()).removeAllChildren();
-			}
-		}
-	}
-
+	return getCurrentTreeModel().insertTreeObject( lb );
 }
 /**
  * Insert the method's description here.

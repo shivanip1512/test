@@ -58,10 +58,14 @@ private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQ
 	Integer theID = new Integer( deviceID );
    String str = null;   
 
-	if( com.cannontech.database.data.device.DeviceBase.hasRoute( theID ) )
+   /* Some day we could consolidate all these seperate delete statements into one
+    * statement. Do this when performance becomes an issue and put it into the
+    * DeviceBase class 
+    */
+	if( (str = com.cannontech.database.data.device.DeviceBase.hasRoute(theID)) != null )
 	{
 		theWarning.delete(0, theWarning.length());
-		theWarning.append("\nbecause it is utilized by a route.");
+		theWarning.append("\nbecause it is utilized by the route named '"+ str + "'");
 		return STATUS_DISALLOW;
 	}
 
@@ -72,7 +76,14 @@ private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQ
       return STATUS_DISALLOW;
    }
 
-	//this point is deleteable
+   if( (str = com.cannontech.database.db.route.RepeaterRoute.isRepeaterUsed(theID)) != null )
+   {
+      theWarning.delete(0, theWarning.length());
+      theWarning.append("\nbecause it is utilized by the route named '"+ str + "'");
+      return STATUS_DISALLOW;
+   }
+
+	//this device is deleteable
 	return STATUS_ALLOW;
 }
 /**
@@ -85,6 +96,10 @@ private static byte createDeleteStringForNotification(int noteID) throws java.sq
 {
 	Integer theID = new Integer( noteID );
 
+   /* Some day we could consolidate all these seperate delete statements into one
+    * statement. Do this when performance becomes an issue and put it into the
+    * NotificationBase class 
+    */
 	if( com.cannontech.database.data.notification.NotificationRecipient.hasPointAlarming( theID ) )
 	{
 		theWarning.delete(0, theWarning.length());
@@ -120,6 +135,10 @@ private static byte createDeleteStringForPoints(int pointID) throws java.sql.SQL
 {
 	Integer ptID = new Integer( pointID );
    	      
+   /* Some day we could consolidate all these seperate delete statements into one
+    * statement. Do this when performance becomes an issue and put it into the
+    * PointBase class 
+    */
 	if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
 	{
 		theWarning.delete(0, theWarning.length());
