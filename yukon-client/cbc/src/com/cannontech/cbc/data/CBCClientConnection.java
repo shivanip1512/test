@@ -229,9 +229,9 @@ private void handleCBCStatesMessage(CBCStates msg)
 {
 	com.cannontech.database.db.state.State[] states = new com.cannontech.database.db.state.State[msg.getNumberOfStates()];
 
-com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
-		+ " : Got a CapBank State Message with " + msg.getNumberOfStates()
-		+ " states" );
+   com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
+   		+ " : Got a CapBank State Message with " + msg.getNumberOfStates()
+   		+ " states" );
 	
 	synchronized ( states ) 
 	{		
@@ -255,10 +255,9 @@ com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonu
  */
 private void handleCBCSubAreaNames( CBCSubAreaNames msg )
 {
-com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
-		+ " : Got an Area Message with " + msg.getNumberOfAreas()
-		+ " areas" );
-
+   com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
+   		+ " : Got an Area Message with " + msg.getNumberOfAreas()
+   		+ " areas" );
 	
 	setChanged();
 	notifyObservers( msg ); // tell our listeners we have new data
@@ -276,9 +275,9 @@ private void handleCBCSubstationBuses(CBCSubstationBuses msg)
 	SubBus[] buses = new SubBus[ msg.getNumberOfBuses() ];
 	for( int i = 0; i < msg.getNumberOfBuses(); i++ )
 	{
-com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
-		+ " : Received SubBus - " + msg.getSubBusAt(i).getCcName() 
-		+ "/" + msg.getSubBusAt(i).getCcArea() );
+      com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString()
+      		+ " : Received SubBus - " + msg.getSubBusAt(i).getCcName() 
+      		+ "/" + msg.getSubBusAt(i).getCcArea() );
 
 		buses[i] = msg.getSubBusAt(i);
 	}
@@ -383,9 +382,11 @@ public void run()
 
 	try
 	{
+      Object in = null;
+      
 		while( true )
 		{
-			Object in = null;
+			in = null;
 
 			if( getConnection().isValid() && ((in = getConnection().read(0L)) != null) )
 			{
