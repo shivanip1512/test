@@ -7,85 +7,6 @@ package com.cannontech.billing;
  */
 public class SQLStringBuilder 
 {
-	private String buildWhereClause_Old (java.util.Vector groupVector, String groupingColumn, int [] analogOffsets, int [] accOffsets)
-{
-	java.util.Vector whereClauses = new java.util.Vector();
-	
-	//String whereString = " WHERE ";
-	if( yukonPAObjectTable_from && deviceMeterGroup_from)
-	{
-		whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
-	}
-	if ( yukonPAObjectTable_from && point_from)
-	{
-		whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = POINT.PAOBJECTID "));
-	}
-	if( rawPointHistoryTable_from)
-	{
-		whereClauses.add(new String(" RAWPOINTHISTORY.TIMESTAMP <= ? "));	//END BILLING DATE
-	}
-
-	if( rawPointHistoryTable_from && point_from)
-	{
-		whereClauses.add(new String(" RAWPOINTHISTORY.POINTID = POINT.POINTID "));
-	}
-	
-	if( deviceMeterGroup_from)
-	{
-		String inCollectionGroup = new String(groupingColumn + " IN ('" + groupVector.get(0) + "'");
-		for (int i = 1; i < groupVector.size(); i++)
-		{
-			inCollectionGroup += ", '" + groupVector.get(i) + "'";
-		}
-		inCollectionGroup += ")";
-			
-		whereClauses.add(inCollectionGroup);
-	}
-	if( point_from )
-	{
-		if( pointUnit_from && unitMeasure_from)
-		{
-			whereClauses.add(new String(" POINT.POINTID = POINTUNIT.POINTID "));
-			whereClauses.add(new String(" POINTUNIT.UOMID = UNITMEASURE.UOMID"));
-		}
-		
-		if( deviceMeterGroup_from)
-		{
-			whereClauses.add(new String(" POINT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID"));
-		}
-		// select valid pointtypes with appropriate pointoffsets.
-		String pointTypeString = new String(" ((POINTTYPE = 'Analog' AND POINTOFFSET IN (" + analogOffsets[0]);
-		for (int i = 1; i < analogOffsets.length; i++)
-		{
-			pointTypeString += ", " + analogOffsets[i];
-		}
-		
-		pointTypeString += ")) OR (POINTTYPE = 'PulseAccumulator' AND POINTOFFSET IN (" + accOffsets[0];
-		for (int i = 1; i < accOffsets.length; i++)
-		{
-			pointTypeString += ", " + accOffsets[i];
-		}
-		pointTypeString += " ))) ";
-		whereClauses.add(pointTypeString);
-		
-	}
-
-
-	if( !whereClauses.isEmpty())
-	{
-		String whereString = new String(" WHERE " + whereClauses.get(0));
-		for (int i = 1; i < whereClauses.size(); i++)
-		{
-			whereString += " AND " + whereClauses.get(i);
-		}
-		return whereString;
-	}
-	else
-	{
-		return null;
-	}
-}
-
 	public StringBuffer buildSQLStatement(String[] columns, String [] tables, com.cannontech.billing.mainprograms.BillingFileDefaults billingDefaults, 
 											int [] analogOffsets, int [] pulseAccOffsets)
 	{
@@ -100,12 +21,10 @@ public class SQLStringBuilder
 			return null;
 		}
 	
-		
-		//setTableBooleans(tables
 		StringBuffer sqlBuffer = new StringBuffer(buildSelectClause(columns));
 		
 		sqlBuffer.append( buildFromClause(tables));
-		sqlBuffer.append( buildWhereClause( billingDefaults.getBillGroup(), billingDefaults.getBillGroupColumn(), analogOffsets, pulseAccOffsets, demandAccOffsets));
+		sqlBuffer.append( buildWhereClause( billingDefaults.getBillGroup(), billingDefaults.getBillGroupSQLString(), analogOffsets, pulseAccOffsets, demandAccOffsets));
 	
 	
 		com.cannontech.clientutils.CTILogger.info(" SQL Statement: " + sqlBuffer.toString());
