@@ -46,6 +46,8 @@ public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel
 
 	private IYukonRoleContainer roleCont = null;
 
+	private CheckNodeSelectionListener nodeListener = null;
+
 /**
  * Constructor
  */
@@ -358,7 +360,6 @@ private javax.swing.JTree getJTreeRoles() {
 			ivjJTreeRoles.setBounds(0, 0, 165, 243);
 			// user code begin {1}
 			
-			
 			DefaultMutableTreeNode root = 
 				new DefaultMutableTreeNode("Role Categories");
 
@@ -394,8 +395,7 @@ private javax.swing.JTree getJTreeRoles() {
 			//expand the root
 			ivjJTreeRoles.expandPath( new TreePath(root.getPath()) );
 
-			ivjJTreeRoles.addMouseListener(
-				new CheckNodeSelectionListener(ivjJTreeRoles) );
+			ivjJTreeRoles.addMouseListener( getNodeListener() );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -738,6 +738,29 @@ public static void main(java.lang.String[] args) {
 		exception.printStackTrace(System.out);
 	}
 }
+
+	private CheckNodeSelectionListener getNodeListener()
+	{
+		if( nodeListener == null )
+			nodeListener = new CheckNodeSelectionListener( getJTreeRoles() );
+		
+		return nodeListener;
+	}
+
+	public void setRoleTabledEnabled( boolean val_ )
+	{
+		getJTableProperties().setEnabled( val_ );
+
+		if( val_ )
+		{
+			getJTreeRoles().addMouseListener( getNodeListener() );
+		}
+		else
+		{
+			getJTreeRoles().removeMouseListener( getNodeListener() );
+		}
+
+	}
 
 
 	/**

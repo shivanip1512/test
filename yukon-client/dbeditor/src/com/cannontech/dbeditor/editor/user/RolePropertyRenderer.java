@@ -111,13 +111,13 @@ public class RolePropertyRenderer extends javax.swing.JLabel implements javax.sw
 		if( value != null )
 		{
 			setText( value.toString() );
-			((javax.swing.JComponent)this).setToolTipText( value.toString() );
 		}
 		else
 		{
 			setText( "" );
-			((javax.swing.JComponent)this).setToolTipText( "" );
 		}
+
+		((javax.swing.JComponent)this).setToolTipText("DBL-Click to see the roles for this group");
 
 		return this;
 	}

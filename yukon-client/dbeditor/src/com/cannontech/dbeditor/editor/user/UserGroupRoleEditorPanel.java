@@ -6,14 +6,20 @@ package com.cannontech.dbeditor.editor.user;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 import javax.swing.table.TableColumn;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.table.CheckBoxColorRenderer;
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
 
 public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.DataInputPanel
@@ -290,18 +296,49 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		{
 			public void mouseClicked(MouseEvent e) 
 			{
-				if( e.getClickCount() == 2 )
+				int row = getJTableRoleGroup().rowAtPoint( e.getPoint() );
+
+				if( row >= 0 && row <= getTableModel().getRowCount() )
 				{
-					System.out.println( "Show the editor MOMBO!!!" );
-				}
-				else
-				{
-					int row = getJTableRoleGroup().rowAtPoint( e.getPoint() );
-					
-					if( row >= 0 && row <= getTableModel().getRowCount() )
+					if( e.getClickCount() == 2 )
+					{
+						UserRolePanel rolePanel = new UserRolePanel();
+						DBPersistent dbObj = 
+								LiteFactory.createDBPersistent( getTableModel().getRowAt(row) );
+						try
+						{
+							dbObj.setDbConnection( 
+								PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() ) );
+
+							dbObj.retrieve();
+
+							rolePanel.setValue( dbObj );
+							rolePanel.setRoleTabledEnabled( false );
+						
+							OkCancelDialog diag = new OkCancelDialog(
+									CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this), 
+									"Group Roles : " + getTableModel().getRowAt(row).getGroupName(), 
+									true, rolePanel );
+	
+							diag.setCancelButtonVisible( false );
+							diag.setSize( 520, 640 );
+							diag.setLocationRelativeTo( CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this) );
+						
+							diag.show();					
+						}
+						catch( SQLException sqlEx )
+						{
+							CTILogger.error( "Unable to get the data for this YukonRoleGroup, aborting operation", sqlEx );
+						}
+						
+					}
+					else
+					{
 						getJTextPaneDescription().setText(
 								getTableModel().getRowAt(row).getGroupDescription() );
+					}
 				}
+
 			}
 		};		
 		getJTableRoleGroup().addMouseListener( ma );
