@@ -7,12 +7,12 @@
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-  int invNo = Integer.parseInt(request.getParameter("InvNo"));
-  StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
-  int deviceID = starsMCT.getDeviceID();
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	int deviceID = starsMCT.getDeviceID();
 
-  //get the liteYukonPao using the deviceID
-  LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+	//get the liteYukonPao using the deviceID
+	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
 %>
 
 <jsp:useBean id="ycBean" class="com.cannontech.yc.gui.YC" scope="session">
