@@ -1679,6 +1679,53 @@ alter table ctidatabase add constraint PK_CTIDATABASE primary key  (Version, Bui
 
 insert into TOUSchedule values (0, '(none)', 0);
 
+insert into YukonListEntry values (1001,1001,0,'Program',1001);
+insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
+insert into YukonListEntry values (1003,1001,0,'ThermostatManual',1003);
+insert into YukonListEntry values (1011,1002,0,'Signup',1101);
+insert into YukonListEntry values (1012,1002,0,'Activation Pending',1102);
+insert into YukonListEntry values (1013,1002,0,'Activation Completed',1103);
+insert into YukonListEntry values (1014,1002,0,'Termination',1104);
+insert into YukonListEntry values (1015,1002,0,'Temp Opt Out',1105);
+insert into YukonListEntry values (1016,1002,0,'Future Activation',1106);
+insert into YukonListEntry values (1017,1002,0,'Install',1107);
+insert into YukonListEntry values (1018,1002,0,'Configure',1108);
+insert into YukonListEntry values (1019,1002,0,'Programming',1109);
+insert into YukonListEntry values (1020,1002,0,'Manual Option',1110);
+insert into YukonListEntry values (1021,1002,0,'Uninstall',1111);
+insert into YukonListEntry values (1031,1003,0,'OneWayReceiver',1201);
+insert into YukonListEntry values (1032,1003,0,'TwoWayReceiver',1202);
+insert into YukonListEntry values (1033,1003,0,'MCT',1203);
+insert into YukonListEntry values (1041,1004,0,' ',0);
+insert into YukonListEntry values (1042,1004,0,'120/120',0);
+insert into YukonListEntry values (1051,1005,0,'LCR-5000',1302);
+insert into YukonListEntry values (1052,1005,0,'LCR-4000',1302);
+insert into YukonListEntry values (1053,1005,0,'LCR-3000',1302);
+insert into YukonListEntry values (1054,1005,0,'LCR-2000',1302);
+insert into YukonListEntry values (1055,1005,0,'LCR-1000',1302);
+insert into YukonListEntry values (1056,1005,-1,'ExpressStat',1301);
+insert into YukonListEntry values (1057,1005,-1,'EnergyPro',3100);
+insert into YukonListEntry values (1058,1005,-1,'MCT',1303);
+
+insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
+insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N');
+insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
+insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','Y');
+insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','Y');
+insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection','DeviceStatus','N');
+insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
+insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','Y');
+insert into YukonSelectionList values (1009,'A','(none)','Service type selection','ServiceType','Y');
+insert into YukonSelectionList values (1010,'N','(none)','Service request status','ServiceStatus','N');
+insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
+insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection','Manufacturer','Y');
+insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection','ApplianceLocation','Y');
+insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection','ChanceOfControl','Y');
+insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection','TimeOfWeek','N');
+insert into YukonSelectionList values (1016,'N','(none)','Question type selection','QuestionType','N');
+insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
+insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection','ThermostatMode','N');
+insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection','ThermostatFanState','N');
 
 
 
