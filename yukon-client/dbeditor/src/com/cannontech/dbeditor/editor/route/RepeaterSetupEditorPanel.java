@@ -22,7 +22,7 @@ public class RepeaterSetupEditorPanel extends com.cannontech.common.gui.util.Dat
    private com.cannontech.common.gui.util.AddRemovePanel ivjRepeatersAddRemovePanel = null;
    private boolean addOrRemoveHasBeenDone = false;
    private boolean changeUpdated = true;
-   private boolean dbRegenerate = true;
+   private boolean dbRegenerate = false;
 
 /*
   * Constructor
@@ -83,17 +83,15 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
 			/*start of the chain that leads eventually out to the DatabaseEditor class
 			 * in order to simulate an apply button click so that the db is updated
 			 */
-			
+		
 			fireInputDataPanelEvent( new com.cannontech.common.gui.util.DataInputPanelEvent(this, com.cannontech.common.gui.util.DataInputPanelEvent.EVENT_FORCE_APPLY));
         }
-        else {
-        dbRegenerate = false;	
-        }
+       else {
+       	dbRegenerate = false;
+       }
            	       	
    	}
-   	else {
-   	dbRegenerate = false;	
-   	}
+   
    	
    getValue(this.objectToEdit);
    getAdvancedRepeaterSetupEditorPanel().setValue(this.objectToEdit);
@@ -183,6 +181,8 @@ private void connEtoC4(java.util.EventObject arg1) {
          getAdvancedSetupButton().setEnabled(true);
       addOrRemoveHasBeenDone = true;
       changeUpdated = false;
+      dbRegenerate = true;
+   
       // user code end
    } catch (java.lang.Throwable ivjExc) {
       // user code begin {3}
@@ -212,6 +212,8 @@ private void connEtoC5(java.util.EventObject arg1) {
       	
       addOrRemoveHasBeenDone = true;
       changeUpdated = false;
+      dbRegenerate = true;
+     
       // user code end
    } catch (java.lang.Throwable ivjExc) {
       // user code begin {3}
@@ -387,10 +389,11 @@ public Object getValue(Object val) {
 	val = (CCURoute)routes.elementAt(0);
 	this.objectToEdit = val;
    }
+   dbRegenerate = false;
    }
    
    
-	dbRegenerate = true;
+	
 	changeUpdated = true;
 	return val;
 }
