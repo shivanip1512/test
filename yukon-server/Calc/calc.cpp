@@ -26,11 +26,11 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
     _valid = TRUE;
     _pointId = pointId;
 
-    if( (!updateType.compareTo(UpdateType_Periodic, RWCString::ignoreCase)) 
+    if( (!updateType.compareTo(UpdateType_Periodic, RWCString::ignoreCase))
         && (updateInterval > 0) )
     {
         _updateInterval = updateInterval;
-		setNextInterval (updateInterval);
+        setNextInterval (updateInterval);
         _updateType = periodic;
     }
     else if( !updateType.compareTo(UpdateType_AllChange, RWCString::ignoreCase))
@@ -44,17 +44,17 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
         _updateInterval = 0;
         _updateType = allUpdate;
 
-		// XXX  invalid for now 
+        // XXX  invalid for now
     }
     else if( !updateType.compareTo(UpdateType_Historical, RWCString::ignoreCase))
-	{
+    {
 //        _updateInterval = 0;
 //        _updateType = historical;
 
-		// XXX  invalid for now 
-		_valid = FALSE;
+        // XXX  invalid for now
+        _valid = FALSE;
 
-	}
+    }
     else
         _valid = FALSE;
 }
@@ -82,7 +82,7 @@ CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
 void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 {
     _components.append( componentToAdd );
-}               
+}
 
 
 void CtiCalc::cleanup( void )
@@ -97,7 +97,7 @@ double CtiCalc::calculate( void )
     RWSlistCollectablesIterator iter( _components );
 
 //    _countdown = _updateInterval;
-    
+
     //  Iterate through all of the calculations in the collection
     for( ; iter( ) && _valid; )
     {
@@ -126,7 +126,7 @@ void CtiCalc::restoreGuts( RWvistream& aStream )
 {
    int entries;
    CtiCalcComponent scratchPad;
-   
+
    aStream >> entries;
 
    for( int i = 0; i < entries; i++ )
@@ -140,9 +140,9 @@ void CtiCalc::restoreGuts( RWvistream& aStream )
 void CtiCalc::saveGuts(RWvostream &aStream) const
 {
    RWSlistCollectablesIterator iter( _components );
-   
+
    aStream << _components.entries( );
-   
+
    //  Iterate through all of the calculations in the collection
    for( ; iter( ); )
    {
@@ -172,15 +172,15 @@ BOOL CtiCalc::ready( void )
     {
         switch( _updateType )
         {
-			case periodic:
-				if (RWTime().seconds() > getNextInterval())
-				{
-					isReady = TRUE;
-				}
-				else
-				{
-					isReady = FALSE;
-				}
+            case periodic:
+                if (RWTime().seconds() > getNextInterval())
+                {
+                    isReady = TRUE;
+                }
+                else
+                {
+                    isReady = FALSE;
+                }
 //                isReady = !(--_countdown);  //  NOTE!  do NOT check if ready more than once before calculating
                 break;                      //    it decrements the timer for the periodic points
             case allUpdate:
@@ -195,11 +195,11 @@ BOOL CtiCalc::ready( void )
 
 /*******************************
 *
-*	Takes the interval requested in seconds
+*   Takes the interval requested in seconds
 *   and calculates when the top of the next interval
 *   would be
-*	ie.  60 seconds interval should be updating
-*		once a minute at the top of the minute
+*   ie.  60 seconds interval should be updating
+*       once a minute at the top of the minute
 ********************************
 */
 CtiCalc& CtiCalc::setNextInterval( int aInterval )
@@ -213,20 +213,20 @@ CtiCalc& CtiCalc::setNextInterval( int aInterval )
    // if we are on the interval, go now
    if ((secondsPastHour % aInterval) == 0)
       _nextInterval = timeNow.seconds();
-	else
-		_nextInterval = timeNow.seconds() + (aInterval - (secondsPastHour % aInterval));
+    else
+        _nextInterval = timeNow.seconds() + (aInterval - (secondsPastHour % aInterval));
 
-	return *this;
+    return *this;
 }
 
 
 ULONG CtiCalc::getNextInterval( ) const
 {
-	return _nextInterval;
+    return _nextInterval;
 }
 
 int CtiCalc::getUpdateInterval( ) const
 {
-	return _updateInterval;
+    return _updateInterval;
 }
 
