@@ -145,12 +145,12 @@ public class DefaultDatabaseCache implements IDatabaseCache
     * @ejb:interface-method
     * tview-type="remote" 
    **/
+   /*
    public synchronized java.util.List getAllGraphTaggedPoints()
    {
       return getDBCache().getAllGraphTaggedPoints();
    }
-   
-   
+   */   
    /**
     * @ejb:interface-method
     * tview-type="remote" 

@@ -25,7 +25,7 @@ public interface IDatabaseCache {
    public java.util.List getAllGraphDefinitions();
 
    // This cache is derive from the point cache
-   public java.util.List getAllGraphTaggedPoints();
+   //public java.util.List getAllGraphTaggedPoints();
 
    public java.util.List getAllHolidaySchedules();
    public java.util.List getAllLMPrograms();
