@@ -67,15 +67,15 @@
  	<url-pattern>*.jpg</url-pattern>
  </filter-mapping>
  
-  <servlet>
+ <!-- <servlet>
    <servlet-name>svgGenerator</servlet-name>
    <servlet-class>com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>   
-  </servlet>
+  </servlet> -->
  
-  <servlet>
+  <!-- <servlet>
    <servlet-name>htmlGenerator</servlet-name>
    <servlet-class>com.cannontech.esub.web.servlet.HTMLGenerator</servlet-class>
-  </servlet>
+  </servlet> -->
   
   <servlet>
     <servlet-name>DynamicTextServlet</servlet-name>
@@ -96,6 +96,12 @@
   	<servlet-name>UpdateAttribute</servlet-name>
   	<servlet-class>com.cannontech.esub.web.servlet.UpdateAttribute</servlet-class>
   </servlet>
+  
+  <servlet>
+  	<servlet-name>ClearAlarm</servlet-name>
+  	<servlet-class>com.cannontech.esub.web.servlet.ClearAlarm</servlet-class>
+  </servlet>
+  
 <!-- deprecated servlets-->
   <servlet>
   	<servlet-name>StatusImage</servlet-name>
@@ -109,7 +115,10 @@
   
 <!-- end of deprecated servlets -->
 
-  <servlet-mapping>
+ <!-- 
+ 	commented out because runtime generation of these things
+ 	isn't necessary anymore
+ <servlet-mapping>
  	<servlet-name>svgGenerator</servlet-name>
  	<url-pattern>*.svg</url-pattern>
  </servlet-mapping>
@@ -117,7 +126,7 @@
  <servlet-mapping>
    <servlet-name>htmlGenerator</servlet-name>
    <url-pattern>*.html</url-pattern>
- </servlet-mapping>
+ </servlet-mapping> -->
 
  
   <session-config>
