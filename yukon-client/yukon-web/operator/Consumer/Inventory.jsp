@@ -371,8 +371,8 @@ function changeSerialNo(form) {
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
 	</tr>
