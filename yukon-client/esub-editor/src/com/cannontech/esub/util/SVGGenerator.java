@@ -23,6 +23,7 @@ import org.w3c.dom.svg.SVGDocument;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -136,10 +137,10 @@ public class SVGGenerator {
 				elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
 			}	
 			
-			if(elem != null)	
+			//if(elem != null)	
 				//elem.setAttributeNS(null,"onclick","refreshDrawing()");
 			
-				elem.setAttributeNS(null,"onclick","editValue()");
+			//	elem.setAttributeNS(null,"onclick","editValue()");
 			if( comp instanceof DrawingElement ) {
 			/*	Properties props = ((DrawingElement) comp).getElementProperties();
 				Enumeration e = props.propertyNames();
@@ -200,7 +201,7 @@ public class SVGGenerator {
 			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 		}
 		
-		Text theText = doc.createTextNode(text.getText());
+		Text theText = doc.createTextNode("-");
 		textElem.insertBefore(theText, null);
 		
 		return textElem;					
@@ -267,9 +268,9 @@ public class SVGGenerator {
 			
 		Element retElement = null;
 		
-		graph.updateGraph();
+		//graph.updateGraph();
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
-		graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width,height));
+		//graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width,height));
 		retElement = svgGenerator.getRoot();
 		
 		
@@ -319,18 +320,18 @@ public class SVGGenerator {
 		int height = (int) r.getMaxY() - y;
 
 		String imgName = "X.gif";		
-		LiteState ls = img.getCurrentState();
+		/*LiteState ls = img.getCurrentState();
 
 		if( ls != null ) {
 			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(ls.getImageID());			
 			if( lyi != null ) {
 				imgName = lyi.getImageName();
 			}
-		}
+		}*/
 
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
-		imgElem.setAttributeNS(null, "xlink:href", imgName);
+		imgElem.setAttributeNS(null, "xlink:href", "X.gif"/*imgName*/);
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
@@ -376,17 +377,19 @@ public class SVGGenerator {
 		Rectangle2D r = table.getStrokedBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
-		
+
 		int width = (int) r.getMaxX() - x; 
 		int height = (int) r.getMaxY() - y;
-			
+
+		int ackX = width - 80;
+		int ackY = 18;
+					
 		Element retElement = null;
 				
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
-		table.getTable().draw(svgGenerator,new Rectangle(width,height));
+		//table.getTable().draw(svgGenerator,new Rectangle(width,height));
 		retElement = svgGenerator.getRoot();
-		
-		
+				
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
 						
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
@@ -394,12 +397,17 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "width", Integer.toString(width));
 		retElement.setAttributeNS(null, "height", Integer.toString(height));			
 		retElement.setAttributeNS(null, "object", "table");
+		retElement.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
+ 		retElement.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
 		
 		Element text = doc.createElementNS(svgNS,"text");
 		text.setAttributeNS(null, "fill","rgb(0,125,122)");
-		text.setAttributeNS(null, "x", "5");
-		text.setAttributeNS(null, "y", "5");
-		Text theText = doc.createTextNode("Press ME!");
+		text.setAttributeNS(null, "x", Integer.toString(ackX));
+		text.setAttributeNS(null, "y", Integer.toString(ackY));
+		text.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
+ 		text.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
+		text.setAttributeNS(null, "onclick", "acknowledgeAlarm(evt)");
+		Text theText = doc.createTextNode("Clear Alarms");
 		text.insertBefore(theText,null);
 		retElement.appendChild(text);
 		return retElement;
