@@ -930,6 +930,11 @@ RWCString convertVersacomAddressToHumanForm(INT address)
         }
     }
 
+    if(rStr.isNull())
+    {
+        rStr = "0";
+    }
+
     return rStr;
 }
 
