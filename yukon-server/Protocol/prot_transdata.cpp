@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/02/16 19:09:52 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/02/16 20:53:36 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,7 +122,6 @@ void CtiProtocolTransdata::processBillingData( BYTE *data )
    else
    {
       memcpy( _billingBytes, _storage, _numBilling );
-      _ASSERTE( _CrtCheckMemory( ) );
       _billingDone = true;
    }
 }
@@ -147,7 +146,6 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
    else
    {
       memcpy( _lpBytes, data, _numLoadProfile );
-      _ASSERTE( _CrtCheckMemory( ) );
    
       _reallyDidProcessLP = true;
       _lpDone = true;
@@ -189,8 +187,9 @@ int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
    if( _billingDone )
    {
-      memcpy( InMessage->Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
-      InMessage->InLength = _numBilling + sizeof( ULONG );
+//      memcpy( InMessage->Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
+      memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, _numBilling );
+      InMessage->InLength = _numBilling + sizeof( llp );
       InMessage->EventCode = NORMAL;
       _numBytes = 0;
    }
@@ -212,14 +211,14 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
 {
    CtiTransdataData           *converted = NULL;
    BYTE                       *ptr = NULL;
-   ULONG                      temp;
+   llp                        *lp = NULL;
    vector<CtiTransdataData *> transVector;
 
    ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
-   
-   temp = ( ULONG)ptr;
-   _lastLPTime == temp;
-   ptr += sizeof( ULONG );
+
+   lp = ( llp *)ptr;
+   _lastLPTime = lp->lastLP;
+   ptr += sizeof( lp ); //ULONG );
 
    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
@@ -367,7 +366,6 @@ int CtiProtocolTransdata::retreiveData( BYTE *data )
    if(( data != NULL ) && ( _lpBytes != NULL ))
    {
       memcpy( data, _lpBytes, _numBytes );
-      _ASSERTE( _CrtCheckMemory( ) );
    }
    return( temp );
 }

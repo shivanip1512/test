@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/02/16 19:09:52 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/02/16 20:53:36 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       {
          RWTime p( getLastLPTime().seconds() );
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " ----test test test----" << p << endl;
+         dout << RWTime() << " ----Stored LPTime----" << p << endl;
       }
       
       OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
@@ -179,19 +179,7 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
    {
       if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
       {
-         /*
-         
-         memcpy( &_llp, InMessage->Buffer.InMessage, sizeof( _llp ));
-         
-         RWTime x( _llp.lastLP );
-         setLastLPTime( x );
-         
-         memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + sizeof( _llp ), InMessage->InLength - sizeof( _llp ));
-         
-         */
          transVector = _transdataProtocol.resultDecode( InMessage );
-
-//         setLastLPTime( _transdataProtocol.getLastLoadProfileTime() ); 
 
          if( transVector.size() )
          {
@@ -973,7 +961,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
       for( index = 0; index < lp->numLpRecs; )
       {
-         //FIXME we need some way out of this if none of the offset+lp matches anything....
          for( int x = 0; x < 4; x++ )
          {
             if( lp->enabledChannels[x] == true )
@@ -997,7 +984,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   pData->setTime( mTime );
                   pData->setType( pPoint->getType() );
                   
-//                  msgMulti = CTIDBG_new CtiMultiMsg;
                   msgMulti->getData().insert( pData );
                   pData = NULL;
 
@@ -1097,8 +1083,7 @@ int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
    if( lLP != NULL )
    {
       //insert lastlptime struct into inmess
-      memcpy( InMessage->Buffer.InMessage, lLP, sizeof( _llp ) );
-      _ASSERTE( _CrtCheckMemory() );
+      memcpy( InMessage->Buffer.InMessage, lLP, sizeof( CtiProtocolTransdata::llp ) );
 
       _transdataProtocol.sendCommResult( InMessage );
       
