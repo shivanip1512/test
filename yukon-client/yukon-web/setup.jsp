@@ -67,7 +67,7 @@ function dispStatusMsg(msgStr) { //v1.0
 		if( Boolean.valueOf(temp).booleanValue() )
 			retMsg += "<span class=\"MainText\">* Saved DATABASE properties successfully</span><br>";
 		else
-			retMsg += "<span class=\"ErrorMsg\">* Unable to save DATABASE propertie changes</span><br>";
+			retMsg += "<span class=\"ErrorMsg\">* Unable to save DATABASE properties changes</span><br>";
 	}
 
 	if( (temp = request.getParameter("yukprop")) != null) 
