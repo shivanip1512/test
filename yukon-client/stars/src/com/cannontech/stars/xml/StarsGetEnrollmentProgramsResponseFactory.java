@@ -93,9 +93,9 @@ public class StarsGetEnrollmentProgramsResponseFactory {
         }
         finally {
             try {
-                if (conn != null) conn.close();
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
+                if (conn != null) conn.close();
             }
             catch (Exception e) {
                 e.printStackTrace();

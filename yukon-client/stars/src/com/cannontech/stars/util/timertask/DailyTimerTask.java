@@ -14,30 +14,24 @@ import com.cannontech.stars.xml.*;
 
 /**
  * @author yao
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Run at midnight every day
  */
 public class DailyTimerTask extends StarsTimerTask {
 	
-	private static final long TIMER_PERIOD = 1000 * 60 * 60 * 24;	// Run every day
-	
-	private static final long INITIAL_DELAY = 1000 * 60 * 5;	// Start initial running 5 mins after initialization
+	private static final long TIMER_PERIOD = 1000 * 60 * 60 * 24;	// 1 day
+
+	/**
+	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#isFixedRate()
+	 */
+	public boolean isFixedRate() {
+		return true;
+	}
 	
 	/**
 	 * @see com.cannontech.stars.util.timer.StarsTimer#getTimerPeriod()
 	 */
 	public long getTimerPeriod() {
 		return TIMER_PERIOD;
-	}
-
-	/**
-	 * @see com.cannontech.stars.util.timer.StarsTimer#getInitialDelay()
-	 */
-	public long getInitialDelay() {
-		return INITIAL_DELAY;
 	}
 
 	/**
@@ -54,12 +48,14 @@ public class DailyTimerTask extends StarsTimerTask {
 		CTILogger.info( "*** Daily timer task start ***" );
 		
 		try {
-			EnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
+			LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
 			if (companies == null) return;
 			
 			for (int i = 0; i < companies.length; i++) {
-				Hashtable selectionLists = SOAPServer.getAllSelectionLists( companies[i].getEnergyCompanyID() );
-				if (selectionLists == null) continue;
+				if (companies[i].getEnergyCompanyID().intValue() < 0) continue;
+				
+				Hashtable selectionLists = SOAPServer.getAllSelectionLists( companies[i].getLiteID() );
+				if (selectionLists == null || selectionLists.size() == 0) continue;
 				
 				int reenableActionID = StarsCustListEntryFactory.getStarsCustListEntry(
 						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
@@ -83,7 +79,7 @@ public class DailyTimerTask extends StarsTimerTask {
 					if (hwEvents[j].getEventDateTime().before( new Date() )) {
 						// Send yukon switch command to enable the LM hardware
 						com.cannontech.database.db.stars.event.LMHardwareEvent hwEvent = new com.cannontech.database.db.stars.event.LMHardwareEvent();
-						hwEvent.setEventID( hwEvents[i].getEventID() );
+						hwEvent.setEventID( hwEvents[j].getEventID() );
 						hwEvent = (com.cannontech.database.db.stars.event.LMHardwareEvent)
 								Transaction.createTransaction( Transaction.RETRIEVE, hwEvent ).execute();
 								
@@ -114,7 +110,7 @@ public class DailyTimerTask extends StarsTimerTask {
 								Transaction.createTransaction( Transaction.INSERT, event2 ).execute();
 						
 						// Update the lite object
-						LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( companies[i].getEnergyCompanyID(), hw.getInventoryID(), false );
+						LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( companies[i].getLiteID(), hw.getInventoryID().intValue(), false );
 						if (liteHw != null) {
 							ArrayList hwHist = liteHw.getLmHardwareHistory();
 							if (hwHist != null) {
@@ -139,7 +135,7 @@ public class DailyTimerTask extends StarsTimerTask {
 						progEvent = (com.cannontech.database.db.stars.event.LMProgramEvent)
 								Transaction.createTransaction( Transaction.RETRIEVE, progEvent ).execute();
 								
-						ArrayList liteAcctInfoList = SOAPServer.getAllCustAccountInformation( companies[i].getEnergyCompanyID() );
+						ArrayList liteAcctInfoList = SOAPServer.getAllCustAccountInformation( companies[i].getLiteID() );
 						for (int k = 0; k < liteAcctInfoList.size(); k++) {
 							LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) liteAcctInfoList.get(k);
 							if (liteAcctInfo.getCustomerAccount().getAccountID() != progEvent.getAccountID().intValue()) continue;
@@ -149,7 +145,7 @@ public class DailyTimerTask extends StarsTimerTask {
 							
 							for (int l = 0; l < programs.size(); l++) {
 								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) programs.get(l);
-								if (liteProg.getLmProgramID() != progEvent.getLMProgramID().intValue()) continue;
+								if (liteProg.getProgramID() != progEvent.getLMProgramID().intValue()) continue;
 								
 								ArrayList progHist = liteProg.getProgramHistory();
 								if (progHist == null) break;

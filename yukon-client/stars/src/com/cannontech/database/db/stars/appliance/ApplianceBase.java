@@ -20,7 +20,7 @@ public class ApplianceBase extends DBPersistent {
     private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
     private Integer applianceCategoryID = new Integer( ApplianceCategory.NONE_INT );
     private Integer lmProgramID = new Integer( NONE_INT );
-    private String yearManufactured = "";
+    private Integer yearManufactured = new Integer(0);
     private Integer manufacturerID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
     private Integer locationID = new Integer( com.cannontech.database.db.stars.CustomerListEntry.NONE_INT );
     private Integer kwCapacity = new Integer(0);
@@ -59,7 +59,7 @@ public class ApplianceBase extends DBPersistent {
                 apps[i].setAccountID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
                 apps[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
                 apps[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                apps[i].setYearManufactured( (String) row[4] );
+                apps[i].setYearManufactured( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
                 apps[i].setManufacturerID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
                 apps[i].setLocationID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
                 apps[i].setKWCapacity( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
@@ -115,7 +115,7 @@ public class ApplianceBase extends DBPersistent {
             setAccountID( (Integer) results[0] );
             setApplianceCategoryID( (Integer) results[1] );
             setLMProgramID( (Integer) results[2] );
-            setYearManufactured( (String) results[3] );
+            setYearManufactured( (Integer) results[3] );
             setManufacturerID( (Integer) results[4] );
             setLocationID( (Integer) results[5] );
             setKWCapacity( (Integer) results[6] );
@@ -144,6 +144,7 @@ public class ApplianceBase extends DBPersistent {
         }
         finally {
             try {
+				if( rset != null ) rset.close();
                 if (pstmt != null) pstmt.close();
             }
             catch (java.sql.SQLException e2) {
@@ -242,14 +243,6 @@ public class ApplianceBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the yearManufactured.
-	 * @return String
-	 */
-	public String getYearManufactured() {
-		return yearManufactured;
-	}
-
-	/**
 	 * Sets the efficiencyRating.
 	 * @param efficiencyRating The efficiencyRating to set
 	 */
@@ -290,10 +283,18 @@ public class ApplianceBase extends DBPersistent {
 	}
 
 	/**
+	 * Returns the yearManufactured.
+	 * @return Integer
+	 */
+	public Integer getYearManufactured() {
+		return yearManufactured;
+	}
+
+	/**
 	 * Sets the yearManufactured.
 	 * @param yearManufactured The yearManufactured to set
 	 */
-	public void setYearManufactured(String yearManufactured) {
+	public void setYearManufactured(Integer yearManufactured) {
 		this.yearManufactured = yearManufactured;
 	}
 

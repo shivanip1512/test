@@ -103,6 +103,7 @@ public class CallReportBase extends DBPersistent {
         }
         finally {
             try {
+				if( rset != null ) rset.close();
                 if (pstmt != null) pstmt.close();
             }
             catch (java.sql.SQLException e2) {

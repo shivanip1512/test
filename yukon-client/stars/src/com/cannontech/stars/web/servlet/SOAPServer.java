@@ -8,6 +8,8 @@ import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.messaging.JAXMServlet;
 import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
@@ -37,83 +39,43 @@ import com.cannontech.stars.xml.util.XMLUtil;
  */
 
 public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cannontech.database.cache.DBChangeListener {
+	
+	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
     
     // Instance of the SOAPServer object
     private static SOAPServer instance = null;
-    private static boolean initialized = false;
     
     // Timer object for periodical tasks
     private static Timer timer = new Timer();
     
     private static StarsTimerTask[] timerTasks = {
-    	new DailyTimerTask()
+    	new DailyTimerTask(),
+    	new LMControlHistoryTimerTask()
     };
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
 	// Array of all the energy companies
-	private static EnergyCompany[] energyCompanies = null;
-    
-    // Map of energy company to customer account info lists
-    // key: Integer energyCompanyID, value: ArrayList custAccountInfos
-    private static Hashtable custAccountInfoTable = new Hashtable();
-    
-    // Map of energy company to customer contact list
-    // key: Integer energyCompanyID, value: ArrayList custContacts
-    private static Hashtable custContactTable = new Hashtable();
-    
-    // Map of energy company to customer address list
-    // key: Integer energyCompanyID, value: ArrayList custAddresses
-    private static Hashtable custAddressTable = new Hashtable();
-    
-    // Map of energy company to LM program list
-    // key: Integer energyCompanyID, value: ArrayList lmPrograms
-    private static Hashtable lmProgramTable = new Hashtable();
-    
-    // Map of energy company to LM hardware list
-    // key: Integer energyCompanyID, value: ArrayList lmHardwares
-    private static Hashtable lmHardwareTable = new Hashtable();
-    
-    // Map of energy company to LM control history list
-    // key: Integer energyCompanyID, value: ArrayList lmCtrlHistList
-    private static Hashtable lmCtrlHistTable = new Hashtable();
-    
-    // Map of energy company to appliance category list
-    // key: Integer energyCompanyID, value: ArrayList appCategories
-    private static Hashtable appCatTable = new Hashtable();
-    
-    // Map of energy company to work order list
-    // key: Integer energyCompanyID, value: ArrayList workOrders
-    private static Hashtable workOrderTable = new Hashtable();
-    
-    // Map of energy company to service company list
-    // key: Integer energyCompanyID, value: ArrayList serviceCompanies
-    private static Hashtable serviceCompanyTable = new Hashtable();
-	
-	// Map of energy company to customer selection lists
-	// key: Integer energyCompanyID, value: Hashtable selectionLists
-    private static Hashtable selectionListTable = new Hashtable();
+	private static LiteStarsEnergyCompany[] energyCompanies = null;
     
     // List of web configurations
     private static ArrayList webConfigList = null;
     
+    
+    public static void refreshCache() {
+    	if (energyCompanies != null) {
+    		for (int i = 0; i < energyCompanies.length; i++)
+    			energyCompanies[i].clear();
+    	}
+    	energyCompanies = null;
+		webConfigList = null;
+    }
 
     public SOAPServer() {
         super();
     }
     
     public static SOAPServer getInstance() {
-    	if (instance == null) {
-    		instance = new SOAPServer();
-    		if (!initialized)
-    			try {
-    				instance.init();
-    			}
-    			catch (javax.servlet.ServletException e) {
-    				e.printStackTrace();
-    			}
-    	}
-    		
     	return instance;
     }
     
@@ -141,66 +103,61 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
      * Start implementation of ReqRespListener
      */
     public void init() throws javax.servlet.ServletException {
-    	com.cannontech.database.db.company.EnergyCompany[] companies = getAllEnergyCompanies();
+		getAllWebConfigurations();
+    	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
     	if (companies != null) {
 	    	for (int i = 0; i < companies.length; i++) {
-	    		getAllLMPrograms( companies[i].getEnergyCompanyID() );
-	    		getAllApplianceCategories( companies[i].getEnergyCompanyID() );
-	    		getAllServiceCompanies( companies[i].getEnergyCompanyID() );
-	    		getAllSelectionLists( companies[i].getEnergyCompanyID() );
-	    		
-	    		custAccountInfoTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
-	    		custContactTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
-	    		custAddressTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
-	    		lmHardwareTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
-	    		lmCtrlHistTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
-	    		workOrderTable.put( companies[i].getEnergyCompanyID(), new ArrayList() );
+	    		if (companies[i].getEnergyCompanyID().intValue() < 0) continue;	// Don't initialize the default company now
+	    		companies[i].init();
 	    	}
     	}
-		getAllWebConfigurations();
     	
     	initDispatchConnection();    	
     	startTimers();
     	
-    	initialized = true;	// Set to true so that the servlet will only be initialized once
+    	ServerUtils.setConnectionContainer( (com.cannontech.servlet.PILConnectionServlet)
+        		getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
+    	instance = this;
     }
+
+	/**
+	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
+	 */
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if (req.getParameter( "RefreshCache" ) != null) {
+			refreshCache();
+			resp.sendRedirect( "/refresh_cache.html" );
+		}
+		else
+			super.service(req, resp);
+	}
 
     public SOAPMessage onMessage(SOAPMessage message) {
         StarsOperation respOper = new StarsOperation();
 
         try {
-            String reqStr = SOAPUtil.parseSOAPBody( message );
-            StringReader sr = new StringReader( reqStr );
-            StarsOperation reqOper = StarsOperation.unmarshal( sr );
-
-            if (reqOper.getStarsLogin() != null) {
-                StarsSuccess success = new StarsSuccess();
-                success.setDescription( "User login successful" );
-                respOper.setStarsSuccess( success );
-            }
-            else {
-                StarsSuccess success = new StarsSuccess();
-                success.setDescription( "Operation successful" );
-                respOper.setStarsSuccess( success );
-            }
+        	StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( message );
+        	if (reqOper == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_NODE_NOT_FOUND, "Invalid request format") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
+        	
+            StarsSuccess success = new StarsSuccess();
+            success.setDescription( "Thanks for waking me up :)" );
+            respOper.setStarsSuccess( success );
+            
+            return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
-            e.printStackTrace();
-
-            StarsFailure failure = new StarsFailure();
-            failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
-            failure.setDescription( e.getMessage() );
-            respOper.setStarsFailure( failure );
-        }
-
-        try {
-            StringWriter sw = new StringWriter();
-            respOper.marshal( sw );
-            String respStr = XMLUtil.removeXMLDecl( sw.toString() );
-            return SOAPUtil.buildSOAPMessage(respStr, "");
-        }
-        catch (Exception e2) {
-            e2.printStackTrace();
+        	try {
+	        	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	        			StarsConstants.FAILURE_CODE_RUNTIME_ERROR, "Server error: cannot process request") );
+	        	return SOAPUtil.buildSOAPMessage( respOper );
+        	}
+        	catch (Exception e2) {
+        		e2.printStackTrace();
+        	}
         }
 
         return null;
@@ -260,7 +217,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     
     void startTimers() {
     	for (int i = 0; i < timerTasks.length; i++) {
-    		if (timerTasks[i].getInitialDelay() >= 0) {
+    		if (timerTasks[i].isFixedRate()) {
     			long initRunTime = System.currentTimeMillis() + timerTasks[i].getInitialDelay();
     			long startTime = timerTasks[i].getNextScheduledTime().getTime();
     			if (initRunTime < startTime) {
@@ -272,122 +229,45 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     					e.printStackTrace();
     				}
     			}
+    			
+	    		timer.scheduleAtFixedRate( timerTasks[i], timerTasks[i].getNextScheduledTime(), timerTasks[i].getTimerPeriod() );
     		}
-    		
-    		timer.schedule( timerTasks[i], timerTasks[i].getNextScheduledTime(), timerTasks[i].getTimerPeriod() );
+    		else
+    			timer.schedule( timerTasks[i], timerTasks[i].getInitialDelay(), timerTasks[i].getTimerPeriod() );
     	}
     }
     
-    public static void refreshCache() {
-		custAccountInfoTable = new Hashtable();
-		custContactTable = new Hashtable();
-		custAddressTable = new Hashtable();
-		lmProgramTable = new Hashtable();
-		lmHardwareTable = new Hashtable();
-		lmCtrlHistTable = new Hashtable();
-		appCatTable = new Hashtable();
-		workOrderTable  = new Hashtable();
-		serviceCompanyTable = new Hashtable();
-		selectionListTable = new Hashtable();
-		webConfigList = null;
-    }
-    
-    public static EnergyCompany[] getAllEnergyCompanies() {
+    public static LiteStarsEnergyCompany[] getAllEnergyCompanies() {
     	if (energyCompanies == null) {
+	    	java.sql.Connection conn = null;
+	    	
     		try {
-	    		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+	    		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
 	    				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-		    	energyCompanies = com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
+		    	com.cannontech.database.db.company.EnergyCompany[] companies =
+		    			com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
+		    	if (companies == null) return null;
+		    	
+		    	energyCompanies = new LiteStarsEnergyCompany[ companies.length ];
+		    	for (int i = 0; i < energyCompanies.length; i++)
+		    		energyCompanies[i] = new LiteStarsEnergyCompany( companies[i] );
     		}
     		catch (Exception e) {
     			e.printStackTrace();
+    		}
+    		finally {
+    			try {
+    				if (conn != null) conn.close();
+    			}
+    			catch (Exception e2) {
+    				e2.printStackTrace();
+    			}
     		}
 	    	
 	    	CTILogger.info( "All energy companies loaded" );
     	}
     	
     	return energyCompanies;
-    }
-    
-    public static ArrayList getAllLMPrograms(Integer energyCompanyID) {
-    	ArrayList lmPrograms = (ArrayList) lmProgramTable.get( energyCompanyID );
-    	
-    	if (lmPrograms == null) {
-    		lmPrograms = new ArrayList();
-    		lmProgramTable.put( energyCompanyID, lmPrograms );
-    		
-    		List lmProgList = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllLMPrograms();
-    		com.cannontech.database.db.stars.ECToGenericMapping[] items =
-    				com.cannontech.database.db.stars.ECToGenericMapping.getAllMappingItems( energyCompanyID, "LMPrograms" );
-    				
-    		for (int i = 0; i < items.length; i++) {
-    			com.cannontech.database.data.lite.LiteYukonPAObject progPao = null;
-    			for (int j = 0; j < lmProgList.size(); j++) {
-    				if (((com.cannontech.database.data.lite.LiteYukonPAObject) lmProgList.get(j)).getYukonID() == items[i].getItemID().intValue()
-    					&& ((com.cannontech.database.data.lite.LiteYukonPAObject) lmProgList.get(j)).getType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM) {
-    					progPao = (com.cannontech.database.data.lite.LiteYukonPAObject) lmProgList.get(j);
-    					break;
-    				}
-    			}
-    			
-    			if (progPao == null) continue;
-				
-				com.cannontech.database.db.stars.LMProgramWebPublishing pubProgram =
-						com.cannontech.database.db.stars.LMProgramWebPublishing.getLMProgramWebPublishing( items[i].getItemID() );
-    			
-				LiteLMProgram program = new LiteLMProgram();
-				program.setProgramID( progPao.getYukonID() );
-				program.setProgramName( progPao.getPaoName() );
-				program.setWebSettingsID( pubProgram.getWebSettingsID().intValue() );
-				program.setProgramCategory( items[i].getMappingCategory() );
-				
-				lmPrograms.add( program );
-    		}
-	    	
-	    	CTILogger.info( "All LM programs loaded for energy company #" + energyCompanyID.toString() );
-    	}
-    	
-    	return lmPrograms;
-    }
-    
-    public static ArrayList getAllApplianceCategories(Integer energyCompanyID) {
-    	ArrayList appCategories = (ArrayList) appCatTable.get( energyCompanyID );
-    	
-    	if (appCategories == null) {
-    		appCategories = new ArrayList();
-    		appCatTable.put( energyCompanyID, appCategories );
-    		
-    		ArrayList lmPrograms = getAllLMPrograms( energyCompanyID );
-    		com.cannontech.database.db.stars.appliance.ApplianceCategory[] appCats =
-    				com.cannontech.database.db.stars.appliance.ApplianceCategory.getAllApplianceCategories( energyCompanyID );
-    				
-    		for (int i = 0; i < appCats.length; i++) {
-    			LiteApplianceCategory appCat = new LiteApplianceCategory();
-    			appCat.setApplianceCategoryID( appCats[i].getApplianceCategoryID().intValue() );
-    			appCat.setCategoryID( appCats[i].getCategoryID().intValue() );
-    			appCat.setDescription( appCats[i].getDescription() );
-    			appCat.setWebConfigurationID( appCats[i].getWebConfigurationID().intValue() );
-    			
-    			com.cannontech.database.db.stars.LMProgramWebPublishing[] pubProgs =
-    					com.cannontech.database.db.stars.LMProgramWebPublishing.getAllLMProgramWebPublishing( appCats[i].getApplianceCategoryID() );
-    			LiteLMProgram[] pubPrograms = new LiteLMProgram[ pubProgs.length ];
-    			for (int j = 0; j < pubProgs.length; j++) {
-    				for (int k = 0; k < lmPrograms.size(); k++) {
-    					if (((LiteLMProgram) lmPrograms.get(k)).getProgramID() == pubProgs[j].getLMProgramID().intValue()) {
-    						pubPrograms[j] = (LiteLMProgram) lmPrograms.get(k);
-    						break;
-    					}
-    				}
-    			}
-    			appCat.setPublishedPrograms( pubPrograms );
-    			
-    			appCategories.add( appCat );
-    		}
-	    	
-	    	CTILogger.info( "All appliance categories loaded for energy company #" + energyCompanyID.toString() );
-    	}
-    	
-    	return appCategories;
     }
     
     public static ArrayList getAllWebConfigurations() {
@@ -405,7 +285,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     			webConfig.setUrl( webConfigs[i].getURL() );
     			
     			webConfigList.add( webConfig );
-    			//CTILogger.info( "WebConfig URL: \"" + webConfigs[i].getURL() + "\"" );
     		}
 	    	
 	    	CTILogger.info( "All customer web configurations loaded" );
@@ -413,224 +292,140 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	
     	return webConfigList;
     }
+    
+    public static LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
+    	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
+    	if (companies != null) {
+    		for (int i = 0; i < companies.length; i++)
+    			if (companies[i].getEnergyCompanyID().intValue() == energyCompanyID)
+    				return companies[i];
+    	}
+    	
+    	return null;
+    }
+    
+    public static ArrayList getAllLMPrograms(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+		return company.getAllLMPrograms();
+    }
+    
+    public static ArrayList getAllApplianceCategories(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getAllApplianceCategories();
+    }
 
-	public static Hashtable getAllSelectionLists(Integer energyCompanyID) {
-		Hashtable selectionLists = (Hashtable) selectionListTable.get( energyCompanyID );
-		
-		if (selectionLists == null) {
-	        selectionLists = new Hashtable();
-			selectionListTable.put( energyCompanyID, selectionLists );
-	        
-	        // Get all selection lists
-	        com.cannontech.database.db.stars.CustomerSelectionList[] selLists =
-	        		com.cannontech.database.data.stars.CustomerSelectionList.getAllSelectionLists( energyCompanyID );
-	        
-	        for (int i = 0; i < selLists.length; i++) {
-	        	LiteCustomerSelectionList selectionList = new LiteCustomerSelectionList();
-	        	selectionList.setListID( selLists[i].getListID().intValue() );
-	        	selectionList.setListName( selLists[i].getListName() );
-	        	
-	        	com.cannontech.database.db.stars.CustomerListEntry[] entries =
-	        			com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( selLists[i].getListID() );
-	        	StarsSelectionListEntry[] listEntries = new StarsSelectionListEntry[ entries.length ];
-	        			
-	        	for (int j = 0; j < entries.length; j++) {
-	        		listEntries[j] = new StarsSelectionListEntry();
-	        		listEntries[j].setEntryID( entries[j].getEntryID().intValue() );
-	        		listEntries[j].setContent( entries[j].getEntryText() );
-	        		listEntries[j].setYukonDefinition( entries[j].getYukonDefinition() );
-	        	}
-	        	
-	        	selectionList.setListEntries( listEntries );
-	        	selectionLists.put( selectionList.getListName(), selectionList );
-	        }
-	            
-	        // Get substation list
-	        LiteCustomerSelectionList subList = new LiteCustomerSelectionList();
-	        subList.setListID( -1 );
-	        subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-	        
-	        com.cannontech.database.db.stars.Substation[] subs =
-	        		com.cannontech.database.db.stars.Substation.getAllSubstations( energyCompanyID );
-	        StarsSelectionListEntry[] listEntries = new StarsSelectionListEntry[ subs.length ];
-	        
-	        for (int i = 0; i < subs.length; i++) {
-	        	listEntries[i] = new StarsSelectionListEntry();
-	        	listEntries[i].setEntryID( subs[i].getSubstationID().intValue() );
-	        	listEntries[i].setContent( subs[i].getSubstationName() );
-	        }
-	        
-	        subList.setListEntries( listEntries );
-	        selectionLists.put( subList.getListName(), subList );
-	        
-	        // Get service company list
-	        LiteCustomerSelectionList companyList = new LiteCustomerSelectionList();
-	        companyList.setListID( -1 );
-	        companyList.setListName( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	        
-	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
-	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( energyCompanyID );
-	        listEntries = new StarsSelectionListEntry[ companies.length ];
-	        
-	        for (int i = 0; i < companies.length; i++) {
-	        	listEntries[i] = new StarsSelectionListEntry();
-	        	listEntries[i].setEntryID( companies[i].getCompanyID().intValue() );
-	        	listEntries[i].setContent( companies[i].getCompanyName() );
-	        }
-	        
-	        companyList.setListEntries( listEntries );
-	        selectionLists.put( companyList.getListName(), companyList );
-			
-			CTILogger.info( "All customer selection lists loaded for energy company #" + energyCompanyID.toString() );
-		}
-		
-		return selectionLists;
+	public static Hashtable getAllSelectionLists(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getAllSelectionLists();
 	}
 	
-	public static ArrayList getAllServiceCompanies(Integer energyCompanyID) {
-		ArrayList serviceCompanies = (ArrayList) serviceCompanyTable.get( energyCompanyID );
-		if (serviceCompanies == null) {
-			serviceCompanies = new ArrayList();
-			serviceCompanyTable.put( energyCompanyID, serviceCompanies );
-			
-	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
-	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( energyCompanyID );
-	        for (int i = 0; i < companies.length; i++) {
-	        	LiteServiceCompany serviceCompany = new LiteServiceCompany();
-	        	serviceCompany.setCompanyID( companies[i].getCompanyID().intValue() );
-	        	serviceCompany.setCompanyName( companies[i].getCompanyName() );
-	        	serviceCompany.setAddressID( companies[i].getAddressID().intValue() );
-	        	serviceCompany.setMainPhoneNumber( companies[i].getMainPhoneNumber() );
-	        	serviceCompany.setMainFaxNumber( companies[i].getMainFaxNumber() );
-	        	serviceCompany.setPrimaryContactID( companies[i].getPrimaryContactID().intValue() );
-	        	serviceCompany.setHiType( companies[i].getHIType() );
-	        	
-	        	serviceCompanies.add( serviceCompany );
-	        }
-			
-			CTILogger.info( "All service companies loaded for energy company #" + energyCompanyID.toString() );
-		}
-		
-		return serviceCompanies;
+	public static ArrayList getAllServiceCompanies(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getAllServiceCompanies();
 	}
 	
-	public static ArrayList getAllCustomerContacts(Integer energyCompanyID) {
-		ArrayList contacts = (ArrayList) custContactTable.get( energyCompanyID );
-		if (contacts == null) {
-			contacts = new ArrayList();
-			custContactTable.put( energyCompanyID, contacts );
-		}
-		
-		return contacts;
+	public static LiteStarsThermostatSettings getDefaultThermostatSettings(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getDefaultThermostatSettings();
 	}
 	
-	public static ArrayList getAllCustomerAddresses(Integer energyCompanyID) {
-		ArrayList addrs = (ArrayList) custAddressTable.get( energyCompanyID );
-		if (addrs == null) {
-			addrs = new ArrayList();
-			custAddressTable.put( energyCompanyID, addrs );
-		}
-		
-		return addrs;
+	public static ArrayList getAllCustomerContacts(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getAllCustomerContacts();
 	}
 	
-	public static ArrayList getAllLMHardwares(Integer energyCompanyID) {
-		ArrayList lmHardwares = (ArrayList) lmHardwareTable.get( energyCompanyID );
-		if (lmHardwares == null) {
-			lmHardwares = new ArrayList();
-			lmHardwareTable.put( energyCompanyID, lmHardwares );
-		}
-			
-		return lmHardwares;
+	public static ArrayList getAllCustomerAddresses(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getAllCustomerAddresses();
 	}
 	
-	public static ArrayList getAllWorkOrders(Integer energyCompanyID) {
-		ArrayList workOrders = (ArrayList) workOrderTable.get( energyCompanyID );
-		if (workOrders == null) {
-			workOrders = new ArrayList();
-			workOrderTable.put( energyCompanyID, workOrders );
-		}
-		
-		return workOrders;
+	public static ArrayList getAllLMHardwares(int energyCompanyID) {
+    	LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+    	if (company == null) return null;
+    	
+    	return company.getAllLMHardwares();
 	}
 	
-	public static ArrayList getAllCustAccountInformation(Integer energyCompanyID) {
-		ArrayList acctInfoList = (ArrayList) custAccountInfoTable.get( energyCompanyID );
-		if (acctInfoList == null) {
-			acctInfoList = new ArrayList();
-			custAccountInfoTable.put( energyCompanyID, acctInfoList );
-		}
+	public static ArrayList getAllWorkOrders(int energyCompanyID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
 		
-		return acctInfoList;
+		return company.getAllWorkOrders();
 	}
 	
-	public static ArrayList getAllLMControlHistory(Integer energyCompanyID) {
-		ArrayList ctrlHist = (ArrayList) lmCtrlHistTable.get( energyCompanyID );
-		if (ctrlHist == null) {
-			ctrlHist = new ArrayList();
-			lmCtrlHistTable.put( energyCompanyID, ctrlHist );
-		}
+	public static ArrayList getAllCustAccountInformation(int energyCompanyID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
 		
-		return ctrlHist;
+		return company.getAllCustAccountInformation();
+	}
+	
+	public static ArrayList getAllLMControlHistory(int energyCompanyID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getAllLMControlHistory();
 	}
 	
 	
-	public static LiteApplianceCategory getApplianceCategory(Integer energyCompanyID, Integer applianceCategoryID) {
-		ArrayList appCats = getAllApplianceCategories( energyCompanyID );
-		
-		LiteApplianceCategory appCat = null;
-		for (int i = 0; i < appCats.size(); i++) {
-			appCat = (LiteApplianceCategory) appCats.get(i);
-			if (appCat.getApplianceCategoryID() == applianceCategoryID.intValue())
-				return appCat;
+	public static LiteWebConfiguration getWebConfiguration(int configID) {
+		ArrayList webConfigList = getAllWebConfigurations();
+		for (int i = 0; i < webConfigList.size(); i++) {
+			LiteWebConfiguration config = (LiteWebConfiguration) webConfigList.get(i);
+			if (config.getConfigID() == configID)
+				return config;
 		}
 		
 		return null;
 	}
 	
-	public static LiteServiceCompany getServiceCompany(Integer energyCompanyID, Integer serviceCompanyID) {
-		ArrayList serviceCompanies = getAllServiceCompanies( energyCompanyID );
+	public static LiteInterviewQuestion[] getInterviewQuestions(int energyCompanyID, int questionType) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
 		
-		LiteServiceCompany serviceCompany = null;
-		for (int i = 0; i < serviceCompanies.size(); i++) {
-			serviceCompany = (LiteServiceCompany) serviceCompanies.get(i);
-			if (serviceCompany.getCompanyID() == serviceCompanyID.intValue())
-				return serviceCompany;
-		}
-		
-		return null;
+		return company.getInterviewQuestions( questionType );
 	}
 	
-	public static LiteCustomerContact getCustomerContact(Integer energyCompanyID, Integer contactID) {
-		ArrayList custContactList = getAllCustomerContacts( energyCompanyID );
+	
+	public static LiteApplianceCategory getApplianceCategory(int energyCompanyID, int applianceCategoryID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
 		
-		LiteCustomerContact liteContact = null;
-		for (int i = 0; i < custContactList.size(); i++) {
-			liteContact = (LiteCustomerContact) custContactList.get(i);
-			if (liteContact.getContactID() == contactID.intValue())
-				return liteContact;
-		}
-		
-		try {
-			com.cannontech.database.db.customer.CustomerContact contact = new com.cannontech.database.db.customer.CustomerContact();
-			contact.setContactID( contactID );
-			contact = (com.cannontech.database.db.customer.CustomerContact)
-					Transaction.createTransaction( Transaction.RETRIEVE, contact ).execute();
-			liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-			
-			custContactList.add( liteContact );
-			return liteContact;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+		return company.getApplianceCategory( applianceCategoryID );
 	}
 	
-	public static void addCustomerContact(Integer energyCompanyID, LiteCustomerContact liteContact) {
-		ArrayList custContactList = getAllCustomerContacts( energyCompanyID );
-		custContactList.add( liteContact );
+	public static LiteServiceCompany getServiceCompany(int energyCompanyID, int serviceCompanyID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getServiceCompany( serviceCompanyID );
+	}
+	
+	public static LiteCustomerContact getCustomerContact(int energyCompanyID, int contactID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getCustomerContact( contactID );
+	}
+	
+	public static void addCustomerContact(int energyCompanyID, LiteCustomerContact liteContact) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company != null)
+			company.addCustomerContact( liteContact );
 	}
 	
 	public static void updateCustomerContact(LiteCustomerContact liteContact) {
@@ -644,342 +439,106 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	ServerUtils.getClientConnection().write( msg );
 	}
 	
-	public static void deleteCustomerContact(Integer energyCompanyID, LiteCustomerContact liteContact) {
-		ArrayList custContactList = getAllCustomerContacts( energyCompanyID );
-		custContactList.remove( liteContact );
+	public static void deleteCustomerContact(int energyCompanyID, LiteCustomerContact liteContact) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company != null)
+			company.deleteCustomerContact( liteContact );
 	}
 	
-	public static LiteCustomerAddress getCustomerAddress(Integer energyCompanyID, Integer addressID) {
-		ArrayList custAddressList = getAllCustomerAddresses( energyCompanyID );
+	public static LiteCustomerAddress getCustomerAddress(int energyCompanyID, int addressID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
 		
-		LiteCustomerAddress liteAddr = null;
-		for (int i = 0; i < custAddressList.size(); i++) {
-			liteAddr = (LiteCustomerAddress) custAddressList.get(i);
-			if (liteAddr.getAddressID() == addressID.intValue())
-				return liteAddr;
+		return company.getCustomerAddress( addressID );
+	}
+	
+	public static LiteCustomerAddress addCustomerAddress(int energyCompanyID, com.cannontech.database.db.customer.CustomerAddress addr) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.addCustomerAddress( addr );
+	}
+	
+	public static LiteLMProgram getLMProgram(int energyCompanyID, int programID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getLMProgram( programID );
+	}
+	
+	public static LiteLMHardwareBase getLMHardware(int energyCompanyID, int inventoryID, boolean autoLoad) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getLMHardware( inventoryID, autoLoad );
+	}
+	
+	public static LiteLMHardwareBase addLMHardware(int energyCompanyID, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.addLMHardware( hw );
+	}
+	
+	public static LiteStarsLMControlHistory getLMControlHistory(int energyCompanyID, int groupID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getLMControlHistory( groupID );
+	}
+	
+	public static LiteWorkOrderBase getWorkOrderBase(int energyCompanyID, int orderID) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getWorkOrderBase( orderID );
+	}
+	
+	public static LiteWorkOrderBase addWorkOrderBase(int energyCompanyID, com.cannontech.database.db.stars.report.WorkOrderBase order) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.addWorkOrderBase( order );
+	}
+	
+	public static LiteStarsCustAccountInformation getCustAccountInformation(int energyCompanyID, int accountID, boolean autoLoad) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.getCustAccountInformation( accountID, autoLoad );
+	}
+	
+	public static LiteStarsCustAccountInformation addCustAccountInformation(int energyCompanyID, com.cannontech.database.data.stars.customer.CustomerAccount account) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.addCustAccountInformation( account );
+	}
+	
+	public static LiteStarsCustAccountInformation searchByAccountNumber(int energyCompanyID, String accountNo) {
+		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
+		if (company == null) return null;
+		
+		return company.searchByAccountNumber( accountNo );
+	}
+	
+	public static void updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
+		ArrayList ctrlHist = liteCtrlHist.getLmControlHistory();
+		if (ctrlHist == null) {
+			ctrlHist = new ArrayList();
+			liteCtrlHist.setLmControlHistory( ctrlHist );
 		}
 		
-		try {
-			com.cannontech.database.db.customer.CustomerAddress addr = new com.cannontech.database.db.customer.CustomerAddress();
-			addr.setAddressID( addressID );
-			addr = (com.cannontech.database.db.customer.CustomerAddress)
-					Transaction.createTransaction( Transaction.RETRIEVE, addr ).execute();
-			liteAddr = (LiteCustomerAddress) StarsLiteFactory.createLite( addr );
+		int lastCtrlHistID = 0;
+		if (ctrlHist.size() > 0)
+			lastCtrlHistID = ((LiteLMControlHistory) ctrlHist.get(ctrlHist.size() - 1)).getLmCtrlHistID();
 			
-			custAddressList.add( liteAddr );
-			return liteAddr;
+		com.cannontech.database.db.pao.LMControlHistory[] ctrlHists = com.cannontech.database.db.stars.LMControlHistory.getLMControlHistory(
+				new Integer(liteCtrlHist.getGroupID()), new Integer(lastCtrlHistID) );
+		if (ctrlHists != null) {
+			for (int i= 0; i < ctrlHists.length; i++)
+				ctrlHist.add( (LiteLMControlHistory) StarsLiteFactory.createLite(ctrlHists[i]) );
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	public static LiteCustomerAddress addCustomerAddress(Integer energyCompanyID, com.cannontech.database.db.customer.CustomerAddress addr) {
-		ArrayList custAddressList = getAllCustomerAddresses( energyCompanyID );
-		
-		try {
-			LiteCustomerAddress liteAddr = (LiteCustomerAddress) StarsLiteFactory.createLite( addr );
-			custAddressList.add( liteAddr );
-			return liteAddr;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	public static LiteLMHardwareBase getLMHardware(Integer energyCompanyID, Integer inventoryID, boolean autoLoad) {
-		ArrayList lmHardwareList = getAllLMHardwares( energyCompanyID );
-		
-		LiteLMHardwareBase liteHw = null;
-		for (int i = 0; i < lmHardwareList.size(); i++) {
-			liteHw = (LiteLMHardwareBase) lmHardwareList.get(i);
-			if (liteHw.getInventoryID() == inventoryID.intValue())
-				return liteHw;
-		}
-		
-		if (autoLoad) {
-			try {
-				com.cannontech.database.data.stars.hardware.LMHardwareBase hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-				hw.setInventoryID( inventoryID );
-				hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
-				liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
-				
-				lmHardwareList.add( liteHw );
-				return liteHw;
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return null;
-	}
-	
-	public static LiteLMHardwareBase addLMHardware(Integer energyCompanyID, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
-		ArrayList lmHardwareList = getAllLMHardwares( energyCompanyID );
-		
-		try {
-			LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
-			lmHardwareList.add( liteHw );
-			return liteHw;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	public static LiteStarsLMControlHistory getLMControlHistory(Integer energyCompanyID, Integer groupID) {
-		ArrayList lmCtrlHistList = getAllLMControlHistory( energyCompanyID );
-		
-		LiteStarsLMControlHistory lmCtrlHist = null;
-		for (int i = 0; i < lmCtrlHistList.size(); i++) {
-			lmCtrlHist = (LiteStarsLMControlHistory) lmCtrlHistList.get(i);
-			if (lmCtrlHist.getGroupID() == groupID.intValue()) {
-				lmCtrlHist.updateStartIndices();
-				return lmCtrlHist;
-			}
-		}
-		
-		ArrayList ctrlHistList = new ArrayList();
-		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = com.cannontech.database.db.stars.LMControlHistory.getLMControlHistory(
-				groupID, com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.ALL );
-		
-		for (int i = 0; i < ctrlHist.length; i++) {
-			LiteLMControlHistory liteCtrlHist = new LiteLMControlHistory();
-			liteCtrlHist.setStartDateTime( ctrlHist[i].getStartDateTime().getTime() );
-			liteCtrlHist.setControlDuration( ctrlHist[i].getControlDuration().longValue() );
-			liteCtrlHist.setControlType( ctrlHist[i].getControlType() );
-			liteCtrlHist.setCurrentDailyTime( ctrlHist[i].getCurrentDailyTime().longValue() );
-			liteCtrlHist.setCurrentMonthlyTime( ctrlHist[i].getCurrentMonthlyTime().longValue() );
-			liteCtrlHist.setCurrentSeasonalTime( ctrlHist[i].getCurrentSeasonalTime().longValue() );
-			liteCtrlHist.setCurrentAnnualTime( ctrlHist[i].getCurrentAnnualTime().longValue() );
-			
-			ctrlHistList.add( liteCtrlHist );
-		}
-		
-		lmCtrlHist = new LiteStarsLMControlHistory( groupID.intValue() );
-		lmCtrlHist.setLmControlHistory( ctrlHistList );
-		lmCtrlHist.updateStartIndices();
-		
-		lmCtrlHistList.add( lmCtrlHist );
-		return lmCtrlHist;
-	}
-	
-	public static LiteWorkOrderBase getWorkOrderBase(Integer energyCompanyID, Integer orderID) {
-        ArrayList workOrders = getAllWorkOrders( energyCompanyID );
-        
-        LiteWorkOrderBase workOrder = null;
-        for (int i = 0; i < workOrders.size(); i++) {
-        	workOrder = (LiteWorkOrderBase) workOrders.get(i);
-        	if (workOrder.getOrderID() == orderID.intValue())
-        		return workOrder;
-        }
-        
-        try {
-        	com.cannontech.database.db.stars.report.WorkOrderBase order = new com.cannontech.database.db.stars.report.WorkOrderBase();
-        	order.setOrderID( orderID );
-        	order = (com.cannontech.database.db.stars.report.WorkOrderBase)
-        			Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
-        	workOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
-        	
-        	workOrders.add( workOrder );
-        	return workOrder;
-        }
-        catch (Exception e) {
-        	e.printStackTrace();
-        }
-        
-        return null;
-	}
-	
-	public static LiteWorkOrderBase addWorkOrderBase(Integer energyCompanyID, com.cannontech.database.db.stars.report.WorkOrderBase order) {
-        ArrayList workOrders = getAllWorkOrders( energyCompanyID );
-        
-        try {
-        	LiteWorkOrderBase workOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
-        	workOrders.add( workOrder );
-        	return workOrder;
-        }
-        catch (Exception e) {
-        	e.printStackTrace();
-        }
-        
-        return null;
-	}
-	
-	public static LiteStarsCustAccountInformation getCustAccountInformation(Integer energyCompanyID, Integer accountID, boolean autoLoad) {
-		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
-		
-		LiteStarsCustAccountInformation accountInfo = null;
-		for (int i = 0; i < custAcctInfoList.size(); i++) {
-			accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-			if (accountInfo.getCustomerAccount().getAccountID() == accountID.intValue())
-				return accountInfo;
-		}
-		
-		if (autoLoad) {
-			try {
-				com.cannontech.database.data.stars.customer.CustomerAccount account = new com.cannontech.database.data.stars.customer.CustomerAccount();
-				account.setAccountID( accountID );
-				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-						Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
-						
-				return addCustAccountInformation( energyCompanyID, account );
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return null;
-	}
-	
-	public static LiteStarsCustAccountInformation addCustAccountInformation(Integer energyCompanyID, com.cannontech.database.data.stars.customer.CustomerAccount account) {
-		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
-		
-		try {
-            LiteStarsCustAccountInformation accountInfo = new LiteStarsCustAccountInformation();
-
-            com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
-            com.cannontech.database.data.stars.customer.CustomerBase customer = account.getCustomerBase();
-            com.cannontech.database.db.stars.customer.CustomerBase customerDB = customer.getCustomerBase();
-            com.cannontech.database.data.stars.customer.AccountSite site = account.getAccountSite();
-            com.cannontech.database.db.stars.customer.AccountSite siteDB = site.getAccountSite();
-            com.cannontech.database.data.stars.customer.SiteInformation siteInfo = site.getSiteInformation();
-            com.cannontech.database.db.stars.customer.SiteInformation siteInfoDB = siteInfo.getSiteInformation();
-            
-            accountInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(accountDB) );
-            accountInfo.setCustomerBase( (LiteCustomerBase) StarsLiteFactory.createLite(customer) );
-            accountInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(siteDB) );
-            accountInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(siteInfoDB) );
-                
-            com.cannontech.database.db.customer.CustomerAddress streetAddr = site.getStreetAddress();
-            addCustomerAddress( energyCompanyID, streetAddr );
-
-            com.cannontech.database.db.customer.CustomerAddress billAddr = account.getBillingAddress();
-            addCustomerAddress( energyCompanyID, billAddr );
-
-            com.cannontech.database.db.customer.CustomerContact primContact = customer.getPrimaryContact();
-			LiteCustomerContact litePrimContact = (LiteCustomerContact) StarsLiteFactory.createLite( primContact );
-            addCustomerContact( energyCompanyID, litePrimContact );
-
-            Vector contactList = customer.getCustomerContactVector();
-            for (int i = 0; i < contactList.size(); i++) {
-                com.cannontech.database.db.customer.CustomerContact contact = (com.cannontech.database.db.customer.CustomerContact) contactList.elementAt(i);
-				LiteCustomerContact liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-                addCustomerContact( energyCompanyID, liteContact );
-            }
-
-			Hashtable selectionLists = (Hashtable) selectionListTable.get( energyCompanyID );
-			
-            Vector applianceVector = account.getApplianceVector();            
-            accountInfo.setAppliances( new ArrayList() );
-
-            for (int i = 0; i < applianceVector.size(); i++) {
-                com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
-                            (com.cannontech.database.data.stars.appliance.ApplianceBase) applianceVector.elementAt(i);
-                accountInfo.getAppliances().add( StarsLiteFactory.createStarsAppliance(appliance, energyCompanyID) );
-            }
-
-            Vector inventoryVector = account.getInventoryVector();
-            accountInfo.setInventories( new ArrayList() );
-
-            for (int i = 0; i < inventoryVector.size(); i++) {
-                com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-                		(com.cannontech.database.data.stars.hardware.InventoryBase) inventoryVector.elementAt(i);
-
-                if (inventory instanceof com.cannontech.database.data.stars.hardware.LMHardwareBase) {
-                    // This is a LM hardware
-                    com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-							(com.cannontech.database.data.stars.hardware.LMHardwareBase) inventory;
-                    addLMHardware( energyCompanyID, hardware );
-                    accountInfo.getInventories().add( hardware.getInventoryBase().getInventoryID() );
-                }
-            }
-            
-            ServerUtils.updateServiceCompanies( accountInfo, energyCompanyID );
-
-            accountInfo.setLmPrograms( new ArrayList() );
-
-            for (int i = 0; i < applianceVector.size(); i++) {
-                com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
-                        (com.cannontech.database.data.stars.appliance.ApplianceBase) applianceVector.elementAt(i);
-                int progID = appliance.getApplianceBase().getLMProgramID().intValue();
-                if (progID == 0) continue;
-                
-                LiteStarsLMProgram liteProg = new LiteStarsLMProgram();
-                liteProg.setLmProgramID( progID );
-                liteProg.setGroupID( appliance.getLMHardwareConfig().getAddressingGroupID().intValue() );
-                
-                com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-                		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents( accountDB.getAccountID(), new Integer(progID) );
-                if (events != null) {
-                	liteProg.setProgramHistory( new ArrayList() );
-                	for (int j = 0; j < events.length; j++) {
-                		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[j] );
-                		liteProg.getProgramHistory().add( liteEvent );
-                	}
-                }
-                
-                getLMControlHistory( energyCompanyID, appliance.getLMHardwareConfig().getAddressingGroupID() );
-                
-                accountInfo.getLmPrograms().add( liteProg );
-            }
-            
-			StarsCallReport[] calls = StarsCallReportFactory.getStarsCallReports( energyCompanyID, accountDB.getAccountID() );
-			if (calls != null) {
-				accountInfo.setCallReportHistory( new ArrayList() );
-				for (int i = 0; i < calls.length; i++)
-					accountInfo.getCallReportHistory().add( calls[i] );
-			}
-				
-	        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-	        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllAccountWorkOrders( accountDB.getAccountID() );
-	        if (orders != null) {
-	        	accountInfo.setServiceRequestHistory( new ArrayList() );
-	        	for (int i = 0; i < orders.length; i++) {
-	        		addWorkOrderBase( energyCompanyID, orders[i] );
-	        		accountInfo.getServiceRequestHistory().add( orders[i].getOrderID() );
-	        	}
-	        }
-	        
-	        if (primContact.getLogInID().intValue() >= 0) {
-		        com.cannontech.database.db.customer.CustomerLogin login = com.cannontech.database.db.customer.CustomerLogin.getCustomerLogin( primContact.getLogInID() );
-		        accountInfo.setCustomerLogin( (com.cannontech.database.data.lite.LiteYukonUser) StarsLiteFactory.createLite(login) );
-	        }
-
-            custAcctInfoList.add( accountInfo );
-            return accountInfo;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	public static LiteStarsCustAccountInformation searchByAccountNumber(Integer energyCompanyID, String accountNo) {
-		ArrayList custAcctInfoList = getAllCustAccountInformation( energyCompanyID );
-		
-		LiteStarsCustAccountInformation accountInfo = null;
-		for (int i = 0; i < custAcctInfoList.size(); i++) {
-			accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
-			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
-				return accountInfo;
-		}
-		
-		com.cannontech.database.data.stars.customer.CustomerAccount account =
-				com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber( energyCompanyID, accountNo );
-		if (account == null) return null;
-		
-		return addCustAccountInformation( energyCompanyID, account );
 	}
 
 }

@@ -48,6 +48,16 @@ public class StarsThermoModeSettings implements java.io.Serializable {
     **/
     public static final StarsThermoModeSettings COOL = new StarsThermoModeSettings(COOL_TYPE, "Cool");
 
+    /**
+     * The Off type
+    **/
+    public static final int OFF_TYPE = 2;
+
+    /**
+     * The instance of the Off type
+    **/
+    public static final StarsThermoModeSettings OFF = new StarsThermoModeSettings(OFF_TYPE, "Off");
+
     private static java.util.Hashtable _memberTable = init();
 
     private int type = -1;
@@ -94,6 +104,7 @@ public class StarsThermoModeSettings implements java.io.Serializable {
         Hashtable members = new Hashtable();
         members.put("Heat", HEAT);
         members.put("Cool", COOL);
+        members.put("Off", OFF);
         return members;
     } //-- java.util.Hashtable init() 
 

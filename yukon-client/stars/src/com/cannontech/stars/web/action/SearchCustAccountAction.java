@@ -69,15 +69,17 @@ public class SearchCustAccountAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
         return null;
     }
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
 
             StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
@@ -86,7 +88,7 @@ public class SearchCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
+            int energyCompanyID = (int) operator.getEnergyCompanyID();
             Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
@@ -98,56 +100,54 @@ public class SearchCustAccountAction implements ActionBase {
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_ACCTNO ).getEntryID()) {
             	/* Search by account number */
             	liteAcctInfo = SOAPServer.searchByAccountNumber(
-            			new Integer((int) operator.getEnergyCompanyID()), searchAccount.getSearchValue() );
+            			energyCompanyID, searchAccount.getSearchValue() );
             }
             else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_PHONENO ).getEntryID()) {
             	/* Search by phone number */
-            	accounts = CustomerAccount.searchByPhoneNumber( energyCompanyID, ServletUtils.formatPhoneNumber(searchAccount.getSearchValue()) );
+            	accounts = CustomerAccount.searchByPhoneNumber( new Integer(energyCompanyID), ServletUtils.formatPhoneNumber(searchAccount.getSearchValue()) );
             	if (accounts != null && accounts.length == 1)
-            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID().intValue(), true );
             }
             else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_LASTNAME ).getEntryID()) {
             	/* Search by last name */
-            	accounts = CustomerAccount.searchByLastName( energyCompanyID, searchAccount.getSearchValue() );
+            	accounts = CustomerAccount.searchByLastName( new Integer(energyCompanyID), searchAccount.getSearchValue() );
             	if (accounts != null && accounts.length == 1)
-            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID().intValue(), true );
             }
             else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_SERIALNO ).getEntryID()) {
             	/* Search by hardware serial number */
-            	accounts = CustomerAccount.searchBySerialNumber( energyCompanyID, searchAccount.getSearchValue() );
+            	accounts = CustomerAccount.searchBySerialNumber( new Integer(energyCompanyID), searchAccount.getSearchValue() );
             	if (accounts != null && accounts.length == 1)
-            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+            		liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID().intValue(), true );
             }
 
+			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
+			
             if (liteAcctInfo != null) {
-	            operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+	            operator.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 	            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
-	            
-				StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
 				resp.setStarsCustAccountInformation( starsAcctInfo );
-	            respOper.setStarsSearchCustomerAccountResponse( resp );
             }
-            else if (accounts != null) {
-				StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
+            else if (accounts != null && accounts.length > 0) {
 				for (int i = 0; i < accounts.length; i++) {
 					StarsCustAccountBrief acctBrief = new StarsCustAccountBrief();
 					
 					LiteCustomerContact contact = null;
 					LiteCustomerAddress addr = null;
 					LiteStarsCustAccountInformation acctInfo =
-							SOAPServer.getCustAccountInformation( energyCompanyID, accounts[i].getAccountID(), false );
+							SOAPServer.getCustAccountInformation( energyCompanyID, accounts[i].getAccountID().intValue(), false );
 							
 					if (acctInfo != null) {
 						acctBrief.setAccountID( acctInfo.getCustomerAccount().getAccountID() );
 						acctBrief.setAccountNumber( acctInfo.getCustomerAccount().getAccountNumber() );
-						contact = SOAPServer.getCustomerContact( energyCompanyID, new Integer(acctInfo.getCustomerBase().getPrimaryContactID()) );
-						addr = SOAPServer.getCustomerAddress( energyCompanyID, new Integer(acctInfo.getAccountSite().getStreetAddressID()) );
+						contact = SOAPServer.getCustomerContact( energyCompanyID, acctInfo.getCustomerBase().getPrimaryContactID() );
+						addr = SOAPServer.getCustomerAddress( energyCompanyID, acctInfo.getAccountSite().getStreetAddressID() );
 					}
 					else {
 						acctBrief.setAccountID( accounts[i].getAccountID().intValue() );
@@ -156,12 +156,12 @@ public class SearchCustAccountAction implements ActionBase {
 						CustomerBase customer = new CustomerBase();
 						customer.setCustomerID( accounts[i].getCustomerID() );
 						customer = (CustomerBase) Transaction.createTransaction( Transaction.RETRIEVE, customer ).execute();
-						contact = SOAPServer.getCustomerContact( energyCompanyID, customer.getPrimaryContactID() );
+						contact = SOAPServer.getCustomerContact( energyCompanyID, customer.getPrimaryContactID().intValue() );
 						
 						AccountSite site = new AccountSite();
 						site.setAccountSiteID( accounts[i].getAccountSiteID() );
 						site = (AccountSite) Transaction.createTransaction( Transaction.RETRIEVE, site ).execute();
-						addr = SOAPServer.getCustomerAddress( energyCompanyID, site.getStreetAddressID() );
+						addr = SOAPServer.getCustomerAddress( energyCompanyID, site.getStreetAddressID().intValue() );
 					}
 					
 					acctBrief.setContactName( contact.getLastName() + ", " + contact.getFirstName() );
@@ -180,18 +180,28 @@ public class SearchCustAccountAction implements ActionBase {
 					
 					resp.addStarsCustAccountBrief( acctBrief );
 				}
-	            respOper.setStarsSearchCustomerAccountResponse( resp );
             }
             else {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
-                return SOAPUtil.buildSOAPMessage( respOper );
+            	StarsFailure failure = StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No customer account matching the search criteria" );
+            	resp.setStarsFailure( failure );
             }
+            
+            respOper.setStarsSearchCustomerAccountResponse( resp );
             
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the search for customer account") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -202,18 +212,21 @@ public class SearchCustAccountAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
 			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			if (resp.getStarsCustAccountInformation() != null)
-            	operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation());
+            	operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
             else {
             	/* The return value is a list of results */
-            	operator.setAttribute( "ACCOUNT_SEARCH_RESULTS", resp );
-            	session.setAttribute( "REDIRECT", "/OperatorDemos/Consumer/SearchResults.jsp" );
+            	operator.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
+            	session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/SearchResults.jsp" );
             }
             
             return 0;

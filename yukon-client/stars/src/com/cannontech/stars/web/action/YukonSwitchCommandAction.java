@@ -103,15 +103,17 @@ public class YukonSwitchCommandAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
         return null;
     }
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
             StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
@@ -120,7 +122,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
@@ -129,13 +131,16 @@ public class YukonSwitchCommandAction implements ActionBase {
 
             ClientConnection conn = ServerUtils.getClientConnection();
             if (conn == null) {
-                CTILogger.debug( "YukonSwitchCommandAction: Failed to retrieve a connection" );
+                CTILogger.debug( "YukonSwitchCommandAction: Failed to retrieve a client connection" );
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send Yukon switch command") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
                 
-			Integer energyCompanyID = new Integer((int) operator.getEnergyCompanyID());
+			int energyCompanyID = (int) operator.getEnergyCompanyID();
+			
+			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
+			String routeStr = (company == null) ? "" : " select route id " + String.valueOf(company.getRouteID());
             
             StarsYukonSwitchCommand command = reqOper.getStarsYukonSwitchCommand();
             StarsYukonSwitchCommandResponse cmdResp = new StarsYukonSwitchCommandResponse();
@@ -167,7 +172,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -175,7 +180,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
 
-                String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber();
+                String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand(cmd, conn);
         		
         		// Add "Temp Opt Out" to hardware events
@@ -188,7 +193,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		eventBase.setActionID( tempTermEntryID );
         		eventBase.setEventDateTime( new Date() );
         		
-        		event.setEnergyCompanyID( energyCompanyID );
+        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
         		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
         				Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
@@ -209,7 +214,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             else if (command.getStarsEnableService() != null) {
                 StarsEnableService service = command.getStarsEnableService();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -217,7 +222,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
 
-                String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+                String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand(cmd, conn);
         		
         		// Add "Activation Completed" to hardware events
@@ -230,7 +235,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		eventBase.setActionID( actCompEntryID );
         		eventBase.setEventDateTime( new Date() );
         		
-        		event.setEnergyCompanyID( energyCompanyID );
+        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
         		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
         				Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
@@ -249,9 +254,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 				cmdResp.setStarsLMHardwareHistory( hwHist );
             }
             else if (command.getStarsConfig() != null) {
-                StarsEnableService service = command.getStarsEnableService();
+                StarsConfig service = command.getStarsConfig();
                 Integer invID = new Integer( service.getInventoryID() );
-        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+        		LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
         		
         		if (liteHw == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -271,7 +276,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         		eventBase.setActionID( configEntryID );
         		eventBase.setEventDateTime( new Date() );
         		
-        		event.setEnergyCompanyID( energyCompanyID );
+        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
         		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
         				Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
@@ -295,6 +300,15 @@ public class YukonSwitchCommandAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the switch command") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -305,46 +319,53 @@ public class YukonSwitchCommandAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 
 			StarsYukonSwitchCommandResponse resp = operation.getStarsYukonSwitchCommandResponse();
             if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
-			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
-			DeviceStatus hwStatus = null;
+			Hashtable selectionLists = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			if (reqOper.getStarsYukonSwitchCommand().getStarsEnableService() != null) {
-				hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
+			DeviceStatus availStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(
 							(StarsCustSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
 							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_AVAIL),
 						DeviceStatus.class );
-			}
-			else if (reqOper.getStarsYukonSwitchCommand().getStarsDisableService() != null) {
-				hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
+			DeviceStatus unavailStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(
 							(StarsCustSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS),
 							com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_DEVSTAT_TEMPUNAVAIL),
 						DeviceStatus.class );
-			}
-			else if (reqOper.getStarsYukonSwitchCommand().getStarsConfig() != null) {
-				/* What to do ??? */
-			}
 			
             // Update hardware history
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsLMHardwareHistory hwHist = resp.getStarsLMHardwareHistory();
+			
 			StarsInventories inventories = accountInfo.getStarsInventories();
 			for (int j = 0; j < inventories.getStarsLMHardwareCount(); j++) {
 				StarsLMHardware hw = inventories.getStarsLMHardware(j);
 				if (hw.getInventoryID() == hwHist.getInventoryID()) {
+					if (reqOper.getStarsYukonSwitchCommand().getStarsEnableService() != null) {
+						hw.setDeviceStatus( availStatus );
+					}
+					else if (reqOper.getStarsYukonSwitchCommand().getStarsDisableService() != null) {
+						hw.setDeviceStatus( unavailStatus );
+					}
+					else if (reqOper.getStarsYukonSwitchCommand().getStarsConfig() != null) {
+						/* If hardware history is empty, set status to available, otherwise unchanged */
+						if (hw.getStarsLMHardwareHistory() == null || hw.getStarsLMHardwareHistory().getStarsLMHardwareEventCount() == 0)
+							hw.setDeviceStatus( availStatus );
+					}
+					
 					hw.setStarsLMHardwareHistory( hwHist );
-					hw.setDeviceStatus( hwStatus );
 				}
 			}
 			

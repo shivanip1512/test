@@ -45,7 +45,7 @@ public class CreateCallAction implements ActionBase {
 		try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			if (operator == null) return null;
-			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
+			Hashtable selectionLists = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
 			StarsCreateCallReport createCall = new StarsCreateCallReport();			
 			createCall.setCallNumber( req.getParameter("CallNumber") );
@@ -73,6 +73,7 @@ public class CreateCallAction implements ActionBase {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -82,9 +83,10 @@ public class CreateCallAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
@@ -93,7 +95,7 @@ public class CreateCallAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
@@ -124,6 +126,15 @@ public class CreateCallAction implements ActionBase {
         }
         catch (Exception e) {
         	e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the call report") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
         
 		return null;
@@ -137,14 +148,17 @@ public class CreateCallAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
 			StarsCreateCallReportResponse resp = operation.getStarsCreateCallReportResponse();
 			StarsCallReport call = resp.getStarsCallReport();
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			

@@ -40,7 +40,7 @@ public class UpdateContacts extends HttpServlet {
 		}
 		
         StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute(
-        		ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION" );
+        		ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
         if (account == null) {
         	resp.sendRedirect(homeURL); return;

@@ -58,41 +58,114 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _starsThermoScheduleList
-        desc = new XMLFieldDescriptorImpl(StarsThermoSchedule.class, "_starsThermoScheduleList", "stars-ThermoSchedule", NodeType.Element);
+        //-- _inventoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsThermoSettings target = (StarsThermoSettings) object;
-                return target.getStarsThermoSchedule();
+                if(!target.hasInventoryID())
+                    return null;
+                return new Integer(target.getInventoryID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsThermoSettings target = (StarsThermoSettings) object;
-                    target.addStarsThermoSchedule( (StarsThermoSchedule) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteInventoryID();
+                        return;
+                    }
+                    target.setInventoryID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsThermoSchedule();
+                return null;
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _inventoryID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
+        
+        //-- _starsThermostatSeasonList
+        desc = new XMLFieldDescriptorImpl(StarsThermostatSeason.class, "_starsThermostatSeasonList", "stars-ThermostatSeason", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermoSettings target = (StarsThermoSettings) object;
+                return target.getStarsThermostatSeason();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    target.addStarsThermostatSeason( (StarsThermostatSeason) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatSeason();
+            }
+        } );
+        desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsThermoScheduleList
+        //-- validation code for: _starsThermostatSeasonList
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        fieldValidator.setMaxOccurs(4);
+        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMaxOccurs(2);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsThermostatManualOption
+        desc = new XMLFieldDescriptorImpl(StarsThermostatManualOption.class, "_starsThermostatManualOption", "stars-ThermostatManualOption", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermoSettings target = (StarsThermoSettings) object;
+                return target.getStarsThermostatManualOption();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    target.setStarsThermostatManualOption( (StarsThermostatManualOption) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatManualOption();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatManualOption
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsThermoSettingsDescriptor()

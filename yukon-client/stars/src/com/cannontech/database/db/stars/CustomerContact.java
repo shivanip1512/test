@@ -114,7 +114,7 @@ public class CustomerContact extends DBPersistent {
 	
 	public static int[] searchByLastName(String lastName) {
 		String sql = "SELECT ContactID FROM " + com.cannontech.database.db.customer.CustomerContact.TABLE_NAME
-				   + " WHERE ContLastName = '" + lastName + "'";
+				   + " WHERE UPPER(ContLastName) = UPPER('" + lastName + "')";
 		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		

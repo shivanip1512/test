@@ -10,13 +10,21 @@ import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteStarsLMProgram {
+public class LiteStarsLMProgram extends LiteLMProgram {
 
-	private int lmProgramID = 0;
 	private int groupID = 0;
 	private java.util.ArrayList programHistory = null;	// List of LiteLMCustomerEvent
 	
 	public LiteStarsLMProgram() {
+		super();
+	}
+	
+	public LiteStarsLMProgram(int programID) {
+		super( programID );
+	}
+	
+	public LiteStarsLMProgram(LiteLMProgram program) {
+		super( program.getProgramID(), program.getProgramName(), program.getWebSettingsID(), program.getProgramCategory() );
 	}
 	
 	/**
@@ -28,27 +36,11 @@ public class LiteStarsLMProgram {
 	}
 
 	/**
-	 * Returns the lmProgramID.
-	 * @return int
-	 */
-	public int getLmProgramID() {
-		return lmProgramID;
-	}
-
-	/**
 	 * Sets the groupID.
 	 * @param groupID The groupID to set
 	 */
 	public void setGroupID(int groupID) {
 		this.groupID = groupID;
-	}
-
-	/**
-	 * Sets the lmProgramID.
-	 * @param lmProgramID The lmProgramID to set
-	 */
-	public void setLmProgramID(int lmProgramID) {
-		this.lmProgramID = lmProgramID;
 	}
 
 	/**

@@ -62,15 +62,17 @@ public class GetLMCtrlHistAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
         return null;
     }
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
@@ -80,16 +82,11 @@ public class GetLMCtrlHistAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            Integer energyCompanyID = null;
-            if (operator != null)
-            	energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
-            else
-            	energyCompanyID = new Integer( user.getEnergyCompanyID() );
+            int energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
 
             StarsGetLMControlHistory getHist = reqOper.getStarsGetLMControlHistory();
 
-            LiteStarsLMControlHistory liteCtrlHist = com.cannontech.stars.web.servlet.SOAPServer.getLMControlHistory(
-            		energyCompanyID, new Integer(getHist.getGroupID()) );
+            LiteStarsLMControlHistory liteCtrlHist = com.cannontech.stars.web.servlet.SOAPServer.getLMControlHistory( energyCompanyID, getHist.getGroupID() );
             StarsLMControlHistory starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
             		liteCtrlHist, getHist.getPeriod(), getHist.getGetSummary() );
                 
@@ -101,6 +98,15 @@ public class GetLMCtrlHistAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the program's control history") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -111,7 +117,10 @@ public class GetLMCtrlHistAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
             
             StarsFailure failure = operation.getStarsFailure();
-            if (failure != null) return failure.getStatusCode();
+            if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+            	return failure.getStatusCode();
+            }
 
 			StarsGetLMControlHistoryResponse response = operation.getStarsGetLMControlHistoryResponse();
             if (response == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
@@ -125,9 +134,9 @@ public class GetLMCtrlHistAction implements ActionBase {
 			StarsCustAccountInformation accountInfo = null;
 			
 			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			else
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsGetLMControlHistory getCtrlHist = reqOper.getStarsGetLMControlHistory();

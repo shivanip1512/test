@@ -69,7 +69,7 @@ public class LMProgramEvent extends DBPersistent {
     }
 
     public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ? ORDER BY EventID";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -106,8 +106,8 @@ public class LMProgramEvent extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {
@@ -122,7 +122,7 @@ public class LMProgramEvent extends DBPersistent {
     
     public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
-        		   + " AND LMProgramID = " + programID.toString();
+        		   + " AND LMProgramID = " + programID.toString() + " ORDER BY EventID";
 
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -222,8 +222,8 @@ public class LMProgramEvent extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.17 2002/12/09 23:11:35 zyao Exp $
+ * $Id: StarsCustAccount.java,v 1.18 2003/01/14 00:31:06 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.17 $ $Date: 2002/12/09 23:11:35 $
+ * @version $Revision: 1.18 $ $Date: 2003/01/14 00:31:06 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -74,6 +74,8 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     private PrimaryContact _primaryContact;
 
     private java.util.Vector _additionalContactList;
+
+    private java.lang.String _timeZone;
 
 
       //----------------/
@@ -288,6 +290,16 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     {
         return this._streetAddress;
     } //-- StreetAddress getStreetAddress() 
+
+    /**
+     * Returns the value of field 'timeZone'.
+     * 
+     * @return the value of field 'timeZone'.
+    **/
+    public java.lang.String getTimeZone()
+    {
+        return this._timeZone;
+    } //-- java.lang.String getTimeZone() 
 
     /**
     **/
@@ -511,6 +523,16 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     {
         this._streetAddress = streetAddress;
     } //-- void setStreetAddress(StreetAddress) 
+
+    /**
+     * Sets the value of field 'timeZone'.
+     * 
+     * @param timeZone the value of field 'timeZone'.
+    **/
+    public void setTimeZone(java.lang.String timeZone)
+    {
+        this._timeZone = timeZone;
+    } //-- void setTimeZone(java.lang.String) 
 
     /**
     **/

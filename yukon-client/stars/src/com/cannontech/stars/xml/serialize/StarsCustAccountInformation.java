@@ -48,7 +48,9 @@ public class StarsCustAccountInformation implements java.io.Serializable {
 
     private StarsThermostatSettings _starsThermostatSettings;
 
-    private StarsLogin _starsLogin;
+    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
+
+    private StarsUser _starsUser;
 
 
       //----------------/
@@ -95,6 +97,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     } //-- StarsCustomerAccount getStarsCustomerAccount() 
 
     /**
+     * Returns the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @return the value of field 'starsDefaultThermostatSettings'.
+    **/
+    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings()
+    {
+        return this._starsDefaultThermostatSettings;
+    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
+
+    /**
      * Returns the value of field 'starsInventories'.
      * 
      * @return the value of field 'starsInventories'.
@@ -113,16 +125,6 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         return this._starsLMPrograms;
     } //-- StarsLMPrograms getStarsLMPrograms() 
-
-    /**
-     * Returns the value of field 'starsLogin'.
-     * 
-     * @return the value of field 'starsLogin'.
-    **/
-    public StarsLogin getStarsLogin()
-    {
-        return this._starsLogin;
-    } //-- StarsLogin getStarsLogin() 
 
     /**
      * Returns the value of field 'starsServiceCompanies'.
@@ -153,6 +155,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         return this._starsThermostatSettings;
     } //-- StarsThermostatSettings getStarsThermostatSettings() 
+
+    /**
+     * Returns the value of field 'starsUser'.
+     * 
+     * @return the value of field 'starsUser'.
+    **/
+    public StarsUser getStarsUser()
+    {
+        return this._starsUser;
+    } //-- StarsUser getStarsUser() 
 
     /**
     **/
@@ -224,6 +236,17 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     } //-- void setStarsCustomerAccount(StarsCustomerAccount) 
 
     /**
+     * Sets the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @param starsDefaultThermostatSettings the value of field
+     * 'starsDefaultThermostatSettings'.
+    **/
+    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings starsDefaultThermostatSettings)
+    {
+        this._starsDefaultThermostatSettings = starsDefaultThermostatSettings;
+    } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
+
+    /**
      * Sets the value of field 'starsInventories'.
      * 
      * @param starsInventories the value of field 'starsInventories'
@@ -242,16 +265,6 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         this._starsLMPrograms = starsLMPrograms;
     } //-- void setStarsLMPrograms(StarsLMPrograms) 
-
-    /**
-     * Sets the value of field 'starsLogin'.
-     * 
-     * @param starsLogin the value of field 'starsLogin'.
-    **/
-    public void setStarsLogin(StarsLogin starsLogin)
-    {
-        this._starsLogin = starsLogin;
-    } //-- void setStarsLogin(StarsLogin) 
 
     /**
      * Sets the value of field 'starsServiceCompanies'.
@@ -285,6 +298,16 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         this._starsThermostatSettings = starsThermostatSettings;
     } //-- void setStarsThermostatSettings(StarsThermostatSettings) 
+
+    /**
+     * Sets the value of field 'starsUser'.
+     * 
+     * @param starsUser the value of field 'starsUser'.
+    **/
+    public void setStarsUser(StarsUser starsUser)
+    {
+        this._starsUser = starsUser;
+    } //-- void setStarsUser(StarsUser) 
 
     /**
      * 

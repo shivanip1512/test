@@ -32,6 +32,11 @@ public class CustomerSelectionList extends DBPersistent {
     public static final String LISTNAME_DEVICESTATUS = "DeviceStatus";
     public static final String LISTNAME_MANUFACTURER = "Manufacturer";
     public static final String LISTNAME_LOCATION = "ApplianceLocation";
+    public static final String LISTNAME_TIMEOFWEEK = "TimeOfWeek";
+    public static final String LISTNAME_QUESTIONTYPE = "QuestionType";
+    public static final String LISTNAME_ANSWERTYPE = "AnswerType";
+    public static final String LISTNAME_THERMOSTATMODE = "ThermostatMode";
+    public static final String LISTNAME_THERMFANSTATE = "ThermostatFanState";
 
     private Integer listID = null;
     private String ordering = ORDERING_NATURAL;
@@ -114,6 +119,7 @@ public class CustomerSelectionList extends DBPersistent {
         }
         finally {
             try {
+                if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
             catch (java.sql.SQLException e2) {

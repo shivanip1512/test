@@ -162,15 +162,8 @@ public class CustomerAccount extends DBPersistent {
         com.cannontech.database.db.stars.hardware.InventoryBase[] inventories =
                     com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
                         getCustomerAccount().getAccountID(), getDbConnection() );
-        for (int i = 0; i < inventories.length; i++) {
-            // May check for whether this is a LM hardware later
-            com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-                        new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-            hardware.setInventoryID( inventories[i].getInventoryID() );
-            hardware.setDbConnection( getDbConnection() );
-            hardware.retrieve();
-            getInventoryVector().addElement( hardware );
-        }
+        for (int i = 0; i < inventories.length; i++)
+            getInventoryVector().addElement( inventories[i] );
 
         setDbConnection(null);
     }

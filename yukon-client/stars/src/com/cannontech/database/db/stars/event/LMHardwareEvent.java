@@ -65,7 +65,7 @@ public class LMHardwareEvent extends DBPersistent {
     }
 
     public static LMHardwareEvent[] getAllLMHardwareEvents(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ? ORDER BY EventID";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -101,8 +101,8 @@ public class LMHardwareEvent extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {
@@ -184,8 +184,8 @@ public class LMHardwareEvent extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {

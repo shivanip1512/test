@@ -9,7 +9,8 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.web.*;
 import com.cannontech.stars.xml.StarsWebConfigFactory;
 import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -57,6 +58,7 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -66,25 +68,29 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
             StarsGetEnrollmentPrograms getEnrProgs = reqOper.getStarsGetEnrollmentPrograms();
             int energyCompanyID = getEnrProgs.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
 				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-	            if (operator == null) {
+				StarsUser user = (StarsUser) session.getAttribute("USER");
+	            if (operator != null)
+	            	energyCompanyID = (int) operator.getEnergyCompanyID();
+	            else if (user != null)
+	            	energyCompanyID = user.getEnergyCompanyID();
+	            else {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
-	            
-            	energyCompanyID = (int) operator.getEnergyCompanyID();
             }
             
-            ArrayList liteAppCats = com.cannontech.stars.web.servlet.SOAPServer.getAllApplianceCategories( new Integer(energyCompanyID) );
+            ArrayList liteAppCats = com.cannontech.stars.web.servlet.SOAPServer.getAllApplianceCategories( energyCompanyID );
             StarsGetEnrollmentProgramsResponse resp = new StarsGetEnrollmentProgramsResponse();
             
             // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"
@@ -112,6 +118,15 @@ public class GetEnrollmentProgramsAction implements ActionBase {
         }
         catch (Exception e) {
         	e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the enrollment program list") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
         
 		return null;
@@ -125,23 +140,26 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
             StarsGetEnrollmentProgramsResponse programs = operation.getStarsGetEnrollmentProgramsResponse();
             if (programs == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             String category = reqOper.getStarsGetEnrollmentPrograms().getCategory();
-            StringBuffer attName = new StringBuffer( "ENROLLMENT_PROGRAMS" );
+            StringBuffer attName = new StringBuffer( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
             if (category != null && category.length() > 0)
             	attName.append("_").append( category.toUpperCase() );
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			// Use (category == null) to tell apart operator and user as a compromise method
-			if (operator != null && category == null)
+			StarsUser user = (StarsUser) session.getAttribute("USER");
+			if (operator != null)
 	            operator.setAttribute(attName.toString(), programs);
 	        else
-	        	session.setAttribute(attName.toString(), programs);
+	        	user.setAttribute(attName.toString(), programs);
             
             return 0;
         }

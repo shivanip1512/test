@@ -20,6 +20,7 @@ public class LiteLMControlHistory extends LiteBase {
 	private long currentMonthlyTime = 0;
 	private long currentSeasonalTime = 0;
 	private long currentAnnualTime = 0;
+	private String activeRestore = null;
 	
 	public LiteLMControlHistory() {
 		super();
@@ -149,6 +150,22 @@ public class LiteLMControlHistory extends LiteBase {
 	 */
 	public void setControlType(String controlType) {
 		this.controlType = controlType;
+	}
+
+	/**
+	 * Returns the activeRestore.
+	 * @return String
+	 */
+	public String getActiveRestore() {
+		return activeRestore;
+	}
+
+	/**
+	 * Sets the activeRestore.
+	 * @param activeRestore The activeRestore to set
+	 */
+	public void setActiveRestore(String activeRestore) {
+		this.activeRestore = activeRestore;
 	}
 
 }

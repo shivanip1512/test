@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.StarsUser;
 import com.cannontech.stars.xml.util.*;
@@ -48,6 +49,7 @@ public class GetCustSelListsAction implements ActionBase {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -57,9 +59,10 @@ public class GetCustSelListsAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
             StarsGetCustSelectionLists getSelLists = reqOper.getStarsGetCustSelectionLists();
             int energyCompanyID = getSelLists.getEnergyCompanyID();
@@ -73,13 +76,10 @@ public class GetCustSelListsAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
 	            
-	            if (operator != null)
-	            	energyCompanyID = (int) operator.getEnergyCompanyID();
-	            else
-	            	energyCompanyID = user.getEnergyCompanyID();
+            	energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
             }
             
-            Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( new Integer(energyCompanyID) );
+            Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
             StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
             
             Iterator it = selectionListTable.values().iterator();
@@ -93,6 +93,15 @@ public class GetCustSelListsAction implements ActionBase {
         }
         catch (Exception e) {
         	e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the customer selection lists") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
         
 		return null;
@@ -106,7 +115,10 @@ public class GetCustSelListsAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
             StarsGetCustSelectionListsResponse lists = operation.getStarsGetCustSelectionListsResponse();
             if (lists == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
@@ -120,9 +132,9 @@ public class GetCustSelListsAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
 			if (operator != null)
-	            operator.setAttribute( "CUSTOMER_SELECTION_LISTS", selectionListTable );
+	            operator.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
 	        else
-	            user.setAttribute( "CUSTOMER_SELECTION_LISTS", selectionListTable );
+	            user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
             
             return 0;
         }

@@ -110,11 +110,13 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static CustomerAccount[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
+    	if (phoneNumber.equals("")) return new CustomerAccount[0];
+    	
 		int[] contactIDs = com.cannontech.database.db.stars.CustomerContact.searchByPhoneNumber( phoneNumber );
 		if (contactIDs == null) return null;
 		if (contactIDs.length == 0) return new CustomerAccount[0];
     		
-        return CustomerAccount.searchByPrimaryContactIDs( energyCompanyID, contactIDs );
+        return searchByPrimaryContactIDs( energyCompanyID, contactIDs );
     }
     
     public static CustomerAccount[] searchByLastName(Integer energyCompanyID, String lastName) {
@@ -209,8 +211,8 @@ public class CustomerAccount extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {
@@ -286,6 +288,7 @@ public class CustomerAccount extends DBPersistent {
         }
         finally {
             try {
+                if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
             catch (java.sql.SQLException e2) {

@@ -46,7 +46,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		timeBase = limitCal.getTime().getTime();
 		
 		// Set the time limit to the beginning of the day
-		limitCal.set(Calendar.HOUR, 0);
+		limitCal.set(Calendar.HOUR_OF_DAY, 0);
 		limitCal.set(Calendar.MINUTE, 0);
 		limitCal.set(Calendar.SECOND, 0);
 		if (oldCal.after(limitCal)) return;

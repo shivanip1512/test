@@ -20,7 +20,8 @@ public class LiteStarsCustAccountInformation {
 	private java.util.ArrayList serviceCompanies = null;	// List of IDs of LiteServiceCompany
 	private java.util.ArrayList callReportHistory = null;	// List of StarsCallReport
 	private java.util.ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
-	private com.cannontech.database.data.lite.LiteYukonUser customerLogin = null;
+	private LiteStarsThermostatSettings thermostatSettings = null;
+	private com.cannontech.database.data.lite.LiteYukonUser yukonUser = null;
 	
 	public LiteStarsCustAccountInformation() {
 	}
@@ -187,20 +188,35 @@ public class LiteStarsCustAccountInformation {
 	}
 
 	/**
-	 * Returns the customerLogin.
+	 * Returns the yukonUser.
 	 * @return com.cannontech.database.data.lite.LiteYukonUser
 	 */
-	public com.cannontech.database.data.lite.LiteYukonUser getCustomerLogin() {
-		return customerLogin;
+	public com.cannontech.database.data.lite.LiteYukonUser getYukonUser() {
+		return yukonUser;
 	}
 
 	/**
-	 * Sets the customerLogin.
-	 * @param customerLogin The customerLogin to set
+	 * Sets the yukonUser.
+	 * @param yukonUser The yukonUser to set
 	 */
-	public void setCustomerLogin(
-		com.cannontech.database.data.lite.LiteYukonUser customerLogin) {
-		this.customerLogin = customerLogin;
+	public void setYukonUser(com.cannontech.database.data.lite.LiteYukonUser yukonUser) {
+		this.yukonUser = yukonUser;
+	}
+
+	/**
+	 * Returns the thermostatSettings.
+	 * @return LiteStarsThermostatSettings
+	 */
+	public LiteStarsThermostatSettings getThermostatSettings() {
+		return thermostatSettings;
+	}
+
+	/**
+	 * Sets the thermostatSettings.
+	 * @param thermostatSettings The thermostatSettings to set
+	 */
+	public void setThermostatSettings(LiteStarsThermostatSettings thermostatSettings) {
+		this.thermostatSettings = thermostatSettings;
 	}
 
 }

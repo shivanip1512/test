@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.17 2002/12/09 23:11:40 zyao Exp $
+ * $Id: StarsOperation.java,v 1.18 2003/01/14 00:31:27 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.17 $ $Date: 2002/12/09 23:11:40 $
+ * @version $Revision: 1.18 $ $Date: 2003/01/14 00:31:27 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -33,6 +33,8 @@ public class StarsOperation implements java.io.Serializable {
     //--------------------------/
 
     private StarsLogin _starsLogin;
+
+    private StarsLoginResponse _starsLoginResponse;
 
     private StarsLogoff _starsLogoff;
 
@@ -133,6 +135,18 @@ public class StarsOperation implements java.io.Serializable {
     private StarsUpdateLogin _starsUpdateLogin;
 
     private StarsUpdateLoginResponse _starsUpdateLoginResponse;
+
+    private StarsGetDefaultThermostatSettings _starsGetDefaultThermostatSettings;
+
+    private StarsGetDefaultThermostatSettingsResponse _starsGetDefaultThermostatSettingsResponse;
+
+    private StarsUpdateThermostatSettings _starsUpdateThermostatSettings;
+
+    private StarsGetExitInterviewQuestions _starsGetExitInterviewQuestions;
+
+    private StarsGetExitInterviewQuestionsResponse _starsGetExitInterviewQuestionsResponse;
+
+    private StarsSendExitInterviewAnswers _starsSendExitInterviewAnswers;
 
 
       //----------------/
@@ -316,6 +330,30 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetCustomerAccountResponse getStarsGetCustomerAccountResponse() 
 
     /**
+     * Returns the value of field
+     * 'starsGetDefaultThermostatSettings'.
+     * 
+     * @return the value of field
+     * 'starsGetDefaultThermostatSettings'.
+    **/
+    public StarsGetDefaultThermostatSettings getStarsGetDefaultThermostatSettings()
+    {
+        return this._starsGetDefaultThermostatSettings;
+    } //-- StarsGetDefaultThermostatSettings getStarsGetDefaultThermostatSettings() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetDefaultThermostatSettingsResponse'.
+     * 
+     * @return the value of field
+     * 'starsGetDefaultThermostatSettingsResponse'.
+    **/
+    public StarsGetDefaultThermostatSettingsResponse getStarsGetDefaultThermostatSettingsResponse()
+    {
+        return this._starsGetDefaultThermostatSettingsResponse;
+    } //-- StarsGetDefaultThermostatSettingsResponse getStarsGetDefaultThermostatSettingsResponse() 
+
+    /**
      * Returns the value of field 'starsGetEnrollmentPrograms'.
      * 
      * @return the value of field 'starsGetEnrollmentPrograms'.
@@ -336,6 +374,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsGetEnrollmentProgramsResponse;
     } //-- StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse() 
+
+    /**
+     * Returns the value of field 'starsGetExitInterviewQuestions'.
+     * 
+     * @return the value of field 'starsGetExitInterviewQuestions'.
+    **/
+    public StarsGetExitInterviewQuestions getStarsGetExitInterviewQuestions()
+    {
+        return this._starsGetExitInterviewQuestions;
+    } //-- StarsGetExitInterviewQuestions getStarsGetExitInterviewQuestions() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetExitInterviewQuestionsResponse'.
+     * 
+     * @return the value of field
+     * 'starsGetExitInterviewQuestionsResponse'.
+    **/
+    public StarsGetExitInterviewQuestionsResponse getStarsGetExitInterviewQuestionsResponse()
+    {
+        return this._starsGetExitInterviewQuestionsResponse;
+    } //-- StarsGetExitInterviewQuestionsResponse getStarsGetExitInterviewQuestionsResponse() 
 
     /**
      * Returns the value of field 'starsGetLMControlHistory'. The
@@ -391,6 +451,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsLogin;
     } //-- StarsLogin getStarsLogin() 
+
+    /**
+     * Returns the value of field 'starsLoginResponse'.
+     * 
+     * @return the value of field 'starsLoginResponse'.
+    **/
+    public StarsLoginResponse getStarsLoginResponse()
+    {
+        return this._starsLoginResponse;
+    } //-- StarsLoginResponse getStarsLoginResponse() 
 
     /**
      * Returns the value of field 'starsLogoff'.
@@ -498,6 +568,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsSearchCustomerAccountResponse getStarsSearchCustomerAccountResponse() 
 
     /**
+     * Returns the value of field 'starsSendExitInterviewAnswers'.
+     * 
+     * @return the value of field 'starsSendExitInterviewAnswers'.
+    **/
+    public StarsSendExitInterviewAnswers getStarsSendExitInterviewAnswers()
+    {
+        return this._starsSendExitInterviewAnswers;
+    } //-- StarsSendExitInterviewAnswers getStarsSendExitInterviewAnswers() 
+
+    /**
      * Returns the value of field 'starsSuccess'.
      * 
      * @return the value of field 'starsSuccess'.
@@ -602,6 +682,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateLoginResponse;
     } //-- StarsUpdateLoginResponse getStarsUpdateLoginResponse() 
+
+    /**
+     * Returns the value of field 'starsUpdateThermostatSettings'.
+     * 
+     * @return the value of field 'starsUpdateThermostatSettings'.
+    **/
+    public StarsUpdateThermostatSettings getStarsUpdateThermostatSettings()
+    {
+        return this._starsUpdateThermostatSettings;
+    } //-- StarsUpdateThermostatSettings getStarsUpdateThermostatSettings() 
 
     /**
      * Returns the value of field 'starsYukonSwitchCommand'.
@@ -838,6 +928,29 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetCustomerAccountResponse(StarsGetCustomerAccountResponse) 
 
     /**
+     * Sets the value of field 'starsGetDefaultThermostatSettings'.
+     * 
+     * @param starsGetDefaultThermostatSettings the value of field
+     * 'starsGetDefaultThermostatSettings'.
+    **/
+    public void setStarsGetDefaultThermostatSettings(StarsGetDefaultThermostatSettings starsGetDefaultThermostatSettings)
+    {
+        this._starsGetDefaultThermostatSettings = starsGetDefaultThermostatSettings;
+    } //-- void setStarsGetDefaultThermostatSettings(StarsGetDefaultThermostatSettings) 
+
+    /**
+     * Sets the value of field
+     * 'starsGetDefaultThermostatSettingsResponse'.
+     * 
+     * @param starsGetDefaultThermostatSettingsResponse the value
+     * of field 'starsGetDefaultThermostatSettingsResponse'.
+    **/
+    public void setStarsGetDefaultThermostatSettingsResponse(StarsGetDefaultThermostatSettingsResponse starsGetDefaultThermostatSettingsResponse)
+    {
+        this._starsGetDefaultThermostatSettingsResponse = starsGetDefaultThermostatSettingsResponse;
+    } //-- void setStarsGetDefaultThermostatSettingsResponse(StarsGetDefaultThermostatSettingsResponse) 
+
+    /**
      * Sets the value of field 'starsGetEnrollmentPrograms'.
      * 
      * @param starsGetEnrollmentPrograms the value of field
@@ -859,6 +972,29 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsGetEnrollmentProgramsResponse = starsGetEnrollmentProgramsResponse;
     } //-- void setStarsGetEnrollmentProgramsResponse(StarsGetEnrollmentProgramsResponse) 
+
+    /**
+     * Sets the value of field 'starsGetExitInterviewQuestions'.
+     * 
+     * @param starsGetExitInterviewQuestions the value of field
+     * 'starsGetExitInterviewQuestions'.
+    **/
+    public void setStarsGetExitInterviewQuestions(StarsGetExitInterviewQuestions starsGetExitInterviewQuestions)
+    {
+        this._starsGetExitInterviewQuestions = starsGetExitInterviewQuestions;
+    } //-- void setStarsGetExitInterviewQuestions(StarsGetExitInterviewQuestions) 
+
+    /**
+     * Sets the value of field
+     * 'starsGetExitInterviewQuestionsResponse'.
+     * 
+     * @param starsGetExitInterviewQuestionsResponse the value of
+     * field 'starsGetExitInterviewQuestionsResponse'.
+    **/
+    public void setStarsGetExitInterviewQuestionsResponse(StarsGetExitInterviewQuestionsResponse starsGetExitInterviewQuestionsResponse)
+    {
+        this._starsGetExitInterviewQuestionsResponse = starsGetExitInterviewQuestionsResponse;
+    } //-- void setStarsGetExitInterviewQuestionsResponse(StarsGetExitInterviewQuestionsResponse) 
 
     /**
      * Sets the value of field 'starsGetLMControlHistory'. The
@@ -916,6 +1052,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsLogin = starsLogin;
     } //-- void setStarsLogin(StarsLogin) 
+
+    /**
+     * Sets the value of field 'starsLoginResponse'.
+     * 
+     * @param starsLoginResponse the value of field
+     * 'starsLoginResponse'.
+    **/
+    public void setStarsLoginResponse(StarsLoginResponse starsLoginResponse)
+    {
+        this._starsLoginResponse = starsLoginResponse;
+    } //-- void setStarsLoginResponse(StarsLoginResponse) 
 
     /**
      * Sets the value of field 'starsLogoff'.
@@ -1030,6 +1177,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsSearchCustomerAccountResponse(StarsSearchCustomerAccountResponse) 
 
     /**
+     * Sets the value of field 'starsSendExitInterviewAnswers'.
+     * 
+     * @param starsSendExitInterviewAnswers the value of field
+     * 'starsSendExitInterviewAnswers'.
+    **/
+    public void setStarsSendExitInterviewAnswers(StarsSendExitInterviewAnswers starsSendExitInterviewAnswers)
+    {
+        this._starsSendExitInterviewAnswers = starsSendExitInterviewAnswers;
+    } //-- void setStarsSendExitInterviewAnswers(StarsSendExitInterviewAnswers) 
+
+    /**
      * Sets the value of field 'starsSuccess'.
      * 
      * @param starsSuccess the value of field 'starsSuccess'.
@@ -1141,6 +1299,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateLoginResponse = starsUpdateLoginResponse;
     } //-- void setStarsUpdateLoginResponse(StarsUpdateLoginResponse) 
+
+    /**
+     * Sets the value of field 'starsUpdateThermostatSettings'.
+     * 
+     * @param starsUpdateThermostatSettings the value of field
+     * 'starsUpdateThermostatSettings'.
+    **/
+    public void setStarsUpdateThermostatSettings(StarsUpdateThermostatSettings starsUpdateThermostatSettings)
+    {
+        this._starsUpdateThermostatSettings = starsUpdateThermostatSettings;
+    } //-- void setStarsUpdateThermostatSettings(StarsUpdateThermostatSettings) 
 
     /**
      * Sets the value of field 'starsYukonSwitchCommand'.

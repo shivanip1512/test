@@ -65,7 +65,7 @@ public class StarsUser extends User {
 		ResultSet rset = null;
 		
 		try {
-			sql = "SELECT map.EnergyCompanyID, acct.* "
+			sql = "SELECT map.EnergyCompanyID, acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes "
 				+ "FROM CustomerAccount acct, CustomerBase cust, CustomerContact cont, ECToAccountMapping map "
 				+ "WHERE cont.LogInID = ? AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
 					   
@@ -75,7 +75,7 @@ public class StarsUser extends User {
 			ArrayList accountList = new ArrayList();
 			
 			while (rset.next()) {
-				energyCompanyID = rset.getInt(1);
+				energyCompanyID = rset.getInt("EnergyCompanyID");
 				
 				CustomerAccount account = new CustomerAccount();
 				account.setAccountID( new Integer(rset.getInt("AccountID")) );
@@ -96,8 +96,8 @@ public class StarsUser extends User {
 		}
 		finally {
 			try {
-				if (pstmt != null) pstmt.close();
 				if (rset != null) rset.close();
+				if (pstmt != null) pstmt.close();
 			}
 			catch (Exception e) {
 				e.printStackTrace();

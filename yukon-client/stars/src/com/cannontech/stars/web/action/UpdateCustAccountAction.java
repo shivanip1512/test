@@ -1,12 +1,9 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Vector;
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
+import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
@@ -54,9 +51,9 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInformation accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			else
-				accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null) return null;
 
             StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
@@ -102,6 +99,8 @@ public class UpdateCustAccountAction implements ActionBase {
             primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
             account.setPrimaryContact( primContact );
+            
+            account.setTimeZone( ServletUtils.getTimeZoneStr(TimeZone.getDefault()) );
 
             StarsUpdateCustomerAccount updateAccount = (StarsUpdateCustomerAccount)
                     StarsCustAccountFactory.newStarsCustAccount(account, StarsUpdateCustomerAccount.class );
@@ -113,15 +112,17 @@ public class UpdateCustAccountAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
         return null;
     }
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
@@ -130,10 +131,10 @@ public class UpdateCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
+            int energyCompanyID = (int) operator.getEnergyCompanyID();
             StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
@@ -143,7 +144,7 @@ public class UpdateCustAccountAction implements ActionBase {
             /* Update customer account */
             LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
             
-            LiteCustomerAddress liteBillAddr = SOAPServer.getCustomerAddress( energyCompanyID, new Integer(liteAccount.getBillingAddressID()) );
+            LiteCustomerAddress liteBillAddr = SOAPServer.getCustomerAddress( energyCompanyID, liteAccount.getBillingAddressID() );
             BillingAddress starsBillAddr = updateAccount.getBillingAddress();
             
             if (!StarsLiteFactory.isIdenticalCustomerAddress( liteBillAddr, starsBillAddr )) {
@@ -174,7 +175,7 @@ public class UpdateCustAccountAction implements ActionBase {
             com.cannontech.database.db.stars.customer.CustomerBase customer =
             		(com.cannontech.database.db.stars.customer.CustomerBase) StarsLiteFactory.createDBPersistent( liteCustomer );
             
-            LiteCustomerContact litePrimContact = SOAPServer.getCustomerContact( energyCompanyID, new Integer(liteCustomer.getPrimaryContactID()) );
+            LiteCustomerContact litePrimContact = SOAPServer.getCustomerContact( energyCompanyID, liteCustomer.getPrimaryContactID() );
             PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
             
             if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
@@ -204,7 +205,7 @@ public class UpdateCustAccountAction implements ActionBase {
 		        	Integer contactID = (Integer) contactList.get(j);
 		        	if (contactID.intValue() == starsContact.getContactID()) {
 		        		contactList.remove(j);
-		        		liteContact = SOAPServer.getCustomerContact( energyCompanyID, contactID );
+		        		liteContact = SOAPServer.getCustomerContact( energyCompanyID, contactID.intValue() );
 		        		
 		        		if (!StarsLiteFactory.isIdentical(liteContact, starsContact)) {
 			        		// Update the customer contact
@@ -245,7 +246,7 @@ public class UpdateCustAccountAction implements ActionBase {
             
             // Remove customer contacts that are not in the update list
             for (int i = 0; i < contactList.size(); i++) {
-            	LiteCustomerContact liteContact = SOAPServer.getCustomerContact( energyCompanyID, (Integer) contactList.get(i) );
+            	LiteCustomerContact liteContact = SOAPServer.getCustomerContact( energyCompanyID, ((Integer) contactList.get(i)).intValue() );
             	com.cannontech.database.db.customer.CustomerContact contact =
             			(com.cannontech.database.db.customer.CustomerContact) StarsLiteFactory.createDBPersistent( liteContact );
 	            
@@ -284,7 +285,7 @@ public class UpdateCustAccountAction implements ActionBase {
             /* Update account site */
             LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
             
-            LiteCustomerAddress liteStAddr = SOAPServer.getCustomerAddress( energyCompanyID, new Integer(liteAcctSite.getStreetAddressID()) );
+            LiteCustomerAddress liteStAddr = SOAPServer.getCustomerAddress( energyCompanyID, liteAcctSite.getStreetAddressID() );
             StreetAddress starsStAddr = updateAccount.getStreetAddress();
             
             if (!StarsLiteFactory.isIdenticalCustomerAddress( liteStAddr, starsStAddr )) {
@@ -336,6 +337,15 @@ public class UpdateCustAccountAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the customer account information") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -346,13 +356,16 @@ public class UpdateCustAccountAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
 			StarsUpdateCustomerAccountResponse resp = operation.getStarsUpdateCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-			operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation());
+			operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
 			
             return 0;
         }

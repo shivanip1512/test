@@ -73,12 +73,14 @@ public class GetServiceHistoryAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
+        	
+        	int energyCompanyID = (int) operator.getEnergyCompanyID();
         	
         	if (accountInfo.getServiceRequestHistory() == null) {
 		        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
@@ -91,15 +93,15 @@ public class GetServiceHistoryAction implements ActionBase {
 		        
 	        	accountInfo.setServiceRequestHistory( new ArrayList() );
 	        	for (int i = 0; i < orders.length; i++)
-	        		com.cannontech.stars.web.servlet.SOAPServer.addWorkOrderBase( new Integer((int) operator.getEnergyCompanyID()), orders[i] );
+	        		com.cannontech.stars.web.servlet.SOAPServer.addWorkOrderBase( energyCompanyID, orders[i] );
         	}
         	
-        	Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( new Integer((int) operator.getEnergyCompanyID()) );
+        	Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
         	
         	StarsServiceRequestHistory orderHist = new StarsServiceRequestHistory();
         	for (int i = 0; i < accountInfo.getServiceRequestHistory().size(); i++) {
         		LiteWorkOrderBase liteOrder = com.cannontech.stars.web.servlet.SOAPServer.getWorkOrderBase(
-        				new Integer((int) operator.getEnergyCompanyID()), (Integer) accountInfo.getServiceRequestHistory().get(i) );
+        				energyCompanyID, ((Integer) accountInfo.getServiceRequestHistory().get(i)).intValue() );
         		orderHist.addStarsServiceRequest( StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists ) );
         	}
         	
@@ -131,7 +133,7 @@ public class GetServiceHistoryAction implements ActionBase {
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
             	

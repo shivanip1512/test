@@ -38,6 +38,8 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
 
     private java.util.Vector _starsCustAccountBriefList;
 
+    private StarsFailure _starsFailure;
+
 
       //----------------/
      //- Constructors -/
@@ -127,6 +129,16 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
     {
         return this._starsCustAccountInformation;
     } //-- StarsCustAccountInformation getStarsCustAccountInformation() 
+
+    /**
+     * Returns the value of field 'starsFailure'.
+     * 
+     * @return the value of field 'starsFailure'.
+    **/
+    public StarsFailure getStarsFailure()
+    {
+        return this._starsFailure;
+    } //-- StarsFailure getStarsFailure() 
 
     /**
     **/
@@ -224,6 +236,16 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
     {
         this._starsCustAccountInformation = starsCustAccountInformation;
     } //-- void setStarsCustAccountInformation(StarsCustAccountInformation) 
+
+    /**
+     * Sets the value of field 'starsFailure'.
+     * 
+     * @param starsFailure the value of field 'starsFailure'.
+    **/
+    public void setStarsFailure(StarsFailure starsFailure)
+    {
+        this._starsFailure = starsFailure;
+    } //-- void setStarsFailure(StarsFailure) 
 
     /**
      * 

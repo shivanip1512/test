@@ -41,6 +41,18 @@ public class ServletUtils {
 	}
 	
 	public static final String TRANSIENT_ATT_LEADING = "$$";
+	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
+	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
+	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
+	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
+	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
+	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
+	public static final String ATT_REDIRECT = "REDIRECT";
+	public static final String ATT_REDIRECT2 = "REDIRECT2";
+	public static final String ATT_REFERRER = "REFERRER";
+	public static final String ATT_OVER_PAGE_ACTION = "OVER_PAGE_ACTION";
+	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
+	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
@@ -146,7 +158,7 @@ public class ServletUtils {
         StarsLMControlHistory ctrlHistToday = new StarsLMControlHistory();
         Date today = com.cannontech.util.ServletUtil.getToday();	
         
-        for (int i = 0; i < ctrlHist.getControlHistoryCount(); i++) {
+        for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
         	ControlHistory hist = ctrlHist.getControlHistory(i);
         	if ( hist.getStartDateTime().before(today) ) break;
         	ctrlHistToday.addControlHistory( hist );
@@ -221,5 +233,35 @@ public class ServletUtils {
     	}
     	
     	return formatedPhoneNo.toString();
+    }
+    
+    public static TimeZone getTimeZone(String timeZoneStr) {
+    	if (timeZoneStr.equalsIgnoreCase("AST"))
+    		return TimeZone.getTimeZone( "US/Alaska" );
+    	else if (timeZoneStr.equalsIgnoreCase("PST"))
+    		return TimeZone.getTimeZone( "US/Pacific" );
+    	else if (timeZoneStr.equalsIgnoreCase("MST"))
+    		return TimeZone.getTimeZone( "US/Mountain" );
+    	else if (timeZoneStr.equalsIgnoreCase("CST"))
+    		return TimeZone.getTimeZone( "US/Central" );
+    	else if (timeZoneStr.equalsIgnoreCase("EST"))
+    		return TimeZone.getTimeZone( "US/Eastern" );
+    	else
+    		return null;
+    }
+    
+    public static String getTimeZoneStr(TimeZone timeZone) {
+    	if (timeZone.equals( TimeZone.getTimeZone("AST") ))
+    		return "AST";
+    	else if (timeZone.equals( TimeZone.getTimeZone("PST") ))
+    		return "PST";
+    	else if (timeZone.equals( TimeZone.getTimeZone("MST") ))
+    		return "MST";
+    	else if (timeZone.equals( TimeZone.getTimeZone("CST") ))
+    		return "CST";
+    	else if (timeZone.equals( TimeZone.getTimeZone("EST") ))
+    		return "EST";
+    	else
+    		return null;
     }
 }

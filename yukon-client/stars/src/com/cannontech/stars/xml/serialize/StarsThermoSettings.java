@@ -34,7 +34,16 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _starsThermoScheduleList;
+    private int _inventoryID;
+
+    /**
+     * keeps track of state for field: _inventoryID
+    **/
+    private boolean _has_inventoryID;
+
+    private java.util.Vector _starsThermostatSeasonList;
+
+    private StarsThermostatManualOption _starsThermostatManualOption;
 
 
       //----------------/
@@ -43,7 +52,7 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     public StarsThermoSettings() {
         super();
-        _starsThermoScheduleList = new Vector();
+        _starsThermostatSeasonList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsThermoSettings()
 
 
@@ -54,73 +63,107 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vStarsThermoSchedule
+     * @param vStarsThermostatSeason
     **/
-    public void addStarsThermoSchedule(StarsThermoSchedule vStarsThermoSchedule)
+    public void addStarsThermostatSeason(StarsThermostatSeason vStarsThermostatSeason)
         throws java.lang.IndexOutOfBoundsException
     {
-        if (!(_starsThermoScheduleList.size() < 4)) {
+        if (!(_starsThermostatSeasonList.size() < 2)) {
             throw new IndexOutOfBoundsException();
         }
-        _starsThermoScheduleList.addElement(vStarsThermoSchedule);
-    } //-- void addStarsThermoSchedule(StarsThermoSchedule) 
+        _starsThermostatSeasonList.addElement(vStarsThermostatSeason);
+    } //-- void addStarsThermostatSeason(StarsThermostatSeason) 
 
     /**
      * 
      * 
      * @param index
-     * @param vStarsThermoSchedule
+     * @param vStarsThermostatSeason
     **/
-    public void addStarsThermoSchedule(int index, StarsThermoSchedule vStarsThermoSchedule)
+    public void addStarsThermostatSeason(int index, StarsThermostatSeason vStarsThermostatSeason)
         throws java.lang.IndexOutOfBoundsException
     {
-        if (!(_starsThermoScheduleList.size() < 4)) {
+        if (!(_starsThermostatSeasonList.size() < 2)) {
             throw new IndexOutOfBoundsException();
         }
-        _starsThermoScheduleList.insertElementAt(vStarsThermoSchedule, index);
-    } //-- void addStarsThermoSchedule(int, StarsThermoSchedule) 
+        _starsThermostatSeasonList.insertElementAt(vStarsThermostatSeason, index);
+    } //-- void addStarsThermostatSeason(int, StarsThermostatSeason) 
 
     /**
     **/
-    public java.util.Enumeration enumerateStarsThermoSchedule()
+    public void deleteInventoryID()
     {
-        return _starsThermoScheduleList.elements();
-    } //-- java.util.Enumeration enumerateStarsThermoSchedule() 
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
+
+    /**
+    **/
+    public java.util.Enumeration enumerateStarsThermostatSeason()
+    {
+        return _starsThermostatSeasonList.elements();
+    } //-- java.util.Enumeration enumerateStarsThermostatSeason() 
+
+    /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
+    **/
+    public int getInventoryID()
+    {
+        return this._inventoryID;
+    } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'starsThermostatManualOption'.
+     * 
+     * @return the value of field 'starsThermostatManualOption'.
+    **/
+    public StarsThermostatManualOption getStarsThermostatManualOption()
+    {
+        return this._starsThermostatManualOption;
+    } //-- StarsThermostatManualOption getStarsThermostatManualOption() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsThermoSchedule getStarsThermoSchedule(int index)
+    public StarsThermostatSeason getStarsThermostatSeason(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsThermoScheduleList.size())) {
+        if ((index < 0) || (index > _starsThermostatSeasonList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsThermoSchedule) _starsThermoScheduleList.elementAt(index);
-    } //-- StarsThermoSchedule getStarsThermoSchedule(int) 
+        return (StarsThermostatSeason) _starsThermostatSeasonList.elementAt(index);
+    } //-- StarsThermostatSeason getStarsThermostatSeason(int) 
 
     /**
     **/
-    public StarsThermoSchedule[] getStarsThermoSchedule()
+    public StarsThermostatSeason[] getStarsThermostatSeason()
     {
-        int size = _starsThermoScheduleList.size();
-        StarsThermoSchedule[] mArray = new StarsThermoSchedule[size];
+        int size = _starsThermostatSeasonList.size();
+        StarsThermostatSeason[] mArray = new StarsThermostatSeason[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsThermoSchedule) _starsThermoScheduleList.elementAt(index);
+            mArray[index] = (StarsThermostatSeason) _starsThermostatSeasonList.elementAt(index);
         }
         return mArray;
-    } //-- StarsThermoSchedule[] getStarsThermoSchedule() 
+    } //-- StarsThermostatSeason[] getStarsThermostatSeason() 
 
     /**
     **/
-    public int getStarsThermoScheduleCount()
+    public int getStarsThermostatSeasonCount()
     {
-        return _starsThermoScheduleList.size();
-    } //-- int getStarsThermoScheduleCount() 
+        return _starsThermostatSeasonList.size();
+    } //-- int getStarsThermostatSeasonCount() 
+
+    /**
+    **/
+    public boolean hasInventoryID()
+    {
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -153,55 +196,77 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllStarsThermoSchedule()
+    public void removeAllStarsThermostatSeason()
     {
-        _starsThermoScheduleList.removeAllElements();
-    } //-- void removeAllStarsThermoSchedule() 
+        _starsThermostatSeasonList.removeAllElements();
+    } //-- void removeAllStarsThermostatSeason() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsThermoSchedule removeStarsThermoSchedule(int index)
+    public StarsThermostatSeason removeStarsThermostatSeason(int index)
     {
-        java.lang.Object obj = _starsThermoScheduleList.elementAt(index);
-        _starsThermoScheduleList.removeElementAt(index);
-        return (StarsThermoSchedule) obj;
-    } //-- StarsThermoSchedule removeStarsThermoSchedule(int) 
+        java.lang.Object obj = _starsThermostatSeasonList.elementAt(index);
+        _starsThermostatSeasonList.removeElementAt(index);
+        return (StarsThermostatSeason) obj;
+    } //-- StarsThermostatSeason removeStarsThermostatSeason(int) 
+
+    /**
+     * Sets the value of field 'inventoryID'.
+     * 
+     * @param inventoryID the value of field 'inventoryID'.
+    **/
+    public void setInventoryID(int inventoryID)
+    {
+        this._inventoryID = inventoryID;
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'starsThermostatManualOption'.
+     * 
+     * @param starsThermostatManualOption the value of field
+     * 'starsThermostatManualOption'.
+    **/
+    public void setStarsThermostatManualOption(StarsThermostatManualOption starsThermostatManualOption)
+    {
+        this._starsThermostatManualOption = starsThermostatManualOption;
+    } //-- void setStarsThermostatManualOption(StarsThermostatManualOption) 
 
     /**
      * 
      * 
      * @param index
-     * @param vStarsThermoSchedule
+     * @param vStarsThermostatSeason
     **/
-    public void setStarsThermoSchedule(int index, StarsThermoSchedule vStarsThermoSchedule)
+    public void setStarsThermostatSeason(int index, StarsThermostatSeason vStarsThermostatSeason)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsThermoScheduleList.size())) {
+        if ((index < 0) || (index > _starsThermostatSeasonList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        if (!(index < 4)) {
+        if (!(index < 2)) {
             throw new IndexOutOfBoundsException();
         }
-        _starsThermoScheduleList.setElementAt(vStarsThermoSchedule, index);
-    } //-- void setStarsThermoSchedule(int, StarsThermoSchedule) 
+        _starsThermostatSeasonList.setElementAt(vStarsThermostatSeason, index);
+    } //-- void setStarsThermostatSeason(int, StarsThermostatSeason) 
 
     /**
      * 
      * 
-     * @param starsThermoScheduleArray
+     * @param starsThermostatSeasonArray
     **/
-    public void setStarsThermoSchedule(StarsThermoSchedule[] starsThermoScheduleArray)
+    public void setStarsThermostatSeason(StarsThermostatSeason[] starsThermostatSeasonArray)
     {
         //-- copy array
-        _starsThermoScheduleList.removeAllElements();
-        for (int i = 0; i < starsThermoScheduleArray.length; i++) {
-            _starsThermoScheduleList.addElement(starsThermoScheduleArray[i]);
+        _starsThermostatSeasonList.removeAllElements();
+        for (int i = 0; i < starsThermostatSeasonArray.length; i++) {
+            _starsThermostatSeasonList.addElement(starsThermostatSeasonArray[i]);
         }
-    } //-- void setStarsThermoSchedule(StarsThermoSchedule) 
+    } //-- void setStarsThermostatSeason(StarsThermostatSeason) 
 
     /**
     **/

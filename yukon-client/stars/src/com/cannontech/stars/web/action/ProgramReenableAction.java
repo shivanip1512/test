@@ -32,7 +32,7 @@ public class ProgramReenableAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
+			com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
 			if (operator == null && user == null) return null;
 
             StarsProgramReenable reEnable = new StarsProgramReenable();
@@ -44,6 +44,7 @@ public class ProgramReenableAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
 		return null;
@@ -53,29 +54,24 @@ public class ProgramReenableAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
             StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            StarsUser user = (StarsUser) session.getAttribute("USER");
+            com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
             if (operator == null && user == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-                
-			Integer energyCompanyID = null;
-    		if (operator != null)
-        		energyCompanyID = new Integer((int) operator.getEnergyCompanyID());
-        	else
-        		energyCompanyID = new Integer(user.getEnergyCompanyID());
             
         	LiteStarsCustAccountInformation liteAcctInfo = null;
         	if (operator != null)
-        		liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        		liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	else
-        		liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        		liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
@@ -93,6 +89,7 @@ public class ProgramReenableAction implements ActionBase {
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 			
             // Get list entry IDs
+            int energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
             Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             
             Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
@@ -114,25 +111,28 @@ public class ProgramReenableAction implements ActionBase {
 
             Date now = new Date();	// Current date, all customer events will use exactly the same date
             
-            // List of hardware IDs to be disabled
+            // List of hardware IDs to be reenabled
             ArrayList hwIDList = new ArrayList();
             for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
             	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
             	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
             		StarsAppliance appliance = (StarsAppliance) liteAcctInfo.getAppliances().get(j);
-            		if (appliance.getLmProgramID() == program.getLmProgramID()) {
+            		if (appliance.getLmProgramID() == program.getProgramID()) {
             			Integer hardwareID = new Integer( appliance.getInventoryID() );
             			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
             			break;
             		}
             	}
             }
+			
+			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
+			String routeStr = (company == null) ? "" : " select route id " + String.valueOf(company.getRouteID());
 
             for (int i = 0; i < hwIDList.size(); i++) {
             	Integer invID = (Integer) hwIDList.get(i);
-            	LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+            	LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
 
-                String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+                String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand(cmd, conn);
     			
     			ServerUtils.removeFutureActivation( liteHw.getLmHardwareHistory(), futureActEntryID );
@@ -148,7 +148,7 @@ public class ProgramReenableAction implements ActionBase {
         		eventBase.setActionID( actCompEntryID );
         		eventBase.setEventDateTime( now );
         		
-        		event.setEnergyCompanyID( energyCompanyID );
+        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
         		multiDB.getDBPersistentVector().addElement( event );
         		
 	            // Add "Activation Completed" to program events
@@ -162,7 +162,7 @@ public class ProgramReenableAction implements ActionBase {
                 	LiteStarsLMProgram liteProg = null;
                 	for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
 	                	LiteStarsLMProgram lProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-	                	if (lProg.getLmProgramID() == programID.intValue()) {
+	                	if (lProg.getProgramID() == programID.intValue()) {
 	                		liteProg = lProg;
 	                		break;
 	                	}
@@ -185,7 +185,7 @@ public class ProgramReenableAction implements ActionBase {
 		            eventBase1.setActionID( actCompEntryID );
 		            eventBase1.setEventDateTime( now );
 		            
-		            event1.setEnergyCompanyID( energyCompanyID );
+		            event1.setEnergyCompanyID( new Integer(energyCompanyID) );
 		            multiDB.getDBPersistentVector().addElement( event1 );
                 }
         		
@@ -216,11 +216,11 @@ public class ProgramReenableAction implements ActionBase {
 					
 					for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
 						LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-						if (liteProg.getLmProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
+						if (liteProg.getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
 						liteProg.getProgramHistory().add( liteEvent );
 						
 						StarsLMProgramHistory progHist = new StarsLMProgramHistory();
-						progHist.setProgramID( liteProg.getLmProgramID() );
+						progHist.setProgramID( liteProg.getProgramID() );
 						for (int l = 0; l < liteProg.getProgramHistory().size(); l++) {
 							liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(l);
 							StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
@@ -237,6 +237,15 @@ public class ProgramReenableAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot reenable the programs") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
 		return null;
@@ -250,20 +259,23 @@ public class ProgramReenableAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 
 			StarsProgramReenableResponse resp = operation.getStarsProgramReenableResponse();
             if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
+			com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
 			
 			StarsCustAccountInformation accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			else
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			if (accountInfo == null)
 				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 				
@@ -290,7 +302,7 @@ public class ProgramReenableAction implements ActionBase {
             
             if (operator != null) {
 				Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
-				Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
+				Hashtable selectionLists = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 					
 				DeviceStatus hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(

@@ -1,11 +1,12 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -20,35 +21,36 @@ import com.cannontech.stars.xml.util.StarsConstants;
  */
 public class MultiAction implements ActionBase {
 	
-	private Vector actionVector = new Vector();
+	private SOAPMessage reqMsg = null;
+	private ArrayList actionList = new ArrayList();
+	private boolean error = false;
 	
-	public Vector getActionVector() {
-		return actionVector;
+	public void addAction(ActionBase action, HttpServletRequest req, HttpSession session) {
+		if (error) return;
+		
+		actionList.add( action );
+		try {
+			if (reqMsg == null) {
+				reqMsg = SOAPUtil.createMessage();
+				reqMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
+			}
+			
+			SOAPMessage message = action.build(req, session);
+			SOAPUtil.mergeSOAPMsgOfOperation( reqMsg, message );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			error = true;
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, action.getClass() + ": invalid request parameters" );
+		}
 	}
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-		if (actionVector.size() == 0) return null;
-		
-		try {
-			SOAPMessage reqMsg = SOAPUtil.createMessage();
-			reqMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
-			
-			for (int i = 0; i < actionVector.size(); i++) {
-				ActionBase action = (ActionBase) actionVector.get(i);
-				SOAPMessage message = action.build(req, session);
-				SOAPUtil.mergeSOAPMsgOfOperation( reqMsg, message );
-			}
-			
-			return reqMsg;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+		if (reqMsg == null || error) return null;
+		return reqMsg;
 	}
 
 	/**
@@ -59,8 +61,8 @@ public class MultiAction implements ActionBase {
 			SOAPMessage respMsg = SOAPUtil.createMessage();
 			respMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
 			
-			for (int i = 0; i < actionVector.size(); i++) {
-				ActionBase action = (ActionBase) actionVector.get(i);
+			for (int i = 0; i < actionList.size(); i++) {
+				ActionBase action = (ActionBase) actionList.get(i);
 				SOAPMessage msg = action.process(reqMsg, session);
 				
 				StarsOperation resOper = SOAPUtil.parseSOAPMsgForOperation( msg );
@@ -88,8 +90,8 @@ public class MultiAction implements ActionBase {
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
-            for (int i = 0; i < actionVector.size(); i++) {
-            	ActionBase action = (ActionBase) actionVector.get(i);
+            for (int i = 0; i < actionList.size(); i++) {
+            	ActionBase action = (ActionBase) actionList.get(i);
             	int res = action.parse(reqMsg, respMsg, session);
             	if (res != 0) return res;
             }

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLogin.java,v 1.17 2002/12/09 23:11:43 zyao Exp $
+ * $Id: StarsLogin.java,v 1.18 2003/01/14 00:31:40 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,20 +23,11 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.17 $ $Date: 2002/12/09 23:11:43 $
+ * @version $Revision: 1.18 $ $Date: 2003/01/14 00:31:40 $
 **/
-public class StarsLogin implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private java.lang.String _username;
-
-    private java.lang.String _password;
-
-    private java.lang.String _dbAlias;
+public class StarsLogin extends StarsUsr 
+implements java.io.Serializable
+{
 
 
       //----------------/
@@ -51,36 +42,6 @@ public class StarsLogin implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'dbAlias'.
-     * 
-     * @return the value of field 'dbAlias'.
-    **/
-    public java.lang.String getDbAlias()
-    {
-        return this._dbAlias;
-    } //-- java.lang.String getDbAlias() 
-
-    /**
-     * Returns the value of field 'password'.
-     * 
-     * @return the value of field 'password'.
-    **/
-    public java.lang.String getPassword()
-    {
-        return this._password;
-    } //-- java.lang.String getPassword() 
-
-    /**
-     * Returns the value of field 'username'.
-     * 
-     * @return the value of field 'username'.
-    **/
-    public java.lang.String getUsername()
-    {
-        return this._username;
-    } //-- java.lang.String getUsername() 
 
     /**
     **/
@@ -118,36 +79,6 @@ public class StarsLogin implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'dbAlias'.
-     * 
-     * @param dbAlias the value of field 'dbAlias'.
-    **/
-    public void setDbAlias(java.lang.String dbAlias)
-    {
-        this._dbAlias = dbAlias;
-    } //-- void setDbAlias(java.lang.String) 
-
-    /**
-     * Sets the value of field 'password'.
-     * 
-     * @param password the value of field 'password'.
-    **/
-    public void setPassword(java.lang.String password)
-    {
-        this._password = password;
-    } //-- void setPassword(java.lang.String) 
-
-    /**
-     * Sets the value of field 'username'.
-     * 
-     * @param username the value of field 'username'.
-    **/
-    public void setUsername(java.lang.String username)
-    {
-        this._username = username;
-    } //-- void setUsername(java.lang.String) 
 
     /**
      * 

@@ -6,6 +6,7 @@ import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.CallReportBase;
 
 /**
@@ -51,7 +52,7 @@ public class StarsCallReportFactory {
         		com.cannontech.database.db.stars.report.CallReportBase.getAllAccountCallReports( accountID );
         if (calls == null) return null;
         
-        java.util.Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
+        java.util.Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID.intValue() );
         LiteCustomerSelectionList callTypeList = (LiteCustomerSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
         
         StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];
@@ -59,7 +60,7 @@ public class StarsCallReportFactory {
         	callRprts[i] = new StarsCallReport();
         	
         	callRprts[i].setCallID( calls[i].getCallID().intValue() );
-			callRprts[i].setCallNumber( calls[i].getCallNumber() );
+			callRprts[i].setCallNumber( StarsLiteFactory.forceNotNull(calls[i].getCallNumber()) );
         	callRprts[i].setCallDate( calls[i].getDateTaken() );
         	
         	StarsSelectionListEntry[] entries = callTypeList.getListEntries();
@@ -70,8 +71,8 @@ public class StarsCallReportFactory {
         		}
         	}
         	
-        	callRprts[i].setTakenBy( calls[i].getTakenBy() );
-        	callRprts[i].setDescription( calls[i].getDescription() );
+        	callRprts[i].setTakenBy( StarsLiteFactory.forceNotNull(calls[i].getTakenBy()) );
+        	callRprts[i].setDescription( StarsLiteFactory.forceNotNull(calls[i].getDescription()) );
         }
         
         return callRprts;

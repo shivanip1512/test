@@ -54,6 +54,7 @@ public class GetCustAccountAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
         return null;
@@ -63,9 +64,10 @@ public class GetCustAccountAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
 
 			StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
             StarsUser user = (StarsUser) session.getAttribute("USER");
@@ -75,11 +77,7 @@ public class GetCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            Integer energyCompanyID = null;
-            if (operator != null)
-            	energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
-            else
-            	energyCompanyID = new Integer( user.getEnergyCompanyID() );
+            int energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
 
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -93,10 +91,10 @@ public class GetCustAccountAction implements ActionBase {
 	                return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID(), true );
+				liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID().intValue(), true );
             }
             else
-	            liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, new Integer(getAccount.getAccountID()), true );
+	            liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, getAccount.getAccountID(), true );
             
             if (liteAcctInfo == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -104,9 +102,9 @@ public class GetCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             if (operator != null)
-            	operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+            	operator.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
             else
-        		user.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+        		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
         	
 			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
 					liteAcctInfo, energyCompanyID, (operator != null) );
@@ -119,6 +117,15 @@ public class GetCustAccountAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get the customer account information") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -132,7 +139,10 @@ public class GetCustAccountAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
             StarsGetCustomerAccountResponse resp = operation.getStarsGetCustomerAccountResponse();
             StarsCustAccountInformation accountInfo = resp.getStarsCustAccountInformation();
@@ -141,9 +151,9 @@ public class GetCustAccountAction implements ActionBase {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsUser user = (StarsUser) session.getAttribute("USER");
 			if (operator != null)
-				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo );
+				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
 			else
-            	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", accountInfo );
+            	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
             
             return 0;
         }

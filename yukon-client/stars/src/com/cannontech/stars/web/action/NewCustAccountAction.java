@@ -1,12 +1,9 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.Vector;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
+import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.multi.MultiDBPersistent;
@@ -61,6 +58,7 @@ public class NewCustAccountAction implements ActionBase {
             account.setAccountNotes( req.getParameter("AcctNotes") );
             account.setPropertyNumber( req.getParameter("PropNo") );
             account.setPropertyNotes( req.getParameter("PropNotes") );
+            account.setTimeZone( ServletUtils.getTimeZoneStr(TimeZone.getDefault()) );
 
             StreetAddress propAddr = new StreetAddress();
             propAddr.setStreetAddr1( req.getParameter("SAddr1") );
@@ -130,6 +128,7 @@ public class NewCustAccountAction implements ActionBase {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -139,9 +138,10 @@ public class NewCustAccountAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
 
             com.cannontech.stars.web.StarsOperator operator = (com.cannontech.stars.web.StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
@@ -150,7 +150,7 @@ public class NewCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
 
-            Integer energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
+            int energyCompanyID = (int)operator.getEnergyCompanyID();
         	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
@@ -233,7 +233,7 @@ public class NewCustAccountAction implements ActionBase {
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
             account.setCustomerBase( customer );
-            account.setEnergyCompanyID( energyCompanyID );
+            account.setEnergyCompanyID( new Integer(energyCompanyID) );
             //account.setCustomerLogin( login );
             /* End create CustomerAccount */
             
@@ -242,7 +242,7 @@ public class NewCustAccountAction implements ActionBase {
             
 			LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.addCustAccountInformation( energyCompanyID, account );
             
-            operator.setAttribute( "CUSTOMER_ACCOUNT_INFORMATION", liteAcctInfo );
+            operator.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
             StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 
             StarsNewCustomerAccountResponse resp = new StarsNewCustomerAccountResponse();
@@ -253,6 +253,15 @@ public class NewCustAccountAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the customer account") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -266,13 +275,16 @@ public class NewCustAccountAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
 			StarsNewCustomerAccountResponse resp = operation.getStarsNewCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION", resp.getStarsCustAccountInformation() );
+			operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation() );
 			
             return 0;
         }

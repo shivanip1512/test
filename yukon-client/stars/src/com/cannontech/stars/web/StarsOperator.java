@@ -106,8 +106,8 @@ public class StarsOperator extends Operator {
 		}
 		finally {
 			try {
-				if (pstmt != null) pstmt.close();
 				if (rset != null) rset.close();
+				if (pstmt != null) pstmt.close();
 			}
 			catch (Exception e) {
 				e.printStackTrace();

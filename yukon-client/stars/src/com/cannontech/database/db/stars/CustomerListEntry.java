@@ -28,6 +28,7 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_CUSTTYPE_RES = "CUSTTYPE_RES";
     public static final String YUKONDEF_CUSTTYPE_COMM = "CUSTTYPE_COMM";
     public static final String YUKONDEF_INVCAT_ONEWAYREC = "INVCAT_ONEWAYREC";
+    public static final String YUKONDEF_DEVTYPE_THERMOSTAT = "DEVTYPE_THERMOSTAT";
     public static final String YUKONDEF_APPCAT_AC = "APPCAT_AC";
     public static final String YUKONDEF_APPCAT_WH = "APPCAT_WH";
     public static final String YUKONDEF_APPCAT_HS = "APPCAT_HS";
@@ -43,6 +44,19 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_DEVSTAT_AVAIL = "DEVSTAT_AVAIL";
     public static final String YUKONDEF_DEVSTAT_TEMPUNAVAIL = "DEVSTAT_TEMPUNAVAIL";
     public static final String YUKONDEF_DEVSTAT_UNAVAIL = "DEVSTAT_UNAVAIL";
+    public static final String YUKONDEF_TOW_WEEKDAY = "TIMEOFWEEK_WEEKDAY";
+    public static final String YUKONDEF_TOW_WEEKEND = "TIMEOFWEEK_WEEKEND";
+    public static final String YUKONDEF_TOW_SATURDAY = "TIMEOFWEEK_SATURDAY";
+    public static final String YUKONDEF_TOW_SUNDAY = "TIMEOFWEEK_SUNDAY";
+    public static final String YUKONDEF_QUESTIONTYPE_SIGNUP = "QUESTIONTYPE_SIGNUP";
+    public static final String YUKONDEF_QUESTIONTYPE_EXIT = "QUESTIONTYPE_EXIT";
+    public static final String YUKONDEF_ANSWERTYPE_SELECTION = "ANSWERTYPE_SELECTION";
+    public static final String YUKONDEF_ANSWERTYPE_FREEFORM = "ANSWERTYPE_FREEFORM";
+    public static final String YUKONDEF_THERMMODE_COOL = "THERMMODE_COOL";
+    public static final String YUKONDEF_THERMMODE_HEAT = "THERMMODE_HEAT";
+    public static final String YUKONDEF_THERMMODE_OFF = "THERMMODE_OFF";
+    public static final String YUKONDEF_FANSTATE_AUTO = "FANSTATE_AUTO";
+    public static final String YUKONDEF_FANSTATE_ON = "FANSTATE_ON";
 
     private Integer entryID = null;
     private Integer listID = null;
@@ -121,6 +135,7 @@ public class CustomerListEntry extends DBPersistent {
         }
         finally {
             try {
+                if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
             catch (java.sql.SQLException e2) {
@@ -183,8 +198,8 @@ public class CustomerListEntry extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {
@@ -229,8 +244,8 @@ public class CustomerListEntry extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {

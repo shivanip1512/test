@@ -15,6 +15,7 @@ public class LiteCustomerBase extends LiteBase {
 	
 	private int primaryContactID = 0;
 	private int customerTypeID = com.cannontech.database.db.stars.CustomerListEntry.NONE_INT;
+	private String timeZone = null;
 	private java.util.ArrayList additionalContacts = null;
 
 	public LiteCustomerBase() {
@@ -81,6 +82,22 @@ public class LiteCustomerBase extends LiteBase {
 	 */
 	public void setPrimaryContactID(int primaryContactID) {
 		this.primaryContactID = primaryContactID;
+	}
+
+	/**
+	 * Returns the timeZone.
+	 * @return String
+	 */
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	/**
+	 * Sets the timeZone.
+	 * @param timeZone The timeZone to set
+	 */
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
 	}
 
 }

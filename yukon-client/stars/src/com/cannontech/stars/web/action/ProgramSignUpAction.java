@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.web.*;
 import com.cannontech.stars.xml.util.*;
@@ -62,6 +63,7 @@ public class ProgramSignUpAction implements ActionBase {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
 		return null;
@@ -71,12 +73,13 @@ public class ProgramSignUpAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
+			com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
 			
             StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
             int energyCompanyID = progSignUp.getEnergyCompanyID();
@@ -88,13 +91,10 @@ public class ProgramSignUpAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
 	            
-	            if (operator != null)
-	            	energyCompanyID = (int) operator.getEnergyCompanyID();
-	            else
-	            	energyCompanyID = user.getEnergyCompanyID();
+            	energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
             }
             
-            LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.searchByAccountNumber( new Integer(energyCompanyID), progSignUp.getAccountNumber() );
+            LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.searchByAccountNumber( energyCompanyID, progSignUp.getAccountNumber() );
             com.cannontech.database.data.stars.customer.CustomerAccount account =
 		            com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber(
         	    		new Integer(energyCompanyID), progSignUp.getAccountNumber() );
@@ -129,7 +129,7 @@ public class ProgramSignUpAction implements ActionBase {
 	        	}
 	        	
 	        	// Get "Signup" action & event type ID
-            	Hashtable selectionLists = SOAPServer.getAllSelectionLists( new Integer(energyCompanyID) );
+            	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             	
             	Integer progEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
             			(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT),
@@ -178,10 +178,10 @@ public class ProgramSignUpAction implements ActionBase {
 		            app = (com.cannontech.database.data.stars.appliance.ApplianceBase) multiDB.getDBPersistentVector().get(0);
 		            event = (com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(1);
 		            
-		            liteAcctInfo.getAppliances().add( StarsLiteFactory.createStarsAppliance(app, new Integer(energyCompanyID)) );
+		            liteAcctInfo.getAppliances().add( StarsLiteFactory.createStarsAppliance(app, energyCompanyID) );
 		            
 		            LiteStarsLMProgram liteProg = new LiteStarsLMProgram();
-		            liteProg.setLmProgramID( app.getLMProgram().getPAObjectID().intValue() );
+		            liteProg.setProgramID( app.getLMProgram().getPAObjectID().intValue() );
 		            
 		            liteProg.setProgramHistory( new ArrayList() );
 		            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
@@ -212,6 +212,15 @@ public class ProgramSignUpAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the program signup") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
 		return null;
@@ -225,7 +234,10 @@ public class ProgramSignUpAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
             if (operation.getStarsSuccess() == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;

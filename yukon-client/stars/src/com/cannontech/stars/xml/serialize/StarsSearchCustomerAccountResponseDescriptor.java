@@ -128,6 +128,40 @@ public class StarsSearchCustomerAccountResponseDescriptor extends org.exolab.cas
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
+        //-- _starsFailure
+        desc = new XMLFieldDescriptorImpl(StarsFailure.class, "_starsFailure", "stars-Failure", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSearchCustomerAccountResponse target = (StarsSearchCustomerAccountResponse) object;
+                return target.getStarsFailure();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSearchCustomerAccountResponse target = (StarsSearchCustomerAccountResponse) object;
+                    target.setStarsFailure( (StarsFailure) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsFailure();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsFailure
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountResponseDescriptor()
 
 

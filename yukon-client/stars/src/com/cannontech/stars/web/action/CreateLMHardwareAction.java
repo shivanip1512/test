@@ -32,7 +32,7 @@ public class CreateLMHardwareAction implements ActionBase {
 		try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			if (operator == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
+			java.util.Hashtable selectionLists = (java.util.Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 			
@@ -109,6 +109,7 @@ public class CreateLMHardwareAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
 		return null;
@@ -118,9 +119,10 @@ public class CreateLMHardwareAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
             if (operator == null) {
@@ -129,14 +131,14 @@ public class CreateLMHardwareAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
-        	Integer energyCompanyID = new Integer((int) operator.getEnergyCompanyID());
+        	int energyCompanyID = (int) operator.getEnergyCompanyID();
             Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             
             StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
@@ -157,7 +159,7 @@ public class CreateLMHardwareAction implements ActionBase {
             hwDB.setManufacturerSerialNumber( createHw.getManufactureSerialNumber() );
             hwDB.setLMHardwareTypeID( new Integer(createHw.getLMDeviceType().getEntryID()) );
             
-            hw.setEnergyCompanyID( energyCompanyID );
+            hw.setEnergyCompanyID( new Integer(energyCompanyID) );
             hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase) Transaction.createTransaction( Transaction.INSERT, hw ).execute();
             
             LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
@@ -180,7 +182,7 @@ public class CreateLMHardwareAction implements ActionBase {
             eventBaseDB.setNotes( createHw.getInstallationNotes() );
             
             eventDB.setInventoryID( hwDB.getInventoryID() );
-            event.setEnergyCompanyID( energyCompanyID );
+            event.setEnergyCompanyID( new Integer(energyCompanyID) );
             
             event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
             		Transaction.createTransaction( Transaction.INSERT, event ).execute();
@@ -215,7 +217,7 @@ public class CreateLMHardwareAction implements ActionBase {
 	            eventBaseDB.setNotes( "Configured while installation" );
 	            
 	            eventDB.setInventoryID( hwDB.getInventoryID() );
-	            event.setEnergyCompanyID( energyCompanyID );
+	            event.setEnergyCompanyID( new Integer(energyCompanyID) );
 	            
 	            event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 	            		Transaction.createTransaction( Transaction.INSERT, event ).execute();
@@ -250,7 +252,7 @@ public class CreateLMHardwareAction implements ActionBase {
             }
             
             if (newServiceCompany) {
-            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, new Integer(liteHw.getInstallationCompanyID()) );
+            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, liteHw.getInstallationCompanyID() );
             	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
             	resp.setStarsServiceCompany( starsCompany );
             	liteAcctInfo.getServiceCompanies().add( new Integer(liteCompany.getCompanyID()) );
@@ -261,6 +263,15 @@ public class CreateLMHardwareAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the hardware") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
 		return null;
@@ -274,14 +285,17 @@ public class CreateLMHardwareAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 			
 			StarsCreateLMHardwareResponse resp = operation.getStarsCreateLMHardwareResponse();
 			StarsLMHardware hw = resp.getStarsLMHardware();
 			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			
@@ -293,7 +307,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					break;
 			}
 			starsInvs.addStarsLMHardware( i+1, hw );
-			session.setAttribute( "REDIRECT", "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i+1) );
+			session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i+1) );
 			
 			StarsServiceCompany company = resp.getStarsServiceCompany();
 			if (company != null)

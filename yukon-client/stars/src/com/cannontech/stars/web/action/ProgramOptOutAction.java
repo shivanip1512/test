@@ -32,7 +32,7 @@ public class ProgramOptOutAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
+			com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
 			if (operator == null && user == null) return null;
             
             int period = 0;
@@ -57,6 +57,7 @@ public class ProgramOptOutAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
 		return null;
@@ -66,29 +67,24 @@ public class ProgramOptOutAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+        StarsOperation respOper = new StarsOperation();
+        
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsOperation respOper = new StarsOperation();
             
             StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            StarsUser user = (StarsUser) session.getAttribute("USER");
+            com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
             if (operator == null && user == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-                
-			Integer energyCompanyID = null;
-    		if (operator != null)
-        		energyCompanyID = new Integer((int) operator.getEnergyCompanyID());
-        	else
-        		energyCompanyID = new Integer(user.getEnergyCompanyID());
             
         	LiteStarsCustAccountInformation liteAcctInfo = null;
         	if (operator != null)
-        		liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        		liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	else
-        		liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( "CUSTOMER_ACCOUNT_INFORMATION" );
+        		liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
@@ -106,6 +102,7 @@ public class ProgramOptOutAction implements ActionBase {
 			StarsProgramOptOutResponse resp = new StarsProgramOptOutResponse();
 			
             // Get list entry IDs
+            int energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
             Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             
             Integer hwEventEntryID = new Integer( StarsCustListEntryFactory.getStarsCustListEntry(
@@ -138,19 +135,22 @@ public class ProgramOptOutAction implements ActionBase {
             	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
             	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
             		StarsAppliance appliance = (StarsAppliance) liteAcctInfo.getAppliances().get(j);
-            		if (appliance.getLmProgramID() == program.getLmProgramID()) {
+            		if (appliance.getLmProgramID() == program.getProgramID()) {
             			Integer hardwareID = new Integer( appliance.getInventoryID() );
             			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
             			break;
             		}
             	}
             }
+			
+			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
+			String routeStr = (company == null) ? "" : " select route id " + String.valueOf(company.getRouteID());
 
             for (int i = 0; i < hwIDList.size(); i++) {
             	Integer invID = (Integer) hwIDList.get(i);
-            	LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+            	LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
 
-                String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber();
+                String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber() + routeStr;
                 ServerUtils.sendCommand(cmd, conn);
             
         		ServerUtils.removeFutureActivation( liteHw.getLmHardwareHistory(), futureActEntryID );
@@ -166,7 +166,7 @@ public class ProgramOptOutAction implements ActionBase {
         		eventBase.setActionID( tempTermEntryID );
         		eventBase.setEventDateTime( now );
         		
-        		event.setEnergyCompanyID( energyCompanyID );
+        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
         		multiDB.getDBPersistentVector().addElement( event );
 				
         		event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -178,7 +178,7 @@ public class ProgramOptOutAction implements ActionBase {
         		eventBase.setActionID( futureActEntryID );
         		eventBase.setEventDateTime( reenableDate );
         		
-        		event.setEnergyCompanyID( energyCompanyID );
+        		event.setEnergyCompanyID( new Integer(energyCompanyID) );
         		multiDB.getDBPersistentVector().addElement( event );
         		
 	            // Add "Temp Opt Out" and "Future Activation" to program events
@@ -191,7 +191,7 @@ public class ProgramOptOutAction implements ActionBase {
                 	
                 	for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
 	                	LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-	                	if (liteProg.getLmProgramID() == programID.intValue()) {
+	                	if (liteProg.getProgramID() == programID.intValue()) {
 	                		ServerUtils.processFutureActivation( liteProg.getProgramHistory(), futureActEntryID, actCompEntryID );
 	                		break;
 	                	}
@@ -208,7 +208,7 @@ public class ProgramOptOutAction implements ActionBase {
 		            eventBase1.setActionID( tempTermEntryID );
 		            eventBase1.setEventDateTime( now );
 		            
-		            event1.setEnergyCompanyID( energyCompanyID );
+		            event1.setEnergyCompanyID( new Integer(energyCompanyID) );
 		            multiDB.getDBPersistentVector().addElement( event1 );
 		            
 		            event1 = new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -221,7 +221,7 @@ public class ProgramOptOutAction implements ActionBase {
 		            eventBase1.setActionID( futureActEntryID );
 		            eventBase1.setEventDateTime( reenableDate );
 		            
-		            event1.setEnergyCompanyID( energyCompanyID );
+		            event1.setEnergyCompanyID( new Integer(energyCompanyID) );
 		            multiDB.getDBPersistentVector().addElement( event1 );
                 }
         		
@@ -255,7 +255,7 @@ public class ProgramOptOutAction implements ActionBase {
 					
 					for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
 						LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-						if (liteProg.getLmProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
+						if (liteProg.getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
 						
 						liteProg.getProgramHistory().add( liteEvent );
 						
@@ -264,7 +264,7 @@ public class ProgramOptOutAction implements ActionBase {
 						liteProg.getProgramHistory().add( liteEvent );
 						
 						StarsLMProgramHistory progHist = new StarsLMProgramHistory();
-						progHist.setProgramID( liteProg.getLmProgramID() );
+						progHist.setProgramID( liteProg.getProgramID() );
 						for (int l = 0; l < liteProg.getProgramHistory().size(); l++) {
 							liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(l);
 							StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
@@ -281,6 +281,15 @@ public class ProgramOptOutAction implements ActionBase {
         }
         catch (Exception e) {
             e.printStackTrace();
+            
+            try {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot opt out the programs") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
+            catch (Exception e2) {
+            	e2.printStackTrace();
+            }
         }
 
         return null;
@@ -294,19 +303,22 @@ public class ProgramOptOutAction implements ActionBase {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
-			if (failure != null) return failure.getStatusCode();
+			if (failure != null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
+				return failure.getStatusCode();
+			}
 
 			StarsProgramOptOutResponse resp = operation.getStarsProgramOptOutResponse();
             if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
+			com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
 			StarsCustAccountInformation accountInfo = null;
 			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			else
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				
 			StarsInventories inventories = accountInfo.getStarsInventories();
 			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
@@ -331,7 +343,7 @@ public class ProgramOptOutAction implements ActionBase {
             
             if (operator != null) {
 				Integer energyCompanyID = new Integer( (int) operator.getEnergyCompanyID() );
-				Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
+				Hashtable selectionLists = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 					
 				DeviceStatus hwStatus = (DeviceStatus) StarsCustListEntryFactory.newStarsCustListEntry(
 						StarsCustListEntryFactory.getStarsCustListEntry(

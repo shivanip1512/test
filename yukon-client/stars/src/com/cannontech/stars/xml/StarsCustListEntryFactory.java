@@ -34,7 +34,7 @@ public class StarsCustListEntryFactory {
 	public static StarsSelectionListEntry getStarsCustListEntry(StarsCustSelectionList list, String yukonDef) {
 		for (int i = 0; i < list.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = list.getStarsSelectionListEntry(i);
-			if (entry.getYukonDefinition().equalsIgnoreCase( yukonDef ))
+			if (entry.getYukonDefinition() != null && entry.getYukonDefinition().equalsIgnoreCase( yukonDef ))
 				return entry;
 		}
 		
@@ -54,7 +54,7 @@ public class StarsCustListEntryFactory {
 	public static StarsSelectionListEntry getStarsCustListEntry(LiteCustomerSelectionList list, String yukonDef) {
 		StarsSelectionListEntry[] entries = list.getListEntries();
 		for (int i = 0; i < entries.length; i++)
-			if (entries[i].getYukonDefinition().equalsIgnoreCase( yukonDef ))
+			if (entries[i].getYukonDefinition() != null && entries[i].getYukonDefinition().equalsIgnoreCase( yukonDef ))
 				return entries[i];
 				
 		return null;

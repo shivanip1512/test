@@ -1,11 +1,18 @@
 package com.cannontech.stars.util;
 
 import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.activation.*;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.db.stars.CustomerSelectionList;
+import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.types.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.message.porter.ClientConnection;
@@ -24,6 +31,8 @@ public class ServerUtils {
 
     // Increment this for every message
     private static long userMessageIDCounter = 1;
+    
+    private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
 
     public static void sendCommand(String command, ClientConnection conn)
     {
@@ -41,7 +50,6 @@ public class ServerUtils {
     
     public static ClientConnection getClientConnection() {
     	if (connContainer == null) return null;
-    	
     	return connContainer.getConnection();
     }
 	
@@ -117,16 +125,131 @@ public class ServerUtils {
 		return false;
 	}
 	
-	public static void updateServiceCompanies(LiteStarsCustAccountInformation liteAcctInfo, Integer energyCompanyID) {
+	public static void updateServiceCompanies(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID) {
 		ArrayList companyList = new ArrayList();
 		liteAcctInfo.setServiceCompanies( companyList );
 		
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			Integer invID = (Integer) liteAcctInfo.getInventories().get(i);
-			LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID, true );
+			LiteLMHardwareBase liteHw = SOAPServer.getLMHardware( energyCompanyID, invID.intValue(), true );
 			Integer companyID = new Integer( liteHw.getInstallationCompanyID() );
 			if (!companyList.contains( companyID ))
 				companyList.add( companyID );
 		}
+	}
+	
+	public static void sendEmailMsg(String from, String[] to, String[] cc, String subject, String text) throws Exception {
+		Properties props = new Properties();
+		props.load( ServerUtils.class.getResourceAsStream("/config.properties") );
+		Session session = Session.getDefaultInstance( props, null );
+		
+		Message emailMsg = new MimeMessage( session );
+		emailMsg.setFrom( new InternetAddress(from) );
+		
+		Address[] toAddrs = new Address[ to.length ];
+		for (int i = 0; i < to.length; i++)
+			toAddrs[i] = new InternetAddress( to[i] );
+		emailMsg.setRecipients( Message.RecipientType.TO, toAddrs );
+		
+		if (cc != null) {
+			Address[] ccAddrs = new Address[ cc.length ];
+			for (int i = 0; i < to.length; i++)
+				ccAddrs[i] = new InternetAddress( cc[i] );
+			emailMsg.setRecipients( Message.RecipientType.CC, ccAddrs );
+		}
+		
+		emailMsg.setSubject( subject );
+		emailMsg.setSentDate( new Date() );
+		emailMsg.setText( text );
+		
+		Transport.send( emailMsg );
+	}
+	
+	public static String formatDate(Date date) {
+		return dateFormat.format( date );
+	}
+	
+	public static StarsThermoDaySettings getThermDaySetting(int towID, Hashtable selectionLists) {
+		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_TIMEOFWEEK), towID );
+		
+		if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_WEEKDAY ))
+			return StarsThermoDaySettings.WEEKDAY;
+		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_WEEKEND ))
+			return StarsThermoDaySettings.WEEKEND;
+		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_SATURDAY ))
+			return StarsThermoDaySettings.SATURDAY;
+		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_TOW_SUNDAY ))
+			return StarsThermoDaySettings.SUNDAY;
+		else
+			return null;
+	}
+	
+	public static Integer getThermSeasonEntryTOWID(StarsThermoDaySettings setting, Hashtable selectionLists) {
+		LiteCustomerSelectionList towList = (LiteCustomerSelectionList) selectionLists.get(
+				CustomerSelectionList.LISTNAME_TIMEOFWEEK );
+		
+		if (setting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_WEEKDAY).getEntryID() );
+		else if (setting.getType() == StarsThermoDaySettings.WEEKEND_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_WEEKEND).getEntryID() );
+		else if (setting.getType() == StarsThermoDaySettings.SATURDAY_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_SATURDAY).getEntryID() );
+		else if (setting.getType() == StarsThermoDaySettings.SUNDAY_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(towList, CustomerListEntry.YUKONDEF_TOW_SUNDAY).getEntryID() );
+		else
+			return null;
+	}
+	
+	public static StarsThermoModeSettings getThermModeSetting(int opStateID, Hashtable selectionLists) {
+		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_THERMOSTATMODE), opStateID );
+		
+		if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_THERMMODE_COOL ))
+			return StarsThermoModeSettings.COOL;
+		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_THERMMODE_HEAT ))
+			return StarsThermoModeSettings.HEAT;
+		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_THERMMODE_OFF ))
+			return StarsThermoModeSettings.OFF;
+		else
+			return null;
+	}
+	
+	public static Integer getThermOptionOpStateID(StarsThermoModeSettings setting, Hashtable selectionLists) {
+		LiteCustomerSelectionList modeList = (LiteCustomerSelectionList) selectionLists.get(
+				CustomerSelectionList.LISTNAME_THERMOSTATMODE );
+		
+		if (setting.getType() == StarsThermoModeSettings.COOL_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(modeList, CustomerListEntry.YUKONDEF_THERMMODE_COOL).getEntryID() );
+		else if (setting.getType() == StarsThermoModeSettings.HEAT_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(modeList, CustomerListEntry.YUKONDEF_THERMMODE_HEAT).getEntryID() );
+		else if (setting.getType() == StarsThermoModeSettings.OFF_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(modeList, CustomerListEntry.YUKONDEF_THERMMODE_OFF).getEntryID() );
+		else
+			return null;
+	}
+	
+	public static StarsThermoFanSettings getThermFanSetting(int fanOpID, Hashtable selectionLists) {
+		StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_THERMFANSTATE), fanOpID );
+		
+		if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_FANSTATE_AUTO ))
+			return StarsThermoFanSettings.AUTO;
+		else if (entry.getYukonDefinition().equals( CustomerListEntry.YUKONDEF_FANSTATE_ON ))
+			return StarsThermoFanSettings.ON;
+		else
+			return null;
+	}
+	
+	public static Integer getThermOptionFanOpID(StarsThermoFanSettings setting, Hashtable selectionLists) {
+		LiteCustomerSelectionList fanList = (LiteCustomerSelectionList) selectionLists.get(
+				CustomerSelectionList.LISTNAME_THERMFANSTATE );
+		
+		if (setting.getType() == StarsThermoFanSettings.AUTO_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(fanList, CustomerListEntry.YUKONDEF_FANSTATE_AUTO).getEntryID() );
+		else if (setting.getType() == StarsThermoFanSettings.ON_TYPE)
+			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(fanList, CustomerListEntry.YUKONDEF_FANSTATE_ON).getEntryID() );
+		else
+			return null;
 	}
 }

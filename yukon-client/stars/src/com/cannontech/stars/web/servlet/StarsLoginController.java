@@ -39,7 +39,6 @@ public class StarsLoginController extends LoginController {
         StarsLogin login = new StarsLogin();
         login.setUsername( req.getParameter("USERNAME") );
         login.setPassword( req.getParameter("PASSWORD") );
-        login.setDbAlias( req.getParameter("DATABASEALIAS") );
         reqOper.setStarsLogin( login );
 
         try {

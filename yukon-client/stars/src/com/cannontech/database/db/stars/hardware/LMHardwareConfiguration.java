@@ -67,8 +67,8 @@ public class LMHardwareConfiguration extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {
@@ -117,8 +117,8 @@ public class LMHardwareConfiguration extends DBPersistent {
         {
             try
             {
-                if( pstmt != null ) pstmt.close();
                 if (rset != null) rset.close();
+                if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
             {
