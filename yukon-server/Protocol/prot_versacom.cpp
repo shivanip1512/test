@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/09/20 14:43:11 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/10/08 20:45:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1678,36 +1678,6 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         if(VersacomFullAddressCommand(uid, aux, sec, cls, div, parse.getiValue("assignedservice", 0x00)))
             removeLastVStruct();
     }
-    else if( isConfig63Valid(sn) && (sec || cls || div) )
-    {
-        if( isGroupConfig && uid )
-        {  // We have a utility id to configure
-            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
-
-            memset(config, 0, 6);      // Blank the bytes
-            config[0] = (BYTE)uid;
-            if(VersacomConfigCommand( VCONFIG_UTILID, config ))
-                removeLastVStruct();
-        }
-
-        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
-
-        memset(config, 0, 6);      // Blank the bytes
-
-        config[0] = (BYTE)sec;
-
-        IAddress = convertHumanFormAddressToVersacom(cls);
-
-        config[1] = (BYTE)( (IAddress >> 8) & 0x00FF );
-        config[2] = (BYTE)( (IAddress) & 0x00FF );
-
-        IAddress = convertHumanFormAddressToVersacom(div);
-        config[3] = (BYTE)( (IAddress >> 8) & 0x00FF );
-        config[4] = (BYTE)( (IAddress) & 0x00FF );
-
-        if(VersacomConfigCommand( VCONFIG_SCD, config ))
-            removeLastVStruct();
-    }
     else
     {
         if((iNum = parse.getiValue("vctexservice")) != INT_MIN)
@@ -1749,43 +1719,76 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
                 removeLastVStruct();
         }
 
-        if( isGroupConfig && ((iNum = parse.getiValue("section")) != INT_MIN) )
-        {  // We have a utility id to configure
+        if( isConfig63Valid(sn) && (sec || cls || div) )
+        {
+            if( isGroupConfig && uid )
+            {  // We have a utility id to configure
+                primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+                memset(config, 0, 6);      // Blank the bytes
+                config[0] = (BYTE)uid;
+                if(VersacomConfigCommand( VCONFIG_UTILID, config ))
+                    removeLastVStruct();
+            }
+
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
             memset(config, 0, 6);      // Blank the bytes
-            config[0] = (BYTE)iNum;
-            if(VersacomConfigCommand( VCONFIG_SECTION, config ))
+
+            config[0] = (BYTE)sec;
+
+            IAddress = convertHumanFormAddressToVersacom(cls);
+
+            config[1] = (BYTE)( (IAddress >> 8) & 0x00FF );
+            config[2] = (BYTE)( (IAddress) & 0x00FF );
+
+            IAddress = convertHumanFormAddressToVersacom(div);
+            config[3] = (BYTE)( (IAddress >> 8) & 0x00FF );
+            config[4] = (BYTE)( (IAddress) & 0x00FF );
+
+            if(VersacomConfigCommand( VCONFIG_SCD, config ))
                 removeLastVStruct();
         }
+        else
+        {
+            if( isGroupConfig && ((iNum = parse.getiValue("section")) != INT_MIN) )
+            {  // We have a utility id to configure
+                primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if( isGroupConfig && ((iNum = parse.getiValue("class")) != INT_MIN) )
-        {  // We have a utility id to configure
-            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+                memset(config, 0, 6);      // Blank the bytes
+                config[0] = (BYTE)iNum;
+                if(VersacomConfigCommand( VCONFIG_SECTION, config ))
+                    removeLastVStruct();
+            }
 
-            memset(config, 0, 6);      // Blank the bytes
+            if( isGroupConfig && ((iNum = parse.getiValue("class")) != INT_MIN) )
+            {  // We have a utility id to configure
+                primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-            IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
+                memset(config, 0, 6);      // Blank the bytes
 
-            config[0] = HIBYTE (IAddress);
-            config[1] = LOBYTE (IAddress);
+                IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
 
-            if(VersacomConfigCommand( VCONFIG_CLASS, config ))
-                removeLastVStruct();
-        }
+                config[0] = HIBYTE (IAddress);
+                config[1] = LOBYTE (IAddress);
 
-        if( isGroupConfig && ((iNum = parse.getiValue("division")) != INT_MIN) )
-        {  // We have a utility id to configure
-            primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+                if(VersacomConfigCommand( VCONFIG_CLASS, config ))
+                    removeLastVStruct();
+            }
 
-            memset(config, 0, 6);      // Blank the bytes
-            IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
+            if( isGroupConfig && ((iNum = parse.getiValue("division")) != INT_MIN) )
+            {  // We have a utility id to configure
+                primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-            config[0] = HIBYTE (IAddress);
-            config[1] = LOBYTE (IAddress);
+                memset(config, 0, 6);      // Blank the bytes
+                IAddress = convertHumanFormAddressToVersacom(iNum);              /* Invert The Address */
 
-            if(VersacomConfigCommand( VCONFIG_DIVISION, config ))
-                removeLastVStruct();
+                config[0] = HIBYTE (IAddress);
+                config[1] = LOBYTE (IAddress);
+
+                if(VersacomConfigCommand( VCONFIG_DIVISION, config ))
+                    removeLastVStruct();
+            }
         }
     }
 
