@@ -13,6 +13,10 @@ public class ThreadPool implements Runnable {
 
 	class RunnerThread extends java.lang.Thread
 	{
+		{
+			setDaemon(true);			
+		}
+		
 		public volatile Runnable runnable = null;
 		boolean stop = false;
 		public void run()
@@ -95,6 +99,7 @@ private void initPool(int nThreads)
 	}
 
 	mainThread = new Thread(this);
+	mainThread.setDaemon(true);
 	mainThread.start();
 }
 /**
