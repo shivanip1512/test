@@ -1,5 +1,6 @@
 package com.cannontech.common.gui.util;
 
+// here is a hole in the head!
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
