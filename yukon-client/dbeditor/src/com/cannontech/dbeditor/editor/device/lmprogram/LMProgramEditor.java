@@ -209,7 +209,8 @@ private void initialize() {
 public boolean isInputValid() 
 {
 	//do what is necessary for Timed operational state
-	checkTimedOpStatus();
+	
+	//checkTimedOpStatus();
 	
 	boolean retVal = super.isInputValid();
 	boolean isTimedOpState = false;
@@ -293,7 +294,7 @@ public void setValue(Object val)
 	super.setValue( val );
 	
 	//check for special Timed Operational State case
-	checkTimedOpStatus();
+	//checkTimedOpStatus();
 }
 /**
  * This method was created in VisualAge.

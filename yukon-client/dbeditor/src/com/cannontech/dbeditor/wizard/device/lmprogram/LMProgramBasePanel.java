@@ -100,9 +100,9 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 							  JOptionPane.OK_OPTION,
 							  JOptionPane.WARNING_MESSAGE);*/
 							  
-				fireInputDataPanelEvent( new PropertyPanelEvent(
+				/*fireInputDataPanelEvent( new PropertyPanelEvent(
 										this, 
-										PropertyPanelEvent.EVENT_FORCE_APPLY));
+										PropertyPanelEvent.EVENT_FORCE_APPLY));*/
 		}
 		// user code end
 		this.fireInputUpdate();
