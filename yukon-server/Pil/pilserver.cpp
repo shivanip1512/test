@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2004/01/20 19:31:31 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2004/05/04 13:38:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,7 +201,20 @@ void CtiPILServer::mainThread()
                 /* Use the same time base for the full scan check */
                 TimeNow = TimeNow.now();   // update the time...
 
-                if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
+                if(MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << TimeNow << " PIL processing an inbound message which is over 15 minutes old.  Message will be discarded." << endl;
+                        dout << " >>---------- Message Content ----------<< " << endl;
+                        MsgPtr->dump();
+                        dout << " <<---------- Message Content ---------->> " << endl;
+                    }
+
+                    delete MsgPtr;    // No one attached it to them, so we need to kill it!
+                    MsgPtr = 0;
+                }
+                else if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
                 {
                     status = pExec->ServerExecute(this);
 
