@@ -9,6 +9,7 @@ public interface CICustomerRoleDefs extends RoleDefs {
 	public static final int ENERGY_BUYBACK_ROLEID = RoleDefs.CICUSTOMER_ROLEID_BASE - 2;
 	public static final int ESUBSTATION_DRAWINGS_ROLEID = RoleDefs.CICUSTOMER_ROLEID_BASE - 3;
 	public static final int COMMERCIAL_METERING_ROLEID = RoleDefs.CICUSTOMER_ROLEID_BASE - 4;
+	public static final int ADMINISTRATOR_ROLEID = RoleDefs.CICUSTOMER_ROLEID_BASE - 5;
 	
 	static final int DIRECT_LOADCONTROL_PROPERTYID_BASE = RoleDefs.CICUSTOMER_PROPERTYID_BASE;
 	static final int DIRECT_CURTAILMENT_PROPERTYID_BASE = RoleDefs.CICUSTOMER_PROPERTYID_BASE - 100;
