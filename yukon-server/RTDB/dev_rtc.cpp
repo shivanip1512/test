@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/05/20 22:43:12 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/05/24 13:49:19 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.7  2004/05/24 13:49:19  cplender
+* Changed destructor to use value_type, not reference.  Harder to destruct a reference...
+*
 * Revision 1.6  2004/05/20 22:43:12  cplender
 * Support for repeating 205 messages after n minutes.
 *
@@ -66,7 +69,7 @@ CtiDeviceRTC::~CtiDeviceRTC()
 
     while(!_repeatList.empty())
     {
-        CtiRepeatCol::reference repeat = _repeatList.front();
+        CtiRepeatCol::value_type repeat = _repeatList.front();
         _repeatList.pop_front();
 
         CtiOutMessage *pOM = repeat.second;
