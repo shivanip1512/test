@@ -174,7 +174,10 @@ public class GraphBean implements GraphDefines
 	 */
 	public int getGdefid()
 	{
-		return getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
+		if( getGraph().getGraphDefinition() != null)
+			return getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue();
+		else
+			return -1;
 	}
 	
 	/**
