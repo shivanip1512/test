@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/08/10 16:52:02 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/10/26 14:54:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -344,7 +344,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
     {
         resetForScan(ScanRateGeneral);
     }
-    else
+    else if( InMessage->Buffer.InMessage[0] == 0x01 )
     {
         /* decode whatever message this is */
         switch(InMessage->Buffer.InMessage[2])
@@ -533,6 +533,15 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                 break;
             }
         }   /* End of switch */
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Message is not a proper MASTERCOM reply" << endl;
+        }
+
+        status = FRAMEERR;
     }
 
     return status;
