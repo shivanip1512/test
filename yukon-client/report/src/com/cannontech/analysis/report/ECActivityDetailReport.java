@@ -2,6 +2,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
@@ -38,7 +40,7 @@ import com.cannontech.util.ServletUtil;
 
 /**
  * Created on Dec 15, 2003
- * Creates a LGControlLogReport using the com.cannontech.analysis.data.loadgroup.LMControlLogData tableModel
+ * Creates a detail report of the activityLog using the com.cannontech.analysis.tablemodel.ActivityDetailModel tableModel
  * Groups data by Date.  Orders asc/desc based on tableModel definition.  
  * @author snebben
  */
@@ -63,18 +65,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		super();
 		setModel(model_);
 	}
-	/**
-	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogModel.
-	 * @param startTime_ - startTime in millis for data query
-	 * @param stopTime_ - stopTime in millis for data query
-	 * 
-	 */
-	public ECActivityDetailReport(long startTime_, long stopTime_)
-	{
-		this(new ActivityDetailModel(startTime_, stopTime_ ));
-		
-	}
+
 	/**
 	 * Runs this report and shows a preview dialog.
  	 * @param args the arguments (ignored).
@@ -85,8 +76,6 @@ public class ECActivityDetailReport extends YukonReportBase
 		// initialize JFreeReport
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-
-		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.EC_ACTIVITY_DETAIL_DATA);
 
 		//Define default start and stop parameters for a default year to date report.
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
@@ -101,9 +90,9 @@ public class ECActivityDetailReport extends YukonReportBase
 		cal.set(java.util.Calendar.MONTH, 0);
 		long start = cal.getTimeInMillis();	//default start date is begining of year
 
-		report.getModel().setStartTime(start);
-		report.getModel().setStopTime(stop);
+		ActivityDetailModel model = new ActivityDetailModel(start, stop);
 
+		boolean detail = false; 
 		for (int i = 0; i < args.length; i++)
 		{
 			String arg = (String)args[i].toLowerCase();
@@ -113,25 +102,27 @@ public class ECActivityDetailReport extends YukonReportBase
 			String subString = arg.substring(startIndex);				
 			
 			if( arg.startsWith("ec"))
-				report.getModel().setECIDs(Integer.valueOf(subString));
+				model.setECIDs(Integer.valueOf(subString));
 			else if( arg.startsWith("program"))
-				((ActivityDetailModel)report.getModel()).setProgramInfoOnly(Boolean.valueOf(subString).booleanValue());
+				model.setProgramInfoOnly(Boolean.valueOf(subString).booleanValue());
 			else if( arg.startsWith("start"))
 			{
 				Date startDate = ServletUtil.parseDateStringLiberally(subString);
-				report.getModel().setStartTime(startDate.getTime());
+				model.setStartTime(startDate.getTime());
 			}
 			else if( arg.startsWith("stop"))
 			{
 				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
-				report.getModel().setStartTime(stopDate.getTime());
+				model.setStartTime(stopDate.getTime());
 			}			
 			else if( arg.startsWith("detail"))
 			{
-				((ECActivityDetailReport)report).setShowDetail(Boolean.valueOf(subString).booleanValue());
+				detail = Boolean.valueOf(subString).booleanValue();
 			}
 		}
 
+		YukonReportBase report = new ECActivityDetailReport(model);
+		((ECActivityDetailReport)report).setShowDetail(detail);
 		report.getModel().collectData();
 
 		//Create the report
@@ -165,27 +156,27 @@ public class ECActivityDetailReport extends YukonReportBase
 			super.getExpressions();
 
 			ItemHideFunction hideItem = new ItemHideFunction();
-			hideItem.setName(ActivityDetailModel.DATE_TIME_STRING + " Hidden");
+			hideItem.setName(ActivityDetailModel.DATE_TIME_STRING + ReportFactory.NAME_HIDDEN);
 			hideItem.setProperty("field", ActivityDetailModel.DATE_TIME_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.DATE_TIME_STRING+" Element");
+			hideItem.setProperty("element", ActivityDetailModel.DATE_TIME_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 	
 			hideItem = new ItemHideFunction();
-			hideItem.setName(ActivityDetailModel.CONTACT_STRING+ " Hidden");
+			hideItem.setName(ActivityDetailModel.CONTACT_STRING+ ReportFactory.NAME_HIDDEN);
 			hideItem.setProperty("field", ActivityDetailModel.CONTACT_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.CONTACT_STRING +" Element");
+			hideItem.setProperty("element", ActivityDetailModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 	
 			hideItem = new ItemHideFunction();
-			hideItem.setName(ActivityDetailModel.USERNAME_STRING + " Hidden");
+			hideItem.setName(ActivityDetailModel.USERNAME_STRING + ReportFactory.NAME_HIDDEN);
 			hideItem.setProperty("field", ActivityDetailModel.USERNAME_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.USERNAME_STRING+" Element");
+			hideItem.setProperty("element", ActivityDetailModel.USERNAME_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 			
 			hideItem = new ItemHideFunction();
-			hideItem.setName(ActivityDetailModel.ACCOUNT_NUMBER_STRING + " Hidden");
+			hideItem.setName(ActivityDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_HIDDEN);
 			hideItem.setProperty("field", ActivityDetailModel.ACCOUNT_NUMBER_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.ACCOUNT_NUMBER_STRING+" Element");
+			hideItem.setProperty("element", ActivityDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 
 			expressions.add(getActionString());
@@ -240,44 +231,30 @@ public class ECActivityDetailReport extends YukonReportBase
 	}
 
 	/**
-	 * Create a Group for LMControlLogData.Date column.  
+	 * Create a Group for EnergyCompany column.  
 	 * @return
 	 */
 	private Group createECGroup()
 	{
 		final Group ecGroup = new Group();
-		ecGroup.setName(ActivityDetailModel.ENERGY_COMPANY_STRING +" Group");
+		ecGroup.setName(ActivityDetailModel.ENERGY_COMPANY_STRING + ReportFactory.NAME_GROUP);
 		ecGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
 
-		final GroupHeader header = new GroupHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		
-		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName(ActivityDetailModel.ENERGY_COMPANY_STRING + " Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getPositionX(), getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getPositionY()));
-		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getWidth(), getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getHeight()));
-		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setNullString("<null>");
-		tfactory.setFieldname(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ActivityDetailModel.ENERGY_COMPANY_COLUMN);
 		header.addElement(tfactory.createElement());
-		
 		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 20f), new java.awt.geom.Line2D.Float(0, 20, 100, 20)));
-		
 		ecGroup.setHeader(header);
 		
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 //		ecGroup.setFooter(footer);
 		
 		return ecGroup;
 	}
 
-
 	/**
-	 * Create a Group for LMControlLogData.Date column.  
+	 * Create a Group for ActivityLog.Date column.  
 	 * @return
 	 */
 	private Group createTimestampGroup()
@@ -291,49 +268,33 @@ public class ECActivityDetailReport extends YukonReportBase
 
 		if( isShowDetail())
 		{
-		final GroupHeader header = new GroupHeader();
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9));
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28)));
-		
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28)));
-		
-		final DateFieldElementFactory dfactory = new DateFieldElementFactory();
-		dfactory.setName(ActivityDetailModel.DATE_TIME_STRING + " Group Element");
-		dfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(colIndex).getPositionX(), 10));
-		dfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(colIndex).getWidth(), getModel().getColumnProperties(colIndex).getHeight()));
-		dfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-		dfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		dfactory.setNullString("<null>");
-		dfactory.setFieldname(getModel().getColumnName(colIndex));
-		dfactory.setFormatString(getModel().getColumnProperties(colIndex).getValueFormat());
-		dfactory.setBold(new Boolean(true));
-		header.addElement(dfactory.createElement());
-		
-		//Add all columns (excluding Date) to the table model.
-		for (int i = ActivityDetailModel.CONTACT_COLUMN; i < ActivityDetailModel.DESCRIPTION_COLUMN; i++)
-		{
-			LabelElementFactory factory = new LabelElementFactory();
-			factory.setName(getModel().getColumnName(i)+" Group Element");
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 10));
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-			factory.setText(getModel().getColumnNames()[i]);
-			header.addElement(factory.createElement());
-		}
-		
-		tsGroup.setHeader(header);
+			GroupHeader header = ReportFactory.createGroupHeaderDefault();
+			header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28)));
+			header.addElement(StaticShapeElementFactory.createLineShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28)));
+			
+			TextFieldElementFactory tFactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ActivityDetailModel.DATE_COLUMN);
+			header.addElement(tFactory.createElement());
+
+			LabelElementFactory lFactory = null;
+			//Add all columns (excluding Date) to the table model.
+			for (int i = ActivityDetailModel.CONTACT_COLUMN; i < ActivityDetailModel.DESCRIPTION_COLUMN; i++)
+			{
+				lFactory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+//TODO??		lFactory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 10));
+				header.addElement(lFactory.createElement());
+			}
+			
+			tsGroup.setHeader(header);
 		}	//end is showDetail
 				
-		final GroupFooter footer = new GroupFooter();
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+		//TODO - Change so monospaced isn't used..hopefully when JFR implements subreporting! ( maybe in 0.8.6?)
 		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Monospaced", 9, true, false, false, false));
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 20));
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line3", null,
-			 new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0) , new java.awt.geom.Line2D.Float(0, 0, 800, 0)));
+		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line3", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0) , new Line2D.Float(0, 0, 800, 0)));
 		
-		//TODO Find a way to dynamically get the needed height for the summary...taking a stab in the dark right now that 4 rows is enough...which it won't be. 
-		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
+		//TODO Find a way to dynamically get the needed height for the summary...taking a stab in the dark right now that 4 rows is enough...which it won't be.
+		//Can't use ReportFactory as that is only good when using a tablemodel 
+		TextFieldElementFactory tfactory = new TextFieldElementFactory();
 		tfactory.setName(ActivityDetailModel.ACTION_STRING + " Group Element");
 		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityDetailModel.DATE_COLUMN).getPositionX(), 10));
 		tfactory.setMinimumSize(new FloatDimension(500, 10));
@@ -343,7 +304,6 @@ public class ECActivityDetailReport extends YukonReportBase
 		tfactory.setNullString("<null>");
 		tfactory.setFieldname(ActivityDetailModel.ACTION_STRING + " String");
 		footer.addElement(tfactory.createElement());
-		
 		tsGroup.setFooter(footer);
 		return tsGroup;
 	}
@@ -369,51 +329,28 @@ public class ECActivityDetailReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
+		ItemBand items = ReportFactory.createItemBandDefault();
 		if( isShowDetail())
 		{		
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
-	
-		if( showBackgroundColor )
-		{
-			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
-		}
-		//Start at 1, we don't want to include the Date column, Date is our group by column.
-		for (int i = ActivityDetailModel.TIME_COLUMN; i < getModel().getColumnNames().length; i++)
-		{
-			TextFieldElementFactory factory = new TextFieldElementFactory();
-
-			if( getModel().getColumnClass(i).equals(String.class))
-				factory = new TextFieldElementFactory();
-			else if( getModel().getColumnClass(i).equals(Integer.class))
-				factory = new NumberFieldElementFactory();
-			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
+			if( showBackgroundColor )
 			{
-				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
+				items.addElement(StaticShapeElementFactory.createRectangleShapeElement
+					("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
+						new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
+				items.addElement(StaticShapeElementFactory.createLineShapeElement
+					("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
+						new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
+				items.addElement(StaticShapeElementFactory.createLineShapeElement
+					("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
+						new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 			}
-			
-			if( factory != null)
+			TextFieldElementFactory factory = null;
+			//Start at 1, we don't want to include the Date column, Date is our group by column.
+			for (int i = ActivityDetailModel.TIME_COLUMN; i < getModel().getColumnNames().length; i++)
 			{
-				factory.setName(getModel().getColumnNames()[i]+ " Element");
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
-				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-				factory.setNullString("<null>");
-				factory.setFieldname(getModel().getColumnNames()[i]);
+				factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 				items.addElement(factory.createElement());
 			}
-		}
 		}//end if showDetail
 		return items;
 	}

@@ -22,7 +22,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.report.cbc.CapBankListModel;
+import com.cannontech.analysis.tablemodel.CapBankListModel;
 
 /**
  * Created on Dec 15, 2003
@@ -64,7 +64,8 @@ public class CapBankReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 		
-		YukonReportBase dbReport = ReportFuncs.createYukonReport(ReportTypes.CARRIER_DATA);
+		CapBankListModel model = new CapBankListModel();
+		YukonReportBase dbReport = new CapBankReport(model);
 		dbReport.getModel().collectData();
 	
 		//Create the report

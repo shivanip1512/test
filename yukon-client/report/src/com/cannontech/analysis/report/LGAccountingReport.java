@@ -1,6 +1,8 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 import org.jfree.report.Boot;
@@ -21,6 +23,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
@@ -42,17 +45,6 @@ public class LGAccountingReport extends YukonReportBase
 		this(new LoadGroupModel());
 	}
 
-	/**
-	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogModel.
-	 * @param startTime_ - startTime in millis for data query
-	 * @param stopTime_ - stopTime in millis for data query
-	 */
-	public LGAccountingReport(long startTime_, long stopTime_)
-	{
-		this(new LoadGroupModel( startTime_, stopTime_));
-	}
-	
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf LoadGroupReportData.
@@ -86,12 +78,11 @@ public class LGAccountingReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 
 		//Initialize the report data and populate the TableModel (collectData).
-		YukonReportBase lgaReport = ReportFuncs.createYukonReport(ReportTypes.LG_ACCOUNTING_DATA);
-		lgaReport.getModel().setStartTime(start);
-		lgaReport.getModel().setStopTime(stop);
-		lgaReport.getModel().collectData();
+		LoadGroupModel model = new LoadGroupModel(start, stop);
 
 		//Create the report
+		YukonReportBase lgaReport = new LGAccountingReport(model);
+		lgaReport.getModel().collectData();
 		JFreeReport report = lgaReport.createReport();
 		report.setData(lgaReport.getModel());
 	
@@ -118,53 +109,33 @@ public class LGAccountingReport extends YukonReportBase
 	 */
 	private Group createLoadGrpGroup()
 	{
-	  final Group collGrpGroup = new Group();
-	  collGrpGroup.setName("Load Group");
-	  collGrpGroup.addField(LoadGroupModel.PAO_NAME_STRING);
+		final Group collGrpGroup = new Group();
+		collGrpGroup.setName("Load Group");
+		collGrpGroup.addField(LoadGroupModel.PAO_NAME_STRING);
 
-	  final GroupHeader header = new GroupHeader();
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-	  header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 50));
-	  header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-	  header.getStyle().setStyleProperty(BandStyleSheet.REPEAT_HEADER, Boolean.TRUE);
-	
-	  LabelElementFactory factory = new LabelElementFactory();
-	  factory.setName("Load Group Label");
-	  factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-	  factory.setMinimumSize(new FloatDimension(110, 20));
-	  factory.setHorizontalAlignment(ElementAlignment.LEFT);
-	  factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-	  factory.setText("Control History for Group:");
-	  header.addElement(factory.createElement());
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.PAO_NAME_COLUMN);
+		factory.setText("Control History for Group:");	//override default
+		header.addElement(factory.createElement());
 
-	  final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-	  tfactory.setName("Load Group Element");
-	  tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(115, 1));
-	  tfactory.setMinimumSize(new FloatDimension(300, 20));
-	  tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-	  tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-	  tfactory.setNullString("<null>");
-	  tfactory.setFieldname(LoadGroupModel.PAO_NAME_STRING);
-	  header.addElement(tfactory.createElement());
-	  
-	  for (int i = 1; i < getModel().getColumnNames().length; i++)
-	  {
-		  factory = new LabelElementFactory();
-		  factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));
-		  factory.setText(getModel().getColumnNames()[i]);
-		  factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-		  factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		  factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		  header.addElement(factory.createElement());
-	  }
-	  header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
-	  collGrpGroup.setHeader(header);
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.PAO_NAME_COLUMN);
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(140, 1));	//override
+		header.addElement(tfactory.createElement());
+		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new Line2D.Float(0, 20, 0, 20)));
 
-	  final GroupFooter footer = new GroupFooter();
-	  footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-	  footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		for (int i = 1; i < getModel().getColumnNames().length; i++)
+		{
+			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));	//lower this row of "headings"
+			header.addElement(factory.createElement());
+		}
+		collGrpGroup.setHeader(header);
 
-	  return collGrpGroup;
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+		collGrpGroup.setFooter(footer);
+
+		return collGrpGroup;
 	}
 
 	/**
@@ -178,16 +149,13 @@ public class LGAccountingReport extends YukonReportBase
 	  return list;
 	}
 
-
 	/**
 	 * Creates the itemBand, the rows of data.
 	 * @return the item band.
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 	
 		if(showBackgroundColor)
 		{
@@ -205,25 +173,8 @@ public class LGAccountingReport extends YukonReportBase
 		//Start at 1, we don't want to include the Load Group column, our group by column.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
-			TextFieldElementFactory factory = new TextFieldElementFactory();
-			if( getModel().getColumnClass(i).equals(String.class))
-				factory = new TextFieldElementFactory();
-			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
-			{
-				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
-			}
-			
-			if( factory != null)
-			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
-				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-				factory.setNullString("<null>");
-				factory.setFieldname(getModel().getColumnNames()[i]);
-				items.addElement(factory.createElement());
-			}
+			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			items.addElement(factory.createElement());
 		}
 
 		return items;

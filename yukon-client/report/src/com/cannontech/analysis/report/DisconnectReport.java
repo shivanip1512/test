@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.geom.Point2D;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -23,6 +24,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
 
 /**
@@ -42,16 +44,7 @@ public class DisconnectReport extends YukonReportBase
 	{
 		this(new DisconnectModel());
 	}
-	
-	/**
-	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseModel.
-	 * @param String paoClass_ (YukonPaoclass.paoclass)
-	 */
-	public DisconnectReport(String disconnectType_)
-	{
-		this(new DisconnectModel(disconnectType_));
-	}
+
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf DatabaseModel.
@@ -73,17 +66,23 @@ public class DisconnectReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		YukonReportBase disconnectReport = new DisconnectReport(DisconnectModel.HISTORY_STRING);
-
+		DisconnectModel model = new DisconnectModel(false);
+		
+		//start and stop time are only valid when model.showHist is false
 		GregorianCalendar cal = new GregorianCalendar();
-		disconnectReport.getModel().setStopTime(cal.getTime().getTime());
+		model.setStopTime(cal.getTime().getTime());
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 	
-		disconnectReport.getModel().setStartTime(cal.getTime().getTime());
-		disconnectReport.getModel().setCollectionGroups(new String[] {"Cycle 1"});
-		disconnectReport.getModel().collectData();
-		
+		model.setStartTime(cal.getTime().getTime());
+//		model.setCollectionGroups(new String[] {"Cycle 1"});
+
+
+		model.setShowConnected(true);
+		model.setShowDisconnected(true);
+
+		YukonReportBase disconnectReport = new DisconnectReport(model);
+		disconnectReport.getModel().collectData();		
 		//Create the report
 		JFreeReport report = disconnectReport.createReport();
 		report.setData(disconnectReport.getModel());
@@ -115,37 +114,20 @@ public class DisconnectReport extends YukonReportBase
 	  collGrpGroup.setName("Collection Group");
 	  collGrpGroup.addField("Collection Group");
 
-	  final GroupHeader header = new GroupHeader();
+	  GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-	  header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-	  header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
-	  LabelElementFactory factory = new LabelElementFactory();
-	  factory.setName("Label 5");
-	  factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-	  factory.setMinimumSize(new FloatDimension(100, 20));
-	  factory.setHorizontalAlignment(ElementAlignment.LEFT);
-	  factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-	  factory.setText("COLLECTION GROUP:");
+	  LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), DisconnectModel.COLL_GROUP_NAME_COLUMN);
+	  factory.setText(factory.getText() + ":");
 	  header.addElement(factory.createElement());
 
-	  final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-	  tfactory.setName("Collection Group Element");
-	  tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
-	  tfactory.setMinimumSize(new FloatDimension(200, 20));
-	  tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-	  tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-	  tfactory.setNullString("<null>");
-	  tfactory.setFieldname("Collection Group");
+	  TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), DisconnectModel.COLL_GROUP_NAME_COLUMN);
+	  tfactory.setAbsolutePosition(new Point2D.Float(110, 1));	//override the default posX
 	  header.addElement(tfactory.createElement());
 
 	  header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
 	  collGrpGroup.setHeader(header);
 
-	  final GroupFooter footer = new GroupFooter();
-	  footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-	  footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
+	  GroupFooter footer = ReportFactory.createGroupFooterDefault();
 	  return collGrpGroup;
 	}
 	/**
@@ -156,68 +138,28 @@ public class DisconnectReport extends YukonReportBase
 	private Group createDeviceGroup()
 	{
 		final Group deviceGroup = new Group();
-		deviceGroup.setName("Device Name");
-		deviceGroup.addField("Collection Group");
-		deviceGroup.addField("Device Name");
+		deviceGroup.setName(DisconnectModel.DEVICE_NAME_STRING + " Group");
+		deviceGroup.addField(DisconnectModel.COLL_GROUP_NAME_STRING);
+		deviceGroup.addField(DisconnectModel.DEVICE_NAME_STRING);
 		
-		  
-		final GroupHeader header = new GroupHeader();
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 22));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
-		LabelElementFactory factory = new LabelElementFactory();
-		factory.setName("Label Device");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(10, 1));
-		factory.setMinimumSize(new FloatDimension(40, 20));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		factory.setText("DEVICE:");
-		
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), DisconnectModel.DEVICE_NAME_COLUMN);
+		factory.setText(DisconnectModel.DEVICE_NAME_STRING + ":");	//override the default text
 		header.addElement(factory.createElement());
 
-		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName("Device Name Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(60, 1));
-		tfactory.setMinimumSize(new FloatDimension(400, 20));
-		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setNullString("<null>");
-		tfactory.setFieldname("Device Name");
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), DisconnectModel.DEVICE_NAME_COLUMN);
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
 		header.addElement(tfactory.createElement());
 
 		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.0f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
 		deviceGroup.setHeader(header);
 		
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.0f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
 	
 		deviceGroup.setFooter(footer);
 		return deviceGroup;
-		
-	}
-
-	
-
-
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{
-		super.getExpressions();
-		
-		/*org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
-		hideItem.setName("hideItem");
-		hideItem.setProperty("field", Disconnect.DEVICE_NAME_STRING);
-		hideItem.setProperty("element", "Device Element");
-		functions.add(hideItem);
-*/
-		return expressions;
 	}
 
 
@@ -240,10 +182,7 @@ public class DisconnectReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 
 		if(showBackgroundColor)
 		{
@@ -258,31 +197,11 @@ public class DisconnectReport extends YukonReportBase
 				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
 		
-		
 		for (int i = 2; i < getModel().getColumnNames().length; i++)
 		{
-			TextFieldElementFactory factory = new TextFieldElementFactory();
-			if( getModel().getColumnClass(i).equals(String.class))
-				factory = new TextFieldElementFactory();
-			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
-			{
-				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
-			}
-			
-			if( factory != null)
-			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
-				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-				factory.setNullString("<null>");
-				factory.setFieldname(getModel().getColumnNames()[i]);
-				items.addElement(factory.createElement());
-			}
-			
+			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			items.addElement(factory.createElement());
 		}
 		return items;
-		
 	}
 }
