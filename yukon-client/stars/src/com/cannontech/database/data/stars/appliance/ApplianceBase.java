@@ -40,6 +40,17 @@ public class ApplianceBase extends DBPersistent {
         // delete from LMHardwareConfiguration
         com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration(
 	            getApplianceBase().getApplianceID(), getDbConnection() );
+        
+        // delete from tables of each appliance type
+        delete( "ApplianceAirConditioner", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceDualFuel", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceGenerator", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceGrainDryer", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceHeatPump", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceIrrigation", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceStorageHeat", "ApplianceID", getApplianceBase().getApplianceID() );
+		delete( "ApplianceWaterHeater", "ApplianceID", getApplianceBase().getApplianceID() );
+        
         getApplianceBase().delete();
     }
 

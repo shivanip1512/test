@@ -68,8 +68,8 @@ public class CustomerAccount extends DBPersistent {
             getCustomerAccount().getAccountID(), getDbConnection() );
 
     	// hardware configuration has already been deleted, so we just need to use the DB object here
-		com.cannontech.database.db.stars.appliance.ApplianceBase app =
-    			new com.cannontech.database.db.stars.appliance.ApplianceBase();
+		com.cannontech.database.data.stars.appliance.ApplianceBase app =
+    			new com.cannontech.database.data.stars.appliance.ApplianceBase();
         for (int i = 0; i < getApplianceVector().size(); i++) {
         	Integer appID = (Integer) getApplianceVector().get(i);
         	app.setApplianceID( appID );
