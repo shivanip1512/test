@@ -62,7 +62,9 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		{   //5 - MCTIEDPort
 			PAOGroups.MCT360, PAOGroups.MCT370
 		},
-		{   //6 - Alarm
+		/*
+		 * Until the background functionality is there, no point in showing this panel
+		 *{   //6 - Alarm
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER,
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, 
@@ -76,17 +78,17 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.DCT_501, PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.MCT310IDL,
 			PAOGroups.MCT410_KWH_ONLY, PAOGroups.TRANSDATA_MARKV
-		},
-		{   //7 - CapBank
+		},*/
+		{   //6 - CapBank
 			PAOGroups.CAPBANK
 		},
-		{   //8 - CapBankSettingsPanel
+		{   //7 - CapBankSettingsPanel
 			PAOGroups.CAPBANK
 		},
-		{	//9 - MCTBroadcastListEditorPanel
+		{	//8 - MCTBroadcastListEditorPanel
 			PAOGroups.MCTBROADCAST
 		},
-		{	//10 - PAOExclusionEditorPanel
+		{	//9 - PAOExclusionEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, PAOGroups.ALPHA_A1, 
 			PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM,
@@ -154,28 +156,28 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceMCTIEDPortEditorPanel();
 			objs[1] = "IED Port";
 			break;
-
+/*
 		case 6:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceAlarmEditorPanel();
 			objs[1] = "Alarm";
 			break;
-
-		case 7:
+*/
+		case 6:
 			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankEditorPanel();
 			objs[1] = "General";
 			break;
 	
-		case 8:
+		case 7:
 			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.CapBankInfoPanel();
 			objs[1] = "Information";
 			break;
 
-		case 9:
+		case 8:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.MCTBroadcastListEditorPanel();
 			objs[1] = "MCT Assignment";
 			break;
 
-		case 10:
+		case 9:
 			String showIt = 
 					CtiProperties.getInstance().getProperty(CtiProperties.KEY_EDITOR_EXCLUSION, "false");
 	
