@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2003/10/24 17:28:22 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2003/10/28 16:05:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -224,7 +224,7 @@ VOID PortThread(void *pid)
 
         if( NORMAL != (status = ResetCommsChannel(Port, Device, OutMessage)) )
         {
-            if(initFails++ > 20)    // Every 5 minutes, we will purge the queue entries.
+            if(initFails++ > PorterPortInitQueuePurgeDelay)  // Every 5 minutes (default, can be CPARM'd), we will purge the queue entries.
             {
                 initFails = 0;
                 {
