@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/08/06 22:04:23 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2003/04/22 20:50:52 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsocketinterface.cpp,v $
+      Revision 1.5  2003/04/22 20:50:52  dsutton
+      Added a null check in the sendall points on the dispatch connection
+
       Revision 1.4  2002/08/06 22:04:23  dsutton
       Programming around the error that happens if the dataset is empty when it is
       returned from the database and shouldn't be.  If our point list had more than
@@ -251,60 +254,69 @@ int CtiFDRSocketInterface::sendAllPoints()
     int retVal=NORMAL;
     CtiFDRPoint *point=NULL;
 
-    // just stay here until the link to dispatch becomes valid
-    if (!iDispatchConn->valid())
+    // bad bad bad
+    if (iDispatchConn == NULL)
     {
         Sleep (250);
         retVal = FDR_NOT_CONNECTED_TO_DISPATCH;
     }
     else
     {
-        // check registration
-        if (!isRegistered())
+        // just stay here until the link to dispatch becomes valid
+        if (!iDispatchConn->valid())
         {
-            retVal = FDR_CLIENT_NOT_REGISTERED;
             Sleep (250);
+            retVal = FDR_NOT_CONNECTED_TO_DISPATCH;
         }
         else
         {
-            Sleep (2000);
+            // check registration
+            if (!isRegistered())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Uploading all requested points to " << getInterfaceName() << endl;
+                retVal = FDR_CLIENT_NOT_REGISTERED;
+                Sleep (250);
             }
-
-            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-            CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
-            for ( ; myIterator(); )
+            else
             {
-                point = myIterator.value();
-                if (!point->isControllable())
+                Sleep (2000);
                 {
-                    if (point->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Uploading all requested points to " << getInterfaceName() << endl;
+                }
+
+                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
+                for ( ; myIterator(); )
+                {
+                    point = myIterator.value();
+                    if (!point->isControllable())
                     {
-                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                        if (point->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PointId " << point->getPointID();
-                            dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " PointId " << point->getPointID();
+                                dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                            }
+                        }
+                        else
+                        {
+                            buildAndWriteToForeignSystem(*point);
                         }
                     }
                     else
                     {
-                        buildAndWriteToForeignSystem(*point);
+                        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Control point Id " << point->getPointID();
+                            dout << " was not sent to " << getInterfaceName() << " because a database reload triggered the send " << endl;
+                        }
                     }
                 }
-                else
-                {
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point Id " << point->getPointID();
-                        dout << " was not sent to " << getInterfaceName() << " because a database reload triggered the send " << endl;
-                    }
-                }
+                retVal = NORMAL;
             }
-            retVal = NORMAL;
         }
     }
     return retVal;
