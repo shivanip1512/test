@@ -1000,6 +1000,17 @@ insert into YukonGroupRole values (-1370,-2,-201,-20870,'(none)');
 
 INSERT into point  values (-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 
+insert into YukonRoleProperty values(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
+insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
+insert into YukonGroupRole values(-108,-100,-100,-10008,'(none)');
+insert into YukonGroupRole values(-109,-100,-100,-10009,'(none)');
+insert into YukonGroupRole values(-1008,-2,-100,-10008,'(none)');
+insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
+insert into YukonUserRole values(-108,-1,-100,-10008,'(none)');
+insert into YukonUserRole values(-109,-1,-100,-10009,'(none)');
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
