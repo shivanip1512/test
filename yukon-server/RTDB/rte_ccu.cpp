@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/10 13:15:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/31 16:15:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -355,7 +355,11 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.ASt.Port = Device->getPortID();
         OutMessage->Buffer.ASt.Remote = Device->getAddress();
 
-        status = Emetcon.parseRequest(parse, *OutMessage);                     // Determin the stuff be need based upon the command.
+        OutMessage->Buffer.ASt.DlcRoute.Feeder     = Carrier.getBus();
+        OutMessage->Buffer.ASt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
+        OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
+
+        status = Emetcon.parseRequest(parse, *OutMessage);                     // Determine the stuff be need based upon the command.
     }
 
 
