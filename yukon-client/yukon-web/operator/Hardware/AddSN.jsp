@@ -1,11 +1,23 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
+<%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%
 	Properties savedReq = null;
-	if (request.getParameter("failed") != null)
+	if (request.getParameter("failed") != null) {
 		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	}
+	else if (request.getParameter("Member") != null) {
+		ServletUtils.saveRequest(request, session, new String[] {"Member", "From", "To", "DeviceType", "ReceiveDate", "Voltage", "ServiceCompany", "Route"});
+		savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
+	}
 	else
 		session.removeAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 	if (savedReq == null) savedReq = new Properties();
+	
+	LiteStarsEnergyCompany member = null;
+	if (savedReq.getProperty("Member") != null)
+		member = StarsDatabaseCache.getInstance().getEnergyCompany(Integer.parseInt(savedReq.getProperty("Member")));
+	if (member == null) member = liteEC;
 %>
 <html>
 <head>
@@ -13,6 +25,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<script language="JavaScript">
+function changeMember(form) {
+	form.attributes["action"].value = "";
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -60,15 +78,14 @@
                         <tr>
                           <td width="25%" align="right">Member:</td>
                           <td width="75%">
-                            <select name="Member">
-                              <option value="<%= liteEC.getLiteID() %>">(Self)</option>
+                            <select name="Member" onchange="changeMember(this.form)">
 <%
 	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-		if (company.equals(liteEC)) continue;
+		String selected = company.equals(member)? "selected" : "";
 %>
-                              <option value="<%= company.getLiteID() %>"><%= company.getName() %></option>
+                              <option value="<%= company.getLiteID() %>" <%= selected %>><%= company.getName() %></option>
 <%
 	}
 %>
@@ -99,13 +116,13 @@
 	if (savedReq.getProperty("DeviceType") != null)
 		savedDeviceType = Integer.parseInt(savedReq.getProperty("DeviceType"));
 	
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
 		String selected = (entry.getEntryID() == savedDeviceType)? "selected" : "";
 %>
-                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
                               <%
 	}
 %>
@@ -131,12 +148,12 @@
 	if (savedReq.getProperty("Voltage") != null)
 		savedVoltage = Integer.parseInt(savedReq.getProperty("Voltage"));
 	
-	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
-	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
+	YukonSelectionList voltageList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
+	for (int i = 0; i < voltageList.getYukonListEntries().size(); i++) {
+		YukonListEntry entry = (YukonListEntry) voltageList.getYukonListEntries().get(i);
 		String selected = (entry.getEntryID() == savedVoltage)? "selected" : "";
 %>
-                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                              <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
                               <%
 	}
 %>
@@ -154,8 +171,9 @@
 	if (savedReq.getProperty("ServiceCompany") != null)
 		savedServiceCompany = Integer.parseInt(savedReq.getProperty("ServiceCompany"));
 	
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
+	StarsServiceCompanies companyList = member.getStarsServiceCompanies();
+	for (int i = 0; i < companyList.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany servCompany = companyList.getStarsServiceCompany(i);
 		String selected = (servCompany.getCompanyID() == savedServiceCompany)? "selected" : "";
 %>
                               <option value="<%= servCompany.getCompanyID() %>" <%= selected %>><%= servCompany.getCompanyName() %></option>
@@ -177,11 +195,11 @@
 	if (savedReq.getProperty("Route") != null)
 		savedRoute = Integer.parseInt(savedReq.getProperty("Route"));
 	
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
-	for (int i = 0; i < routes.length; i++) {
-		String selected = (routes[i].getYukonID() == savedRoute)? "selected" : "";
+	LiteYukonPAObject[] routeList = member.getAllRoutes();
+	for (int i = 0; i < routeList.length; i++) {
+		String selected = (routeList[i].getYukonID() == savedRoute)? "selected" : "";
 %>
-                              <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
+                              <option value="<%= routeList[i].getYukonID() %>" <%= selected %>><%= routeList[i].getPaoName() %></option>
                               <%
 	}
 %>

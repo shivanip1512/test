@@ -145,6 +145,49 @@ public class StarsDeleteLMHardwareDescriptor extends org.exolab.castor.xml.util.
         }
         desc.setValidator(fieldValidator);
         
+        //-- _deleteFromYukon
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_deleteFromYukon", "DeleteFromYukon", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsDeleteLMHardware target = (StarsDeleteLMHardware) object;
+                if(!target.hasDeleteFromYukon())
+                    return null;
+                return new Boolean(target.getDeleteFromYukon());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsDeleteLMHardware target = (StarsDeleteLMHardware) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDeleteFromYukon();
+                        return;
+                    }
+                    target.setDeleteFromYukon( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _deleteFromYukon
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- _removeDate
         desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_removeDate", "RemoveDate", NodeType.Element);
         handler = (new XMLFieldHandler() {

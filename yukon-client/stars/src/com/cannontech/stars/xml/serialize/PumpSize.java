@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: PumpSize.java,v 1.29 2004/12/09 22:16:57 zyao Exp $
+ * $Id: PumpSize.java,v 1.30 2004/12/14 02:15:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.29 $ $Date: 2004/12/09 22:16:57 $
+ * @version $Revision: 1.30 $ $Date: 2004/12/14 02:15:20 $
 **/
 public class PumpSize extends StarsCustListEntry 
 implements java.io.Serializable

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDeleteApplianceResponse.java,v 1.22 2004/12/09 22:16:49 zyao Exp $
+ * $Id: StarsDeleteApplianceResponse.java,v 1.23 2004/12/14 02:15:12 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.22 $ $Date: 2004/12/09 22:16:49 $
+ * @version $Revision: 1.23 $ $Date: 2004/12/14 02:15:12 $
 **/
 public class StarsDeleteApplianceResponse implements java.io.Serializable {
 

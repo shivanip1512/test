@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -29,7 +28,6 @@ import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -55,15 +53,10 @@ public class DeleteLMHardwareAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
-			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
-			if (tz == null) tz = TimeZone.getDefault();
-			
 			StarsOperation operation = null;
 			if (req.getParameter("InvID") != null) {
 				// Request directly from the webpage
-				operation = getRequestOperation( req, tz );
+				operation = getRequestOperation( req );
 			}
 			else {
 				// Request redirected from InventoryManager
@@ -158,18 +151,17 @@ public class DeleteLMHardwareAction implements ActionBase {
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) {
+	public static StarsOperation getRequestOperation(HttpServletRequest req) {
 		StarsDeleteLMHardware delHw = new StarsDeleteLMHardware();
-		if (req.getParameter("OrigInvID") != null) {
-			delHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
-			delHw.setDeleteFromInventory( false );
-			
-			if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
-				delHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate"), tz) );
-		}
-		else {
-			delHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+		delHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+		
+		String delAction = req.getParameter("DeleteAction");
+		if (delAction.equalsIgnoreCase("DeleteFromInventory")) {
 			delHw.setDeleteFromInventory( true );
+		}
+		else if (delAction.equalsIgnoreCase("DeleteFromYukon")) {
+			delHw.setDeleteFromInventory( true );
+			delHw.setDeleteFromYukon( true );
 		}
 		
 		StarsOperation operation = new StarsOperation();
@@ -188,12 +180,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			LiteInventoryBase liteInv = energyCompany.getInventory( deleteHw.getInventoryID(), true );
         	
 			if (deleteHw.getDeleteFromInventory()) {
-				com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-						new com.cannontech.database.data.stars.hardware.InventoryBase();
-				inventory.setInventoryID( new Integer(liteInv.getInventoryID()) );
-				
-				Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
-				energyCompany.deleteInventory( liteInv.getInventoryID() );
+				InventoryManagerUtil.deleteInventory( deleteHw.getInventoryID(), energyCompany, deleteHw.getDeleteFromYukon() );
 			}
 			else {
 				java.util.Date removeDate = deleteHw.getRemoveDate();
@@ -260,7 +247,10 @@ public class DeleteLMHardwareAction implements ActionBase {
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-			throw new WebClientException( "Failed to remove the hardware", e );
+			if (e instanceof WebClientException)
+				throw (WebClientException)e;
+			else
+				throw new WebClientException( "Failed to remove the hardware", e );
 		}
 	}
 	

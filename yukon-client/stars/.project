@@ -5,6 +5,7 @@
 	<projects>
 		<project>commander</project>
 		<project>common</project>
+		<project>dbeditor</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -13,11 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -26,6 +30,7 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.dbeditor.DBDeletionFuncs;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ECUtils;
@@ -160,23 +165,21 @@ public class InventoryManagerUtil {
 			else if (ECUtils.isMCT(categoryID)) {
 				MCT mct = new MCT();
 				mct.setDeviceName( req.getParameter("DeviceName") );
-				if (req.getParameter("CreateMCT") != null) {
-					if (req.getParameter("MCTType") != null)
-						mct.setMctType( Integer.parseInt(req.getParameter("MCTType")) );
-					
-					try {
-						if (req.getParameter("PhysicalAddr") != null)
-							mct.setPhysicalAddress( Integer.parseInt(req.getParameter("PhysicalAddr")) );
-					}
-					catch (NumberFormatException e) {
-						throw new WebClientException("Invalid number format in the \"Physical Address\" field.");
-					}
-					
-					if (req.getParameter("MeterNumber") != null)
-						mct.setMeterNumber( req.getParameter("MeterNumber") );
-					if (req.getParameter("MCTRoute") != null)
-						mct.setRouteID( Integer.parseInt(req.getParameter("MCTRoute")) );
+				if (req.getParameter("MCTType") != null)
+					mct.setMctType( Integer.parseInt(req.getParameter("MCTType")) );
+				
+				try {
+					if (req.getParameter("PhysicalAddr") != null)
+						mct.setPhysicalAddress( Integer.parseInt(req.getParameter("PhysicalAddr")) );
 				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format in the \"Physical Address\" field.");
+				}
+				
+				if (req.getParameter("MeterNumber") != null)
+					mct.setMeterNumber( req.getParameter("MeterNumber") );
+				if (req.getParameter("MCTRoute") != null)
+					mct.setRouteID( Integer.parseInt(req.getParameter("MCTRoute")) );
 				starsInv.setMCT( mct );
 			}
 		}
@@ -378,7 +381,7 @@ public class InventoryManagerUtil {
 	}
 	
 	public static int createMCT(int mctType, String deviceName, Integer physicalAddr, String meterNumber, Integer routeID)
-		throws com.cannontech.database.TransactionException, WebClientException
+		throws TransactionException, WebClientException
 	{
 		if (!DeviceAddressRange.isValidRange( mctType, physicalAddr.intValue() ))
 			throw new WebClientException( "Invalid physical address: " + DeviceAddressRange.getRangeMessage(mctType) );
@@ -406,5 +409,32 @@ public class InventoryManagerUtil {
 			ServerUtils.handleDBChangeMsg( dbChange[i] );
 		
 		return device.getDevice().getDeviceID().intValue();
+	}
+	
+	public static void deleteInventory(int invID, LiteStarsEnergyCompany energyCompany, boolean deleteFromYukon) throws Exception
+	{
+		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
+		
+		com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+				new com.cannontech.database.data.stars.hardware.InventoryBase();
+		inventory.setInventoryID( new Integer(invID) );
+		
+		Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
+		energyCompany.deleteInventory( invID );
+		
+		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
+			byte status = DBDeletionFuncs.deletionAttempted( liteInv.getDeviceID(), DBDeletionFuncs.DEVICE_TYPE );
+			if (status == DBDeletionFuncs.STATUS_DISALLOW)
+				throw new WebClientException( DBDeletionFuncs.getTheWarning().toString() );
+			
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
+			DBPersistent dbPer = LiteFactory.convertLiteToDBPers( litePao );
+			Transaction.createTransaction( Transaction.DELETE, dbPer ).execute();
+			
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+					(CTIDbChange)dbPer, DBChangeMsg.CHANGE_TYPE_DELETE );
+			for (int i = 0; i < dbChange.length; i++)
+				ServerUtils.handleDBChangeMsg( dbChange[i] );
+		}
 	}
 }

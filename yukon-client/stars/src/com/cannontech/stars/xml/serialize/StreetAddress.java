@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StreetAddress.java,v 1.91 2004/12/09 22:16:54 zyao Exp $
+ * $Id: StreetAddress.java,v 1.92 2004/12/14 02:15:17 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.91 $ $Date: 2004/12/09 22:16:54 $
+ * @version $Revision: 1.92 $ $Date: 2004/12/14 02:15:17 $
 **/
 public class StreetAddress extends StarsCustomerAddress 
 implements java.io.Serializable

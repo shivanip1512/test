@@ -951,6 +951,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="DeleteFromInventory" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="DeleteFromYukon" type="xs:boolean" minOccurs="0"/>
 				<xs:element name="RemoveDate" type="xs:dateTime" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int"/>

@@ -47,6 +47,13 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
     **/
     private boolean _has_deleteFromInventory;
 
+    private boolean _deleteFromYukon;
+
+    /**
+     * keeps track of state for field: _deleteFromYukon
+    **/
+    private boolean _has_deleteFromYukon;
+
     private java.util.Date _removeDate;
 
 
@@ -72,6 +79,13 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
 
     /**
     **/
+    public void deleteDeleteFromYukon()
+    {
+        this._has_deleteFromYukon= false;
+    } //-- void deleteDeleteFromYukon() 
+
+    /**
+    **/
     public void deleteInventoryID()
     {
         this._has_inventoryID= false;
@@ -86,6 +100,16 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
     {
         return this._deleteFromInventory;
     } //-- boolean getDeleteFromInventory() 
+
+    /**
+     * Returns the value of field 'deleteFromYukon'.
+     * 
+     * @return the value of field 'deleteFromYukon'.
+    **/
+    public boolean getDeleteFromYukon()
+    {
+        return this._deleteFromYukon;
+    } //-- boolean getDeleteFromYukon() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -113,6 +137,13 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
     {
         return this._has_deleteFromInventory;
     } //-- boolean hasDeleteFromInventory() 
+
+    /**
+    **/
+    public boolean hasDeleteFromYukon()
+    {
+        return this._has_deleteFromYukon;
+    } //-- boolean hasDeleteFromYukon() 
 
     /**
     **/
@@ -169,6 +200,17 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
         this._deleteFromInventory = deleteFromInventory;
         this._has_deleteFromInventory = true;
     } //-- void setDeleteFromInventory(boolean) 
+
+    /**
+     * Sets the value of field 'deleteFromYukon'.
+     * 
+     * @param deleteFromYukon the value of field 'deleteFromYukon'.
+    **/
+    public void setDeleteFromYukon(boolean deleteFromYukon)
+    {
+        this._deleteFromYukon = deleteFromYukon;
+        this._has_deleteFromYukon = true;
+    } //-- void setDeleteFromYukon(boolean) 
 
     /**
      * Sets the value of field 'inventoryID'.
