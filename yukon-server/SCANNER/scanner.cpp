@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/09/16 21:51:31 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/09/23 20:18:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -949,11 +949,6 @@ VOID NexusThread (VOID *Arg)
 
             Sleep(500);
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
             delete InMessage;
             InMessage = 0;
             continue;
@@ -1585,10 +1580,6 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
 
             if(PorterNexus.CTINexusWrite (OutMessage, sizeof(OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
                 PorterNexus.CTINexusClose();
             }
             else
@@ -1602,11 +1593,6 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
                 }
                 LastPorterOutTime = LastPorterOutTime.now();
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         // Message is re-built on the other side, so clean it up!
