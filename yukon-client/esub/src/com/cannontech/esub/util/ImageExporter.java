@@ -6,13 +6,16 @@
  */
 package com.cannontech.esub.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.YukonImageElement;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -45,6 +48,17 @@ public class ImageExporter {
 				}
 				else {
 					writeImage(dir + File.separatorChar + Util.DEFAULT_IMAGE_NAME, Util.DEFAULT_IMAGE_BYTES);
+				}
+			}
+			else 
+			if(c[i] instanceof DynamicGraphElement) {
+				DynamicGraphElement dge = (DynamicGraphElement) c[i];
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				try {				
+					dge.getCTIGraph().encodePng(bout);
+					writeImage(dir + File.separatorChar + Util.genExportedGraphName(dge), bout.toByteArray());
+				}catch(IOException ioe) {
+					CTILogger.error(ioe.getMessage(), ioe);
 				}
 			}
  		
