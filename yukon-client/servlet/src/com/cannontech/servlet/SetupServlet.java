@@ -134,6 +134,7 @@ public class SetupServlet extends HttpServlet
 		}
 		catch( Exception e )
 		{
+			CTILogger.error( "Unable to write DB properties", e );
 			urlParams.put( "dbprop", "false" );			
 		}
 
