@@ -44,6 +44,7 @@ msg_signal.obj \
 msg_pdata.obj \
 msg_reg.obj \
 msg_ptreg.obj \
+msg_tag.obj \
 msg_trace.obj \
 
 
