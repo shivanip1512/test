@@ -26,16 +26,16 @@ public final class GraphRenderers
 	public final static int DEFAULT = 12;	//Use the GDS database column
 	
 	public final static String DONT_CHANGE_STRING = "Invalid";
-	public final static String LINE_STRING = "Line Graph";
-	public final static String LINE_SHAPES_STRING = "Line/Shapes Graph";
-	public final static String LINE_AREA_STRING = "Line/Area Graph";
-	public final static String LINE_AREA_SHAPES_STRING = "Line/Area/Shapes Graph";
-	public final static String STEP_STRING = "Step Graph";
-	public final static String STEP_SHAPES_STRING = "Step Graph";
-	public final static String STEP_AREA_STRING = "Step/Area (Bar Look) Graph";
-	public final static String STEP_AREA_SHAPES_STRING = "Step/Area/Shapes (Bar Look) Graph";
-	public final static String BAR_STRING = "Bar Graph";
-	public final static String BAR_3D_STRING = "3D Bar Graph";
+	public final static String LINE_STRING = "Line";
+	public final static String LINE_SHAPES_STRING = "Line/Shapes";
+	public final static String LINE_AREA_STRING = "Line/Area";
+	public final static String LINE_AREA_SHAPES_STRING = "Line/Area/Shapes";
+	public final static String STEP_STRING = "Step";
+	public final static String STEP_SHAPES_STRING = "Step/Shapes";
+	public final static String STEP_AREA_STRING = "Step/Area";
+	public final static String STEP_AREA_SHAPES_STRING = "Step/Area/Shapes";
+	public final static String BAR_STRING = "Bar";
+	public final static String BAR_3D_STRING = "3D Bar";
 	public final static String TABULAR_STRING = "Tabular";
 	public final static String SUMMARY_STRING = "Summary";
 	public final static String DEFAULT_STRING = "Default";
