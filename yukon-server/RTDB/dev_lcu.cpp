@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/12/23 15:27:02 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/12/31 17:04:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2374,3 +2374,25 @@ CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
     return pData;
 }
 
+void CtiDeviceLCU::pushControlledGroupInfo(LONG LMGIDControl, UINT TrxID)
+{
+    _controlledGroupVector.push_back( make_pair(LMGIDControl, TrxID) );
+    return;
+}
+
+bool CtiDeviceLCU::popControlledGroupInfo(LONG &LMGIDControl, UINT &TrxID)
+{
+    bool got_one = false;
+
+    if(!_controlledGroupVector.empty())
+    {
+        const pair<LONG, UINT> &mypair = _controlledGroupVector.back();
+        LMGIDControl = mypair.first;
+        TrxID = mypair.second;
+
+        _controlledGroupVector.pop_back();
+        got_one = true;
+    }
+
+    return got_one;
+}

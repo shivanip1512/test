@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/12/21 21:17:40 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/12/31 17:04:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,6 +106,8 @@ private:
 
     vector< pair<ULONG, double> >  _honktime;
 
+    vector< pair<LONG, UINT> > _controlledGroupVector; // Vector of groupids, and TrxId for that group.  Used initially for MPC bit mashing 12/31/04 CGP
+
 public:
 
     typedef CtiDeviceIDLC Inherited;
@@ -194,5 +196,9 @@ public:
 
     CtiPointDataMsg* getPointSet( int status );   //ecs 12/10/2004
     CtiPointDataMsg* getPointClear( int status );   //ecs 12/20/2004
+
+    void pushControlledGroupInfo(LONG LMGIDControl, UINT TrxID);
+    bool popControlledGroupInfo(LONG &LMGIDControl, UINT &TrxID);
+
 };
 #endif // #ifndef __DEV_LCU_H__

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.127 $
-* DATE         :  $Date: 2004/12/21 21:17:40 $
+* REVISION     :  $Revision: 1.128 $
+* DATE         :  $Date: 2004/12/31 17:04:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,6 +75,7 @@ using namespace std;
 #include "dsm2.h"
 #include "dsm2err.h"
 #include "device.h"
+#include "dev_lcu.h"
 #include "dev_tap.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
@@ -895,6 +896,12 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 {
                     pGroup[byt] |= pMatch[byt];
                 }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** PUSH GROUP TO LCUCheckpoint **** " << __FILE__ << " (" << __LINE__ << ") Group " << om->DeviceIDofLMGroup << endl;
+                }
+                ((CtiDeviceLCU*)Device.get())->pushControlledGroupInfo(om->DeviceIDofLMGroup, om->TrxID); // Record the groups, TrxIDs in qustion here.
 
                 delete om;
                 om = 0;

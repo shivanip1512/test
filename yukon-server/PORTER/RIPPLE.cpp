@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/12/21 21:17:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/12/31 17:04:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,7 @@
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
 
+void ProcessRippleGroupTrxID( LONG LMGIDControl, UINT TrxID);
 void Send4PartToDispatch(RWCString Source, RWCString MajorName, RWCString MinorName, RWCString Message1 = RWCString(""), RWCString Message2 = RWCString(""));
 INT SendTextToDispatch(PCHAR Source, PCHAR Message = NULL, RWCString majorName = RWCString(""), RWCString minorName = RWCString(""));
 INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
@@ -1297,25 +1298,28 @@ INT ReportCompletionStateToLMGroup(CtiDeviceLCU *lcu)     // f.k.a. ReturnTrxID(
     LONG     Rte = 0;
     UINT     TrxID = 0;
 
-    RWTPtrSlist< CtiMessage >  vgList;
-
     // this means we had a good message - retries are OK
     lcu->resetFlags( LCUNEVERRETRY );
 
+    while( lcu->popControlledGroupInfo(LMGIDControl, TrxID) )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Group : " << LMGIDControl  << endl;
+        }
+        ProcessRippleGroupTrxID(LMGIDControl, TrxID);
+    }
+
     if(lcu->getLastControlMessage() != NULL)
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
         LMGIDControl    = lcu->getLastControlMessage()->DeviceIDofLMGroup;
         TrxID           = lcu->getLastControlMessage()->TrxID;
 
-        // Find the controlling group.
-        CtiDeviceSPtr pGroupDev = DeviceManager.getEqual( LMGIDControl );
-
-        if(pGroupDev)
-        {
-            pGroupDev->processTrxID( TrxID, vgList );
-        }
-
-        SubmitDataToDispatch( vgList );
+        ProcessRippleGroupTrxID(LMGIDControl, TrxID);
     }
     else
     {
@@ -1791,3 +1795,19 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message, RWCString majorName, RWCStri
 
     return NORMAL;
 }
+
+void ProcessRippleGroupTrxID( LONG LMGIDControl, UINT TrxID)
+{
+    RWTPtrSlist< CtiMessage >  vgList;
+
+    // Find the controlling group.
+    CtiDeviceSPtr pGroupDev = DeviceManager.getEqual( LMGIDControl );
+
+    if(pGroupDev)
+    {
+        pGroupDev->processTrxID( TrxID, vgList );
+    }
+
+    SubmitDataToDispatch( vgList );
+}
+
