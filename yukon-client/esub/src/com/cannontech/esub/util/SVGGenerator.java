@@ -15,6 +15,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -49,29 +50,35 @@ import com.loox.jloox.LxRectangle;
  */
 public class SVGGenerator {
 	
-	private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;	
+	private static final String DTD = "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
+	
+	private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
+	private static final String xlinkNS = "http://www.w3.org/1999/xlink";
+	
 	private static final Random randomGen = new Random(System.currentTimeMillis());
 	
-	// flags to decide whenter to generate code for editing and controlling
-	private boolean editEnabled = false;
-	private boolean controlEnabled = false;
-		
+	private SVGOptions genOptions;
+	
 	public SVGGenerator() {
+		this(new SVGOptions());
 	} 
 	
-	public void generate(Writer writer, Drawing d, boolean edit, boolean control) throws IOException {
-		setEditEnabled(edit);
-	 	setControlEnabled(control);
-		generate(writer, d);
-	}	
-	
+	public SVGGenerator(SVGOptions options) {
+		genOptions = options;
+	}
+		
 	/**  
 	 * Writes an svg document to the given write based on the graph passed.
 	 * @param writer
 	 * @param graph
 	 * @throws IOException
 	 */
-	public void generate(Writer writer, Drawing d) throws IOException {		
+	public void generate(Writer writer, Drawing d) throws IOException {	
+		if(!genOptions.isStaticSVG()) {
+			DrawingUpdater updater = new DrawingUpdater(d);
+		 	updater.updateDrawing();
+		}    
+					
 	 	LxGraph graph = d.getLxGraph();
 	 	
 	 	DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
@@ -79,26 +86,45 @@ public class SVGGenerator {
 		
 	 	// get the root element (the svg element)
 		Element svgRoot = doc.getDocumentElement();
-
-		//svgRoot.setAttributeNS(null, "width", Integer.toString(d.getMetaElement().getDrawingWidth()));
-		//svgRoot.setAttributeNS(null, "height", Integer.toString(d.getMetaElement().getDrawingHeight()));
-	 	svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
-	 	//svgRoot.setAttributeNS(null, "onerror", "suppressErrors()");
+		svgRoot.setAttributeNS(null, "xmlns","http://www.w3.org/2000/svg");
+		svgRoot.setAttributeNS(null, "xmlns:xlink", "http://www.w3.org/1999/xlink");
+		
+		//DocumentType dt = impl.createDocumentType("svg", "-//W3C//DTD SVG 1.0//EN", "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd");
+		//doc.appendChild(dt);
+		
+		if(genOptions.isScriptingEnabled()) {
+			Element e = doc.createElementNS(null, "script");
+			e.setAttributeNS(null, "type", "text/ecmascript");
+			CDATASection cdata = doc.createCDATASection(JS.JS);
+			e.appendChild(cdata);
+			svgRoot.appendChild(e);
+		}
+		
+		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {			
+	 		svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
 	 		 	
-		Element scriptElem = doc.createElementNS(null, "script");
-		scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-		scriptElem.setAttributeNS(null, "xlink:href", "refresh.js");
-		svgRoot.appendChild(scriptElem);
-		
-		Element scriptElem2 = doc.createElementNS(null, "script");
-		scriptElem2.setAttributeNS(null, "type", "text/ecmascript");
-		scriptElem2.setAttributeNS(null, "xlink:href", "updateGraph.js");
-		svgRoot.appendChild(scriptElem2);
-		
-		Element scriptElem3 = doc.createElementNS(null, "script");
-		scriptElem3.setAttributeNS(null, "type", "text/ecmascript");
-		scriptElem3.setAttributeNS(null, "xlink:href", "action.js");
-		svgRoot.appendChild(scriptElem3);
+			Element scriptElem = doc.createElementNS(null, "script");
+			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "refresh.js");
+			svgRoot.appendChild(scriptElem);
+			
+			Element scriptElem2 = doc.createElementNS(null, "script");
+			scriptElem2.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem2.setAttributeNS(xlinkNS, "xlink:href", "updateGraph.js");
+			svgRoot.appendChild(scriptElem2);
+			
+			Element scriptElem3 = doc.createElementNS(null, "script");	
+			scriptElem3.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem3.setAttributeNS(xlinkNS, "xlink:href", "action.js");
+			svgRoot.appendChild(scriptElem3);
+			
+			if(genOptions.isControlEnabled()) {
+				Element scriptElem4 = doc.createElementNS(null, "script");	
+				scriptElem4.setAttributeNS(null, "type", "text/ecmascript");
+				scriptElem4.setAttributeNS(xlinkNS, "xlink:href", "control.js");
+				svgRoot.appendChild(scriptElem4);
+			}
+		}
 		
 		Element backRect = doc.createElementNS(svgNS, "rect");
 		backRect.setAttributeNS(null, "width", "100%");
@@ -116,7 +142,7 @@ public class SVGGenerator {
 		OutputFormat format  = new OutputFormat( doc );   //Serialize DOM
         XMLSerializer    serial = new XMLSerializer(writer, format);
         serial.asDOMSerializer();                            // As a DOM Serializer
-        serial.serialize( doc.getDocumentElement() );       		 		
+        serial.serialize( doc.getDocumentElement() );                           		
 	}
 	
 	private Element createElement(SVGDocument doc, LxComponent comp) {
@@ -163,22 +189,32 @@ public class SVGGenerator {
 				if( comp instanceof DrawingElement ) {
 					DrawingElement de = (DrawingElement) comp;
 					String link = de.getLinkTo();
+										
+					elem.setAttributeNS(null,"elementID", de.getElementID());
+					elem.setAttributeNS(null,"classid",comp.getClass().getName());
+					
 					if(link != null && link.length() > 0) {
-						elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");
 						
-						if(comp instanceof LxAbstractText) {
+						//elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");						
+						
+						if(comp instanceof LxAbstractText && genOptions.isScriptingEnabled()) {
 							elem.setAttributeNS(null,"onmouseover", "underLine(evt.getTarget())");
 							elem.setAttributeNS(null,"onmouseout", "noUnderLine(evt.getTarget())");
 						}
 						else 
-						if(comp instanceof LxAbstractImage){						
+						if(comp instanceof LxAbstractImage && genOptions.isScriptingEnabled()){						
 							elem.setAttributeNS(null,"onmouseover", "addBorder(evt.getTarget())");
 							elem.setAttributeNS(null,"onmouseout", "noBorder(evt.getTarget())");
 						}
+						
+						Element linkElem = doc.createElementNS(xlinkNS, "a");
+						linkElem.setAttributeNS(xlinkNS, "xlink:href", link);
+						
+						linkElem.appendChild(elem);
+						elem = linkElem;
 					}
 				 
-				elem.setAttributeNS(null,"elementID", de.getElementID());
-				elem.setAttributeNS(null,"classid",comp.getClass().getName());					
+								
 				}
 			}
 			
@@ -216,10 +252,17 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
 		
-		if(isEditEnabled() && text.isEditable()) {
-			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
+			//UpdateUtil assumes a live system!
+			if(genOptions.isControlEnabled() && UpdateUtil.isControllable(text.getPointID())) {
+				textElem.setAttributeNS(null, "onclick", "controlPoint(evt)");	
+			}
+			else
+			if(genOptions.isEditEnabled() && text.isEditable()) {
+				textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+			}
 		}
-
+		
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
 		
@@ -316,7 +359,7 @@ public class SVGGenerator {
 		 
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", img.getName());
-		imgElem.setAttributeNS(null, "xlink:href", relImage);
+		imgElem.setAttributeNS(xlinkNS, "xlink:href", relImage);
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
@@ -335,11 +378,18 @@ public class SVGGenerator {
 
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
-		imgElem.setAttributeNS(null, "xlink:href", imgName);
+		imgElem.setAttributeNS(xlinkNS, "xlink:href", imgName);
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
 		imgElem.setAttributeNS(null, "height", Integer.toString(height));
+		
+		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
+			//Update Util requires a live system!
+			if(genOptions.isControlEnabled() && UpdateUtil.isControllable(img.getPoint().getPointID())) {
+				imgElem.setAttributeNS(null, "onclick", "controlPoint(evt)");	
+			}
+		}
 		return imgElem;		
 	}	
 	
@@ -404,7 +454,7 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
  		retElement.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
 		
-		if(editEnabled) {
+		if(genOptions.isEditEnabled()) {
 			Element text = doc.createElementNS(svgNS,"text");
 			text.setAttributeNS(null, "fill","rgb(0,125,122)");
 			text.setAttributeNS(null, "x", Integer.toString(ackX));
@@ -509,36 +559,4 @@ public class SVGGenerator {
 		}
 		return pathStr;		
 	}		
-	/**
-	 * Returns the controlEnabled.
-	 * @return boolean
-	 */
-	public boolean isControlEnabled() {
-		return controlEnabled;
-	}
-
-	/**
-	 * Returns the editEnabled.
-	 * @return boolean
-	 */
-	public boolean isEditEnabled() {
-		return editEnabled;
-	}
-
-	/**
-	 * Sets the controlEnabled.
-	 * @param controlEnabled The controlEnabled to set
-	 */
-	public void setControlEnabled(boolean controlEnabled) {
-		this.controlEnabled = controlEnabled;
-	}
-
-	/**
-	 * Sets the editEnabled.
-	 * @param editEnabled The editEnabled to set
-	 */
-	public void setEditEnabled(boolean editEnabled) {
-		this.editEnabled = editEnabled;
-	}
-
 }

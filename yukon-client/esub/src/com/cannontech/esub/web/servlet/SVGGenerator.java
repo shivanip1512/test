@@ -1,8 +1,9 @@
-package com.cannontech.esub.web.servlet;
+ package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,15 +16,14 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.esub.util.SVGOptions;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;
 
 /**
  * Description Here
  * @author alauinger
  */
-public class SVGGenerator extends HttpServlet {
- 
+public class SVGGenerator extends HttpServlet { 
 	/**
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)
 	 */
@@ -58,21 +58,27 @@ public class SVGGenerator extends HttpServlet {
 			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&	
 				(AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) ||
 				 AuthFuncs.checkRoleProperty(user, EsubDrawingsRole.VIEW))) {				
-				
-				// Update the drawing before sending it out to init all the values
-				DrawingUpdater updater = new DrawingUpdater(d);
-				updater.updateDrawing();
-				
-				// enable edit functions?
-				
+							
 				boolean canEdit = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
+				boolean canControl = AuthFuncs.checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL);
 				
-				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();				
-				gen.generate(w, d, canEdit, false);	
+				SVGOptions svgOptions = new SVGOptions();
+				svgOptions.setStaticSVG(false);
+				svgOptions.setScriptingEnabled(true);
+				svgOptions.setEditEnabled(canEdit);
+				svgOptions.setControlEnabled(canControl);
+				
+				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator(svgOptions);				
+				gen.generate(w, d);	
 			}
 		}
 		catch(Exception e ) {
 			CTILogger.error("Error generating svg", e);
 		}
 	}
+
+	public void init(ServletConfig cfg) throws ServletException {		
+		super.init(cfg);
+	}
+
 }
