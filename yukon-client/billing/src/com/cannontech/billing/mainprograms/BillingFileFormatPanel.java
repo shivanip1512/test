@@ -898,14 +898,23 @@ private javax.swing.JList getGroupList() {
 			ivjGroupList.setName("GroupList");
 			ivjGroupList.setBounds(0, 0, 160, 120);
 			// user code begin {1}
-			ivjGroupList.setListData(billingFile.getAllBillGroupsVector());
+			ivjGroupList.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			java.util.Vector listData = billingFile.getAllBillGroupsVector();
+			ivjGroupList.setListData(listData);
 
+			//Select one/multiple billing groups.
 			java.util.Vector tempCollGrp = billingFile.getBillingDefaults().getBillGroup();
 			if( tempCollGrp != null)
 			{
 				for (int i = 0; i < tempCollGrp.size(); i++)
 				{
-					ivjGroupList.setSelectedValue(tempCollGrp.get(i), true);
+					for(int j = 0; j < listData.size(); j++)
+					{
+						if( ((String)tempCollGrp.get(i)).equalsIgnoreCase((String)listData.get(j)))
+						{
+							ivjGroupList.addSelectionInterval(j,j);
+						}
+					}
 				}
 			}
 			else
