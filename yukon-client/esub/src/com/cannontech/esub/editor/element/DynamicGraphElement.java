@@ -44,7 +44,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	
 	//persistent fields	
 	private LiteGraphDefinition graphDefinition;
-	private int trendType; // see com.cannontech.graph.model.TrendModelType;
+	private int viewType; // see com.cannontech.graph.model.TrendModelType;
 	private int displayRange; // one of the static ints above
 	private transient Drawing drawing = null;
 	private String linkTo = "";
@@ -63,7 +63,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 	private void initialize() {
 		setGraphDefinition(new LiteGraphDefinition(INVALID_GRAPH_DEFINITION));
-		setTrendType(TrendModelType.LINE_MODEL);
+		setTrendType(TrendModelType.LINE_VIEW);
 		setDisplayRange(TODAY);
 		resetDisplayRange();
 		setSize(DEFAULT_SIZE.getWidth(), DEFAULT_SIZE.getHeight());
@@ -247,7 +247,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * @return int
 	 */
 	public int getTrendType() {
-		return trendType;
+		return viewType;
 	}
 
 	/**
@@ -255,8 +255,8 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * @param trendType The trendType to set
 	 */
 	public void setTrendType(int trendType) {
-		if( this.trendType != trendType) {
-			this.trendType = trendType;	
+		if( this.viewType != trendType) {
+			this.viewType = trendType;	
 			setDirty(true);
 		}
 	}
@@ -296,12 +296,12 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			graph.setDatabaseAlias(CtiUtilities.getDatabaseAlias());
 			graph.setSize((int) getWidth(), (int) getHeight());
 			graph.setCurrentGraphDefinition(gDef);
-			graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
+			//graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 
-			graph.setModelType(getTrendType());
+			graph.setViewType(getTrendType());
 						
 			// Define the peak series....
-			for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
+			/*for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
 			{
 				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
 
@@ -310,7 +310,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 					graph.setHasPeakSeries( true );
 					break;
 				}
-			}
+			}*/
 		getCTIGraph().setUpdateTrend(true);
 		getCTIGraph().update();
 		

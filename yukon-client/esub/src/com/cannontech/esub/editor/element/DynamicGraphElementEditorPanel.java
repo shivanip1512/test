@@ -564,21 +564,21 @@ public Object getValue(Object o) {
 	DynamicGraphElement graph = getDynamicGraphElement();
 	graph.setGraphDefinition(getGraphDefinitionSelectionPanel().getSelectedGraphDefinition());
 	
-	int trendType = TrendModelType.LINE_MODEL;
+	int trendType = TrendModelType.LINE_VIEW;
 	if( getLineRadioButton().isSelected() ) {
-		trendType = TrendModelType.LINE_MODEL;
+		trendType = TrendModelType.LINE_VIEW;
 	}
 	else
 	if( getBarRadioButton().isSelected() ) {
-		trendType = TrendModelType.BAR_MODEL;
+		trendType = TrendModelType.BAR_VIEW;
 	}
 	else
 	if( getStepLineRadioButton().isSelected() ) {
-		trendType = TrendModelType.STEP_MODEL;
+		trendType = TrendModelType.STEP_VIEW;
 	}
 	else
 	if( getThreeDBarRadioButton().isSelected() ) {
-		trendType = TrendModelType.BAR_3D_MODEL;
+		trendType = TrendModelType.BAR_3D_VIEW;
 	}
 	
 	graph.setTrendType(trendType);
@@ -725,20 +725,20 @@ public void setValue(Object o) {
 	
 	switch(trendType) {
 		
-		case TrendModelType.BAR_MODEL:
+		case TrendModelType.BAR_VIEW:
 			getBarRadioButton().setSelected(true);
 		break;
 		
-		case TrendModelType.STEP_MODEL:
+		case TrendModelType.STEP_VIEW:
 			getStepLineRadioButton().setSelected(true);
 		break;
 		
-		case TrendModelType.BAR_3D_MODEL:
+		case TrendModelType.BAR_3D_VIEW:
 			getThreeDBarRadioButton().setSelected(true);
 		break;
 		
 		default:
-		case TrendModelType.LINE_MODEL:
+		case TrendModelType.LINE_VIEW:
 			getLineRadioButton().setSelected(true);
 		break;
 		
