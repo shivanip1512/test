@@ -132,7 +132,7 @@ public class BillingFileDefaults
 			if (getBillGroupType() == validBillGroupTypeStrings[i])
 				return validBillGroupTypeIDs[i];
 		}
-		return this.COLLECTION_GROUP;
+		return COLLECTION_GROUP;
 	}
 
 	/**
@@ -236,21 +236,24 @@ public class BillingFileDefaults
 	 */
 	public java.util.Date getEndDate()
 	{
-		endDate = new java.util.Date();
-		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-	
-		// add a whole day to now so we can increment the Date field
-		long time = endDate.getTime() + 86400000;
-		endDate.setTime(time);
-	
-		cal.setTime(endDate);
-			
-		cal.set(java.util.Calendar.HOUR_OF_DAY,0);
-		cal.set(java.util.Calendar.MINUTE,0);
-		cal.set(java.util.Calendar.SECOND,0);
-		cal.set(java.util.Calendar.MILLISECOND,0);
-	
-		endDate = cal.getTime();
+		if( endDate == null)
+		{
+			endDate = new java.util.Date();
+			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+		
+			// add a whole day to now so we can increment the Date field
+			long time = endDate.getTime() + 86400000;
+			endDate.setTime(time);
+		
+			cal.setTime(endDate);
+				
+			cal.set(java.util.Calendar.HOUR_OF_DAY,0);
+			cal.set(java.util.Calendar.MINUTE,0);
+			cal.set(java.util.Calendar.SECOND,0);
+			cal.set(java.util.Calendar.MILLISECOND,0);
+		
+			endDate = cal.getTime();
+		}
 		return endDate;
 	}
 	
