@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/05/24 20:25:36 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/05/24 20:30:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -844,13 +844,6 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
 
     switch(_transmitterDevice->getType())
     {
-    case TYPE_SERIESVLMIRTU:
-        {
-            OutMessage->EventCode = RESULT | ENCODED;
-            OutMessage->Buffer.SASt._groupType = GOLAY;
-            strncpy(OutMessage->Buffer.SASt._codeSimple, "123456", 6);
-            break;
-        }
     case TYPE_RTC:
         {
             CtiProtocolSA3rdParty prot;
@@ -945,17 +938,25 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
     OutMessage->InLength = -1;
 
 
-    CtiProtocolSA3rdParty prot;
-
-    prot.setTransmitterAddress(_transmitterDevice->getAddress());
-    prot.parseCommand(parse, *OutMessage);
-
-    if(prot.messageReady())
+    switch(_transmitterDevice->getType())
     {
-        switch(_transmitterDevice->getType())
+    case TYPE_SERIESVLMIRTU:
         {
-        case TYPE_RTC:
-        case TYPE_SERIESVLMIRTU:
+            OutMessage->EventCode = RESULT | ENCODED;
+            OutMessage->Buffer.SASt._groupType = GOLAY;
+            strncpy(OutMessage->Buffer.SASt._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+
+            resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+            break;
+        }
+    case TYPE_RTC:
+        {
+            CtiProtocolSA3rdParty prot;
+
+            prot.setTransmitterAddress(_transmitterDevice->getAddress());
+            prot.parseCommand(parse, *OutMessage);
+
+            if(prot.messageReady())
             {
                 OutMessage->EventCode = RESULT | ENCODED;
 
@@ -964,38 +965,35 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
 
                 outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
-                break;
+                prot.copyMessage(byteString);
+                resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
             }
-        case TYPE_WCTP:
-        case TYPE_TAPTERM:
+            break;
+        }
+    case TYPE_WCTP:
+    case TYPE_TAPTERM:
+        {
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
-                }
-
-                break;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
             }
-        default:
+
+            break;
+        }
+    default:
+        {
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
-                }
-
-                break;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
             }
+
+            break;
         }
     }
 
-    if(prot.messageReady())
-    {
-        prot.copyMessage(byteString);
-        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
-    }
-    else
+    if( resultString.isNull() )
     {
         xmore = false;
         resultString = "Route " + getName() + " did not transmit commands";
