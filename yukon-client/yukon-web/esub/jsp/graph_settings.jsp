@@ -37,14 +37,16 @@
 %>
 
 <html>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+
+
 <head>
 <title>Graph Settings</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script langauge = "Javascript" src = "updateGraph.js"></script>
 <script langauge = "Javascript" src = "refresh.js"></script>
-<script  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></script>
 </head>
-<body bgcolor="#000000" text="#000000"><form name = "MForm">    
+<body bgcolor="#000000" text="#000000"><form id="MForm" name="MForm">    
   <table width="100%" border="0" cellspacing="0" cellpadding="9" >
     <tr>
     <td>
@@ -53,7 +55,7 @@
           <td height="2" width="50%" valign = "top" bgcolor = "#CCCCCC"><b><font size="2" face="Arial, Helvetica, sans-serif">Graph 
             Settings</font></b></td>
         </tr>
-        <tr>
+        <tr>  
         	<td>
         		<table>
                     <tr>
@@ -61,12 +63,16 @@
         					<font face="Arial, Helvetica, sans-serif" size="2">Start Date:</font>
         				</td>
         				<td>
-        					<input type="text" name="start" size="9" value="<%= start %>" >
-        					<!--<a HREF="javascript:show_calendar('MForm.startDate')"
-                            	onMouseOver="window.status='Pop Calendar';return true;"
-                                onMouseOut="window.status='';return true;"><img SRC="StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
-                            </a>-->
+        					<input type="text" id="cal" name="start" size="10" value="<%= start %>" >
         				</td>
+        				
+        				<td>        				
+        					 <a href="javascript:show_calendar('MForm.start')"
+									onMouseOver="window.status='Pop Calendar';return true;"
+                                    onMouseOut="window.status='';return true;">
+                    		  <IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" BORDER="0">
+                  			</a>
+                  		</td>
         				<td>
         					<font face="Arial, Helvetica, sans-serif" size="2">(mm/dd/yy)</font>
         				</td>
