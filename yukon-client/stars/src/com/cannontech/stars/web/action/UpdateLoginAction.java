@@ -83,11 +83,12 @@ public class UpdateLoginAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            if (liteAcctInfo.getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID) {
-            	createLogin( liteAcctInfo, energyCompanyID, updateLogin.getUsername(), updateLogin.getPassword() );
+            LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
+            if (liteAccount.getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID) {
+            	createLogin( liteAccount, energyCompanyID, updateLogin.getUsername(), updateLogin.getPassword() );
             }
             else {
-            	LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAcctInfo.getLoginID() );
+            	LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
 		        com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser) StarsLiteFactory.createDBPersistent( liteUser );
 	            		
 	            dbUser.setUsername( updateLogin.getUsername() );
@@ -167,7 +168,7 @@ public class UpdateLoginAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static void createLogin(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, String username, String password)
+	public static void createLogin(LiteCustomerAccount liteAccount, int energyCompanyID, String username, String password)
 	throws com.cannontech.database.TransactionException {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
@@ -190,7 +191,6 @@ public class UpdateLoginAction implements ActionBase {
         dbGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
         dataUser.getYukonGroups().addElement( dbGroup );
         
-        dbUser.setUserID( com.cannontech.database.db.user.YukonUser.getNextUserID() );
     	dbUser.setUsername( username );
     	dbUser.setPassword( password );
     	dbUser.setStatus( "Enabled" );
@@ -200,17 +200,10 @@ public class UpdateLoginAction implements ActionBase {
         LiteYukonUser liteUser = new LiteYukonUser( dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getPassword() );
         ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         
-        LiteContact liteContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact(
-        		liteAcctInfo.getCustomer().getPrimaryContactID() );
-        com.cannontech.database.data.customer.Contact contact =
-        		(com.cannontech.database.data.customer.Contact) LiteFactory.createDBPersistent( liteContact );
-        
-        com.cannontech.database.db.contact.Contact contactDB = contact.getContact();
-        contactDB.setLogInID( dbUser.getUserID() );
-        Transaction.createTransaction( Transaction.UPDATE, contactDB ).execute();
-        ServerUtils.handleDBChange( liteContact, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
-        
-        liteAcctInfo.setLoginID( dbUser.getUserID().intValue() );
+        liteAccount.setLoginID( dbUser.getUserID().intValue() );
+        com.cannontech.database.db.stars.customer.CustomerAccount account =
+        		(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
+        Transaction.createTransaction(Transaction.UPDATE, account).execute();
 	}
 
 }

@@ -313,7 +313,7 @@ public class ProgramSignUpAction implements ActionBase {
             
             StarsLogin starsLogin = progSignUp.getStarsLogin();
             if (starsLogin != null)
-            	UpdateLoginAction.createLogin( liteAcctInfo, energyCompanyID, starsLogin.getUsername(), starsLogin.getPassword() );
+            	UpdateLoginAction.createLogin( liteAcctInfo.getCustomerAccount(), energyCompanyID, starsLogin.getUsername(), starsLogin.getPassword() );
             
             if (user != null) {
 				StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();

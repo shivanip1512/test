@@ -87,9 +87,6 @@ public class CustomerAccount extends DBPersistent {
         getCustomerAccount().setBillingAddressID( getBillingAddress().getAddressID() );
         int addrID = getBillingAddress().getAddressID().intValue();
         
-        //getCustomerLogin().add();
-        //getCustomerBase().getPrimaryContact().setLogInID( getCustomerLogin().getLoginID() );
-        
     	if (getCustomerAccount().getCustomerID().intValue() == 0) {
     		getCustomer().add();
     		getCustomerAccount().setCustomerID( getCustomer().getCustomer().getCustomerID() );

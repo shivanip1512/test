@@ -182,6 +182,7 @@ public class StarsLiteFactory {
 		liteAccount.setCustomerID( account.getCustomerID().intValue() );
 		liteAccount.setBillingAddressID( account.getBillingAddressID().intValue() );
 		liteAccount.setAccountNotes( account.getAccountNotes() );
+		liteAccount.setLoginID( account.getLoginID().intValue() );
 	}
 	
 	public static void setLiteCustomer(LiteCustomer liteCustomer, com.cannontech.database.data.customer.Customer customer) {
@@ -384,6 +385,7 @@ public class StarsLiteFactory {
 		account.setCustomerID( new Integer(liteAccount.getCustomerID()) );
 		account.setBillingAddressID( new Integer(liteAccount.getBillingAddressID()) );
 		account.setAccountNotes( liteAccount.getAccountNotes() );
+		account.setLoginID( new Integer(liteAccount.getLoginID()) );
 	}
 	
 	public static void setCustomer(com.cannontech.database.db.customer.Customer customer, LiteCustomer liteCustomer) {
@@ -1081,8 +1083,8 @@ public class StarsLiteFactory {
 				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompanyID) );
 			}
 			
-	        if (liteAcctInfo.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
-		        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAcctInfo.getLoginID() );
+	        if (liteAccount.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
+		        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
 				starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
 	        }
 		}
@@ -1205,14 +1207,13 @@ public class StarsLiteFactory {
 		starsList.setListID( yukonList.getListID() );
 		starsList.setListName( yukonList.getListName() );
 		
-		Properties entries = yukonList.getYukonListEntries();
-		Iterator it = entries.values().iterator();
-		while (it.hasNext()) {
+		ArrayList entries = yukonList.getYukonListEntries();
+		for (int i = 0; i < entries.size(); i++) {
 			if (yukonList.getListID() == -1)	// substation list or service company list
-				starsList.addStarsSelectionListEntry( (StarsSelectionListEntry) it.next() );
+				starsList.addStarsSelectionListEntry( (StarsSelectionListEntry) entries.get(i) );
 			else {
 				StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-				YukonListEntry yukonEntry = (YukonListEntry) it.next();
+				YukonListEntry yukonEntry = (YukonListEntry) entries.get(i);
 				setStarsCustListEntry( starsEntry, yukonEntry );
 				starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
 				starsList.addStarsSelectionListEntry( starsEntry );

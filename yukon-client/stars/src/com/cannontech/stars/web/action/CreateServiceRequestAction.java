@@ -58,7 +58,7 @@ public class CreateServiceRequestAction implements ActionBase {
             
             CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry(
             		StarsCustListEntryFactory.getStarsCustListEntry(
-            			selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_NOT_SCHEDULED),
+            			selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_UNSCHEDULED),
             		CurrentState.class );
             createOrder.setCurrentState( status );
 			

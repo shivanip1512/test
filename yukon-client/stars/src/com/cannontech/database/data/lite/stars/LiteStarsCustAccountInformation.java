@@ -23,8 +23,6 @@ public class LiteStarsCustAccountInformation {
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private LiteStarsThermostatSettings thermostatSettings = null;
-	private int loginID = com.cannontech.user.UserUtils.USER_YUKON_ID;
-	
 	public LiteStarsCustAccountInformation() {
 	}
 	
@@ -144,8 +142,8 @@ public class LiteStarsCustAccountInformation {
 	}
 
 	/**
-	 * Returns the customerBase.
-	 * @return LiteCustomerBase
+	 * Returns the customer.
+	 * @return LiteCustomer
 	 */
 	public LiteCustomer getCustomer() {
 		return customer;
@@ -215,22 +213,6 @@ public class LiteStarsCustAccountInformation {
 	 */
 	public void setThermostatSettings(LiteStarsThermostatSettings thermostatSettings) {
 		this.thermostatSettings = thermostatSettings;
-	}
-
-	/**
-	 * Returns the logInID.
-	 * @return int
-	 */
-	public int getLoginID() {
-		return loginID;
-	}
-
-	/**
-	 * Sets the logInID.
-	 * @param logInID The logInID to set
-	 */
-	public void setLoginID(int loginID) {
-		this.loginID = loginID;
 	}
 
 }

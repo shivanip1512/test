@@ -129,18 +129,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	instance = this;
     }
 
-	/**
-	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
-	 */
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getParameter( "RefreshCache" ) != null) {
-			refreshCache();
-			resp.sendRedirect( "/refresh_cache.html" );
-		}
-		else
-			super.service(req, resp);
-	}
-
     public SOAPMessage onMessage(SOAPMessage message) {
         StarsOperation respOper = new StarsOperation();
 

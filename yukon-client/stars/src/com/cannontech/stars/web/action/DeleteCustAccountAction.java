@@ -74,9 +74,10 @@ public class DeleteCustAccountAction implements ActionBase {
         			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompanyID);
         	Transaction.createTransaction(Transaction.DELETE, account).execute();
         	
-        	if (ServerUtils.isResidentialCustomer(user)) {
+        	if (ServerUtils.isResidentialCustomer(user)
+        		&& liteAcctInfo.getCustomerAccount().getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
         		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
-        		yukonUser.setUserID( new Integer(liteAcctInfo.getLoginID()) );
+        		yukonUser.setUserID( new Integer(liteAcctInfo.getCustomerAccount().getLoginID()) );
         		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
         	}
         	

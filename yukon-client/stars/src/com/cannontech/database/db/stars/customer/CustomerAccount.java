@@ -22,9 +22,10 @@ public class CustomerAccount extends DBPersistent {
     private Integer customerID = new Integer( 0 );
     private Integer billingAddressID = new Integer( 0 );
     private String accountNotes = "";
+    private Integer loginID = new Integer( com.cannontech.user.UserUtils.USER_YUKON_ID );
 
     public static final String[] SETTER_COLUMNS = {
-        "AccountSiteID", "AccountNumber", "CustomerID", "BillingAddressID", "AccountNotes"
+        "AccountSiteID", "AccountNumber", "CustomerID", "BillingAddressID", "AccountNotes", "LoginID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "AccountID" };
@@ -39,9 +40,10 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
-        String sql = "SELECT account.* FROM ECToAccountMapping map, " + TABLE_NAME + " account "
+        String sql = "SELECT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
+        		   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct "
                    + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString()
-                   + " AND account.AccountNumber = '" + accountNumber + "' AND map.AccountID = account.AccountID";
+                   + " AND acct.AccountNumber = '" + accountNumber + "' AND map.AccountID = acct.AccountID";
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
         		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
@@ -59,6 +61,7 @@ public class CustomerAccount extends DBPersistent {
                 account.setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
                 account.setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
                 account.setAccountNotes( (String) row[5] );
+                account.setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
 
                 return account;
             }
@@ -74,9 +77,10 @@ public class CustomerAccount extends DBPersistent {
     private static CustomerAccount[] searchByPrimaryContactIDs(Integer energyCompanyID, int[] contactIDs) {
     	if (contactIDs == null || contactIDs.length == 0) return null;
     	
-    	String sql = "SELECT DISTINCT account.* FROM ECToAccountMapping map, " + TABLE_NAME + " account, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
-    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = account.AccountID "
-    			   + "AND account.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
+        String sql = "SELECT DISTINCT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
+    			   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = acct.AccountID "
+    			   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
     	for (int i = 1; i < contactIDs.length; i++)
     		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
     	sql += ")";
@@ -98,6 +102,7 @@ public class CustomerAccount extends DBPersistent {
                 accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
                 accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
                 accounts[i].setAccountNotes( (String) row[5] );
+                accounts[i].setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
     		}
     		
     		return accounts;
@@ -110,8 +115,6 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static CustomerAccount[] searchByPhoneNumber(Integer energyCompanyID, String phoneNumber) {
-    	if (phoneNumber.equals("")) return new CustomerAccount[0];
-    	
 		int[] contactIDs = com.cannontech.database.data.customer.Contact.searchByPhoneNumber( phoneNumber );
 		if (contactIDs == null) return null;
 		if (contactIDs.length == 0) return new CustomerAccount[0];
@@ -132,10 +135,9 @@ public class CustomerAccount extends DBPersistent {
     	if (invIDs == null) return null;
     	if (invIDs.length == 0) return new CustomerAccount[0];
     	
-    	String sql = "SELECT DISTINCT account.* FROM ECToAccountMapping map, " + TABLE_NAME + " account, "
-    			   + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
-    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = account.AccountID "
-    			   + "AND account.AccountID = inv.AccountID AND (inv.InventoryID = " + String.valueOf(invIDs[0]);
+        String sql = "SELECT DISTINCT acct.AccountID, acct.AccountSiteID, acct.AccountNumber, acct.CustomerID, acct.BillingAddressID, acct.AccountNotes, acct.LoginID "
+    			   + "FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + String.valueOf(invIDs[0]);
     	for (int i = 1; i < invIDs.length; i++)
     		sql += " OR inv.InventoryID = " + String.valueOf(invIDs[i]);
     	sql += ")";
@@ -158,6 +160,7 @@ public class CustomerAccount extends DBPersistent {
                 accounts[i].setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
                 accounts[i].setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
                 accounts[i].setAccountNotes( (String) row[5] );
+                accounts[i].setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
     		}
     		
     		return accounts;
@@ -171,7 +174,8 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public static CustomerAccount[] getAllCustomerAccounts(Integer customerID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CustomerID = ?";
+        String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes, LoginID "
+        		   + "FROM " + TABLE_NAME + " WHERE CustomerID = ?";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -192,12 +196,13 @@ public class CustomerAccount extends DBPersistent {
                 while (rset.next()) {
                     CustomerAccount account = new CustomerAccount();
 
-                    account.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    account.setAccountSiteID( new Integer(rset.getInt("AccountSiteID")) );
-                    account.setAccountNumber( rset.getString("AccountNumber") );
-                    account.setCustomerID( new Integer(rset.getInt("CustomerID")) );
-                    account.setBillingAddressID( new Integer(rset.getInt("BillingAddressID")) );
-                    account.setAccountNotes( rset.getString("AccountNotes") );
+                    account.setAccountID( new Integer(rset.getInt(1)) );
+                    account.setAccountSiteID( new Integer(rset.getInt(2)) );
+                    account.setAccountNumber( rset.getString(3) );
+                    account.setCustomerID( new Integer(rset.getInt(4)) );
+                    account.setBillingAddressID( new Integer(rset.getInt(5)) );
+                    account.setAccountNotes( rset.getString(6) );
+                    account.setLoginID( new Integer(rset.getInt(7)) );
 
                     accountList.add( account );
                 }
@@ -237,7 +242,7 @@ public class CustomerAccount extends DBPersistent {
     		
         Object[] addValues = {
             getAccountID(), getAccountSiteID(), getAccountNumber(),
-            getCustomerID(), getBillingAddressID(), getAccountNotes()
+            getCustomerID(), getBillingAddressID(), getAccountNotes(), getLoginID()
         };
 
         add( TABLE_NAME, addValues );
@@ -246,7 +251,7 @@ public class CustomerAccount extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getAccountSiteID(), getAccountNumber(), getCustomerID(),
-            getBillingAddressID(), getAccountNotes()
+            getBillingAddressID(), getAccountNotes(), getLoginID()
         };
 
         Object[] constraintValues = { getAccountID() };
@@ -265,6 +270,7 @@ public class CustomerAccount extends DBPersistent {
             setCustomerID( (Integer) results[2] );
             setBillingAddressID( (Integer) results[3] );
             setAccountNotes( (String) results[4] );
+            setLoginID( (Integer) results[5] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -346,4 +352,20 @@ public class CustomerAccount extends DBPersistent {
     public void setAccountNotes(String newAccountNotes) {
         accountNotes = newAccountNotes;
     }
+	/**
+	 * Returns the loginID.
+	 * @return Integer
+	 */
+	public Integer getLoginID() {
+		return loginID;
+	}
+
+	/**
+	 * Sets the loginID.
+	 * @param loginID The loginID to set
+	 */
+	public void setLoginID(Integer loginID) {
+		this.loginID = loginID;
+	}
+
 }

@@ -225,14 +225,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        
 	        com.cannontech.database.db.stars.Substation[] subs =
 	        		com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
-	        Properties entries = new Properties();
+	        ArrayList entries = new ArrayList();
 	        
 	        for (int i = 0; i < subs.length; i++) {
 	        	StarsSelectionListEntry entry = new StarsSelectionListEntry();
 	        	entry.setEntryID( subs[i].getSubstationID().intValue() );
 	        	entry.setContent( subs[i].getSubstationName() );
 	        	
-	        	entries.put( new Integer(entry.getEntryID()), entry );
+	        	entries.add( entry );
 	        }
 	        
 	        subList.setYukonListEntries( entries );
@@ -245,12 +245,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        
 	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
 	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( getEnergyCompanyID() );
-	        entries = new Properties();
+	        entries = new ArrayList();
 	        
 	        for (int i = 0; i < companies.length; i++) {
 	        	StarsSelectionListEntry entry = new StarsSelectionListEntry();
 	        	entry.setEntryID( companies[i].getCompanyID().intValue() );
 	        	entry.setContent( companies[i].getCompanyName() );
+	        	
+	        	entries.add( entry );
 	        }
 	        
 	        companyList.setYukonListEntries( entries );
@@ -268,9 +270,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
 			if (list.getListID() < 0) continue;
 			
-			Iterator it = list.getYukonListEntries().values().iterator();
-			while (it.hasNext()) {
-				YukonListEntry entry = (YukonListEntry) it.next();
+			ArrayList entries = list.getYukonListEntries();
+			for (int j = 0; j < entries.size(); j++) {
+				YukonListEntry entry = (YukonListEntry) entries.get(j);
 				if (entry.getYukonDefID() == yukonDefID)
 					return entry;
 			}
@@ -284,8 +286,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		for (int i = 0; i < selectionLists.size(); i++) {
 			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
 			if (list.getListID() == -1 && list.getListName().equalsIgnoreCase(listName)) {
-				Properties entries = list.getYukonListEntries();
-				return (StarsSelectionListEntry) entries.get( new Integer(entryID) );
+				ArrayList entries = list.getYukonListEntries();
+				
+				for (int j = 0; j < entries.size(); j++) {
+					StarsSelectionListEntry entry = (StarsSelectionListEntry) entries.get(j);
+					if (entry.getEntryID() == entryID)
+						return entry;
+				}
 			}
 		}
 		
@@ -979,9 +986,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        		accountInfo.getServiceRequestHistory().add( orders[i].getOrderID() );
 	        	}
 	        }
-	        
-	        LiteContact primContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact( customerDB.getPrimaryContactID().intValue() );
-	        accountInfo.setLoginID( primContact.getLoginID() );
 
             synchronized (custAcctInfoList) { custAcctInfoList.add( accountInfo ); }
             return accountInfo;

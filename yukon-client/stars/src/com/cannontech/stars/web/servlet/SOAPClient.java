@@ -89,6 +89,11 @@ public class SOAPClient extends HttpServlet {
     	String referer = req.getHeader( "referer" );
         String action = req.getParameter( "action" );
         if (action == null) action = "";
+        
+		if (action.equalsIgnoreCase("RefreshCache")) {
+			if (!serverAtRemote) SOAPServer.refreshCache();
+			resp.sendRedirect( loginURL ); return;
+		}
 
         HttpSession session = req.getSession(false);
         if (session == null && !action.endsWith("Login")) {
@@ -103,7 +108,7 @@ public class SOAPClient extends HttpServlet {
         String errorURL = homeURL;		// URL we should go to if action failed
         
         ActionBase clientAction = null;
-
+		
         if (action.equalsIgnoreCase("OperatorLogin")) {
         	MultiAction actions = new MultiAction();
         	actions.addAction( new LoginAction(), req, session );

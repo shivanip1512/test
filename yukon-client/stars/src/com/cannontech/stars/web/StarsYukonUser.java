@@ -83,8 +83,8 @@ public class StarsYukonUser {
 		}
 		else if (ServerUtils.isResidentialCustomer(this)) {
 			String sql = "SELECT map.EnergyCompanyID, acct.AccountID "
-					   + "FROM CustomerAccount acct, CustomerBase cust, CustomerContact cont, ECToAccountMapping map "
-					   + "WHERE cont.LogInID = " + getYukonUser().getUserID() + " AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
+					   + "FROM CustomerAccount acct, ECToAccountMapping map "
+					   + "WHERE acct.LoginID = " + getYukonUser().getUserID() + " AND acct.AccountID = map.AccountID";
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 					
