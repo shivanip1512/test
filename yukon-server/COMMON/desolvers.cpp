@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/20 21:47:20 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/08/29 16:30:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,6 +200,10 @@ RWCString desolveDeviceType( INT aType )
    {
       Ret = "rtu-ses92";
    }
+   else if(aType == TYPE_DNPRTU)
+   {
+      Ret = "rtu-dnp";
+   }
    else if(aType == TYPE_LCU415)
    {
       Ret = "lcu-415";
@@ -371,6 +375,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPEFISHERPCBC)
    {
       Ret = "cbc fp-2800";
+   }
+   else if(aType == TYPECBC6510)
+   {
+      Ret = "cbc 6510";
    }
    else if(aType == TYPE_TAPTERM)
    {
