@@ -821,10 +821,10 @@ public void updateTypeComboBox_ActionPerformed(java.awt.event.ActionEvent action
 	String val = getUpdateTypeComboBox().getSelectedItem().toString();
 
 	getPeriodicRateLabel().setEnabled(
-		"On Timer".equalsIgnoreCase(val) );
+		"On Timer".equalsIgnoreCase(val) || "On Timer+Change".equalsIgnoreCase(val) );
 		
 	getPeriodicRateComboBox().setEnabled(
-		"On Timer".equalsIgnoreCase(val) );
+		"On Timer".equalsIgnoreCase(val) || "On Timer+Change".equalsIgnoreCase(val) );
 
 	fireInputUpdate();
 
