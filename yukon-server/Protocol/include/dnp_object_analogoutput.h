@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/26 17:27:06 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/01 19:21:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,12 @@ public:
     enum group
     {
         Group = 40
+    };
+
+    enum
+    {
+        //  Analog outputs are offset by this amount when they are returned as normal analogs
+        AnalogOutputOffset = 10000
     };
 
     virtual int restore(unsigned char *buf, int len);
