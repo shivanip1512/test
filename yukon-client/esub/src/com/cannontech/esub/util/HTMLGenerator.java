@@ -28,7 +28,7 @@ public class HTMLGenerator {
 		String height = Integer.toString(d.getMetaElement().getDrawingHeight());
 		
 		w.write(header);
-		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"100%\" height=\"100%\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
+		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"" + width + "\" height=\"" + height + "\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
 		w.write(footer);
 	}
 
