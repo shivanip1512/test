@@ -2171,12 +2171,12 @@ LONG ResetBreakAlloc()
 #ifdef _DEBUG
     long *my_pointer = (long*)new long;
     _CrtIsMemoryBlock(my_pointer, sizeof(long), &allocReqNum, NULL, NULL);
-
     /*
      * Set a breakpoint on the allocation request number for "my_pointer"
      * this should keep us from breaking for at least 2^31 more allocations.
      */
     _CrtSetBreakAlloc(allocReqNum);
+    _crtBreakAlloc = allocReqNum;
     delete my_pointer;
 #endif
 
