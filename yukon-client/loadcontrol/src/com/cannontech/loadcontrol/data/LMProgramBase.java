@@ -36,7 +36,6 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	private Integer stopOrder = null;
 	private Integer defaultPriority = null;
 	private String controlType = null;
-	private String availableSeasons = null;
 	private String availableWeekDays = null;
 	private Integer maxHoursDaily = null;
 	private Integer maxHoursMonthly = null;
@@ -69,14 +68,6 @@ public boolean equals(Object o)
 	return ( (o != null) &&
 			 (o instanceof LMProgramBase) &&
 		     ((LMProgramBase) o).getYukonID().equals(getYukonID()) );
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @return java.lang.String
- */
-public java.lang.String getAvailableSeasons() {
-	return availableSeasons;
 }
 /**
  * Insert the method's description here.
@@ -367,14 +358,6 @@ public java.lang.Integer getYukonType() {
  */
 public int hashCode() {
 	return getYukonID().intValue();
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 10:58:13 AM)
- * @param newAvailableSeasons java.lang.String
- */
-public void setAvailableSeasons(java.lang.String newAvailableSeasons) {
-	availableSeasons = newAvailableSeasons;
 }
 /**
  * Insert the method's description here.

@@ -82,7 +82,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer stopOrder = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer defaultPriority = new Integer( (int)vstr.extractUnsignedInt() );
 	String controlType = (String) vstr.restoreObject( SimpleMappings.CString );
-	String availableSeasons = (String) vstr.restoreObject( SimpleMappings.CString );
 	String availableWeekDays = (String) vstr.restoreObject( SimpleMappings.CString );
 	Integer maxHoursDaily = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer maxHoursMonthly = new Integer( (int)vstr.extractUnsignedInt() );
@@ -112,7 +111,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramBase.setStopOrder(stopOrder);
 	lmProgramBase.setDefaultPriority(defaultPriority);
 	lmProgramBase.setControlType(controlType);
-	lmProgramBase.setAvailableSeasons(availableSeasons);
 	lmProgramBase.setAvailableWeekDays(availableWeekDays);
 	lmProgramBase.setMaxHoursDaily(maxHoursDaily);
 	lmProgramBase.setMaxHoursMonthly(maxHoursMonthly);
