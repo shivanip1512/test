@@ -3,7 +3,7 @@ insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Residential
 insert into YukonRoleProperty values(-1106,-2,'operator_group_name','Web Client Operators','Group name of all the web client operator logins');
 
 /* Web Client Role Properties */
-insert into YukonRoleProperty values(-10806,-108,'log_in_url','(none)','The url of the customized login page. The users will be redirected to this page after they log off.');
+insert into YukonRoleProperty values(-10806,-108,'log_in_url','/login.jsp','The url of the customized login page. The users will be redirected to this page after they log off.');
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 
