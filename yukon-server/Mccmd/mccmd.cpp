@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2003/09/05 18:46:58 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2004/03/11 17:27:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -314,7 +314,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
                     if( lowi != 0 && highi != 0 )
                     {
-  	                CtiLockGuard< CtiLogger > guard(dout);
+                    CtiLockGuard< CtiLogger > guard(dout);
                         dout << RWTime() << " FM_CONFIG_SERIAL_RANGE " << lowi << "-" << highi << endl;
                         gFMConfigSerialLow[index] = lowi;
                         gFMConfigSerialHigh[index] = highi;
@@ -366,7 +366,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
 /* Disconnects from the PIL */
 int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
-{    
+{
     if( MessageThr.isValid() )
         MessageThr.requestCancellation();
 
@@ -438,6 +438,10 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "loop", Loop, NULL, NULL );
     Tcl_CreateCommand( interp, "LOOP", Loop, NULL, NULL );
 
+    Tcl_CreateCommand( interp, "Ping", Loop, NULL, NULL );
+    Tcl_CreateCommand( interp, "ping", Loop, NULL, NULL );
+    Tcl_CreateCommand( interp, "PING", Loop, NULL, NULL );
+
     Tcl_CreateCommand( interp, "Control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "CONTROL", Control, NULL, NULL );
@@ -507,7 +511,7 @@ int Mccmd_Init(Tcl_Interp* interp)
             init_script += temp;
         else
             init_script += "init.tcl";
-	
+
         if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )
         {
             char *eptr;
@@ -551,7 +555,7 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     //copied from default tcl exit handler
     int value;
-    
+
     Tcl_Eval(interp, "pilshutdown");
 
     if( argc != 1 && argc != 2)
@@ -585,7 +589,7 @@ int Command(ClientData clientdata, Tcl_Interp* interp, int argc, char* argv[])
 
     return DoTwoWayRequest(interp, cmd);
 }
-    
+
 int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;
@@ -1009,7 +1013,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                             CtiLockGuard< CtiLogger > guard(dout);
                             dout << RWTime() << " - Will export commands using versacom only " <<endl;
                         }
-                    } 
+                    }
                     else if(RWCString(argv[i]).contains (RWCString ("expresscom"),RWCString::ignoreCase))
                     {
                         protocol = TEXT_CMD_FILE_SPECIFY_EXPRESSCOM;
@@ -1318,7 +1322,7 @@ int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
       Tcl_SetResult(interp, "0", NULL);
       return TCL_OK;
     }
-  
+
   long id = atoi(argv[1]);
   RWCString name;
   GetDeviceName(id,name);
@@ -1327,7 +1331,7 @@ int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
   return TCL_OK;
 }
 
-int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]) 
+int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
   if(argc < 2)
     {
@@ -1343,12 +1347,12 @@ int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 
 int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-  if(argc < 2) 
+  if(argc < 2)
     {
       WriteOutput("Usage: formatError <errorcode>");
       return TCL_OK;
     }
-  
+
   int id = atoi(argv[1]);
   RWCString err_str = FormatError(id);
   Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str,-1);
@@ -1458,7 +1462,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         status = queue_ptr->read(msg, 100);
 
         if( status != RW_THR_TIMEOUT && msg != NULL )
-	  {
+      {
             if( msg->isA() == MSG_PCRETURN )
             {
                 // received a message, reset the timeout
@@ -1474,7 +1478,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             }
             else
             {
-	      delete msg;
+          delete msg;
               RWCString err("Received unknown message __LINE__, __FILE__");
               WriteOutput(err.data());
             }
@@ -1520,7 +1524,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
          m_iter++ )
     {
         GetDeviceName(m_iter->first,dev_name);
-	delete m_iter->second;
+    delete m_iter->second;
         Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name, -1));
     }
 
@@ -1529,11 +1533,11 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
          m_iter++ )
     {
         GetDeviceName(m_iter->first,dev_name);
-	
+
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
-	Tcl_ListObjAppendElement(interp, status_list, 
-				 Tcl_NewIntObj(m_iter->second->Status()));
-	delete m_iter->second;
+    Tcl_ListObjAppendElement(interp, status_list,
+                 Tcl_NewIntObj(m_iter->second->Status()));
+    delete m_iter->second;
     }
 
     // any device id's left in this set must have timed out
@@ -1546,9 +1550,9 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
             GetDeviceName(m_iter->first,dev_name);
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
-	    Tcl_ListObjAppendElement(interp, status_list, 
-				     Tcl_NewIntObj(m_iter->second->Status()));
-       	    delete m_iter->second;
+        Tcl_ListObjAppendElement(interp, status_list,
+                     Tcl_NewIntObj(m_iter->second->Status()));
+            delete m_iter->second;
         }
     }
 
@@ -1566,9 +1570,9 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     Handles the sorting of an incoming message form PIL
 ****/
 void HandleMessage(RWCollectable* msg,
-		   PILReturnMap& good_map,
-		   PILReturnMap& bad_map,
-		   PILReturnMap& device_map )
+           PILReturnMap& good_map,
+           PILReturnMap& bad_map,
+           PILReturnMap& device_map )
 {
     if( msg->isA() == MSG_PCRETURN )
     {
@@ -1592,9 +1596,9 @@ void HandleMessage(RWCollectable* msg,
 }
 
 void HandleReturnMessage(CtiReturnMsg* msg,
-			 PILReturnMap& good_map,
-			 PILReturnMap& bad_map,
-			 PILReturnMap& device_map )
+             PILReturnMap& good_map,
+             PILReturnMap& bad_map,
+             PILReturnMap& device_map )
 {
     long dev_id = msg->DeviceId();
 
@@ -1608,29 +1612,29 @@ void HandleReturnMessage(CtiReturnMsg* msg,
     {
         if( msg->ExpectMore() )
         {
-	  device_map.insert(PILReturnMap::value_type(dev_id, msg));
+      device_map.insert(PILReturnMap::value_type(dev_id, msg));
         }
         else
         {
-	  PILReturnMap::iterator pos;
+      PILReturnMap::iterator pos;
             if( msg->Status() == 0 )
             {
-	        pos = bad_map.find(dev_id);
+            pos = bad_map.find(dev_id);
                 if(pos != bad_map.end())
                 {
                     RWCString warn("moved device from bad list to good list, id: ");
                     warn += CtiNumStr(dev_id);
                     WriteOutput(warn);
-		    delete pos->second;
-		    bad_map.erase(pos);
+            delete pos->second;
+            bad_map.erase(pos);
                 }
 
-		pos = device_map.find(dev_id);
-		if(pos != device_map.end())
-		{
-		  delete pos->second;
-		  device_map.erase(pos);
-		}
+        pos = device_map.find(dev_id);
+        if(pos != device_map.end())
+        {
+          delete pos->second;
+          device_map.erase(pos);
+        }
 
                 if( !good_map.insert(PILReturnMap::value_type(dev_id,msg)).second )
                 {
@@ -1641,12 +1645,12 @@ void HandleReturnMessage(CtiReturnMsg* msg,
             }
             else
             {
-	      pos = device_map.find(dev_id);
-	      if(pos != device_map.end())
-	      {
-		delete pos->second;
-		device_map.erase(pos);
-	      }
+          pos = device_map.find(dev_id);
+          if(pos != device_map.end())
+          {
+        delete pos->second;
+        device_map.erase(pos);
+          }
 
                 if( !bad_map.insert(PILReturnMap::value_type(dev_id,msg)).second)
                 {
@@ -1740,27 +1744,27 @@ static void GetDeviceName(long deviceID, RWCString& name)
     }
 }
 
-static long GetDeviceID(const RWCString& name) 
+static long GetDeviceID(const RWCString& name)
 {
   long id = 0;
-  try 
+  try
     {
       {
-	CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-	RWDBConnection conn = getConnection();
-    
-	RWCString sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
-	sql += name;
-	sql += "'";
-	RWDBReader rdr = ExecuteQuery(conn,sql);
-	if(rdr())
-	  {
-	    rdr >> id;
-	  }
-	else
-	  {
-	    WriteOutput("Unable to retrieve device id __LINE__ __FILE__");
-	  }
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWCString sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
+    sql += name;
+    sql += "'";
+    RWDBReader rdr = ExecuteQuery(conn,sql);
+    if(rdr())
+      {
+        rdr >> id;
+      }
+    else
+      {
+        WriteOutput("Unable to retrieve device id __LINE__ __FILE__");
+      }
       }
     }
   catch(RWExternalErr err)

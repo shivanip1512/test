@@ -290,7 +290,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
             _cmd["command"] = CtiParseValue( cmdstr, PutConfigRequest );
             doParsePutConfig(CmdStr);
         }
-        else if(cmdstr == "loop")
+        else if(cmdstr == "loop" || cmdstr == "ping")  //  so "ping" is just an alias
         {
             _cmd["command"] = CtiParseValue( cmdstr, LoopbackRequest );
             _cmd["count"] = CtiParseValue( 1 );
