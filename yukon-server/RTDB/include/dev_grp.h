@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:36:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/05/23 22:22:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ public:
         CtiPointAnalog *pAnalog = (CtiPointAnalog*)getDevicePointOffsetTypeEqual( CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType );
         if(pAnalog)
         {
-            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), (isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0)) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
+            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pAnalog->getPointID(), pAnalog->computeValueForUOM((isshed == CONTROLLED ? (DOUBLE)(shedtime) : (DOUBLE)(0.0))) , NormalQuality, AnalogPointType, (isshed == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
             pData->setMessagePriority( pData->getMessagePriority() + 1 );
             vgList.insert(pData);
         }
