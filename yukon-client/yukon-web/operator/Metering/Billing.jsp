@@ -122,10 +122,10 @@ function updateDemandDate()
 														</td>
 													</tr>
 												</table>
-												<table width="100%" border="0" cellspacing="0" cellpadding="3" class = "TableCell">
+												<table width="100%" border="0" cellspacing="0" cellpadding="2" class = "TableCell">
 													<tr> 
 														<td width="50%" align = "right">Demand Days Previous:</td>
-														<td width="20%"> 
+														<td width="50%"> 
 															<input type="text" name="dDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "5" onChange="update()">
 														</td>
 <!--														<td id="DEMANDSTART" width="30%" align="left"><%=datePart.format(billingBean.getDemandStartDate())%></td>-->
