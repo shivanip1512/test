@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
@@ -20,6 +21,8 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
+
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * @author yao
@@ -41,6 +44,14 @@ public class ServerUtils {
 	
 	private static final java.text.SimpleDateFormat dateTimeFormat =
 			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+    
+	public static final java.text.SimpleDateFormat starsDateFormat =
+			new java.text.SimpleDateFormat( "yyyyMMdd" );
+	public static final java.text.SimpleDateFormat starsTimeFormat =
+			new java.text.SimpleDateFormat( "HHmm" );
+	
+	// Directory to store all the uploaded files
+	private static final String UPLOAD_PATH = "C:/yukon/upload";
     
 	
     public static void sendCommand(String command)
@@ -301,6 +312,43 @@ public class ServerUtils {
 			fw.println( (String)lines.get(i) );
 		
 		fw.close();
+	}
+	
+	public static String getFormField(List items, String fieldName) {
+		for (int i = 0; i < items.size(); i++) {
+			FileItem item = (FileItem) items.get(i);
+			if (item.isFormField() && item.getFieldName().equals(fieldName))
+				return item.getString();
+		}
+		
+		return null;
+	}
+	
+	public static File getUploadFile(List items, String fieldName) {
+		try {
+			for (int i = 0; i < items.size(); i++) {
+				FileItem item = (FileItem) items.get(i);
+				if (item.isFormField() || !item.getFieldName().equals(fieldName))
+					continue;
+				
+				Date uploadDate = new Date();
+				String uploadFileName = fieldName + "_" + starsDateFormat.format(uploadDate) +
+						"_" + starsTimeFormat.format(uploadDate) + ".csv";
+				
+				File uploadPath = new File(UPLOAD_PATH);
+				if (!uploadPath.exists()) uploadPath.mkdirs();
+				
+				File uploadFile = new File(uploadPath, uploadFileName);
+				item.write( uploadFile );
+				
+				return uploadFile;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }
