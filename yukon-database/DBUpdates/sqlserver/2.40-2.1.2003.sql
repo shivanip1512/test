@@ -214,3 +214,8 @@ alter TABLE YukonRole add RoleDescription VARCHAR(200) not null DEFAULT '(none)'
 go
 insert into YukonRole values(-104,'WEB_OPERATOR','WebClient','(none)', '(none)')
 go
+
+insert into DeviceMeterGroup 
+select paobjectid, 'Default', 'Default', paoname, 'Default' from YukonPAObject
+where type like '%ion%'
+go
