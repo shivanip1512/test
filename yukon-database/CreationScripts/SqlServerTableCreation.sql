@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     10/29/2002 9:58:56 AM                        */
+/* Created on:     10/29/2002 10:13:34 AM                       */
 /*==============================================================*/
 
 
@@ -1793,7 +1793,7 @@ insert into CTIDatabase values('2.11', 'Ryan', '12-APR-2002', 'Added the LMDirec
 
 insert into CTIDatabase values('2.12', 'Ryan', '15-MAY-2002', 'Added some new UOM, modified DyanmicLMControlArea and added BillingsFormat table');
 
-insert into CTIDatabase values('2.13', 'Ryan', '6-JUN-2002', 'Added CustomerLoginSerialGroup table and data for the telegyr interface, added PAOStatistics Table & ExpressCommm Support');
+insert into CTIDatabase values('2.13', 'Ryan', '6-JUN-2002', 'Added CustomerLoginSerialGroup table and data for the telegyr interface, added PAOStatistics Table and ExpressCommm Support');
 
 insert into CTIDatabase values('2.14', 'Ryan', '20-JUN-2002', 'Added PAOStatistics to YukonPAObject, dropped a PK from DyanmicPAOStatistics and Display2WayData');
 
@@ -1807,6 +1807,7 @@ insert into CTIDatabase values('2.33', 'Ryan', '29-AUG-2002', 'Added some column
 
 insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofile defaults, add column to DynamicPointDispatch, added a row to BillingFileFormats');
 
+insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
