@@ -132,7 +132,7 @@
                                 <div align="right">Receive Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= datePart.format(hardware.getReceiveDate()) %>">
+                                <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= CommonUtils.getDateFormat(hardware.getReceiveDate(), datePart) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -140,7 +140,7 @@
                                 <div align="right">Remove Date: </div>
                               </td>
                               <td width="200"> 
-                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= datePart.format(hardware.getRemoveDate()) %>">
+                                <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= CommonUtils.getDateFormat(hardware.getRemoveDate(), datePart) %>">
                               </td>
                             </tr>
                             <tr> 
@@ -224,7 +224,7 @@
                                   <div align="right">Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= datePart.format(hardware.getInstallDate()) %>">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= CommonUtils.getDateFormat(hardware.getInstallDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 

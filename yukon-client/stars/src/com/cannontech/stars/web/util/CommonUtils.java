@@ -43,6 +43,8 @@ public class CommonUtils {
 	public static final String TRANSIENT_ATT_LEADING = "$$";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
+    
+    private static GregorianCalendar veryEarlyDate = new GregorianCalendar(1970, Calendar.JANUARY, 2);
 
     public CommonUtils() {
     }
@@ -110,5 +112,14 @@ public class CommonUtils {
     	ProgramHistory[] progHists = new ProgramHistory[ progHistMap.size() ];
     	progHistMap.values().toArray( progHists );
     	return progHists;
+    }
+    
+    public static String getDateFormat(Date date, java.text.SimpleDateFormat format) {
+    	GregorianCalendar cal = new GregorianCalendar();
+    	cal.setTime( date );
+    	if (cal.before( veryEarlyDate ))	// Too early date means the date should be empty
+    		return "";
+    		
+    	return format.format( date );
     }
 }

@@ -173,7 +173,7 @@ public class StarsCustAccountInfoFactory {
                     starsHW.setInstallationCompany( hardware.getInstallationCompany().getCompanyName() );
                     starsHW.setReceiveDate( hardware.getInventoryBase().getReceiveDate() );
                     starsHW.setInstallDate( hardware.getInventoryBase().getInstallDate() );
-                    starsHW.setRemoveDate( hardware.getInventoryBase().getReceiveDate() );
+                    starsHW.setRemoveDate( hardware.getInventoryBase().getRemoveDate() );
                     if (hardware.getInventoryBase().getAlternateTrackingNumber() != null)
                         starsHW.setAltTrackingNumber( hardware.getInventoryBase().getAlternateTrackingNumber() );
                     else
