@@ -926,7 +926,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 				if( prevUserID != returnMsg.getUserMessageID())
 				{
 					//textColor = java.awt.Color.black;
-					debugOutput = "\n["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} Return from \'" + returnMsg.getCommandString() + "\'\n";
+					debugOutput = "\n["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  PAOFuncs.getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'\n";					
 					message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
 					setChanged();
 					this.notifyObservers(message);
