@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/15 14:07:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/12/12 14:43:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -572,6 +572,7 @@ Which should work well for any CCU hooked to one of these spread sprectum radios
 IDLCSetDelaySets (CtiDevice *Dev)
 {
     bool filefound = false;
+    bool devfound = false;
     USHORT Index;
     OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -623,6 +624,7 @@ IDLCSetDelaySets (CtiDevice *Dev)
 
             if(MyPort == Dev->getPortID() && MyRemote == Dev->getAddress())
             {
+                devfound = true;
                 break;
             }
         }
@@ -640,138 +642,141 @@ IDLCSetDelaySets (CtiDevice *Dev)
         }
     }
 
-    /* If we get here we got one */
-    if(PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
+    if(devfound)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " " << Dev->getName() << " (" << Dev->getPortID() << "," << Dev->getAddress() << ") timings being set to: " << endl;
-        dout << " T_RTSOn    " << T_RTSOn << endl;
-        dout << " T_CTSTo    " << T_CTSTo << endl;
-        dout << " T_KeyOff   " << T_KeyOff << endl;
-        dout << " T_IntraTo  " << T_IntraTo << endl;
-        dout << " BA_Trig    " << BA_Trig << endl;
-    }
+        /* If we get here we got one */
+        if(PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << " " << Dev->getName() << " (" << Dev->getPortID() << "," << Dev->getAddress() << ") timings being set to: " << endl;
+            dout << " T_RTSOn    " << T_RTSOn << endl;
+            dout << " T_CTSTo    " << T_CTSTo << endl;
+            dout << " T_KeyOff   " << T_KeyOff << endl;
+            dout << " T_IntraTo  " << T_IntraTo << endl;
+            dout << " BA_Trig    " << BA_Trig << endl;
+        }
 
-    /* Allocate some memory */
-    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-    {
-        printf ("Error Allocating Memory\n");
-        return(MEMORY);
-    }
+        /* Allocate some memory */
+        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
+        {
+            printf ("Error Allocating Memory\n");
+            return(MEMORY);
+        }
 
-    /* Load up the queue structure */
-    OutMessage->DeviceID      = Dev->getID();
-    OutMessage->Port          = Dev->getPortID();
-    OutMessage->Remote        = Dev->getAddress();
-    OutMessage->TimeOut       = TIMEOUT;
-    OutMessage->Retry         = 1;
-    OutMessage->InLength      = 0;
-    OutMessage->Source        = 0;
-    OutMessage->Destination   = DEST_BASE;
-    OutMessage->Command       = CMND_WMEMS;
-    OutMessage->Sequence      = 0;
-    OutMessage->Priority      = MAXPRIORITY;
-    OutMessage->EventCode     = NOWAIT | NORESULT | ENCODED | RCONT;
-    OutMessage->ReturnNexus = NULL;
-    OutMessage->SaveNexus = NULL;
+        /* Load up the queue structure */
+        OutMessage->DeviceID      = Dev->getID();
+        OutMessage->Port          = Dev->getPortID();
+        OutMessage->Remote        = Dev->getAddress();
+        OutMessage->TimeOut       = TIMEOUT;
+        OutMessage->Retry         = 1;
+        OutMessage->InLength      = 0;
+        OutMessage->Source        = 0;
+        OutMessage->Destination   = DEST_BASE;
+        OutMessage->Command       = CMND_WMEMS;
+        OutMessage->Sequence      = 0;
+        OutMessage->Priority      = MAXPRIORITY;
+        OutMessage->EventCode     = NOWAIT | NORESULT | ENCODED | RCONT;
+        OutMessage->ReturnNexus = NULL;
+        OutMessage->SaveNexus = NULL;
 
-    Index = PREIDL;
+        Index = PREIDL;
 
-    /* Load Values */
-    OutMessage->Buffer.OutMessage[Index++] = 4;
+        /* Load Values */
+        OutMessage->Buffer.OutMessage[Index++] = 4;
 
-    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1010);
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1010);
+        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1010);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1010);
 
-    T_RTSOn /= 8;
+        T_RTSOn /= 8;
 
-    if(T_RTSOn < 1)
-    {
-        T_RTSOn = 1;
-    }
-    else if(T_RTSOn > 255)
-    {
-        T_RTSOn = 255;
-    }
+        if(T_RTSOn < 1)
+        {
+            T_RTSOn = 1;
+        }
+        else if(T_RTSOn > 255)
+        {
+            T_RTSOn = 255;
+        }
 
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_RTSOn);
-
-
-    OutMessage->Buffer.OutMessage[Index++] = 4;
-
-    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1011);
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1011);
-
-    T_CTSTo /= 8;
-
-    if(T_CTSTo < 21)
-    {
-        T_CTSTo = 21;
-    }
-    else if(T_CTSTo > 255)
-    {
-        T_CTSTo = 255;
-    }
-
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_CTSTo);
-
-    OutMessage->Buffer.OutMessage[Index++] = 4;
-
-    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1012);
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1012);
-
-    T_KeyOff /= 8;
-
-    if(T_KeyOff > 20)
-    {
-        T_KeyOff = 20;
-    }
-
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_KeyOff);
-
-    OutMessage->Buffer.OutMessage[Index++] = 4;
-
-    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1013);
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1013);
-
-    T_IntraTo /= 8;
-
-    if(T_IntraTo < 31)
-    {
-        T_IntraTo = 31;
-    }
-    else if(T_IntraTo > 255)
-    {
-        T_IntraTo = 255;
-    }
-
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_IntraTo);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_RTSOn);
 
 
-    OutMessage->Buffer.OutMessage[Index++] = 5;
+        OutMessage->Buffer.OutMessage[Index++] = 4;
 
-    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1100);
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1100);
+        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1011);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1011);
 
-    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (BA_Trig);
-    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (BA_Trig);
+        T_CTSTo /= 8;
 
-    /* Last SETL */
-    OutMessage->Buffer.OutMessage[Index++] = 0;
+        if(T_CTSTo < 21)
+        {
+            T_CTSTo = 21;
+        }
+        else if(T_CTSTo > 255)
+        {
+            T_CTSTo = 255;
+        }
 
-    /* Thats it so send the message */
-    OutMessage->OutLength = Index - PREIDL + 2;
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_CTSTo);
 
-    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-    {
-        printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-        delete (OutMessage);
-        return(QUEUE_WRITE);
-    }
-    else
-    {
-        p711Info->PortQueueEnts++;
-        p711Info->PortQueueConts++;
+        OutMessage->Buffer.OutMessage[Index++] = 4;
+
+        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1012);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1012);
+
+        T_KeyOff /= 8;
+
+        if(T_KeyOff > 20)
+        {
+            T_KeyOff = 20;
+        }
+
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_KeyOff);
+
+        OutMessage->Buffer.OutMessage[Index++] = 4;
+
+        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1013);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1013);
+
+        T_IntraTo /= 8;
+
+        if(T_IntraTo < 31)
+        {
+            T_IntraTo = 31;
+        }
+        else if(T_IntraTo > 255)
+        {
+            T_IntraTo = 255;
+        }
+
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (T_IntraTo);
+
+
+        OutMessage->Buffer.OutMessage[Index++] = 5;
+
+        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1100);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1100);
+
+        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (BA_Trig);
+        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (BA_Trig);
+
+        /* Last SETL */
+        OutMessage->Buffer.OutMessage[Index++] = 0;
+
+        /* Thats it so send the message */
+        OutMessage->OutLength = Index - PREIDL + 2;
+
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        {
+            printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+            delete (OutMessage);
+            return(QUEUE_WRITE);
+        }
+        else
+        {
+            p711Info->PortQueueEnts++;
+            p711Info->PortQueueConts++;
+        }
     }
 
     return(NORMAL);
