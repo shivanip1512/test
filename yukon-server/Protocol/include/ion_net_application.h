@@ -110,7 +110,7 @@ public:
     CtiIONApplicationLayer( );
     ~CtiIONApplicationLayer( );
 
-    void setAddresses( unsigned short srcID, unsigned short dstID );
+    void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
     void setToTimeSync( void );
     void setToOutput( const CtiIONSerializable &payload );

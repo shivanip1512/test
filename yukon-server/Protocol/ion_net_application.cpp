@@ -36,9 +36,9 @@ CtiIONApplicationLayer::~CtiIONApplicationLayer( )
 }
 
 
-void CtiIONApplicationLayer::setAddresses( unsigned short srcID, unsigned short dstID )
+void CtiIONApplicationLayer::setAddresses( unsigned short masterAddress, unsigned short slaveAddress )
 {
-    _networkLayer.setAddresses(srcID, dstID);
+    _networkLayer.setAddresses(masterAddress, slaveAddress);
 }
 
 
@@ -167,6 +167,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 
     if( _networkLayer.errorCondition() )
     {
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint -- _networkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
