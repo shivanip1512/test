@@ -7,26 +7,28 @@ public class Command extends com.cannontech.message.util.Message
 {
 	//Operations that Van Gogh recognizes
 	public static final int NO_OP = 0;		//Same as LOOP_CLIENT
-	public static final int SHUTDOWN = 1;  //Shuts down Van Gogh! careful
-	public static final int CLIENT_APP_SHUTDOWN = 2;  //We are going away
-	public static final int NEW_CLIENT = 3;	//Client App has been connected by Connection Handler
-	public static final int LOOP_CLIENT = 4;  //Send a mesage back to client
-	public static final int TRACE_ROUTE = 5; //Prints a blurb out in each place it is encountered.
-	public static final int ARE_YOU_THERE = 6;
-	public static final int ACKNOWLEGDE_ALARM = 7;
-	public static final int CLEAR_ALARM = 8;
-	public static final int TOKEN_GRANT = 9;
-	public static final int REREGISTRATION_REQUEST = 10;	
-	public static final int DEVICE_SCAN_FAILED = 11;
-	public static final int CONTROL_REQUEST = 12;
-	public static final int ABLEMENT_TOGGLE = 13;
-	public static final int COMM_STATUS =14; // Vector contains token, deviceid,status (communication result in porter, 0 = NORMAL).
-	public static final int ALTERNATE_SCAN_RATE = 15;
-	public static final int CONTROL_ABLEMENT = 16;
-	public static final int RESET_CNTRL_HOURS = 17; //Resets the Seasonal control history hours to zero
+	public static final int SHUTDOWN = 10;  //Shuts down Van Gogh! careful
+	public static final int CLIENT_APP_SHUTDOWN = 20;  //We are going away
+	public static final int NEW_CLIENT = 30;	//Client App has been connected by Connection Handler
+	public static final int LOOP_CLIENT = 40;  //Send a mesage back to client
+	public static final int TRACE_ROUTE = 50; //Prints a blurb out in each place it is encountered.
+	public static final int ARE_YOU_THERE = 60;
+	public static final int ACKNOWLEGDE_ALARM = 70;
+	public static final int CLEAR_ALARM = 80;
+	public static final int TOKEN_GRANT = 90;
+	public static final int REREGISTRATION_REQUEST = 100;	
+	public static final int DEVICE_SCAN_FAILED = 110;
+	public static final int CONTROL_REQUEST = 120;
+	public static final int ABLEMENT_TOGGLE = 130;
+	public static final int COMM_STATUS = 140; // Vector contains token, deviceid,status (communication result in porter, 0 = NORMAL).
+	public static final int ALTERNATE_SCAN_RATE = 150;
+	public static final int CONTROL_ABLEMENT = 160;
+    public static final int POINT_TAG_ADJUST = 170;  //vector (token, pointID, tagsToSet[], tagsToReset[])
+    public static final int PORTER_CONSOLE_INPUT = 180; //vector (token, operation)
+	public static final int RESET_CNTRL_HOURS = 190; //Resets the Seasonal control history hours to zero
 	
 	
-	public static final int LAST_COMMAND = 18; //Always increment this value when adding any new commands
+	private static final int LAST_COMMAND = 10000; //Make this big
 
 
 	// ABLEMTENT_TOGGLE used variables
