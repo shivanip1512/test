@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/13 16:45:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/23 21:29:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ public:
                             LONG             month   = 0,
                             LONG             season  = 0,
                             LONG             annual  = 0,
-                            const RWCString& restore = RWCString(' '),
+                            const RWCString& restore = RWCString('N'),
                             DOUBLE           reduce  = 0.0,
                             LONG             lmchid  = 0L);
 
