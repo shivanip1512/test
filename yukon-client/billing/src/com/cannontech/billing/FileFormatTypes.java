@@ -21,7 +21,7 @@ public final class FileFormatTypes {
 	public static final int DAFFRON = 6;
 	public static final int NCDC = 7;
 //	public static final int CADPXL1 = 8;
-//	public static final int CTIStandard2 = 9;
+	public static final int CTIStandard2 = 9;
 //	public static final int MVRS = 10;
 	public static final int MV_90 = 11;
 	public static final int SEDC_5_4 = 12;
@@ -38,6 +38,7 @@ public final class FileFormatTypes {
 	public static final String OPU_STRING = "OPU";
 	public static final String DAFFRON_STRING = "DAFFRON";
 	public static final String NCDC_STRING = "NCDC";
+	public static final String CTI_STANDARD2_STRING = "CTI2";
 	public static final String SEDC_5_4_STRING = "SEDC 5.4";
 	public static final String NISC_STRING = "NISC-Turtle";
 	public static final String NISC_NCDC_STRING = "NISC-NCDC";
@@ -53,7 +54,8 @@ public final class FileFormatTypes {
 		CTICSV, 
 		OPU, 
 		DAFFRON, 
-		NCDC, 
+		NCDC,
+		CTIStandard2, 
 		SEDC_5_4,
 		NISC,
 		NISC_NCDC,
@@ -70,6 +72,7 @@ public final class FileFormatTypes {
 		OPU_STRING, 
 		DAFFRON_STRING, 
 		NCDC_STRING, 
+		CTI_STANDARD2_STRING,
 		SEDC_5_4_STRING,
 		NISC_STRING,
 		NISC_NCDC_STRING,

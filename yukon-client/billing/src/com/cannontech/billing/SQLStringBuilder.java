@@ -46,6 +46,8 @@ public class SQLStringBuilder
 	public static final String DMG_DEVICEID = "DEVICEMETERGROUP.DEVICEID";
 	public static final String DMG_METERNUMBER = "DEVICEMETERGROUP.METERNUMBER";
 	
+	public static final String DCS_ADDRESS = "DEVICECARRIERSETTINGS.ADDRESS";
+	
 //	public static final String DSR_INTERVALRATE = "DEVICESCANRATE.INTERVALRATE";
 
 	// COLUMNS THAT MAY BE USED AS BILLING GROUPINGS.
@@ -63,6 +65,7 @@ public class SQLStringBuilder
 	boolean device_from = false;
 	boolean pointUnit_from = false;
 	boolean unitMeasure_from = false;
+	boolean deviceCarrierSettings_from = false;
 	
 	public SQLStringBuilder()
 	{
@@ -103,6 +106,10 @@ public class SQLStringBuilder
 			{
 				unitMeasure_from = true;
 			}
+			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.device.DeviceCarrierSettings.TABLE_NAME))
+			{
+				deviceCarrierSettings_from = true;
+			}
 //			else if( tables[i].equalsIgnoreCase(com.cannontech.database.db.device.DeviceScanRate.TABLE_NAME))
 //			{
 //				deviceScanRate_from = true;
@@ -129,6 +136,10 @@ public class SQLStringBuilder
 		if( yukonPAObjectTable_from && deviceMeterGroup_from)
 		{
 			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
+		}
+		if( yukonPAObjectTable_from && deviceCarrierSettings_from)
+		{
+			whereClauses.add(new String(" POINT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
 		}
 //		if ( yukonPAObjectTable_from && deviceScanRate_from)
 //		{
