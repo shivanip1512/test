@@ -51,33 +51,24 @@
 
 package com.cannontech.jfreechart.chart;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.DrawableLegendItem;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.Legend;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
-import org.jfree.chart.Spacer;
 import org.jfree.chart.StandardLegend;
-import org.jfree.chart.event.LegendChangeEvent;
-import org.jfree.io.SerialUtilities;
-import org.jfree.util.ObjectUtils;
+import org.jfree.chart.entity.EntityCollection;
+import org.jfree.chart.entity.LegendItemEntity;
 
 /**
  * A chart legend shows the names and visual representations of the series
@@ -122,9 +113,10 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
      *
      * @return the remaining available drawing area.
      */
-    protected Rectangle2D draw(Graphics2D g2, Rectangle2D available,
-                               boolean horizontal, boolean inverted) {
-
+	protected Rectangle2D draw(Graphics2D g2, Rectangle2D available,
+								  boolean horizontal, boolean inverted,
+								  ChartRenderingInfo info) {
+								  	
         LegendItemCollection legendItems = getChart().getPlot().getLegendItems();
 
         if ((legendItems != null) && (legendItems.getItemCount() > 0)) {
@@ -276,7 +268,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
             g2.setStroke(getOutlineStroke());
             g2.draw(legendArea);
 
-/*            g2.setPaint(getBackgroundPaint());
+/*
+            g2.setPaint(getBackgroundPaint());
             g2.fill(legendArea_2);
             g2.setPaint(getOutlinePaint());
             g2.setStroke(getOutlineStroke());
@@ -293,6 +286,10 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
                               (float) legendTitle.getLabelPosition().getY());
             }
 
+			EntityCollection entities = null;
+			if( info != null){
+				entities = info.getEntityCollection();
+			}
             // Draw individual series elements
             for (int i = 0; i < items.length; i++) {
                 g2.setPaint(items[i].getItem().getPaint());
@@ -308,6 +305,16 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
                 g2.drawString(items[i].getItem().getLabel(),
                               (float) items[i].getLabelPosition().getX(),
                               (float) items[i].getLabelPosition().getY());
+                              
+                if (entities != null) {
+                	Rectangle2D area = new Rectangle2D.Double(translation.getX() + items[i].getX(),
+                	                                          translation.getY() + items[i].getY(),
+                	                                          items[i].getWidth(),
+                	                                          items[i].getHeight());
+                	LegendItemEntity entity = new LegendItemEntity(area);
+                	entity.setSeriesIndex(i);
+                	entities.addEntity(entity);
+                }
             }
 
             // translate the origin back to what it was prior to drawing the legend
@@ -393,7 +400,11 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
         xloc = (float) (x + innerGap + 0.15f * lineHeight);
         yloc = (float) (y + innerGap + 0.15f * lineHeight);
 
-        if (getDisplaySeriesShapes()) {
+		if (false)
+		{	
+		//FALSE FOR NOW AS WE DON't DO THIS YET...  
+		//Must change but wanted to be able to compile with a realeased version jfreechart0.9.8.jar
+//        if (getDisplaySeriesShapes()) {
             Shape marker = legendItem.getShape();
             AffineTransform transformer = AffineTransform.getTranslateInstance(xloc + boxDim / 2, 
                                                                                yloc + boxDim / 2);
@@ -413,4 +424,5 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
         return item;
 
     }
+    
 }

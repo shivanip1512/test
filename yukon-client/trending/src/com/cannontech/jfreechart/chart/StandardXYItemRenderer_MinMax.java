@@ -14,14 +14,14 @@ import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.CrosshairInfo;
-import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.StandardXYItemRenderer;
-import org.jfree.chart.tooltips.StandardXYToolTipGenerator;
-import org.jfree.chart.tooltips.XYToolTipGenerator;
 import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.XYDataset;
+import org.jfree.ui.RectangleEdge;
 
 /**
  * Shapes rendered for MIN/MAX valuse on a Standard item renderer for an XYPlot.
@@ -30,7 +30,7 @@ import org.jfree.data.XYDataset;
  */
 public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
 {
-	public Dataset_MinMaxValues [][] minMaxValues = null;
+	public Dataset_MinMaxValues[] minMaxValues = null;
 	private boolean plotMinMaxValues = true;
 
     /**
@@ -97,31 +97,32 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          ValueAxis domainAxis,
                          ValueAxis rangeAxis,
                          XYDataset dataset,
-                         int datasetIndex,
                          int series,
                          int item,
                          CrosshairInfo crosshairInfo,
                          int pass)
 	{
-		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, dataset, datasetIndex, series, item, crosshairInfo, pass);
+		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairInfo, pass);
 		// get the data point...
 		Number x1n = dataset.getXValue(series, item);
 		Number y1n = dataset.getYValue(series, item);
 		if (y1n != null)
 		{
-			AxisLocation domainAxisLocation = plot.getDomainAxisLocation();
-			AxisLocation rangeAxisLocation = plot.getRangeAxisLocation();
-			
+//			AxisLocation domainAxisLocation = plot.getDomainAxisLocation();
+//			AxisLocation rangeAxisLocation = plot.getRangeAxisLocation();
+			final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
+			final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
+
 		    double x1 = x1n.doubleValue();
 		    double y1 = y1n.doubleValue();
-		    double transX1 = domainAxis.translateValueToJava2D(x1, dataArea, domainAxisLocation);
-		    double transY1 = rangeAxis.translateValueToJava2D(y1, dataArea, rangeAxisLocation);
-		
+		    double transX1 = domainAxis.translateValueToJava2D(x1, dataArea, xAxisLocation);
+		    double transY1 = rangeAxis.translateValueToJava2D(y1, dataArea, yAxisLocation);
+	
 			if( this.plotMinMaxValues)
 			{  
-				if (minMaxValues != null && (y1 == minMaxValues[datasetIndex][series].getMaximumValue() || y1 == minMaxValues[datasetIndex][series].getMinimumValue()))
+				if (minMaxValues != null && (y1 == minMaxValues[series].getMaximumValue() || y1 == minMaxValues[series].getMinimumValue()))
 				{
-					Shape shape = getItemShape(datasetIndex, series, item);
+					Shape shape = getItemShape(pass, series);
 					shape = createTransformedShape(shape, transX1, transY1);
 					g2.fill(shape);
 				}
