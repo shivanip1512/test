@@ -36,6 +36,7 @@ import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
+import com.cannontech.debug.gui.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.DBEditorRole;
 
@@ -613,7 +614,7 @@ public void displayDatabaseEditor(javax.swing.JRootPane rPane) {
 private void executeAboutButton_ActionPerformed( ActionEvent event )
 {
 	java.awt.Frame f = getParentFrame();
-	AboutDBEditor aboutDialog = new AboutDBEditor( f, "About DBEditor", true );
+	AboutDialog aboutDialog = new AboutDialog( f, "About DBEditor", true );
 
 	aboutDialog.setLocationRelativeTo( f );
 	aboutDialog.setValue(null);
