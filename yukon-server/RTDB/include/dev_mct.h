@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/06/30 22:37:33 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/08/11 20:12:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,15 +18,9 @@
 #define __DEV_MCT_H__
 #pragma warning( disable : 4786)
 
-
 #include "dev_carrier.h"
 #include "pt_numeric.h"
 
-
-#define MCT_DEMANDINTERVAL_DEFAULT     300    //  5 minute default demand, if not specified in the database...
-
-#define MAXPULSECOUNT 10000000
-#define MAX_MCTMAGIC 35       // Any number > 32..
 
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
 {
@@ -60,15 +54,17 @@ protected:
         MCT_GroupAddrInhibit = 0x53,
         MCT_GroupAddrEnable  = 0x54,
 
-        MCT_Rollover         = 100000,  //  5 digits
-
         MCT_Restore          = 0x00,
         MCT_Shed_Base_07m    = 0x00,
         MCT_Shed_Base_15m    = 0x10,
         MCT_Shed_Base_30m    = 0x20,
         MCT_Shed_Base_60m    = 0x30,
 
-        MCT_LPInt_Func       = 0x70
+        MCT_LPInt_Func       = 0x70,
+
+        MCT_Rollover              = 100000,   //  5 digits
+        MCT_DemandIntervalDefault = 300,      //  5 minute default demand, if not specified in the database...
+        MCT_MaxPulseCount         = 10000000
     };
 
 private:

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/07/17 22:25:55 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/08/11 20:13:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -881,7 +881,7 @@ void CtiDeviceMCT310::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Da
             result[i] = (result[i] << 8) + Data[j];
         }
 
-        if(result[i] > MAXPULSECOUNT)
+        if(result[i] > MCT_MaxPulseCount)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
