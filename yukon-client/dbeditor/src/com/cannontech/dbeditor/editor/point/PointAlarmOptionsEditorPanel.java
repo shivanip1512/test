@@ -373,6 +373,8 @@ private javax.swing.JComboBox getJComboBoxContact() {
 
 			refillContactComboBox();
 			
+			ivjJComboBoxContact.setToolTipText("Will use the first email for this contact");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -602,25 +604,8 @@ public Object getValue(Object val)
 
 	// get the selected contact from its combo box
 	LiteContact contact = (LiteContact)getJComboBoxContact().getSelectedItem();
-	Integer recID_ = new Integer(CtiUtilities.NONE_ID);
-
-	if( contact != null )
-	{
-		//find the first email address in the list ContactNotifications...then use it
-		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
-		{	
-			LiteContactNotification ltCntNotif = 
-					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
-					
-			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL )
-			{
-				recID_ = new Integer(ltCntNotif.getContactNotifID());
-				break;
-			}
-		}
-	}
-	point.getPointAlarming().setRecipientID( recID_ );
 	
+	point.getPointAlarming().setRecipientID( new Integer( findEmailContact(contact) ) );
 	
 
 	// get the selected notificationGroup from its combo box and insert its id
@@ -859,6 +844,32 @@ public void newContactButton_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 }
 
+/**
+ * Looks the first email notificatoin type in the list passed in.  Returns a NONE_ID if
+ * no email type is found.
+ * @param contact
+ * @return int
+ */
+private int findEmailContact( LiteContact contact )
+{
+	if( contact != null )
+	{
+		//find the first email address in the list ContactNotifications...then use it
+		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
+		{	
+			LiteContactNotification ltCntNotif = 
+					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
+						
+			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL )
+			{
+				return ltCntNotif.getContactNotifID();
+			}
+		}
+	}
+
+	//no email notif found
+	return CtiUtilities.NONE_ID;
+}
 
 /**
  * Insert the method's description here.
@@ -876,11 +887,16 @@ private void refillContactComboBox()
 		List contacts = cache.getAllContacts();
 		for( int i = 0; i < contacts.size(); i++ )
 		{
-			getJComboBoxContact().addItem( 
-				(LiteContact)contacts.get(i) );
+			LiteContact contact = (LiteContact)contacts.get(i);
+			
+			//be sure we have an Email notif for this contact
+			if( findEmailContact(contact) != CtiUtilities.NONE_ID )
+				getJComboBoxContact().addItem( contact );
 		}
 	}
 
+
+	
 }
 
 
