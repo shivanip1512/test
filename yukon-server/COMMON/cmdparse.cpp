@@ -1211,6 +1211,11 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
     {
         INT type = getiValue("type");
 
+        if(CmdStr.contains(" timesync"))
+        {
+            _cmd["timesync"] = CtiParseValue("TRUE");
+        }
+
         switch( type )
         {
         case ProtocolVersacomType:              // For putconfig, we may not know who we are talking to.  Decode for both.
@@ -1450,10 +1455,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 //  multiplier
                 _cmd["multiplier"] = CtiParseValue( atof( cmdtok().data() ) );
             }
-        }
-        if(!(CmdStr.match("time")).isNull())
-        {
-            _cmd["timesync"] = CtiParseValue("TRUE");
         }
         if(!(CmdStr.match("interval")).isNull())
         {
