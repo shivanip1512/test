@@ -56,7 +56,7 @@ public class ECUtils {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -83,7 +83,7 @@ public class ECUtils {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	

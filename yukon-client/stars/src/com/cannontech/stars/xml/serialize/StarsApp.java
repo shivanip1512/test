@@ -60,7 +60,12 @@ public abstract class StarsApp implements java.io.Serializable {
     **/
     private boolean _has_lmProgramID;
 
-    private java.lang.String _yearManufactured;
+    private int _yearManufactured;
+
+    /**
+     * keeps track of state for field: _yearManufactured
+    **/
+    private boolean _has_yearManufactured;
 
     private Manufacturer _manufacturer;
 
@@ -157,6 +162,13 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         this._has_lmProgramID= false;
     } //-- void deleteLmProgramID() 
+
+    /**
+    **/
+    public void deleteYearManufactured()
+    {
+        this._has_yearManufactured= false;
+    } //-- void deleteYearManufactured() 
 
     /**
      * Returns the value of field 'airConditioner'.
@@ -353,10 +365,10 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @return the value of field 'yearManufactured'.
     **/
-    public java.lang.String getYearManufactured()
+    public int getYearManufactured()
     {
         return this._yearManufactured;
-    } //-- java.lang.String getYearManufactured() 
+    } //-- int getYearManufactured() 
 
     /**
     **/
@@ -399,6 +411,13 @@ public abstract class StarsApp implements java.io.Serializable {
     {
         return this._has_lmProgramID;
     } //-- boolean hasLmProgramID() 
+
+    /**
+    **/
+    public boolean hasYearManufactured()
+    {
+        return this._has_yearManufactured;
+    } //-- boolean hasYearManufactured() 
 
     /**
     **/
@@ -631,10 +650,11 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @param yearManufactured the value of field 'yearManufactured'
     **/
-    public void setYearManufactured(java.lang.String yearManufactured)
+    public void setYearManufactured(int yearManufactured)
     {
         this._yearManufactured = yearManufactured;
-    } //-- void setYearManufactured(java.lang.String) 
+        this._has_yearManufactured = true;
+    } //-- void setYearManufactured(int) 
 
     /**
     **/

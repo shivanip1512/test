@@ -364,7 +364,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		

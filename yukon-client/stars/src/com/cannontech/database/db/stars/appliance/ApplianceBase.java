@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.appliance;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
@@ -131,16 +132,14 @@ public class ApplianceBase extends DBPersistent {
 				nextApplianceID = rset.getInt(1) + 1;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
 				if( rset != null ) rset.close();
 				if (pstmt != null) pstmt.close();
 			}
-			catch (java.sql.SQLException e2) {
-				e2.printStackTrace();
-			}
+			catch (java.sql.SQLException e2) {}
 		}
 
 		return new Integer( nextApplianceID );
@@ -162,7 +161,7 @@ public class ApplianceBase extends DBPersistent {
 			return accountIDs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
     	
 		return null;
@@ -184,7 +183,7 @@ public class ApplianceBase extends DBPersistent {
 			return appIDs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
     	
 		return null;
@@ -205,7 +204,7 @@ public class ApplianceBase extends DBPersistent {
 			return accountIDs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
     	
 		return null;
@@ -226,7 +225,7 @@ public class ApplianceBase extends DBPersistent {
 			return appIDs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
     	
 		return null;

@@ -1158,11 +1158,12 @@ public class ImportManager extends HttpServlet {
 		else
 			app.setApplianceCategoryID( getApplianceCategoryID(energyCompany, fields[IDX_APP_TYPE]) );
 		
-		app.setYearManufactured( fields[IDX_YEAR_MADE] );
 		app.setNotes( fields[IDX_APP_NOTES] );
 		app.setModelNumber( "" );
 		app.setEfficiencyRating( -1 );
 		
+		if (fields[IDX_YEAR_MADE].length() > 0)
+			app.setYearManufactured( Integer.parseInt(fields[IDX_YEAR_MADE]) );
 		if (fields[IDX_APP_KW].length() > 0) {
 			int kwCap = (int) Double.parseDouble(fields[IDX_APP_KW]);
 			if (kwCap >= 0) app.setKWCapacity( kwCap );
@@ -1564,7 +1565,7 @@ public class ImportManager extends HttpServlet {
 				redirect = ServerUtils.getFormField( items, ServletUtils.ATT_REDIRECT );
 			}
 			catch (FileUploadException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to parse the form data");
 			}
 		}
@@ -1629,7 +1630,7 @@ public class ImportManager extends HttpServlet {
 			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 		}
 		catch (WebClientException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 			redirect = referer;
 		}
@@ -1756,11 +1757,11 @@ public class ImportManager extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, msg);
 		}
 		catch (WebClientException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import INI file(s)");
 		}
 	}
@@ -3095,14 +3096,14 @@ public class ImportManager extends HttpServlet {
 			}
 		}
 		catch (WebClientException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			String errorMsg = e.getMessage();
 			if (lineNo > 0) errorMsg += ": line #" + lineNo;
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
 			redirect = referer;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to preprocess old STARS data");
 			redirect = referer;
 		}
@@ -3188,7 +3189,7 @@ public class ImportManager extends HttpServlet {
 				redirect = referer;
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to assign import values to selection list");
 				redirect = referer;
 			}

@@ -76,7 +76,7 @@ public class CallReportBase extends DBPersistent {
 	    	}
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     }
     

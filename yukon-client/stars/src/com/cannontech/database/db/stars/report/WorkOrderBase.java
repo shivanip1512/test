@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.report;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
@@ -114,16 +115,14 @@ public class WorkOrderBase extends DBPersistent {
                 nextOrderID = rset.getInt(1) + 1;
         }
         catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
 				if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
+            catch (java.sql.SQLException e2) {}
         }
 
         return new Integer( nextOrderID );
@@ -157,7 +156,7 @@ public class WorkOrderBase extends DBPersistent {
 			return orderIDs;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
@@ -194,7 +193,7 @@ public class WorkOrderBase extends DBPersistent {
 			return orderIDs;
     	}
     	catch (java.sql.SQLException e) {
-    		e.printStackTrace();
+    		CTILogger.error( e.getMessage(), e );
     	}
     	finally {
     		try {

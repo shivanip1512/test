@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -84,7 +85,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( operation );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
@@ -139,36 +140,24 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-					String errorMsg = (invIDs.length == 1)?
-							"The thermostat is currently out of service, manual option is not sent." :
-							"The thermostat \"" + liteHw.getDeviceLabel() + "\" is currently out of service, manual option is not sent.";
+					String errorMsg = ServerUtils.isOperator(user) ?
+							((invIDs.length == 1)?
+								"The thermostat is currently out of service" :
+								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service") :
+							"Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					
-					if (ServerUtils.isOperator( user )) {
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
-					}
-					else {
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg + " Please refer to the \"Contact us\" page if you want to get more information.") );
-					}
-					
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					if (ServerUtils.isOperator( user )) {
-						String errorMsg = (invIDs.length == 1)?
-								"The serial # of the thermostat cannot be empty, manual option is not sent." :
-								"The serial # of thermostat \"" + liteHw.getDeviceLabel() + "\" is empty, manual option is not sent.";
-						
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
-					}
-					else {
-						respOper.setStarsFailure( StarsFactory.newStarsFailure(
-								StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send manual option to the thermostat. Please refer to the \"Contact us\" page if you want to get more information.") );
-					}
+					String errorMsg = ServerUtils.isOperator(user) ?
+							"The serial # of the thermostat cannot be empty." :
+							"Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					
+					respOper.setStarsFailure( StarsFactory.newStarsFailure(
+							StarsConstants.FAILURE_CODE_OPERATION_FAILED, errorMsg) );
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
@@ -192,9 +181,12 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				}
 				cmd.append(" serial ").append(liteHw.getManufacturerSerialNumber());
 				
+				int routeID = liteHw.getRouteID();
+				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
+				
 				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 				synchronized (yc) {
-					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					yc.setRouteID( routeID );
 					yc.setCommand( cmd.toString() );
 					yc.handleSerialNumber();
 				}
@@ -266,7 +258,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -274,7 +266,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
-            	e2.printStackTrace();
+            	CTILogger.error( e2.getMessage(), e2 );
             }
         }
 
@@ -335,7 +327,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             return 0;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
         
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;

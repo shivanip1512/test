@@ -247,7 +247,7 @@ public class ServerUtils {
 				return lns;
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				CTILogger.error("Failed to read file \"" + file.getPath() + "\"");
 			}
 			finally {
@@ -344,7 +344,7 @@ public class ServerUtils {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			return null;
 		}
 		

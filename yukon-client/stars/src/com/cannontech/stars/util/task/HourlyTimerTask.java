@@ -3,6 +3,7 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -85,16 +86,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 				
 				try {
 					// Send out "opt out"/"reenable" command
-					String[] commands = dueEvents[j].getCommand().split(",");
-					
-					com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-					synchronized (yc) {
-						yc.setRouteID( company.getDefaultRouteID() );
-						for (int k = 0; k < commands.length; k++) {
-							yc.setCommand( commands[k] );
-							yc.handleSerialNumber();
-						}
-					}
+					OptOutEventQueue.sendOptOutCommands( dueEvents[j].getCommand(), company.getDefaultRouteID() );
 					
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
 						StarsProgramReenable reEnable = new StarsProgramReenable();
@@ -116,19 +108,13 @@ public class HourlyTimerTask extends StarsTimerTask {
 						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
 						e.setAccountID( dueEvents[j].getAccountID() );
 		            	
-						commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, company );
-						StringBuffer cmd = new StringBuffer();
-						if (commands.length > 0) {
-							cmd.append( commands[0] );
-							for (int k = 1; k < commands.length; k++)
-								cmd.append( "," ).append( commands[k] );
-						}
-						e.setCommand( cmd.toString() );
+						Hashtable commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, company );
+						e.setCommand( OptOutEventQueue.getOptOutEventCommand(commands) );
 						company.getOptOutEventQueue().addEvent( e, false );
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				}
 			}
 			

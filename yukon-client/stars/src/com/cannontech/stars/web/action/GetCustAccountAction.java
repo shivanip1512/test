@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -52,7 +53,7 @@ public class GetCustAccountAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( operation );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
@@ -137,7 +138,7 @@ public class GetCustAccountAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -145,7 +146,7 @@ public class GetCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
-            	e2.printStackTrace();
+            	CTILogger.error( e2.getMessage(), e2 );
             }
         }
 
@@ -177,7 +178,7 @@ public class GetCustAccountAction implements ActionBase {
             return 0;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;

@@ -492,7 +492,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					errorMsg += " after " + position + " is processed";
 			}
 			else {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				status = STATUS_ERROR;
 				
 				stackTrace = new ArrayList();

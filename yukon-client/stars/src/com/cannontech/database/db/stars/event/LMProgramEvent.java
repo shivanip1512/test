@@ -82,7 +82,7 @@ public class LMProgramEvent extends DBPersistent {
 			return eventIDs;
         }
         catch (Exception e) {
-        	e.printStackTrace();
+        	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
         
         return null;
@@ -103,7 +103,7 @@ public class LMProgramEvent extends DBPersistent {
 			return eventIDs;
         }
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
         
 		return null;
@@ -127,7 +127,7 @@ public class LMProgramEvent extends DBPersistent {
 			return eventIDs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
         
 		return null;

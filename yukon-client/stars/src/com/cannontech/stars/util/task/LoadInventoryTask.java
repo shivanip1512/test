@@ -102,7 +102,7 @@ public class LoadInventoryTask implements TimeConsumingTask {
 			CTILogger.info( "All inventory loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			status = STATUS_ERROR;
 			
 			if (e instanceof WebClientException)

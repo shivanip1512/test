@@ -82,7 +82,7 @@ public class ECToGenericMapping extends DBPersistent {
 			return items;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -111,7 +111,7 @@ public class ECToGenericMapping extends DBPersistent {
 			return items;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;

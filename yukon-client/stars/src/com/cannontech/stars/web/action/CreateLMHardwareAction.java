@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -85,7 +86,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 
@@ -140,7 +141,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -148,7 +149,7 @@ public class CreateLMHardwareAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
         
@@ -171,7 +172,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
@@ -270,7 +271,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			return seasons;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			conn.rollback();
 			throw e;
 		}
@@ -305,20 +306,24 @@ public class CreateLMHardwareAction implements ActionBase {
 			if (liteAcctInfo != null)
 				invDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
 			
+			com.cannontech.database.data.stars.hardware.LMHardwareBase hw = null;
+			if (createHw.getLMHardware() != null) {
+				hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				hw.setInventoryBase( invDB );
+				
+				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+				hwDB.setManufacturerSerialNumber( createHw.getLMHardware().getManufacturerSerialNumber() );
+				hwDB.setLMHardwareTypeID( new Integer(createHw.getDeviceType().getEntryID()) );
+				hwDB.setRouteID( new Integer(createHw.getLMHardware().getRouteID()) );
+			}
+			
 			LiteInventoryBase liteInv = null;
 			int invID = createHw.getInventoryID();
 			
 			if (invID == -1) {
 				// Create new hardware
 				if (createHw.getLMHardware() != null) {
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
-					
-					hwDB.setManufacturerSerialNumber( createHw.getLMHardware().getManufacturerSerialNumber() );
-					hwDB.setLMHardwareTypeID( new Integer(createHw.getDeviceType().getEntryID()) );
-					hw.setInventoryBase( invDB );
 					hw.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					
 					hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
 							Transaction.createTransaction( Transaction.INSERT, hw ).execute();
 					
@@ -366,11 +371,20 @@ public class CreateLMHardwareAction implements ActionBase {
 						DeleteLMHardwareAction.parseResponse( invID, starsPrevAccount );
 				}
             	
-				invDB.setInventoryID( new Integer(invID) );
-				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
-				
-				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+            	if (createHw.getLMHardware() != null && liteInv instanceof LiteStarsLMHardware) {
+					hw.setInventoryID( new Integer(invID) );
+					hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+							Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
+            		
+            		StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hw );
+            	}
+            	else {
+					invDB.setInventoryID( new Integer(invID) );
+					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+					
+					StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+            	}
 			}
 			
 			if (liteAcctInfo != null) {
@@ -484,7 +498,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			return liteInv;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			throw new WebClientException( "Failed to create the hardware" );
 		}
 	}

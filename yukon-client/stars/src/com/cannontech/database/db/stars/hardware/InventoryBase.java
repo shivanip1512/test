@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.hardware;
 
 import java.util.Date;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
@@ -136,16 +137,14 @@ public class InventoryBase extends DBPersistent {
 				nextInventoryID = rset.getInt(1) + 1;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
 				if (rset != null) rset.close();
 				if (pstmt != null) pstmt.close();
 			}
-			catch (java.sql.SQLException e2) {
-				e2.printStackTrace();
-			}
+			catch (java.sql.SQLException e2) {}
 		}
 
 		return new Integer( nextInventoryID );
@@ -174,7 +173,7 @@ public class InventoryBase extends DBPersistent {
 			return invIDs;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
@@ -220,7 +219,7 @@ public class InventoryBase extends DBPersistent {
 			return invIDs;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
@@ -274,7 +273,7 @@ public class InventoryBase extends DBPersistent {
 			}
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {

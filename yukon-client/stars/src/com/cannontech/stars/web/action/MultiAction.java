@@ -63,7 +63,7 @@ public class MultiAction implements ActionBase {
 			return reqMsg;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to build request message" );
 		}
 		
@@ -98,7 +98,7 @@ public class MultiAction implements ActionBase {
 			return respMsg;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -118,7 +118,7 @@ public class MultiAction implements ActionBase {
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
         
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;

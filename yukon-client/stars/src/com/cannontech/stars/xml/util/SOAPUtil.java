@@ -220,7 +220,7 @@ public class SOAPUtil {
 	    	CTILogger.debug( leading + sw.toString() );
     	}
     	catch (Exception e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     }
     

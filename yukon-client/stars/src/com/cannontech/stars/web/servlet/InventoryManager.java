@@ -457,11 +457,11 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		catch (WebClientException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update hardware information");
 		}
 	}
@@ -485,7 +485,7 @@ public class InventoryManager extends HttpServlet {
 				energyCompany.deleteInventory( invID );
 			}
 			catch (TransactionException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		else {
@@ -851,7 +851,7 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Batched switch commands sent out successfully");
 		}
 		catch (WebClientException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 	}
@@ -950,7 +950,7 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr != null && recvDateStr.length() > 0) {
 			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, tz);
 			if (recvDate == null)
-				throw new WebClientException("Invalid date format '" + recvDateStr + "', the date should be in the form of 'mm/dd/yy'");
+				throw new WebClientException("Invalid receive date format '" + recvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setReceiveDate( recvDate );
 		}
 		
@@ -958,7 +958,7 @@ public class InventoryManager extends HttpServlet {
 		if (instDateStr != null && instDateStr.length() > 0) {
 			Date instDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(instDateStr, tz);
 			if (instDate == null)
-				throw new WebClientException("Invalid date format '" + instDateStr + "', the date should be in the form of 'mm/dd/yy'");
+				throw new WebClientException("Invalid install date format '" + instDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setInstallDate( instDate );
 		}
 		
@@ -966,7 +966,7 @@ public class InventoryManager extends HttpServlet {
 		if (remvDateStr != null && remvDateStr.length() > 0) {
 			Date remvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(remvDateStr, tz);
 			if (remvDate == null)
-				throw new WebClientException("Invalid date format '" + remvDateStr + "', the date should be in the form of 'mm/dd/yy'");
+				throw new WebClientException("Invalid remove date format '" + remvDateStr + "', the date should be in the form of 'mm/dd/yy'");
 			starsInv.setRemoveDate( remvDate );
 		}
 		
@@ -992,6 +992,8 @@ public class InventoryManager extends HttpServlet {
 		if (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) {
 			LMHardware hw = new LMHardware();
 			hw.setManufacturerSerialNumber( req.getParameter("SerialNo") );
+			if (req.getParameter("Route") != null)
+				hw.setRouteID( Integer.parseInt(req.getParameter("Route")) );
 			starsInv.setLMHardware( hw );
 		}
 	}

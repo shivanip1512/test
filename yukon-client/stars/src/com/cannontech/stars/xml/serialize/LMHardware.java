@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardware.java,v 1.11 2004/05/04 17:46:08 zyao Exp $
+ * $Id: LMHardware.java,v 1.12 2004/05/10 22:13:27 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2004/05/04 17:46:08 $
+ * @version $Revision: 1.12 $ $Date: 2004/05/10 22:13:27 $
 **/
 public class LMHardware implements java.io.Serializable {
 
@@ -33,6 +33,13 @@ public class LMHardware implements java.io.Serializable {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    private int _routeID;
+
+    /**
+     * keeps track of state for field: _routeID
+    **/
+    private boolean _has_routeID;
 
     private java.lang.String _manufacturerSerialNumber;
 
@@ -80,6 +87,13 @@ public class LMHardware implements java.io.Serializable {
 
     /**
     **/
+    public void deleteRouteID()
+    {
+        this._has_routeID= false;
+    } //-- void deleteRouteID() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateStarsLMHardwareConfig()
     {
         return _starsLMHardwareConfigList.elements();
@@ -94,6 +108,16 @@ public class LMHardware implements java.io.Serializable {
     {
         return this._manufacturerSerialNumber;
     } //-- java.lang.String getManufacturerSerialNumber() 
+
+    /**
+     * Returns the value of field 'routeID'.
+     * 
+     * @return the value of field 'routeID'.
+    **/
+    public int getRouteID()
+    {
+        return this._routeID;
+    } //-- int getRouteID() 
 
     /**
      * 
@@ -139,6 +163,13 @@ public class LMHardware implements java.io.Serializable {
     {
         return this._starsThermostatSettings;
     } //-- StarsThermostatSettings getStarsThermostatSettings() 
+
+    /**
+    **/
+    public boolean hasRouteID()
+    {
+        return this._has_routeID;
+    } //-- boolean hasRouteID() 
 
     /**
     **/
@@ -206,6 +237,17 @@ public class LMHardware implements java.io.Serializable {
     {
         this._manufacturerSerialNumber = manufacturerSerialNumber;
     } //-- void setManufacturerSerialNumber(java.lang.String) 
+
+    /**
+     * Sets the value of field 'routeID'.
+     * 
+     * @param routeID the value of field 'routeID'.
+    **/
+    public void setRouteID(int routeID)
+    {
+        this._routeID = routeID;
+        this._has_routeID = true;
+    } //-- void setRouteID(int) 
 
     /**
      * 

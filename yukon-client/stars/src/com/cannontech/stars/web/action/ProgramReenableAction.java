@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
@@ -68,7 +69,7 @@ public class ProgramReenableAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( operation );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
@@ -105,16 +106,8 @@ public class ProgramReenableAction implements ActionBase {
             StarsProgramReenable reenable = reqOper.getStarsProgramReenable();
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 			
-			String[] commands = getReenableCommands( liteAcctInfo, energyCompany );
-			
-			com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-			synchronized (yc) {
-				yc.setRouteID( energyCompany.getDefaultRouteID() );
-				for (int i = 0; i < commands.length; i++) {
-					yc.setCommand( commands[i] );
-					yc.handleSerialNumber();
-				}
-			}
+			Hashtable commands = getReenableCommands( liteAcctInfo, energyCompany );
+			ProgramOptOutAction.sendOptOutCommands( commands, energyCompany.getDefaultRouteID() );
         	
         	// Send out reenable notification
         	SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
@@ -124,9 +117,9 @@ public class ProgramReenableAction implements ActionBase {
 			OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
 			queue.removeEvents( liteAcctInfo.getCustomerAccount().getAccountID() );
 			
-			String desc = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command has been sent out successfully";
+			String desc = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command sent out successfully.";
 			if (e1 != null)
-				desc += ", a scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event is canceled";
+				desc += " A scheduled " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event is canceled.";
 			
 			resp = processReenable( liteAcctInfo, energyCompany );
 			resp.setDescription( desc );
@@ -139,7 +132,7 @@ public class ProgramReenableAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -147,7 +140,7 @@ public class ProgramReenableAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
-            	e2.printStackTrace();
+            	CTILogger.error( e2.getMessage(), e2 );
             }
         }
 
@@ -210,48 +203,45 @@ public class ProgramReenableAction implements ActionBase {
             return 0;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	/**
-	 * Return the list of hardware IDs to be reenabled
-	 */
-	private static ArrayList getHardwareIDs(LiteStarsCustAccountInformation liteAcctInfo) {
-        ArrayList hwIDList = new ArrayList();
-        for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-        	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-        	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-        		LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-        		if (appliance.getLmProgramID() == program.getLmProgram().getProgramID()) {
-        			if (appliance.getInventoryID() > 0) {
-	        			Integer hardwareID = new Integer( appliance.getInventoryID() );
-	        			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
-        			}
-        			break;
-        		}
-        	}
-        }
-        
-        return hwIDList;
+	private static ArrayList getReenableHardwareIDs(LiteStarsCustAccountInformation liteAcctInfo) {
+		ArrayList hwIDList = new ArrayList();
+		
+		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+			LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			if (appliance.getLmProgramID() > 0 && appliance.getInventoryID() > 0) {
+				Integer invID = new Integer( appliance.getInventoryID() );
+				if (!hwIDList.contains( invID )) hwIDList.add( invID );
+			}
+		}
+		
+		return hwIDList;
 	}
 	
-	public static String[] getReenableCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	/**
+	 * Returns a map of all the hardwares to be enabled and the corresponding reenable commands
+	 * @return HashMap(LiteStarsLMHardware, String)
+	 */
+	public static Hashtable getReenableCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 	throws Exception {
-        ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
-		String[] commands = new String[ hwIDList.size() ];
-
-        for (int i = 0; i < hwIDList.size(); i++) {
-        	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
-        	
-    		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
-    			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
-
-            commands[i] = "putconfig service in temp serial " + liteHw.getManufacturerSerialNumber();
-        }
+		ArrayList hwIDList = getReenableHardwareIDs( liteAcctInfo );
+		Hashtable commands = new Hashtable();
+		
+		for (int i = 0; i < hwIDList.size(); i++) {
+			int invID = ((Integer) hwIDList.get(i)).intValue();
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+			
+			if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
+				throw new Exception( "The serial # of the hardware cannot be empty" );
+			
+			String cmd = "putconfig service in temp serial " + liteHw.getManufacturerSerialNumber();
+			commands.put( liteHw, cmd );
+		}
         
         return commands;
 	}
@@ -270,7 +260,7 @@ public class ProgramReenableAction implements ActionBase {
         Date now = new Date();	// Current date, all customer events will use exactly the same date
         
 		// Add "Activation Completed" to hardware events
-        ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
+        ArrayList hwIDList = getReenableHardwareIDs( liteAcctInfo );
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
@@ -349,7 +339,7 @@ public class ProgramReenableAction implements ActionBase {
 			resp = processReenable( liteAcctInfo, energyCompany );
 		}
 		catch (com.cannontech.database.TransactionException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			return;
 		}
 		

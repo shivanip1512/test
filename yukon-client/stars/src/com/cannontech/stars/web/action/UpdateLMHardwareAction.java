@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
@@ -83,7 +84,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 
@@ -178,6 +179,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				else {
 					com.cannontech.database.db.stars.hardware.InventoryBase invDB =
 							new com.cannontech.database.db.stars.hardware.InventoryBase();
+					StarsLiteFactory.setInventoryBase( invDB, liteInv );
 					invDB.setDeviceLabel( updateHw.getDeviceLabel() );
 					
 					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
@@ -198,7 +200,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -206,7 +208,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
         
@@ -230,7 +232,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
@@ -288,6 +290,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				StarsLiteFactory.setLMHardwareBase( hw, liteHw );
 				
 				hw.getLMHardwareBase().setManufacturerSerialNumber( serialNo );
+				hw.getLMHardwareBase().setRouteID( new Integer(updateHw.getLMHardware().getRouteID()) );
 				StarsFactory.setInventoryBase( hw.getInventoryBase(), updateHw );
 				
 				hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
@@ -332,7 +335,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			}
 		}
 		catch (TransactionException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			throw new WebClientException( "Failed to update the hardware information" );
 		}
 	}

@@ -146,12 +146,12 @@ public class SendControlOddsTask implements Runnable {
 						emailMsg.send();
 					}
 					catch (Exception e) {
-						e.printStackTrace();
+						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 					}
 				}
 			}
 			catch (com.cannontech.common.util.CommandExecutionException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 				

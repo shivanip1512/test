@@ -143,7 +143,7 @@ public class SOAPClient extends HttpServlet {
 			return StarsOperation.unmarshal( sr );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;

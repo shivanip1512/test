@@ -30,12 +30,15 @@ public class SendConfigCommandTask implements Runnable {
 	 */
 	public void run() {
 		CTILogger.info( "*** Start SendConfigCommand task ***" );
+        
+        int routeID = liteHw.getRouteID();
+        if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 		
-        String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
+		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
         
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
-			yc.setRouteID( energyCompany.getDefaultRouteID() );
+			yc.setRouteID( routeID );
 			yc.setCommand( cmd );
 			yc.handleSerialNumber();
 		}
@@ -54,12 +57,12 @@ public class SendConfigCommandTask implements Runnable {
             cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
             
             synchronized (yc) {
-				yc.setRouteID( energyCompany.getDefaultRouteID() );
+				yc.setRouteID( routeID );
 				yc.setCommand( cmd );
 				yc.handleSerialNumber();
             }
 		}
-				
+		
 		CTILogger.info( "*** End SendConfigCommand task ***" );
 	}
 

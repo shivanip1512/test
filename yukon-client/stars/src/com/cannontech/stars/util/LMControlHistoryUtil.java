@@ -101,7 +101,7 @@ public class LMControlHistoryUtil {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
@@ -110,7 +110,7 @@ public class LMControlHistoryUtil {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                e.printStackTrace();
+                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
             }
         }
 
@@ -159,7 +159,7 @@ public class LMControlHistoryUtil {
 			return ctrlHists;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -207,7 +207,7 @@ public class LMControlHistoryUtil {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
@@ -216,7 +216,7 @@ public class LMControlHistoryUtil {
                 if (conn != null) conn.close();
             }
             catch (Exception e) {
-                e.printStackTrace();
+                com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
             }
         }
 

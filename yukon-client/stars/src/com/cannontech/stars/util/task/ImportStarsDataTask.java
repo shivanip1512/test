@@ -608,7 +608,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			}
 			else {
 				status = STATUS_ERROR;
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				
 				stackTrace = new ArrayList();
 				stackTrace.add( "\t" + e.toString() );

@@ -58,7 +58,7 @@ public class SOAPMessenger {
             CTILogger.debug("SOAPMessenger: " + str + msgStr);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
     }
 
@@ -107,7 +107,7 @@ public class SOAPMessenger {
             System.out.println( "Header: " + SOAPUtil.parseSOAPHeader(msg) );
             System.out.println( "Body: " + SOAPUtil.parseSOAPBody(msg) );
         } catch (Exception e) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
@@ -128,7 +130,7 @@ public class ProgramOptOutAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( operation );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
         }
 
@@ -185,14 +187,8 @@ public class ProgramOptOutAction implements ActionBase {
             	event.setPeriod( optOut.getPeriod() );
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
-				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, optOut.getPeriod() * 24 );
-            	StringBuffer cmd = new StringBuffer();
-            	if (commands.length > 0) {
-            		cmd.append( commands[0] );
-            		for (int i = 1; i < commands.length; i++)
-            			cmd.append( "," ).append( commands[i] );
-            	}
-            	event.setCommand( cmd.toString() );
+				Hashtable commands = getOptOutCommands( liteAcctInfo, energyCompany, optOut.getPeriod() * 24 );
+            	event.setCommand( OptOutEventQueue.getOptOutEventCommand(commands) );
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
 				StarsLMProgramHistory starsProgHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo.getProgramHistory() );
@@ -207,16 +203,8 @@ public class ProgramOptOutAction implements ActionBase {
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
             	int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
-				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
-			
-				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-				synchronized (yc) {
-					yc.setRouteID( energyCompany.getDefaultRouteID() );
-					for (int i = 0; i < commands.length; i++) {
-						yc.setCommand( commands[i] );
-						yc.handleSerialNumber();
-					}
-				}
+				Hashtable commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
+				sendOptOutCommands( commands, energyCompany.getDefaultRouteID() );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
             	event.setEnergyCompanyID( energyCompanyID );
@@ -225,13 +213,7 @@ public class ProgramOptOutAction implements ActionBase {
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
 				commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, energyCompany );
-            	StringBuffer cmd = new StringBuffer();
-            	if (commands.length > 0) {
-            		cmd.append( commands[0] );
-            		for (int i = 1; i < commands.length; i++)
-            			cmd.append( "," ).append( commands[i] );
-            	}
-            	event.setCommand( cmd.toString() );
+				event.setCommand( OptOutEventQueue.getOptOutEventCommand(commands) );
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
@@ -254,16 +236,8 @@ public class ProgramOptOutAction implements ActionBase {
 				
 				if (e1 == null && e2 != null) {
 					int offHours = (int) ((e2.getStartDateTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
-					String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
-					
-					com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-					synchronized (yc) {
-						yc.setRouteID( energyCompany.getDefaultRouteID() );
-						for (int i = 0; i < commands.length; i++) {
-							yc.setCommand( commands[i] );
-							yc.handleSerialNumber();
-						}
-					}
+					Hashtable commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
+					sendOptOutCommands( commands, energyCompany.getDefaultRouteID() );
 					
 					resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent" );
 				}
@@ -275,16 +249,8 @@ public class ProgramOptOutAction implements ActionBase {
             }
             else {
             	// Send opt out commands immediately, and store the reenable command in memory
-				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, optOut.getPeriod() * 24 );
-				
-				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-				synchronized (yc) {
-					yc.setRouteID( energyCompany.getDefaultRouteID() );
-					for (int i = 0; i < commands.length; i++) {
-						yc.setCommand( commands[i] );
-						yc.handleSerialNumber();
-					}
-				}
+				Hashtable commands = getOptOutCommands( liteAcctInfo, energyCompany, optOut.getPeriod() * 24 );
+				sendOptOutCommands( commands, energyCompany.getDefaultRouteID() );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
             	event.setEnergyCompanyID( energyCompanyID );
@@ -295,13 +261,7 @@ public class ProgramOptOutAction implements ActionBase {
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
 				commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, energyCompany );
-            	StringBuffer cmd = new StringBuffer();
-            	if (commands.length > 0) {
-            		cmd.append( commands[0] );
-            		for (int i = 1; i < commands.length; i++)
-            			cmd.append( "," ).append( commands[i] );
-            	}
-            	event.setCommand( cmd.toString() );
+				event.setCommand( OptOutEventQueue.getOptOutEventCommand(commands) );
             	energyCompany.getOptOutEventQueue().addEvent( event );
             	
             	resp = processOptOut( liteAcctInfo, energyCompany, optOut );
@@ -324,7 +284,7 @@ public class ProgramOptOutAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -332,7 +292,7 @@ public class ProgramOptOutAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
-            	e2.printStackTrace();
+            	CTILogger.error( e2.getMessage(), e2 );
             }
         }
 
@@ -399,55 +359,65 @@ public class ProgramOptOutAction implements ActionBase {
             return 0;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	/**
-	 * Return the list of hardware IDs to be disabled
-	 */
-	private static ArrayList getHardwareIDs(LiteStarsCustAccountInformation liteAcctInfo) {
-        ArrayList hwIDList = new ArrayList();
-        
-        for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-        	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-        	
-        	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-        		LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-        		
-        		if (appliance.getLmProgramID() == program.getLmProgram().getProgramID()) {
-        			if (appliance.getInventoryID() > 0) {
-	        			Integer hardwareID = new Integer( appliance.getInventoryID() );
-	        			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
-        			}
-        			
-        			break;
-        		}
-        	}
-        }
-        
-        return hwIDList;
+	private static ArrayList getOptOutHardwareIDs(LiteStarsCustAccountInformation liteAcctInfo) {
+		ArrayList hwIDList = new ArrayList();
+		
+		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+			LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			if (appliance.getLmProgramID() > 0 && appliance.getInventoryID() > 0) {
+				Integer invID = new Integer( appliance.getInventoryID() );
+				if (!hwIDList.contains( invID )) hwIDList.add( invID );
+			}
+		}
+		
+		return hwIDList;
 	}
 	
-	private static String[] getOptOutCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, int offHours)
+	/**
+	 * Returns a map of all the hardwares to be disabled and the corresponding opt out commands
+	 * @return HashMap(LiteStarsLMHardware, String)
+	 */
+	private Hashtable getOptOutCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, int offHours)
 	throws Exception {
-        ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
-		String[] commands = new String[ hwIDList.size() ];
-
-        for (int i = 0; i < hwIDList.size(); i++) {
-        	Integer invID = (Integer) hwIDList.get(i);
-        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID.intValue(), true );
-        	
-    		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
-    			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
+		ArrayList hwIDList = getOptOutHardwareIDs( liteAcctInfo );
+		Hashtable commands = new Hashtable();
+		
+		for (int i = 0; i < hwIDList.size(); i++) {
+			int invID = ((Integer) hwIDList.get(i)).intValue();
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+			
+			if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
+				throw new Exception( "The serial # of the hardware cannot be empty" );
             
-            commands[i] = "putconfig serial " + liteHw.getManufacturerSerialNumber() +
-            			" service out temp offhours " + String.valueOf(offHours);
-        }
+			String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() +
+						" service out temp offhours " + String.valueOf(offHours);
+			commands.put( liteHw, cmd );
+		}
         
         return commands;
+	}
+	
+	public static void sendOptOutCommands(Hashtable commands, int dftRouteID) {
+		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		synchronized (yc) {
+			Iterator it = commands.keySet().iterator();
+			while (it.hasNext()) {
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) it.next();
+				String cmd = (String) commands.get( liteHw );
+				
+				int routeID = liteHw.getRouteID();
+				if (routeID == 0) routeID = dftRouteID;
+				yc.setRouteID( routeID );
+				yc.setCommand( cmd );
+				yc.handleSerialNumber();
+			}
+		}
 	}
 	
 	/**
@@ -484,7 +454,7 @@ public class ProgramOptOutAction implements ActionBase {
 		}
 		
 		// Add "Temp Opt Out" to hardware events
-		ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
+		ArrayList hwIDList = getOptOutHardwareIDs( liteAcctInfo );
 		
 		for (int i = 0; i < hwIDList.size(); i++) {
 			Integer invID = (Integer) hwIDList.get(i);
@@ -734,7 +704,7 @@ public class ProgramOptOutAction implements ActionBase {
 			resp = processOptOut( liteAcctInfo, energyCompany, optOut );
 		}
 		catch (com.cannontech.database.TransactionException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			return;
 		}
 		

@@ -149,7 +149,7 @@ public class CustomerResidence extends DBPersistent {
 			return custRes;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;

@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.hardware;
 
 import java.sql.SQLException;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -51,16 +52,14 @@ public class LMThermostatSeasonEntry extends DBPersistent {
                 nextEntryID = rset.getInt(1) + 1;
         }
         catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
                 if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
+            catch (java.sql.SQLException e2) {}
         }
 
         return new Integer( nextEntryID );
@@ -139,7 +138,7 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 			return entries;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -154,7 +153,7 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 			stmt.execute();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -168,7 +167,7 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 			stmt.execute();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 

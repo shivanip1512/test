@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.customer;
 
 import java.util.ArrayList;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.db.DBPersistent;
 
@@ -67,7 +68,7 @@ public class CustomerAccount extends DBPersistent {
 			return accountIDs;
         }
         catch( Exception e ) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
 		finally {
 			try {
@@ -101,7 +102,7 @@ public class CustomerAccount extends DBPersistent {
 			return accountIDs;
     	}
     	catch (Exception e) {
-    		e.printStackTrace();
+    		CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;
@@ -133,7 +134,7 @@ public class CustomerAccount extends DBPersistent {
 			return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
@@ -170,7 +171,7 @@ public class CustomerAccount extends DBPersistent {
 	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
@@ -213,7 +214,7 @@ public class CustomerAccount extends DBPersistent {
 			return accountIDs;
     	}
     	catch (java.sql.SQLException e) {
-    		e.printStackTrace();
+    		CTILogger.error( e.getMessage(), e );
     	}
     	finally {
     		try {
@@ -251,7 +252,7 @@ public class CustomerAccount extends DBPersistent {
         }
         catch( Exception e )
         {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
 
         return null;
@@ -279,7 +280,7 @@ public class CustomerAccount extends DBPersistent {
 	        return searchByPrimaryContactIDs( contactIDs, energyCompanyID.intValue() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -344,16 +345,14 @@ public class CustomerAccount extends DBPersistent {
                 nextAccountID = rset.getInt(1) + 1;
         }
         catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
                 if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
+            catch (java.sql.SQLException e2) {}
         }
 
         return new Integer( nextAccountID );

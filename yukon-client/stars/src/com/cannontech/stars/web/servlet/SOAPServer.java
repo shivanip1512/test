@@ -114,7 +114,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
 
@@ -144,7 +144,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			connToDispatch.connectWithoutWait();
 		}
 		catch ( Exception e ) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
     
@@ -242,14 +242,14 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			    }
     		}
     		catch (Exception e) {
-    			e.printStackTrace();
+    			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     		}
     		finally {
     			try {
     				if (conn != null) conn.close();
     			}
     			catch (Exception e2) {
-    				e2.printStackTrace();
+    				CTILogger.error( e2.getMessage(), e2 );
     			}
     		}
 	    	

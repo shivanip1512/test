@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
@@ -73,7 +74,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 
@@ -120,7 +121,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -128,7 +129,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
 		
@@ -151,7 +152,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
@@ -300,7 +301,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			throw new WebClientException( "Failed to remove the hardware" );
 		}
 	}

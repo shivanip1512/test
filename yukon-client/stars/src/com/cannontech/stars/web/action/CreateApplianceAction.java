@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
@@ -30,6 +31,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -98,14 +100,30 @@ public class CreateApplianceAction implements ActionBase {
 
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
 			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("AppCatID")) );
-			newApp.setYearManufactured( req.getParameter("ManuYear") );
 			newApp.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			newApp.setModelNumber( req.getParameter("ModelNo") );
 			
-			if (req.getParameter("KWCapacity").length() > 0)
-				newApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
-			if (req.getParameter("EffRating").length() > 0)
-				newApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+			try {
+				if (req.getParameter("ManuYear").length() > 0)
+					newApp.setYearManufactured( Integer.parseInt(req.getParameter("ManuYear")) );
+			}
+			catch (NumberFormatException e) {
+				throw new WebClientException("Invalid number format '" + req.getParameter("ManuYear") + "' for year manufactured");
+			}
+			try {
+				if (req.getParameter("KWCapacity").length() > 0)
+					newApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+			}
+			catch (NumberFormatException e) {
+				throw new WebClientException("Invalid number format '" + req.getParameter("KWCapacity") + "' for KW capacity");
+			}
+			try {
+				if (req.getParameter("EffRating").length() > 0)
+					newApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+			}
+			catch (NumberFormatException e) {
+				throw new WebClientException("Invalid number format '" + req.getParameter("EffRating") + "' for efficiency rating");
+			}
 			
 			newApp.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
@@ -145,8 +163,14 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
 						EnergySource.class) );
-				if (req.getParameter("WH_ElementNum").length() > 0)
-					wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
+				
+				try {
+					if (req.getParameter("WH_ElementNum").length() > 0)
+						wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("WH_ElementNum") + "' for # heating coils");
+				}
 				newApp.setWaterHeater( wh );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL)
@@ -156,12 +180,18 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
 						SwitchOverType.class) );
-				if (req.getParameter("DF_KWCapacity2").length() > 0)
-					df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE, Integer.parseInt(req.getParameter("DF_SecondarySrc"))),
 						SecondaryEnergySource.class) );
+				
+				try {
+					if (req.getParameter("DF_KWCapacity2").length() > 0)
+						df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("DF_KWCapacity2") + "' for secondary KW capacity");
+				}
 				newApp.setDualFuel( df );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR)
@@ -175,12 +205,28 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
 						TransferSwitchManufacturer.class) );
-				if (req.getParameter("GEN_KWCapacity").length() > 0)
-					gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
-				if (req.getParameter("GEN_FuelCapGal").length() > 0)
-					gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
-				if (req.getParameter("GEN_StartDelaySec").length() > 0)
-					gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
+				
+				try {
+					if (req.getParameter("GEN_KWCapacity").length() > 0)
+						gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("GEN_KWCapacity") + "' for peak KW capacity");
+				}
+				try {
+					if (req.getParameter("GEN_FuelCapGal").length() > 0)
+						gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("GEN_FuelCapGal") + "' for fuel capacity");
+				}
+				try {
+					if (req.getParameter("GEN_StartDelaySec").length() > 0)
+						gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("GEN_StartDelaySec") + "' for start delay");
+				}
 				newApp.setGenerator( gen );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER)
@@ -215,10 +261,21 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
 						StorageType.class) );
-				if (req.getParameter("SH_KWCapacity").length() > 0)
-					sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
-				if (req.getParameter("SH_RechargeHour").length() > 0)
-					sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
+				
+				try {
+					if (req.getParameter("SH_KWCapacity").length() > 0)
+						sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("SH_KWCapacity") + "' for peak KW capacity");
+				}
+				try {
+					if (req.getParameter("SH_RechargeHour").length() > 0)
+						sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("SH_RechargeHour") + "' for recharge time");
+				}
 				newApp.setStorageHeat( sh );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP)
@@ -236,8 +293,14 @@ public class CreateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
 						StandbySource.class) );
-				if (req.getParameter("HP_RestartDelaySec").length() > 0)
-					hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
+				
+				try {
+					if (req.getParameter("HP_RestartDelaySec").length() > 0)
+						hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("HP_RestartDelaySec") + "' for restart delay");
+				}
 				newApp.setHeatPump( hp );
 			}
 			else if (categoryID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
@@ -275,8 +338,11 @@ public class CreateApplianceAction implements ActionBase {
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
+		catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 
@@ -314,7 +380,7 @@ public class CreateApplianceAction implements ActionBase {
 			return respMsg;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -322,7 +388,7 @@ public class CreateApplianceAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
 
@@ -369,7 +435,7 @@ public class CreateApplianceAction implements ActionBase {
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
@@ -389,8 +455,8 @@ public class CreateApplianceAction implements ActionBase {
 		appDB.setNotes( newApp.getNotes() );
 		appDB.setModelNumber( newApp.getModelNumber() );
         
-		if (newApp.getYearManufactured().length() > 0)
-			appDB.setYearManufactured( Integer.valueOf(newApp.getYearManufactured()) );
+		if (newApp.hasYearManufactured())
+			appDB.setYearManufactured( new Integer(newApp.getYearManufactured()) );
 		else
 			appDB.setYearManufactured( new Integer(-1) );
 		if (newApp.hasKWCapacity())

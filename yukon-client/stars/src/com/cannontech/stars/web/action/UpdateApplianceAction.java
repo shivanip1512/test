@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
@@ -113,14 +114,36 @@ public class UpdateApplianceAction implements ActionBase {
 					StarsFactory.newStarsApp( appliance, StarsUpdateAppliance.class );
 			
 			updateApp.setApplianceID( appID );
-			updateApp.setYearManufactured( req.getParameter("ManuYear") );
 			updateApp.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			updateApp.setModelNumber( req.getParameter("ModelNo") );
 			
-			if (req.getParameter("KWCapacity").length() > 0)
-				updateApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
-			if (req.getParameter("EffRating").length() > 0)
-				updateApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+			try {
+				if (req.getParameter("ManuYear").length() > 0)
+					updateApp.setYearManufactured( Integer.parseInt(req.getParameter("ManuYear")) );
+				else
+					updateApp.deleteYearManufactured();
+			}
+			catch (NumberFormatException e) {
+				throw new WebClientException("Invalid number format '" + req.getParameter("ManuYear") + "' for year manufactured");
+			}
+			try {
+				if (req.getParameter("KWCapacity").length() > 0)
+					updateApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+				else
+					updateApp.deleteKWCapacity();
+			}
+			catch (NumberFormatException e) {
+				throw new WebClientException("Invalid number format '" + req.getParameter("KWCapacity") + "' for KW capacity");
+			}
+			try {
+				if (req.getParameter("EffRating").length() > 0)
+					updateApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+				else
+					updateApp.deleteEfficiencyRating();
+			}
+			catch (NumberFormatException e) {
+				throw new WebClientException("Invalid number format '" + req.getParameter("EffRating") + "' for efficiency rating");
+			}
 			
 			updateApp.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
@@ -153,8 +176,16 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
 						EnergySource.class) );
-				if (req.getParameter("WH_ElementNum").length() > 0)
-					wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
+				
+				try {
+					if (req.getParameter("WH_ElementNum").length() > 0)
+						wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
+					else
+						wh.deleteNumberOfElements();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("WH_ElementNum") + "' for # heating coils");
+				}
 			}
 			else if (updateApp.getDualFuel() != null) {
 				DualFuel df = updateApp.getDualFuel();
@@ -162,12 +193,20 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
 						SwitchOverType.class) );
-				if (req.getParameter("DF_KWCapacity2").length() > 0)
-					df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE, Integer.parseInt(req.getParameter("DF_SecondarySrc"))),
 						SecondaryEnergySource.class) );
+				
+				try {
+					if (req.getParameter("DF_KWCapacity2").length() > 0)
+						df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
+					else
+						df.deleteSecondaryKWCapacity();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("DF_KWCapacity2") + "' for secondary KW capacity");
+				}
 			}
 			else if (updateApp.getGenerator() != null) {
 				Generator gen = updateApp.getGenerator();
@@ -179,12 +218,34 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
 						TransferSwitchManufacturer.class) );
-				if (req.getParameter("GEN_KWCapacity").length() > 0)
-					gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
-				if (req.getParameter("GEN_FuelCapGal").length() > 0)
-					gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
-				if (req.getParameter("GEN_StartDelaySec").length() > 0)
-					gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
+				
+				try {
+					if (req.getParameter("GEN_KWCapacity").length() > 0)
+						gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
+					else
+						gen.deletePeakKWCapacity();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("GEN_KWCapacity") + "' for peak KW capacity");
+				}
+				try {
+					if (req.getParameter("GEN_FuelCapGal").length() > 0)
+						gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
+					else
+						gen.deleteFuelCapGallons();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("GEN_FuelCapGal") + "' for fuel capacity");
+				}
+				try {
+					if (req.getParameter("GEN_StartDelaySec").length() > 0)
+						gen.setStartDelaySeconds( Integer.parseInt(req.getParameter("GEN_StartDelaySec")) );
+					else
+						gen.deleteStartDelaySeconds();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("GEN_StartDelaySec") + "' for start delay");
+				}
 			}
 			else if (updateApp.getGrainDryer() != null) {
 				GrainDryer gd = updateApp.getGrainDryer();
@@ -215,10 +276,25 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
 						StorageType.class) );
-				if (req.getParameter("SH_KWCapacity").length() > 0)
-					sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
-				if (req.getParameter("SH_RechargeHour").length() > 0)
-					sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
+				
+				try {
+					if (req.getParameter("SH_KWCapacity").length() > 0)
+						sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
+					else
+						sh.deletePeakKWCapacity();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("SH_KWCapacity") + "' for peak KW capacity");
+				}
+				try {
+					if (req.getParameter("SH_RechargeHour").length() > 0)
+						sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
+					else
+						sh.deleteHoursToRecharge();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("SH_RechargeHour") + "' for recharge time");
+				}
 			}
 			else if (updateApp.getHeatPump() != null) {
 				HeatPump hp = updateApp.getHeatPump();
@@ -234,8 +310,16 @@ public class UpdateApplianceAction implements ActionBase {
 						ServletUtils.getStarsCustListEntryByID(
 							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
 						StandbySource.class) );
-				if (req.getParameter("HP_RestartDelaySec").length() > 0)
-					hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
+				
+				try {
+					if (req.getParameter("HP_RestartDelaySec").length() > 0)
+						hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
+					else
+						hp.deleteRestartDelaySeconds();
+				}
+				catch (NumberFormatException e) {
+					throw new WebClientException("Invalid number format '" + req.getParameter("HP_RestartDelaySec") + "' for restart delay");
+				}
 			}
 			else if (updateApp.getIrrigation() != null) {
 				Irrigation irr = updateApp.getIrrigation();
@@ -268,12 +352,15 @@ public class UpdateApplianceAction implements ActionBase {
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsUpdateAppliance( updateApp );
 			
-            return SOAPUtil.buildSOAPMessage( operation );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (WebClientException e) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
 		return null;
 	}
@@ -282,48 +369,48 @@ public class UpdateApplianceAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			StarsUpdateAppliance updateApp = reqOper.getStarsUpdateAppliance();
     		
-    		try {
+			try {
 				updateAppliance( updateApp, liteAcctInfo );
-    		}
-    		catch (WebClientException e) {
+			}
+			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
-    		}
+			}
             
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription("Appliance information updated successfully");
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription("Appliance information updated successfully");
             
-            respOper.setStarsSuccess( success );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			respOper.setStarsSuccess( success );
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the appliance information") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the appliance information") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				CTILogger.error( e2.getMessage(), e2 );
+			}
+		}
 
 		return null;
 	}
@@ -332,9 +419,9 @@ public class UpdateApplianceAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -362,13 +449,13 @@ public class UpdateApplianceAction implements ActionBase {
 				}
 			}
 			
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	public static void updateAppliance(StarsUpdateAppliance updateApp, LiteStarsCustAccountInformation liteAcctInfo)
@@ -393,15 +480,15 @@ public class UpdateApplianceAction implements ActionBase {
 				(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
     	
-    	if (updateApp.hasApplianceCategoryID())
-    		appDB.setApplianceCategoryID( new Integer(updateApp.getApplianceCategoryID()) );
+		if (updateApp.hasApplianceCategoryID())
+			appDB.setApplianceCategoryID( new Integer(updateApp.getApplianceCategoryID()) );
 		appDB.setManufacturerID( new Integer(updateApp.getManufacturer().getEntryID()) );
 		appDB.setLocationID( new Integer(updateApp.getLocation().getEntryID()) );
 		appDB.setNotes( updateApp.getNotes() );
 		appDB.setModelNumber( updateApp.getModelNumber() );
 		
-		if (updateApp.getYearManufactured().trim().length() > 0)
-			appDB.setYearManufactured( Integer.valueOf(updateApp.getYearManufactured()) );
+		if (updateApp.hasYearManufactured())
+			appDB.setYearManufactured( new Integer(updateApp.getYearManufactured()) );
 		else
 			appDB.setYearManufactured( new Integer(-1) );
 		if (updateApp.hasKWCapacity())
@@ -418,7 +505,7 @@ public class UpdateApplianceAction implements ActionBase {
 		
 		if (updateApp.getAirConditioner() != null) {
 			if (!(liteApp instanceof LiteStarsAppAirConditioner)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppAirConditioner();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -438,7 +525,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getWaterHeater() != null) {
 			if (!(liteApp instanceof LiteStarsAppWaterHeater)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppWaterHeater();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -462,7 +549,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getDualFuel() != null) {
 			if (!(liteApp instanceof LiteStarsAppDualFuel)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppDualFuel();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -486,7 +573,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getGenerator() != null) {
 			if (!(liteApp instanceof LiteStarsAppGenerator)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppGenerator();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -518,7 +605,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getGrainDryer() != null) {
 			if (!(liteApp instanceof LiteStarsAppGrainDryer)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppGrainDryer();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -541,7 +628,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getStorageHeat() != null) {
 			if (!(liteApp instanceof LiteStarsAppStorageHeat)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppStorageHeat();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -568,7 +655,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getHeatPump() != null) {
 			if (!(liteApp instanceof LiteStarsAppHeatPump)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppHeatPump();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -593,7 +680,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getIrrigation() != null) {
 			if (!(liteApp instanceof LiteStarsAppIrrigation)) {
-				unextendAppliance( liteApp );
+				removeApplianceChild( liteApp );
 				LiteStarsAppliance liteApp2 = new LiteStarsAppIrrigation();
 				copyLiteStarsAppliance( liteApp2, liteApp );
 				liteAcctInfo.getAppliances().set( appIdx, liteApp2 );
@@ -617,7 +704,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 	}
 	
-	private static void unextendAppliance(LiteStarsAppliance liteApp) throws CommandExecutionException {
+	private static void removeApplianceChild(LiteStarsAppliance liteApp) throws CommandExecutionException {
 		if (liteApp instanceof LiteStarsAppAirConditioner) {
 			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
 			appAC.setApplianceID( new Integer(liteApp.getApplianceID()) );

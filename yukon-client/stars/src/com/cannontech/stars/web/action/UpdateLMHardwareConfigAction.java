@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -73,7 +74,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 
@@ -141,7 +142,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -149,7 +150,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
 
@@ -179,12 +180,12 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			parseResponse( accountInfo, operation.getStarsUpdateLMHardwareConfigResponse() );
-			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully" );
+			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration updated successfully" );
 			
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;

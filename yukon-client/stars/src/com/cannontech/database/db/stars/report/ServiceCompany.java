@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.report;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -101,16 +102,14 @@ public class ServiceCompany extends DBPersistent {
                 nextCompanyID = rset.getInt(1) + 1;
         }
         catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
                 if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
+            catch (java.sql.SQLException e2) {}
         }
 
         return new Integer( nextCompanyID );
@@ -149,7 +148,7 @@ public class ServiceCompany extends DBPersistent {
     		return companies;
     	}
     	catch (Exception e) {
-    		e.printStackTrace();
+    		CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;

@@ -18,10 +18,11 @@ public class LMHardwareBase extends DBPersistent {
 
     private Integer inventoryID = null;
     private String manufacturerSerialNumber = "";
-    private Integer lmHardwareTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer lmHardwareTypeID = new Integer( CtiUtilities.NONE_ID );
+    private Integer routeID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
-        "ManufacturerSerialNumber", "LMHardwareTypeID"
+        "ManufacturerSerialNumber", "LMHardwareTypeID", "RouteID"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "InventoryID" };
@@ -40,7 +41,7 @@ public class LMHardwareBase extends DBPersistent {
 
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
-            getInventoryID(), getManufacturerSerialNumber(), getLMHardwareTypeID()
+            getInventoryID(), getManufacturerSerialNumber(), getLMHardwareTypeID(), getRouteID()
         };
 
         add( TABLE_NAME, addValues );
@@ -48,7 +49,7 @@ public class LMHardwareBase extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getManufacturerSerialNumber(), getLMHardwareTypeID()
+            getManufacturerSerialNumber(), getLMHardwareTypeID(), getRouteID()
         };
 
         Object[] constraintValues = { getInventoryID() };
@@ -64,6 +65,7 @@ public class LMHardwareBase extends DBPersistent {
         if (results.length == SETTER_COLUMNS.length) {
             setManufacturerSerialNumber( (String) results[0] );
             setLMHardwareTypeID( (Integer) results[1] );
+            setRouteID( (Integer) results[2] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -100,7 +102,7 @@ public class LMHardwareBase extends DBPersistent {
 			return invIDs;
     	}
     	catch (java.sql.SQLException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     	finally {
     		try {
@@ -147,7 +149,7 @@ public class LMHardwareBase extends DBPersistent {
 			return snTable;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
@@ -162,7 +164,7 @@ public class LMHardwareBase extends DBPersistent {
     }
     
     public static LMHardwareBase[] searchBySerialNumber(String serialNo, int energyCompanyID) {
-    	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID " +
+    	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID, hw.RouteID " +
     			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +
     			"WHERE UPPER(hw.ManufacturerSerialNumber) = UPPER(?) AND hw.InventoryID >= 0 " +
     			"AND hw.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
@@ -186,6 +188,7 @@ public class LMHardwareBase extends DBPersistent {
 				hw.setInventoryID( new Integer(rset.getInt(1)) );
 				hw.setManufacturerSerialNumber( rset.getString(2) );
 				hw.setLMHardwareTypeID( new Integer(rset.getInt(3)) );
+				hw.setRouteID( new Integer(rset.getInt(4)) );
 				
 				hwList.add( hw );
 			}
@@ -196,7 +199,7 @@ public class LMHardwareBase extends DBPersistent {
 			return hardwares;
     	}
     	catch (java.sql.SQLException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     	finally {
     		try {
@@ -239,6 +242,20 @@ public class LMHardwareBase extends DBPersistent {
 	 */
 	public void setLMHardwareTypeID(Integer lmHardwareTypeID) {
 		this.lmHardwareTypeID = lmHardwareTypeID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getRouteID() {
+		return routeID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRouteID(Integer integer) {
+		routeID = integer;
 	}
 
 }

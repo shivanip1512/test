@@ -246,7 +246,7 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Delete customer accounts failed");
 		}
 	}
@@ -303,7 +303,7 @@ public class StarsAdmin extends HttpServlet {
 			
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update address information");
 			redirect = referer;
 		}
@@ -465,7 +465,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update energy company information");
 			redirect = referer;
 		}
@@ -748,7 +748,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update appliance category information");
 			redirect = referer;
 		}
@@ -867,7 +867,7 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category has been deleted successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete appliance category");
 			redirect = referer;
 		}
@@ -1011,7 +1011,7 @@ public class StarsAdmin extends HttpServlet {
 			redirect = referer;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update service company information");
 			redirect = referer;
 		}
@@ -1102,7 +1102,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the service company");
 			redirect = referer;
 		}
@@ -1159,7 +1159,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ link");
 			redirect = referer;
 		}
@@ -1198,7 +1198,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ subjects updated successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ subjects");
 			redirect = referer;
 		}
@@ -1314,7 +1314,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer FAQs");
 			redirect = referer;
 		}
@@ -1371,7 +1371,7 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete service company");
 			redirect = referer;
 		}
@@ -1446,7 +1446,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Interview questions updated successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update interview questions");
 			redirect = referer;
 		}
@@ -1526,7 +1526,7 @@ public class StarsAdmin extends HttpServlet {
 						substation.delete();
 					}
 					catch (java.sql.SQLException e) {
-						e.printStackTrace();
+						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 						conn.rollback();
 						throw new WebClientException("Cannot delete substation with id = " + entryID + ", make sure it is not referenced");
 					}
@@ -1596,7 +1596,7 @@ public class StarsAdmin extends HttpServlet {
 						entry.delete();
 					}
 					catch (java.sql.SQLException e) {
-						e.printStackTrace();
+						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 						conn.rollback();
 						throw new WebClientException("Cannot delete list entry with id = " + entryID + ", make sure it is not referenced");
 					}
@@ -1714,7 +1714,7 @@ public class StarsAdmin extends HttpServlet {
 			redirect = referer;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer selection list");
 			redirect = referer;
 		}
@@ -1743,7 +1743,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Default thermostat schedule updated successfully");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update default thermostat schedule");
 			redirect = referer;
 		}
@@ -1839,7 +1839,7 @@ public class StarsAdmin extends HttpServlet {
 			redirect = referer;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update operator login");
 			redirect = referer;
 		}
@@ -2015,7 +2015,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the energy company");
 		}
 	}
@@ -2061,7 +2061,7 @@ public class StarsAdmin extends HttpServlet {
 					LoginController.SAVE_CURRENT_USER + "=true";
 		}
 		catch (java.io.UnsupportedEncodingException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			redirect = redir;
 		}
 	}
@@ -2138,7 +2138,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add new member");
 		}
 	}
@@ -2201,7 +2201,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update member login");
 		}
 	}
@@ -2249,7 +2249,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to remove member(s)");
 		}
 	}

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -92,7 +93,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 
@@ -163,7 +164,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             
 			try {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -171,7 +172,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			catch (Exception e2) {
-				e2.printStackTrace();
+				CTILogger.error( e2.getMessage(), e2 );
 			}
 		}
         
@@ -198,10 +199,18 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			parseResponse( accountInfo, resp.getStarsInventory() );
 			
+			StarsYukonSwitchCommand command = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsYukonSwitchCommand();
+			if (command.getStarsEnableService() != null)
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Enable command sent out successfully" );
+			else if (command.getStarsDisableService() != null)
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Disable command sent out successfully" );
+			else if (command.getStarsConfig() != null)
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully" );
+			
 			return 0;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
@@ -215,11 +224,14 @@ public class YukonSwitchCommandAction implements ActionBase {
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
 		java.util.Date now = new java.util.Date();
 		
+		int routeID = liteHw.getRouteID();
+		if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
+		
 		String cmd = "putconfig service out serial " + liteHw.getManufacturerSerialNumber();
         
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
-			yc.setRouteID( energyCompany.getDefaultRouteID() );
+			yc.setRouteID( routeID );
 			yc.setCommand( cmd );
 			yc.handleSerialNumber();
 		}
@@ -244,7 +256,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
     
@@ -256,11 +268,14 @@ public class YukonSwitchCommandAction implements ActionBase {
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 		java.util.Date now = new java.util.Date();
 		
+		int routeID = liteHw.getRouteID();
+		if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
+		
 		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
         
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
-			yc.setRouteID( energyCompany.getDefaultRouteID() );
+			yc.setRouteID( routeID );
 			yc.setCommand( cmd );
 			yc.handleSerialNumber();
 		}
@@ -285,7 +300,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -298,6 +313,9 @@ public class YukonSwitchCommandAction implements ActionBase {
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 		Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
 		java.util.Date now = new java.util.Date();
+        
+        int routeID = liteHw.getRouteID();
+        if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
         
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
 				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( invID );
@@ -313,7 +331,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		        
 				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 				synchronized (yc) {
-					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					yc.setRouteID( routeID );
 					yc.setCommand( cmd );
 					yc.handleSerialNumber();
 				}
@@ -339,7 +357,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				liteHw.updateDeviceStatus();
 			}
 			catch (TransactionException e) {
-				e.printStackTrace();
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		else {
@@ -352,7 +370,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 	            
 				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 				synchronized (yc) {
-					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					yc.setRouteID( routeID );
 					yc.setCommand( cmd );
 					yc.handleSerialNumber();
 				}
@@ -379,7 +397,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				liteHw.getInventoryHistory().add( liteEvent );
 			}
 			catch (TransactionException e) {
-				e.printStackTrace();
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 	}

@@ -65,7 +65,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 	    	}
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     }
     
@@ -82,7 +82,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 	    	}
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     }
     
@@ -100,7 +100,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 			}
 		}
 		catch (TransactionException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
     
@@ -121,7 +121,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 			return events;
 		}
 		catch (TransactionException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
     	
 		return null;
@@ -144,7 +144,7 @@ public class LMProgramEvent extends LMCustomerEventBase {
 	        return events;
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;

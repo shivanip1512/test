@@ -385,7 +385,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -399,7 +399,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				switchCommandQueue.syncFromFile();
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -923,7 +923,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return cList;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -1168,7 +1168,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return dftLMHardware;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -1228,7 +1228,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 						customerFAQs.add( liteFAQ );
 					}
 					catch (Exception e) {
-						e.printStackTrace();
+						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 					}
 				}
 			}
@@ -1284,7 +1284,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				nextCallNo = maxCallNo + 1;
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				return null;
 			}
 		}
@@ -1323,7 +1323,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				nextOrderNo = maxOrderNo + 1;
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -1529,7 +1529,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return liteAddr;
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -1664,7 +1664,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -1760,7 +1760,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 			}
 			catch (TransactionException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				return null;
 			}
 		}
@@ -1838,7 +1838,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 			}
 			catch (TransactionException e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				return null;
 			}
 		}
@@ -2189,7 +2189,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return workOrders;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -2219,7 +2219,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return workOrder;
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
         
@@ -2321,7 +2321,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return settings;
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -2504,7 +2504,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			liteAcctInfo.setExtended( true );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -2531,7 +2531,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return addBriefCustAccountInfo( account );
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -2618,7 +2618,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return addBriefCustAccountInfo( account );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -2727,7 +2727,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			return null;
 		}
 		

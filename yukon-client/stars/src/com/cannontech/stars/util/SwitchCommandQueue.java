@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * @author yao
  *
@@ -144,14 +146,14 @@ public class SwitchCommandQueue {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
 				if (fr != null) fr.close();
 			}
-			catch (IOException ioe) {
-				ioe.printStackTrace();
+			catch (IOException e) {
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 	}
@@ -177,7 +179,7 @@ public class SwitchCommandQueue {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			if (fw != null) fw.close();

@@ -48,7 +48,7 @@ public class LiteSiteInformation extends LiteBase {
 			StarsLiteFactory.setLiteSiteInformation( this, site );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	

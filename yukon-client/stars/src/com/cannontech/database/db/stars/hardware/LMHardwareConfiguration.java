@@ -53,7 +53,7 @@ public class LMHardwareConfiguration extends DBPersistent {
             }
         }
         catch( Exception e ) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
         
         return null;
@@ -79,7 +79,7 @@ public class LMHardwareConfiguration extends DBPersistent {
             return configs;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
         
         return null;
@@ -93,7 +93,7 @@ public class LMHardwareConfiguration extends DBPersistent {
         	stmt.execute();
         }
         catch( Exception e ) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
     }
 
@@ -105,7 +105,7 @@ public class LMHardwareConfiguration extends DBPersistent {
         	stmt.execute();
         }
         catch( Exception e ) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
     }
 

@@ -138,7 +138,7 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 					numSuccess++;
 				}
 				catch (TransactionException e) {
-					e.printStackTrace();
+					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 					hardwareSet.add( liteInv );
 					numFailure++;
 				}

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
@@ -66,7 +67,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
 		}
 		
@@ -134,7 +135,7 @@ public class CreateServiceRequestAction implements ActionBase {
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
-        	e.printStackTrace();
+        	CTILogger.error( e.getMessage(), e );
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -142,7 +143,7 @@ public class CreateServiceRequestAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
-            	e2.printStackTrace();
+            	CTILogger.error( e2.getMessage(), e2 );
             }
         }
         
@@ -175,7 +176,7 @@ public class CreateServiceRequestAction implements ActionBase {
             return 0;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;

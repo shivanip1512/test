@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars;
 
 import java.sql.SQLException;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -48,16 +49,14 @@ public class CustomerFAQ extends DBPersistent {
                 nextQuestionID = rset.getInt(1) + 1;
         }
         catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            CTILogger.error( e.getMessage(), e );
         }
         finally {
             try {
                 if (rset != null) rset.close();
                 if (pstmt != null) pstmt.close();
             }
-            catch (java.sql.SQLException e2) {
-                e2.printStackTrace();
-            }
+            catch (java.sql.SQLException e2) {}
         }
 
         return new Integer( nextQuestionID );
@@ -145,7 +144,7 @@ public class CustomerFAQ extends DBPersistent {
 			return faqs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -174,7 +173,7 @@ public class CustomerFAQ extends DBPersistent {
 			return faqs;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;

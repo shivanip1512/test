@@ -185,6 +185,7 @@ public class StarsLiteFactory {
 		setLiteInventoryBase( liteHw, hw.getInventoryBase() );
 		liteHw.setManufacturerSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
+		liteHw.setRouteID( hw.getLMHardwareBase().getRouteID().intValue() );
 	}
 	
 	public static void extendLiteInventoryBase(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
@@ -570,7 +571,7 @@ public class StarsLiteFactory {
 			liteProg.setGroupIDs( groupIDs );
 		}
 		catch (java.sql.SQLException e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -759,6 +760,7 @@ public class StarsLiteFactory {
 		hw.setInventoryID( hw.getInventoryBase().getInventoryID() );
 		hw.getLMHardwareBase().setManufacturerSerialNumber( liteHw.getManufacturerSerialNumber() );
 		hw.getLMHardwareBase().setLMHardwareTypeID( new Integer(liteHw.getLmHardwareTypeID()) );
+		hw.getLMHardwareBase().setRouteID( new Integer(liteHw.getRouteID()) );
 	}
 	
 	public static void setYukonUser(com.cannontech.database.db.user.YukonUser user, com.cannontech.database.data.lite.LiteYukonUser liteUser) {
@@ -1558,6 +1560,7 @@ public class StarsLiteFactory {
 					DeviceType.class) );
 			
 			LMHardware hw = new LMHardware();
+			hw.setRouteID( liteHw.getRouteID() );
 			hw.setManufacturerSerialNumber( ServerUtils.forceNotNull(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber()) );
 			
 			if (liteHw.getThermostatSettings() != null) {
@@ -1942,11 +1945,8 @@ public class StarsLiteFactory {
 			starsApp.setKWCapacity( liteApp.getKWCapacity() );
 		if (liteApp.getEfficiencyRating() >= 0)
 			starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
-        
-		if (liteApp.getYearManufactured() > 0)
-			starsApp.setYearManufactured( String.valueOf(liteApp.getYearManufactured()) );
-		else
-			starsApp.setYearManufactured( "" );
+		if (liteApp.getYearManufactured() >= 0)
+			starsApp.setYearManufactured( liteApp.getYearManufactured() );
        	
 		Manufacturer manu = new Manufacturer();
 		setStarsCustListEntry( manu, YukonListFuncs.getYukonListEntry(liteApp.getManufacturerID()) );

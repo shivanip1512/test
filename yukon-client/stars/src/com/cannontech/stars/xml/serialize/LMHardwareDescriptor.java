@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: LMHardwareDescriptor.java,v 1.11 2004/05/04 17:46:09 zyao Exp $
+ * $Id: LMHardwareDescriptor.java,v 1.12 2004/05/10 22:13:29 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2004/05/04 17:46:09 $
+ * @version $Revision: 1.12 $ $Date: 2004/05/10 22:13:29 $
 **/
 public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -57,6 +57,48 @@ public class LMHardwareDescriptor extends org.exolab.castor.xml.util.XMLClassDes
         //-- set grouping compositor
         setCompositorAsSequence();
         //-- initialize attribute descriptors
+        
+        //-- _routeID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_routeID", "routeID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                LMHardware target = (LMHardware) object;
+                if(!target.hasRouteID())
+                    return null;
+                return new Integer(target.getRouteID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    LMHardware target = (LMHardware) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteRouteID();
+                        return;
+                    }
+                    target.setRouteID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _routeID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         

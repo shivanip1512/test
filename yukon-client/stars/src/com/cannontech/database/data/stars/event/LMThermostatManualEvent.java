@@ -63,7 +63,7 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
     		}
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     }
     
@@ -84,7 +84,7 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
 	        return events;
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;
@@ -106,7 +106,7 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
 	        return event;
     	}
     	catch (TransactionException e) {
-    		e.printStackTrace();
+    		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
     	}
     	
     	return null;

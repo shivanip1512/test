@@ -229,21 +229,27 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         //-- initialize element descriptors
         
         //-- _yearManufactured
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yearManufactured", "YearManufactured", NodeType.Element);
-        desc.setImmutable(true);
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_yearManufactured", "YearManufactured", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsApp target = (StarsApp) object;
-                return target.getYearManufactured();
+                if(!target.hasYearManufactured())
+                    return null;
+                return new Integer(target.getYearManufactured());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsApp target = (StarsApp) object;
-                    target.setYearManufactured( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteYearManufactured();
+                        return;
+                    }
+                    target.setYearManufactured( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -254,17 +260,14 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _yearManufactured
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
         

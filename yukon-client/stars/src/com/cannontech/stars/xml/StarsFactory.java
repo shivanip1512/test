@@ -67,7 +67,7 @@ public class StarsFactory {
 			return newEntry;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -85,7 +85,7 @@ public class StarsFactory {
 			return newEntry;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -99,7 +99,7 @@ public class StarsFactory {
 			return newEntry;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -117,14 +117,18 @@ public class StarsFactory {
 			starsApp.setLmProgramID( app.getLmProgramID() );
 			starsApp.setInventoryID( app.getInventoryID() );
 			
-			starsApp.setYearManufactured( app.getYearManufactured() );
 			starsApp.setManufacturer( app.getManufacturer() );
 			starsApp.setLocation( app.getLocation() );
 			starsApp.setServiceCompany( app.getServiceCompany() );
 			starsApp.setNotes( app.getNotes() );
 			starsApp.setModelNumber( app.getModelNumber() );
-			starsApp.setKWCapacity( app.getKWCapacity() );
-			starsApp.setEfficiencyRating( app.getEfficiencyRating() );
+			
+			if (app.hasYearManufactured())
+				starsApp.setYearManufactured( app.getYearManufactured() );
+			if (app.hasKWCapacity())
+				starsApp.setKWCapacity( app.getKWCapacity() );
+			if (app.hasEfficiencyRating())
+				starsApp.setEfficiencyRating( app.getEfficiencyRating() );
 			
 			starsApp.setAirConditioner( app.getAirConditioner() );
 			starsApp.setWaterHeater( app.getWaterHeater() );
@@ -138,7 +142,7 @@ public class StarsFactory {
 			return starsApp;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -167,7 +171,7 @@ public class StarsFactory {
 			return starsCall;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -238,7 +242,7 @@ public class StarsFactory {
 			return newAccount;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -315,7 +319,7 @@ public class StarsFactory {
 			return newAddr;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -335,7 +339,7 @@ public class StarsFactory {
 			return newAddr;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -363,7 +367,7 @@ public class StarsFactory {
 			return newNotif;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -382,7 +386,7 @@ public class StarsFactory {
 			return newContact;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -402,7 +406,7 @@ public class StarsFactory {
 			return newContact;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return null;
@@ -503,7 +507,7 @@ public class StarsFactory {
 			return starsInv;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -535,7 +539,7 @@ public class StarsFactory {
 			return starsInv;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -646,7 +650,7 @@ public class StarsFactory {
 			return newRes;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;

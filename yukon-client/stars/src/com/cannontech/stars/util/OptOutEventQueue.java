@@ -9,8 +9,13 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.StringTokenizer;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.TreeMap;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
  * @author yao
@@ -191,7 +196,7 @@ public class OptOutEventQueue {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			if (fw != null) fw.close();
@@ -322,26 +327,66 @@ public class OptOutEventQueue {
 			fr = new BufferedReader( new FileReader(diskFile) );
 			String line = null;
 			while ((line = fr.readLine()) != null) {
-				StringTokenizer st = new StringTokenizer( line );
+				String[] fields = ServerUtils.splitString( line, " " );
+				
 				OptOutEvent event = new OptOutEvent();
-				event.setEnergyCompanyID( Integer.parseInt(st.nextToken()) );
-				event.setStartDateTime( Long.parseLong(st.nextToken()) );
-				event.setPeriod( Integer.parseInt(st.nextToken()) );
-				event.setAccountID( Integer.parseInt(st.nextToken()) );
-				String cmd = st.nextToken( "\n" );
-				event.setCommand( cmd.substring(cmd.indexOf('\"')+1, cmd.lastIndexOf('\"')) );
+				event.setEnergyCompanyID( Integer.parseInt(fields[0]) );
+				event.setStartDateTime( Long.parseLong(fields[1]) );
+				event.setPeriod( Integer.parseInt(fields[2]) );
+				event.setAccountID( Integer.parseInt(fields[3]) );
+				event.setCommand( fields[4] );
 				optOutEvents.add( event );
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
 			try {
 				if (fr != null) fr.close();
 			}
-			catch (IOException ioe) {
-				ioe.printStackTrace();
+			catch (IOException e) {
+				CTILogger.error( e.getMessage(), e );
+			}
+		}
+	}
+	
+	/**
+	 * The opt out event command string is in the form of "command1,route1,command2,route2,..."
+	 */	
+	public static String getOptOutEventCommand(Hashtable commands) {
+		StringBuffer command = new StringBuffer();
+		Iterator it = commands.keySet().iterator();
+		
+		if (it.hasNext()) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) it.next();
+			String cmd = (String) commands.get( liteHw );
+			command.append(cmd).append(",").append(liteHw.getRouteID());
+			while (it.hasNext()) {
+				liteHw = (LiteStarsLMHardware) it.next();
+				cmd = (String) commands.get( liteHw );
+				command.append(",").append(cmd).append(",").append(liteHw.getRouteID());
+			}
+		}
+		
+		return command.toString();
+	}
+	
+	/**
+	 * Send out the commands represented by the opt out event command string
+	 */
+	public static void sendOptOutCommands(String command, int dftRouteID) {
+		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		synchronized (yc) {
+			String[] fields = command.split(",");
+			for (int i = 0; i < fields.length / 2; i++) {
+				String cmd = fields[i*2];
+				int routeID = Integer.parseInt( fields[i*2+1] );
+				if (routeID == 0) routeID = dftRouteID;
+				
+				yc.setRouteID( routeID );
+				yc.setCommand( cmd );
+				yc.handleSerialNumber();
 			}
 		}
 	}

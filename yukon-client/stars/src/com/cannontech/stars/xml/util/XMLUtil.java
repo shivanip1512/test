@@ -41,7 +41,7 @@ public class XMLUtil {
             return logger;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
         }
         return null;
     }
