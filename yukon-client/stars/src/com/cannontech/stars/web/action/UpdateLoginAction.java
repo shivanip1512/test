@@ -253,7 +253,7 @@ public class UpdateLoginAction implements ActionBase {
 		String username = updateLogin.getUsername();
 		String password = updateLogin.getPassword();
 	    
-		if (userID == com.cannontech.user.UserUtils.USER_YUKON_ID ||
+		if (userID == com.cannontech.user.UserUtils.USER_ADMIN_ID ||
 			userID == com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 		{
 			// Create new customer login

@@ -162,7 +162,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			// Delete login
 			int userID = primContact.getLoginID();
 			if (userID != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
-				userID != com.cannontech.user.UserUtils.USER_YUKON_ID)
+				userID != com.cannontech.user.UserUtils.USER_ADMIN_ID)
 				UpdateLoginAction.deleteLogin( userID, null );
 			
 			// Delete lite and stars objects

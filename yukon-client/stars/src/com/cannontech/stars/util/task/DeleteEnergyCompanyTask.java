@@ -350,7 +350,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				LiteYukonGroup liteGroup = energyCompany.getOperatorDefaultGroup();
 				
 				// Delete the default operator login
-				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID &&
+				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
 					energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 				{
 					com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(energyCompany.getUserID()) );

@@ -862,7 +862,7 @@ public class ImportManager extends HttpServlet {
 		throws Exception
 	{
 		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-		if ((liteContact.getLoginID() == UserUtils.USER_YUKON_ID ||
+		if ((liteContact.getLoginID() == UserUtils.USER_ADMIN_ID ||
 			liteContact.getLoginID() == UserUtils.USER_STARS_DEFAULT_ID)
 			&& fields[IDX_USERNAME].trim().length() == 0)
 			return;
