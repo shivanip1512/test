@@ -2703,6 +2703,28 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                 _cmd["silver"] = CtiParseValue(atoi(tok().data()));
             }
         }
+
+        if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+        {
+            int   op = 0;
+            CHAR  op_name[20];
+
+            if(!(token.match("ena")).isNull())
+            {
+                op = 1;
+                _snprintf(op_name, sizeof(op_name), "ENABLE");
+            }
+            else if(!(token.match("dis")).isNull())
+            {
+                op = 0;
+                _snprintf(op_name, sizeof(op_name), "DISABLE");
+            }
+
+            _cmd["ovuv"] = CtiParseValue( op );
+
+            _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
+            _actionItems.insert(tbuf);
+        }
     }
     else
     {
