@@ -219,6 +219,16 @@ LONG CtiCCCapBank::getMapLocationId() const
 }
 
 /*---------------------------------------------------------------------------
+    getRecloseDelay
+
+    Returns the Reclose Delay of the cap bank
+---------------------------------------------------------------------------*/
+LONG CtiCCCapBank::getRecloseDelay() const
+{
+    return _reclosedelay;
+}
+
+/*---------------------------------------------------------------------------
     getControlOrder
 
     Returns the control order of the cap bank in the list of a feeder
@@ -514,6 +524,18 @@ CtiCCCapBank& CtiCCCapBank::setMapLocationId(LONG maplocation)
 }
 
 /*---------------------------------------------------------------------------
+    setRecloseDelay
+
+    Sets the RecloseDelay of the capbank
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setRecloseDelay(LONG reclose)
+{
+    _reclosedelay = reclose;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setControlOrder
 
     Sets the control order of the capbank in the list of the parent feeder
@@ -692,6 +714,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _typeofswitch
     >> _switchmanufacture
     >> _maplocationid
+    >> _reclosedelay
     >> _controlorder
     >> _statuspointid
     >> _controlstatus
@@ -730,6 +753,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _typeofswitch
     << _switchmanufacture
     << _maplocationid
+    << _reclosedelay
     << _controlorder
     << _statuspointid
     << _controlstatus
@@ -764,6 +788,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _typeofswitch = right._typeofswitch;
         _switchmanufacture = right._switchmanufacture;
         _maplocationid = right._maplocationid;
+        _reclosedelay = right._reclosedelay;
         _controlorder = right._controlorder;
         _statuspointid = right._statuspointid;
         _controlstatus = right._controlstatus;
@@ -829,6 +854,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["typeofswitch"] >> _typeofswitch;
     rdr["switchmanufacture"] >> _switchmanufacture;
     rdr["maplocationid"] >> _maplocationid;
+    rdr["reclosedelay"] >> _reclosedelay;
     rdr["controlorder"] >> _controlorder;
 
     setStatusPointId(0);

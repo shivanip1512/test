@@ -53,6 +53,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     const RWCString& getTypeOfSwitch() const;
     const RWCString& getSwitchManufacture() const;
     LONG getMapLocationId() const;
+    LONG getRecloseDelay() const;
     LONG getControlOrder() const;
     LONG getStatusPointId() const;
     LONG getControlStatus() const;
@@ -81,6 +82,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setTypeOfSwitch(const RWCString& switchtype);
     CtiCCCapBank& setSwitchManufacture(const RWCString& manufacture);
     CtiCCCapBank& setMapLocationId(LONG maplocation);
+    CtiCCCapBank& setRecloseDelay(LONG reclose);
     CtiCCCapBank& setControlOrder(LONG order);
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
     CtiCCCapBank& setControlStatus(LONG status);
@@ -142,6 +144,7 @@ private:
     RWCString _typeofswitch;
     RWCString _switchmanufacture;
     LONG _maplocationid;
+    LONG _reclosedelay;
     LONG _controlorder;
     LONG _statuspointid;
     LONG _controlstatus;
