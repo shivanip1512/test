@@ -357,6 +357,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return dftRouteID;
 	}
 	
+	public void setDefaultRouteID(int routeID) {
+		dftRouteID = routeID;
+	}
+	
 	public TimeZone getDefaultTimeZone() {
 		if (dftTimeZone == null) {
 			String tz = getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE);

@@ -29,6 +29,9 @@ import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.device.lm.LMFactory;
+import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -50,7 +53,11 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.macro.GenericMacro;
+import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.database.db.web.LMDirectOperatorList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -193,6 +200,8 @@ public class StarsAdmin extends HttpServlet {
 			updateOperatorLogin( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteOperatorLogin"))
 			deleteOperatorLogin( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateDirectPrograms"))
+			updateDirectPrograms( user, req, session );
 		else if (action.equalsIgnoreCase("MemberLogin"))
 			memberLogin( user, req, session );
 		else if (action.equalsIgnoreCase("SwitchContext"))
@@ -461,6 +470,57 @@ public class StarsAdmin extends HttpServlet {
 	        	
 				ServerUtils.handleDBChange( liteGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
 				ec.setTimeZone( timeZone );
+			}
+        	
+			int routeID = Integer.parseInt(req.getParameter("Route"));
+			if (energyCompany.getDefaultRouteID() != routeID) {
+				if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
+					// Assign the default route to the energy company
+					LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( PAOGroups.LM_GROUP_EXPRESSCOMM );
+					grpDftRoute.setPAOName( energyCompany.getName() + " Default Route" );
+					grpDftRoute.setRouteID( new Integer(routeID) );
+					grpDftRoute = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpDftRoute ).execute();
+					ServerUtils.sendDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+					
+					MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( PAOGroups.MACRO_GROUP );
+					grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
+					GenericMacro macro = new GenericMacro();
+					macro.setChildID( grpDftRoute.getPAObjectID() );
+					macro.setChildOrder( new Integer(0) );
+					macro.setMacroType( MacroTypes.GROUP );
+					grpSerial.getMacroGroupVector().add( macro );
+					grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
+					ServerUtils.sendDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+					
+					String sql = "INSERT INTO OperatorSerialGroup VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
+					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+					stmt.execute();
+				}
+				else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
+					if (routeID < 0) routeID = 0;
+					
+					String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, OperatorSerialGroup opgrp " +
+							"WHERE opgrp.LoginID = " + energyCompany.getUserID() + " AND opgrp.LMGroupID = macro.OwnerID " +
+							"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+					stmt.execute();
+					
+					if (stmt.getRowCount() == 0)
+						throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
+					int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+					
+					LMGroupExpressCom group = new LMGroupExpressCom();
+					group.setLMGroupID( new Integer(groupID) );
+					group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
+					
+					com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
+					grpDB.setRouteID( new Integer(routeID) );
+					Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
+					ServerUtils.sendDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
+				}
+				
+				energyCompany.setDefaultRouteID( routeID );
+				ec.setRouteID( routeID );
 			}
         	
 			session.removeAttribute( ENERGY_COMPANY_TEMP );
@@ -2048,6 +2108,47 @@ public class StarsAdmin extends HttpServlet {
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+	}
+	
+	private void updateDirectPrograms(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			long[] programIDs = LMDirectOperatorList.getProgramIDs( user.getUserID() );       
+			ArrayList oldProgIDs = new ArrayList();
+			for (int i = 0; i < programIDs.length; i++)
+				oldProgIDs.add( new Integer((int)programIDs[i]) );
+			
+			String[] progIDs = req.getParameterValues( "ProgIDs" );
+			if (progIDs != null) {
+				for (int i = 0; i < progIDs.length; i++) {
+					Integer progID = Integer.valueOf( progIDs[i] );
+					
+					if (oldProgIDs.contains( progID )) {
+						// Program already assigned to this energy company
+						oldProgIDs.remove( progID );
+					}
+					else {
+						// New direct program
+						String sql = "INSERT INTO LMDirectOperatorList VALUES (" + progID + ", " + user.getUserID() + ")";
+						SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+						stmt.execute();
+					}
+				}
+			}
+			
+			for (int i = 0; i < oldProgIDs.size(); i++) {
+				// Direct programs to be removed
+				Integer progID = (Integer) oldProgIDs.get(i);
+				String sql = "DELETE FROM LMDirectOperatorList WHERE ProgramID = " + progID + " AND OperatorLoginID = " + user.getUserID();
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+			}
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to update the direct programs" );
+		}
 	}
 	
 	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {

@@ -111,6 +111,20 @@ public class ServerUtils {
 		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 	
+	public static void sendDBChangeMsg(DBChangeMsg msg) {
+		if (msg != null) {
+			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
+			
+			com.cannontech.message.util.ClientConnection conn = SOAPServer.getInstance().getClientConnection();
+			if (conn == null) {
+				CTILogger.error( "Cannot get dispatch client connection" );
+				return;
+			}
+			
+			conn.write( msg );
+		}
+	}
+	
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
 		DBChangeMsg msg = null;
 		
@@ -181,17 +195,7 @@ public class ServerUtils {
 				);
 		}
 		
-		if (msg != null) {
-			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
-			
-			com.cannontech.message.util.ClientConnection conn = SOAPServer.getInstance().getClientConnection();
-			if (conn == null) {
-				CTILogger.error( "Cannot get dispatch client connection" );
-				return;
-			}
-			
-			conn.write( msg );
-		}
+		sendDBChangeMsg( msg );
 	}
 	
 	public static Date translateDate(long time) {

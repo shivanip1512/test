@@ -1101,6 +1101,7 @@
 				<xs:element name="CompanyAddress" type="stars-CustomerAddress" minOccurs="0"/>
 				<xs:element name="TimeZone" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
+			<xs:attribute name="routeID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-GetEnergyCompanySettings">
