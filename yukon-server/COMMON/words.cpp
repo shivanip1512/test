@@ -271,12 +271,7 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
    }
 
    /* decode the first word and get the data from it */
-   if((Code = D1_Word (DWords,
-                       DSt->Message,
-                       &DSt->RepVar,
-                       &DSt->Address,
-                       &DSt->Power,
-                       &DSt->Alarm)) != NORMAL)
+   if((Code = D1_Word (DWords, DSt->Message, &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm)) != NORMAL)
       return(Code);
 
    /* repeat the process for each DWord in the message */
@@ -299,11 +294,8 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
             return(NACK2);
       }
 
-      if((Code = D23_Word (DWords+8,
-                           DSt->Message + 3,
-                           &DSt->TSync,
-                           &Dummy)) != NORMAL)
-         return(Code);
+      if((Code = D23_Word (DWords+8, DSt->Message + 3, &DSt->TSync, &Dummy)) != NORMAL)
+          return(Code);
    }
 
    if(Num > 2)
@@ -326,10 +318,7 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
             return(NACK3);
       }
 
-      if((Code = D23_Word (DWords+16,
-                           DSt->Message + 8,
-                           &Dummy,
-                           &Dummy)) != NORMAL)
+      if((Code = D23_Word (DWords+16, DSt->Message + 8, &Dummy, &Dummy)) != NORMAL)
          return(Code);
    }
 
