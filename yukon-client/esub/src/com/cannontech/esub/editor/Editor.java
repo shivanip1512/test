@@ -420,6 +420,7 @@ public class Editor extends JPanel {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String selectedFile = fileChooser.getSelectedFile().getPath();
 			
+			getDrawing().setFileName(selectedFile);
 			saveDrawing();
 			//getDrawing().save(selectedFile);
 			setFrameTitle(getDrawing().getFileName());
@@ -451,7 +452,6 @@ public class Editor extends JPanel {
 	public void saveDrawing() {	
 		try {			
 			getDrawing().save();
-			throw new RuntimeException("");
 		}
 		catch(Exception e) {
 			CTILogger.error("Error saving drawing", e);
@@ -459,7 +459,7 @@ public class Editor extends JPanel {
 			getDrawing().getLxView()), "An error occured saving the drawing", "Saving Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-
+	
 	/**
 	 * Creation date: (12/12/2001 3:28:20 PM)
 	 * @return int
