@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/23 20:02:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -656,7 +656,7 @@ void CtiMCScheduler::calcDateTimeStart(const RWTime& now, const CtiMCSchedule& s
         start_tm.tm_year = sched.getStartYear() - 1900;
         temp = RWTime(&start_tm);
 
-        if( temp >= now )
+        if( temp > now )
             start_time = temp;
         else
             start_time = _invalid_time;
@@ -748,7 +748,7 @@ void CtiMCScheduler::calcWeekDayStart(const RWTime& now, const CtiMCSchedule& sc
     int i;
     for( i = start_tm.tm_wday; i <= 6; i++ ) {
         temp += 86400;
-        if( temp >= now && wdays[i] == 'Y' && 
+        if( temp > now && wdays[i] == 'Y' && 
            (on_holidays || 
             !holiday_mgr.isHoliday(RWDate(temp), sched.getHolidayScheduleID()))) {            
 
