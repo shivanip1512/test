@@ -364,7 +364,6 @@ public String getConnectionState()
 		
 		try
 		{
-System.out.print(Thread.currentThread().getName());			
 			com.cannontech.clientutils.CTILogger.info("...Retrieving MACS schedules...");
 			getConnection().sendRetrieveAllSchedules();
 		}
