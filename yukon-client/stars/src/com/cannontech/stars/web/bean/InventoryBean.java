@@ -161,7 +161,7 @@ public class InventoryBean {
 		}
 	};
 	
-	private int sortBy = CtiUtilities.NONE_ZERO_ID;
+	private int sortBy = YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO;
 	private int sortOrder = SORT_ORDER_ASCENDING;
 	private int filterBy = CtiUtilities.NONE_ZERO_ID;
 	private int deviceType = CtiUtilities.NONE_ZERO_ID;
