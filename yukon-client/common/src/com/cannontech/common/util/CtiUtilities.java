@@ -525,6 +525,18 @@ public final static String getDatabaseAlias() {
 	return "yukon";
 }
 
+/**
+ * Returns a registration string for the current running app
+ * @return java.lang.String
+ */
+public final static String getAppRegistration()
+{
+	return
+		getApplicationName() + "-" + 
+		getUserIPAddress() + ":" +
+		Integer.toHexString(Thread.currentThread().hashCode()) + "  (" +
+		getUserName() + ")";
+}
 
 /**
  * This method was created in VisualAge.
@@ -777,7 +789,7 @@ public final static String getYukonBase()
 public final static String getApplicationName()
 {
 	if( System.getProperty("cti.app.name") == null )
-		return CtiUtilities.STRING_NONE;
+		return "Webserver";
 	else
 		return System.getProperty("cti.app.name");
 }

@@ -61,7 +61,7 @@ public class GenericDBCacheHandler implements DBChangeListener, Observer
 			connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 			Registration reg = new Registration();
 
-			reg.setAppName( CtiUtilities.getAppRegistration() );
+			reg.setAppName( name + "_" + CtiUtilities.getAppRegistration() );
 				
 			reg.setAppIsUnique(0);
 			reg.setAppKnownPort(0);
