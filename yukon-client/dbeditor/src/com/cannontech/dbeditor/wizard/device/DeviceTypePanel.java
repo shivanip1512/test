@@ -60,6 +60,9 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 									PAOGroups.STRING_ALPHA_A1[0],
 									PAOGroups.STRING_DR_87[0],
 									PAOGroups.STRING_FULCRUM[0],  // Schlumberger
+                           PAOGroups.STRING_ION_7330[0],
+                           PAOGroups.STRING_ION_7700[0],
+                           PAOGroups.STRING_ION_8300[0],									
 									PAOGroups.STRING_LANDISGYR_RS4[0],
 									PAOGroups.STRING_QUANTUM[0],
 									PAOGroups.STRING_VECTRON[0],
@@ -68,9 +71,6 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 								},								
 								{	//RTUs
                            PAOGroups.STRING_DAVIS_WEATHER[0],
-                           PAOGroups.STRING_ION_7330[0],
-                           PAOGroups.STRING_ION_7700[0],
-                           PAOGroups.STRING_ION_8300[0],                           
                            PAOGroups.STRING_RTU_DNP[0],
 									PAOGroups.STRING_RTU_ILEX[0],
 									PAOGroups.STRING_RTU_WELCO[0]
