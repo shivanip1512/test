@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/07/10 21:12:42 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/07/17 22:25:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,26 +241,17 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
             //  we're overdue
             else
             {
-                if( lpBlockSize > 3600 )
-                {
-                    if( Now.seconds() % lpBlockSize )
-                    {
-                        //  we're on a block boundary - try after it's out of this block
-                        channelTime = Now.seconds() + lpBlockEvacuationTime;
-                    }
-                    else
-                    {
-                        //  try as soon as it's out of the current block
-                        channelTime  = Now.seconds() + lpBlockSize;
-                        channelTime -= Now.seconds() % lpBlockSize;  //  make sure we're on the trailing edge of the block
+                unsigned int overdueLPRetryRate = getLPRetryRate(lpDemandRate);
 
-                        channelTime += lpBlockEvacuationTime;
-                    }
-                }
-                else
+                /*if( Now.seconds() % overdueLPRetryRate )*/
                 {
-                    channelTime = Now.seconds() + 3600;
+                    channelTime  = Now.seconds() + overdueLPRetryRate;
+                    channelTime -= Now.seconds() % overdueLPRetryRate;
                 }
+                /*else
+                {
+                    channelTime = Now.seconds();
+                }*/
             }
 
             _nextLPTime[i] = channelTime;

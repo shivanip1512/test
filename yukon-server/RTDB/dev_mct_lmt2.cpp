@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/06/27 21:09:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/07/17 22:25:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,12 +186,17 @@ ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
         //  we're overdue
         else
         {
-            //  try again on the next 'loadprofileinterval' minutes boundary
-            nextTime  = Now.seconds() + lpDemandRate;
-            if( nextTime % lpDemandRate )
+            unsigned int overdueLPRetryRate = getLPRetryRate(lpDemandRate);
+
+            /*if( Now.seconds() % overdueLPRetryRate )*/
             {
-                nextTime -= nextTime % lpDemandRate;
+                nextTime  = Now.seconds() + overdueLPRetryRate;
+                nextTime -= Now.seconds() % overdueLPRetryRate;
             }
+            /*else
+            {
+                nextTime = Now.seconds();
+            }*/
         }
     }
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2003/07/14 18:23:40 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2003/07/17 22:25:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -361,26 +361,17 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
             //  we're overdue
             else
             {
-                if( lpBlockSize > 3600 )
-                {
-                    if( Now.seconds() % lpBlockSize )
-                    {
-                        //  we're on a block boundary - try after it's out of this block
-                        channelTime = Now.seconds() + lpBlockEvacuationTime;
-                    }
-                    else
-                    {
-                        //  try as soon as it's out of the current block
-                        channelTime  = Now.seconds() + lpBlockSize;
-                        channelTime -= Now.seconds() % lpBlockSize;  //  make sure we're on the trailing edge of the block
+                unsigned int overdueLPRetryRate = getLPRetryRate(lpDemandRate);
 
-                        channelTime += lpBlockEvacuationTime;
-                    }
-                }
-                else
+                /*if( Now.seconds() % overdueLPRetryRate )*/
                 {
-                    channelTime = Now.seconds() + 3600;
+                    channelTime  = Now.seconds() + overdueLPRetryRate;
+                    channelTime -= Now.seconds() % overdueLPRetryRate;
                 }
+                /*else
+                {
+                    channelTime = Now.seconds();
+                }*/
             }
 
             _nextLPTime[i] = channelTime;
@@ -478,10 +469,11 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                              lpDescriptorString.data(),
                              sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
 
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "\"" << OutMessage->Request.CommandStr << "\"" << endl;
+                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
                     outList.insert(tmpOutMess);
