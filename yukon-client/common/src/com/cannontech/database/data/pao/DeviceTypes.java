@@ -92,6 +92,8 @@ public interface DeviceTypes extends TypeBase
 	public final static int KVII					= DEVICE_OFFSET + 75;
 	
 	public final static int RTM						= DEVICE_OFFSET + 76;
+	
+	public final static int MCT410IL				= DEVICE_OFFSET + 77;
 
 
 	//all the possible text representation of each device type.
@@ -123,6 +125,7 @@ public interface DeviceTypes extends TypeBase
    public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
 	public static final String[] STRING_MCT_410_KWH_ONLY = {"MCT-410iLE", "MCT-410 kWh Only"};
+	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL"};  
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
