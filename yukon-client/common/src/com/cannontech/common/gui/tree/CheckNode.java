@@ -1,7 +1,8 @@
 package com.cannontech.common.gui.tree;
 
 import java.util.Enumeration;
-import javax.swing.tree.DefaultMutableTreeNode;
+
+import com.cannontech.database.model.DBTreeNode;
 
 /**
  * @author rneuharth
@@ -11,7 +12,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class CheckNode extends DefaultMutableTreeNode 
+public class CheckNode extends DBTreeNode 
 {
 //  public final static int SINGLE_SELECTION = 0;
 //  public final static int DIG_IN_SELECTION = 4;
@@ -29,7 +30,8 @@ public class CheckNode extends DefaultMutableTreeNode
 
   public CheckNode(Object userObject, boolean allowsChildren
                                     , boolean isSelected) {
-    super(userObject, allowsChildren);
+    super(userObject);
+    this.allowsChildren = allowsChildren;
     this.isSelected = isSelected;
 //    setSelectionMode(DIG_IN_SELECTION);
   }
@@ -55,8 +57,9 @@ public class CheckNode extends DefaultMutableTreeNode
       Enumeration enum = children.elements();      
       while (enum.hasMoreElements()) 
       {
-        CheckNode node = (CheckNode)enum.nextElement();
-        node.setSelected(isSelected);
+      	DBTreeNode node = (DBTreeNode)enum.nextElement();
+      	if( node instanceof CheckNode)
+	        ((CheckNode)node).setSelected(isSelected);
       }
     }
 
