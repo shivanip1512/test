@@ -1183,33 +1183,40 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(LONG cvpq)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::figureEstimatedVarLoadPointValue()
 {
-    DOUBLE tempValue;
-    if( getRecentlyControlledFlag() )
-        tempValue = getVarValueBeforeControl();
-    else
-        tempValue = getCurrentVarLoadPointValue();
-
-    for(LONG i=0;i<_ccfeeders.entries();i++)
+    if( getCurrentVarLoadPointId() > 0 )
     {
-        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-
-        for(LONG j=0;j<ccCapBanks.entries();j++)
+        DOUBLE tempValue;
+        if( getRecentlyControlledFlag() )
+            tempValue = getVarValueBeforeControl();
+        else
+            tempValue = getCurrentVarLoadPointValue();
+    
+        for(LONG i=0;i<_ccfeeders.entries();i++)
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-            if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+    
+            for(LONG j=0;j<ccCapBanks.entries();j++)
             {
-                tempValue = tempValue + currentCapBank->getBankSize();
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
+                    currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
+                {
+                    tempValue = tempValue + currentCapBank->getBankSize();
+                }
             }
+            //if( currentFeeder->getRecentlyControlledFlag() )
+            //{
+            currentFeeder->figureEstimatedVarLoadPointValue();
+            //}
         }
-        //if( currentFeeder->getRecentlyControlledFlag() )
-        //{
-        currentFeeder->figureEstimatedVarLoadPointValue();
-        //}
+    
+        setEstimatedVarLoadPointValue(tempValue);
     }
-
-    setEstimatedVarLoadPointValue(tempValue);
+    else
+    {
+        setEstimatedVarLoadPointValue(0.0);
+    }
 
     return *this;
 }
@@ -3030,6 +3037,15 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Undefined Substation Bus point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
+    }
+
+    if( _currentvarloadpointid <= 0 )
+    {
+        _currentvarloadpointvalue = 0;
+    }
+    if( _currentwattloadpointid <= 0 )
+    {
+        _currentwattloadpointvalue = 0;
     }
 }
 

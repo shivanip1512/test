@@ -1010,23 +1010,30 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOr
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
 {
-    DOUBLE tempValue;
-    if( getRecentlyControlledFlag() )
-        tempValue = getVarValueBeforeControl();
-    else
-        tempValue = getCurrentVarLoadPointValue();
-
-    for(LONG i=0;i<_cccapbanks.entries();i++)
+    if( getCurrentVarLoadPointId() > 0 )
     {
-        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-        if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-            currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
-        {
-            tempValue = tempValue + currentCapBank->getBankSize();
-        }
-    }
+        DOUBLE tempValue;
+        if( getRecentlyControlledFlag() )
+            tempValue = getVarValueBeforeControl();
+        else
+            tempValue = getCurrentVarLoadPointValue();
 
-    setEstimatedVarLoadPointValue(tempValue);
+        for(LONG i=0;i<_cccapbanks.entries();i++)
+        {
+            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+            if( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
+                currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
+            {
+                tempValue = tempValue + currentCapBank->getBankSize();
+            }
+        }
+
+        setEstimatedVarLoadPointValue(tempValue);
+    }
+    else
+    {
+        setEstimatedVarLoadPointValue(0.0);
+    }
 
     return *this;
 }
@@ -2042,6 +2049,15 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Undefined Feeder point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
+    }
+
+    if( _currentvarloadpointid <= 0 )
+    {
+        _currentvarloadpointvalue = 0;
+    }
+    if( _currentwattloadpointid <= 0 )
+    {
+        _currentwattloadpointvalue = 0;
     }
 }
 
