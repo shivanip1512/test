@@ -114,7 +114,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             if (deleteHw != null) {
             	// Build up request message for adding new hardware and preserving old hardware configuration
             	StarsCreateLMHardware createHw = (StarsCreateLMHardware)
-            			StarsFactory.newStarsLMHw( updateHw, StarsCreateLMHardware.class );
+            			StarsFactory.newStarsInventory( updateHw, StarsCreateLMHardware.class );
             	
             	for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
             		LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
