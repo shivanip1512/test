@@ -6,8 +6,12 @@ package com.cannontech.tools.msg;
  * @author: 
  */
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 
-public class PointGenerator {
+public class PointGenerator implements MessageListener 
+{
 /**
  * This method was created in VisualAge.
  * @param args java.lang.String[]
@@ -49,6 +53,10 @@ public static void main(String[] args)
 	 	forever = true;
 	
 	ClientConnection conn = new ClientConnection();
+	PointRegistration pr = new PointRegistration();
+	pr.setRegFlags( PointRegistration.REG_ALL_PTS_MASK );
+	conn.setRegistrationMsg( pr );
+	conn.addMessageListener( new PointGenerator() );
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);
@@ -134,4 +142,11 @@ public static void main(String[] args)
 
 	System.exit(0);
 }
+
+
+public void messageReceived(MessageEvent e)
+{
+
+}
+
 }
