@@ -999,7 +999,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
 	 */
-	public List getAllYukonGroups() {		
+	public synchronized List getAllYukonGroups() {		
 		if(allYukonGroups == null) {
 			allYukonGroups = new ArrayList();
 			YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
@@ -1011,7 +1011,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
 	 */
-	public List getAllYukonRoles() {		
+	public synchronized List getAllYukonRoles() {		
 		if( allYukonRoles == null) {
 			allYukonRoles = new ArrayList();
 			YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
@@ -1020,7 +1020,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonRoles;				
 	}
 		
-	public List getAllYukonRoleProperties() { 
+	public synchronized List getAllYukonRoleProperties() { 
 		if( allYukonRoleProperties == null) {
 			allYukonRoleProperties = new ArrayList();
 			final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
@@ -1031,7 +1031,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
 	 */
-	public List getAllYukonUsers() {		
+	public synchronized List getAllYukonUsers() {		
 		if(allYukonUsers == null) {
 			allYukonUsers = new ArrayList();
 			YukonUserLoader l = new YukonUserLoader(allYukonUsers, databaseAlias);
@@ -1043,7 +1043,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRolePropertyMap()
 	 */
-	public Map getYukonUserRolePropertyMap() 
+	public synchronized Map getYukonUserRolePropertyMap() 
 	{
 		if(allYukonUserRoleProperties == null) {
 			allYukonUserRoleProperties = new java.util.HashMap();
@@ -1057,7 +1057,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
 	 */
-	public Map getYukonGroupRolePropertyMap() 
+	public synchronized Map getYukonGroupRolePropertyMap() 
 	{
 		if(allYukonGroupRoleProperties == null) 
 		{
@@ -1072,7 +1072,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
 	 */
-	public Map getYukonUserGroupMap() 
+	public synchronized Map getYukonUserGroupMap() 
 	{
 		if(allYukonUserGroups == null) {
 			loadUsersAndGroups();
@@ -1083,7 +1083,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
 	 */
-	public Map getYukonGroupUserMap()
+	public synchronized Map getYukonGroupUserMap()
 	{
 		if(allYukonUserGroups == null) {
 			loadUsersAndGroups();
@@ -1103,7 +1103,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRoleIDLookupMap()
 	 */
-	public Map getYukonUserRoleIDLookupMap() 
+	public synchronized Map getYukonUserRoleIDLookupMap() 
 	{
 		if(allYukonUserLookupRoleIDs == null) {
 			loadRoleLookupMaps();
@@ -1111,7 +1111,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonUserLookupRoleIDs;
 	}
 	
-	public Map getYukonUserRolePropertyIDLookupMap() 
+	public synchronized Map getYukonUserRolePropertyIDLookupMap() 
 	{
 		if(allYukonUserLookupRolePropertyIDs == null) {
 			loadRoleLookupMaps();
@@ -1197,7 +1197,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
-	public List getAllEnergyCompanies() {
+	public synchronized List getAllEnergyCompanies() {
 		if(allEnergyCompanies == null) {
 			allEnergyCompanies = new ArrayList();
 			EnergyCompanyLoader l = new EnergyCompanyLoader(allEnergyCompanies, databaseAlias);
@@ -1209,7 +1209,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
 	 */
-	public Map getAllUserEnergyCompanies() {
+	public synchronized Map getAllUserEnergyCompanies() {
 		if(allUserEnergyCompanies == null) {
 			allUserEnergyCompanies = new java.util.HashMap();
 			UserEnergyCompanyLoader l = new UserEnergyCompanyLoader(allUserEnergyCompanies,getAllYukonUsers(), getAllEnergyCompanies(), databaseAlias);
@@ -1221,7 +1221,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllCustomers()
 	 */
-	public List getAllCustomers() {
+	public synchronized List getAllCustomers() {
 		if (allCustomers == null)
 		{
 			allCustomers = new ArrayList();
