@@ -41,7 +41,8 @@ public class PoolManager
 	{
 		"oracle.jdbc.OracleDriver",
 		"com.microsoft.jdbc.sqlserver.SQLServerDriver",
-		"net.sourceforge.jtds.jdbc.Driver"
+		"net.sourceforge.jtds.jdbc.Driver",
+		"sun.jdbc.odbc.JdbcOdbcDriver"  //only exists for backwards compatibility
 	};
 
 
