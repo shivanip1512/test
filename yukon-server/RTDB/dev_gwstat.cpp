@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/08/19 14:00:06 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/08/19 20:52:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -666,7 +666,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Cool Setpoint:  ");
-            if(_setpoints._coolSetpoint == 0x7fff)
+            if(_setpoints._coolSetpoint >= 0x7f00)
             {
                 astr += RWCString("Unknown\n");
             }
@@ -676,7 +676,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Heat Setpoint:  ");
-            if(_setpoints._heatSetpoint == 0x7fff)
+            if(_setpoints._heatSetpoint >= 0x7f00)
             {
                 astr += RWCString("Unknown\n");
             }
@@ -1057,7 +1057,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += ((" Cool Limit: "));
-            if(_setpointLimits._lowerCoolSetpointLimit == 0x7fff)
+            if(_setpointLimits._lowerCoolSetpointLimit >= 0x7f00)
             {
                 astr += (RWCString("Unknown"));
             }
@@ -1067,7 +1067,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += RWCString(" Heat Limit: ");
-            if(_setpointLimits._upperHeatSetpointLimit == 0x7fff)
+            if(_setpointLimits._upperHeatSetpointLimit >= 0x7f00)
             {
                 astr += (RWCString("Unknown"));
             }
@@ -1084,7 +1084,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             now = RWTime(_outdoorTemp._utime);
             astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Outdoor Temperature Received: " ));
 
-            if(_outdoorTemp._outdoorTemperature == 0x7fff)
+            if(_outdoorTemp._outdoorTemperature >= 0x7f00)
             {
                 astr += (RWCString("Unknown"));
             }
@@ -1193,7 +1193,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += (" Cool Setpoint: ");
-            if(_utilSetpoint._utilCoolSetpoint == 0x7fff)
+            if(_utilSetpoint._utilCoolSetpoint >= 0x7f00)
             {
                 astr += (RWCString("Unknown"));
             }
@@ -1203,7 +1203,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
 
             astr += (RWCString(" Heat Setpoint: "));
-            if(_utilSetpoint._utilHeatSetpoint == 0x7fff)
+            if(_utilSetpoint._utilHeatSetpoint >= 0x7f00)
             {
                 astr += (RWCString("Unknown\n"));
             }
@@ -1681,7 +1681,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             }
 
             astr += (RWCString(" Cool: "));
-            if(_schedule[day][period]._coolSetpoint == 0x7fff)
+            if(_schedule[day][period]._coolSetpoint >= 0x7f00)
             {
                 astr += (RWCString("Unknown"));
             }
@@ -1691,7 +1691,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             }
 
             astr += (RWCString(" \\ Heat: "));
-            if(_schedule[day][period]._heatSetpoint == 0x7fff)
+            if(_schedule[day][period]._heatSetpoint >= 0x7f00)
             {
                 astr += (RWCString("Unknown"));
             }
@@ -2816,71 +2816,7 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
             for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
             {
                 BYTE per = ( (9) << 4 | (pod & 0x0f) );
-                RWCString hhstr("xctodshh_" + CtiNumStr(per));
-                RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-                RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-                RWCString coolstr("xctodscool_" + CtiNumStr(per));
-
-                BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
-                BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
-                int heat = (BYTE)parse.getiValue(heatstr, 0xff);
-                int cool = (BYTE)parse.getiValue(coolstr, 0xff);
-
-                if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
-                {
-                    // One of them were defined!
-                    processed = 1;
-
-                    if(dow < 7 && pod < EP_PERIODS_PER_DAY)
-                    {
-                        if(heat == 0xff)
-                        {
-                            if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
-                            {
-                                heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " hsp 0x" << CtiNumStr(_schedule[dow][pod]._heatSetpoint).hex().zpad(4) << endl;
-                                }
-                            }
-                            else
-                            {
-                                heat = 68;
-                            }
-                        }
-                        if(cool == 0xff)
-                        {
-                            if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " csp 0x" << CtiNumStr(_schedule[dow][pod]._coolSetpoint).hex().zpad(4) << endl;
-                                }
-                                cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
-                            }
-                            else
-                            {
-                                cool = 80;
-                            }
-                        }
-
-#if 0
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Day    " << dow << endl;
-                            dout << " Period " << pod+1 << endl;
-                        }
-#endif
-
-                        _schedule[dow][pod]._ch_utime = 86400;
-                        _schedule[dow][pod]._utime = 86400;
-                    }
-
-                    sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat, scaleFahrenheit), convertToStatTemp(cool, scaleFahrenheit), hh, mm, 1 );
-                }
+                processed = processSchedulePeriod(msgsock, parse, OutMessage, dow, pod, per);
             }
         }
     }
@@ -2891,61 +2827,7 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
             for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
             {
                 BYTE per = ( (8) << 4 | (pod & 0x0f) );
-                RWCString hhstr("xctodshh_" + CtiNumStr(per));
-                RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-                RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-                RWCString coolstr("xctodscool_" + CtiNumStr(per));
-
-                BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
-                BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
-                int heat = (BYTE)parse.getiValue(heatstr, 0xff);
-                int cool = (BYTE)parse.getiValue(coolstr, 0xff);
-
-                if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
-                {
-                    // One of them were defined!
-                    processed = 1;
-
-                    if(dow < 7 && pod < EP_PERIODS_PER_DAY)
-                    {
-                        if(heat == 0xff)
-                        {
-                            if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
-                            {
-                                heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
-                            }
-                            else
-                            {
-                                heat = 68;
-                            }
-                        }
-                        if(cool == 0xff)
-                        {
-                            if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
-                            {
-                                cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
-                            }
-                            else
-                            {
-                                cool = 80;
-                            }
-                        }
-
-#if 0
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Day    " << dow << endl;
-                            dout << " Period " << pod+1 << endl;
-                        }
-#endif
-
-                        _schedule[dow][pod]._ch_utime = 86400;
-                        _schedule[dow][pod]._utime = 86400;
-                    }
-
-                    sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat), convertToStatTemp(cool), hh, mm, 1 );
-                }
+                processed = processSchedulePeriod(msgsock, parse, OutMessage, dow, pod, per);
             }
         }
     }
@@ -2956,61 +2838,7 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
             for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
             {
                 BYTE per = ( (7) << 4 | (pod & 0x0f) );
-                RWCString hhstr("xctodshh_" + CtiNumStr(per));
-                RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-                RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-                RWCString coolstr("xctodscool_" + CtiNumStr(per));
-
-                BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
-                BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
-                int heat = (BYTE)parse.getiValue(heatstr, 0xff);
-                int cool = (BYTE)parse.getiValue(coolstr, 0xff);
-
-                if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
-                {
-                    // One of them were defined!
-                    processed = 1;
-
-                    if(dow < 7 && pod < EP_PERIODS_PER_DAY)
-                    {
-                        if(heat == 0xff)
-                        {
-                            if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
-                            {
-                                heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
-                            }
-                            else
-                            {
-                                heat = 68;
-                            }
-                        }
-                        if(cool == 0xff)
-                        {
-                            if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
-                            {
-                                cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
-                            }
-                            else
-                            {
-                                cool = 80;
-                            }
-                        }
-
-#if 0
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Day    " << dow << endl;
-                            dout << " Period " << pod+1 << endl;
-                        }
-#endif
-
-                        _schedule[dow][pod]._ch_utime = 86400;
-                        _schedule[dow][pod]._utime = 86400;
-                    }
-
-                    sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat), convertToStatTemp(cool), hh, mm, 1 );
-                }
+                processed = processSchedulePeriod(msgsock, parse, OutMessage, dow, pod, per);
             }
         }
     }
@@ -3022,50 +2850,7 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
             for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
             {
                 BYTE per = ( (dow) << 4 | (pod & 0x0f) );
-                RWCString hhstr("xctodshh_" + CtiNumStr(per));
-                RWCString mmstr("xctodsmm_" + CtiNumStr(per));
-                RWCString heatstr("xctodsheat_" + CtiNumStr(per));
-                RWCString coolstr("xctodscool_" + CtiNumStr(per));
-
-                BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
-                BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
-                int heat = (BYTE)parse.getiValue(heatstr, 0xff);
-                int cool = (BYTE)parse.getiValue(coolstr, 0xff);
-
-                if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
-                {
-                    // One of them were defined!
-#if 0
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << " Dow " << hex << (int)dow << dec << endl;
-                        dout << " Pod " << hex << (int)pod << dec << endl;
-                        dout << hhstr << " " << (int)hh << endl;
-                        dout << mmstr << " " << (int)mm << endl;
-                        dout << heatstr << " " << (int)heat << endl;
-                        dout << coolstr << " " << (int)cool << endl;
-                    }
-#endif
-
-                    processed = 1;
-
-                    if(dow < 7 && pod < EP_PERIODS_PER_DAY)
-                    {
-#if 0
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Day    " << dow << endl;
-                            dout << " Period " << pod+1 << endl;
-                        }
-#endif
-
-                        _schedule[dow][pod]._ch_utime = 86400;
-                        _schedule[dow][pod]._utime = 86400;
-                    }
-
-                    sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat), convertToStatTemp(cool), hh, mm, 1 );
-                }
+                processed = processSchedulePeriod(msgsock, parse, OutMessage, dow, pod, per);
             }
         }
     }
@@ -3478,7 +3263,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     case TYPE_SETPOINTS_CH:
     case TYPE_SETPOINTS:
         {
-            if(_setpoints._coolSetpoint == 0x7fff || _setpoints._heatSetpoint == 0x7fff)
+            if(_setpoints._coolSetpoint >= 0x7f00 || _setpoints._heatSetpoint >= 0x7f00)
             {
                 astr = RWCString("0,");
                 astr += RWCString("0,");
@@ -3829,7 +3614,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     case TYPE_SETPOINTLIMITS_CH:
     case TYPE_SETPOINTLIMITS:
         {
-            if(_setpointLimits._lowerCoolSetpointLimit == 0x7fff)
+            if(_setpointLimits._lowerCoolSetpointLimit >= 0x7f00)
             {
                 astr += (RWCString("-1,"));
             }
@@ -3838,7 +3623,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + ","));
             }
 
-            if(_setpointLimits._upperHeatSetpointLimit == 0x7fff)
+            if(_setpointLimits._upperHeatSetpointLimit >= 0x7f00)
             {
                 astr += (RWCString("-1"));
             }
@@ -3858,7 +3643,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_OUTDOORTEMP:
         {
-            if(_outdoorTemp._outdoorTemperature == 0x7fff)
+            if(_outdoorTemp._outdoorTemperature >= 0x7f00)
             {
                 // astr += (RWCString("Unknown"));
                 astr = CtiNumStr(-100);
@@ -4012,7 +3797,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     case TYPE_UTILSETPOINT_CH:
     case TYPE_UTILSETPOINT:
         {
-            if(_utilSetpoint._utilCoolSetpoint == 0x7fff)
+            if(_utilSetpoint._utilCoolSetpoint >= 0x7f00)
             {
                 astr = RWCString("(UNKNOWN),");
             }
@@ -4021,7 +3806,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 astr = RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + ",");
             }
 
-            if(_utilSetpoint._utilHeatSetpoint == 0x7fff)
+            if(_utilSetpoint._utilHeatSetpoint >= 0x7f00)
             {
                 astr += RWCString("(UNKNOWN),");
             }
@@ -4386,7 +4171,7 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
             }
 
             short sp = convertFromStatTemp(_schedule[day][period]._coolSetpoint);
-            if(_schedule[day][period]._coolSetpoint == 0x7fff)
+            if(_schedule[day][period]._coolSetpoint >= 0x7f00)
             {
                 astr += RWCString("0,");
             }
@@ -4397,7 +4182,7 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
 
             sp = convertFromStatTemp(_schedule[day][period]._heatSetpoint);
 
-            if(_schedule[day][period]._heatSetpoint == 0x7fff)
+            if(_schedule[day][period]._heatSetpoint >= 0x7f00)
             {
                 astr += (RWCString("0"));
             }
@@ -4491,3 +4276,84 @@ bool CtiDeviceGatewayStat::getCompletedOperation( CtiPendingStatOperation &op )
     return gotone;
 }
 
+int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser &parse, CtiOutMessage *&OutMessage, int dow, int pod, BYTE per)
+{
+    int processed = 0;
+
+    RWCString hhstr("xctodshh_" + CtiNumStr(per));
+    RWCString mmstr("xctodsmm_" + CtiNumStr(per));
+    RWCString heatstr("xctodsheat_" + CtiNumStr(per));
+    RWCString coolstr("xctodscool_" + CtiNumStr(per));
+
+    BYTE hh = (BYTE)parse.getiValue(hhstr, 0xff);
+    BYTE mm = (BYTE)parse.getiValue(mmstr, 0xff);
+    int heat = (BYTE)parse.getiValue(heatstr, 0xff);
+    int cool = (BYTE)parse.getiValue(coolstr, 0xff);
+
+    if(hh != 0xff || mm != 0xff || heat != 0xff || cool != 0xff)
+    {
+        // One of them were defined!
+        processed = 1;
+
+        if(dow < 7 && pod < EP_PERIODS_PER_DAY)
+        {
+            if(hh == 0xff)
+            {
+                hh = _schedule[dow][pod]._hour;
+            }
+            if(mm == 0xff)
+            {
+                mm = _schedule[dow][pod]._minute;
+            }
+
+            if(heat == 0xff)
+            {
+                if(_schedule[dow][pod]._heatSetpoint ?= 0x7f00)
+                {
+                    heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " hsp 0x" << CtiNumStr(_schedule[dow][pod]._heatSetpoint).hex().zpad(4) << endl;
+                    }
+                }
+                else
+                {
+                    heat = 68;
+                }
+            }
+            if(cool == 0xff)
+            {
+                if(_schedule[dow][pod]._coolSetpoint >= 0x7f00)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " csp 0x" << CtiNumStr(_schedule[dow][pod]._coolSetpoint).hex().zpad(4) << endl;
+                    }
+                    cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
+                }
+                else
+                {
+                    cool = 80;
+                }
+            }
+
+#if 0
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Day    " << dow << endl;
+                dout << " Period " << pod+1 << endl;
+            }
+#endif
+
+            _schedule[dow][pod]._ch_utime = 86400;
+            _schedule[dow][pod]._utime = 86400;
+        }
+
+        sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat, scaleFahrenheit), convertToStatTemp(cool, scaleFahrenheit), hh, mm, 1 );
+    }
+
+    return processed;
+}
