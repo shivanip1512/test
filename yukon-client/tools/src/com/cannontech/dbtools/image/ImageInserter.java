@@ -46,7 +46,8 @@ public class ImageInserter extends MessageFrameAdaptor
 		//ii.insertImages(args[0]);
 	}
 	
-	public void insertImages(String dir) {
+	public void insertImages(String dir) throws Exception 
+	{
 		File fDir = new File(dir);
 		
 		if( !fDir.exists() ) {
@@ -93,12 +94,13 @@ public class ImageInserter extends MessageFrameAdaptor
 		}
 		catch(Exception e) {
 			e.printStackTrace();
+			throw e;
 		}
 		finally {
 			try {
 				pstmt.close();
 				conn.close();
-		    } catch(Exception e2 ) { e2.printStackTrace(); }
+		    } catch(Exception e2 ) { e2.printStackTrace(); throw e2; }
 			
 		}
 		
@@ -172,6 +174,7 @@ public class ImageInserter extends MessageFrameAdaptor
 		}
 		catch( Exception e )
 		{
+			getIMessageFrame().addOutput("-------- " + getName() + " Completed with an EXCEPTION" );
 			getIMessageFrame().finish( "Completed with an EXCEPTION" );
 		}
 
