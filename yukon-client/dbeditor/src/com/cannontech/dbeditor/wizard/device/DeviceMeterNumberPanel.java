@@ -231,9 +231,6 @@ public boolean isInputValid() {
 		return false;
 	}
 	
-
-	
-
 	return true;
 }
 /**
@@ -260,7 +257,10 @@ public static void main(java.lang.String[] args) {
  */
 public void setDefaultMeterNumber(String address) {
 	
-	getMeterNumberTextField().setText("10" + address);
+	if(is410)
+		getMeterNumberTextField().setText(address);
+	else
+		getMeterNumberTextField().setText("10" + address);
 	}
 /**
  * This method was created in VisualAge.
