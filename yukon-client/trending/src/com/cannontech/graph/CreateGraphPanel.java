@@ -577,8 +577,8 @@ private javax.swing.JTable getGraphGDSTable() {
 				GraphDataSeries.USAGE_TYPE_STRING,
 				GraphDataSeries.YESTERDAY_GRAPH_TYPE_STRING,
 				GraphDataSeries.PEAK_GRAPH_TYPE_STRING,
-				GraphDataSeries.USAGE_GRAPH_TYPE_STRING,
-				GraphDataSeries.THRESHOLD_TYPE_STRING
+				GraphDataSeries.USAGE_GRAPH_TYPE_STRING
+				//				,GraphDataSeries.THRESHOLD_TYPE_STRING	//not selectable!
 			};
 			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox(typeStrings);
 			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
