@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.yukon.IConnectionBase;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
@@ -17,8 +18,8 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 {
 	private InputStream inStrm = null;
 	private OutputStream outStrm = null;
-	
-	private Socket sock;
+
+	private Socket sock = null;
 	
 	private String host;
 	private int port;
@@ -49,6 +50,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	
 	// Keep track of all of this connections MessageListeners 
 	private ArrayList messageListeners = new ArrayList(5);
+
 /**
  * ClientConnection constructor comment.
  */
@@ -66,6 +68,18 @@ public ClientConnection(String host, int port) {
 	this.host = host;
 	this.port = port;	
 }
+
+/**
+ * Create a connection with a given client connection. Used for Java servers.
+ */
+public ClientConnection( Socket newSocket ) 
+{
+	this();
+
+	this.sock = newSocket;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (8/9/00 12:13:06 PM)
@@ -90,7 +104,7 @@ private void cleanUp()
 	}
 	catch( java.io.IOException ex )
 	{
-		com.cannontech.clientutils.CTILogger.error( ex.getMessage(), ex );
+		CTILogger.error( ex.getMessage(), ex );
 	}
 }
 /**
@@ -108,8 +122,8 @@ public void connect() throws java.io.IOException
 	}
 	catch( InterruptedException e )
 	{
-		//com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		com.cannontech.clientutils.CTILogger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
+		//CTILogger.error( e.getMessage(), e );
+		CTILogger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
 	}
 }
 /**
@@ -327,9 +341,13 @@ public void run()
 	{		
 		try
 		{
-			com.cannontech.clientutils.CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
+			// we were not given a Socket, so get one
+			if( this.sock == null )
+			{
+				CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
+				this.sock = new Socket( this.host, this.port );
+			}
 
-			this.sock = new Socket( this.host, this.port );
 
 			inStrm = new java.io.BufferedInputStream(this.sock.getInputStream());
 			outStrm = new java.io.BufferedOutputStream(this.sock.getOutputStream());
@@ -352,7 +370,7 @@ public void run()
 			setChanged();
 			notifyObservers(this);
 			
-			com.cannontech.clientutils.CTILogger.info("SOCKET open for " + this.getClass().getName() );
+			CTILogger.info("SOCKET open for " + this.getClass().getName() );
 
 			do
 			{
@@ -362,19 +380,19 @@ public void run()
 			inThread.interrupt();
 			outThread.interrupt();
 
-			com.cannontech.clientutils.CTILogger.info("Closing SOCKET for " + this.getClass().getName() );
+			CTILogger.info("CLOSING SOCKET for " + this.getClass().getName() );
 			sock.close();
 			
 		}
 		catch( InterruptedException e )
 		{
 			// The monitorThread must have been interrupted probably from disconnect()
-			com.cannontech.clientutils.CTILogger.info("  InterruptedException in monitorThread : " + e.getMessage() );
+			CTILogger.info("  InterruptedException in monitorThread : " + e.getMessage() );
 			return;
 		}
 		catch( java.io.IOException io )
 		{
-			com.cannontech.clientutils.CTILogger.info( io.getMessage() );
+			CTILogger.info( io.getMessage() );
 		}
 		
 		isValid = false;
@@ -394,12 +412,12 @@ public void run()
 			catch(InterruptedException e )
 			{
 				// The monitorThread must have been interrupted probably from disconnect()
-				com.cannontech.clientutils.CTILogger.info("  InterruptedException in monitorThread : " +  e.getMessage() );
+				CTILogger.info("  InterruptedException in monitorThread : " +  e.getMessage() );
 				return;
 			}
 		}
 
-		com.cannontech.clientutils.CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
+		CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
 	} 
 	
 }
