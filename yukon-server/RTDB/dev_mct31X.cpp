@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2003/07/17 22:25:56 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2003/08/11 20:13:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,8 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 #include "dllyukon.h"
+
+const double CtiDeviceMCT31X::MCT360_GEKV_KWHMultiplier = 2000000.0;
 
 set< CtiDLCCommandStore > CtiDeviceMCT31X::_commandStore;
 
@@ -472,7 +474,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                     }
 
@@ -483,8 +485,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "LP scan too early." << endl;
+                        dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -509,7 +510,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
         dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
     }
@@ -543,8 +544,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
+            dout << RWTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
         }
 
         retVal = false;
@@ -598,10 +598,10 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             {
                 status = decodeStatus(InMessage, TimeNow, vgList, retList, outList);
 
-                if(status)  //  OR these or something, we should be smarter
+                if(status)  //  FIX - OR these or something, we should be smarter
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - status scan error codes for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
@@ -640,8 +640,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             if(status != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+                dout << RWTime() << " **** Checkpoint - errors on Inherited::ResultDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
@@ -790,16 +789,19 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
             {
                 case CtiProtocolEmetcon::GetStatus_IEDLink:
                 {
+                    //  i don't know if this is valid for the status bytes
+#if 0
                     for( int i = 0; i < 4; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
                     {
-                        //  BCD is not make happiness.  so FIX!  Whee!
+                        //  Convert the bytes from BCD to normal byte values
                         DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
                     }
+#endif
 
                     switch( getIEDPort().getIEDType() )
                     {
                         case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
-
+                        {
                             resultString += getName() + " / IED / Alpha status:\n";
 
                             if( DSt->Message[0] & 0x01 )    resultString += "  Time Change\n";
@@ -847,17 +849,18 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             }
 
                             break;
+                        }
 
                         case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                        {
+                            resultString += getName() + " / IED / LGS4 status:  \n";
 
-                            resultString += getName() + " / IED / LGS4 status:\n";
-
-                            if( DSt->Message[0] & 0x01 )    resultString += "  S4 Low battery\n";
-                            if( DSt->Message[0] & 0x02 )    resultString += "  No S4 Programming\n";
-                            if( DSt->Message[0] & 0x04 )    resultString += "  S4 Memory Failure\n";
-                            if( DSt->Message[0] & 0x08 )    resultString += "  S4 Demand Overflow\n";
-                            if( DSt->Message[0] & 0x10 )    resultString += "  S4 Stuck Switch\n";
-                            if( DSt->Message[0] & 0x20 )    resultString += "  S4 Unsafe Power Fail\n";
+                            if( DSt->Message[0] & 0x01 )    resultString += "S4 Low battery\n";
+                            if( DSt->Message[0] & 0x02 )    resultString += "No S4 Programming\n";
+                            if( DSt->Message[0] & 0x04 )    resultString += "S4 Memory Failure\n";
+                            if( DSt->Message[0] & 0x08 )    resultString += "S4 Demand Overflow\n";
+                            if( DSt->Message[0] & 0x10 )    resultString += "S4 Stuck Switch\n";
+                            if( DSt->Message[0] & 0x20 )    resultString += "S4 Unsafe Power Fail\n";
 
                             switch( (DSt->Message[1] & 0xf0) >> 4 )
                             {
@@ -886,12 +889,12 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
                                 switch( DSt->Message[1] & 0x07 )
                                 {
-                                    case 0: resultString += "  MCT to S4 Session failed ($55)\n";               break;
-                                    case 1: resultString += "  MCT to S4 Session failed ($AA)\n";               break;
-                                    case 2: resultString += "  MCT to S4 Session failed (bad Security key)\n";  break;
-                                    case 3: resultString += "  MCT to S4 Session failed (get status)\n";        break;
-                                    case 4: resultString += "  MCT to S4 Session in progress\n";                break;
-                                    case 5: resultString += "  MCT to S4 communication Successful\n";           break;
+                                    case 0: resultString += "MCT to S4 Session failed ($55)\n";               break;
+                                    case 1: resultString += "MCT to S4 Session failed ($AA)\n";               break;
+                                    case 2: resultString += "MCT to S4 Session failed (bad Security key)\n";  break;
+                                    case 3: resultString += "MCT to S4 Session failed (get status)\n";        break;
+                                    case 4: resultString += "MCT to S4 Session in progress\n";                break;
+                                    case 5: resultString += "MCT to S4 communication Successful\n";           break;
                                 }
                             }
                             else
@@ -900,11 +903,87 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                             }
 
                             break;
+                        }
+
+                        case (CtiTableDeviceMCTIEDPort::GeneralElectricKV):
+                        {
+                            resultString += getName() + " / IED / GEKV status:\n";
+
+                            if( (DSt->Message[0] & 0xff) == 0xff )
+                            {
+                                resultString += "  KV Status byte uninitialized in MCT\n";
+                            }
+                            else if( DSt->Message[0] & 0x7f )
+                            {
+                                if( DSt->Message[0] & 0x01 )    resultString += "  KV Unprogrammed\n";
+                                if( DSt->Message[0] & 0x02 )    resultString += "  KV Memory failure\n";
+                                if( DSt->Message[0] & 0x04 )    resultString += "  KV Clock error\n";
+                                if( DSt->Message[0] & 0x08 )    resultString += "  KV Measurement element error\n";
+                                if( DSt->Message[0] & 0x10 )    resultString += "  KV Low battery error\n";
+                                if( DSt->Message[0] & 0x20 )    resultString += "  KV Low potential\n";
+                                if( DSt->Message[0] & 0x40 )    resultString += "  KV Demand threshold overload\n";
+                            }
+
+                            resultString += "Result of last communication with KV:  ";
+
+                            switch( (DSt->Message[1] & 0xf0) >> 4 )
+                            {
+                                case 0x0:   resultString += "communication successful\n"; break;
+                                case 0x1:   resultString += "MCT waiting 2 seconds for refresh after programming write\n"; break;
+                                case 0x2:   resultString += "communication terminated after NAK from KV\n"; break;
+                                case 0x3:   resultString += "communication terminated after incorrect CRC, cksum, or a NOK\n"; break;
+                                case 0x4:   resultString += "communication terminated after SCI framing or overrun error\n"; break;
+                                case 0x5:   resultString += "communication did not complete before buffer refresh\n"; break;
+                                case 0x6:   resultString += "MCT security key does not match KV key\n"; break;
+                                case 0x7:   resultString += "communication terminated after procedure write returned write failure\n"; break;
+                                case 0x8:   resultString += "MCT did not recognize type of connected meter\n"; break;
+                                case 0x9:   resultString += "MCT contains invalid NVRAM protocol setting\n"; break;
+                                case 0xa:   resultString += "communication terminated after partial loss of response packet\n"; break;
+                                case 0xb:   resultString += "communication terminated after invalid character received in response packet\n"; break;
+                                case 0xd:   resultString += "communication terminated after duplicate packet received from KV\n"; break;
+
+                                case 0xc:
+                                case 0xe:
+                                case 0xf:   resultString += "undefined error code " + CtiNumStr((DSt->Message[1] & 0xf0) >> 4) + "\n"; break;
+                            }
+
+                            if( DSt->Message[1] & 0x08 )    resultString += "  Last communication failed\n";
+
+                            resultString += "Level of communication reached:";
+
+                            switch( DSt->Message[1] & 0x07 )
+                            {
+                                case 0x0:   resultString += "  Identification\n"; break;
+                                case 0x1:   resultString += "  Negotiate\n"; break;
+                                case 0x2:   resultString += "  Logon\n"; break;
+                                case 0x3:   resultString += "  Security\n"; break;
+                                case 0x4:   resultString += "  Determine meter type/mode of operation\n"; break;
+                                case 0x5:   resultString += "  Read GE status byte\n"; break;
+                                case 0x6:   resultString += "  Full session established\n"; break;
+                                case 0x7:   resultString += "  Logoff/terminate\n"; break;
+                            }
+
+                            if( DSt->Message[2] & 0x10 )  resultString += "  Communication with KV terminated after BCH error:\n";
+
+                            resultString += "Firmware version:  ";
+                            if(      (DSt->Message[4] & 0xf0) == 0x00 )  resultString += "<= 5.2\n";
+                            else if( (DSt->Message[4] & 0xf0) == 0x10 )  resultString += "5.3\n";
+                            else if( (DSt->Message[4] & 0xf0) == 0x20 )  resultString += ">= 5.4\n";
+                            else if( (DSt->Message[4] & 0xf0) == 0xf0 )  resultString += "unrecognized version\n";
+                            else                                         resultString += "bad firmware ID byte: " + CtiNumStr(DSt->Message[4] & 0xf0).xhex() + "\n";
+
+                            resultString += "Meter type:  ";
+                            if(      (DSt->Message[4] & 0x0f) == 0x00 )  resultString += "GE kV\n";
+                            else if( (DSt->Message[4] & 0x0f) == 0x01 )  resultString += "GE kV2\n";
+                            else                                         resultString += "unknown meter type " + CtiNumStr(DSt->Message[4] & 0x0f) + "\n";
+
+                            break;
+                        }
 
                         default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -916,7 +995,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                 default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -988,15 +1067,16 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                 }
                 else
                 {
-                    for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
-                    {
-                        //  BCD is not make happiness.  so FIX!  Whee!
-                        DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
-                    }
-
                     switch( getIEDPort().getIEDType() )
                     {
-                        case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                        case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                        {
+                            for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                            {
+                                //  Convert the bytes from BCD to normal byte values
+                                DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                            }
+
                             resultString += getName() + " / IED / current time: ";
                             resultString += CtiNumStr((int)DSt->Message[1]).zpad(2) + "/" +
                                             CtiNumStr((int)DSt->Message[2]).zpad(2) + "/" +
@@ -1006,9 +1086,18 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                                             CtiNumStr((int)DSt->Message[5]).zpad(2) + "\n";
                             resultString += "Demand Reset Count: " + CtiNumStr((int)DSt->Message[6]) + "\n";
                             resultString += "Current TOU Rate: " + RWCString((char)('A' + ((DSt->Message[7] & 0x0C) >> 2)));
-                            break;
 
-                        case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                            break;
+                        }
+
+                        case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                        {
+                            for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
+                            {
+                                //  Convert the bytes from BCD to normal byte values
+                                DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
+                            }
+
                             resultString += getName() + " / IED / current time: ";
                             if( DSt->Message[6] <= 5 )
                             {
@@ -1024,12 +1113,71 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
                             resultString += "Outage count: " + CtiNumStr((int)DSt->Message[7]) + "\n";
                             resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07)));
+
                             break;
+                        }
+
+                        case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                        {
+                            resultString += getName() + " / IED / current time: ";
+
+                            int year, month, day, hour, minute, second;
+                            int rate,    tou_rtp, meter_class, frequency,
+                                holiday, season,  outages,     service;
+
+                            year        =   DSt->Message[0]         >> 1;
+                            month       = ((DSt->Message[0] & 0x01) << 3) |
+                                          ((DSt->Message[1] & 0xe0) >> 5);
+                            day         =  (DSt->Message[1] & 0x1f);
+
+                            hour        =   DSt->Message[2];
+                            minute      =   DSt->Message[3];
+                            second      =   DSt->Message[4];
+
+
+                            resultString += CtiNumStr(hour) + ":" + CtiNumStr(minute).zpad(2) + ":" + CtiNumStr(second).zpad(2) + " ";
+                            resultString += CtiNumStr(month) + "/" + CtiNumStr(day) + "/" + CtiNumStr(year + 2000) + "\n";
+
+                            rate        =  (DSt->Message[5] & 0xe0) >> 5;
+
+                            tou_rtp     =   DSt->Message[6] & 0x03;
+                            meter_class =  (DSt->Message[6] & 0x74) >> 3;
+                            frequency   =  (DSt->Message[6] & 0x80) >> 7;
+
+                            resultString += "Current TOU Rate: " + RWCString((char)('A' + (DSt->Message[8] & 0x07))) + "\n";
+
+                            holiday     =  (DSt->Message[7] & 0xf0) >> 4;
+                            season      =   DSt->Message[7] & 0x0f;
+
+                            outages     =  (DSt->Message[8]         << 8) |
+                                            DSt->Message[9];
+
+                            service     =   DSt->Message[10];
+
+
+                            resultString += "Electrical Service: ";
+
+                            switch( service )
+                            {
+                                case 0x00:  resultString += "1-Phase, 2-Wire";          break;
+                                case 0x01:  resultString += "1-Phase, 3-Wire";          break;
+                                case 0x02:  resultString += "3-Phase, 3-Wire (Delta)";  break;
+                                case 0x03:  resultString += "3-Phase, 4-Wire (Delta)";  break;
+                                case 0x04:  resultString += "3-Phase, 4-Wire (Wye)";    break;
+                                case 0x05:  resultString += "Network";                  break;
+                                case 0xff:  resultString += "Service Error";            break;
+                                default:    resultString += "Unknown service status " + CtiNumStr(service);  break;
+                            }
+
+                            resultString += "\n";
+
+                            break;
+                        }
 
                         default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
 
@@ -1043,42 +1191,82 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
             {
                 switch( getIEDPort().getIEDType() )
                 {
-                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
                     {
                         resultString += getName() + " / Alpha Power Plus scan info:\n";
 
-                        if( DSt->Message[5] == 11 )
-                            resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
-                        else if( DSt->Message[5] == 12 )
-                            resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
-                        else
-                            resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
+                        if(      DSt->Message[5] == 11 )    resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
+                        else if( DSt->Message[5] == 12 )    resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
+                        else                                resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
+
+                        resultString += "  Scan Offset:     " + CtiNumStr(((int)DSt->Message[3] * 256) + (int)DSt->Message[4]).spad(3) + "\n";
 
                         break;
                     }
-                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
                     {
                         resultString += getName() + " / Landis and Gyr S4 scan info:\n";
 
-                        if( DSt->Message[5] == 0 )
-                            resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
-                        else
-                            resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
+                        if( DSt->Message[5] == 0 )  resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
+                        else                        resultString += "  Buffer Contains: S4 Meter Read Cmd: "      + CtiNumStr((int)DSt->Message[4]) + "\n";
+
+                        resultString += "  Scan Offset:     " + CtiNumStr(((int)DSt->Message[3] * 256) + (int)DSt->Message[4]).spad(3) + "\n";
+
                         break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        int offset, tableid;
+
+                        offset  = DSt->Message[3] << 16 |
+                                  DSt->Message[4] << 8  |
+                                  DSt->Message[5];
+
+                        tableid = DSt->Message[6] << 8  |
+                                  DSt->Message[7];
+
+                        resultString += getName() + " / General Electric KV scan info:\n";
+
+                        if( tableid == 0xffff )
+                        {
+                            resultString += "  Buffer contains pre-canned TOU data\n";
+                        }
+                        else
+                        {
+                            resultString += "  Buffer contains table " + CtiNumStr(tableid) + "\n";
+                        }
+
+                        resultString += "  Scan Offset: " + CtiNumStr(offset) + "\n";
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
-                resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
+                resultString += "  Scan Rate: " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
                 resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
 
                 if( DSt->Message[2] == 0 )
                     DSt->Message[2] = 128;
 
                 resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
-                resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
 
                 ReturnMsg->setResultString( resultString );
+
                 break;
+            }
+
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage->Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -1171,7 +1359,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                 if( parse.getFlags() & CMD_FLAG_GV_RATET )
                 {
-                    //  NOOP
+                    //  NOOP, leave the pid alone
                 }
                 else if( parse.getFlags() & CMD_FLAG_GV_RATED )
                 {
@@ -1218,6 +1406,26 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                         break;
                     }
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        unsigned long tmp, exp;
+
+                        tmp  = 0;
+                        tmp |=  DSt->Message[0]         << 12;
+                        tmp |=  DSt->Message[1]         <<  4;
+                        tmp |= (DSt->Message[2] & 0xf0) >>  4;
+
+                        exp  =  DSt->Message[2] & 0x0f;
+
+                        Value = tmp * pow(2, exp);
+
+                        break;
+                    }
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
 
                 if( pPoint != NULL )
@@ -1258,6 +1466,25 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         Value = MAKEUSHORT(DSt->Message[2], DSt->Message[3]);
 
                         break;
+                    }
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        unsigned long tmp, exp;
+
+                        tmp  = 0;
+                        tmp |=  DSt->Message[3]         << 12;
+                        tmp |=  DSt->Message[4]         <<  4;
+                        tmp |= (DSt->Message[5] & 0xf0) >>  4;
+                        exp  =  DSt->Message[5] & 0x0f;
+
+                        Value = tmp * pow(2, exp);
+
+                        break;
+                    }
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
 
@@ -1320,6 +1547,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                         break;
                     }
+
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
                     {
                         lValue = MAKEUSHORT(DSt->Message[4], DSt->Message[5]);
@@ -1328,7 +1556,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
 
-                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsPhaseA_PointOffset, AnalogPointType);
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType);
 
                         if( pPoint != NULL )
                         {
@@ -1356,7 +1584,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
 
-                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsPhaseB_PointOffset, AnalogPointType);
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType);
 
                         if( pPoint != NULL )
                         {
@@ -1384,7 +1612,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
 
-                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsPhaseC_PointOffset, AnalogPointType);
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType);
 
                         if( pPoint != NULL )
                         {
@@ -1412,7 +1640,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         if( lValue == 0xfffd )  lValue = 65534;
                         Value = lValue * 0.01;
 
-                        pPoint = getDevicePointOffsetTypeEqual(MCT360_LGS4_VoltsNeutralCurrent_PointOffset, AnalogPointType);
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsNeutralCurrent_PointOffset, AnalogPointType);
 
                         if( pPoint != NULL )
                         {
@@ -1435,6 +1663,111 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         }
 
                         break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        int voltsA, voltsB, voltsC;
+                        double kvVoltageMultiplier = 0.10;
+
+                        voltsA = MAKEUSHORT(DSt->Message[ 7], DSt->Message[ 6]);
+                        voltsB = MAKEUSHORT(DSt->Message[ 9], DSt->Message[ 8]);
+                        voltsC = MAKEUSHORT(DSt->Message[11], DSt->Message[10]);
+
+                        Value = voltsA * kvVoltageMultiplier;
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Phase A Volts: " + CtiNumStr(Value) + "\n";
+                        }
+
+                        Value = voltsB * kvVoltageMultiplier;
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                                CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Phase B Volts: " + CtiNumStr(Value) + "\n";
+                        }
+
+                        Value = voltsC * kvVoltageMultiplier;
+                        pPoint = getDevicePointOffsetTypeEqual(MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType);
+
+                        if( pPoint != NULL )
+                        {
+                            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( Value );
+
+                            pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
+                                            CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
+
+                            if(pData != NULL)
+                            {
+                                ReturnMsg->PointData().insert(pData);
+                                pData = NULL;  // We just put it on the list...
+                            }
+                        }
+                        else
+                        {
+                            resultString += "Phase C Volts: " + CtiNumStr(Value) + "\n";
+                        }
+
+                        if( DSt->Message[12] == 0xff )
+                        {
+                            resultString += "Electrical Service Error detected\n";
+                        }
+                        else if( DSt->Message[12] )
+                        {
+                            resultString += "Cautions:\n";
+
+                            if( DSt->Message[12] & 0x01 ) resultString += "Polarity, Cross Phase, Reverse Energy Flow\n";
+                            if( DSt->Message[12] & 0x02 ) resultString += "Voltage Imbalance\n";
+                            if( DSt->Message[12] & 0x04 ) resultString += "Inactive Phase Current\n";
+                            if( DSt->Message[12] & 0x08 ) resultString += "Current Imbalance\n";
+                            if( DSt->Message[12] & 0x10 ) resultString += "High Distortion\n";
+                            if( DSt->Message[12] & 0x20 ) resultString += "Under Voltage\n";
+                            if( DSt->Message[12] & 0x40 ) resultString += "Over Voltage\n";
+                            if( DSt->Message[12] & 0x80 ) resultString += "High Neutral Current\n";
+                        }
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -1487,6 +1820,51 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
                         break;
                     }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        long     tmpLong;
+                        unsigned tmpUInt;
+
+                        if( parse.getFlags() & CMD_FLAG_GV_KVAH || parse.getFlags() & CMD_FLAG_GV_KVARH )
+                        {
+                            tmpLong = (DSt->Message[ 6] << 24) |
+                                      (DSt->Message[ 7] << 16) |
+                                      (DSt->Message[ 8] <<  8) |
+                                       DSt->Message[ 9];
+                            tmpUInt = (DSt->Message[10] <<  8) |
+                                       DSt->Message[11];
+
+                            Value  = tmpLong;
+                            Value *= 256.0 * 256.0;  //  effectively, Value << 16
+                            Value += tmpUInt;
+
+                            Value /= MCT360_GEKV_KWHMultiplier;
+                        }
+                        else
+                        {
+                            tmpLong = (DSt->Message[0] << 24) |
+                                      (DSt->Message[1] << 16) |
+                                      (DSt->Message[2] <<  8) |
+                                       DSt->Message[3];
+                            tmpUInt = (DSt->Message[4] <<  8) |
+                                       DSt->Message[5];
+
+                            Value  = tmpLong;
+                            Value *= 256.0 * 256.0;  //  effectively, Value << 16
+                            Value += tmpUInt;
+
+                            Value /= MCT360_GEKV_KWHMultiplier;
+                        }
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
 
 
@@ -1514,26 +1892,67 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
             {
                 pPoint = getDevicePointOffsetTypeEqual( pid, AnalogPointType );
 
-                if( getIEDPort().getIEDType() == CtiTableDeviceMCTIEDPort::AlphaPowerPlus )
+                switch( getIEDPort().getIEDType() )
                 {
-                    Value  = BCDtoBase10( DSt->Message + 8, 5 );
-                    Value /= 100.0;
-
-                }
-                else
-                {
-                    Value = 0.0;
-
-                    //  reverse the order so it works with a standard BCD->base10 call
-                    char tmp;
-                    for( int i = 0; i < 3; i++ )
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
                     {
-                        tmp = DSt->Message[i];
-                        DSt->Message[i] = DSt->Message[5-i];
-                        DSt->Message[5-i] = tmp;
+                        Value  = BCDtoBase10( DSt->Message + 8, 5 );
+                        Value /= 100.0;
+
+                        break;
                     }
 
-                    Value  = BCDtoBase10( DSt->Message, 6 );
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        Value = 0.0;
+
+                        //  reverse the order so it works with a standard BCD->base10 call
+                        char tmp;
+                        for( int i = 0; i < 3; i++ )
+                        {
+                            tmp = DSt->Message[i];
+                            DSt->Message[i] = DSt->Message[5-i];
+                            DSt->Message[5-i] = tmp;
+                        }
+
+                        Value  = BCDtoBase10( DSt->Message, 6 );
+
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        long     tmpLong;
+                        unsigned tmpUInt;
+
+                        tmpLong = (DSt->Message[0] << 24) |
+                                  (DSt->Message[1] << 16) |
+                                  (DSt->Message[2] <<  8) |
+                                   DSt->Message[3];
+                        tmpUInt = (DSt->Message[4] <<  8) |
+                                   DSt->Message[5];
+
+                        Value  = tmpLong;
+                        Value *= 256.0 * 256.0;  //  effectively, Value << 16
+                        Value += tmpUInt;
+
+                        Value /= MCT360_GEKV_KWHMultiplier;
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        pPoint = NULL;  //  we can't do a point update - we don't know how to interpret the data
+                        Value  = 0.0;
+
+                        break;
+                    }
                 }
 
                 if( pPoint != NULL )
@@ -1563,14 +1982,20 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
                     {
                         Value  = BCDtoBase10( DSt->Message, 3 );
+                        Value /= 1000.0;
+
                         for( i = 3; i < 8; i++ )
                         {
-                            //  BCD is not make happiness.  so FIX!  Whee!
+                            //  Convert the bytes from BCD to normal byte values
                             DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
                         }
-                        datestamp = RWDate((unsigned)DSt->Message[5], (unsigned)DSt->Message[4], (unsigned)DSt->Message[3] + 2000 );
-                        timestamp = RWTime( datestamp, (unsigned)DSt->Message[6], (unsigned)DSt->Message[7] );
-                        Value /= 1000.0;
+
+                        datestamp = RWDate((unsigned)DSt->Message[5],
+                                           (unsigned)DSt->Message[4],
+                                           (unsigned)DSt->Message[3] + 2000 );
+                        timestamp = RWTime( datestamp,
+                                            (unsigned)DSt->Message[6],
+                                            (unsigned)DSt->Message[7] );
 
                         break;
                     }
@@ -1578,13 +2003,59 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
                     {
                         Value  = (DSt->Message[7] << 8) + DSt->Message[6];
+
                         for( i = 8; i < 13; i++ )
                         {
-                            //  BCD is not make happiness.  so FIX!  Whee!
+                            //  Convert the bytes from BCD to normal byte values
                             DSt->Message[i] = (((DSt->Message[i] & 0xf0) / 16) * 10) + (DSt->Message[i] & 0x0f);
                         }
-                        datestamp = RWDate((unsigned)DSt->Message[11], (unsigned)DSt->Message[12], (unsigned)DSt->Message[10] + 2000 );
-                        timestamp = RWTime( datestamp, (unsigned)DSt->Message[9], (unsigned)DSt->Message[8] );
+
+                        datestamp = RWDate((unsigned)DSt->Message[11],
+                                           (unsigned)DSt->Message[12],
+                                           (unsigned)DSt->Message[10] + 2000);
+                        timestamp = RWTime(datestamp,
+                                           (unsigned)DSt->Message[9],
+                                           (unsigned)DSt->Message[8]);
+
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        unsigned long tmp, exp;
+                        unsigned year, month, day, hour, minute, second;
+
+                        tmp  = 0;
+                        tmp |=  DSt->Message[6]         << 12;
+                        tmp |=  DSt->Message[7]         <<  4;
+                        tmp |= (DSt->Message[8] & 0xf0) >>  4;
+                        exp  =  DSt->Message[8] & 0x0f;
+
+                        Value = tmp * pow(2, exp);
+
+                        year        =   DSt->Message[ 9]         >> 1;
+                        month       = ((DSt->Message[ 9] & 0x01) << 3) |
+                                      ((DSt->Message[10] & 0xe0) >> 5);
+                        day         =  (DSt->Message[10] & 0x1f);
+
+                        hour        =   DSt->Message[11];
+                        minute      =   DSt->Message[12];
+
+                        datestamp = RWDate(day, month, year + 2000 );
+                        timestamp = RWTime(datestamp, hour, minute);
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        pPoint = NULL;  //  we can't do a point update - we don't know how to interpret the data
+                        Value  = 0.0;
 
                         break;
                     }
