@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct22X.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/18 20:52:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,10 @@ protected:
         MCT22X_DiscLen      =    3,  //  Gets last latch cmnd recv, reserved byte, LCIMAG
         MCT22X_PutMReadAddr = 0x86,
         MCT22X_PutMReadLen  =    9,
+        MCT22X_DemandAddr   = 0x86,
+        MCT22X_DemandLen    =    6
     };
+
 
 private:
 
@@ -55,5 +58,6 @@ public:
    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
    virtual INT ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+   int decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 };
 #endif // #ifndef __DEV_MCT22X_H__

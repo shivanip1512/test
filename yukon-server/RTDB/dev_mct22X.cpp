@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/18 20:52:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,13 +65,18 @@ bool CtiDeviceMCT22X::initCommandStore()
                             (int)MCT22X_MReadLen );
    _commandStore.insert( cs );
 
-//  if'n'when - this meter requires you to subtract the current and previous meter readings to get a 5-minute demand
-//    value...
-//   cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
-//   cs._io      = IO_READ;
-//   cs._funcLen = make_pair( (int)MCT22X_DemandAddr,
-//                            (int)MCT22X_DemandLen );
-//   _commandStore.insert( cs );
+//  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value
+   cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
+   cs._io      = IO_READ;
+   cs._funcLen = make_pair( (int)MCT22X_DemandAddr,
+                            (int)MCT22X_DemandLen );
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
+   cs._io      = IO_READ;
+   cs._funcLen = make_pair( (int)MCT22X_DemandAddr,
+                            (int)MCT22X_DemandLen );
+   _commandStore.insert( cs );
 
    return failed;
 }
@@ -116,6 +121,13 @@ INT CtiDeviceMCT22X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     switch(InMessage->Sequence)
     {
+        case (CtiProtocolEmetcon::GetValue_Demand):
+        case (CtiProtocolEmetcon::Scan_Integrity):
+        {
+            status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         default:
         {
             status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -132,3 +144,92 @@ INT CtiDeviceMCT22X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
     return status;
 }
+
+
+
+INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn =  InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    resetScanPending();
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+        INT    j;
+        ULONG  curead, prevrd;
+        double Value;
+        RWCString resultString;
+
+        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiPointDataMsg *pData     = NULL;
+        CtiPointBase    *pPoint;
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        curead = ((DSt->Message[3] & 0x3f) << 16) |
+                  (DSt->Message[4]         <<  8) |
+                   DSt->Message[5];
+        prevrd = ((DSt->Message[0] & 0x3f) << 16) |
+                  (DSt->Message[1]         <<  8) |
+                   DSt->Message[2];
+
+        //  figure out the difference between current and previous readings
+        Value  = curead - prevrd;
+        //  turn raw pulses into a demand reading
+        Value *= 12;
+
+        //  look for first defined DEMAND accumulator
+        pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
+
+        if(pPoint != NULL)
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
+            RWTime pointTime;
+
+            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
+
+            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
+            //  correct to beginning of interval
+
+            if(pData != NULL)
+            {
+                pointTime -= pointTime.seconds() % getDemandInterval();
+                pData->setTime( pointTime );
+                ReturnMsg->PointData().insert(pData);
+                pData = NULL;  // We just put it on the list...
+            }
+        }
+        else
+        {
+            resultString = getName() + " / Demand = " + CtiNumStr((int)Value) + "  --  POINT UNDEFINED IN DB";
+            ReturnMsg->setResultString(resultString);
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+   return status;
+}
+
+
+
