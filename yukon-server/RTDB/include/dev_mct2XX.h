@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2XX.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/06/27 21:05:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,23 +27,40 @@ protected:
 
     enum
     {
-        MCT2XX_PFCountAddr = 0x20,
-        MCT2XX_PFCountLen  =    2,
-        MCT2XX_TimeAddr    = 0x46,
-        MCT2XX_TimeLen     =    3,
+        MCT2XX_PFCountPos = 0x20,
+        MCT2XX_PFCountLen =    2,
+        MCT2XX_TimePos    = 0x46,
+        MCT2XX_TimeLen    =    3,
 
-        MCT2XX_MultAddr    = 0x90,
-        MCT2XX_MultLen     =    2,
+        MCT2XX_MultPos    = 0x90,
+        MCT2XX_MultLen    =    2,
 
-        MCT2XX_GenStatAddr = 0x3D,
-        MCT2XX_GenStatLen  =    9,
-        MCT2XX_OptionAddr  = 0x2F,
-        MCT2XX_OptionLen   =    1,
+        MCT2XX_GenStatPos = 0x3D,
+        MCT2XX_GenStatLen =    9,
+        MCT2XX_OptionPos  = 0x2F,
+        MCT2XX_OptionLen  =    1,
 
-        MCT2XX_ResetAddr   = 0x43,
-        MCT2XX_ResetLen    =    3
+        MCT2XX_ResetPos   = 0x43,
+        MCT2XX_ResetLen   =    3
     };
 
+    enum
+    {
+        //  these addresses are not valid for the 210 series meters, but that
+        //    doesn't matter because these are never added in the 210 initCommandStore
+
+        MCT2XX_GroupAddrPos     = 0x28,
+        MCT2XX_GroupAddrLen     =    5,
+
+        MCT2XX_GroupAddrBronzePos      = 0x28,
+        MCT2XX_GroupAddrBronzeLen      =    1,
+        MCT2XX_GroupAddrLeadPos        = 0x29,
+        MCT2XX_GroupAddrLeadLen        =    3,
+        MCT2XX_GroupAddrGoldSilverPos  = 0x2c,
+        MCT2XX_GroupAddrGoldSilverLen  =    1,
+        MCT2XX_UniqAddrPos             = 0x22,
+        MCT2XX_UniqAddrLen             =    6
+    };
 
 private:
 

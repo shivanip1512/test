@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/06/27 21:05:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,55 +61,55 @@ bool CtiDeviceMCT2XX::initCommandStore()
     //  MCT 2xx common commands
     cs._cmd     = CtiProtocolEmetcon::GetValue_PFCount;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT2XX_PFCountAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_PFCountPos,
                              (int)MCT2XX_PFCountLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_PFCountAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_PFCountPos,
                              (int)MCT2XX_PFCountLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT2XX_GenStatAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_GenStatPos,
                              (int)MCT2XX_GenStatLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_ResetAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_ResetPos,
                              (int)MCT2XX_ResetLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT2XX_MultAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_MultPos,
                              (int)MCT2XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT2XX_MultAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_MultPos,
                              (int)MCT2XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Options;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT2XX_OptionAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_OptionPos,
                              (int)MCT2XX_OptionLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT2XX_TimeAddr,
+    cs._funcLen = make_pair( (int)MCT2XX_TimePos,
                              (int)MCT2XX_TimeLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
     cs._io      = IO_WRITE | Q_ARMC;
-    cs._funcLen = make_pair( (int)MCT_TSyncAddr,
+    cs._funcLen = make_pair( (int)MCT_TSyncPos,
                              (int)MCT_TSyncLen );
     _commandStore.insert( cs );
 
