@@ -15,7 +15,7 @@ CtiMutex::CtiMutex()
 {
 #ifdef _WINDOWS
     hMutex = CreateMutex( NULL, FALSE, NULL );
-#ifdef DEBUG
+#ifdef _DEBUG
     _threadID = 0;
 #endif
 #endif
@@ -37,7 +37,7 @@ bool CtiMutex::acquire()
 {
 #ifdef _WINDOWS
     DWORD result = WaitForSingleObject( hMutex, INFINITE );
-#ifdef DEBUG
+#ifdef _DEBUG
     _threadID = GetCurrentThreadId();
 #endif
     return( result == WAIT_OBJECT_0 );
@@ -56,7 +56,7 @@ bool CtiMutex::acquire(unsigned long millis)
 #ifdef _WINDOWS
     DWORD result = WaitForSingleObject( hMutex, millis );
     // assert(result != WAIT_FAILED);   // Why??? CGP 021502
-#ifdef DEBUG
+#ifdef _DEBUG
     _threadID = GetCurrentThreadId();
 #endif
     return( result == WAIT_OBJECT_0 );
@@ -73,7 +73,7 @@ void CtiMutex::release()
 #ifdef _WINDOWS
     ReleaseMutex( hMutex );
 
-#ifdef DEBUG
+#ifdef _DEBUG
     _threadID = 0;
 #endif
 #endif
