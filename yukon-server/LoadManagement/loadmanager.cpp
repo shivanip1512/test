@@ -114,7 +114,6 @@ void CtiLoadManager::stop()
             _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
             _pilConnection->ShutdownConnection();
         }
-        CtiLockGuard<CtiLogger> logger_guard(dout);
         dout.interrupt(CtiThread::SHUTDOWN);
         dout.join();
     }
