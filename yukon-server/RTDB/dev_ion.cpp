@@ -259,7 +259,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unsupported command. Command = " << parse.getCommand() << endl;
             }
-            nRet = NoMethod;
 
             break;
         }
@@ -274,9 +273,23 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->Retry    = IONRetries;
         OutMessage->Sequence = _ion.getCommand();
         _ion.sendCommRequest( OutMessage, outList );
+
+        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
+                                               RWCString(OutMessage->Request.CommandStr),
+                                               getName() + " / command submitted",
+                                               nRet,
+                                               OutMessage->Request.RouteID,
+                                               OutMessage->Request.MacroOffset,
+                                               OutMessage->Request.Attempt,
+                                               OutMessage->Request.TrxID,
+                                               OutMessage->Request.UserID,
+                                               OutMessage->Request.SOE,
+                                               RWOrdered()));
     }
     else
     {
+        nRet = NoMethod;
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Couldn't come up with an operation for device " << getName() << endl;
