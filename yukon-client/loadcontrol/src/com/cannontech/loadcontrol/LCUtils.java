@@ -685,23 +685,34 @@ public class LCUtils
 			{
 				// some type of error occured
 				programResp[i].setStatus( responseMsgs[i].getStatus() );
+                
+                success = (programResp[i].getStatus() == ServerResponseMsg.STATUS_OK);
 
-				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
-				if(lmResp != null)
-				{
-					//do something interesting.
-					List violationStrs = lmResp.getConstraintViolations();
-					for( int j = 0; j < violationStrs.size(); j++, success = false )
-						programResp[i].addViolation( violationStrs.get(j).toString() );
-				}
+                if( !success )
+                {
+    				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
+    				if(lmResp != null)
+    				{
+    					//do something interesting.
+    					List violationStrs = lmResp.getConstraintViolations();
+    					for( int j = 0; j < violationStrs.size(); j++ )
+    						programResp[i].addViolation( violationStrs.get(j).toString() );
+    				}
+                    else
+                    {
+                        //add the message from the response to out list of problems
+                        programResp[i].addViolation( responseMsgs[i].getMessage() );
+                    }
+                }
+                
 			}
 
 		}
-		catch(Exception e)
-		{
-			CTILogger.error( "No response received from server", e );
-			success = false;
-		}
+        catch(Exception e)
+        {
+            CTILogger.error( "No response received from server", e );
+            success = false;
+        }
 
 		return success;
 	}

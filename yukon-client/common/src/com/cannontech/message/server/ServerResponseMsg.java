@@ -3,7 +3,9 @@
  */
 package com.cannontech.message.server;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.util.Message;
+import com.cannontech.message.util.ServerRequest;
 
 /**
  * CtiServerResponseMsg is used to respond back to a particular
@@ -25,12 +27,36 @@ public class ServerResponseMsg extends Message {
 		"Error",
 		"Uninitialized"
 	};
-
-
+    
 	private int _id;
 	private int _status;
 	private String _message;
 	private Object _payload;
+
+
+    protected ServerResponseMsg( int id, int status, String message )
+    {
+        super();
+        setId( id );
+        setStatus( status );
+        setMessage( message );
+    }
+    
+    protected ServerResponseMsg()
+    {
+        super();
+    }
+
+    public static ServerResponseMsg createTimeoutResp()
+    {
+        return 
+            new ServerResponseMsg(
+                CtiUtilities.NONE_ID,
+                STATUS_ERROR,
+                "Response from the server took too long and timed out (Timeout= " +
+                    (ServerRequest.DEFAULT_TIMEOUT / 1000) + " seconds)");        
+    }
+
 
 	/**
 	 * @return String
@@ -80,28 +106,28 @@ public class ServerResponseMsg extends Message {
 	/**
 	 * @param i
 	 */
-	public void setId(int i) {
+	protected void setId(int i) {
 		_id = i;
 	}
 
 	/**
 	 * @param string
 	 */
-	public void setMessage(String string) {
+	protected void setMessage(String string) {
 		_message = string;
 	}
 
 	/**
 	 * @param object
 	 */
-	public void setPayload(Object object) {
+	protected void setPayload(Object object) {
 		_payload = object;
 	}
 
 	/**
 	 * @param i
 	 */
-	public void setStatus(int i) {
+	protected void setStatus(int i) {
 		_status = i;
 	}
 

@@ -44,14 +44,20 @@ import com.cannontech.message.server.ServerResponseMsg;
 public class ServerRequest implements MessageListener 
 {
 	// wait this many millis by default for a response message
-	private final static long DEFAULT_TIMEOUT = 30L*1000L;
+	public final static long DEFAULT_TIMEOUT = 30L*1000L;
+    
+    private static int MIN_RESERVED_ID = 0;
+    private static int MAX_RESERVED_ID = 10;
 	
 	// used to generate a request id
-	private static int _currentRequestID;
+	private static int _currentRequestID = Integer.MIN_VALUE;
 
 	static { 
 		Random r = new Random(System.currentTimeMillis());
-		_currentRequestID = r.nextInt();
+        
+        //values MIN_RESERVED_ID to MAX_RESERVED_ID inclusive are reserved
+        while( _currentRequestID >= MIN_RESERVED_ID && _currentRequestID <= MAX_RESERVED_ID )
+            _currentRequestID = r.nextInt();
 	}
 
 	private ClientConnection _connection;
@@ -92,8 +98,9 @@ public class ServerRequest implements MessageListener
 
 	/**
 	 * Returns a ServerResponseMsg that matches the request.
-	 * If no matching response is received an exception will be thrown after
-	 * DEFAULT_TIMEOUT.
+	 * If no matching response is received a Timeout response will be returned
+	 * ater DEFAULT_TIMEOUT.
+     * 
 	 * @return
 	 * @throws Exception
 	 */
@@ -103,13 +110,14 @@ public class ServerRequest implements MessageListener
 	
 	/**
 	 * Returns a ServerResponseMsg that matches the request.
-	 * If no matching response is received an exception will be thrown after
-	 * the given timeout number of milliseconds.
+	 * If no matching response is received a Timeout response will be returned 
+     * after the given timeout number of milliseconds.
+     * 
 	 * @param timeout
 	 * @return
 	 * @throws Exception
 	 */
-	public synchronized ServerResponseMsg execute(long timeout) throws Exception {
+	public synchronized ServerResponseMsg execute(long timeout) throws InterruptedException {
 		try { 
 			//Add this as a listener so we can look for a response
 			_connection.addMessageListener(this);
@@ -123,7 +131,8 @@ public class ServerRequest implements MessageListener
 		
 		// Did we get a response that matched our request id?
 		if(_responseMsg == null) {
-			throw new Exception("Timed out waiting for response message with id: " + _requestID);
+            _responseMsg = ServerResponseMsg.createTimeoutResp();
+			//throw new TimeoutException("Timed out waiting for response message with id: " + _requestID);
 		}
 		
 		return _responseMsg;
@@ -161,7 +170,13 @@ public class ServerRequest implements MessageListener
 	 * Generate the next client message id
 	 * @return
 	 */
-	private static synchronized int nextClientMessageID() {
-		return _currentRequestID++;
+	private static synchronized int nextClientMessageID()
+    {
+        _currentRequestID +=
+            (_currentRequestID >= MIN_RESERVED_ID && _currentRequestID <= MAX_RESERVED_ID
+                ? MAX_RESERVED_ID + 1
+                : 1 );
+        
+        return _currentRequestID;
 	}
 }
