@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2004/09/30 21:37:22 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/10/22 16:48:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -511,9 +511,9 @@ DLLEXPORT bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
 
         if(!bRet && isCarrierLPDevice(pDevice))
         {
-            for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+            for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
             {
-                if(((CtiDeviceMCT *)pUnique)->getLoadProfile().isChannelValid(i))
+                if(((CtiDeviceCarrier *)pUnique)->getLoadProfile().isChannelValid(i))
                 {
                     bRet = true;
                     break;
@@ -548,6 +548,7 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
     case TYPEMCT260:
     case TYPEMCT310IL:
     case TYPEMCT318L:
+    case TYPEMCT410:
         result = TRUE;
         break;
 
@@ -591,9 +592,9 @@ DLLEXPORT RWBoolean isNotScannable( CtiDeviceSPtr& pDevice, void* d)
 
         if(bRet && isCarrierLPDevice(pDevice))
         {
-            for(int i = 0; i < MAX_COLLECTED_CHANNEL; i++)
+            for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
             {
-                if(((CtiDeviceMCT *)pUnique)->getLoadProfile().isChannelValid(i))
+                if(((CtiDeviceCarrier *)pUnique)->getLoadProfile().isChannelValid(i))
                 {
                     bRet = FALSE;
                     break;
