@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/11/05 17:25:58 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/08 14:40:39 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.4  2004/11/08 14:40:39  cplender
+* 305 Protocol should send controls on RTCs now.
+*
 * Revision 1.3  2004/11/05 17:25:58  cplender
 *
 * Getting 305s to work
@@ -35,6 +38,8 @@
 #include "prot_sa305.h"
 
 CtiProtocolSA305::CtiProtocolSA305() :
+_rtcTarget(false),
+_transmitterAddress(0),
 _messageReady(false),
 _addressUsage(0),
 _serial(-1),
@@ -47,11 +52,14 @@ _rateMember(),
 _rateHierarchy(0),
 _priority(0),
 _strategy(0),
-_functions(0)
+_functions(0),
+_rtcResponse(0x00)
 {
 }
 
 CtiProtocolSA305::CtiProtocolSA305(const CtiProtocolSA305& aRef) :
+_rtcTarget(false),
+_transmitterAddress(0),
 _messageReady(false),
 _addressUsage(0),
 _serial(-1),
@@ -64,7 +72,8 @@ _rateMember(-1),
 _rateHierarchy(0),
 _priority(0),
 _strategy(0),
-_functions(0)
+_functions(0),
+_rtcResponse(0x00)
 {
     *this = aRef;
 }
@@ -423,6 +432,9 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
     // Now process the message components.
     resetMessage();
     addressMessage(parse.getiValue("sa_f1bit", CtiProtocolSA305::CommandTypeOperationFlag), parse.getiValue("sa_f0bit", CtiProtocolSA305::CommandDescription_DIMode) );
+
+    // Assist in the asString() call in the future.
+    OutMessage.Buffer.SASt._commandType = parse.getCommand();
 
     switch(parse.getCommand())
     {
@@ -1035,7 +1047,7 @@ bool CtiProtocolSA305::messageReady() const
     return _messageReady;
 }
 
-int CtiProtocolSA305::getPageLength(int mode) const      // Returns the length in characters of this message.
+int CtiProtocolSA305::getMessageLength(int mode) const      // Returns the length in characters of this message.
 {
     int length = 0;
 
@@ -1047,19 +1059,31 @@ int CtiProtocolSA305::getPageLength(int mode) const      // Returns the length i
             {
                 break;
             }
-        case ModeOctal:         // = 1,              // Every three bits are converted into an octal value.
+        case ModeNumericPage:
             {
                 int cnt = _messageBits.size();
                 length = cnt/3 + ((cnt%3)?1:0);
+                if(_rtcTarget)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** ERROR Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " RTCs should not execute this code!" << endl;
+                    }
+                }
                 break;
             }
-        case ModeHex:           // = 2,         // Every four bits are converted into a hex value.
+        case ModeHex:
             {
                 int cnt = _messageBits.size();
-                length = cnt/4 + ((cnt%4)?1:0);
+                length = cnt/8 + ((cnt%8)?1:0);
+                if(_rtcTarget)
+                {
+                    length += 5;    // RTC overhead
+                }
                 break;
             }
-        case ModeSerial:        // = 3              // Data is churned out the port in a serial fashion.
+        case ModeSerial:
         default:
             {
                 {
@@ -1074,9 +1098,9 @@ int CtiProtocolSA305::getPageLength(int mode) const      // Returns the length i
     return length;
 }
 
-int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns the length in characters of this message.
+int CtiProtocolSA305::buildMessage(int mode, CHAR *buffer) const      // Returns the length in characters of this message.
 {
-    int length = 0;
+    int bufpos = 0;
 
     if(messageReady())
     {
@@ -1086,14 +1110,22 @@ int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns th
             {
                 break;
             }
-        case ModeOctal:         // = 1,              // Every three bits are converted into an octal value.
+        case ModeNumericPage:
             {
-                unsigned bufpos = 0;
                 unsigned pos = 0;
                 int ich = 0;
                 CHAR ch;
 
                 vector< BYTE >::const_iterator itr;
+
+                if(_rtcTarget)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** ERROR ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  RTCs should never execute this code" << endl;
+                    }
+                }
 
                 for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
                 {
@@ -1122,23 +1154,38 @@ int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns th
 
                 break;
             }
-        case ModeHex:    // = 2,         // Every four bits are converted into a hex value.
+        case ModeHex:
             {
-                unsigned bufpos = 0;
+                unsigned crc = 0;
                 unsigned pos = 0;
                 int ich = 0;
                 CHAR ch;
+
+                if(_rtcTarget)
+                {
+                    int ltf = _messageBits.size() / 8 + (_messageBits.size() % 8 ? 1 : 0);
+
+                    buffer[bufpos++] = (CHAR)(0xa0 | (0x0f & _transmitterAddress));         // byte 1 of the RTC preamble
+                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    buffer[bufpos++] = (CHAR)(0x29 | (0x10 & _rtcResponse));                // byte 2 of the RTC preamble
+                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    buffer[bufpos++] = (CHAR)(3);                                           // 305 protocol is "3" per rtc spec
+                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                    buffer[bufpos++] = (CHAR)(ltf);                                         // Length to follow not including the CRC
+                    crc ^= buffer[bufpos-1];                                                // Update the crc.
+                }
 
                 vector< BYTE >::const_iterator itr;
 
                 for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
                 {
                     ich<<=1;
-                    ich|=(*itr?1:0);
-                    if(++pos >= 4)  // ch is ready!
+                    ich|=(*itr ? 0x01 : 0x00);
+                    if(++pos >= 8)  // ch is ready!
                     {
                         pos = 0;
-                        buffer[bufpos++] = '0' + ich;
+                        buffer[bufpos++] = ich;
+                        crc ^= buffer[bufpos-1];                                                // Update the crc.
                         ich = 0;
                     }
                 }
@@ -1147,18 +1194,24 @@ int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns th
                 while(pos != 0)
                 {
                     ich<<=1;
-                    if(++pos >= 4)  // ch is ready!
+                    if(++pos >= 8)  // ch is ready!
                     {
                         pos = 0;
-                        buffer[bufpos++] = '0' + ich;
+                        buffer[bufpos++] = ich;
+                        crc ^= buffer[bufpos-1];                                                // Update the crc.
                         ich = 0;
                         break;
                     }
                 }
 
+                if(_rtcTarget)
+                {
+                    buffer[bufpos++] = (CHAR)(crc);                                         // Record the CRC
+                }
+
                 break;
             }
-        case ModeSerial:        // = 3              // Data is churned out the port in a serial fashion.
+        case ModeSerial:
         default:
             {
                 {
@@ -1170,6 +1223,26 @@ int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns th
         }
     }
 
-    return length;
+    return bufpos;
+}
+
+CtiProtocolSA305& CtiProtocolSA305::setRTCTarget( bool bv )
+{
+    _rtcTarget = bv;
+    return *this;
+}
+CtiProtocolSA305& CtiProtocolSA305::setRTCResponse( bool bv )
+{
+    if(bv)
+        _rtcResponse = 0x10;
+    else
+        _rtcResponse = 0x00;
+    return *this;
+}
+
+CtiProtocolSA305& CtiProtocolSA305::setTransmitterAddress( int val )
+{
+    _transmitterAddress = val;
+    return *this;
 }
 

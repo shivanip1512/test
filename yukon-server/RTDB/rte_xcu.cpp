@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2004/11/05 17:25:59 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2004/11/08 14:40:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -742,16 +742,13 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                 {
                     CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
-                    /* Calculate the length */
-                    Length                              = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+                    /* Build the message */
+                    Length = prot305.buildMessage(CtiProtocolSA305::ModeNumericPage, NewOutMessage->Buffer.TAPSt.Message);
 
-                    NewOutMessage->TimeOut              = 2;
-                    NewOutMessage->InLength             = -1;
                     NewOutMessage->OutLength            = Length;
                     NewOutMessage->Buffer.TAPSt.Length  = Length;
-
-                    /* Build the message */
-                    prot305.buildPage(CtiProtocolSA305::ModeOctal, NewOutMessage->Buffer.TAPSt.Message);
+                    NewOutMessage->TimeOut              = 2;
+                    NewOutMessage->InLength             = -1;
 
                     for(i = 0; i < NewOutMessage->OutLength; i++)
                     {
@@ -767,17 +764,20 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                 }
             case TYPE_RTC:
                 {
-                    NewOutMessage->EventCode = RESULT | ENCODED;
+                    prot305.setRTCTarget(true);
+                    prot305.setTransmitterAddress(_transmitterDevice->getAddress());
 
-                    prot305.buildPage(CtiProtocolSA305::ModeOctal, (char*)(NewOutMessage->Buffer.SASt._buffer));
-                    NewOutMessage->Buffer.SASt._bufferLen = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
-                    NewOutMessage->OutLength = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+                    NewOutMessage->EventCode = RESULT | ENCODED;
+                    NewOutMessage->Buffer.SASt._groupType = SA305;
+
+                    NewOutMessage->Buffer.SASt._bufferLen = prot305.buildMessage(CtiProtocolSA305::ModeHex, (char*)(NewOutMessage->Buffer.SASt._buffer));
+                    NewOutMessage->OutLength = NewOutMessage->Buffer.SASt._bufferLen;
 
                     strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr() ,COMMAND_STR_SIZE);
 
                     for(i = 0; i < NewOutMessage->OutLength; i++)
                     {
-                        byteString += (char)NewOutMessage->Buffer.SASt._buffer[i];
+                        byteString += CtiNumStr(NewOutMessage->Buffer.SASt._buffer[i]).hex().zpad(2) + " ";
                     }
                     byteString += "\n";
 

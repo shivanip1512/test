@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/11/05 17:25:58 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/11/08 14:40:39 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.15  2004/11/08 14:40:39  cplender
+* 305 Protocol should send controls on RTCs now.
+*
 * Revision 1.14  2004/11/05 17:25:58  cplender
 *
 * Getting 305s to work
@@ -1337,6 +1340,11 @@ RWCString CtiProtocolSA3rdParty::asString() const
             case SA205:
                 {
                     rstr += "SA 205 - code " + CtiNumStr(_sa._code205) + " - " + strategyAsString();
+                    break;
+                }
+            case SA305:
+                {
+                    rstr += "SA 305 - code ";
                     break;
                 }
             case GOLAY:

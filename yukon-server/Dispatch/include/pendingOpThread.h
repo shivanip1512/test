@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/11/05 17:22:48 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/11/08 14:40:38 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.2  2004/11/08 14:40:38  cplender
+* 305 Protocol should send controls on RTCs now.
+*
 * Revision 1.1  2004/11/05 17:22:48  cplender
 * IR
 *
@@ -88,7 +91,6 @@ public:
     void doPendingControls(bool bShutdown = false);
     void doPendingLimits(bool bShutdown = false);
     void doPendingPointData(bool bShutdown = false);
-    bool removePointDataFromPending( LONG pID );
     void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
     // void dumpPendingOps( bool force = false  );
     void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
@@ -109,6 +111,7 @@ public:
     void processPendableAdd(CtiPendable *&pendable);
     void removeLimit(CtiPendable *&pendable);
     void removePointData(CtiPendable *&pendable);
+    void removeControl(CtiPendable *&pendable);
 
 };
 #endif // #ifndef __PENDINGOPTHREAD_H__

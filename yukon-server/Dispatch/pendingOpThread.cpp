@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/11/05 17:22:48 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/11/08 14:40:37 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.2  2004/11/08 14:40:37  cplender
+* 305 Protocol should send controls on RTCs now.
+*
 * Revision 1.1  2004/11/05 17:22:48  cplender
 * IR
 *
@@ -94,7 +97,7 @@ void CtiPendingOpThread::run( void )
             doPendingPointData(false);
             doPendingControls(false);
 
-            sleep(5000);               // interrupt(XXX) can wake us.
+            sleep(1000);               // interrupt(XXX) can wake us.
         }
 
         {
@@ -251,6 +254,8 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
             int lpcnt = 0;
             RWTime now;
 
+            bool postCtrlStop = (CntlHistPointPostInterval && !(now.seconds() % CntlHistPointPostInterval));
+
             #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -270,12 +275,60 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                 {
                     ULONG prevLogSec = ppo.getControl().getPreviousLogTime().seconds();
 
-                    if(ppo.getControlState() == CtiPendingPointOperations::controlSeasonalReset)
+                    if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
                     {
-                        updateControlHistory( ppo, CtiPendingPointOperations::seasonReset, now);
-
-                        it = _pendingControls.erase(it);
-                        continue;   // iterator has been repositioned!
+                        /*
+                         *  Order is important here.  Please do not rearrange the else if conditionals.
+                         */
+                        if(bShutdown)
+                        {
+                            // Record for the future!
+                            updateControlHistory( ppo, CtiPendingPointOperations::dispatchShutdown, now);
+                        }
+                        else if( ppo.getControl().getControlDuration() >= 0 &&
+                                 now.seconds() >= ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
+                        {
+                            /*  Do NOTHING.  CONTROL IS COMPLETE! Don't tally any more time though.. */
+                            if(gDispatchDebugLevel & 0x00000001)
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " Start + control duration are < now not gonna write any more..." << endl;
+                                }
+                            }
+                        }
+                        else if(ppo.getControl().getControlDuration() < 0)
+                        {
+                            /*  Do NOTHING.  This is a restore command.  Don't tally time though.. */
+                            if(gDispatchDebugLevel & 0x00000001)
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  Control Duration is less than zero" << endl;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
+                            {
+                                // We have accumulated enough time against this control to warrant a new log entry!
+                                updateControlHistory( ppo, CtiPendingPointOperations::intervalcrossing, now);
+                            }
+                            else if(postCtrlStop)
+                            {
+                                // This rate posts history points and stop point.
+                                updateControlHistory( ppo, CtiPendingPointOperations::intervalpointpostcrossing, now);
+                            }
+                            else if(ppo.getControl().getControlDuration() > 0 &&
+                                    now.seconds() >= ppo.getControl().getPreviousStopReportTime().seconds() - (ppo.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval)
+                            {
+                                // This rate posts stop point.
+                                updateControlHistory( ppo, CtiPendingPointOperations::stopintervalcrossing, now);
+                            }
+                        }
                     }
                     else if(ppo.getControlState() == CtiPendingPointOperations::controlPending)
                     {
@@ -309,70 +362,14 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 pSig = 0;
                             }
 
-                            try
-                            {
-                                it = _pendingControls.erase(it);
-                                continue;   // iterator has been repositioned!
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    }
-                    else if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
-                    {
-                        /*
-                         *  Order is important here.  Please do not rearrange the else if conditionals.
-                         */
-                        if(bShutdown)
-                        {
-                            // Record for the future!
-                            updateControlHistory( ppo, CtiPendingPointOperations::dispatchShutdown, now);
-                        }
-                        else if( ppo.getControl().getControlDuration() >= 0 &&
-                                 now.seconds() >= ppo.getControl().getStartTime().seconds() + ppo.getControl().getControlDuration())
-                        {
-                            /*  Do NOTHING.  CONTROL IS COMPLETE! Don't tally any more time though.. */
-                            if(gDispatchDebugLevel & 0x00000001)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " Start + control duration are < now not gonna write any more..." << endl;
-                                }
-                            }
-                        }
-                        else if(ppo.getControl().getControlDuration() < 0)
-                        {
-                            /*  Do NOTHING.  This is a restore command.  Don't tally any more time though.. */
-                            if(gDispatchDebugLevel & 0x00000001)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Control Duration is less than zero" << endl;
-                                }
-                            }
+                            it = _pendingControls.erase(it);
+                            continue;   // iterator has been repositioned!
                         }
                         else
                         {
-                            if(now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
                             {
-                                // We have accumulated enough time against this control to warrant a new log entry!
-                                updateControlHistory( ppo, CtiPendingPointOperations::intervalcrossing, now);
-                            }
-                            else if(CntlHistPointPostInterval && !(now.seconds() % CntlHistPointPostInterval))
-                            {
-                                // This rate posts history points and stop point.
-                                updateControlHistory( ppo, CtiPendingPointOperations::intervalpointpostcrossing, now);
-                            }
-                            else if(ppo.getControl().getControlDuration() > 0 &&
-                                    now.seconds() >= ppo.getControl().getPreviousStopReportTime().seconds() - (ppo.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval)
-                            {
-                                // This rate posts stop point.
-                                updateControlHistory( ppo, CtiPendingPointOperations::stopintervalcrossing, now);
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
@@ -380,16 +377,15 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteTimedIn     ||
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteManual      )
                     {
-                        try
-                        {
-                            it = _pendingControls.erase(it);
-                            continue;   // iterator has been repositioned!
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        it = _pendingControls.erase(it);
+                        continue;   // iterator has been repositioned!
+                    }
+                    else if(ppo.getControlState() == CtiPendingPointOperations::controlSeasonalReset)
+                    {
+                        updateControlHistory( ppo, CtiPendingPointOperations::seasonReset, now);
+
+                        it = _pendingControls.erase(it);
+                        continue;   // iterator has been repositioned!
                     }
                     else
                     {
@@ -583,50 +579,6 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
         dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
-
-bool CtiPendingOpThread::removePointDataFromPending( LONG pID )
-{
-    bool bRemoved = false;
-    bool bRemoveIt = false;
-
-    if( !_pendingPointData.empty() )
-    {
-        // There are pending operations for points out there in the world!
-        CtiPendingOpSet_t::iterator it = _pendingPointData.begin();
-
-        while( it != _pendingPointData.end() )
-        {
-            CtiPendingPointOperations &ppo = *it;
-
-            if(ppo.getPointID() == pID && ppo.getType() == CtiPendingPointOperations::pendingPointData )
-            {
-                bRemoveIt = true;
-            }
-
-            if(bRemoveIt)
-            {
-                bRemoveIt = false;
-
-                try
-                {
-                    it = _pendingPointData.erase(it);
-                    bRemoved = true;
-                    continue;
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            it++;   // And look at the next item in the list.
-        }
-    }
-
-    return bRemoved;
-}
-
 
 /*
  *  Should only be called by doPendingOperation() method!  Any other caller MAY be blocked by the DB etc!!!
@@ -1350,6 +1302,22 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
             updateControlHistory( ppo, CtiPendingPointOperations::datachange, pendable->_time );
             _pendingControls.erase(it);
         }
+    }
+}
+
+void CtiPendingOpThread::removeControl(CtiPendable *&pendable)
+{
+    CtiPendingOpSet_t::iterator it = _pendingPointData.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
+
+    if( it != _pendingPointData.end() )
+    {
+        #if 0
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** removeControl Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        #endif
+        it = _pendingPointData.erase(it);
     }
 }
 

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/10/08 20:53:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/11/08 14:40:40 $
 *
 *
 * Notes:
@@ -56,6 +56,8 @@ X205CMD;
 #define SA105 3
 #define SALAT 4
 #define GOLAT 5
+
+#define SA305 6
 
 /* SA205 DCU management command */
 #define DEF_ADDR 1

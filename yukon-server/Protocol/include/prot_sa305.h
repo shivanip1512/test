@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/11/05 17:25:59 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/11/08 14:40:39 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.3  2004/11/08 14:40:39  cplender
+* 305 Protocol should send controls on RTCs now.
+*
 * Revision 1.2  2004/11/05 17:25:59  cplender
 *
 * Getting 305s to work
@@ -101,6 +104,11 @@ private:
     float _percentageOff;   // Percentage of the cycle that the loads are to be shed.
 
 
+    bool _rtcTarget;            // Wrap the protocol in RTC love.
+    int _transmitterAddress;    // Used for RTC targeted 305 messages
+    BYTE _rtcResponse;          // Should the RTC respond to commands?
+
+
     vector< BYTE > _messageBits;  // Store it as bits.  Not sure if this will cost me in the long run...
     int _messageCount;
 
@@ -129,9 +137,10 @@ public:
     enum
     {
         ModeUnspecified = 0,
-        ModeOctal = 1,              // Every three bits are converted into an octal value.
-        ModeHex = 2,                // Every eight bits are converted into a hex value.
-        ModeSerial = 3              // Data is churned out the port in a serial fashion.
+        ModeOctal,              // Every three bits are converted into an octal value.
+        ModeHex,                // Every eight bits are converted into a hex value.
+        ModeSerial,             // Data is churned out the port in a serial fashion.
+        ModeNumericPage         // Every three bits are converted into an octal value and added to char '0' to be sent as a page.
     };
 
     CtiProtocolSA305();
@@ -197,7 +206,13 @@ public:
     void appendCRCToMessage();
 
     bool messageReady() const;
-    int getPageLength(int mode) const;      // Returns the length in characters of this message.
-    int buildPage(int mode, CHAR *buffer) const;      // Returns the length in characters of this message.
+    int getMessageLength(int mode) const;      // Returns the length in characters of this message.
+    int buildMessage(int mode, CHAR *buffer) const;      // Returns the length in characters of this message.
+
+    CtiProtocolSA305& setTransmitterAddress( int val );
+    CtiProtocolSA305& setRTCTarget( bool bv = true );
+    CtiProtocolSA305& setRTCResponse( bool bv = true ); // Should the RTC respond to commands.
+
+
 };
 #endif // #ifndef __PROT_SA305_H__
