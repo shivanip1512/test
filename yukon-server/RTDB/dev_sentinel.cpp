@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_sentinel
@@ -12,6 +8,7 @@
 *
 ** Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "porter.h"
 #include "logger.h"
@@ -144,10 +141,10 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
     for (int a = 0; a < 10; a++)
-    {       
+    {
         nibble = 0;
         for (int nib = 0; nib < 2; nib++)
-        {   
+        {
             pwdTemp = 0;
             for (int i = 0; i < 16; i++)
             {
@@ -202,7 +199,7 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
             (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+sizeof(ANSI_TABLE_WANTS)),
             &scanOperation, sizeof(BYTE));
-    
+
    // BYTE julieTEST[5] = {'j', 'u','l','i','e'};
     //memcpy( aMsg, &julieTEST, sizeof(BYTE) * 5);
 
@@ -239,7 +236,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
     switch( parse.getCommand( ) )
     {
 
-    
+
         /*case LoopbackRequest:
         {
             nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
@@ -251,7 +248,7 @@ INT CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg         *pReq,
             nRet = GeneralScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             //nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
-        } 
+        }
         /*case GetValueRequest:
         {
             nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
@@ -364,7 +361,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrS
     resetScanPending();
 
     setUseScanFlags(FALSE);
-    //   getProtocol().recvInbound( InMessage );
+    //   getSentinelProtocol().recvInbound( InMessage );
     CtiLockGuard< CtiLogger > doubt_guard( dout );
     dout << RWTime::now() << " ==============================================" << endl;
     dout << RWTime::now() << " ==========The Sentinel responded with data=========" << endl;
@@ -389,8 +386,8 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
         dout << RWTime() << "sendCommResult    RWTime(lastLpTime) "<<RWTime(lastLpTime)<< endl;
     }
     setUseScanFlags(FALSE);
-    
-//   getProtocol().recvInbound( InMessage );
+
+//   getSentinelProtocol().recvInbound( InMessage );
 
 //   CtiLockGuard< CtiLogger > doubt_guard( dout );
 //   dout << RWTime::now() << " ==============================================" << endl;
@@ -449,7 +446,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg)
        // {  0,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
        // { 70,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
-        
+
     };
 
     RWCString pswdTemp;
@@ -485,10 +482,10 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
     for (int a = 0; a < 10; a++)
-    {       
+    {
         nibble = 0;
         for (int nib = 0; nib < 2; nib++)
-        {   
+        {
             pwdTemp = 0;
             for (int i = 0; i < 16; i++)
             {
@@ -543,7 +540,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg)
 
 
     // keep the list on the scanner side for decode
-    getProtocol().buildWantedTableList (aMsg);
+    getSentinelProtocol().buildWantedTableList (aMsg);
     return NORMAL;
 }
 
@@ -551,7 +548,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg)
 //
 //=========================================================================================================================================
 
-CtiProtocolANSI & CtiDeviceSentinel::getProtocol( void )
+CtiProtocolANSI & CtiDeviceSentinel::getSentinelProtocol( void )
 {
    return  _ansiProtocol;
 }
@@ -562,7 +559,7 @@ CtiProtocolANSI & CtiDeviceSentinel::getProtocol( void )
 void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 {
 
-    CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg; 
+    CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg;
     CtiPointDataMsg                  *pData = NULL;
     CtiPointBase                     *pPoint = NULL;
     double value = 0;
@@ -577,10 +574,10 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
     }
     x =  OFFSET_TOTAL_KWH;
-    while (x <= OFFSET_HIGHEST_CURRENT_OFFSET) 
+    while (x <= OFFSET_HIGHEST_CURRENT_OFFSET)
     {
         pPoint = getDevicePointOffsetTypeEqual( x, AnalogPointType );
-        if (pPoint != NULL) 
+        if (pPoint != NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -592,7 +589,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
             qual = 0;
             pData->setId( pPoint->getID() );
 
-            switch (x) 
+            switch (x)
             {
                 case OFFSET_TOTAL_KWH:
                 case OFFSET_RATE_A_KWH:
@@ -615,7 +612,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 case OFFSET_RATE_D_KVAH:
                 case OFFSET_RATE_E_KVAH:
                 {
-                    gotValue = getProtocol().retreiveSummation( x, &value );
+                    gotValue = getSentinelProtocol().retreiveSummation( x, &value );
                     break;
                 }
                 case OFFSET_PEAK_KW_OR_RATE_A_KW:
@@ -639,10 +636,10 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 case OFFSET_RATE_E_KVA:
                 case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
                 {
-                    gotValue = getProtocol().retreiveDemand( x, &value );
+                    gotValue = getSentinelProtocol().retreiveDemand( x, &value );
                     break;
                 }
-                case OFFSET_LOADPROFILE_KW:  
+                case OFFSET_LOADPROFILE_KW:
                 case OFFSET_LOADPROFILE_KVAR:
                 case OFFSET_LOADPROFILE_QUADRANT1_KVAR:
                 case OFFSET_LOADPROFILE_QUADRANT2_KVAR:
@@ -655,36 +652,36 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 case OFFSET_LOADPROFILE_QUADRANT4_KVA:
                 {
 
-                    gotLPValues = getProtocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
-                    break;  
+                    gotLPValues = getSentinelProtocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
+                    break;
                 }
                 case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
-                case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:  
+                case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:
                 case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
-                case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:  
+                case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:
                 case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
-                case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:  
+                case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:
                 case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
-                case OFFSET_LOADPROFILE_PHASE_A_CURRENT:  
+                case OFFSET_LOADPROFILE_PHASE_A_CURRENT:
                 case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
-                case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+                case OFFSET_LOADPROFILE_PHASE_B_CURRENT:
                 case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
-                case OFFSET_LOADPROFILE_PHASE_C_CURRENT:  
+                case OFFSET_LOADPROFILE_PHASE_C_CURRENT:
                 case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
-                case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:  
+                case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
                 {
-                    gotValue = getProtocol().retreivePresentValue(x, &value);
+                    gotValue = getSentinelProtocol().retreivePresentValue(x, &value);
                     break;
                 }
                 default:
-                {  
+                {
                     gotValue = false;
                     gotLPValues = false;
                 }
                 break;
             }
-             
-            if (gotValue) 
+
+            if (gotValue)
             {
                 pData = CTIDBG_new CtiPointDataMsg();
                 pData->setId( pPoint->getID() );
@@ -695,54 +692,54 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 pData->setTime( RWTime() );
                 pData->setType( pPoint->getType() );
 
-                msgPtr->insert(pData); 
+                msgPtr->insert(pData);
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " gotValue! "<< endl;
-                    dout << RWTime() << " getProtocol().getTotalWantedLPBlockInts()  "<< getProtocol().getTotalWantedLPBlockInts()<< endl;
+                    dout << RWTime() << " getSentinelProtocol().getTotalWantedLPBlockInts()  "<< getSentinelProtocol().getTotalWantedLPBlockInts()<< endl;
                 }
 
                 pData = NULL;
             }
-            else if (gotLPValues) 
+            else if (gotLPValues)
             {
                 setUseScanFlags(TRUE);
 
-                for (y = getProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--) 
+                for (y = getSentinelProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
                 {
-                    if (getProtocol().getLPTime(y) > getLastLPTime().seconds())
+                    if (getSentinelProtocol().getLPTime(y) > getLastLPTime().seconds())
                     {
-                        pData = new CtiPointDataMsg(pPoint->getID(), getProtocol().getLPValue(y), qual, pPoint->getType());
+                        pData = new CtiPointDataMsg(pPoint->getID(), getSentinelProtocol().getLPValue(y), qual, pPoint->getType());
                         pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                        pData->setTime( RWTime(getProtocol().getLPTime(y)) );
-                        msgPtr->insert(pData); 
+                        pData->setTime( RWTime(getSentinelProtocol().getLPTime(y)) );
+                        msgPtr->insert(pData);
                         pData = NULL;
                     }
                     else
                     {
                         y = -1;
                     }
-                    
+
 
                 }
 
                 setUseScanFlags(FALSE);
                 setUseScanFlags(TRUE);
-                setLastLPTime(RWTime(getProtocol().getLPTime(getProtocol().getTotalWantedLPBlockInts()-1)));
+                setLastLPTime(RWTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1)));
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "getProtocol().getTotalWantedLPBlockInts() time  "<<RWTime(getProtocol().getLPTime(getProtocol().getTotalWantedLPBlockInts()-1))<< endl;
-                    dout << RWTime() << "lastLPTime "<<RWTime(getProtocol().getlastLoadProfileTime())<< endl;
+                    dout << RWTime() << "getSentinelProtocol().getTotalWantedLPBlockInts() time  "<<RWTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1))<< endl;
+                    dout << RWTime() << "lastLPTime "<<RWTime(getSentinelProtocol().getlastLoadProfileTime())<< endl;
                 }
                 setUseScanFlags(FALSE);
-            } 
-            if (pData != NULL) 
+            }
+            if (pData != NULL)
             {
                 delete []pData;
                 pData = NULL;
-            } 
+            }
         }
         pPoint = NULL;
         gotValue = false;
@@ -754,7 +751,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
     {
        delete msgMulti;
        msgMulti = NULL;
-    }  
+    }
 }
 
 
