@@ -163,8 +163,8 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsOkPanel.gridx = 1; constraintsOkPanel.gridy = 2;
 			constraintsOkPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsOkPanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsOkPanel.weightx = 1.0;
-			constraintsOkPanel.weighty = 1.0;
+//			constraintsOkPanel.weightx = 1.0;
+//			constraintsOkPanel.weighty = 1.0;
 			constraintsOkPanel.ipadx = 15;
 			constraintsOkPanel.insets = new java.awt.Insets(4, 16, 3, 15);
 			getJDialogContentPane().add(getOkPanel(), constraintsOkPanel);
