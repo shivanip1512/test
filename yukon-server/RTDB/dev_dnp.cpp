@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/09/11 21:27:32 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/09/18 21:23:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,9 +212,9 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 controlout.offset     = parse.getiValue("analogoffset");
 
                 _dnp.setCommand(CtiProtocolDNP::DNP_SetAnalogOut, &controlout, 1);
-            }
 
-            nRet = NoError;
+                nRet = NoError;
+            }
 
             break;
         }
