@@ -75,7 +75,7 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script langauge = "JavaScript">
@@ -266,7 +266,7 @@ function prepareSubmit() {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../WebConfig/yukon/ConsumerImage.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 

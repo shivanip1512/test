@@ -9,7 +9,7 @@ String logo =
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="WebConfig/esubBGStyle.css" type="text/css">
+<link rel="stylesheet" href="WebConfig/yukon/esubBGStyle.css" type="text/css">
 
 <SCRIPT LANGUAGE="JavaScript">
 function popUp(url) {

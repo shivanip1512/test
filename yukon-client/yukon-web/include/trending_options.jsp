@@ -31,7 +31,7 @@ GraphRenderers<!--TRENDING OPTIONS-->
               </td>
               <td width="75">
                 <div align="left">
-                  <input type="image" src="<%=request.getContextPath()%>/Images/GoButton.gif" name="image" border="0">
+                  <input type="image" src="<%=request.getContextPath()%>/Images/Buttons/GoButton.gif" name="image" border="0">
                 </div>
               </td>
             </form>

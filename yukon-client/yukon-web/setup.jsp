@@ -26,7 +26,7 @@ function dispStatusMsg(msgStr) { //v1.0
 <head>
 <title>Yukon Setup</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="WebConfig/yukon/CannonStyle.css" type="text/css">
 
 </head>
 

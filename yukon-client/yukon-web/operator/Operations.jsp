@@ -23,7 +23,7 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 function confirmDelete() {
@@ -61,8 +61,8 @@ function confirmDelete() {
   
 <cti:checkRole roleid="<%= ConsumerInfoRole.ROLEID %>">
   <tr> 
-    <td width="102" background="Consumer/ConsumerImage.jpg" height="102">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="ConsumerHeader.gif" width="229" height="15" border="0"><br>
+    <td width="102" background="../WebConfig/yukon/ConsumerImage.jpg" height="102">&nbsp;</td>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/ConsumerHeader.gif" width="229" height="15" border="0"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%"><font face="Arial, Helvetica, sans-serif" size="2"> 
@@ -110,7 +110,7 @@ function confirmDelete() {
               &nbsp; 
               <input type="text" name="SearchValue" size="15">
               &nbsp; </td>
-            <td class = "MainText" width="7%" valign = "top"><img class="Clickable" src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
+            <td class = "MainText" width="7%" valign = "top"><img class="Clickable" src="../Images/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
           </form>
         </tr>
@@ -127,8 +127,8 @@ function confirmDelete() {
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="Metering/MeterImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="MeteringHeader.gif" width="161" height="15"><br>
+    <td width="102" height="102" background="../WebConfig/yukon/MeterImage.jpg">&nbsp;</td>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/MeteringHeader.gif" width="161" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%">&nbsp;</td>
@@ -163,9 +163,9 @@ function confirmDelete() {
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="LoadControl/LoadImage.jpg">&nbsp;</td>
+    <td width="102" height="102" background="../WebConfig/yukon/LoadImage.jpg">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top">
-      <div align="left"><img src="LoadHeader.gif"><br>
+      <div align="left"><img src="../WebConfig/yukon/LoadHeader.gif"><br>
       </div>
       <div align="left"></div>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
@@ -221,8 +221,8 @@ function confirmDelete() {
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="Hardware/InventoryImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="InventoryHeader.gif" width="148" height="15"><br>
+    <td width="102" height="102" background="../WebConfig/yukon/InventoryImage.jpg">&nbsp;</td>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/InventoryHeader.gif" width="148" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%" height="30" valign="bottom">&nbsp;</td>
@@ -254,7 +254,7 @@ function confirmDelete() {
 			  &nbsp; 
               <input type="text" name="SearchValue" size="15">
               &nbsp; </td>
-            <td valign = "top" class="MainText" width="7%"> <img src="GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
+            <td valign = "top" class="MainText" width="7%"> <img src="../Images/Buttons/GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
             </td>
           </form>
         </tr>
@@ -271,8 +271,8 @@ function confirmDelete() {
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
-    <td width="102" height="102" background="WorkOrder/WorkImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="WorkHeader.gif" width="104" height="15"><br>
+    <td width="102" height="102" background="../WebConfig/yukon/WorkImage.jpg">&nbsp;</td>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/WorkHeader.gif" width="104" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr valign="bottom"> 
           <td width="25%">&nbsp;</td>
@@ -305,7 +305,7 @@ function confirmDelete() {
             &nbsp; 
             <input type="text" name="SearchValue" size="15">
             &nbsp; </td>
-            <td width="7%" valign="top" class="MainText"><img src="GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
+            <td width="7%" valign="top" class="MainText"><img src="../Images/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
 		  </form>
         </tr>
       </table>
@@ -321,8 +321,8 @@ function confirmDelete() {
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr>
-    <td width="102" bgcolor="#000000" height="102" background="Admin/AdminImage.jpg">&nbsp;</td>
-    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
+    <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/AdminImage.jpg">&nbsp;</td>
+    <td bgcolor="#FFFFFF" height="102" valign="top"><img src="../WebConfig/yukon/AdminHeader.gif" width="129" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="25%">&nbsp;</td>

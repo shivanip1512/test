@@ -2,7 +2,7 @@
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
@@ -21,7 +21,7 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="150" height="102" background="../../WebConfig/MomWide.jpg">&nbsp;</td>
+          <td width="150" height="102" background="../../WebConfig/yukon/MomWide.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr> 

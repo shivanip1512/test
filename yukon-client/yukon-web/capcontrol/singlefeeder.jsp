@@ -40,7 +40,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcAnnex.getRefreshRate() %> >
-<link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <!--<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
 </head>
 
