@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     7/1/2004 3:50:18 PM                          */
+/* Created on:     7/21/2004 1:16:08 PM                         */
 /*==============================================================*/
 
 
@@ -101,11 +101,19 @@ drop table LMConfigurationBase cascade constraints
 /
 
 
+drop table LMConfigurationExpressCom cascade constraints
+/
+
+
 drop table LMConfigurationSA205 cascade constraints
 /
 
 
 drop table LMConfigurationSA305 cascade constraints
+/
+
+
+drop table LMConfigurationVersacom cascade constraints
 /
 
 
@@ -788,6 +796,30 @@ alter table LMConfigurationBase
 
 
 /*==============================================================*/
+/* Table : LMConfigurationExpressCom                            */
+/*==============================================================*/
+
+
+create table LMConfigurationExpressCom  (
+   ConfigurationID      NUMBER                           not null,
+   ServiceProvider      NUMBER                           not null,
+   GEO                  NUMBER                           not null,
+   Substation           NUMBER                           not null,
+   Feeder               NUMBER                           not null,
+   Zip                  NUMBER                           not null,
+   UserAddress          NUMBER                           not null,
+   Program              VARCHAR2(80)                     not null,
+   Splinter             VARCHAR2(80)                     not null
+)
+/
+
+
+alter table LMConfigurationExpressCom
+   add constraint PK_LMCONFIGURATIONEXPRESSCOM primary key (ConfigurationID)
+/
+
+
+/*==============================================================*/
 /* Table : LMConfigurationSA205                                 */
 /*==============================================================*/
 
@@ -829,6 +861,26 @@ create table LMConfigurationSA305  (
 
 alter table LMConfigurationSA305
    add constraint PK_LMCONFIGURATIONSA305 primary key (ConfigurationID)
+/
+
+
+/*==============================================================*/
+/* Table : LMConfigurationVersacom                              */
+/*==============================================================*/
+
+
+create table LMConfigurationVersacom  (
+   ConfigurationID      NUMBER                           not null,
+   UtilityID            NUMBER                           not null,
+   Section              NUMBER                           not null,
+   ClassAddress         NUMBER                           not null,
+   DivisionAddress      NUMBER                           not null
+)
+/
+
+
+alter table LMConfigurationVersacom
+   add constraint PK_LMCONFIGURATIONVERSACOM primary key (ConfigurationID)
 /
 
 
@@ -1407,6 +1459,12 @@ alter table LMProgramWebPublishing
 /
 
 
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
+      references YukonListEntry (EntryID)
+/
+
+
 alter table LMThermostatSeasonEntry
    add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
@@ -1421,12 +1479,6 @@ alter table ApplianceAirConditioner
 
 alter table WorkOrderBase
    add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
       references YukonListEntry (EntryID)
 /
 
@@ -1449,14 +1501,14 @@ alter table ApplianceAirConditioner
 /
 
 
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+alter table LMThermostatManualEvent
+   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
       references YukonListEntry (EntryID)
 /
 
 
-alter table LMThermostatManualEvent
-   add constraint FK_CsLsE_LThMnO1 foreign key (FanOperationID)
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
 /
 
@@ -1515,6 +1567,12 @@ alter table CallReportBase
 /
 
 
+alter table InventoryBase
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+      references YukonListEntry (EntryID)
+/
+
+
 alter table LMHardwareBase
    add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
       references YukonListEntry (EntryID)
@@ -1523,12 +1581,6 @@ alter table LMHardwareBase
 
 alter table ApplianceCategory
    add constraint FK_CstLs_ApCt foreign key (CategoryID)
-      references YukonListEntry (EntryID)
-/
-
-
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
 /
 
@@ -1703,6 +1755,18 @@ alter table ECToLMCustomerEventMapping
 
 alter table LMConfigurationSA305
    add constraint FK_LMCfg305_LMCfg foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
+/
+
+
+alter table LMConfigurationVersacom
+   add constraint FK_LMCfgVcom_LMCfg foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
+/
+
+
+alter table LMConfigurationExpressCom
+   add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID)
 /
 

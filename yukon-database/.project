@@ -6,8 +6,12 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>org.eclipse.emf.codegen.JETBuilder</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
 			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.emf.codegen.JETBuilder.launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
