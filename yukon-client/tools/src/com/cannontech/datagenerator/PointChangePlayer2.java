@@ -28,7 +28,7 @@ public class PointChangePlayer2 {
 	private static final String USAGE = "Replays point history from a binary file written by com.cannontech.datagenerator.PointChangeRecorder.\nPointChangePlayer2 file [idoffset]";
 	
 	public static void main(String[] args) throws Exception {
-		if(args.length != 1) {
+		if(args.length < 1) {
 			System.out.println(USAGE);
 			System.exit(-1);	
 		}
