@@ -2435,6 +2435,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public ArrayList searchAccountByAccountNo(String accountNo, boolean searchMembers) {
 		ArrayList accountList = new ArrayList();
 		
+		if (accountNo.equals("*")) accountNo = "";
+		
 		if (isAccountsLoaded()) {
 			ArrayList custAcctInfoList = getAllCustAccountInformation();
 			for (int i = 0; i < custAcctInfoList.size(); i++) {
@@ -2449,10 +2451,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		else {
-			String acctNo = accountNo.replace( '*', '%' );
-			if (acctNo.indexOf('%') < 0) acctNo += "%";
+			if (accountNo.indexOf('%') < 0) accountNo += "%";
 			
-			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( acctNo, getLiteID() );
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
 			if (accountIDs != null) {
 				for (int i = 0; i < accountIDs.length; i++) {
 					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
