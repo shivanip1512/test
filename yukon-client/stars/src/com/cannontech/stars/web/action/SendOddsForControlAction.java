@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,7 +12,7 @@ import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.timertask.SendControlOddsTimerTask;
+import com.cannontech.stars.util.task.SendControlOddsTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
@@ -45,6 +46,7 @@ public class SendOddsForControlAction implements ActionBase {
         	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	if (user == null) return null;
 			
+			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
 					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
@@ -62,11 +64,17 @@ public class SendOddsForControlAction implements ActionBase {
         				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
         					StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
         					if (program.getProgramID() == progID) {
-        						ChanceOfControl ctrlOdds = new ChanceOfControl();
-        						ctrlOdds.setEntryID( Integer.parseInt(controlOdds[i]) );
-			        			program.setChanceOfControl( ctrlOdds );
+        						StarsEnrLMProgram enrProg = new StarsEnrLMProgram();
+        						enrProg.setProgramID( program.getProgramID() );
+        						ChanceOfControl ctrlOdds = (ChanceOfControl) StarsFactory.newStarsCustListEntry(
+        								ServletUtils.getStarsCustListEntryByID(
+        									selectionLists,
+        									com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
+        									Integer.parseInt(controlOdds[i])),
+        								ChanceOfControl.class );
+			        			enrProg.setChanceOfControl( ctrlOdds );
 			        			
-			        			sendCtrlOdds.addStarsEnrLMProgram( program );
+			        			sendCtrlOdds.addStarsEnrLMProgram( enrProg );
 			        			break;
         					}
         				}
@@ -108,20 +116,19 @@ public class SendOddsForControlAction implements ActionBase {
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             ArrayList appCatList = energyCompany.getAllApplianceCategories();
-            ArrayList progList = new ArrayList();	// List of LiteLMProgram whose chance of control is going to be sent
-            
         	synchronized (appCatList) {
 	            StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
 	            for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
-	            	StarsEnrLMProgram starsProg = sendCtrlOdds.getStarsEnrLMProgram(i);
+	            	StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
+	            	boolean enrProgFound = false;
             		
             		for (int j = 0; j < appCatList.size(); j++) {
             			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
             			for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
             				LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
-            				if (liteProg.getProgramID() == starsProg.getProgramID()) {
-            					liteProg.setChanceOfControlID( starsProg.getChanceOfControl().getEntryID() );
-            					progList.add( liteProg );
+            				if (liteProg.getProgramID() == enrProg.getProgramID()) {
+            					liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
+            					enrProgFound = true;
             					
 			        			com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
 			        					new com.cannontech.database.db.stars.LMProgramWebPublishing();
@@ -135,12 +142,12 @@ public class SendOddsForControlAction implements ActionBase {
             				}
             			}
             			
-            			if (progList.size() == i+1) break;
+            			if (enrProgFound) break;
             		}
             	}
             	
             	// Create a new thread to get through all the accounts and send out emails
-            	SOAPServer.runTimerTask( new SendControlOddsTimerTask(energyCompanyID) );
+            	new Thread( new SendControlOddsTask(energyCompanyID) ).start();
             }
             
             StarsSuccess success = new StarsSuccess();
@@ -180,6 +187,30 @@ public class SendOddsForControlAction implements ActionBase {
 			
 			if (operation.getStarsSuccess() == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			
+        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
+			
+			StarsSendOddsForControl sendCtrlOdds = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsSendOddsForControl();
+			for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
+				StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
+				boolean enrProgFound = false;
+				
+				for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+					StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+						StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
+						if (program.getProgramID() == enrProg.getProgramID()) {
+							program.setChanceOfControl( enrProg.getChanceOfControl() );
+							break;
+						}
+					}
+					
+					if (enrProgFound) break;
+				}
+			}
 			
             return 0;
         }

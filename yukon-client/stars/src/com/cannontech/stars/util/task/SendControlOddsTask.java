@@ -1,4 +1,4 @@
-package com.cannontech.stars.util.timertask;
+package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +25,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class SendControlOddsTimerTask extends StarsTimerTask {
+public class SendControlOddsTask implements Runnable {
 	
 	private static final String subject = "Today's Odds For Control";
 	private static final String header =
@@ -36,33 +36,8 @@ public class SendControlOddsTimerTask extends StarsTimerTask {
 	
 	private int energyCompanyID = 0;
 	
-	public SendControlOddsTimerTask(int energyCompanyID) {
+	public SendControlOddsTask(int energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
-	}
-
-	/**
-	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#isFixedRate()
-	 */
-	public boolean isFixedRate() {
-		return false;
-	}
-
-	/**
-	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#getTimerPeriod()
-	 */
-	public long getTimerPeriod() {
-		return 0;
-	}
-
-	/**
-	 * @see com.cannontech.stars.util.timertask.StarsTimerTask#getNextScheduledTime()
-	 */
-	public Date getNextScheduledTime() {
-		return null;
-	}
-
-	public long getInitialDelay() {
-		return 0L;
 	}
 	
 	/**
