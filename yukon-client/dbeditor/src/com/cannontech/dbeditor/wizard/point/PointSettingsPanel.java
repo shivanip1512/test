@@ -162,7 +162,6 @@ public Object getValue(Object val) {
 	point.setPointID( com.cannontech.database.db.point.Point.getNextCachedPointID() );
 	point.getPoint().setPointName(name);
 	point.getPoint().setPaoID( new Integer(liteDevice.getYukonID()) );
-	point.getPoint().setLogicalGroup("Default");
 
 	return val;
 }

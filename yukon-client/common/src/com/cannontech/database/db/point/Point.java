@@ -5,6 +5,8 @@ package com.cannontech.database.db.point;
  */
 import java.sql.Connection;
 
+import com.cannontech.database.data.point.PointLogicalGroups;
+
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
 	public static final Character PSEUDOFLAG_PSEUDO = new Character('P');
@@ -15,7 +17,7 @@ public class Point extends com.cannontech.database.db.DBPersistent
 	private String pointType = null;
 	private String pointName = null;
 	private Integer paoID = null;
-	private String logicalGroup = null;
+	private String logicalGroup = PointLogicalGroups.getLogicalGrp(PointLogicalGroups.LGRP_DEFAULT);
 	private Integer stateGroupID = null;
 	private Character serviceFlag = null;
 	private Character alarmInhibit = null;

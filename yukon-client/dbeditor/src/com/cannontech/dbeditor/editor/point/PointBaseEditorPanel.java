@@ -4,25 +4,28 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.StatusPoint;
 
 public class PointBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjBasePanel = null;
 	private javax.swing.JLabel ivjDeviceNameLabel = null;
-	private javax.swing.JLabel ivjGroupLabel = null;
+	private javax.swing.JLabel ivjLogicalGrpLabel = null;
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjPointNameTextField = null;
 	private javax.swing.JLabel ivjPointNumberLabel = null;
 	private javax.swing.JPanel ivjSpecificPanel = null;
 	private javax.swing.JCheckBox ivjOutOfServiceCheckBox = null;
-	private javax.swing.JComboBox ivjGroupComboBox = null;
+	private javax.swing.JComboBox ivjLogGroupComboBox = null;
 	private DataInputPanel currentSpecificPanel = null;
 	private javax.swing.JLabel ivjPointNumberActualLabel = null;
 	private javax.swing.JLabel ivjDeviceNameActualLabel = null;
@@ -40,17 +43,14 @@ public PointBaseEditorPanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getGroupComboBox()) 
+public void actionPerformed(java.awt.event.ActionEvent e) 
+{
+	if (e.getSource() == getLogGroupComboBox()) 
 		connEtoC3(e);
 	if (e.getSource() == getOutOfServiceCheckBox()) 
 		connEtoC4(e);
-	// user code begin {2}
-	// user code end
 }
+
 /**
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
@@ -174,7 +174,7 @@ private javax.swing.JPanel getBasePanel() {
 			constraintsGroupLabel.ipadx = 71;
 			constraintsGroupLabel.ipady = 4;
 			constraintsGroupLabel.insets = new java.awt.Insets(2, 8, 1, 3);
-			getBasePanel().add(getGroupLabel(), constraintsGroupLabel);
+			getBasePanel().add(getLogicalGrpLabel(), constraintsGroupLabel);
 
 			java.awt.GridBagConstraints constraintsGroupComboBox = new java.awt.GridBagConstraints();
 			constraintsGroupComboBox.gridx = 2; constraintsGroupComboBox.gridy = 2;
@@ -183,7 +183,7 @@ private javax.swing.JPanel getBasePanel() {
 			constraintsGroupComboBox.weightx = 1.0;
 			constraintsGroupComboBox.ipadx = 35;
 			constraintsGroupComboBox.insets = new java.awt.Insets(2, 4, 0, 4);
-			getBasePanel().add(getGroupComboBox(), constraintsGroupComboBox);
+			getBasePanel().add(getLogGroupComboBox(), constraintsGroupComboBox);
 
 			java.awt.GridBagConstraints constraintsPointNumberLabel = new java.awt.GridBagConstraints();
 			constraintsPointNumberLabel.gridx = 1; constraintsPointNumberLabel.gridy = 3;
@@ -294,51 +294,61 @@ private javax.swing.JLabel getDeviceNameLabel() {
  * Return the JComboBox2 property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getGroupComboBox() {
-	if (ivjGroupComboBox == null) {
-		try {
-			ivjGroupComboBox = new javax.swing.JComboBox();
-			ivjGroupComboBox.setName("GroupComboBox");
-			ivjGroupComboBox.setPreferredSize(new java.awt.Dimension(130, 22));
-			ivjGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjGroupComboBox.setMinimumSize(new java.awt.Dimension(126, 22));
-			ivjGroupComboBox.setEditable(true);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+private javax.swing.JComboBox getLogGroupComboBox() 
+{
+	if (ivjLogGroupComboBox == null) 	
+	{
+		try 
+		{
+			ivjLogGroupComboBox = new javax.swing.JComboBox();
+			ivjLogGroupComboBox.setName("LogGroupComboBox");
+			ivjLogGroupComboBox.setPreferredSize(new java.awt.Dimension(130, 22));
+			ivjLogGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
+			ivjLogGroupComboBox.setMinimumSize(new java.awt.Dimension(126, 22));
+			ivjLogGroupComboBox.setEditable(false);
+
+
+			for( int i = 0; i < PointLogicalGroups.LGRP_STRS.length; i++ )
+				ivjLogGroupComboBox.addItem( PointLogicalGroups.getLogicalGrp(i) );
+
+		}
+		catch (java.lang.Throwable ivjExc) 
+		{
 			handleException(ivjExc);
 		}
 	}
-	return ivjGroupComboBox;
+
+	return ivjLogGroupComboBox;
 }
+
 /**
  * Return the GroupLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getGroupLabel() {
-	if (ivjGroupLabel == null) {
-		try {
-			ivjGroupLabel = new javax.swing.JLabel();
-			ivjGroupLabel.setName("GroupLabel");
-			ivjGroupLabel.setText("Sort Label:");
-			ivjGroupLabel.setMaximumSize(new java.awt.Dimension(40, 16));
-			ivjGroupLabel.setPreferredSize(new java.awt.Dimension(40, 16));
-			ivjGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjGroupLabel.setMinimumSize(new java.awt.Dimension(40, 16));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+private javax.swing.JLabel getLogicalGrpLabel() 
+{
+	if (ivjLogicalGrpLabel == null) 
+	{
+		try 
+		{
+			ivjLogicalGrpLabel = new javax.swing.JLabel();
+			ivjLogicalGrpLabel.setName("LogGroupLabel");
+			ivjLogicalGrpLabel.setText("Timing Group:");
+			ivjLogicalGrpLabel.setMaximumSize(new java.awt.Dimension(40, 16));
+			ivjLogicalGrpLabel.setPreferredSize(new java.awt.Dimension(40, 16));
+			ivjLogicalGrpLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			ivjLogicalGrpLabel.setMinimumSize(new java.awt.Dimension(40, 16));
+
+		}
+		catch (java.lang.Throwable ivjExc) 
+		{
 			handleException(ivjExc);
 		}
 	}
-	return ivjGroupLabel;
+
+	return ivjLogicalGrpLabel;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -566,17 +576,19 @@ private javax.swing.JPanel getSpecificPanel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) {
+public Object getValue(Object val) 
+{
 	//Consider commonObject as a com.cannontech.database.data.point.PointBase
 	PointBase point = (PointBase) val;
 
-	String name = getPointNameTextField().getText();
-	String group = (String) getGroupComboBox().getSelectedItem();
+	point.getPoint().setPointName( getPointNameTextField().getText() );
 
-	point.getPoint().setPointName( name );
-	point.getPoint().setLogicalGroup( group );
+	point.getPoint().setLogicalGroup( 
+			getLogGroupComboBox().getSelectedItem().toString() );
+
 	point.getPoint().setServiceFlag( new Character(
 		(getOutOfServiceCheckBox().isSelected() ? 'Y' : 'N') ) );
+
 
 	//Get the value out of whatever panel happens to be
 	//the 'specific panel' - was set in setDefaultValue
@@ -591,20 +603,19 @@ public Object getValue(Object val) {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
+private void initConnections() throws java.lang.Exception 
+{
 	getPointNameTextField().addCaretListener(this);
-	getGroupComboBox().addActionListener(this);
+	getLogGroupComboBox().addActionListener(this);
 	getOutOfServiceCheckBox().addActionListener(this);
 }
+
 /**
  * Initialize the class.
  */
@@ -704,7 +715,8 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
-public void setValue(Object val) {
+public void setValue(Object val) 
+{
 	//Consider defaultObject a com.cannontech.database.data.point.PointBase
 	PointBase point = (PointBase) val;
 
@@ -719,26 +731,20 @@ public void setValue(Object val) {
 	getOutOfServiceCheckBox().setSelected( 
 				(point.getPoint().getServiceFlag().toString().equalsIgnoreCase("Y") ? true : false) );
 	
-	if( group != null )
-		CtiUtilities.setSelectedInComboBox( getGroupComboBox(), group );
-	
-	//Load the device
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
-	synchronized(cache)
-	{
-		java.util.List devices = cache.getAllYukonPAObjects();
-		for(int i=0;i<devices.size();i++)
-		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID() == pointDeviceID )
-			{
-				liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
-				break;
-			}
-		}
-	}
+	if( PointLogicalGroups.isValidLogicalGroup(group) )
+		getLogGroupComboBox().setSelectedItem( group );
+		//CtiUtilities.setSelectedInComboBox( getLogGroupComboBox(), group );
+	else
+		getLogGroupComboBox().setSelectedItem(
+				PointLogicalGroups.getLogicalGrp(PointLogicalGroups.LGRP_DEFAULT) );
 
-	getDeviceNameActualLabel().setText( liteDevice.getPaoName() );
+
+
+	//Load the device
+	LiteYukonPAObject litePAO = PAOFuncs.getLiteYukonPAO( pointDeviceID );
+	getDeviceNameActualLabel().setText( litePAO.getPaoName() );
+
+
 	getPointTypeActualLabel().setText( point.getPoint().getPointType() );
 	
 	//Depending on type change the specific panel to suite

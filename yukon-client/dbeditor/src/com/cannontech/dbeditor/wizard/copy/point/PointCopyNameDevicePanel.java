@@ -237,7 +237,6 @@ public Object getValue(Object val)
 	point.setPointID( Point.getNextCachedPointID() );
 	point.getPoint().setPointName(nameString);
 	point.getPoint().setPaoID(new Integer(liteDevice.getYukonID()));
-	point.getPoint().setLogicalGroup("Default");
 
 
 	return val;
