@@ -26,7 +26,7 @@ public class DeviceCustomerList extends DBPersistent
 		"CustomerID"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID"};
 
 	public static final String TABLE_NAME = "DeviceCustomerList";
 
@@ -35,7 +35,7 @@ public class DeviceCustomerList extends DBPersistent
 	 */
 	public void add() throws SQLException
 	{
-		Object addValues[] = { getDeviceID(), getCustomerID() };
+		Object addValues[] = { getCustomerID(), getDeviceID() };
 
 		add( TABLE_NAME, addValues );
 	}
@@ -109,26 +109,7 @@ public class DeviceCustomerList extends DBPersistent
 		deviceID = integer;
 	}
 	
-  /**
-   * This method was created by Cannon Technologies Inc.
-   * @return boolean
-   * @param deviceID java.lang.Integer
-   */
-  public static boolean deleteDeviceCustomerList(Integer customerID )
-  {
-	  return deleteDeviceCustomerList( customerID, "yukon");
-  }
-  /**
-   * This method was created by Cannon Technologies Inc.
-   * @return boolean
-   * @param deviceID java.lang.Integer
-   */
-  public static boolean deleteDeviceCustomerList(Integer customerID, String databaseAlias )
-  {
-  	  java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-	  return deleteDeviceCustomerList( customerID, conn);
-  } 
-  /**
+    /**
    * This method was created by Cannon Technologies Inc.
    * @return boolean
    * @param deviceID java.lang.Integer
@@ -150,27 +131,7 @@ public class DeviceCustomerList extends DBPersistent
 
 	  return true;
   }
-  /**
-   * This method was created in VisualAge.
-   * @return DeviceCustomerList[]
-   * @param stateGroup java.lang.Integer
-   */
-  public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID) throws java.sql.SQLException 
-  {
-	  return getAllDeviceCustomerList(customerID, "yukon");												
-  }
   
-  /**
-	 * This method was created in VisualAge.
-	 * @return DeviceCustomerList[]
-	 * @param stateGroup java.lang.Integer
-	 */
-  public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID, String databaseAlias) throws java.sql.SQLException 
-  {
-  	java.sql.Connection conn = null;
-  	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-  	return getAllDeviceCustomerList(customerID, conn);												
-  }  
   /**
    * This method was created in VisualAge.
    * @return DeviceCustomerList[]
@@ -219,7 +180,7 @@ public class DeviceCustomerList extends DBPersistent
 		  try
 		  {
 			  if( pstmt != null ) pstmt.close();
-			  if( conn != null ) conn.close();
+			  if( rset != null ) rset.close();
 		  } 
 		  catch( java.sql.SQLException e2 )
 		  {

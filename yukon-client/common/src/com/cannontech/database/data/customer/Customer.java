@@ -217,14 +217,14 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		getCustomer().update();
 		
 		// delete all the graph references for this customer
-		GraphCustomerList.deleteCustomerGraphList( getCustomerID() );
+		GraphCustomerList.deleteCustomerGraphList( getCustomerID(), getDbConnection() );
 
 		// add all the graphs for this customer
 		for (int i = 0; i < getGraphVector().size(); i++)
 			 ((GraphCustomerList) getGraphVector().elementAt(i)).add();
 
 		// delete all the device references for this customer
-		DeviceCustomerList.deleteDeviceCustomerList( getCustomerID() );
+		DeviceCustomerList.deleteDeviceCustomerList( getCustomerID() ,getDbConnection());
 
 		// add all the devices for this customer
 		for (int i = 0; i < getDeviceVector().size(); i++)

@@ -50,20 +50,11 @@ public void delete() throws java.sql.SQLException
  * @return boolean
  * @param deviceID java.lang.Integer
  */
-public static boolean deleteCustomerGraphList(Integer customerID )
-{
-	return deleteCustomerGraphList( customerID, "yukon");
-} 
-/**
- * This method was created by Cannon Technologies Inc.
- * @return boolean
- * @param deviceID java.lang.Integer
- */
-public static boolean deleteCustomerGraphList(Integer customerID, String databaseAlias)
+public static boolean deleteCustomerGraphList(Integer customerID, java.sql.Connection conn)
 {
 	com.cannontech.database.SqlStatement stmt =
 		new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME + " WHERE CustomerID=" + customerID,
-												 databaseAlias );
+												 conn);
 	try
 	{
 		stmt.execute();
@@ -78,22 +69,12 @@ public static boolean deleteCustomerGraphList(Integer customerID, String databas
 }
 /**
  * This method was created in VisualAge.
- * @return LMControlAreaProgramList[]
- * @param stateGroup java.lang.Integer
- */
-public static final GraphCustomerList[] getAllGraphCustomerList(Integer customerID) throws java.sql.SQLException 
-{
-	return getAllGraphCustomerList(customerID, "yukon");												
-}
-/**
- * This method was created in VisualAge.
  * @return com.cannontech.database.db.point.State[]
  * @param stateGroup java.lang.Integer
  */
-public static final GraphCustomerList[] getAllGraphCustomerList(Integer customerID, String databaseAlias) throws java.sql.SQLException
+public static final GraphCustomerList[] getAllGraphCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
 {
 	java.util.ArrayList tmpList = new java.util.ArrayList(30);
-	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
@@ -102,8 +83,6 @@ public static final GraphCustomerList[] getAllGraphCustomerList(Integer customer
 
 	try
 	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
-
 		if( conn == null )
 		{
 			throw new IllegalStateException("Error getting database connection.");
@@ -138,7 +117,7 @@ public static final GraphCustomerList[] getAllGraphCustomerList(Integer customer
 		try
 		{
 			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
+			if( rset != null ) rset.close();
 		} 
 		catch( java.sql.SQLException e2 )
 		{
