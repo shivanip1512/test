@@ -1177,21 +1177,30 @@ BOOL CtiLMProgramDirect::maintainProgramControl(ULONG currentPriority, RWOrdered
 
     BOOL returnBoolean = FALSE;
     ULONG previousGearNumber = _currentgearnumber;
-    if( hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901) )
+
+    if( isWithinValidControlWindow(secondsFromBeginningOfDay) )
     {
-        if( _LM_DEBUG )
+        if( hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber << endl;
+            if( _LM_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber << endl;
+            }
+            updateProgramControlForGearChange(previousGearNumber, multiPilMsg, multiDispatchMsg);
         }
-        updateProgramControlForGearChange(previousGearNumber, multiPilMsg, multiDispatchMsg);
+        else
+        {
+            if( refreshStandardProgramControl(secondsFrom1901, multiPilMsg, multiDispatchMsg) )
+            {
+                returnBoolean = TRUE;
+            }
+        }
     }
     else
     {
-        if( refreshStandardProgramControl(secondsFrom1901, multiPilMsg, multiDispatchMsg) )
-        {
-            returnBoolean = TRUE;
-        }
+        stopProgramControl(multiPilMsg, multiDispatchMsg);
+        returnBoolean = TRUE;
     }
 
     return returnBoolean;
