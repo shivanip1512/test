@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/03/09 22:06:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/03/16 23:09:02 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,8 +145,8 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair((int)MCT470_Memory_RTCLen,
-                            (int)MCT470_Memory_RTCPos);
+    cs._funcLen = make_pair((int)MCT470_Memory_RTCPos,
+                            (int)MCT470_Memory_RTCLen);
     s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_TSync;
