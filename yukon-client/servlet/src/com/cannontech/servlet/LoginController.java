@@ -12,9 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.roles.application.WebClientRole;
 
 public class LoginController extends javax.servlet.http.HttpServlet {
@@ -64,10 +68,11 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		
 		if(user != null && 
 			(home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
-			HttpSession session = req.getSession(true);
+			HttpSession session = req.getSession(true); 
 			try {						
 				initSession(user, session);
-
+				logEvent(user.getUsername(), "User Login (Web)", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
+				
 				//stash a cookie that might tell us later where they log in at								
 				String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
 				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
@@ -77,7 +82,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			} catch(TransactionException e) {
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
+			} 
 
 			resp.sendRedirect(req.getContextPath() + home_url);
 		}
@@ -93,6 +98,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 					redirectURI = req.getContextPath() + INVALID_URI;
 				}
 			}
+			logEvent("User Login Failed", "Login attempt as " + username + " failed from " + req.getRemoteAddr());
 			resp.sendRedirect(redirectURI);
 		}			
 	}
@@ -108,6 +114,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				session = req.getSession( true );
 				session.setAttribute(SAVED_YUKON_USER, savedUser);
 			}
+			logEvent(user.getUsername(),"User Logout", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
 		}
 
 		//Try to send them back to where they logged in from
@@ -137,6 +144,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			HttpSession session = req.getSession(true);
 			try {						
 				initSession(user, session);
+				logEvent(user.getUsername(), "User Login (Client)", "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
 			} catch(TransactionException e) {
 				session.invalidate();
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -155,5 +163,21 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 
 private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException  {
 	session.setAttribute(com.cannontech.common.constants.LoginController.YUKON_USER, user);
+	
 }
+
+private void logEvent(String action, String description) {
+	logEvent(null, action, description);
+}
+private void logEvent(String username, String action, String description) {
+	Signal msg = new Signal();
+	if(username != null)
+		msg.setUserName(username);
+	msg.setPointID(PointTypes.SYS_PID_SYSTEM);
+	msg.setLogType(SystemLog.TYPE_USER);
+	msg.setAction(action);
+	msg.setDescription(description);
+	PointChangeCache.getPointChangeCache().getDispatchConnection().write(msg);	
+}
+
 }
