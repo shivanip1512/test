@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/02/17 23:03:30 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.25  2005/02/17 23:03:30  cplender
+* Make certain we do not GIGO the OutMessage
+*
 * Revision 1.24  2005/02/10 23:24:00  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -493,6 +496,8 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
 
     RWTime now;
     CtiRepeatCol::value_type repeat;
+
+    OutMessage = 0;
 
     if(!_repeatList.empty() && (repeat = _repeatList.front()).first <= now)
     {
