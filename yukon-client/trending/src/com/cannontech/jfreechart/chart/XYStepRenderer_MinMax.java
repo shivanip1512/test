@@ -11,11 +11,10 @@ package com.cannontech.jfreechart.chart;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.CrosshairInfo;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.XYItemRendererState;
 import org.jfree.chart.renderer.XYStepRenderer;
 import org.jfree.data.XYDataset;
 import org.jfree.ui.RectangleEdge;
@@ -65,19 +64,11 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
      * @param item The item index.
      * @param item The pass index.
      */
-    public void drawItem(Graphics2D g2,
-    					 XYItemRendererState state, 
-    					 Rectangle2D dataArea, 
-    					 PlotRenderingInfo info,
-    					 XYPlot plot, 
-    					 ValueAxis domainAxis, 
-    					 ValueAxis rangeAxis,
-                         XYDataset dataset,
-                         int series, 
-                         int item,
-                         CrosshairInfo crosshairInfo,
-                         int pass) {
-		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairInfo, pass);
+    public void drawItem(Graphics2D g2, Rectangle2D dataArea, ChartRenderingInfo info,
+                         XYPlot plot, ValueAxis horizontalAxis, ValueAxis verticalAxis,
+                         XYDataset dataset, int series, int item,
+                         CrosshairInfo crosshairInfo, int pass) {
+		super.drawItem(g2, dataArea, info, plot, horizontalAxis, verticalAxis, dataset, series, item, crosshairInfo, pass);
 
         // get the data point...
         Number x1 = dataset.getXValue(series, item);
@@ -88,8 +79,8 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 		final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
 		final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
 
-		double transX1 = domainAxis.translateValueToJava2D(x1.doubleValue(), dataArea, xAxisLocation);
-		double transY1 = rangeAxis.translateValueToJava2D(y1.doubleValue(), dataArea, yAxisLocation);
+		double transX1 = horizontalAxis.translateValueToJava2D(x1.doubleValue(), dataArea, xAxisLocation);
+		double transY1 = verticalAxis.translateValueToJava2D(y1.doubleValue(), dataArea, yAxisLocation);
 
         if( this.plotMinMaxValues)
 		{
