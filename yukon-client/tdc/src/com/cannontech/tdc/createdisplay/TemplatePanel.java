@@ -436,8 +436,6 @@ private void initialize() {
 		constraintsJScrollPaneTable.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJScrollPaneTable.weightx = 1.0;
 		constraintsJScrollPaneTable.weighty = 1.0;
-		constraintsJScrollPaneTable.ipadx = 467;
-		constraintsJScrollPaneTable.ipady = 16;
 		constraintsJScrollPaneTable.insets = new java.awt.Insets(2, 2, 2, 2);
 		add(getJScrollPaneTable(), constraintsJScrollPaneTable);
 
@@ -452,15 +450,12 @@ private void initialize() {
 		constraintsJComboBoxTemplate.gridx = 1; constraintsJComboBoxTemplate.gridy = 1;
 		constraintsJComboBoxTemplate.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraintsJComboBoxTemplate.weightx = 1.0;
-		constraintsJComboBoxTemplate.ipadx = 4;
-		constraintsJComboBoxTemplate.ipady = -6;
 		constraintsJComboBoxTemplate.insets = new java.awt.Insets(9, 60, 7, 2);
 		add(getJComboBoxTemplate(), constraintsJComboBoxTemplate);
 
 		java.awt.GridBagConstraints constraintsJButtonAdvanced = new java.awt.GridBagConstraints();
 		constraintsJButtonAdvanced.gridx = 3; constraintsJButtonAdvanced.gridy = 1;
 		constraintsJButtonAdvanced.anchor = java.awt.GridBagConstraints.NORTHEAST;
-		constraintsJButtonAdvanced.ipadx = 7;
 		constraintsJButtonAdvanced.insets = new java.awt.Insets(8, 47, 2, 4);
 		add(getJButtonAdvanced(), constraintsJButtonAdvanced);
 

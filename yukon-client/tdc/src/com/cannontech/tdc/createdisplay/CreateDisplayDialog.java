@@ -140,20 +140,12 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsTopPanel.gridx = 1; constraintsTopPanel.gridy = 1;
 			constraintsTopPanel.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsTopPanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsTopPanel.weightx = 1.0;
-			constraintsTopPanel.weighty = 1.0;
-			constraintsTopPanel.ipadx = 138;
-			constraintsTopPanel.ipady = 168;
 			getJDialogContentPane().add(getTopPanel(), constraintsTopPanel);
 
 			java.awt.GridBagConstraints constraintsJPanelTemplateHolder = new java.awt.GridBagConstraints();
 			constraintsJPanelTemplateHolder.gridx = 1; constraintsJPanelTemplateHolder.gridy = 2;
-			constraintsJPanelTemplateHolder.fill = java.awt.GridBagConstraints.BOTH;
+			constraintsJPanelTemplateHolder.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJPanelTemplateHolder.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJPanelTemplateHolder.weightx = 1.0;
-			constraintsJPanelTemplateHolder.weighty = 1.0;
-			constraintsJPanelTemplateHolder.ipadx = 619;
-			constraintsJPanelTemplateHolder.ipady = 99;
 			getJDialogContentPane().add(getJPanelTemplateHolder(), constraintsJPanelTemplateHolder);
 
 			java.awt.GridBagConstraints constraintsJPanelBottomPanelHolder = new java.awt.GridBagConstraints();
@@ -162,11 +154,10 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsJPanelBottomPanelHolder.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJPanelBottomPanelHolder.weightx = 1.0;
 			constraintsJPanelBottomPanelHolder.weighty = 1.0;
-			constraintsJPanelBottomPanelHolder.ipadx = -10;
-			constraintsJPanelBottomPanelHolder.ipady = -12;
 			constraintsJPanelBottomPanelHolder.insets = new java.awt.Insets(0, 0, 1, 0);
 			getJDialogContentPane().add(getJPanelBottomPanelHolder(), constraintsJPanelBottomPanelHolder);
 			// user code begin {1}
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -200,8 +191,6 @@ private javax.swing.JPanel getJPanelBottomPanelHolder() {
 			constraintsEditDataSetPanel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsEditDataSetPanel.weightx = 1.0;
 			constraintsEditDataSetPanel.weighty = 1.0;
-			constraintsEditDataSetPanel.ipadx = -22;
-			constraintsEditDataSetPanel.ipady = 20;
 			constraintsEditDataSetPanel.insets = new java.awt.Insets(0, 5, 0, 5);
 			getJPanelBottomPanelHolder().add(getEditDataSetPanel(), constraintsEditDataSetPanel);
 
@@ -209,9 +198,8 @@ private javax.swing.JPanel getJPanelBottomPanelHolder() {
 			constraintsOkCancelPanel.gridx = 1; constraintsOkCancelPanel.gridy = 2;
 			constraintsOkCancelPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsOkCancelPanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsOkCancelPanel.weightx = 1.0;
-			constraintsOkCancelPanel.weighty = 1.0;
-			constraintsOkCancelPanel.ipadx = 475;
+			constraintsOkCancelPanel.weightx = 0.0;
+			constraintsOkCancelPanel.weighty = 0.0;
 			constraintsOkCancelPanel.insets = new java.awt.Insets(0, 5, 5, 5);
 			getJPanelBottomPanelHolder().add(getOkCancelPanel(), constraintsOkCancelPanel);
 			// user code begin {1}
@@ -234,9 +222,7 @@ private javax.swing.JPanel getJPanelTemplateHolder() {
 		try {
 			ivjJPanelTemplateHolder = new javax.swing.JPanel();
 			ivjJPanelTemplateHolder.setName("JPanelTemplateHolder");
-			ivjJPanelTemplateHolder.setPreferredSize(new java.awt.Dimension(1071, 45));
 			ivjJPanelTemplateHolder.setLayout(new java.awt.BorderLayout());
-			ivjJPanelTemplateHolder.setMinimumSize(new java.awt.Dimension(10, 9));
 			getJPanelTemplateHolder().add(getTemplatePanel(), "Center");
 			// user code begin {1}
 			// user code end
@@ -304,9 +290,7 @@ private CreateTopPanel getTopPanel() {
 			ivjLocalBorder.setTitle("Display");
 			ivjTopPanel = new com.cannontech.tdc.createdisplay.CreateTopPanel();
 			ivjTopPanel.setName("TopPanel");
-			ivjTopPanel.setPreferredSize(new java.awt.Dimension(1071, 115));
 			ivjTopPanel.setBorder(ivjLocalBorder);
-			ivjTopPanel.setMinimumSize(new java.awt.Dimension(491, 10));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

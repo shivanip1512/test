@@ -228,35 +228,25 @@ private javax.swing.JPanel getJPanel1() {
 			constraintsJTextFieldName.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJTextFieldName.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJTextFieldName.weightx = 1.0;
-			constraintsJTextFieldName.ipadx = 151;
-			constraintsJTextFieldName.ipady = 1;
-			constraintsJTextFieldName.insets = new java.awt.Insets(4, 47, 4, 21);
+			constraintsJTextFieldName.insets = new java.awt.Insets(2, 40, 4, 2);
 			getJPanel1().add(getJTextFieldName(), constraintsJTextFieldName);
 
 			java.awt.GridBagConstraints constraintsJLabelType = new java.awt.GridBagConstraints();
 			constraintsJLabelType.gridx = 2; constraintsJLabelType.gridy = 2;
-			constraintsJLabelType.gridwidth = -1;
-constraintsJLabelType.gridheight = -1;
-			constraintsJLabelType.ipadx = -27;
-			constraintsJLabelType.ipady = -14;
+			constraintsJLabelType.insets = new java.awt.Insets(2, 4, 4, 2);
 			getJPanel1().add(getJLabelType(), constraintsJLabelType);
 
 			java.awt.GridBagConstraints constraintsJComboBoxType = new java.awt.GridBagConstraints();
 			constraintsJComboBoxType.gridx = 2; constraintsJComboBoxType.gridy = 2;
-			constraintsJComboBoxType.gridwidth = -1;
-constraintsJComboBoxType.gridheight = -1;
 			constraintsJComboBoxType.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxType.weightx = 1.0;
-			constraintsJComboBoxType.ipadx = -126;
-			constraintsJComboBoxType.ipady = -23;
 			getJPanel1().add(getJComboBoxType(), constraintsJComboBoxType);
 
 			java.awt.GridBagConstraints constraintsJLabelName = new java.awt.GridBagConstraints();
 			constraintsJLabelName.gridx = 2; constraintsJLabelName.gridy = 2;
 			constraintsJLabelName.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelName.ipadx = 3;
-			constraintsJLabelName.ipady = 5;
-			constraintsJLabelName.insets = new java.awt.Insets(5, 9, 5, 175);
+			constraintsJLabelName.weightx = 1.0;
+			constraintsJLabelName.insets = new java.awt.Insets(2, 4, 4, 2);
 			getJPanel1().add(getJLabelName(), constraintsJLabelName);
 
 			java.awt.GridBagConstraints constraintsJTextFieldTitle = new java.awt.GridBagConstraints();
@@ -264,17 +254,13 @@ constraintsJComboBoxType.gridheight = -1;
 			constraintsJTextFieldTitle.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJTextFieldTitle.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJTextFieldTitle.weightx = 1.0;
-			constraintsJTextFieldTitle.ipadx = 191;
-			constraintsJTextFieldTitle.ipady = 1;
-			constraintsJTextFieldTitle.insets = new java.awt.Insets(4, 2, 4, 4);
+			constraintsJTextFieldTitle.insets = new java.awt.Insets(2, 4, 4, 2);
 			getJPanel1().add(getJTextFieldTitle(), constraintsJTextFieldTitle);
 
 			java.awt.GridBagConstraints constraintsJLabelTitle = new java.awt.GridBagConstraints();
 			constraintsJLabelTitle.gridx = 3; constraintsJLabelTitle.gridy = 2;
 			constraintsJLabelTitle.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelTitle.ipadx = 8;
-			constraintsJLabelTitle.ipady = 5;
-			constraintsJLabelTitle.insets = new java.awt.Insets(5, 21, 5, 1);
+			constraintsJLabelTitle.insets = new java.awt.Insets(2, 4, 4, 2);
 			getJPanel1().add(getJLabelTitle(), constraintsJLabelTitle);
 			// user code begin {1}
 			// user code end

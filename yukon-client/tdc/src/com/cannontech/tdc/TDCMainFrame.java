@@ -3163,6 +3163,7 @@ public void jMenuItemCreate_ActionPerformed(java.awt.event.ActionEvent actionEve
 
 		setCursor( original );
 		createDisplay.setModal(true);
+		createDisplay.setSize(680, 650);
 		createDisplay.setLocationRelativeTo( this );
 		createDisplay.show();
 
@@ -3235,6 +3236,7 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 		setCursor( original );
 		display.setModal(true);
+		display.setSize(680, 650);
 		display.setLocationRelativeTo( this );	
 		display.show();
 

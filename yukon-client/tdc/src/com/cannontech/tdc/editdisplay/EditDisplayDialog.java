@@ -320,7 +320,7 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsAddPointsPanel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsAddPointsPanel.weightx = 1.0;
 			constraintsAddPointsPanel.weighty = 1.0;
-			constraintsAddPointsPanel.insets = new java.awt.Insets(3, 0, 2, 0);
+			constraintsAddPointsPanel.insets = new java.awt.Insets(2, 0, 0, 0);
 			getJDialogContentPane().add(getAddPointsPanel(), constraintsAddPointsPanel);
 
 			java.awt.GridBagConstraints constraintsOkCancelPanel = new java.awt.GridBagConstraints();
@@ -329,7 +329,7 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsOkCancelPanel.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsOkCancelPanel.weightx = 0.0;
 			constraintsOkCancelPanel.weighty = 0.0;
-			constraintsOkCancelPanel.insets = new java.awt.Insets(3, 6, 0, 6);
+			constraintsOkCancelPanel.insets = new java.awt.Insets(0, 6, 0, 6);
 			getJDialogContentPane().add(getOkCancelPanel(), constraintsOkCancelPanel);
 			// user code begin {1}
 			// user code end
@@ -561,7 +561,6 @@ private void initialize()
 		// user code end
 		setName("EditDisplayDialog");
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		setSize(623, 593);
 		setTitle("Edit Display");
 		setContentPane(getJDialogContentPane());
 		initConnections();
