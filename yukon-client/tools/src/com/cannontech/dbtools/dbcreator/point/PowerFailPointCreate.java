@@ -6,67 +6,14 @@ package com.cannontech.dbtools.dbcreator.point;
  */
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
-public class PowerFailPointCreate 
+public class PowerFailPointCreate extends PointCreate
 {
-	//a mutable lite point used for comparisons
-	private static final LitePoint DUMMY_LITE_POINT = 
-					new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0 );
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
 	public PowerFailPointCreate() 
 	{
 		super();
-	}
-	
-	/**
-	 * Main. Start the Power Fail Point creation/insertion process.
-	 * Creation date: (1/10/2001 11:18:55 PM)
-	 * @param args java.lang.String[]
-	 */
-	public static void main(String[] args) 
-	{
-		java.util.Date timerStart = new java.util.Date();
-	
-		PowerFailPointCreate creater = new PowerFailPointCreate();
-		creater.createPowerFailPoints();
-
-
-		java.util.Date timerStop = new java.util.Date();
-		com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
-				" Secs for PowerFailPointCreate to complete" );
-		System.exit(0);
-	}
-
-	/**
-	 * Returns true when the deviceDevID does not already have 
-	 * a POWER FAIL point attached to it.  
-	 * The list points contains all points to search through.
-	 * Creation date: (2/27/2002 10:37:56 AM)
-	 * @param points java.util.List
-	 * @param deviceDevID int
-	 * @return boolean
-	 */
-	private boolean addPowerFailPointToDevice(java.util.List points, int deviceDevID )
-	{
-		java.util.List pointTempList = new java.util.Vector(10);
-		
-		DUMMY_LITE_POINT.setPaobjectID(deviceDevID);	//needed for binarySearchRepetition
-		
-		//searches and sorts the list!
-		com.cannontech.common.util.CtiUtilities.binarySearchRepetition( 
-						points,
-						DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-						com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
-						pointTempList );
-					
-		for (int i = 0; i < pointTempList.size(); i++)
-		{
-			com.cannontech.database.data.lite.LitePoint lp = (LitePoint)pointTempList.get(i);
-			if( lp.getPointOffset() == 20)
-				return false;
-		}
-		return true;
 	}
 	
 	/**
@@ -83,55 +30,28 @@ public class PowerFailPointCreate
 	}
 
 	/**
-	 * Returns a Vector of LiteYukonPaobjects that need a Power Fail point added to them.
+	 * Returns true if the Device is a valid container of Power Fail points.
+	 * A valid type_ is of type MCT (Not including LMT2 or DCT501
 	 * Creation date: (4/22/2002 4:11:23 PM)
-	 * @return java.util.Vector
+	 * @param _type int
+	 * @return boolean
 	 */
-	public java.util.Vector getPowerFailPointsDeviceVector()
+	public boolean isPointCreated( int pointOffset_, int pointType_)
 	{
-		java.util.Vector powerFailPointDevices = new java.util.Vector(20);
-		
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	
-		synchronized (cache)
-		{
-			java.util.List devices = cache.getAllDevices();
-			java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
-			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-			
-			for (int i = 0; i < devices.size(); i++)
-			{
-				com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i));
-				if( isDeviceValid(litePaobject.getType()) )
-				{
-					int deviceDevID = litePaobject.getLiteID();
-					
-					//makes a list of points devices to add power fail points to
-					if( addPowerFailPointToDevice( points, deviceDevID ))
-					{
-						powerFailPointDevices.addElement(litePaobject);
-					}
-				}
-			}
-			com.cannontech.clientutils.CTILogger.info(powerFailPointDevices.size() + " Total MCT Devices needing POWER FAIL points added.");
-		} //synch
-		return powerFailPointDevices;
+		return ((pointOffset_ == 20) && (pointType_ == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT));
 	}
-	
 	/**
 	 * Parses through the powerFailPointsDeviceList and creates a mutiDBPersistent
 	 *  of PulseAccumulator points to be inserted as Power Fail points.
 	 * Creation date: (5/29/2001 9:13:14 AM)
 	 * @return boolean
 	 */
-	public boolean createPowerFailPoints() 
+	public boolean create() 
 	{
 		com.cannontech.clientutils.CTILogger.info("Starting Power Fail Point creation process...");
 	
 		java.util.Vector powerFailDevices = new java.util.Vector(20);
-		powerFailDevices = getPowerFailPointsDeviceVector();
+		getDeviceVector(powerFailDevices);
 	
 		//create an object to hold all of our DBPersistant objects
 		com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
@@ -205,25 +125,4 @@ public class PowerFailPointCreate
 	}
 	
 	
-	/**
-	 * Returns true if multi is successfully inserted into the Database.
-	 * Creation date: (3/31/2001 12:07:17 PM)
-	 * @param multi com.cannontech.database.data.multi.MultiDBPersistent
-	 */
-	private boolean writeToSQLDatabase(com.cannontech.database.data.multi.MultiDBPersistent multi) 
-	{
-		//write all the collected data to the SQL database
-		try
-		{
-		  com.cannontech.clientutils.CTILogger.info("Creating Transaction to insert multi");
-	      multi = (com.cannontech.database.data.multi.MultiDBPersistent)com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, multi).execute();
-	
-			return true;
-		}
-		catch( com.cannontech.database.TransactionException t )
-		{
-			com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
-			return false;
-		}
-	}
 }
