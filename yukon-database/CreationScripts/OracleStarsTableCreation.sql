@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/10/2005 2:42:09 PM                         */
+/* Created on:     2/3/2005 5:26:25 PM                          */
 /*==============================================================*/
 
 
@@ -74,6 +74,8 @@ drop table LMConfigurationSA205 cascade constraints;
 
 drop table LMConfigurationSA305 cascade constraints;
 
+drop table LMConfigurationSASimple cascade constraints;
+
 drop table LMConfigurationVersacom cascade constraints;
 
 drop table LMCustomerEventBase cascade constraints;
@@ -103,8 +105,6 @@ drop table SiteInformation cascade constraints;
 drop table Substation cascade constraints;
 
 drop table WorkOrderBase cascade constraints;
-
-drop table LMConfigurationSASimple cascade constraints;
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -617,6 +617,17 @@ alter table LMConfigurationSA305
    add constraint PK_LMCONFIGURATIONSA305 primary key (ConfigurationID);
 
 /*==============================================================*/
+/* Table: LMConfigurationSASimple                               */
+/*==============================================================*/
+create table LMConfigurationSASimple  (
+   ConfigurationID      NUMBER                          not null,
+   OperationalAddress   NUMBER                          not null
+);
+
+alter table LMConfigurationSASimple
+   add constraint PK_LMCONFIGURATIONSASIMPLE primary key (ConfigurationID);
+
+/*==============================================================*/
 /* Table: LMConfigurationVersacom                               */
 /*==============================================================*/
 create table LMConfigurationVersacom  (
@@ -875,17 +886,6 @@ create table WorkOrderBase  (
 
 alter table WorkOrderBase
    add constraint PK_WORKORDERBASE primary key (OrderID);
-
-/*==============================================================*/
-/* Table: LMConfigurationSASimple                                 */
-/*==============================================================*/
-create table LMConfigurationSASimple  (
-   ConfigurationID      NUMBER                          not null,
-   OperationalAddress   NUMBER                          not null
-);
-
-alter table LMConfigurationSASimple
-   add constraint PK_LMCONFIGURATIONSASIMPLE primary key (ConfigurationID);
 
 alter table AccountSite
    add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)
@@ -1207,6 +1207,10 @@ alter table LMConfigurationSA305
    add constraint FK_LMCfg305_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
 
+alter table LMConfigurationSASimple
+   add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID);
+
 alter table LMConfigurationVersacom
    add constraint FK_LMCfgVcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
@@ -1359,6 +1363,3 @@ alter table WorkOrderBase
    add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
       references ServiceCompany (CompanyID);
 
-alter table LMConfigurationSASimple
-   add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
-      references LMConfigurationBase (ConfigurationID);

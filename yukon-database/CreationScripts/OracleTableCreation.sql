@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/24/2005 4:12:02 PM                         */
+/* Created on:     2/3/2005 5:29:55 PM                          */
 /*==============================================================*/
 
 
@@ -4104,6 +4104,7 @@ insert into YukonGroupRole values(-15,-1,-1,-1014,'CannonLogo.gif');
 insert into YukonGroupRole values(-16,-1,-1,-1015,'(none)');
 insert into YukonGroupRole values(-17,-1,-1,-1016,'(none)');
 insert into YukonGroupRole values(-18,-1,-1,-1017,'(none)');
+insert into YukonGroupRole values(-19,-1,-1,-1018,'(none)');
 
 insert into YukonGroupRole values(-70,-1,-5,-1400,'(none)');
 insert into YukonGroupRole values(-71,-1,-5,-1401,'(none)');
@@ -5293,6 +5294,7 @@ insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The l
 insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or IP address of the voice server');
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
+insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
 
 /* Energy Company Role Properties */
 insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');

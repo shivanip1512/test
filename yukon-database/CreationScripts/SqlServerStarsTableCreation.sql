@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/10/2005 2:41:33 PM                         */
+/* Created on:     2/3/2005 5:25:41 PM                          */
 /*==============================================================*/
 
 
@@ -302,6 +302,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('LMConfigurationSASimple')
+            and   type = 'U')
+   drop table LMConfigurationSASimple
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('LMConfigurationVersacom')
             and   type = 'U')
    drop table LMConfigurationVersacom
@@ -417,13 +425,6 @@ if exists (select 1
            where  id = object_id('WorkOrderBase')
             and   type = 'U')
    drop table WorkOrderBase
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('LMConfigurationSASimple')
-            and   type = 'U')
-   drop table LMConfigurationSASimple
 go
 
 
@@ -1058,6 +1059,21 @@ go
 
 
 /*==============================================================*/
+/* Table: LMConfigurationSASimple                               */
+/*==============================================================*/
+create table LMConfigurationSASimple (
+   ConfigurationID      numeric              not null,
+   OperationalAddress   numeric              not null
+)
+go
+
+
+alter table LMConfigurationSASimple
+   add constraint PK_LMCONFIGURATIONSASIMPLE primary key  (ConfigurationID)
+go
+
+
+/*==============================================================*/
 /* Table: LMConfigurationVersacom                               */
 /*==============================================================*/
 create table LMConfigurationVersacom (
@@ -1373,20 +1389,6 @@ create table WorkOrderBase (
    ActionTaken          varchar(200)         null,
    AccountID            numeric              null
 )
-go
-
-/*==============================================================*/
-/* Table: LMConfigurationSASimple                                 */
-/*==============================================================*/
-create table LMConfigurationSASimple (
-   ConfigurationID      numeric              not null,
-   OperationalAddress   numeric              not null
-)
-go
-
-
-alter table LMConfigurationSASimple
-   add constraint PK_LMCONFIGURATIONSASIMPLE primary key  (ConfigurationID)
 go
 
 
@@ -1875,6 +1877,12 @@ alter table LMConfigurationSA305
 go
 
 
+alter table LMConfigurationSASimple
+   add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
+      references LMConfigurationBase (ConfigurationID)
+go
+
+
 alter table LMConfigurationVersacom
    add constraint FK_LMCfgVcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID)
@@ -2100,11 +2108,6 @@ go
 alter table WorkOrderBase
    add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
       references ServiceCompany (CompanyID)
-go
-
-alter table LMConfigurationSASimple
-   add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
-      references LMConfigurationBase (ConfigurationID)
 go
 
 
