@@ -14,6 +14,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -32,7 +33,6 @@
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
 #include "ctibase.h"
-#include "yukon.h"
 #include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"

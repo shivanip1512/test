@@ -1,3 +1,4 @@
+#include "yukon.h"
 #pragma title ( "Logger Client Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------

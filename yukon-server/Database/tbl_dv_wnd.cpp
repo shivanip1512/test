@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786)
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: tbl_scanwindow.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2004/06/28 16:40:40 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.10  2005/02/10 23:23:48  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.9  2004/06/28 16:40:40  cplender
       Added toUpper on the string responses to FORCE case insensitivity.
 
@@ -59,6 +61,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 #include "tbl_dv_wnd.h"
 

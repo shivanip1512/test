@@ -55,7 +55,7 @@ deps:
                 @echo C-Options: $(DLLFLAGS)
                 @echo Output   : bin\$@
                 @echo:
-                $(RWCPPINVOKE) $(CPPFLAGS) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(CPPFLAGS) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
 #UPDATE#
 #ENDUPDATE#

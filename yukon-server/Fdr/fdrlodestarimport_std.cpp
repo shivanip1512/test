@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrlodestarimport.cpp
@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/08/18 21:46:01 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.6  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.5  2004/08/18 21:46:01  jrichter
       1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
       2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).

@@ -1,4 +1,4 @@
-#pragma warning (disable : 4786 )
+#include "yukon.h"
 
 #include <windows.h>
 #include <fstream>
@@ -8,7 +8,6 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 #include <memory.h>
-#include <malloc.h>
 #include <process.h>
 
 

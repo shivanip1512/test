@@ -11,7 +11,7 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 
 
 #include "ctidbgmem.h" // defines CTIDBG_new

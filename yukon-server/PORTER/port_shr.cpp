@@ -8,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:30 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/10 23:23:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include <windows.h>

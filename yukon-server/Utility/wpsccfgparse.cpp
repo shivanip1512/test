@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/UTILITY/wpsccfgparse.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/12 17:35:32 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/02/10 23:24:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

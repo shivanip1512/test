@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/02/10 23:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,14 +20,11 @@
 #define __TBL_BASE_H__
 
 #include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
 
 #include <rw\cstring.h>
 
 #include "resolvers.h"
-#include "yukon.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "dbmemobject.h"
 

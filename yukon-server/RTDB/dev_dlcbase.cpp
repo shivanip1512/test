@@ -8,13 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/01/13 17:49:57 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include "dev_dlcbase.h"

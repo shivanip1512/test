@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_contact_notification.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/08/24 13:51:08 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

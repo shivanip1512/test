@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $                                                198
-* DATE         :  $Date: 2005/01/03 23:07:14 $
+* REVISION     :  $Revision: 1.10 $                                                198
+* DATE         :  $Date: 2005/02/10 23:23:55 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.10  2005/02/10 23:23:55  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.9  2005/01/03 23:07:14  jrichter
       checking into 3.1, for use at columbia to test sentinel
 

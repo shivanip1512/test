@@ -6,14 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/08/11 19:52:44 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/02/10 23:23:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
-#pragma warning (disable : 4786)
 #pragma title ( "Process Request Server Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1999" )
 /*---------------------------------------------------------------------
@@ -82,7 +82,6 @@ using namespace std;
 #include "dev_base.h"
 #include "dev_lcu.h"
 #include "dllbase.h"
-#include "yukon.h"
 
 #include "logger.h"
 #include "guard.h"

@@ -6,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/11/17 17:30:51 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 
 
 #include <rw/db/db.h>
@@ -26,7 +26,6 @@
 #include "tbl_rtmacro.h"
 
 #include "dbaccess.h"
-#include "yukon.h"
 
 CtiRouteManager::CtiRouteManager() {}
 CtiRouteManager::~CtiRouteManager() {}

@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*****************************************************************************
 *
 *    FILE NAME: xcel.cpp.cpp
@@ -27,6 +26,7 @@ I,2355642216,KUEHN STEVEN.J,,,3440 BUCKBEE RD,WHITE BEAR LK.,MN,55110,6517772595
 *
 ****************************************************************************
 */
+#include "yukon.h"
 #include "xcel.h"
 
 /***************************

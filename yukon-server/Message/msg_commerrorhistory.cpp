@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 * File:   msg_commerrorhistory
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_commerrorhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/12 01:03:00 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/10 23:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
 #include <windows.h>
@@ -22,7 +22,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 #include "logger.h"
 #include "msg_commerrorhistory.h"
-#include "yukon.h"
 
 RWDEFINE_COLLECTABLE( CtiCommErrorHistoryMsg, MSG_COMMERRORHISTORY );
 

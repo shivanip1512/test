@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/12/01 20:11:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -32,7 +32,6 @@
 #include "cmdparse.h"
 #include "dev_cbc.h"
 #include "device.h"
-#include "yukon.h"
 #include "logger.h"
 #include "numstr.h"
 #include "cparms.h"

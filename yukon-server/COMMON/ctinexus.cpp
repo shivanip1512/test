@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 #include <windows.h>
 #include <iostream>
@@ -14,7 +15,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "os2_2w32.h"
 #include "ctinexus.h"
 #include "logger.h"
-#include "yukon.h"
+#include "cticalls.h"
+#include "dsm2.h"
 
 char     CTINexusErrors[][80] = {
     {"Error unknown"},      // 0

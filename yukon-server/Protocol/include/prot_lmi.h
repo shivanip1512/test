@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/11/16 20:46:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include <vector>
 using namespace std;
 
+#include "dllbase.h"
 #include "dlldefs.h"
 #include "dsm2.h"
 

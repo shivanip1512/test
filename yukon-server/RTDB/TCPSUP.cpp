@@ -21,7 +21,7 @@
     Revision History:
 
    -------------------------------------------------------------------- */
-#pragma warning (disable : 4786)
+#include "yukon.h"
 #pragma title ( "Low Level TCP Terminal Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1996" )
 

@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -9,11 +10,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/03/18 19:46:44 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_sa305.cpp,v $
+* Revision 1.3  2005/02/10 23:23:48  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.2  2004/03/18 19:46:44  cplender
 * Added code to support the SA305 protocol and load group
 *
@@ -24,7 +28,6 @@
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include "logger.h"
 #include "tbl_lmg_sa305.h"

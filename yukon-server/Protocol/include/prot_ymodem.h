@@ -14,14 +14,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <rw\cstring.h>
+
+#include "dllbase.h"
 #include "xfer.h"
 
 class IM_EX_PROT CtiProtocolYmodem

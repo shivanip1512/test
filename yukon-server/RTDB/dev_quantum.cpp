@@ -11,8 +11,8 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )
 
 
 #include <rw/rwtime.h>
@@ -20,7 +20,6 @@
 #include <string.h>
 #include "numstr.h"
 
-#include "yukon.h"
 #include "porter.h"
 #include "dev_schlum.h"
 #include "dev_quantum.h"

@@ -13,8 +13,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )
-
+#include "yukon.h"
 
 #include <windows.h>
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
@@ -23,8 +22,6 @@
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "logger.h"
-
-
 
 DLLEXPORT CtiSemaphore  gDBAccessSema(gMaxDBConnectionCount, gMaxDBConnectionCount);
 

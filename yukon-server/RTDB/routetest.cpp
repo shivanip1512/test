@@ -6,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/routetest.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 
 
 #include <windows.h>

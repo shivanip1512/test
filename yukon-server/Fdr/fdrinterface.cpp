@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 /*****************************************************************************
 *
@@ -17,10 +17,13 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2004/08/30 20:27:54 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.16  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.15  2004/08/30 20:27:54  dsutton
       Updated the RCCS interface to accept different connection and listen sockets
       when the interface is initialized.  A new CPARM was created to define the
@@ -100,7 +103,6 @@
 #include <rw/ctoken.h>
 #include <rw/collstr.h>
 
-#include "yukon.h"
 #include "cparms.h"
 #include "dbaccess.h"
 #include "ctinexus.h"

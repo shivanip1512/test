@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/14 22:25:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.9  2005/02/10 23:23:58  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.8  2004/12/14 22:25:16  cplender
 * Various to wring out config commands.  Should be pretty good.
 *
@@ -49,6 +52,7 @@
 
 #include "cmdparse.h"
 #include "dlldefs.h"
+#include "dllbase.h"
 #include "dsm2.h"
 #include "pointtypes.h"
 #include "prot_base.h"

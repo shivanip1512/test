@@ -1,7 +1,7 @@
+#include "yukon.h"
 
 
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_seven.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *    History: 
       $Log: std_ansi_tbl_two_seven.cpp,v $
+      Revision 1.2  2005/02/10 23:23:58  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.1  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 

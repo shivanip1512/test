@@ -3,9 +3,11 @@
 
 
 all:
+        @$(MAKE) -nologo -f makepch.mak
         @$(MAKE) -nologo -f makedll.mak
 
 copy:
+        @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makedll.mak $@
 
 deps:

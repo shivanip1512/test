@@ -41,7 +41,7 @@ clean:
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) -I..\include $(INCLPATHS) /D_DLL_CTISCN -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) -I..\include $(INCLPATHS) /D_DLL_CTISCN -c $<
 
 
 ######################################################################################

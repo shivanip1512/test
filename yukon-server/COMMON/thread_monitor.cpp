@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*--------------------------------------------------------------------------------------------*
 *
 * File:   thread_montior
@@ -11,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/10/07 16:57:48 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/02/10 23:23:45 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
-
+#include "yukon.h"
 #include "dllbase.h"
 #include "logger.h"
 #include "thread_monitor.h"

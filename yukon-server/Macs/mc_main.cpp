@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/09/05 18:46:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/10 23:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
 ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <windows.h>
 

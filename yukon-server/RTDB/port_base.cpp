@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/01/27 17:54:11 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.49  2005/02/10 23:24:02  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.48  2005/01/27 17:54:11  cplender
 * Altered the comm logging to create and store in a Comm subdir beneath the base logging directory.
 *
@@ -48,7 +52,6 @@
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include <iostream>
 using namespace std;

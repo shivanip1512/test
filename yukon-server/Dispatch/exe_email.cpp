@@ -8,14 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_email.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/08/24 13:51:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>

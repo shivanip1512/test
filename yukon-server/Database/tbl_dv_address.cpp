@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive: $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/14 16:36:40 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

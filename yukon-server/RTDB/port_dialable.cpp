@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,12 +9,11 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
 
 
 #include "port_dialable.h"

@@ -1,9 +1,9 @@
+#include "yukon.h"
 
 #include <windows.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 #include <process.h>
 
 #ifdef OLD_STUFF

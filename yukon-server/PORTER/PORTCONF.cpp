@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/05/05 15:31:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/10 23:23:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning ( disable : 4786)
 #pragma title ( "Routines to handle VCONFIG.DAT" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------

@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ci_cust.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/19 16:02:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/10 23:23:47 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

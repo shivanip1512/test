@@ -1,3 +1,5 @@
+#include "yukon.h"
+
 #include "lmfactory.h"
 
 #include <rw/db/db.h>

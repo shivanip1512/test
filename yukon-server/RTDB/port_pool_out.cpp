@@ -7,12 +7,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/06/28 20:16:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 #include "cparms.h"
 #include "port_pool_out.h"

@@ -9,8 +9,8 @@
     
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "ccclientconn.h"
 #include "ccmessage.h"

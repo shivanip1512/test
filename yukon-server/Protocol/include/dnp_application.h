@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/10/22 22:19:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "dllbase.h"
 #include "message.h"
 
 #include "dnp_objects.h"

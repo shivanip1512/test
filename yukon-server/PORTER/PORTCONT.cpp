@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONT.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/19 20:25:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/10 23:23:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning(disable : 4786)
 #pragma title ( "Routines to Build Switch Control Messages" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------

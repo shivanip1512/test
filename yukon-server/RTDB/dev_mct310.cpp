@@ -8,13 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/01/14 17:21:51 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>

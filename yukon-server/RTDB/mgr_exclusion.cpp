@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/10 21:35:50 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * HISTORY      :
 * $Log: mgr_exclusion.cpp,v $
+* Revision 1.4  2005/02/10 23:24:02  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.3  2004/05/10 21:35:50  cplender
 * Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
 *
@@ -26,7 +30,6 @@
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include "mgr_exclusion.h"
 #include "guard.h"

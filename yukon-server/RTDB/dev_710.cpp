@@ -8,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/03/11 17:27:44 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include <windows.h>
@@ -44,7 +44,6 @@ using namespace std;
 #include "msg_pdata.h"
 #include "msg_multi.h"
 #include "prot_711.h"
-#include "yukon.h"
 
 #endif
 

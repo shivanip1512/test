@@ -105,7 +105,7 @@ clean:
                 @echo C-Options: $(CFLAGS)
                 @echo Output   : $@
                 @echo:
-                $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
 
 #UPDATE#

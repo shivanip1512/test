@@ -6,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/05/05 15:31:44 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/02/10 23:23:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning (disable : 4786)
+#include "yukon.h"
 
 #pragma title ( "CCU-711 DLC Algorithm Load Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )

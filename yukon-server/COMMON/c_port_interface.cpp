@@ -1,4 +1,5 @@
-#pragma warning( disable : 4786 )
+#include "yukon.h"
+
 
 #include <windows.h>
 #include <iostream>

@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include <rw/thr/condtion.h>
 #include <rw/thr/barrier.h>

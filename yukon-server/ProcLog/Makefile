@@ -4,10 +4,12 @@ include ..\common\rwglobal.inc
 # nmake file YUKON 1.0
 
 all:
+                @$(MAKE) -nologo -f makepch.mak
                 @$(MAKE) -nologo -f makedll.mak
                 @$(MAKE) -nologo -f makeexe.mak
 
 copy:
+                @$(MAKE) -nologo -f makepch.mak $@
                 @$(MAKE) -nologo -f makedll.mak $@
                 @$(MAKE) -nologo -f makeexe.mak $@
 

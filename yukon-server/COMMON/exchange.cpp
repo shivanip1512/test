@@ -6,13 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/exchange.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/10/08 20:35:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/02/10 23:23:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
+#include "yukon.h"
 
 #include <windows.h>
 #include <iostream>

@@ -95,7 +95,7 @@ $(BIN)\*.exe
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) /D_DLL_SEASONDB -Fo$(OBJ)\ -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_SEASONDB -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################

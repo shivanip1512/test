@@ -5,13 +5,13 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning ( disable : 4786 )
 
 
 #include <vector>

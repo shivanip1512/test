@@ -6,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2004/12/10 21:58:43 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/02/10 23:24:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning (disable : 4786)
+#include "yukon.h"
 
 
 #include <rw/db/db.h>
@@ -83,7 +83,6 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "slctdev.h"
-#include "yukon.h"
 
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)

@@ -10,7 +10,7 @@
          
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 #include "ccid.h"
 #include "ccstate.h"

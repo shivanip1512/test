@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 #include <iostream>
 #include <vector>
 using namespace std ;
@@ -7,7 +7,6 @@ using namespace std ;
 #include <rw/rwdate.h>
 
 
-#include "yukon.h"
 #include "porter.h"
 #include "dev_ied.h"
 #include "dev_dr87.h"

@@ -11,7 +11,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 #include <rw/tpsrtvec.h>
 #include "dbaccess.h"

@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -21,7 +21,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "msg_tag.h"
 #include "numstr.h"
-#include "yukon.h"
 
 RWDEFINE_COLLECTABLE( CtiTagMsg, MSG_TAG );
 

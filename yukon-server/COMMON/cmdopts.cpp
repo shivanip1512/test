@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include <windows.h>
 #include <iostream>
@@ -9,8 +9,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "argkey.h"
 #include "argval.h"
 #include "cmdopts.h"
-#include "yukon.h"
-
 
 DLLEXPORT
 CtiCmdLineOpts::CtiCmdLineOpts() :

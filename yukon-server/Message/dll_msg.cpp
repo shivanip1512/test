@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786)
 /*-----------------------------------------------------------------------------*
 *
 * File:   dll_msg
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/02 19:29:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/10 23:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include <windows.h>
 #include <winbase.h>
@@ -25,7 +25,6 @@
 #include <rw\cstring.h>
 
 #include "dsm2.h"
-#include "yukon.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
 #include "connection.h"

@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )
 
 #include <windows.h>
 #include <math.h>

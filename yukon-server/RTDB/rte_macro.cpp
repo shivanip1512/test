@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -7,12 +8,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/08/27 14:54:20 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/10 23:24:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
 
 
 #include <rw/db/reader.h>

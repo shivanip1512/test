@@ -14,14 +14,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/02/16 19:09:52 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <rw/db/datetime.h>
 
+#include "dllbase.h"
 #include "xfer.h"
 #include "numstr.h"
 #include "transdata_datalink.h"

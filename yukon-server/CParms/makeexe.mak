@@ -74,7 +74,7 @@ clean:
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 
 

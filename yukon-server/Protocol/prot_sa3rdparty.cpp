@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/12/14 22:25:16 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/02/10 23:23:57 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.20  2005/02/10 23:23:57  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.19  2004/12/14 22:25:16  cplender
 * Various to wring out config commands.  Should be pretty good.
 *
@@ -75,8 +78,8 @@
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 #include <rw\re.h>
 #undef mask_                // Stupid RogueWave re.h

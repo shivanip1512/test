@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 #pragma title ( "Porter Process Interface Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
@@ -32,6 +33,7 @@
         8-30-93     Converted to 32 bit                         WRO
 
    -------------------------------------------------------------------- */
+
 #include <windows.h>       // These next few are required for Win32
 #include <process.h>
 #include <iostream>
@@ -40,7 +42,6 @@ using namespace std;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include <rw\thr\mutex.h>
 #include <rw/toolpro/winsock.h>

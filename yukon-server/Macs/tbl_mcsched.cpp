@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/12/16 23:55:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/10 23:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

@@ -1,9 +1,8 @@
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 #include <math.h>
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
 
-#include "yukon.h"
 #include "porter.h"
 #include "dev_lgs4.h"
 

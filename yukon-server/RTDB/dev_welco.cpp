@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/10/12 20:14:17 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/02/10 23:24:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -24,7 +24,6 @@
 
 #include "device.h"
 #include "dev_welco.h"
-#include "yukon.h"
 #include "pt_base.h"
 #include "pt_status.h"
 #include "connection.h"

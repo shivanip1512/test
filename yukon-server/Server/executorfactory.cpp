@@ -1,5 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -9,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/executorfactory.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:25 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/10 23:24:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 #include <windows.h>
 #include <iostream>
@@ -7,7 +7,6 @@ using namespace std;
 #include <rw/db/db.h>
 #include <rw\thr\mutex.h>
 
-#include "yukon.h"
 #include "dll_prot.h"
 #include "utility.h"
 

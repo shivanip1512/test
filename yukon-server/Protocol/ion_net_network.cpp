@@ -11,6 +11,7 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "ctitypes.h"
 #include "guard.h"

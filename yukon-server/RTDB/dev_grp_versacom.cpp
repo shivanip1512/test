@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/01/27 17:50:44 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -20,7 +20,6 @@
 #include "dsm2.h"
 #include "porter.h"
 
-#include "yukon.h"
 #include "pt_base.h"
 #include "pt_status.h"
 #include "master.h"

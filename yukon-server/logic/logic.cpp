@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include "logic.h"
 
 #include "cparms.h"

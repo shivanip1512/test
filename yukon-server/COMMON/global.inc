@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.9 $                               #
-#       $Date: 2004/05/17 21:23:47 $                  #
+#       $Revision: 1.10 $                               #
+#       $Date: 2005/02/10 23:23:45 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -113,17 +113,19 @@ BOOSTLIBS = $(BOOST)\stage\lib\libboost_date_time-vc6-mt-gd-1_31.lib
 
 !IFDEF DEBUG
 CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD
-DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD
+DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD 
 TCL_LIB = tcl81d
 XERCES_LIB = xerces-c_1D
 XERCES_DLL = xerces-c_1_7_0D
 !ELSE
 CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD
-DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD
+DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD 
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0
 !ENDIF
+
+PCHFLAGS = /Yu"yukon.h" /Fp"$(BIN)\yukon.pch"
 
 !IFDEF YUKONPROFILE
 CFLAGS  = /Fm $(CFLAGS)

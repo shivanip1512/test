@@ -1,10 +1,8 @@
-
-
+#include "yukon.h"
 
 #include <windows.h>
 #include <iostream>
 using namespace std;
-#include <malloc.h>
 #include <memory.h>
 
 #include "os2_2w32.h"

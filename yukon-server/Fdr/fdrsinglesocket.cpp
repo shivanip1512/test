@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrsinglesocket.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2002/10/14 21:10:56 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsinglesocket.cpp,v $
+      Revision 1.7  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.6  2002/10/14 21:10:56  dsutton
       In the database translation routines, if we failed to hit the database
       we called the load routine again just to get the error code.  Whoops
@@ -87,6 +89,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 #include <windows.h>
 #include <iostream>

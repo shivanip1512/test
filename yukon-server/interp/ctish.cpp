@@ -11,6 +11,7 @@
                     9/3/03
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999, 2003
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "ctish.h"
 

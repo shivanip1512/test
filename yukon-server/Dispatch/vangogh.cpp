@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 * File:   vangogh
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/26 15:30:25 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
 #include <windows.h>

@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrinet.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2004/12/21 17:40:56 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.12  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.11  2004/12/21 17:40:56  dsutton
       Bug in the connect code when Yukon acts as the client.  INET was trying to
       connect to port 0 instead of port 1000.  Bug was introduced when updates
@@ -136,6 +138,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 
 #include <windows.h>

@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -10,10 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/02/10 23:23:57 $
 *    History: 
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.6  2005/02/10 23:23:57  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.5  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 

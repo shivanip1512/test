@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/02/17 15:08:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 * HISTORY      :
 * $Log: tbl_lmg_golay.cpp,v $
+* Revision 1.2  2005/02/10 23:23:48  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.1  2004/02/17 15:08:03  cplender
 * New files for GRE/SA support
 *
@@ -20,7 +24,6 @@
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include "tbl_lmg_golay.h"
 

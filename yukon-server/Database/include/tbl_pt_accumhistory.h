@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_accumhistory.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/02/10 23:23:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 
 #include "dbmemobject.h"
 #include "yukon.h"
+#include "dlldefs.h"
 
 class IM_EX_CTIYUKONDB CtiTablePointAccumulatorHistory : public CtiMemDBObject
 {

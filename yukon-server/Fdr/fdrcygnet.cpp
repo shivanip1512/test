@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrcygnet.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/10/22 20:58:54 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -24,6 +23,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.8  2005/02/10 23:23:50  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.7  2004/10/22 20:58:54  mfisher
       localized boost ptime references to restore some semblance of sanity to build times
 
@@ -50,6 +52,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 
 

@@ -9,15 +9,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/01/18 19:11:03 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/02/10 23:24:03 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __DEV_BASE_H__
 #define __DEV_BASE_H__
-#pragma warning( disable : 4786)
-
 
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>
@@ -39,7 +37,6 @@ using namespace std;
 #include "tbl_scanrate.h"
 #include "tbl_pao.h"
 #include "tbl_paoexclusion.h"
-#include "yukon.h"
 #include "queues.h"
 #include "utility.h"
 

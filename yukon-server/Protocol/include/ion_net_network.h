@@ -18,6 +18,7 @@
 
 #include <vector>
 
+#include "dllbase.h"
 #include "dlldefs.h"
 #include "xfer.h"
 

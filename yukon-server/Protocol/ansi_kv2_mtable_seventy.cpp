@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786)
 /*---------------------------------------------------------------------------------*
 *
 * File:   ansi_kv2_mtable_seventy.cpp
@@ -10,10 +9,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_seventy.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/30 21:37:16 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/02/10 23:23:56 $
 *    History: 
       $Log: ansi_kv2_mtable_seventy.cpp,v $
+      Revision 1.3  2005/02/10 23:23:56  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.2  2004/09/30 21:37:16  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -21,6 +23,7 @@
       Ansi protocol tables specific to the implementation of the KV2
 
 *----------------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
 #include "ansi_kv2_mtable_seventy.h"

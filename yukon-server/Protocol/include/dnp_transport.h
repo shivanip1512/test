@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:46 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 #define __DNP_TRANSPORT_H__
 #pragma warning( disable : 4786)
 
-
+#include "dllbase.h"
 #include "dnp_datalink.h"
 #include "xfer.h"
 

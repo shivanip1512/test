@@ -6,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/01/28 22:51:54 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/10 23:23:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include <windows.h>
@@ -32,7 +32,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "dllbase.h"
 #include "devicetypes.h"
 #include "logger.h"
-#include "yukon.h"
 #include "utility.h"
 
 

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/01/13 17:49:57 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.24  2005/02/10 23:24:00  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.23  2005/01/13 17:49:57  mfisher
 * Returning ErrReturn for error instead of InMessage->EventCode
 *
@@ -86,8 +89,8 @@
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 #include "cparms.h"
 #include "dsm2err.h"

@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.9  2005/02/10 23:23:58  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.8  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 
@@ -41,6 +44,7 @@
 #include <rw/ordcltn.h>
 #include <list>
 
+#include "dllbase.h"
 #include "ansi_application.h"
 #include "ansi_datalink.h"
 #include "ansi_billing_table.h"

@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,13 +11,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/08/24 13:51:37 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "yukon.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_mark_v.h"

@@ -8,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/16 16:59:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/02/10 23:23:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include "prot_seriesv.h"

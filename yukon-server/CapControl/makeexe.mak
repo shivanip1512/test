@@ -104,13 +104,13 @@ allclean:   clean all
                @echo C-Options: $(CFLAGS)
                @echo Output   : ..\$@
                @echo:
-               $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
+               $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 #UPDATE#
-capcontroller.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h connection.h \
-		exchange.h logger.h thread.h message.h ctidbgmem.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
+capcontroller.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h sema.h connection.h exchange.h logger.h \
+		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h queue.h \
 		ccmessage.h ccsubstationbus.h observe.h ccfeeder.h \
 		cccapbank.h msg_pcrequest.h ccstate.h msg_cmd.h \
 		msg_pcreturn.h msg_dbchg.h pointtypes.h configparms.h \
@@ -118,111 +118,114 @@ capcontroller.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h netports.h \
 		devicetypes.h resolvers.h db_entry_defines.h ccclientconn.h \
 		ccclientlistener.h
-cccapbank.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h cccapbank.h \
-		observe.h ccid.h pointdefs.h device.h devicetypes.h logger.h \
-		thread.h resolvers.h pointtypes.h yukon.h ctidbgmem.h \
+cccapbank.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h sema.h cccapbank.h observe.h ccid.h pointdefs.h \
+		device.h devicetypes.h logger.h thread.h resolvers.h \
+		pointtypes.h db_entry_defines.h
+ccclientconn.obj:	yukon.h precompiled.h ctidbgmem.h ccclientconn.h \
+		ctdpcptrq.h dlldefs.h observe.h types.h ccmessage.h message.h \
+		collectable.h ccsubstationbus.h dbaccess.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h sema.h \
+		connection.h exchange.h logger.h thread.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
+		queue.h ccfeeder.h cccapbank.h msg_pcrequest.h ccstate.h \
+		ccexecutor.h ccsubstationbusstore.h ccid.h ctibase.h \
+		ctinexus.h capcontroller.h msg_cmd.h pointtypes.h \
+		configparms.h cparms.h
+ccclientlistener.obj:	yukon.h precompiled.h ctidbgmem.h \
+		ccclientlistener.h ccclientconn.h ctdpcptrq.h dlldefs.h \
+		observe.h types.h ccstate.h connection.h exchange.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h logger.h \
+		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h queue.h \
+		ccmessage.h ccsubstationbus.h dbaccess.h sema.h ccfeeder.h \
+		cccapbank.h msg_pcrequest.h ccsubstationbusstore.h ccid.h \
+		configparms.h cparms.h ctibase.h ctinexus.h ccexecutor.h
+ccexecutor.obj:	yukon.h precompiled.h ctidbgmem.h ccclientlistener.h \
+		ccclientconn.h ctdpcptrq.h dlldefs.h observe.h types.h \
+		ccstate.h connection.h exchange.h dllbase.h os2_2w32.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h message.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h ccexecutor.h \
+		ccmessage.h ccsubstationbus.h dbaccess.h sema.h ccfeeder.h \
+		cccapbank.h msg_pcrequest.h ccsubstationbusstore.h ccid.h \
+		capcontroller.h msg_cmd.h pointtypes.h configparms.h cparms.h \
+		ctibase.h ctinexus.h
+ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h sema.h ccsubstationbus.h connection.h exchange.h \
+		logger.h thread.h message.h collectable.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
+		queue.h observe.h ccfeeder.h cccapbank.h msg_pcrequest.h \
+		ccid.h pointtypes.h capcontroller.h msg_cmd.h configparms.h \
+		cparms.h ccsubstationbusstore.h ccexecutor.h ccmessage.h \
+		ccstate.h ctdpcptrq.h ctibase.h ctinexus.h resolvers.h \
 		db_entry_defines.h
-ccclientconn.obj:	ccclientconn.h ctdpcptrq.h dlldefs.h observe.h \
-		types.h ccmessage.h message.h ctidbgmem.h collectable.h \
-		ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h mutex.h guard.h sema.h connection.h exchange.h \
-		logger.h thread.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h ccfeeder.h \
-		cccapbank.h msg_pcrequest.h ccstate.h ccexecutor.h \
-		ccsubstationbusstore.h ccid.h ctibase.h ctinexus.h \
-		capcontroller.h msg_cmd.h pointtypes.h configparms.h cparms.h
-ccclientlistener.obj:	ccclientlistener.h ccclientconn.h ctdpcptrq.h \
-		dlldefs.h observe.h types.h ccstate.h connection.h exchange.h \
-		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
-		logger.h thread.h message.h ctidbgmem.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h ccmessage.h ccsubstationbus.h \
-		dbaccess.h sema.h ccfeeder.h cccapbank.h msg_pcrequest.h \
-		ccsubstationbusstore.h ccid.h configparms.h cparms.h \
-		ctibase.h ctinexus.h ccexecutor.h
-ccexecutor.obj:	ccclientlistener.h ccclientconn.h ctdpcptrq.h \
-		dlldefs.h observe.h types.h ccstate.h connection.h exchange.h \
-		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
-		logger.h thread.h message.h ctidbgmem.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h ccexecutor.h ccmessage.h \
-		ccsubstationbus.h dbaccess.h sema.h ccfeeder.h cccapbank.h \
-		msg_pcrequest.h ccsubstationbusstore.h ccid.h capcontroller.h \
-		msg_cmd.h pointtypes.h configparms.h cparms.h ctibase.h \
-		ctinexus.h
-ccfeeder.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h ccsubstationbus.h \
+ccmain.obj:	yukon.h precompiled.h ctidbgmem.h ccsubstationbusstore.h \
+		observe.h types.h dlldefs.h ccsubstationbus.h dbaccess.h \
+		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		connection.h exchange.h logger.h thread.h message.h \
-		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h observe.h \
-		ccfeeder.h cccapbank.h msg_pcrequest.h ccid.h pointtypes.h \
-		capcontroller.h msg_cmd.h configparms.h cparms.h \
-		ccsubstationbusstore.h ccexecutor.h ccmessage.h ccstate.h \
-		ctdpcptrq.h ctibase.h ctinexus.h resolvers.h \
-		db_entry_defines.h
-ccmain.obj:	ccsubstationbusstore.h observe.h types.h dlldefs.h \
-		ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h mutex.h guard.h sema.h connection.h exchange.h \
-		logger.h thread.h message.h ctidbgmem.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h ccfeeder.h cccapbank.h \
-		msg_pcrequest.h ccid.h capcontroller.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h ccexecutor.h ccmessage.h ccstate.h \
-		ctdpcptrq.h ctibase.h ctinexus.h ccservice.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h ccfeeder.h \
+		cccapbank.h msg_pcrequest.h ccid.h capcontroller.h msg_cmd.h \
+		pointtypes.h configparms.h cparms.h ccexecutor.h ccmessage.h \
+		ccstate.h ctdpcptrq.h ctibase.h ctinexus.h ccservice.h \
 		ccclientlistener.h ccclientconn.h cservice.h precomp.h \
 		Monitor.h CServiceConfig.h rtdb.h hashkey.h
-ccmessage.obj:	ccmessage.h message.h ctidbgmem.h collectable.h \
-		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h sema.h connection.h \
-		exchange.h logger.h thread.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
-		queue.h observe.h ccfeeder.h cccapbank.h msg_pcrequest.h \
-		ccstate.h ccid.h
-ccserver.obj:	ccserver.h ccclientlistener.h ccclientconn.h ctdpcptrq.h \
-		dlldefs.h observe.h types.h ccstate.h connection.h exchange.h \
-		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
-		logger.h thread.h message.h ctidbgmem.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h ccmessage.h ccsubstationbus.h \
-		dbaccess.h sema.h ccfeeder.h cccapbank.h msg_pcrequest.h \
-		ctibase.h ctinexus.h configparms.h cparms.h
-ccservice.obj:	ccservice.h ccclientlistener.h ccclientconn.h \
-		ctdpcptrq.h dlldefs.h observe.h types.h ccstate.h \
-		connection.h exchange.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h mutex.h guard.h logger.h thread.h message.h \
-		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h cservice.h \
-		capcontroller.h dbaccess.h sema.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h ccsubstationbusstore.h \
+ccmessage.obj:	yukon.h precompiled.h ctidbgmem.h ccmessage.h message.h \
+		collectable.h dlldefs.h ccsubstationbus.h dbaccess.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h sema.h connection.h exchange.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h observe.h ccfeeder.h cccapbank.h \
+		msg_pcrequest.h ccstate.h ccid.h
+ccserver.obj:	yukon.h precompiled.h ctidbgmem.h ccserver.h \
+		ccclientlistener.h ccclientconn.h ctdpcptrq.h dlldefs.h \
+		observe.h types.h ccstate.h connection.h exchange.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h logger.h \
+		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h queue.h \
+		ccmessage.h ccsubstationbus.h dbaccess.h sema.h ccfeeder.h \
+		cccapbank.h msg_pcrequest.h ctibase.h ctinexus.h \
+		configparms.h cparms.h
+ccservice.obj:	yukon.h precompiled.h ctidbgmem.h ccservice.h \
+		ccclientlistener.h ccclientconn.h ctdpcptrq.h dlldefs.h \
+		observe.h types.h ccstate.h connection.h exchange.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h logger.h \
+		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h queue.h \
+		cservice.h capcontroller.h dbaccess.h sema.h msg_cmd.h \
+		pointtypes.h configparms.h cparms.h ccsubstationbusstore.h \
 		ccsubstationbus.h ccfeeder.h cccapbank.h msg_pcrequest.h \
 		ccid.h ccexecutor.h ccmessage.h ctibase.h ctinexus.h \
 		eventlog.h rtdb.h hashkey.h
-ccstate.obj:	ccid.h ccstate.h connection.h dlldefs.h exchange.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h message.h ctidbgmem.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h observe.h
-ccsubstationbus.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h ccsubstationbus.h \
-		connection.h exchange.h logger.h thread.h message.h \
-		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h observe.h \
-		ccfeeder.h cccapbank.h msg_pcrequest.h ccid.h pointtypes.h \
-		capcontroller.h msg_cmd.h configparms.h cparms.h \
-		ccsubstationbusstore.h ccexecutor.h ccmessage.h ccstate.h \
-		ctdpcptrq.h ctibase.h ctinexus.h resolvers.h \
-		db_entry_defines.h mgr_holiday.h
-ccsubstationbusstore.obj:	ccsubstationbusstore.h observe.h types.h \
-		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h connection.h \
-		exchange.h logger.h thread.h message.h ctidbgmem.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h ccfeeder.h \
-		cccapbank.h msg_pcrequest.h ccid.h ccstate.h desolvers.h \
-		db_entry_defines.h pointtypes.h resolvers.h devicetypes.h \
-		ctibase.h ctinexus.h configparms.h cparms.h msg_dbchg.h \
-		capcontroller.h msg_cmd.h ccexecutor.h ccmessage.h \
-		ctdpcptrq.h utility.h
+ccstate.obj:	yukon.h precompiled.h ctidbgmem.h ccid.h ccstate.h \
+		connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h observe.h
+ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h sema.h ccsubstationbus.h connection.h \
+		exchange.h logger.h thread.h message.h collectable.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h observe.h ccfeeder.h cccapbank.h \
+		msg_pcrequest.h ccid.h pointtypes.h capcontroller.h msg_cmd.h \
+		configparms.h cparms.h ccsubstationbusstore.h ccexecutor.h \
+		ccmessage.h ccstate.h ctdpcptrq.h ctibase.h ctinexus.h \
+		resolvers.h db_entry_defines.h mgr_holiday.h
+ccsubstationbusstore.obj:	yukon.h precompiled.h ctidbgmem.h \
+		ccsubstationbusstore.h observe.h types.h dlldefs.h \
+		ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h cticalls.h \
+		dsm2.h mutex.h guard.h sema.h connection.h exchange.h \
+		logger.h thread.h message.h collectable.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
+		queue.h ccfeeder.h cccapbank.h msg_pcrequest.h ccid.h \
+		ccstate.h desolvers.h db_entry_defines.h pointtypes.h \
+		resolvers.h devicetypes.h ctibase.h ctinexus.h configparms.h \
+		cparms.h msg_dbchg.h capcontroller.h msg_cmd.h ccexecutor.h \
+		ccmessage.h ctdpcptrq.h utility.h
+precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 #ENDUPDATE#
 

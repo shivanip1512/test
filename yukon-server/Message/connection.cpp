@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -8,13 +9,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/10/08 20:39:25 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/02/10 23:23:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 #include <windows.h>
 #include <limits.h>
 #include <iostream>
@@ -29,7 +29,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "message.h"
 #include "numstr.h"
 #include "dlldefs.h"
-#include "yukon.h"
 
 #include "logger.h"
 

@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/con_mgr_vg.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/12/31 14:08:32 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/02/10 23:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "con_mgr_vg.h"
 #include "dlldefs.h"
-#include "yukon.h"
 #include "logger.h"
 #include "pointtypes.h"
 

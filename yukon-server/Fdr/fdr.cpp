@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/06/28 18:59:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -28,8 +28,8 @@
 //
 //$Archive$
 //
-//$Revision: 1.5 $
-//$Date: 2004/06/28 18:59:18 $
+//$Revision: 1.6 $
+//$Date: 2005/02/10 23:23:50 $
 //
 
 /** include files **/

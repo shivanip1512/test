@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -8,13 +9,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2005/01/27 17:48:04 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2005/02/10 23:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <windows.h>
 #include <iomanip>
@@ -75,7 +75,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 // #include "slctdev.h"
 #include "connection.h"
-#include "yukon.h"
 #include "device.h"
 #include "dbaccess.h"
 #include "utility.h"

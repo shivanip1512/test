@@ -106,21 +106,22 @@ $(BIN)\*.exe
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) /D_DLL_SIGNAL -Fo$(OBJ)\ -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_SIGNAL -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################
 
 #UPDATE#
-dbsigsend.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h tbl_signal.h dbmemobject.h pointdefs.h \
-		utility.h yukon.h ctidbgmem.h
-tbl_rawpthistory.obj:	tbl_rawpthistory.h dlldefs.h pointdefs.h \
-		utility.h dsm2.h mutex.h guard.h yukon.h ctidbgmem.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dbaccess.h sema.h \
-		logger.h thread.h
-tbl_signal.obj:	tbl_signal.h dbmemobject.h dlldefs.h pointdefs.h \
-		utility.h dsm2.h mutex.h guard.h yukon.h ctidbgmem.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dbaccess.h sema.h \
-		logger.h thread.h
+dbsigsend.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
+		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
+		tbl_signal.h dbmemobject.h pointdefs.h utility.h
+precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+tbl_rawpthistory.obj:	yukon.h precompiled.h ctidbgmem.h \
+		tbl_rawpthistory.h dlldefs.h pointdefs.h utility.h dsm2.h \
+		mutex.h guard.h dbaccess.h dllbase.h os2_2w32.h types.h \
+		cticalls.h sema.h logger.h thread.h
+tbl_signal.obj:	yukon.h precompiled.h ctidbgmem.h tbl_signal.h \
+		dbmemobject.h dlldefs.h pointdefs.h utility.h dsm2.h mutex.h \
+		guard.h dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h \
+		sema.h logger.h thread.h
 #ENDUPDATE#

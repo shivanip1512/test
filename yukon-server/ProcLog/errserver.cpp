@@ -1,3 +1,5 @@
+#include "yukon.h"
+
 #include <windows.h>
 #include <fstream>
 #include <iostream>
@@ -7,7 +9,6 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 #include <memory.h>
-#include <malloc.h>
 #include <process.h>
 
 #include <rw\tvdlist.h>

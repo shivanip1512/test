@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include "lmconstraint.h"
 
 #include <algorithm>

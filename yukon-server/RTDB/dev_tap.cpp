@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -7,13 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/03/23 20:42:44 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786 )
 
 
 #include <windows.h>
@@ -36,7 +36,6 @@
 #include "msg_trace.h"
 #include "numstr.h"
 #include "dev_tap.h"
-#include "yukon.h"
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 

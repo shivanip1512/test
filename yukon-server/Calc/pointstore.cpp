@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include "pointstore.h"
 
 RWDEFINE_NAMED_COLLECTABLE(CtiPointStoreElement,"CtiPointStoreElement")

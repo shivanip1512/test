@@ -1,6 +1,6 @@
+#include "yukon.h"
 
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_eight.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/10/01 17:54:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *    History: 
       $Log: std_ansi_tbl_zero_eight.cpp,v $
+      Revision 1.2  2005/02/10 23:23:58  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.1  2004/10/01 17:54:26  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.  New files!
 

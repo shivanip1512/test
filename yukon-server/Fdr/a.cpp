@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include <rw/toolpro/inetaddr.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/portstrm.h>

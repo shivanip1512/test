@@ -1,3 +1,4 @@
+#include "yukon.h"
 #pragma title ( "Routines to Build and Decode DLC words" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
@@ -35,6 +36,7 @@
 
 
    -------------------------------------------------------------------- */
+
 #include <windows.h>
 #include <process.h>
 #include "os2_2w32.h"

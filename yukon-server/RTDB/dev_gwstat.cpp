@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -9,13 +10,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/01/18 19:11:19 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include <rw\cstring.h>
 #include <rw\rwtime.h>
@@ -29,7 +29,6 @@
 #include "pt_numeric.h"
 #include "tbl_gateway_end_device.h"
 #include "utility.h"
-#include "yukon.h"
 
 #define GATEWAY_TEMPERATURE_PRECISION 0
 

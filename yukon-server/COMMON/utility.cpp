@@ -1,6 +1,4 @@
-
-
-
+#include "yukon.h"
 // includes /////////////////////////////////////////////////////
 
 #include <windows.h>
@@ -32,19 +30,14 @@ using namespace std;
 #include <imagehlp.h>
 #pragma pack( pop, before_imagehlp )
 
-
-
 #include <winsock.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/timeb.h>
 
-
-
 #include <rw\thr\mutex.h>
 #include <rw/db/db.h>
-
 
 #include "ctinexus.h"
 #include "dbaccess.h"
@@ -55,7 +48,6 @@ using namespace std;
 #include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
-#include "yukon.h"
 
 LONG GetMaxLMControl(long pao)
 {

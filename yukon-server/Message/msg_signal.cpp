@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 * File:   msg_signal
@@ -7,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/10/19 20:18:46 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/02/10 23:23:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
 #include <windows.h>
@@ -23,7 +23,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "msg_signal.h"
 #include "utility.h"
-#include "yukon.h"
 
 RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 

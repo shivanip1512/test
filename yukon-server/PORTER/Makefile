@@ -2,6 +2,7 @@ include ..\common\global.inc
 include ..\common\rwglobal.inc
 
 all:
+        @$(MAKE) -nologo -f makepch.mak
         @$(MAKE) -nologo -f makedll.mak
         @$(MAKE) -nologo -f makeexe.mak
 
@@ -20,6 +21,7 @@ $(BIN)\*.exe
 allclean:   clean all
 
 copy:
+        @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makedll.mak $@
         @$(MAKE) -nologo -f makeexe.mak $@
 

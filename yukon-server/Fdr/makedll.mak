@@ -341,407 +341,426 @@ fdrtextexport.obj : fdrtextexport.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTEXTEXPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRTEXTEXPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 
 fdrtextimport.obj : fdrtextimport.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTEXTIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRTEXTIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrdsm2import.obj : fdrdsm2import.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRDSM2IMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRDSM2IMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrdsm2filein.obj : fdrdsm2filein.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRDSM2FILEIN -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRDSM2FILEIN -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrrdex.obj : fdrrdex.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRRDEX -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRRDEX -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrcygnet.obj : fdrcygnet.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRCYGNET -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRCYGNET -DWINDOWS -Fo$(OBJ)\ -c $<
 fdracs.obj : fdracs.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRACS -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRACS -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrvalmet.obj : fdrvalmet.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRVALMET -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRVALMET -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrinet.obj : fdrinet.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRINET -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRINET -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrstec.obj : fdrstec.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRSTEC -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRSTEC -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrtristate.obj : fdrtristate.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTRISTATE -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRTRISTATE -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrrccs.obj : fdrrccs.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRRCCS -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRRCCS -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrlodestarimport_enh.obj : fdrlodestarimport_enh.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_ENH_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_ENH_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 fdrlodestarimport_std.obj : fdrlodestarimport_std.cpp
 		@echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_STD_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_STD_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
 
 telegyrgroup.obj : telegyrgroup.cpp
 		@echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
 
 telegyrcontrolcenter.obj : telegyrcontrolcenter.cpp
 		@echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
 
 fdrtelegyr.obj : fdrtelegyr.cpp
 		@echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
+		$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRTELEGYRAPI -DWINDOWS -Fo$(OBJ)\ -c $<
  
 fdrxa21lm.obj : fdrxa21lm.cpp
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRXA21LM -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRXA21LM -DWINDOWS -Fo$(OBJ)\ -c $<
 
 .cpp.obj :
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRBASE -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRBASE -DWINDOWS -Fo$(OBJ)\ -c $<
 
 
 
 
 #UPDATE#
-fdr.obj:	dlldefs.h ctibase.h ctinexus.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h cparms.h \
-		CServiceConfig.h fdrservice.h cservice.h id_ctibase.h \
-		utility.h id_build.h
-fdracs.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
+a.obj:	yukon.h precompiled.h ctidbgmem.h
+fdr.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h ctibase.h \
+		ctinexus.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h cparms.h CServiceConfig.h \
+		fdrservice.h cservice.h id_ctibase.h utility.h id_build.h
+fdracs.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdracs.h
-fdrasciiimportbase.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h logger.h thread.h fdrasciiimportbase.h \
-		fdrinterface.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
-		pointtypes.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h
-fdrclientconnection.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
-		thread.h fdrinterface.h message.h collectable.h connection.h \
-		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
+fdrasciiimportbase.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		message.h msg_signal.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		fdrasciiimportbase.h fdrinterface.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h cparms.h \
-		fdrdebuglevel.h fdrpointlist.h queues.h fdrsocketlayer.h \
-		device.h devicetypes.h fdrsocketconnection.h \
+		fdrpoint.h pointtypes.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h
+fdrclientconnection.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h fdrinterface.h message.h \
+		collectable.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h pointtypes.h fdrdestination.h \
+		fdr.h cparms.h fdrdebuglevel.h fdrpointlist.h queues.h \
+		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrclientconnection.h
-fdrcygnet.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h fdrcygnet.h \
+fdrcygnet.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
+		fdrcygnet.h fdrinterface.h mgr_fdrpoint.h rtdb.h hashkey.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h device.h devicetypes.h
+fdrdestination.obj:	yukon.h precompiled.h ctidbgmem.h fdrdestination.h \
+		dlldefs.h fdr.h pointdefs.h
+fdrdsm2filein.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_cmd.h message.h collectable.h pointtypes.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrtextfilebase.h fdrinterface.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h fdrdsm2filein.h
+fdrdsm2import.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		message.h msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h \
+		connection.h exchange.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h queue.h \
+		pointtypes.h fdrdsm2import.h fdrasciiimportbase.h \
 		fdrinterface.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
 		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		queues.h device.h devicetypes.h
-fdrdestination.obj:	fdrdestination.h dlldefs.h fdr.h pointdefs.h
-fdrdsm2filein.obj:	cparms.h dlldefs.h msg_cmd.h message.h ctidbgmem.h \
-		collectable.h pointtypes.h dllbase.h os2_2w32.h types.h \
+		queues.h
+fdrftpinterface.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		message.h msg_signal.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		fdrftpinterface.h fdrinterface.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h \
-		fdrdsm2filein.h
-fdrdsm2import.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
-		fdrdsm2import.h fdrasciiimportbase.h fdrinterface.h \
-		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h fdrdestination.h \
-		fdr.h fdrdebuglevel.h fdrpointlist.h queues.h
-fdrftpinterface.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h logger.h thread.h fdrftpinterface.h \
-		fdrinterface.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
-		pointtypes.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h
-fdrinet.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
+		fdrpoint.h pointtypes.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h
+fdrinet.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h fdrserverconnection.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrclientconnection.h fdrinet.h
-fdrinterface.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h cparms.h dbaccess.h \
-		sema.h ctinexus.h resolvers.h pointtypes.h db_entry_defines.h \
-		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
-		msg_signal.h msg_ptreg.h msg_cmd.h msg_dbchg.h fdrinterface.h \
-		connection.h exchange.h logger.h thread.h msg_reg.h queue.h \
-		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h fdrdestination.h \
-		fdr.h fdrdebuglevel.h fdrpointlist.h queues.h
-fdrio.obj:	fdrio.h
-fdriosocket.obj:	fdriosocket.h fdrio.h
-fdrlodestarimport.obj:	cparms.h dlldefs.h msg_cmd.h message.h \
-		ctidbgmem.h collectable.h pointtypes.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
+fdrinterface.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h sema.h ctinexus.h resolvers.h pointtypes.h \
+		db_entry_defines.h msg_multi.h collectable.h msg_pdata.h \
+		pointdefs.h message.h msg_signal.h msg_ptreg.h msg_cmd.h \
+		msg_dbchg.h fdrinterface.h connection.h exchange.h logger.h \
+		thread.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
 		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h \
-		fdrlodestarimport.h fdrlodestarinfo.h
-fdrlodestarimport_enh.obj:	cparms.h dlldefs.h msg_cmd.h message.h \
-		ctidbgmem.h collectable.h pointtypes.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h \
-		fdrlodestarimport.h fdrlodestarinfo.h fdrlodestarimport_enh.h
-fdrlodestarimport_std.obj:	cparms.h dlldefs.h msg_cmd.h message.h \
-		ctidbgmem.h collectable.h pointtypes.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h \
-		fdrlodestarimport.h fdrlodestarinfo.h fdrlodestarimport_std.h
-fdrlodestarinfo.obj:	fdrlodestarinfo.h dlldefs.h fdr.h pointdefs.h
-fdrpoint.obj:	fdrpoint.h dlldefs.h pointtypes.h fdrdestination.h fdr.h \
-		pointdefs.h types.h logger.h thread.h mutex.h guard.h
-fdrpointidmap.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h fdrpointidmap.h \
-		pointtypes.h resolvers.h yukon.h ctidbgmem.h \
-		db_entry_defines.h logger.h thread.h
-fdrpointlist.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h logger.h thread.h fdrpoint.h \
-		pointtypes.h fdrdestination.h fdr.h pointdefs.h \
-		fdrpointlist.h queues.h mgr_fdrpoint.h rtdb.h hashkey.h
-fdrprotectedmaplist.obj:	dllbase.h os2_2w32.h dlldefs.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h pointdefs.h \
-		fdrprotectedmaplist.h queues.h
-fdrrccs.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
+		fdrpointlist.h queues.h
+fdrio.obj:	yukon.h precompiled.h ctidbgmem.h fdrio.h
+fdriosocket.obj:	yukon.h precompiled.h ctidbgmem.h fdriosocket.h \
+		fdrio.h
+fdrlodestarimport.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_cmd.h message.h collectable.h pointtypes.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
+		guard.h logger.h thread.h fdrtextfilebase.h fdrinterface.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h fdrlodestarimport.h \
+		fdrlodestarinfo.h
+fdrlodestarimport_enh.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_cmd.h message.h collectable.h pointtypes.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrtextfilebase.h fdrinterface.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h fdrlodestarimport.h \
+		fdrlodestarinfo.h fdrlodestarimport_enh.h
+fdrlodestarimport_std.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_cmd.h message.h collectable.h pointtypes.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrtextfilebase.h fdrinterface.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h fdrlodestarimport.h \
+		fdrlodestarinfo.h fdrlodestarimport_std.h
+fdrlodestarinfo.obj:	yukon.h precompiled.h ctidbgmem.h \
+		fdrlodestarinfo.h dlldefs.h fdr.h pointdefs.h
+fdrpoint.obj:	yukon.h precompiled.h ctidbgmem.h fdrpoint.h dlldefs.h \
+		pointtypes.h fdrdestination.h fdr.h pointdefs.h types.h \
+		logger.h thread.h mutex.h guard.h
+fdrpointidmap.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h sema.h fdrpointidmap.h pointtypes.h \
+		resolvers.h db_entry_defines.h logger.h thread.h
+fdrpointlist.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
+		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrpoint.h pointtypes.h \
+		fdrdestination.h fdr.h pointdefs.h fdrpointlist.h queues.h \
+		mgr_fdrpoint.h rtdb.h hashkey.h
+fdrprotectedmaplist.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
+		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrpoint.h pointtypes.h \
+		fdrdestination.h fdr.h pointdefs.h fdrprotectedmaplist.h \
+		queues.h
+fdrrccs.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h fdrserverconnection.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrclientconnection.h fdrinet.h fdrrccs.h
-fdrrdex.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
+fdrrdex.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrserverconnection.h fdrrdex.h
-fdrserverconnection.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
-		thread.h fdrinterface.h message.h collectable.h connection.h \
-		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h cparms.h \
-		fdrdebuglevel.h fdrpointlist.h queues.h fdrsocketlayer.h \
+fdrserverconnection.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h fdrinterface.h message.h \
+		collectable.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h pointtypes.h fdrdestination.h \
+		fdr.h cparms.h fdrdebuglevel.h fdrpointlist.h queues.h \
+		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
+		fdrserverconnection.h
+fdrservice.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		logger.h thread.h mutex.h guard.h fdrservice.h cservice.h
+fdrsinglesocket.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		message.h msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h \
+		connection.h exchange.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h queue.h \
+		pointtypes.h fdrsocketinterface.h queues.h fdrinterface.h \
+		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h fdrdestination.h \
+		fdr.h fdrdebuglevel.h fdrpointlist.h fdrsocketlayer.h \
+		device.h devicetypes.h fdrsocketconnection.h \
+		fdrserverconnection.h fdrsinglesocket.h
+fdrsocketconnection.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h fdrsocketlayer.h queues.h \
+		types.h device.h devicetypes.h fdrsocketconnection.h
+fdrsocketinterface.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
+		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrpointlist.h queues.h \
+		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h pointtypes.h \
+		fdrdestination.h fdr.h pointdefs.h fdrsocketconnection.h \
+		fdrsocketinterface.h fdrinterface.h message.h collectable.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h msg_signal.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h fdrdebuglevel.h
+fdrsocketlayer.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h fdrinterface.h message.h \
+		collectable.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h pointtypes.h fdrdestination.h \
+		fdr.h cparms.h fdrdebuglevel.h fdrpointlist.h queues.h \
+		fdrsocketinterface.h fdrclientconnection.h fdrsocketlayer.h \
 		device.h devicetypes.h fdrsocketconnection.h \
 		fdrserverconnection.h
-fdrservice.obj:	cparms.h dlldefs.h logger.h thread.h mutex.h guard.h \
-		fdrservice.h cservice.h
-fdrsinglesocket.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
-		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
+fdrstec.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
+		fdrstec.h fdrftpinterface.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h fdrsocketlayer.h device.h \
-		devicetypes.h fdrsocketconnection.h fdrserverconnection.h \
-		fdrsinglesocket.h
-fdrsocketconnection.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
-		fdrsocketlayer.h queues.h types.h device.h devicetypes.h \
-		fdrsocketconnection.h
-fdrsocketinterface.obj:	dllbase.h os2_2w32.h dlldefs.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrpointlist.h queues.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h pointdefs.h \
-		fdrsocketconnection.h fdrsocketinterface.h fdrinterface.h \
-		message.h ctidbgmem.h collectable.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h msg_signal.h yukon.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h fdrdebuglevel.h
-fdrsocketlayer.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrinterface.h message.h collectable.h connection.h \
-		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h cparms.h \
-		fdrdebuglevel.h fdrpointlist.h queues.h fdrsocketinterface.h \
-		fdrclientconnection.h fdrsocketlayer.h device.h devicetypes.h \
-		fdrsocketconnection.h fdrserverconnection.h
-fdrstec.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h fdrstec.h \
-		fdrftpinterface.h fdrinterface.h mgr_fdrpoint.h rtdb.h \
-		hashkey.h fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h
-fdrtelegyr.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h dbaccess.h \
-		sema.h hashkey.h resolvers.h db_entry_defines.h fdr.h \
-		fdrdebuglevel.h fdrinterface.h mgr_fdrpoint.h rtdb.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h
+fdrtelegyr.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
+		dbaccess.h sema.h hashkey.h resolvers.h db_entry_defines.h \
+		fdr.h fdrdebuglevel.h fdrinterface.h mgr_fdrpoint.h rtdb.h \
 		fdrpoint.h fdrdestination.h fdrpointlist.h queues.h \
 		fdrtelegyr.h fdrasciiimportbase.h device.h devicetypes.h \
 		telegyrgroup.h telegyrcontrolcenter.h
-fdrtextexport.obj:	cparms.h dlldefs.h msg_cmd.h message.h ctidbgmem.h \
-		collectable.h pointtypes.h dllbase.h os2_2w32.h types.h \
+fdrtextexport.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_cmd.h message.h collectable.h pointtypes.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrtextfilebase.h fdrinterface.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h fdrtextexport.h
+fdrtextfilebase.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		message.h msg_signal.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
 		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
 		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h \
-		fdrtextexport.h
-fdrtextfilebase.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h logger.h thread.h fdrtextfilebase.h \
-		fdrinterface.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
-		pointtypes.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h
-fdrtextimport.obj:	cparms.h dlldefs.h msg_cmd.h message.h ctidbgmem.h \
-		collectable.h pointtypes.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h TextFileInterfaceParts.h \
-		fdrtextimport.h
-fdrtristate.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
+		fdrpoint.h pointtypes.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h
+fdrtextimport.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_cmd.h message.h collectable.h pointtypes.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h logger.h thread.h fdrtextfilebase.h fdrinterface.h \
+		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h queues.h \
+		TextFileInterfaceParts.h fdrtextimport.h
+fdrtristate.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrtristate.h fdrftpinterface.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h queues.h
-fdrvalmet.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
+fdrvalmet.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrvalmet.h
-fdrxa21lm.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
-		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
-		exchange.h logger.h thread.h queue.h pointtypes.h \
-		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
-		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
+fdrxa21lm.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
+		numstr.h fdrsocketinterface.h queues.h fdrinterface.h \
+		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h fdrdestination.h \
+		fdr.h fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
-		fdrserverconnection.h fdrxa21lm.h
-inetinterface.obj:	dlldefs.h socketinterface.h fdrinterface.h \
-		message.h ctidbgmem.h collectable.h connection.h exchange.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
-		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h pointtypes.h \
-		fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
+		fdrserverconnection.h fdrxa21lm.h critical_section.h \
+		string_util.h
+inetinterface.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h \
+		socketinterface.h fdrinterface.h message.h collectable.h \
+		connection.h exchange.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
 		fdrpointlist.h queues.h inetinterface.h fdriosocket.h fdrio.h
-mgr_fdrpoint.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h hashkey.h \
-		resolvers.h pointtypes.h yukon.h ctidbgmem.h \
+mgr_fdrpoint.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h sema.h hashkey.h resolvers.h pointtypes.h \
 		db_entry_defines.h fdr.h pointdefs.h fdrdebuglevel.h \
 		mgr_fdrpoint.h rtdb.h fdrpoint.h fdrdestination.h logger.h \
 		thread.h utility.h
-socketinterface.obj:	socketinterface.h dlldefs.h fdrinterface.h \
-		message.h ctidbgmem.h collectable.h connection.h exchange.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
-		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h pointtypes.h \
-		fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
-		fdrpointlist.h queues.h
-telegyrcontrolcenter.obj:	telegyrcontrolcenter.h dlldefs.h fdr.h \
-		pointdefs.h telegyrgroup.h fdrpoint.h pointtypes.h \
-		fdrdestination.h types.h mutex.h logger.h thread.h guard.h
-telegyrgroup.obj:	telegyrgroup.h dlldefs.h fdr.h pointdefs.h \
-		fdrpoint.h pointtypes.h fdrdestination.h types.h
-testinterface.obj:	dlldefs.h fdrinterface.h message.h ctidbgmem.h \
+precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+socketinterface.obj:	yukon.h precompiled.h ctidbgmem.h \
+		socketinterface.h dlldefs.h fdrinterface.h message.h \
 		collectable.h connection.h exchange.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h cparms.h \
-		fdrdebuglevel.h fdrpointlist.h queues.h testinterface.h \
-		fdrinterface.cpp dbaccess.h sema.h ctinexus.h resolvers.h \
-		db_entry_defines.h msg_cmd.h msg_dbchg.h
-textfileinterfaceparts.obj:	cparms.h dlldefs.h msg_multi.h \
-		collectable.h msg_pdata.h pointdefs.h message.h ctidbgmem.h \
-		msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h
+telegyrcontrolcenter.obj:	yukon.h precompiled.h ctidbgmem.h \
+		telegyrcontrolcenter.h dlldefs.h fdr.h pointdefs.h \
+		telegyrgroup.h fdrpoint.h pointtypes.h fdrdestination.h \
+		types.h mutex.h logger.h thread.h guard.h
+telegyrgroup.obj:	yukon.h precompiled.h ctidbgmem.h telegyrgroup.h \
+		dlldefs.h fdr.h pointdefs.h fdrpoint.h pointtypes.h \
+		fdrdestination.h types.h
+testinterface.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h \
+		fdrinterface.h message.h collectable.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h queue.h \
+		mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h pointtypes.h \
+		fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h testinterface.h fdrinterface.cpp \
+		dbaccess.h sema.h ctinexus.h resolvers.h db_entry_defines.h \
+		msg_cmd.h msg_dbchg.h
+textfileinterfaceparts.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
+		message.h msg_signal.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
 		TextFileInterfaceParts.h
 #ENDUPDATE#

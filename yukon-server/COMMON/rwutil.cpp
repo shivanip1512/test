@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include "rwutil.h"
 
 date to_boost_date(const RWDate& rw_date)

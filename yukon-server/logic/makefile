@@ -4,7 +4,8 @@
 
 ALL:
             @if not exist obj md obj            
-            @if not exist bin md bin            
+            @if not exist bin md bin       
+            @$(MAKE) -nologo -f makepch.mak     
             @$(MAKE) -nologo -f makedll.mak
 
 clean:
@@ -23,6 +24,7 @@ allclean:   clean all
 
 
 copy:
+            @$(MAKE) -nologo -f makepch.mak $@
             @$(MAKE) -nologo -f makedll.mak $@
 
 

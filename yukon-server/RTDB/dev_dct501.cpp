@@ -8,13 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/12/07 17:53:57 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -25,7 +25,6 @@
 #include "mgr_point.h"
 #include "porter.h"
 #include "pt_numeric.h"
-#include "yukon.h"
 #include "numstr.h"
 
 set< CtiDLCCommandStore > CtiDeviceDCT501::_commandStore;

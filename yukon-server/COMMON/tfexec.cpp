@@ -9,6 +9,7 @@
     
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "tfexec.h"
 

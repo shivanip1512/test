@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/08 21:21:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.9  2005/02/10 23:23:59  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.8  2004/12/08 21:21:39  cplender
 * Make certain the CycleTime is > 0 on the "next" calculation
 *
@@ -39,8 +42,8 @@
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 #include "cparms.h"
 #include "dev_exclusion.h"

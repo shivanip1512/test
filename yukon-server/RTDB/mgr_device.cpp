@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2005/01/27 17:53:47 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )
 
 #include <rw/db/db.h>
 
@@ -46,7 +46,6 @@
 #include "dev_grp_versacom.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
-#include "yukon.h"
 
 #include "devicetypes.h"
 #include "resolvers.h"

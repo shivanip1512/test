@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -9,12 +10,11 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/05/05 15:31:42 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
 
 
 #include "dsm2.h"

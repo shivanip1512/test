@@ -1,5 +1,4 @@
-
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -12,7 +11,7 @@ using namespace std;
 #undef mask_                // Stupid RogueWave re.h
 
 #include <limits.h>
-#include "yukon.h"
+
 #include "cmdparse.h"
 #include "cparms.h"
 #include "devicetypes.h"

@@ -11,7 +11,7 @@
          
   COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2004
   ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include "lmgroupSA205or105.h"
 #include "lmid.h"

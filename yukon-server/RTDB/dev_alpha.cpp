@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/07/23 12:54:28 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.11  2005/02/10 23:23:59  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.10  2004/07/23 12:54:28  cplender
       USHORT pointids are not large enough.  Changed to LONG.
       dispatch was having point type mismatch issues because of id truncation.
@@ -22,11 +25,10 @@
 
 
 *-----------------------------------------------------------------------------*/
-
-#pragma warning( disable : 4786 )
-
-
 #include "yukon.h"
+
+
+
 #include "porter.h"
 #include "dev_alpha.h"
 

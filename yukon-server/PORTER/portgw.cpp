@@ -7,13 +7,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/01/18 19:13:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/02/10 23:23:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 #include <windows.h>
 #include <iostream>

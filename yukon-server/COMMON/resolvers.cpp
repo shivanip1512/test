@@ -6,13 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2004/12/31 14:08:31 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/02/10 23:23:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
+#include "yukon.h"
 
 #include <rw/db/db.h>
 #include <rw/re.h>
@@ -24,8 +23,6 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "numstr.h"
-#include "yukon.h"
-
 
 INT resolveRouteType(RWCString rwsTemp)
 {

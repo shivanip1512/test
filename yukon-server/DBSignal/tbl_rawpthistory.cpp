@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include "tbl_rawpthistory.h"
 #include "dbaccess.h"
 #include "logger.h"

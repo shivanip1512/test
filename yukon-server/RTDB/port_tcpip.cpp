@@ -8,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/12/08 21:22:08 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/02/10 23:24:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include <windows.h>
@@ -24,7 +24,6 @@ using namespace std;
 #include "logger.h"
 #include "port_tcpip.h"
 #include "utility.h"
-#include "yukon.h"
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
 _dialable(0),

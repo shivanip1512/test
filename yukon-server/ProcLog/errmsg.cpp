@@ -1,3 +1,5 @@
+#include "yukon.h"
+
 /* RW stuff MUST be first to avoid crap with macros max and min.. these WILL bite your butt */
 #include <rw\rwtime.h>
 
@@ -5,7 +7,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 #include <process.h>
 
 #include <iostream>

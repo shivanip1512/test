@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -8,13 +9,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/08/24 13:51:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786 )
 
 #include <rw/db/db.h>
 #include <rw/db/status.h>
@@ -34,7 +34,6 @@
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
 #include "resolvers.h"
-#include "yukon.h"
 
 static void verifyDynamicData(CtiPoint *&pTempPoint);
 

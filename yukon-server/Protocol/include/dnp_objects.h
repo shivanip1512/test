@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/12/26 17:25:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 
 #include <rw/tpslist.h>
 
+#include "dllbase.h"
 #include "msg_pdata.h"
 #include "pointtypes.h"
 

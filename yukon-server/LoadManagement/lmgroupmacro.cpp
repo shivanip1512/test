@@ -10,7 +10,7 @@
          
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001-2004
 ---------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include "dbaccess.h"
 #include "lmgroupmacro.h"

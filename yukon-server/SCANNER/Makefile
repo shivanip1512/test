@@ -2,12 +2,14 @@
 !include ..\common\rwglobal.inc
 
 all:
+        @$(MAKE) -nologo -f makepch.mak
         @$(MAKE) -nologo -f makedll.mak
         @$(MAKE) -nologo -f makeexe.mak
 
 #        @$(MAKE) -nologo -f makescn.mak
 
 copy:
+        @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makedll.mak $@
         @$(MAKE) -nologo -f makeexe.mak $@
 

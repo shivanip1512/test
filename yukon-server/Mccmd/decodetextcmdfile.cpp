@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*****************************************************************************
 *
 *    FILE NAME: decodeTextCmdFile.cpp
@@ -33,6 +32,7 @@ Function #  Comment in the file, will get moved to the exported file if needed
 *
 ****************************************************************************
 */
+#include "yukon.h"
 #include <rw/ctoken.h>
 #include <rw/rwdate.h>
 

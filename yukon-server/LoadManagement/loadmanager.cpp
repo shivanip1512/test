@@ -12,7 +12,7 @@
 
   COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
   -----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -32,7 +32,6 @@
 #include "lmcontrolareatrigger.h"
 #include "executor.h"
 #include "ctibase.h"
-#include "yukon.h"
 #include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"

@@ -3,6 +3,7 @@ include ..\common\rwglobal.inc
 
 
 all:
+            @$(MAKE) -nologo -f makepch.mak
             @$(MAKE) -nologo -f makepntdb.mak
             @$(MAKE) -nologo -f makedevdb.mak
             @$(MAKE) -nologo -f makeprtdb.mak
@@ -12,6 +13,7 @@ all:
             @$(MAKE) -nologo -f makeexe.mak
 
 copy:
+            @$(MAKE) -nologo -f makepch.mak $@
             @$(MAKE) -nologo -f makepntdb.mak $@
             @$(MAKE) -nologo -f makedevdb.mak $@
             @$(MAKE) -nologo -f makeprtdb.mak $@

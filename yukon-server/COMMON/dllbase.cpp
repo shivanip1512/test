@@ -6,14 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/10/22 20:58:53 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/02/10 23:23:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
-
+#include "yukon.h"
 
 #include <windows.h>
 #include <winbase.h>
@@ -30,7 +28,6 @@
 #include <rw\ctoken.h>
 
 #include "dsm2.h"
-#include "yukon.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
 #include "configparms.h"

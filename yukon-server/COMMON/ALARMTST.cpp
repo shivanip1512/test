@@ -1,3 +1,4 @@
+#include "yukon.h"
 #include <windows.h>
 
 #include "os2_2w32.h"

@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_six_two
@@ -12,6 +9,7 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
 #include "math.h"

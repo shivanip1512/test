@@ -2,6 +2,7 @@ include global.inc
 include rwglobal.inc
 
 all:
+         @$(MAKE) -nologo -f makepch.mak	
          @$(MAKE) -nologo -f makebase.mak
          @$(MAKE) -nologo -f makecmdline.mak
 
@@ -21,6 +22,7 @@ $(BIN)\*.exe
 allclean:   clean all
 
 copy:
+        @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makebase.mak $@
         @$(MAKE) -nologo -f makecmdline.mak $@
 

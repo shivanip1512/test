@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 #pragma title ( "DST Time Routines" )
@@ -45,7 +46,6 @@
 #include <time.h>
 #include <sys\timeb.h>
 #include <string.h>
-#include <malloc.h>
 #include "dllbase.h"
 #include "os2_2w32.h"
 #include "cticalls.h"

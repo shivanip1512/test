@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrprotectedmaplist.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrprotectedmaplist.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:35 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrprotectedmaplist.cpp,v $
+      Revision 1.4  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.3  2002/04/16 15:58:35  softwarebuild
       20020416_1031_2_16
 
@@ -46,6 +48,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 
 #include <windows.h>

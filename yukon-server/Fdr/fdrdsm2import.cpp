@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrdsm2import.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/09/29 17:47:47 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.6  2005/02/10 23:23:50  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.5  2004/09/29 17:47:47  dsutton
       Updated all interfaces to default the db reload rate to once a day (86400)
 
@@ -50,6 +52,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 
 #include <windows.h>

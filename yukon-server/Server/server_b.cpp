@@ -6,19 +6,18 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/12/06 21:31:22 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/02/10 23:24:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "executor.h"
 #include "server_b.h"
 #include "msg_cmd.h"
 #include "numstr.h"
-#include "yukon.h"
 #include "logger.h"
 #include "utility.h"
 

@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#include "yukon.h"
 
 #include <crtdbg.h>
 #include <windows.h>
@@ -8,7 +8,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/cstring.h>
 //#include <rw/db/connect.h>
 
-#include "yukon.h"
 #include "cparms.h"
 #include "message.h"
 #include "connection.h"

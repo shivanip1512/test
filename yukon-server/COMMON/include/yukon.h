@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/01/31 17:07:41 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/02/10 23:23:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,12 +15,11 @@
 #define __YUKON_H__
 #pragma warning( disable : 4786)
 
+#include "precompiled.h"
 
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 
 #include <rw\thr\mutex.h>
-#include "dlldefs.h"
-#include "dllbase.h"
 
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
 #define YUKONEOT (ULONG_MAX - 86400 * 2)

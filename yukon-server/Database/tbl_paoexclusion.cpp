@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 /*-----------------------------------------------------------------------------*
@@ -9,13 +10,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/06/03 21:46:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include <rw\re.h>
 #undef mask_
@@ -24,7 +24,6 @@
 #include "logger.h"
 #include "tbl_paoexclusion.h"
 #include "utility.h"
-#include "yukon.h"
 
 CtiTablePaoExclusion::CtiTablePaoExclusion(long xid,
                                            long paoid,

@@ -76,7 +76,7 @@ id_proclog.obj:    id_proclog.cpp include\id_proclog.h
                 @echo C-Options: $(DLLFLAGS)
                 @echo Output   : ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) -D_DLL_PROCLOG $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) -D_DLL_PROCLOG $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 

@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_datalink.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/01/03 23:07:15 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *    History: 
       $Log: ansi_datalink.h,v $
+      Revision 1.8  2005/02/10 23:23:58  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.7  2005/01/03 23:07:15  jrichter
       checking into 3.1, for use at columbia to test sentinel
 
@@ -34,7 +37,7 @@
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#include "dllbase.h"
 #include "xfer.h"
 
 #define ANSI_EOL           0x00

@@ -8,13 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2004/12/07 18:13:08 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -39,7 +39,6 @@ using namespace std;
 #include "porter.h"
 #include "utility.h"
 #include "dllyukon.h"
-#include "yukon.h"
 
 set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
 

@@ -1,3 +1,4 @@
+#include "yukon.h"
 #pragma title ( "ILEX RTU Protocol Support Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------

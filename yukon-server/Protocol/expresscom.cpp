@@ -7,12 +7,12 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/12/01 20:11:04 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/10 23:23:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include <rw\ctoken.h>
@@ -23,7 +23,6 @@
 #include "expresscom.h"
 #include "logger.h"
 #include "numstr.h"
-#include "yukon.h"
 
 CtiProtocolExpresscom::CtiProtocolExpresscom() :
 _useProtocolCRC(false),

@@ -9,6 +9,7 @@
     
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "ccclientlistener.h"
 #include "ccexecutor.h"

@@ -1,3 +1,4 @@
+#include "yukon.h"
 #pragma title ( "Error Message Database Routines" )
 #pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
@@ -25,6 +26,7 @@
 
 
    -------------------------------------------------------------------- */
+
 #include <windows.h>       // These next few are required for Win32
 #include <iostream>
 using namespace std;
@@ -44,7 +46,6 @@ using namespace std;
 #include "dsm2err.h"
 #include "dllbase.h"
 #include "logger.h"
-#include "yukon.h"
 
 BYTE ErrorPosBlk[128];
 

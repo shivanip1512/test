@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrrdex.cpp
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/09/29 17:47:47 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.8  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.7  2004/09/29 17:47:47  dsutton
       Updated all interfaces to default the db reload rate to once a day (86400)
 
@@ -70,6 +72,7 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
+#include "yukon.h"
 
 
 #include <windows.h>

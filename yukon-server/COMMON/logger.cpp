@@ -8,13 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/12/14 22:23:16 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/02/10 23:23:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
+#include "yukon.h"
 
 #include "cparms.h"
 #include "dllbase.h"

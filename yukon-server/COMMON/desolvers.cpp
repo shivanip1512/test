@@ -8,13 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/12/10 21:58:39 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/02/10 23:23:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
+#include "yukon.h"
 
 #include <rw/db/db.h>
 #include <rw\cstring.h>
@@ -25,7 +24,6 @@
 #include "devicetypes.h"
 #include "pointtypes.h"
 #include "logger.h"
-#include "yukon.h"
 
 RWCString desolveScanType( LONG scanType )
 {

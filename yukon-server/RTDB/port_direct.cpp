@@ -13,7 +13,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 
 
 #include <windows.h>

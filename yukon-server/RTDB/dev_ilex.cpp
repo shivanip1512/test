@@ -5,13 +5,13 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/10/12 20:14:16 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -21,7 +21,6 @@
 
 #include "device.h"
 #include "dev_ilex.h"
-#include "yukon.h"
 #include "pt_base.h"
 #include "pt_status.h"
 #include "connection.h"

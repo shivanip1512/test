@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/01/27 17:48:46 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/02/10 23:23:50 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.13  2005/02/10 23:23:50  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.12  2005/01/27 17:48:46  cplender
 * Make certain the _opId map is copied for pendables.
 * Reduce the frequency of ctlhist AI points.
@@ -54,7 +58,6 @@
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include <windows.h>
 

@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 
 #pragma title ( "Various Support Routines" )
@@ -34,6 +35,7 @@
         5-14-96 Added Alternate Plug Method for Marshall        BDW
 
    -------------------------------------------------------------------- */
+
 #include <windows.h>       // These next few are required for Win32
 #include "os2_2w32.h"
 #include "cticalls.h"

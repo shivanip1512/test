@@ -6,13 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/12/31 17:04:39 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/10 23:24:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -38,7 +38,6 @@ using namespace std;
 #include "pt_accum.h"
 #include "pt_numeric.h"
 #include "utility.h"
-#include "yukon.h"
 
 #include "elogger.h"       // for Send4PartToLogger()
 #include "mpc.h"

@@ -1,4 +1,4 @@
-#pragma warning( disable : 4786 )
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,12 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/07/27 16:53:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/02/10 23:23:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.9  2005/02/10 23:23:59  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.8  2004/07/27 16:53:54  mfisher
       RWTime.seconds workaround for boost ptime::seconds
 
@@ -30,7 +33,6 @@
 
 *-----------------------------------------------------------------------------*/
 
-#include "yukon.h"
 #include "porter.h"
 #include "dev_alpha.h"
 #include "dev_aplus.h"

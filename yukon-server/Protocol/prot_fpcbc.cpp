@@ -8,12 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:35:41 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/02/10 23:23:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
+#include "yukon.h"
 
 
 #include <windows.h>
@@ -30,7 +30,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pcrequest.h"
 #include "prot_fpcbc.h"
 #include "utility.h"
-#include "yukon.h"
 
 
 INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)

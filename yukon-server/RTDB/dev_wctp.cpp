@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -10,7 +11,6 @@
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786 )
 
 
 #include <windows.h>
@@ -30,7 +30,6 @@
 #include "logger.h"
 #include "porter.h"
 
-#include "yukon.h"
 #include "pt_base.h"
 #include "pt_accum.h"
 

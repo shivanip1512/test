@@ -1,3 +1,4 @@
+#include "yukon.h"
 
 /*-----------------------------------------------------------------------------*
 *
@@ -8,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/18 19:50:34 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/10 23:23:48 $
 *
 * HISTORY      :
 * $Log: tbl_dv_rtc.cpp,v $
+* Revision 1.2  2005/02/10 23:23:48  alauinger
+* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+*
 * Revision 1.1  2004/03/18 19:50:34  cplender
 * Initial Checkin
 * Builds, but not too complete.
@@ -21,7 +25,6 @@
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
 
 #include <windows.h>
 
@@ -36,7 +39,6 @@
 #include "dllbase.h"
 #include "logger.h"
 #include "tbl_dv_rtc.h"
-#include "yukon.h"
 
 CtiTableDeviceRTC::CtiTableDeviceRTC() :
     _deviceID(-1),

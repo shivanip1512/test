@@ -1,5 +1,5 @@
+#include "yukon.h"
 
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrlodestarimport.cpp
@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2004/09/29 17:47:47 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2005/02/10 23:23:51 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.13  2005/02/10 23:23:51  alauinger
+      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
+
       Revision 1.12  2004/09/29 17:47:47  dsutton
       Updated all interfaces to default the db reload rate to once a day (86400)
 

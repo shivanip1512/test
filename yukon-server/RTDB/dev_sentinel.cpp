@@ -1,6 +1,6 @@
+#include "yukon.h"
 
 
-#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -13,7 +13,6 @@
 ** Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "yukon.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_sentinel.h"

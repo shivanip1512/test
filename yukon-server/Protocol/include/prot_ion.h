@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/07/31 20:23:41 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/10 23:23:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 #define __PROT_ION_H__
 #pragma warning( disable : 4786)
 
-
+#include "dllbase.h"
 #include "dlldefs.h"
 #include "pointtypes.h"
 
