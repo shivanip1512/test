@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     12/20/2002 3:08:57 PM                        */
+/* Created on:     1/7/2003 5:06:56 PM                          */
 /*==============================================================*/
 
 
@@ -715,9 +715,9 @@ go
 /*==============================================================*/
 create table LMThermostatManualOption (
 InventoryID          numeric              not null,
-PerviousTemperature  numeric              null,
+PreviousTemperature  numeric              null,
 HoldTemperature      varchar(1)           null,
-OperationalStateID   numeric              null,
+OperationStateID     numeric              null,
 FanOperationID       numeric              null,
 constraint PK_LMTHERMOSTATMANUALOPTION primary key  (InventoryID)
 )
@@ -865,13 +865,13 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (StreetAddressID)
-      references  ()
+      references CustomerAddress (AddressID)
 go
 
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references  ()
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -889,13 +889,13 @@ go
 
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
-      references  ()
+      references CustomerContact (ContactID)
 go
 
 
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references  ()
+      references CustomerContact (ContactID)
 go
 
 
@@ -930,7 +930,7 @@ go
 
 
 alter table LMThermostatManualOption
-   add constraint FK_CsLsE_LThMnO2 foreign key (OperationalStateID)
+   add constraint FK_CsLsE_LThMnO2 foreign key (OperationStateID)
       references CustomerListEntry (EntryID)
 go
 
@@ -1003,7 +1003,7 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references  ()
+      references CustomerAddress (AddressID)
 go
 
 
@@ -1021,13 +1021,13 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
-      references  ()
+      references CustomerContact (ContactID)
 go
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
-      references  ()
+      references CustomerContact (ContactID)
 go
 
 
@@ -1057,7 +1057,7 @@ go
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references  ()
+      references DEVICE (DEVICEID)
 go
 
 
@@ -1069,25 +1069,25 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany (EnergyCompanyID)
+go
+
+
+alter table ECToInventoryMapping
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
       references InventoryBase (InventoryID)
-go
-
-
-alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references  ()
 go
 
 
@@ -1099,13 +1099,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1117,7 +1117,7 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references  ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1159,7 +1159,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
-      references  ()
+      references LMGroup (DeviceID)
 go
 
 
@@ -1171,7 +1171,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references  ()
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -1183,7 +1183,7 @@ go
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
-      references  ()
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -1195,7 +1195,7 @@ go
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (RouteID)
-      references  ()
+      references Route (RouteID)
 go
 
 
