@@ -16,15 +16,15 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
- 
+
 #include "ion_rootclasses.h"
 #include "ctitypes.h"
 
-class CtiIONChar : public CtiIONValue
+class IM_EX_PROT CtiIONChar : public CtiIONValue
 {
 public:
 
-    CtiIONChar( char initialValue='\0' ) : 
+    CtiIONChar( char initialValue='\0' ) :
         CtiIONValue(IONChar),
         _char(initialValue & 0x7F)
         { };
@@ -34,24 +34,24 @@ public:
     char getValue( void )              { return _char; };
 
 protected:
-    
+
     typedef CtiIONValue Inherited;
     friend Inherited;
     friend class CtiIONCharArray;
-    
+
     CtiIONChar( unsigned char *byteStream, unsigned long streamLength );
-    
+
     unsigned int getSerializedValueLength( void ) { return 1; };
     void putSerializedValue( unsigned char *buf ) { memcpy( buf, &_char, getSerializedValueLength( ) ); };
 
 private:
-    
+
     char _char;
 };
 
 
 
-class CtiIONNumeric : public CtiIONValue
+class IM_EX_PROT CtiIONNumeric : public CtiIONValue
 {
 public:
     CtiIONNumeric( CtiIONValue::IONValueTypes valueType ) :
@@ -61,7 +61,7 @@ public:
 };
 
 
-class CtiIONFloat : public CtiIONNumeric
+class IM_EX_PROT CtiIONFloat : public CtiIONNumeric
 {
 public:
 
@@ -71,7 +71,7 @@ public:
         { };
     CtiIONFloat( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONFloat( ) { };
-    
+
     unsigned int getSerializedValueLength( void ) { return 4; };
     void putSerializedValue( unsigned char *buf ) { memcpy( buf, &_float, getSerializedValueLength( ) ); };
 
@@ -85,7 +85,7 @@ private:
 
 
 
-class CtiIONSignedInt : public CtiIONNumeric
+class IM_EX_PROT CtiIONSignedInt : public CtiIONNumeric
 {
 public:
 
@@ -109,7 +109,7 @@ private:
 
 
 
-class CtiIONUnsignedInt : public CtiIONNumeric
+class IM_EX_PROT CtiIONUnsignedInt : public CtiIONNumeric
 {
 public:
 
@@ -133,13 +133,13 @@ private:
 
 
 
-class CtiIONBoolean : public CtiIONNumeric
+class IM_EX_PROT CtiIONBoolean : public CtiIONNumeric
 {
 public:
 
     CtiIONBoolean( int initialValue=FALSE ) :
         CtiIONNumeric(IONBoolean),
-        _bool(initialValue) 
+        _bool(initialValue)
         { };
     CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONBoolean( ) { };
@@ -147,7 +147,7 @@ public:
     unsigned int getSerializedValueLength( void ) { return 0; };  //  it's all in the header
     void putSerializedValue( unsigned char *buf ) { };            //
 
-    CtiIONBoolean &setValue( int value ) { _bool = value; };
+    CtiIONBoolean &setValue( int value ) { _bool = value;  return *this; };
     int           getValue( void )       { return _bool; };
 
 private:
@@ -157,7 +157,7 @@ private:
 
 
 
-class CtiIONTime : public CtiIONValue
+class IM_EX_PROT CtiIONTime : public CtiIONValue
 {
 public:
 
@@ -170,12 +170,12 @@ public:
     CtiIONTime( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONTime( ) { };
 
-    CtiIONTime    &setSeconds( unsigned long value ) { _seconds = value;  
+    CtiIONTime    &setSeconds( unsigned long value ) { _seconds = value;
                                                        return *this; };
     unsigned long  getSeconds( void )                { return _seconds; };
     CtiIONTime    &setFractionalSeconds( unsigned long value );
     unsigned long  getFractionalSeconds( void )      { return _fractionalSeconds; };
-    
+
 protected:
 
     unsigned int getSerializedValueLength( void ) { return 8; };
@@ -189,7 +189,7 @@ private:
 
 
 
-class CtiIONArray : public CtiIONValue
+class IM_EX_PROT CtiIONArray : public CtiIONValue
 {
 public:
     enum IONArrayTypes
@@ -200,17 +200,17 @@ public:
         IONSignedIntArray   = 0xD,  //
         IONUnsignedIntArray = 0xE,  //
 //        IONNumericArray,
-        IONStruct,      //  these two get spawned off into seperate instantiators, 
+        IONStruct,      //  these two get spawned off into seperate instantiators,
         IONStructArray  //    and never numerically use these enum values
     };
-    
+
     IONArrayTypes getArrayType( void )   { return _arrayType; };
     int isNumericArray( void );
 
 protected:
 
     friend class CtiIONValue;
-    
+
     CtiIONArray( IONArrayTypes arrayType ) :
         CtiIONValue(IONArray),
         _arrayType(arrayType)
@@ -218,7 +218,7 @@ protected:
 
     ~CtiIONArray( )
         {  clearArrayElements( );  };
-    
+
     virtual unsigned int getSerializedValueLength( void );
     virtual void putSerializedValue( unsigned char *buf );
 
@@ -228,17 +228,17 @@ protected:
     static CtiIONArray *restoreStruct( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
     static CtiIONArray *restoreStructArray( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
     static CtiIONArray *restoreFixedArray( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
-    
+
     unsigned char *putClassSize( unsigned char key, unsigned char *buf );
     unsigned char getArrayKey( void );
-        
-    int getSize( void )                  
+
+    int getSize( void )
         {  return _array.size( );  };
 
     CtiIONValue *getArrayElement( unsigned long index );
     CtiIONArray &appendArrayElement( CtiIONValue *toAppend );
     void clearArrayElements( void );
-    
+
 private:
 
     vector< CtiIONValue * > _array;
@@ -251,7 +251,7 @@ private:
 
 
 
-class CtiIONProgram : public CtiIONValue
+class IM_EX_PROT CtiIONProgram : public CtiIONValue
 {
 public:
 
@@ -263,12 +263,12 @@ public:
 
     ~CtiIONProgram( );
 
-    CtiIONProgram &addStatement( CtiIONStatement *toAdd ) 
-    { 
-        _statements.push_back( toAdd ); 
-        return *this; 
+    CtiIONProgram &addStatement( CtiIONStatement *toAdd )
+    {
+        _statements.push_back( toAdd );
+        return *this;
     };
-        
+
     unsigned int getSerializedValueLength( void );
     void putSerializedValue( unsigned char *buf );
 
@@ -279,4 +279,4 @@ private:
 
 
 #endif  //  #ifndef __ION_VALUEBASICTYPES_H__
-    
+

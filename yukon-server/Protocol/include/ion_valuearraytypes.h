@@ -16,11 +16,11 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
- 
+
 #include "ion_valuebasictypes.h"
 
 
-class CtiIONCharArray : public CtiIONArray
+class IM_EX_PROT CtiIONCharArray : public CtiIONArray
 {
 public:
     CtiIONCharArray( ) :
@@ -40,7 +40,7 @@ protected:
 
 
 
-class CtiIONBooleanArray : CtiIONArray
+class IM_EX_PROT CtiIONBooleanArray : CtiIONArray
 {
 public:
     CtiIONBooleanArray( ) :
@@ -54,7 +54,7 @@ public:
 
 
 
-class CtiIONFloatArray : CtiIONArray
+class IM_EX_PROT CtiIONFloatArray : CtiIONArray
 {
 public:
     CtiIONFloatArray( ) :
@@ -68,7 +68,7 @@ public:
 
 
 
-class CtiIONSignedIntArray : CtiIONArray
+class IM_EX_PROT CtiIONSignedIntArray : CtiIONArray
 {
 public:
     CtiIONSignedIntArray( ) :
@@ -82,7 +82,7 @@ public:
 
 
 
-class CtiIONUnsignedIntArray : CtiIONArray
+class IM_EX_PROT CtiIONUnsignedIntArray : CtiIONArray
 {
 public:
     CtiIONUnsignedIntArray( ) :
@@ -96,12 +96,12 @@ public:
 
 
 
-class CtiIONStruct : public CtiIONArray
+class IM_EX_PROT CtiIONStruct : public CtiIONArray
 {
 public:
     enum IONStructTypes;
     enum Elements;
-    
+
     CtiIONStruct( IONStructTypes structType, unsigned long numElements = 0 ) :
         CtiIONArray(IONStruct),
         _structType(structType),
@@ -110,19 +110,19 @@ public:
     ~CtiIONStruct( ) { };
 
     void init( vector< CtiIONValue * > &structValues );
-    
+
     virtual CtiIONValue *operator[]( Elements index );
 
     unsigned char getStructKey( void );
     IONStructTypes getStructType( void ) { return _structType; };
 
     static CtiIONArray *restoreObject( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
-    
+
     virtual enum Elements
     {
         Undefined
     };
-    
+
     enum IONStructTypes
     {
         IONLogRecord   = 0x0,
@@ -147,7 +147,7 @@ private:
 
 
 
-class CtiIONStructArray : public CtiIONArray
+class IM_EX_PROT CtiIONStructArray : public CtiIONArray
 {
 public:
     enum IONStructArrayTypes;
@@ -160,7 +160,7 @@ public:
 
     unsigned char getStructArrayKey( void );
     IONStructArrayTypes getStructArrayType( void ) { return _structArrayType; };
-    
+
     static CtiIONArray *restoreObject( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
 
     enum IONStructArrayTypes
