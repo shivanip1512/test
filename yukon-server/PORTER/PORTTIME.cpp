@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/12/19 20:26:31 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/12/24 18:50:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -552,6 +552,8 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                     OutMessage->ReturnNexus = NULL;
                     OutMessage->SaveNexus = NULL;
 
+
+                    #if 0
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -560,12 +562,9 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                         dout << "port:   " << OutMessage->Port << endl;
                         dout << "remote: " << OutMessage->Remote << endl;
                     }
+                    #endif
 
-                    if(PortManager.writeQueue(OutMessage->Port,
-                                              OutMessage->EventCode,
-                                              sizeof (*OutMessage),
-                                              (char *) OutMessage,
-                                              OutMessage->Priority))
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
                         printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                         delete (OutMessage);
