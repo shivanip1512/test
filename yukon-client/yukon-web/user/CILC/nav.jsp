@@ -1,25 +1,15 @@
-<%@ page import="java.util.Hashtable" %>
 <%
 	// Map of page name / link text
 	String linkMap[][] = {{"user_ee.jsp", "Peak Day Partner"},
 						  {"user_curtail.jsp", "Notification"},
 						  {"user_lm_control.jsp", "Auto Control"},
 						  {"user_lm_time.jsp", "Time Based"},
-						  {"switch_commands.jsp", "Switch Command"}
+						  {"switch_commands.jsp", "Switch Command"},
+						  {"user_trending.jsp", "Trending"}
 						 };
-	boolean trendSelected = true;
-	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkMap.length; i++) {
-		if (linkMap[i][0].equalsIgnoreCase(pageName))
-		{
-			links.put(linkMap[i][0], "<img src=\"../../WebConfig/Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
-			trendSelected = false;
-		}
-		else
-		{
-			links.put(linkMap[i][0], "<img src=\"../../WebConfig/Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
-		}
-	}
+	
+	String buybackLinks[][] ={linkMap[0], linkMap[1]};
+	String usercontrolLinks[][] ={linkMap[2], linkMap[3], linkMap[4]};
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
@@ -41,7 +31,7 @@
 		{
 			for( int i = 0; i < gData.length; i++ )                                                          
 			{
-				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && trendSelected)
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkMap[5][0].equalsIgnoreCase(pageName))
 				{%>
 					<img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET_SELECTED%>"/>" width="12" height="12"><span class="Nav"><%=gData[i][1] %></span><br>
 				<%}
@@ -56,16 +46,37 @@
   <tr> 
     <td height="20"> 
       <div align="left"><span class="NavHeader">Buyback</span><br>
-        <%= links.get("user_ee.jsp") %><br>
-        <%= links.get("user_curtail.jsp") %></div>
+      <%
+        for (int i = 0; i < buybackLinks.length; i++)
+        {
+          if (buybackLinks[i][0].equalsIgnoreCase(pageName))
+          {%>
+            <img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET_SELECTED%>"/>" width="12" height="12"><span class="Nav"><%=buybackLinks[i][1]%></span><br>
+          <%}
+          else
+          {%>
+            <img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>" width="12" height="12"><a href="<%=buybackLinks[i][0]%>" class="Link2"><span class="NavText"><%=buybackLinks[i][1]%></span></a><br>
+          <%}
+        }%>
+      </div>
     </td>
   </tr>
-  <tr> 
-    <td> 
-<!--      <div align="left"><span class="NavHeader">User-Control</span><br>
-        <%= links.get("user_lm_control.jsp") %><br>
-        <%= links.get("user_lm_time.jsp") %><br>
-		<%= links.get("switch_commands.jsp") %></div> -->
+<!--  <tr> 
+    <td height="20"> 
+      <div align="left"><span class="NavHeader">User-Control</span><br>
+      <%
+        for (int i = 0; i < usercontrolLinks.length; i++)
+        {
+          if (usercontrolLinks[i][0].equalsIgnoreCase(pageName))
+          {%>
+            <img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET_SELECTED%>"/>" width="12" height="12"><span class="Nav"><%=usercontrolLinks[i][1]%></span><br>
+          <%}
+          else
+          {%>
+            <img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>" width="12" height="12"><a href="<%=usercontrolLinks[i][0]%>" class="Link2"><span class="NavText"><%=usercontrolLinks[i][1]%></span></a><br>
+          <%}
+        }%>
+      </div>
     </td>
-  </tr>
+  </tr>-->
 </table>
