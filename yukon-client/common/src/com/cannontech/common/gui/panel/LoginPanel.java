@@ -1,12 +1,11 @@
 package com.cannontech.common.gui.panel;
 
-import com.cannontech.common.util.CtiUtilities;
-
-/** 
+/**
+ * Insert the type's description here.
  * Creation date: (11/18/2002 3:58:30 PM)
- * @author: alauinger
+ * @author: 
  */
-class LoginPanel extends javax.swing.JPanel {
+public class LoginPanel extends javax.swing.JPanel {
 	private javax.swing.JLabel ivjHeadingLabel = null;
 	private javax.swing.JButton ivjLoginButton = null;
 	private javax.swing.JLabel ivjPasswordLabel = null;
@@ -102,7 +101,7 @@ private javax.swing.JLabel getHeadingLabel() {
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getLoginButton() {
+public javax.swing.JButton getLoginButton() {
 	if (ivjLoginButton == null) {
 		try {
 			ivjLoginButton = new javax.swing.JButton();
@@ -356,7 +355,6 @@ private void initialize() {
  */
 public static void main(java.lang.String[] args) {
 	try {
-		CtiUtilities.setLaF();
 		javax.swing.JFrame frame = new javax.swing.JFrame();
 		LoginPanel aLoginPanel;
 		aLoginPanel = new LoginPanel();
