@@ -13,8 +13,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.10 $
- * DATE         :  $Date: 2002/09/16 21:51:31 $
+ * REVISION     :  $Revision: 1.11 $
+ * DATE         :  $Date: 2002/10/11 14:08:06 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -47,13 +47,15 @@ private:
    void RefreshScanRates(LONG id = 0);
    void RefreshDeviceWindows(LONG id = 0);
 
+   void refreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL, LONG paoID = 0);
+   bool refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID);
+
 
 public:
    CtiDeviceManager();
    virtual ~CtiDeviceManager();
 
-   void RefreshList(LONG paoID, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
-   void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL);
+   void refresh(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
 
    void DumpList(void);
    void DeleteList(void);
@@ -62,6 +64,10 @@ public:
    CtiDeviceBase* RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
    CtiDeviceBase* RemoteGetEqual(LONG Remote);
    CtiDeviceBase* RemoteGetEqualbyName (const RWCString &RemoteName);
+
+   // Deprecated
+   void RefreshList(LONG paoID, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
+   void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL);
 
    void setIncludeScanInfo();
    void resetIncludeScanInfo();

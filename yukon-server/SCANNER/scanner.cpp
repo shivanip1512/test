@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2002/10/03 16:15:53 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2002/10/11 14:08:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1184,14 +1184,15 @@ void LoadScannableDevices(void *ptr)
     RWTime start;
     RWTime stop;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
-    }
 
     InitScannerGlobals();      // Go fetch from the environmant
 
     RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
+    }
     ScannerDeviceManager.setIncludeScanInfo();
 
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
@@ -1200,26 +1201,18 @@ void LoadScannableDevices(void *ptr)
         {
             start = start.now();
 
-            if(pChg && (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE))
+            LONG chgid = 0;
+            RWCString catstr;
+            RWCString devstr;
+
+            if(pChg)
             {
-                DeviceRecord = ScannerDeviceManager.getEqual(pChg->getId());
-                if(DeviceRecord)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Reloading " << DeviceRecord->getName() << endl;
-                    }
-                    ScannerDeviceManager.RefreshList(pChg->getId(), pChg->getCategory(), pChg->getObjectType());
-                }
-                else
-                {
-                    ScannerDeviceManager.RefreshList(DeviceFactory, isNotAScannableDevice);
-                }
+                chgid = pChg->getId();
+                catstr = pChg->getCategory();
+                devstr = pChg->getObjectType();
             }
-            else
-            {
-                ScannerDeviceManager.RefreshList(DeviceFactory, isNotAScannableDevice);
-            }
+
+            ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
 
             stop = stop.now();
 

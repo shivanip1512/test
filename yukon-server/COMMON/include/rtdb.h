@@ -72,8 +72,8 @@ public:
    virtual ~CtiRTDB()
    {
       LockGuard guard(monitor());
-      Map.clearAndDestroy();
       _orphans.clearAndDestroy();       // Clean up the leftovers if there are any.
+      Map.clearAndDestroy();
    }
 
    bool orphan( long id )
@@ -84,7 +84,7 @@ public:
        LockGuard  gaurd(monitor());
        CtiHashKey key(id);
 
-       temp = (T*)Map.find( &key );
+       temp = (T*)Map.findValue( &key );
        CtiHashKey *foundKey = Map.remove( &key );
        delete foundKey;
 
@@ -92,6 +92,10 @@ public:
        {
            status = true;
            _orphans.insert( temp );     // Save this guy out so we know we found him
+       }
+       else
+       {
+           cout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
        }
 
        return status;

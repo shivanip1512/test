@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/10/08 20:14:13 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/10/11 14:08:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,760 +84,17 @@ ApplyClearMacroDeviceList(const CtiHashKey *key, CtiDeviceBase *&pDevice, void *
 
 void CtiDeviceManager::RefreshList(LONG paoID, RWCString category, RWCString devicetype)
 {
-    CtiHashKey key(paoID);
-    bool rowFound = false;
-    CtiDeviceBase *pDev = Map.findValue(&key);
-
-    if(pDev)
-    {
-        /*
-         *  This is the code to handle change type.
-         */
-        if(resolvePAOType(category, devicetype) != pDev->getType())
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
-            }
-
-            if( orphan(paoID) )
-            {
-                if(DebugLevel & 0x00020000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                // I don't know who the old guy is anymore!
-                RefreshList();
-            }
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                RWDBDatabase db = getDatabase();
-
-                RWDBTable   keyTable;
-                RWDBSelector selector = db.selector();
-
-                pDev->getSQL( db, keyTable, selector );
-
-                selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-                RWDBReader rdr = selector.reader(conn);
-
-                if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                }
-
-                RefreshDevices(rowFound, rdr, DeviceFactory);
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
-                }
-            }
-
-            if(_includeScanInfo)
-            {
-                RefreshScanRates( paoID );
-                RefreshDeviceWindows( paoID );
-            }
-        }
-    }
+    // This method is deprecated.
+    refresh(DeviceFactory, isNotADevice, NULL, paoID, category, devicetype);
+    return;
 }
 
 void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceBase*,void*), void *arg)
 {
-    CtiDeviceBase *pTempCtiDevice = NULL;
-    bool rowFound = false;
-
-    RWTime start, stop, querytime;
-
-    if(removeFunc != NULL)
-    {
-        _removeFunc = removeFunc;
-    }
-
-    try
-    {
-        CtiDeviceBase *pSp;
-
-        {   // Make sure all objects that that store results
-            {
-                // Reset everyone's Updated flag.
-                Map.apply(ApplyDeviceResetUpdated, NULL);
-                resetErrorCode();
-
-                {
-                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Looking for Sixnet IEDs" << endl;
-                        }
-                        CtiDeviceIED().getSQL( db, keyTable, selector );
-
-                        selector.where( keyTable["type"] == "SIXNET" && selector.where() );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Sixnet IEDs" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  SIXNET " << endl;
-                    }
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Meters & IEDs" << endl;
-                        }
-                        CtiDeviceMeter().getSQL( db, keyTable, selector );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Meters & IEDs" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Meters & IEDs" << endl;
-                    }
-
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP Devices" << endl;
-                        }
-                        CtiDeviceDNP().getSQL( db, keyTable, selector );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP Devices" << endl;
-                    }
-
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Tap Devices" << endl;
-                        }
-                        CtiDeviceTapPagingTerminal().getSQL( db, keyTable, selector );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for TAP Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  TAP Devices" << endl;
-                    }
-
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for IDLC Target Devices" << endl;
-                        }
-                        CtiDeviceIDLC().getSQL( db, keyTable, selector );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for IDLC Target Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  IDLC Target Devices" << endl;
-                    }
-
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DLC Devices" << endl;
-                        }
-                        CtiDeviceCarrier().getSQL( db, keyTable, selector );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DLC Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DLC Devices" << endl;
-                    }
-
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for REPEATER Devices" << endl;
-                        }
-                        CtiDeviceDLCBase().getSQL( db, keyTable, selector );
-
-                        selector.where( (keyTable["type"]==RWDBExpr("REPEATER 800") ||
-                                         keyTable["type"]==RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for REPEATER Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  REPEATER Devices" << endl;
-                    }
-
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-
-                        RWDBTable   keyTable;
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CBC Devices" << endl;
-                        }
-                        CtiDeviceCBC().getSQL( db, keyTable, selector );
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CBC Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  CBC Devices" << endl;
-                    }
-
-
-                    if(!_includeScanInfo)       // These are not scannable items..
-                    {
-                        start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-
-                            RWDBTable   keyTable;
-                            RWDBSelector selector = db.selector();
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Emetcon Group Devices" << endl;
-                            }
-                            CtiDeviceGroupEmetcon().getSQL( db, keyTable, selector );
-
-                            RWDBReader rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-                            RefreshDevices(rowFound, rdr, Factory);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Emetcon Group Devices" << endl;
-                            }
-                        }
-                        stop = stop.now();
-                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Emetcon Group Devices" << endl;
-                        }
-
-
-                        start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-
-                            RWDBTable   keyTable;
-                            RWDBSelector selector = db.selector();
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Group Devices" << endl;
-                            }
-                            CtiDeviceGroupVersacom().getSQL( db, keyTable, selector );
-
-                            RWDBReader rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-                            RefreshDevices(rowFound, rdr, Factory);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Versacom Group Devices" << endl;
-                            }
-                        }
-                        stop = stop.now();
-                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Versacom Group Devices" << endl;
-                        }
-
-
-                        start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-
-                            RWDBTable   keyTable;
-
-                            RWDBSelector selector = db.selector();
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Ripple Group Devices" << endl;
-                            }
-                            CtiDeviceGroupRipple().getSQL( db, keyTable, selector );
-
-                            RWDBReader rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-                            RefreshDevices(rowFound, rdr, Factory);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Ripple Group Devices" << endl;
-                            }
-                        }
-                        stop = stop.now();
-                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Ripple Group Devices" << endl;
-                        }
-
-
-                        start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-
-                            RWDBTable   keyTable;
-                            RWDBSelector selector = db.selector();
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Expresscom Group Devices" << endl;
-                            }
-                            CtiDeviceGroupExpresscom().getSQL( db, keyTable, selector );
-
-                            RWDBReader rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-                            RefreshDevices(rowFound, rdr, Factory);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Expresscom Group Devices" << endl;
-                            }
-                        }
-                        stop = stop.now();
-                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Expresscom Group Devices" << endl;
-                        }
-
-
-                        start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-                            RWDBTable   keyTable;
-
-                            RWDBSelector selector = db.selector();
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Devices" << endl;
-                            }
-                            CtiDeviceMacro().getSQL( db, keyTable, selector );
-
-                            RWDBReader rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-                            RefreshDevices(rowFound, rdr, Factory);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Devices" << endl;
-                            }
-                        }
-                        stop = stop.now();
-                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Macro Devices" << endl;
-                        }
-
-
-                        start = start.now();
-                        {
-                            RWDBConnection conn = getConnection();
-                            RWDBDatabase db = getDatabase();
-                            RWDBSelector selector = db.selector();
-                            RWDBTable tblGenericMacro = db.table("GenericMacro");
-                            RWDBReader rdr;
-                            long tmpOwnerID, tmpChildID;
-                            CtiHashKey tmpOwnerKey(0), tmpChildKey(0);
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Subdevices" << endl;
-                            }
-
-                            selector << tblGenericMacro["ChildID"]
-                            << tblGenericMacro["OwnerID"];
-                            selector.from(tblGenericMacro);
-                            selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
-                            selector.orderBy(tblGenericMacro["ChildOrder"]);
-
-                            rdr = selector.reader(conn);
-                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                            }
-
-                            if(rdr.status().errorCode() == RWDBStatus::ok)
-                            {
-                                Map.apply(ApplyClearMacroDeviceList, NULL);
-
-                                while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
-                                {
-                                    rdr["OwnerID"] >> tmpOwnerID;
-                                    rdr["ChildID"] >> tmpChildID;
-                                    tmpOwnerKey.setID(tmpOwnerID);
-                                    tmpChildKey.setID(tmpChildID);
-                                    ((CtiDeviceMacro *)Map.findValue(&tmpOwnerKey))->addDevice((CtiDeviceBase *)Map.findValue(&tmpChildKey));
-                                }
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "Error reading macro subdevices from database: " << rdr.status().errorCode() << endl;
-                            }
-
-                            if(DebugLevel & 0x00020000)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Subdevices" << endl;
-                            }
-                        }
-                        stop = stop.now();
-                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Macro Subdevices" << endl;
-                        }
-
-                    }
-
-                    start = start.now();
-                    {
-                        RWDBConnection conn = getConnection();
-                        RWDBDatabase db = getDatabase();
-                        RWDBTable   keyTable;
-
-                        RWDBSelector selector = db.selector();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Devices" << endl;
-                        }
-                        CtiDevice().getSQL( db, keyTable, selector );
-                        selector.where( keyTable["type"]==RWDBExpr("System") && selector.where() );   // Need to attach a few conditions!
-
-                        RWDBReader rdr = selector.reader(conn);
-                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-                        }
-                        RefreshDevices(rowFound, rdr, Factory);
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for System Devices" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  System Devices" << endl;
-                    }
-
-
-                    start = start.now();
-                    if(_includeScanInfo)
-                    {
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan rates." << endl;
-                        }
-                        RefreshScanRates();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan rates" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  scan rates" << endl;
-                    }
-
-                    start = start.now();
-                    if(_includeScanInfo)
-                    {
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan windows." << endl;
-                        }
-                        RefreshDeviceWindows();
-
-                        if(DebugLevel & 0x00020000)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan windows" << endl;
-                        }
-                    }
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load scan windows" << endl;
-                    }
-                }
-
-                if(getErrorCode() != RWDBStatus::ok && getErrorCode() != RWDBStatus::endOfFetch)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " database had a return code of " << getErrorCode() << endl;
-                    }
-                }
-                else if(rowFound)
-                {
-                    start = start.now();
-
-                    if(_removeFunc)
-                    {
-                        removeAndDestroy(_removeFunc, arg);
-                    }
-
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply removeFunc." << endl;
-                    }
-
-                    // Now I need to check for any Device removals based upon the
-                    // Updated Flag being NOT set
-
-                    start = start.now();
-                    Map.apply(ApplyInvalidateNotUpdated, NULL);
-
-                    do
-                    {
-                        pTempCtiDevice = remove(isDeviceNotUpdated, NULL);
-                        if(pTempCtiDevice != NULL)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
-                            }
-
-                            delete pTempCtiDevice;
-                        }
-
-                    } while(pTempCtiDevice != NULL);
-                    stop = stop.now();
-                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply ApplyInvalidateNotUpdated." << endl;
-                    }
-                }
-            }
-        }   // Temporary results are destroyed to free the connection
-    }
-    catch(RWExternalErr e )
-    {
-        //Make sure the list is cleared
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Attempting to clear point list..." << endl;
-        }
-        Map.clearAndDestroy();
-
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " getDevices:  " << e.why() << endl;
-        }
-        RWTHROW(e);
-
-    }
+    // This method is deprecated.
+    refresh(Factory,removeFunc,arg);
+    return;
 }
-
 
 void CtiDeviceManager::DumpList(void)
 {
@@ -887,11 +144,9 @@ void CtiDeviceManager::RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDevice
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
-
         rdr["deviceid"] >> lTemp;            // get the DeviceID
-        CtiHashKey key(lTemp);
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = Map.findValue(&key)) != NULL) )
+        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
@@ -1086,9 +341,8 @@ void CtiDeviceManager::RefreshScanRates(LONG id)
         CtiDeviceBase* pSp = NULL;
 
         rdr["deviceid"] >> lTemp;            // get the DeviceID
-        CtiHashKey key(lTemp);
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = Map.findValue(&key)) != NULL) )
+        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
         {
             if( pTempCtiDevice->isSingle() )
             {
@@ -1162,9 +416,8 @@ void CtiDeviceManager::RefreshDeviceWindows(LONG id)
         CtiDeviceBase* pSp = NULL;
 
         rdr["deviceid"] >> lTemp;            // get the DeviceID
-        CtiHashKey key(lTemp);
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = Map.findValue(&key)) != NULL) )
+        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
         {
             if( pTempCtiDevice->isSingle() )
             {
@@ -1228,9 +481,8 @@ void CtiDeviceManager::RefreshDeviceRoute(LONG id)
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rdr["deviceid"] >> lTemp;            // get the DeviceID
-        CtiHashKey key(lTemp);
 
-        if( Map.entries() > 0 && ((pTempCtiDevice = Map.findValue(&key)) != NULL) )
+        if( Map.entries() > 0 && ((pTempCtiDevice = getEqual(lTemp)) != NULL) )
         {
             if(pTempCtiDevice->getType())       // FIX FIX FIX FIX FIX
             {
@@ -1246,3 +498,808 @@ void CtiDeviceManager::RefreshDeviceRoute(LONG id)
     }
 }
 #endif
+
+void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceBase*,void*), void *d, LONG paoID, RWCString category, RWCString devicetype)
+{
+    if(paoID != 0)
+    {
+        bool rowFound = false;
+        CtiDeviceBase *pDev = getEqual(paoID);
+
+        if(pDev)        // If we have it, we can take a shortcut and do specific selects on the device type in question.
+        {
+            /*
+             *  This is the code to handle change type.
+             */
+            if(resolvePAOType(category, devicetype) != pDev->getType())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
+                }
+
+                if( orphan(paoID) )
+                {
+                    if(DebugLevel & 0x00020000)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    // I don't know who the old guy is anymore!
+                    refreshList(Factory, removeFunc, d, paoID);     // This should accomplish a minimal reload, getting the "new" guy.
+                }
+            }
+            else
+            {
+                refreshDeviceByPao(pDev, paoID);
+            }
+        }
+        else
+        {
+            // We were given an id.  We can use that to reduce our workload.
+            refreshList(Factory, removeFunc, d, paoID);
+        }
+    }
+    else
+    {
+        // we were given no id.  There must be no dbchange info.
+        refreshList(Factory, removeFunc, d, paoID);
+    }
+
+}
+
+
+void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceBase*,void*), void *arg, LONG paoID)
+{
+    CtiDeviceBase *pTempCtiDevice = NULL;
+    bool rowFound = false;
+
+    RWTime start, stop, querytime;
+
+    if(removeFunc != NULL)
+    {
+        _removeFunc = removeFunc;
+    }
+
+    try
+    {
+        CtiDeviceBase *pSp;
+
+        {
+            {
+
+                if(paoID == 0)
+                {
+                    Map.apply(ApplyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
+                }
+                else
+                {
+                    pTempCtiDevice = getEqual(paoID);
+                    if(pTempCtiDevice) pTempCtiDevice->resetUpdatedFlag();
+                }
+
+                resetErrorCode();
+
+                if(pTempCtiDevice)
+                {
+                    refreshDeviceByPao(pTempCtiDevice, paoID);
+                }
+                else
+                {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Looking for Sixnet IEDs" << endl;
+                        }
+                        CtiDeviceIED().getSQL( db, keyTable, selector );
+
+                        selector.where( keyTable["type"] == "SIXNET" && selector.where() );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Sixnet IEDs" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  SIXNET " << endl;
+                    }
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Meters & IEDs" << endl;
+                        }
+                        CtiDeviceMeter().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Meters & IEDs" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Meters & IEDs" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP Devices" << endl;
+                        }
+                        CtiDeviceDNP().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Tap Devices" << endl;
+                        }
+                        CtiDeviceTapPagingTerminal().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for TAP Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  TAP Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for IDLC Target Devices" << endl;
+                        }
+                        CtiDeviceIDLC().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for IDLC Target Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  IDLC Target Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DLC Devices" << endl;
+                        }
+                        CtiDeviceCarrier().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DLC Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DLC Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for REPEATER Devices" << endl;
+                        }
+                        CtiDeviceDLCBase().getSQL( db, keyTable, selector );
+
+                        selector.where( (keyTable["type"]==RWDBExpr("REPEATER 800") ||
+                                         keyTable["type"]==RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for REPEATER Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  REPEATER Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CBC Devices" << endl;
+                        }
+                        CtiDeviceCBC().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CBC Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  CBC Devices" << endl;
+                    }
+
+
+                    if(!_includeScanInfo)       // These are not scannable items..
+                    {
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Emetcon Group Devices" << endl;
+                            }
+                            CtiDeviceGroupEmetcon().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            RefreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Emetcon Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Emetcon Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Group Devices" << endl;
+                            }
+                            CtiDeviceGroupVersacom().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            RefreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Versacom Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Versacom Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Ripple Group Devices" << endl;
+                            }
+                            CtiDeviceGroupRipple().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            RefreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Ripple Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Ripple Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+                            RWDBTable   keyTable;
+
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Devices" << endl;
+                            }
+                            CtiDeviceMacro().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            RefreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Macro Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+                            RWDBSelector selector = db.selector();
+                            RWDBTable tblGenericMacro = db.table("GenericMacro");
+                            RWDBReader rdr;
+                            long tmpOwnerID, tmpChildID;
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Subdevices" << endl;
+                            }
+
+                            selector << tblGenericMacro["ChildID"] << tblGenericMacro["OwnerID"];
+                            selector.from(tblGenericMacro);
+                            selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
+                            if(paoID != 0) selector.where( tblGenericMacro["OwnerID"] == RWDBExpr( paoID ) && selector.where() );
+                            selector.orderBy(tblGenericMacro["ChildOrder"]);
+
+                            rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+
+                            if(rdr.status().errorCode() == RWDBStatus::ok)
+                            {
+                                Map.apply(ApplyClearMacroDeviceList, NULL);
+
+                                while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+                                {
+                                    rdr["OwnerID"] >> tmpOwnerID;
+                                    rdr["ChildID"] >> tmpChildID;
+
+                                    pTempCtiDevice = getEqual(tmpOwnerID);
+                                    if(pTempCtiDevice)
+                                    {
+                                        CtiDeviceMacro * pOwner = (CtiDeviceMacro *)pTempCtiDevice;
+                                        if( NULL != (pTempCtiDevice = getEqual(tmpChildID)) )
+                                        {
+                                            pOwner->addDevice(pTempCtiDevice);
+                                        }
+                                    }
+                                    // (Map.findValue(&tmpOwnerKey))->addDevice((CtiDeviceBase *)Map.findValue(&tmpChildKey)); CRAP CRAP CRAP.
+                                }
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "Error reading macro subdevices from database: " << rdr.status().errorCode() << endl;
+                            }
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Subdevices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Macro Subdevices" << endl;
+                        }
+
+                    }
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+                        RWDBTable   keyTable;
+
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Devices" << endl;
+                        }
+                        CtiDevice().getSQL( db, keyTable, selector );
+                        selector.where( keyTable["type"]==RWDBExpr("System") && selector.where() );   // Need to attach a few conditions!
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        RefreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for System Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  System Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    if(_includeScanInfo)
+                    {
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan rates." << endl;
+                        }
+                        RefreshScanRates();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan rates" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  scan rates" << endl;
+                    }
+
+                    start = start.now();
+                    if(_includeScanInfo)
+                    {
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan windows." << endl;
+                        }
+                        RefreshDeviceWindows();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan windows" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load scan windows" << endl;
+                    }
+                }
+
+                if(getErrorCode() != RWDBStatus::ok && getErrorCode() != RWDBStatus::endOfFetch)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " database had a return code of " << getErrorCode() << endl;
+                    }
+                }
+                else if(rowFound)
+                {
+                    start = start.now();
+
+                    if(_removeFunc)
+                    {
+                        removeAndDestroy(_removeFunc, arg);
+                    }
+
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply removeFunc." << endl;
+                    }
+
+                    // Now I need to check for any Device removals based upon the
+                    // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
+
+                    start = start.now();
+
+                    #if 0               // Not sure that anyone(me) knows what valid means for this stuff.
+                    if(paoID == 0)
+                    {
+                        Map.apply(ApplyInvalidateNotUpdated, NULL);
+                    }
+                    else
+                    {
+                        pTempCtiDevice = getEqual(paoID);
+                        if(pTempCtiDevice)
+                        {
+                            if(!pTempCtiDevice->getUpdatedFlag())
+                            {
+                                pTempCtiDevice->setValid(FALSE);   //   NOT NOT NOT Valid
+                            }
+                        }
+                    }
+                    #endif
+
+                    do
+                    {
+                        pTempCtiDevice = remove(isDeviceNotUpdated, NULL);
+                        if(pTempCtiDevice != NULL)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
+                            }
+
+                            delete pTempCtiDevice;
+                        }
+
+                    } while(pTempCtiDevice != NULL);
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply ApplyInvalidateNotUpdated." << endl;
+                    }
+                }
+            }
+        }   // Temporary results are destroyed to free the connection
+    }
+    catch(RWExternalErr e )
+    {
+        //Make sure the list is cleared
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Attempting to clear point list..." << endl;
+        }
+        Map.clearAndDestroy();
+
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " getDevices:  " << e.why() << endl;
+        }
+        RWTHROW(e);
+
+    }
+}
+
+
+bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID)
+{
+    bool status = false;
+
+    // Found it and it has not changed type at all.  Let's reload it based upon its type.
+    if(pDev)
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        RWDBDatabase db = getDatabase();
+
+        RWDBTable   keyTable;
+        RWDBSelector selector = db.selector();
+
+        pDev->getSQL( db, keyTable, selector );
+
+        selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+        RWDBReader rdr = selector.reader(conn);
+
+        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        }
+
+        RefreshDevices(status, rdr, DeviceFactory);
+
+        if(!status)     // It was NOT found in the DB!
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << pDev->getName() << " removed from DB." << endl;
+            orphan(paoID);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
+        }
+    }
+
+    if(_includeScanInfo)
+    {
+        RefreshScanRates( paoID );
+        RefreshDeviceWindows( paoID );
+    }
+
+    return status;
+}

@@ -985,7 +985,7 @@ LONG GetPAOIdOfPoint(long pid)
     {
         rdr >> id;
     }
-    else
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2002/10/03 16:19:16 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2002/10/11 14:08:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1053,7 +1053,8 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
     try
     {
-        if(RWTime().seconds() - Msg.getMessageTime().seconds() < 900)   // Nothing older than 15 minutes!
+        if(Msg.getMessageTime().seconds() > RWTime().seconds() ||
+           RWTime().seconds() - Msg.getMessageTime().seconds() < 900)   // Nothing older than 15 minutes!
         {
             if(Msg.getId())
             {
@@ -4143,13 +4144,13 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
                 if(pmguard.isAcquired())
                 {
-                    if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeUpdate)
+                    if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
                         PointMgr.RefreshPoint(pChg->getId());
                     }
-                    else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeAdd)
+                    else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
-                        PointMgr.RefreshPoint(pChg->getId());
+                        PointMgr.orphan(pChg->getId());
                     }
                     else
                     {

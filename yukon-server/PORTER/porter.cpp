@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2002/10/03 16:15:53 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2002/10/11 14:08:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1276,34 +1276,18 @@ INT RefreshPorterRTDB(void *ptr)
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(DeviceManager.getMux());
 
-        RWCString category;
-        RWCString devicetype;
+        LONG chgid = 0;
+        RWCString catstr;
+        RWCString devstr;
 
-        if(pChg != NULL)
+        if(pChg)
         {
-            CtiDevice *changeddev;
-
-            id = pChg->getId();
-
-            if(NULL == (changeddev = DeviceManager.getEqual(id)))
-            {
-                id = 0;
-            }
-            else
-            {
-                category = pChg->getCategory();
-                devicetype = pChg->getObjectType();
-            }
+            chgid = pChg->getId();
+            catstr = pChg->getCategory();
+            devstr = pChg->getObjectType();
         }
 
-        if(id)
-        {
-            DeviceManager.RefreshList(id, category, devicetype);
-        }
-        else
-        {
-            DeviceManager.RefreshList();
-        }
+        DeviceManager.refresh(DeviceFactory, isNotADevice, NULL, chgid, catstr, devstr);
     }
 
     if(!PorterQuit)
@@ -1330,6 +1314,8 @@ INT RefreshPorterRTDB(void *ptr)
         {
             LONG paoid = GetPAOIdOfPoint( pChg->getId() );
 
+            if(paoid != 0)
+            {
             RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
             CtiDevice *pDevToReset = DeviceManager.getEqual( paoid );
             if(pDevToReset)
@@ -1340,10 +1326,6 @@ INT RefreshPorterRTDB(void *ptr)
                     dout << RWTime() << " Reset device " << pDevToReset->getName() << "'s pointmanager due to pointchange on point " << pChg->getId() << endl;
                 }
             }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
