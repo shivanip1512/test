@@ -17,6 +17,8 @@ using namespace std;
 #include <rw\thr\monitor.h>  // for RWMonitor<T>
 #include <rw\thr\mutex.h>    // for RWMutexLock
 #include <rw\tpsrtvec.h>      // for RWTPtrSortedVector<T>
+#include <rw\tpsrtdli.h>      // for RWTPtrSortedDlist<T>
+
 
 // Template Queuing class
 template <class T,  class C>
@@ -24,7 +26,7 @@ class IM_EX_CTIBASE CtiQueue : RWMonitor< RWMutexLock >
 {
 private:
     RWCondition                dataAvailable;
-    RWTPtrSortedVector<T,C>    pvect_;
+    RWTPtrSortedDlist<T,C>     _sortedCol;
 
     RWCString                  _name;
 public:
@@ -41,7 +43,7 @@ public:
             if(pt != NULL)
             {
                 LockGuard lock(monitor()); // acquire monitor mutex
-                pvect_.insert(pt);
+                _sortedCol.insert(pt);
                 dataAvailable.signal();
                 // mutex automatically released in LockGuard destructor
             }
@@ -58,14 +60,14 @@ public:
         try
         {
             LockGuard lock(monitor());   // acquire monitor mutex
-            while(!(pvect_.entries() > 0))
+            while(!(_sortedCol.entries() > 0))
             {
                 dataAvailable.wait(); // mutex released automatically
                 // thread must have been signalled AND
                 //   mutex reacquired to reach here
             }
-            pval = pvect_.removeFirst();
-            // cout << "Number of entries " << pvect_.entries() << endl;
+            pval = _sortedCol.removeFirst();
+            // cout << "Number of entries " << _sortedCol.entries() << endl;
         }
         catch(const RWxmsg& x)
         {
@@ -84,7 +86,7 @@ public:
             LockGuard lock(monitor());   // acquire monitor mutex
             RWWaitStatus wRes = RW_THR_COMPLETED;
 
-            if(!(pvect_.entries() > 0))
+            if(!(_sortedCol.entries() > 0))
             {
                 wRes = dataAvailable.wait(time); // monitor mutex released automatically
                 // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
@@ -92,7 +94,7 @@ public:
 
             if(wRes == RW_THR_COMPLETED)
             {
-                pval = pvect_.removeFirst();
+                pval = _sortedCol.removeFirst();
             }
 
             // mutex automatically released in LockGuard destructor
@@ -114,7 +116,7 @@ public:
             {
                 LockGuard lock(monitor()); // acquire monitor mutex
                 {
-                    pvect_.insert(pt);
+                    _sortedCol.insert(pt);
                     dataAvailable.signal();
                     // mutex automatically released in LockGuard destructor
                     putWasDone = true;
@@ -136,7 +138,7 @@ public:
             T *pval = NULL;
 
             LockGuard lock(monitor());   // acquire monitor mutex
-            pval = pvect_.remove(fn, d);
+            pval = _sortedCol.remove(fn, d);
             return pval;
             // mutex automatically released in LockGuard destructor
         }
@@ -156,20 +158,20 @@ public:
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        return pvect_.entries();
+        return _sortedCol.entries();
     }
 
 
     size_t   entries(void) const       // QueryQue.
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-        return pvect_.entries();
+        return _sortedCol.entries();
     }
 
     size_t   size(void)        // how big may it be?
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-        return pvect_.entries();
+        return _sortedCol.entries();
     }
 
     BOOL  isFull(void)
@@ -181,7 +183,7 @@ public:
     void     clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-        pvect_.clearAndDestroy();
+        _sortedCol.clearAndDestroy();
     }
 
     RWCString getName() const
@@ -198,7 +200,7 @@ public:
     void apply(void (*fn)(T*&,void*), void* d)
     {
         LockGuard lock(monitor());   // acquire monitor mutex
-        pvect_.apply(fn,d);
+        _sortedCol.apply(fn,d);
     }
 };
 
