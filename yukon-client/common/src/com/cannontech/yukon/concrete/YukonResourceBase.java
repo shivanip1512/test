@@ -412,4 +412,18 @@ public abstract class YukonResourceBase implements IYukon
 		return getDBCache().getAllYukonUsers();
 	}
 
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
+	 */
+	public List getAllEnergyCompanies() {
+		return getDBCache().getAllEnergyCompanies();
+	}
+
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
+	 */
+	public Map getAllUserEnergyCompanies() {
+		return getDBCache().getAllUserEnergyCompanies(); 
+	}
+
 }

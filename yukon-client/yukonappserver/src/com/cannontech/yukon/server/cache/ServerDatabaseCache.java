@@ -58,6 +58,9 @@ public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 	//see type info in IDatabaseCache
 	private java.util.Map allYukonUserLookupRoles = null;
 	 
+	private java.util.ArrayList allEnergyCompanies = null;
+	private java.util.Map allUserEnergyCompanies = null;
+	
 	//lists that are created by the joining/parsing of existing lists
 	private java.util.ArrayList allGraphTaggedPoints = null; //Points
 	private java.util.ArrayList allUnusedCCDevices = null; //PAO
@@ -858,6 +861,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 				new YukonUserGroupLoader(allYukonUserGroups, allYukonGroupUsers, getAllYukonUsers(), getAllYukonGroups(), databaseAlias);
 		l.run();
 	}
+	
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleLookupMap()
 	 */
@@ -913,6 +917,31 @@ public synchronized java.util.List getAllYukonPAObjects()
 		}
 	}
 		
+		
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
+	 */
+	public List getAllEnergyCompanies() {
+		if(allEnergyCompanies == null) {
+			allEnergyCompanies = new java.util.ArrayList();
+			EnergyCompanyLoader l = new EnergyCompanyLoader(allEnergyCompanies, databaseAlias);
+			l.run();
+		}
+		return allEnergyCompanies;
+	}
+	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getAllUserEnergyCompanies()
+	 */
+	public Map getAllUserEnergyCompanies() {
+		if(allUserEnergyCompanies == null) {
+			allUserEnergyCompanies = new java.util.HashMap();
+			UserEnergyCompanyLoader l = new UserEnergyCompanyLoader(allUserEnergyCompanies,getAllYukonUsers(), getAllEnergyCompanies(), databaseAlias);
+			l.run();
+		}
+		return allUserEnergyCompanies;
+	}
+	
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 2:01:01 PM)
@@ -2025,5 +2054,6 @@ public void setDatabaseAlias(String newAlias){
 protected void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
 	dbChangeListener = newDbChangeListener;
 }
+
 
 }

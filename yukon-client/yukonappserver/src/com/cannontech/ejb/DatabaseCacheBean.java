@@ -355,6 +355,21 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 		return getCache().getAllYukonUsers();
 	}
 
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public List getAllEnergyCompanies() {
+		return getCache().getAllEnergyCompanies();
+	}
+
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public Map getAllUserEnergyCompanies() {
+		return getCache().getAllUserEnergyCompanies();
+	}
 //   /**
 //    * @ejb:interface-method
 //    * tview-type="remote" 

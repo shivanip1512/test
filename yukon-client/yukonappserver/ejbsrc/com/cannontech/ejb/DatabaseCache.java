@@ -81,6 +81,10 @@ public interface DatabaseCache
  
    public java.util.Map getAllYukonUserRoleLookupMap() throws java.rmi.RemoteException;;
    
+   public java.util.List getAllEnergyCompanies() throws java.rmi.RemoteException;
+   
+   public java.util.Map getAllUserEnergyCompanies() throws java.rmi.RemoteException;
+   
    public com.cannontech.database.data.lite.LiteBase handleDBChangeMessage( com.cannontech.message.dispatch.message.DBChangeMsg dbChangeMsg ) throws java.rmi.RemoteException;
 
    public void loadAllCache(  ) throws java.rmi.RemoteException;

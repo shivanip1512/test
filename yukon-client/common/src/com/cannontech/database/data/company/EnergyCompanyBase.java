@@ -149,6 +149,15 @@ public void setEnergyCompanyID(Integer ecID)
 {
 	getEnergyCompany().setEnergyCompanyID( ecID );
 }
+
+public void setName(String name) {
+	getEnergyCompany().setName(name);
+}
+
+public String getName() {
+	return getEnergyCompany().getName();
+}
+
 /**
  * This method was created in VisualAge.
  */

@@ -60,7 +60,10 @@ public interface IDatabaseCache {
    //Map<LiteYukonUser,Map<String(rolename),Pair<LiteYukonRole,String(value)>>
    //Provided as a means to efficiently obtain a role and its value
    public java.util.Map getAllYukonUserRoleLookupMap();
-     
+        
+   public java.util.List getAllEnergyCompanies();
+   public java.util.Map getAllUserEnergyCompanies();
+   
    // This cache is derive from the Device cache
    public java.util.List getAllUnusedCCDevices();
 

@@ -1,5 +1,8 @@
 package com.cannontech.yukon.server;
 
+import java.util.List;
+import java.util.Map;
+
 import com.cannontech.ejb.SqlStatementBean;
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
@@ -65,5 +68,4 @@ public class YukonServerResource extends YukonResourceBase
    {
       return new SqlStatementBean();
    }
-
 }

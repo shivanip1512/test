@@ -113,6 +113,12 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 	 		((com.cannontech.database.data.user.YukonUser)returnObject).setPassword( ((LiteYukonUser)liteObject).getPassword() );
 	 		break;
 	 		
+	 	case LiteTypes.ENERGY_COMPANY:
+	 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
+	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
+	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setName( ((LiteEnergyCompany)liteObject).getName());
+	 		break;
+	 		
 			default:
 				returnObject = null;
 		}

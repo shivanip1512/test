@@ -24,6 +24,7 @@ public final class LiteTypes
     public final static int YUKON_USER = 20;
     public final static int YUKON_ROLE = 21;
     public final static int YUKON_GROUP = 22;
+    public final static int ENERGY_COMPANY = 23;
 	
 	// Stars lite types
 	public final static int STARS_CUSTOMER_CONTACT = 101;

@@ -627,6 +627,30 @@ public class ClientCache implements IDatabaseCache
 	}
 
 
+		/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public List getAllEnergyCompanies() {
+		try
+      {
+         return getCache().getAllEnergyCompanies();
+      }
+      catch( java.rmi.RemoteException e )
+      {
+         com.cannontech.clientutils.CTILogger.info( e );
+         return new java.util.ArrayList();
+      }
+		
+	}
+
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public Map getAllUserEnergyCompanies() {
+		return null;
+	}
 //   /**
 //    * @ejb:interface-method
 //    * tview-type="remote" 
