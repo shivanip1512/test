@@ -74,6 +74,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 
 	private ArrayList allTags = null;
 	private ArrayList allSeasons = null;
+	private ArrayList allGears = null;
 	
 	private ArrayList allYukonUsers = null;
 	private ArrayList allYukonRoles = null;
@@ -497,6 +498,20 @@ public synchronized java.util.List getAllSeasons()
 		SeasonLoader seasonLoader = new SeasonLoader(allSeasons, databaseAlias);
 		seasonLoader.run();
 		return allSeasons;
+	}
+}
+
+public synchronized java.util.List getAllGears()
+{
+
+	if (allGears != null)
+		return allGears;
+	else
+	{
+		allGears = new ArrayList();
+		GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
+		gearLoader.run();
+		return allGears;
 	}
 }
 

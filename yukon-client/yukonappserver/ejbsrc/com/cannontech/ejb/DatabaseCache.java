@@ -56,6 +56,8 @@ public interface DatabaseCache
    public java.util.List getAllTags(  ) throws java.rmi.RemoteException;
    
    public java.util.List getAllLMPrograms(  ) throws java.rmi.RemoteException;
+   
+   public java.util.List getAllGears( ) throws java.rmi.RemoteException;
 
    public java.util.List getAllLoadManagement(  ) throws java.rmi.RemoteException;
 

@@ -262,6 +262,10 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllLMPrograms();
    }
 
+   public synchronized java.util.List getAllGears()
+   {
+	  return getDBCache().getAllGears();
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 

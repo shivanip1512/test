@@ -40,6 +40,7 @@ public interface IDatabaseCache
    public java.util.List getAllLMProgramConstraints();
    public java.util.List getAllLMScenarios();
    public java.util.List getAllLMPrograms();
+   public java.util.List getAllGears();
    public java.util.List getAllLoadManagement();
    public java.util.List getAllLMScenarioProgs();
    public java.util.List getAllSeasons();
