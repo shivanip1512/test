@@ -34,10 +34,12 @@ public int doStartTag() throws javax.servlet.jsp.JspException {
 		// Not logged in
 		skip = true;
 		
-		 javax.servlet.http.HttpServletResponse response = 
-		 	(javax.servlet.http.HttpServletResponse) pageContext.getResponse();
+		javax.servlet.http.HttpServletRequest request = 
+			(javax.servlet.http.HttpServletRequest) pageContext.getRequest();
+		javax.servlet.http.HttpServletResponse response = 
+			(javax.servlet.http.HttpServletResponse) pageContext.getResponse();
 	
-		 response.sendRedirect("/login.jsp");
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
 	}
 	catch(Exception e ) {
 		throw new JspException(e.getMessage());
