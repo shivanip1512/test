@@ -519,68 +519,68 @@ public class StarsLiteFactory {
 		
 		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( appliance.getApplianceBase().getApplianceCategoryID().intValue() );
 		if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
+			liteApp.setAirConditioner( new LiteStarsAppliance.AirConditioner() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceAirConditioner app =
 					com.cannontech.database.db.stars.appliance.ApplianceAirConditioner.getApplianceAirConditioner( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setAirConditioner( new LiteStarsAppliance.AirConditioner() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+			liteApp.setWaterHeater( new LiteStarsAppliance.WaterHeater() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceWaterHeater app =
 					com.cannontech.database.db.stars.appliance.ApplianceWaterHeater.getApplianceWaterHeater( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setWaterHeater( new LiteStarsAppliance.WaterHeater() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
+			liteApp.setDualFuel( new LiteStarsAppliance.DualFuel() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceDualFuel app =
 					com.cannontech.database.db.stars.appliance.ApplianceDualFuel.getApplianceDualFuel( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setDualFuel( new LiteStarsAppliance.DualFuel() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppDualFuel( liteApp.getDualFuel(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+			liteApp.setGenerator( new LiteStarsAppliance.Generator() );
 			com.cannontech.database.db.stars.appliance.ApplianceGenerator app =
 					com.cannontech.database.db.stars.appliance.ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setGenerator( new LiteStarsAppliance.Generator() );
+			
+			if (app != null)
 				StarsLiteFactory.setLiteAppGenerator( liteApp.getGenerator(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
+			liteApp.setGrainDryer( new LiteStarsAppliance.GrainDryer() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceGrainDryer app =
 					com.cannontech.database.db.stars.appliance.ApplianceGrainDryer.getApplianceGrainDryer( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setGrainDryer( new LiteStarsAppliance.GrainDryer() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppGrainDryer( liteApp.getGrainDryer(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
+			liteApp.setStorageHeat( new LiteStarsAppliance.StorageHeat() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceStorageHeat app =
 					com.cannontech.database.db.stars.appliance.ApplianceStorageHeat.getApplianceStorageHeat( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setStorageHeat( new LiteStarsAppliance.StorageHeat() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppStorageHeat( liteApp.getStorageHeat(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
+			liteApp.setHeatPump( new LiteStarsAppliance.HeatPump() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceHeatPump app =
 					com.cannontech.database.db.stars.appliance.ApplianceHeatPump.getApplianceHeatPump( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setHeatPump( new LiteStarsAppliance.HeatPump() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppHeatPump( liteApp.getHeatPump(), app );
-			}
 		}
 		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
+			liteApp.setIrrigation( new LiteStarsAppliance.Irrigation() );
+			
 			com.cannontech.database.db.stars.appliance.ApplianceIrrigation app =
 					com.cannontech.database.db.stars.appliance.ApplianceIrrigation.getApplianceIrrigation( appliance.getApplianceBase().getApplianceID() );
-			if (app != null) {
-				liteApp.setIrrigation( new LiteStarsAppliance.Irrigation() );
+			if (app != null)
 				StarsLiteFactory.setLiteAppIrrigation( liteApp.getIrrigation(), app );
-			}
 		}
         
 		return liteApp;
@@ -2027,7 +2027,8 @@ public class StarsLiteFactory {
 	public static StarsUser createStarsUser(LiteYukonUser liteUser, LiteStarsEnergyCompany energyCompany) {
 		StarsUser starsUser = new StarsUser();
 		starsUser.setUsername( ServerUtils.forceNotNull(liteUser.getUsername()) );
-		starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
+		//starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
+		starsUser.setPassword( "" );
 		starsUser.setStatus( ECUtils.getLoginStatus(liteUser.getStatus()) );
 		
 		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();

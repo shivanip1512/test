@@ -6,9 +6,9 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -88,7 +88,6 @@ public class CreateApplianceAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
 			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("AppCatID")) );
@@ -118,29 +117,24 @@ public class CreateApplianceAction implements ActionBase {
 			}
 			
 			newApp.setManufacturer( (Manufacturer)StarsFactory.newStarsCustListEntry(
-					ServletUtils.getStarsCustListEntryByID(
-						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER, Integer.parseInt(req.getParameter("Manufacturer"))),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("Manufacturer")) ),
 					Manufacturer.class) );
 			
 			newApp.setLocation( (Location)StarsFactory.newStarsCustListEntry(
-					ServletUtils.getStarsCustListEntryByID(
-						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION, Integer.parseInt(req.getParameter("Location"))),
+					YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("Location")) ),
 					Location.class) );
 			
 			int categoryID = Integer.parseInt( req.getParameter("CatID") );
-			int catDefID = ServletUtils.getStarsCustListEntryByID(
-					selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY, categoryID).getYukonDefID();
+			int catDefID = YukonListFuncs.getYukonListEntry(categoryID).getYukonDefID();
 			
 			if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
 			{
 				AirConditioner ac = new AirConditioner();
 				ac.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE, Integer.parseInt(req.getParameter("AC_Tonnage"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Tonnage")) ),
 						Tonnage.class) );
 				ac.setACType( (ACType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE, Integer.parseInt(req.getParameter("AC_Type"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("AC_Type")) ),
 						ACType.class) );
 				newApp.setAirConditioner( ac );
 			}
@@ -148,12 +142,10 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				WaterHeater wh = new WaterHeater();
 				wh.setNumberOfGallons( (NumberOfGallons)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS, Integer.parseInt(req.getParameter("WH_GallonNum"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("WH_GallonNum")) ),
 						NumberOfGallons.class) );
 				wh.setEnergySource( (EnergySource)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("WH_EnergySrc")) ),
 						EnergySource.class) );
 				
 				try {
@@ -169,12 +161,10 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				DualFuel df = new DualFuel();
 				df.setSwitchOverType( (SwitchOverType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("DF_SwitchOverType")) ),
 						SwitchOverType.class) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE, Integer.parseInt(req.getParameter("DF_SecondarySrc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("DF_SecondarySrc")) ),
 						SecondaryEnergySource.class) );
 				
 				try {
@@ -190,12 +180,10 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				Generator gen = new Generator();
 				gen.setTransferSwitchType( (TransferSwitchType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE, Integer.parseInt(req.getParameter("GEN_TranSwitchType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GEN_TranSwitchType")) ),
 						TransferSwitchType.class) );
 				gen.setTransferSwitchManufacturer( (TransferSwitchManufacturer)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GEN_TranSwitchMfg")) ),
 						TransferSwitchManufacturer.class) );
 				
 				try {
@@ -225,24 +213,19 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				GrainDryer gd = new GrainDryer();
 				gd.setDryerType( (DryerType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE, Integer.parseInt(req.getParameter("GD_DryerType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_DryerType")) ),
 						DryerType.class) );
 				gd.setBinSize( (BinSize)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE, Integer.parseInt(req.getParameter("GD_BinSize"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BinSize")) ),
 						BinSize.class) );
 				gd.setBlowerEnergySource( (BlowerEnergySource)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerEnergySrc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerEnergySrc")) ),
 						BlowerEnergySource.class) );
 				gd.setBlowerHorsePower( (BlowerHorsePower)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER, Integer.parseInt(req.getParameter("GD_BlowerHorsePower"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerHorsePower")) ),
 						BlowerHorsePower.class) );
 				gd.setBlowerHeatSource( (BlowerHeatSource)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerHeatSrc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("GD_BlowerHeatSrc")) ),
 						BlowerHeatSource.class) );
 				newApp.setGrainDryer( gd );
 			}
@@ -250,8 +233,7 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				StorageHeat sh = new StorageHeat();
 				sh.setStorageType( (StorageType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("SH_StorageType")) ),
 						StorageType.class) );
 				
 				try {
@@ -274,16 +256,13 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				HeatPump hp = new HeatPump();
 				hp.setPumpType( (PumpType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE, Integer.parseInt(req.getParameter("HP_PumpType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HP_PumpType")) ),
 						PumpType.class) );
 				hp.setPumpSize( (PumpSize)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_SIZE, Integer.parseInt(req.getParameter("HP_PumpSize"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HP_PumpSize")) ),
 						PumpSize.class) );
 				hp.setStandbySource( (StandbySource)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("HP_StandbySrc")) ),
 						StandbySource.class) );
 				
 				try {
@@ -299,28 +278,22 @@ public class CreateApplianceAction implements ActionBase {
 			{
 				Irrigation irr = new Irrigation();
 				irr.setIrrigationType( (IrrigationType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRRIGATION_TYPE, Integer.parseInt(req.getParameter("IRR_IrrigationType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_IrrigationType")) ),
 						IrrigationType.class) );
 				irr.setHorsePower( (HorsePower)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER, Integer.parseInt(req.getParameter("IRR_HorsePower"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_HorsePower")) ),
 						HorsePower.class) );
 				irr.setEnergySource( (EnergySource)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE, Integer.parseInt(req.getParameter("IRR_EnergySrc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_EnergySrc")) ),
 						EnergySource.class) );
 				irr.setSoilType( (SoilType)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE, Integer.parseInt(req.getParameter("IRR_SoilType"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_SoilType")) ),
 						SoilType.class) );
 				irr.setMeterLocation( (MeterLocation)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION, Integer.parseInt(req.getParameter("IRR_MeterLoc"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_MeterLoc")) ),
 						MeterLocation.class) );
 				irr.setMeterVoltage( (MeterVoltage)StarsFactory.newStarsCustListEntry(
-						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE, Integer.parseInt(req.getParameter("IRR_MeterVolt"))),
+						YukonListFuncs.getYukonListEntry( Integer.parseInt(req.getParameter("IRR_MeterVolt")) ),
 						MeterVoltage.class) );
 				newApp.setIrrigation( irr );
 			}
