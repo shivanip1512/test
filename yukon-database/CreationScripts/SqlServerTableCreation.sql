@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/8/2002 2:28:02 PM                         */
+/* Created on:     11/15/2002 2:24:34 PM                        */
 /*==============================================================*/
 
 
@@ -1847,7 +1847,7 @@ insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofil
 
 insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
 
-insert into CTIDatabase values('2.38', 'Ryan', '6-NOV-2002', 'Added a column to DynamicLMGroup and a Windows Service row to display');
+insert into CTIDatabase values('2.38', 'Ryan', '2002-NOV-6', 'Added a column to DynamicLMGroup and a Windows Service row to display');
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
@@ -2484,6 +2484,8 @@ CurrentDailyOperations numeric              not null,
 LastStatusChangeTime datetime             not null,
 TagsControlStatus    numeric              not null,
 CTITimeStamp         datetime             not null,
+OriginalFeederID     numeric              not null,
+OriginalSwitchingOrder numeric              not null,
 constraint PK_DYNAMICCCCAPBANK primary key  (CapBankID)
 )
 go

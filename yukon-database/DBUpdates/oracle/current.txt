@@ -6,7 +6,12 @@ insert into CTIDatabase values('2.39', 'Ryan', '6-NOV-2002', 'Added two columns 
 
 
 /* Change the DynamicCCCapBank table */
-alter TABLE DynamicCCCapBank add OriginalFeederID NUMERIC not null DEFAULT 0;
-go
-alter TABLE DynamicCCCapBank add OriginalSwitchingOrder NUMERIC not null DEFAULT 0;
-go
+alter table DynamicCCCapBank add OriginalFeederID NUMBER;
+update DynamicCCCapBank set OriginalFeederID = 0;
+alter TABLE DynamicCCCapBank MODIFY OriginalFeederID NOT NULL;
+/
+
+alter table DynamicCCCapBank add OriginalSwitchingOrder NUMBER;
+update DynamicCCCapBank set OriginalSwitchingOrder = 0;
+alter TABLE DynamicCCCapBank MODIFY OriginalSwitchingOrder NOT NULL;
+/
