@@ -145,4 +145,10 @@ public void update() throws java.sql.SQLException {
 	getDeviceDialupSettings().update();
 	getDeviceDirectCommSettings().update();
 }
+
+public boolean hasPhoneNumber()
+{
+	return (!(getDeviceDialupSettings().getPhoneNumber().compareTo("0") == 0 ||getDeviceDialupSettings().getPhoneNumber() == null));
+
+}
 }
