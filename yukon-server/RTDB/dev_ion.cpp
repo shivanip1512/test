@@ -30,6 +30,7 @@
 #include "msg_cmd.h"
 #include "msg_pdata.h"
 #include "msg_multi.h"
+#include "msg_lmcontrolhistory.h"
 #include "cmdparse.h"
 
 #include "dlldefs.h"
@@ -136,7 +137,6 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                 case ScanRateAccum:
                 {
-                    //  same as getstatus eventlog
                     initEventLogPosition();
 
                     _ion.setCommand(CtiProtocolION::Command_EventLogRead);
@@ -174,6 +174,18 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             break;
         }
 
+        case PutConfigRequest:
+        {
+            if( parse.isKeyValid("timesync") )
+            {
+                _ion.setCommand(CtiProtocolION::Command_TimeSync);
+
+                found = true;
+            }
+
+            break;
+        }
+
         case ControlRequest:
         {
             bool has_offset = false;
@@ -195,6 +207,8 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             {
                 offset = parse.getiValue("offset");
                 has_offset = true;
+
+                point = getDeviceControlPointOffsetEqual(offset);
             }
 
             if( parse.getFlags() & CMD_FLAG_CTL_CLOSE && has_offset )
@@ -216,6 +230,16 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                         propagateRequest(OutMessage, pReq);
                     }
+                }
+
+                if( point )
+                {
+                    //  ACH FIX BLAH BLAH BLAH - NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
+                    //                                    (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
+                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), 1, RWTime(), 86400, 100);
+
+                    hist->setMessagePriority(hist->getMessagePriority() + 1);
+                    vgList.insert(hist);
                 }
 
                 _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
@@ -512,6 +536,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     RWTPtrSlist<CtiPointDataMsg> pointData;
     RWTPtrSlist<CtiSignalMsg>    eventData;
 
+    RWCString commandStr(InMessage->Return.CommandStr);
+
     resetScanPending();
 
     if( !ErrReturn && !_ion.recvCommResult(InMessage, outList) )
@@ -544,8 +570,6 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                                  InMessage->Return.MacroOffset,
                                                                  InMessage->Return.Attempt);
 
-                RWCString commandStr(InMessage->Return.CommandStr);
-
                 if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
                 {
                     newReq->setCommandString(newReq->CommandString() + " duke_issg_start");
@@ -572,8 +596,6 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             {
                 if( _postControlScanCount < IONPostControlScanMax )
                 {
-                    RWCString commandStr(InMessage->Return.CommandStr);
-
                     if( commandStr.contains("duke_issg_start", RWCString::ignoreCase) )
                     {
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) == 0 &&
@@ -641,7 +663,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     }
 
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                     "getstatus eventlogs",
+                                                                     "getstatus eventlog no_timesync",
                                                                      InMessage->Return.UserID,
                                                                      InMessage->Return.TrxID,
                                                                      InMessage->Return.RouteID,
@@ -658,10 +680,26 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                     delete newReq;
                 }
-    /*            else
+                else
                 {
-                    setIONScanPending(ScanRateAccum, false);
-                }*/
+                    CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                                     "putconfig time",
+                                                                     InMessage->Return.UserID,
+                                                                     InMessage->Return.TrxID,
+                                                                     InMessage->Return.RouteID,
+                                                                     InMessage->Return.MacroOffset,
+                                                                     InMessage->Return.Attempt);
+
+                    newReq->setMessagePriority(15);
+
+                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                    CtiCommandParser parse(newReq->CommandString());
+
+                    CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+
+                    delete newReq;
+                }
 
                 break;
             }
