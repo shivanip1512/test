@@ -280,7 +280,7 @@ function jumpPage(form)
 				
 				<script language = "JavaScript">
 				document.writeln('<FORM NAME = "exportForm">');
-				document.writeln('<INPUT TYPE="hidden" NAME="format" VALUE="png">');
+				document.writeln('<INPUT TYPE="hidden" NAME="ext" VALUE="csv">');
 				if (navigator.userAgent.indexOf("Mozilla/2") != -1)
 					document.writeln('<INPUT TYPE = BUTTON VALUE="Jump!">');
 				document.writeln('</FORM>');
