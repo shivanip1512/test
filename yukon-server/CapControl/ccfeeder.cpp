@@ -154,14 +154,14 @@ DOUBLE CtiCCFeeder::getOffPeakSetPoint() const
 }
 
 /*---------------------------------------------------------------------------
-    getBandwidth
+    getUpperBandwidth
 
-    Returns the bandwidth of the feeder
+    Returns the Upper bandwidth of the feeder
 ---------------------------------------------------------------------------*/
-ULONG CtiCCFeeder::getBandwidth() const
+DOUBLE CtiCCFeeder::getUpperBandwidth() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-    return _bandwidth;
+    return _upperbandwidth;
 }
 
 /*---------------------------------------------------------------------------
@@ -217,6 +217,17 @@ ULONG CtiCCFeeder::getMapLocationId() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _maplocationid;
+}
+
+/*---------------------------------------------------------------------------
+    getLowerBandwidth
+
+    Returns the lower bandwidth of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getLowerBandwidth() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _lowerbandwidth;
 }
 
 /*---------------------------------------------------------------------------
@@ -374,6 +385,17 @@ DOUBLE CtiCCFeeder::getBusOptimizedVarOffset() const
 }
 
 /*---------------------------------------------------------------------------
+    getPowerFactorValue
+
+    Returns the power factor value of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPowerFactorValue() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _powerfactorvalue;
+}
+
+/*---------------------------------------------------------------------------
     getCCCapBanks
 
     Returns the list of cap banks in the feeder
@@ -495,14 +517,14 @@ CtiCCFeeder& CtiCCFeeder::setOffPeakSetPoint(DOUBLE offpeak)
 }
 
 /*---------------------------------------------------------------------------
-    setBandwidth
+    setUpperBandwidth
 
-    Sets the bandwidth of the feeder
+    Sets the Upper bandwidth of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setBandwidth(ULONG bandwidth)
+CtiCCFeeder& CtiCCFeeder::setUpperBandwidth(DOUBLE bandwidth)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    _bandwidth = bandwidth;
+    _upperbandwidth = bandwidth;
     return *this;
 }
 
@@ -563,6 +585,18 @@ CtiCCFeeder& CtiCCFeeder::setMapLocationId(ULONG maplocation)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _maplocationid = maplocation;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setLowerBandwidth
+
+    Sets the lower bandwidth of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setLowerBandwidth(DOUBLE bandwidth)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _lowerbandwidth = bandwidth;
     return *this;
 }
 
@@ -707,6 +741,18 @@ CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(ULONG lastcapbank)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _lastcapbankcontrolleddeviceid = lastcapbank;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPowerFactorValue
+
+    Sets the PowerFactorValue in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPowerFactorValue(DOUBLE pfval)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _powerfactorvalue = pfval;
     return *this;
 }
 
@@ -881,9 +927,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     BOOL returnBoolean = FALSE;
     DOUBLE setpoint = (peakTimeFlag?getPeakSetPoint():getOffPeakSetPoint());
 
-    //if current var load is outside of range defined by the set point plus/minus the bandwidth
-    if( (getCurrentVarLoadPointValue() < (setpoint - getBandwidth())) ||
-        (getCurrentVarLoadPointValue() > (setpoint + getBandwidth())) )
+    //if current var load is outside of range defined by the set point plus/minus the bandwidths
+    if( (getCurrentVarLoadPointValue() < (setpoint - getUpperBandwidth())) ||
+        (getCurrentVarLoadPointValue() > (setpoint + getLowerBandwidth())) )
     {
         CtiRequestMsg* request = NULL;
         try
@@ -898,11 +944,18 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 
                 request = createDecreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
 
-                if( request == NULL )
+                if( request == NULL && _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Can Not Reduce Var level for feeder: " << getPAOName()
-                    << " any further.  All cap banks are already in the Close state" << endl;
+                    << " any further.  All cap banks are already in the Close state in: " << __FILE__ << " at: " << __LINE__ << endl;
+
+                    CtiCCCapBank* currentCapBank = NULL;
+                    for(int i=0;i<_cccapbanks.entries();i++)
+                    {
+                        currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                        dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                    }
                 }
             }
             else
@@ -915,11 +968,18 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 
                 request = createIncreaseVarRequest(pointChanges, getCurrentVarLoadPointValue(), decimalPlaces);
 
-                if( request == NULL )
+                if( request == NULL && _CC_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Can Not Increase Var level for feeder: " << getPAOName()
-                    << " any further.  All cap banks are already in the Open state" << endl;
+                    << " any further.  All cap banks are already in the Open state in: " << __FILE__ << " at: " << __LINE__ << endl;
+
+                    CtiCCCapBank* currentCapBank = NULL;
+                    for(int i=0;i<_cccapbanks.entries();i++)
+                    {
+                        currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                        dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                    }
                 }
             }
 
@@ -1123,23 +1183,23 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
     DOUBLE setpoint = (peakTimeFlag?getPeakSetPoint():getOffPeakSetPoint());
 
     //if current var load is less than the set point minus the bandwidth
-    if( getCurrentVarLoadPointValue() < (setpoint - getBandwidth()) )
+    if( getCurrentVarLoadPointValue() < (setpoint - getLowerBandwidth()) )
     {
         _busoptimizedvarcategory = 0;
-        _busoptimizedvaroffset = getCurrentVarLoadPointValue() - (setpoint - getBandwidth());
+        _busoptimizedvaroffset = getCurrentVarLoadPointValue() - (setpoint - getLowerBandwidth());
     }
     //if current var load is within the range defined by the set point plus/minus the bandwidth
-    else if( (getCurrentVarLoadPointValue() > (setpoint - getBandwidth())) ||
-             (getCurrentVarLoadPointValue() < (setpoint + getBandwidth())) )
+    else if( (getCurrentVarLoadPointValue() > (setpoint - getLowerBandwidth())) ||
+             (getCurrentVarLoadPointValue() < (setpoint + getUpperBandwidth())) )
     {
         _busoptimizedvarcategory = 1;
         _busoptimizedvaroffset = getCurrentVarLoadPointValue() - setpoint;
     }
     //if current var load is more than the set point plus the bandwidth
-    else if( getCurrentVarLoadPointValue() > (setpoint + getBandwidth()) )
+    else if( getCurrentVarLoadPointValue() > (setpoint + getUpperBandwidth()) )
     {
         _busoptimizedvarcategory = 2;
-        _busoptimizedvaroffset = getCurrentVarLoadPointValue() - (setpoint + getBandwidth());
+        _busoptimizedvaroffset = getCurrentVarLoadPointValue() - (setpoint + getUpperBandwidth());
     }
 }
 
@@ -1323,12 +1383,13 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _disableflag
     >> _peaksetpoint
     >> _offpeaksetpoint
-    >> _bandwidth
+    >> _upperbandwidth
     >> _currentvarloadpointid
     >> _currentvarloadpointvalue
     >> _currentwattloadpointid
     >> _currentwattloadpointvalue
     >> _maplocationid
+    >> _lowerbandwidth
     >> _displayorder
     >> _newpointdatareceivedflag
     >> tempTime1
@@ -1340,7 +1401,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _recentlycontrolledflag
     >> tempTime2
     >> _varvaluebeforecontrol
-    >> _lastcapbankcontrolleddeviceid;
+    >> _lastcapbankcontrolleddeviceid
+    >> _powerfactorvalue;
     istrm >> numberOfCapBanks;
     for(UINT i=0;i<numberOfCapBanks;i++)
     {
@@ -1372,12 +1434,13 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _disableflag
     << _peaksetpoint
     << _offpeaksetpoint
-    << _bandwidth
+    << _upperbandwidth
     << _currentvarloadpointid
     << _currentvarloadpointvalue
     << _currentwattloadpointid
     << _currentwattloadpointvalue
     << _maplocationid
+    << _lowerbandwidth
     << _displayorder
     << _newpointdatareceivedflag
     << _lastcurrentvarpointupdatetime.rwtime()
@@ -1389,7 +1452,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _recentlycontrolledflag
     << _lastoperationtime.rwtime()
     << _varvaluebeforecontrol
-    << _lastcapbankcontrolleddeviceid;
+    << _lastcapbankcontrolleddeviceid
+    << _powerfactorvalue;
     ostrm << _cccapbanks.entries();
     for(UINT i=0;i<_cccapbanks.entries();i++)
     {
@@ -1415,12 +1479,13 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _disableflag = right._disableflag;
         _peaksetpoint = right._peaksetpoint;
         _offpeaksetpoint = right._offpeaksetpoint;
-        _bandwidth = right._bandwidth;
+        _upperbandwidth = right._upperbandwidth;
         _currentvarloadpointid = right._currentvarloadpointid;
         _currentvarloadpointvalue = right._currentvarloadpointvalue;
         _currentwattloadpointid = right._currentwattloadpointid;
         _currentwattloadpointvalue = right._currentwattloadpointvalue;
         _maplocationid = right._maplocationid;
+        _lowerbandwidth = right._lowerbandwidth;
         _displayorder = right._displayorder;
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
@@ -1433,6 +1498,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _lastoperationtime = right._lastoperationtime;
         _varvaluebeforecontrol = right._varvaluebeforecontrol;
         _lastcapbankcontrolleddeviceid = right._lastcapbankcontrolleddeviceid;
+        _powerfactorvalue = right._powerfactorvalue;
 
         _cccapbanks.clearAndDestroy();
         for(UINT i=0;i<right._cccapbanks.entries();i++)
@@ -1496,10 +1562,11 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
     rdr["peaksetpoint"] >> _peaksetpoint;
     rdr["offpeaksetpoint"] >> _offpeaksetpoint;
-    rdr["bandwidth"] >> _bandwidth;
+    rdr["upperbandwidth"] >> _upperbandwidth;
     rdr["currentvarloadpointid"] >> _currentvarloadpointid;
     rdr["currentwattloadpointid"] >> _currentwattloadpointid;
     rdr["maplocationid"] >> _maplocationid;
+    rdr["lowerbandwidth"] >> _lowerbandwidth;
     rdr["displayorder"] >> _displayorder;
 
     setEstimatedVarLoadPointId(0);
@@ -1525,6 +1592,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
         rdr["busoptimizedvarcategory"] >> _busoptimizedvarcategory;
         rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
+		//HACK 
+        //rdr["powerfactorvalue"] >> _powerfactorvalue;
+        setPowerFactorValue(-1000000.0);
+		//HACK 
         rdr["ctitimestamp"] >> dynamicTimeStamp;
 
         //if dynamic timestamp from yesterday, zero out operation count
@@ -1550,6 +1621,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         setLastCapBankControlledDeviceId(0);
         _busoptimizedvarcategory = 1;
         _busoptimizedvaroffset = 0.0;
+        _powerfactorvalue = -1000000.0;
 
         _insertDynamicDataFlag = TRUE;
     }

@@ -74,12 +74,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getDisableFlag() const;
     DOUBLE getPeakSetPoint() const;
     DOUBLE getOffPeakSetPoint() const;
-    ULONG getBandwidth() const;
+    DOUBLE getUpperBandwidth() const;
     ULONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     ULONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
     ULONG getMapLocationId() const;
+    DOUBLE getLowerBandwidth() const;
     ULONG getDisplayOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
     const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
@@ -94,6 +95,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     ULONG getLastCapBankControlledDeviceId() const;
     ULONG getBusOptimizedVarCategory() const;
     DOUBLE getBusOptimizedVarOffset() const;
+    DOUBLE getPowerFactorValue() const;
     
     RWSortedVector& getCCCapBanks();
 
@@ -106,12 +108,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setDisableFlag(BOOL disable);
     CtiCCFeeder& setPeakSetPoint(DOUBLE peak);
     CtiCCFeeder& setOffPeakSetPoint(DOUBLE offpeak);
-    CtiCCFeeder& setBandwidth(ULONG bandwidth);
+    CtiCCFeeder& setUpperBandwidth(DOUBLE bandwidth);
     CtiCCFeeder& setCurrentVarLoadPointId(ULONG currentvarid);
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval);
     CtiCCFeeder& setCurrentWattLoadPointId(ULONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
     CtiCCFeeder& setMapLocationId(ULONG maplocation);
+    CtiCCFeeder& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCFeeder& setDisplayOrder(ULONG order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
@@ -127,6 +130,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     //don't think we want public setters for these
     //CtiCCFeeder& setBusOptimizedVarCategory(ULONG varcategory);
     //CtiCCFeeder& setBusOptimizedVarOffset(DOUBLE varoffset);
+    CtiCCFeeder& setPowerFactorValue(DOUBLE pfval);
 
 
     CtiRequestMsg* createIncreaseVarRequest(RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
@@ -170,12 +174,13 @@ private:
     BOOL _disableflag;
     DOUBLE _peaksetpoint;
     DOUBLE _offpeaksetpoint;
-    ULONG _bandwidth;
+    DOUBLE _upperbandwidth;
     ULONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
     ULONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
     ULONG _maplocationid;
+    DOUBLE _lowerbandwidth;
     ULONG _displayorder;
     BOOL _newpointdatareceivedflag;
     RWDBDateTime _lastcurrentvarpointupdatetime;
@@ -190,6 +195,7 @@ private:
     ULONG _lastcapbankcontrolleddeviceid;
     ULONG _busoptimizedvarcategory;
     DOUBLE _busoptimizedvaroffset;
+    DOUBLE _powerfactorvalue;
 
     RWSortedVector _cccapbanks;
 
