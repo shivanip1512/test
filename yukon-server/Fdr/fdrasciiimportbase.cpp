@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/08/06 22:00:51 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2002/10/14 21:10:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.5  2002/10/14 21:10:53  dsutton
+      In the database translation routines, if we failed to hit the database
+      we called the load routine again just to get the error code.  Whoops
+      The error code is now saved from the original call and printed as needed
+
       Revision 1.4  2002/08/06 22:00:51  dsutton
       Programming around the error that happens if the dataset is empty when it is
       returned from the database and shouldn't be.  If our point list had more than
@@ -237,14 +242,19 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     RWCString           tempString2;
     RWCString           translationName;
     bool                foundPoint = false;
+    RWDBStatus          listStatus;
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
                                                        RWCString (FDR_INTERFACE_RECEIVE));
+
+        // keep the status
+        listStatus = pointList->loadPointList();
+
         // if status is ok, we were able to read the database at least
-        if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
+        if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -335,7 +345,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " db read code " << pointList->loadPointList().errorCode() << endl;
+            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
 

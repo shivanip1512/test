@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2002/09/06 18:54:17 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2002/10/14 21:10:54 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.6  2002/10/14 21:10:54  dsutton
+      In the database translation routines, if we failed to hit the database
+      we called the load routine again just to get the error code.  Whoops
+      The error code is now saved from the original call and printed as needed
+
       Revision 1.5  2002/09/06 18:54:17  dsutton
       The database load and list swap used to occur before we updated
       the translation names.  I now update the entire temporary list and then
@@ -410,14 +415,18 @@ bool CtiFDR_Inet::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
     RWCString           translationName;
     int                 entries;
     bool                foundPoint = false;
+    RWDBStatus          listStatus;
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
                                                        aDirection);
+
+        listStatus = pointList->loadPointList();
+
         // if status is ok, we were able to read the database at least
-        if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
+        if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -532,7 +541,7 @@ bool CtiFDR_Inet::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " db read code " << pointList->loadPointList().errorCode() << endl;
+            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
     }   // end try block
@@ -568,14 +577,19 @@ bool CtiFDR_Inet::loadClientList()
     CtiFDRPoint *       translationPoint = NULL;
     RWCString           receiveConnections;
     int                 entries;
+    RWDBStatus          listStatus;
+
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
                                                        RWCString (FDR_INTERFACE_SEND));
+
+        listStatus = pointList->loadPointList();
+
         // if status is ok, we were able to read the database at least
-        if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
+        if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
             CtiLockGuard<CtiMutex> destGuard(iClientListMux);  
             iClientList.erase (iClientList.begin(),iClientList.end());
@@ -611,13 +625,11 @@ bool CtiFDR_Inet::loadClientList()
             {
                 successful = true;
             }
-
-
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " db read code " << pointList->loadPointList().errorCode() << endl;
+            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
             successful = false;
         }
         // we're always newing this so delete it everytime through

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/06 19:10:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/14 21:10:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1089,13 +1089,18 @@ bool CtiFDRTelegyr::loadLists( CtiFDRPointList &aList )
    RWCString           groupStr;
    RWCString           newTranslationString;
    bool                foundPoint = false;
+   RWDBStatus          listStatus;
+
 
    try
    {
       // make a list with all received points
       CtiFDRManager *pointList = new CtiFDRManager( getInterfaceName(), RWCString( FDR_INTERFACE_RECEIVE ) );
 
-      if( pointList->loadPointList().errorCode() == ( RWDBStatus::ok ) )
+      listStatus = pointList->loadPointList();
+
+      // if status is ok, we were able to read the database at least
+      if ( listStatus.errorCode() == (RWDBStatus::ok))
       {
 
           /**************************************
@@ -1230,7 +1235,7 @@ bool CtiFDRTelegyr::loadLists( CtiFDRPointList &aList )
       else
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << RWTime::now() <<  " db read code " << pointList->loadPointList().errorCode() << endl;
+         dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
          successful = false;
       }
    }

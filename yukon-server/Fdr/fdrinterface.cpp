@@ -17,10 +17,15 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2002/10/11 14:24:50 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2002/10/14 21:10:55 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.11  2002/10/14 21:10:55  dsutton
+      In the database translation routines, if we failed to hit the database
+      we called the load routine again just to get the error code.  Whoops
+      The error code is now saved from the original call and printed as needed
+
       Revision 1.10  2002/10/11 14:24:50  dsutton
       Whoops, new calculation should only be done when the rate is 3600
       or higher
@@ -197,14 +202,18 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
     bool                foundPoint = false, translatedPoint(false);
     RWCString           controlDirection;
     long                retID=0;
+    RWDBStatus          listStatus;
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(RWCString (FDR_SYSTEM),
                                                        RWCString (FDR_INTERFACE_LINK_STATUS));
+
+        listStatus = pointList->loadPointList();
+
         // if status is ok, we were able to read the database at least
-        if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
+        if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
             // get iterator on list
             CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
@@ -249,7 +258,7 @@ long CtiFDRInterface::getClientLinkStatusID(RWCString &aClientName)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " db read code " << pointList->loadPointList().errorCode() << endl;
+            dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
         }
     }   // end try block
 
