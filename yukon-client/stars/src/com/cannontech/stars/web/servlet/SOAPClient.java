@@ -109,7 +109,7 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
             clientAction = new YukonSwitchCommandAction();
-            destURL = "/OperatorDemos/Consumer/OptOut.jsp";
+            destURL = "/OperatorDemos/Consumer/Programs.jsp";
             nextURL = errorURL = "/OperatorDemos/Consumer/OptOut.jsp";
 
             PILConnectionServlet connContainer = (PILConnectionServlet)

@@ -34,6 +34,13 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _inventoryID;
+
+    /**
+     * keeps track of state for field: _inventoryID
+    **/
+    private boolean _has_inventoryID;
+
     private java.util.Vector _LMHardwareEventList;
 
 
@@ -76,10 +83,27 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
 
     /**
     **/
+    public void deleteInventoryID()
+    {
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateLMHardwareEvent()
     {
         return _LMHardwareEventList.elements();
     } //-- java.util.Enumeration enumerateLMHardwareEvent() 
+
+    /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
+    **/
+    public int getInventoryID()
+    {
+        return this._inventoryID;
+    } //-- int getInventoryID() 
 
     /**
      * 
@@ -115,6 +139,13 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
     {
         return _LMHardwareEventList.size();
     } //-- int getLMHardwareEventCount() 
+
+    /**
+    **/
+    public boolean hasInventoryID()
+    {
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -171,6 +202,17 @@ public class StarsLMHardwareHistory implements java.io.Serializable {
         _LMHardwareEventList.removeElementAt(index);
         return (LMHardwareEvent) obj;
     } //-- LMHardwareEvent removeLMHardwareEvent(int) 
+
+    /**
+     * Sets the value of field 'inventoryID'.
+     * 
+     * @param inventoryID the value of field 'inventoryID'.
+    **/
+    public void setInventoryID(int inventoryID)
+    {
+        this._inventoryID = inventoryID;
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
 
     /**
      * 

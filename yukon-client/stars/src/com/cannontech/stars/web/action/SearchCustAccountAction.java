@@ -84,8 +84,10 @@ public class SearchCustAccountAction implements ActionBase {
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
             com.cannontech.database.data.stars.customer.CustomerAccount account = null;
 
-            Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
-            StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
+            Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            		new Integer((int) operator.getEnergyCompanyID()) );
+            		
+            StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
             StarsSelectionListEntry searchByEntry = null;
             for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
             	StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
@@ -111,7 +113,7 @@ public class SearchCustAccountAction implements ActionBase {
         	operator.setAttribute("CUSTOMER_ACCOUNT", account);
             
 			StarsCustAccountInfo accountInfo = StarsCustAccountInfoFactory.getStarsCustAccountInfo(
-					account, selectionList, StarsSearchCustomerAccountResponse.class );
+					account, selectionLists, StarsSearchCustomerAccountResponse.class );
             respOper.setStarsSearchCustomerAccountResponse( (StarsSearchCustomerAccountResponse) accountInfo );
 
             return SOAPUtil.buildSOAPMessage( respOper );

@@ -61,12 +61,12 @@ public class CommonUtils {
     public static String getDurationString(Date startDate, Date stopDate) {
     	if (startDate == null || stopDate == null) return "";
     	
-    	int duration = (int) ((stopDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+    	int duration = (int) ((stopDate.getTime() - startDate.getTime()) * 0.001 / (3600 * 24) + 0.5);
     	String durStr = String.valueOf(duration);
     	if (duration > 1)
     		durStr += " Days";
     	else
-    		durStr += "Day";
+    		durStr += " Day";
     		
     	return durStr;
     }
@@ -87,6 +87,7 @@ public class CommonUtils {
 	    			progHist = new ProgramHistory();
 	    			progHist.date = event.getEventDateTime();
 	    			progHist.action = event.getEventAction();
+	    			progHistMap.put( event.getEventDateTime(), progHist );
 	    		}
 	    			
     			if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION )) {

@@ -87,40 +87,7 @@ public class LoginAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
         	}
             
-            // Get all selection lists
-            com.cannontech.database.db.stars.CustomerSelectionList[] selectionLists =
-            		com.cannontech.database.data.stars.CustomerSelectionList.getAllSelectionLists( energyCompanyID );
-            java.util.Hashtable selectionListTable = new java.util.Hashtable();
-            
-            for (int i = 0; i < selectionLists.length; i++) {
-            	com.cannontech.database.db.stars.CustomerListEntry[] entries =
-            			com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( selectionLists[i].getListID() );
-            	StarsCustSelectionList starsList = new StarsCustSelectionList();
-            	starsList.setListID( selectionLists[i].getListID().intValue() );
-            	
-            	for (int j = 0; j < entries.length; j++) {
-            		StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-            		starsEntry.setEntryID( entries[j].getEntryID().intValue() );
-            		starsEntry.setContent( entries[j].getEntryText() );
-            		starsEntry.setYukonDefinition( entries[j].getYukonDefinition() );
-            		starsList.addStarsSelectionListEntry( starsEntry );
-            	}
-            	
-            	selectionListTable.put( selectionLists[i].getListName(), starsList );
-            }
-            
-            // Get substation list
-            com.cannontech.database.db.stars.Substation[] subs =
-            		com.cannontech.database.data.stars.Substation.getAllSubstations( energyCompanyID );
-            StarsCustSelectionList starsList = new StarsCustSelectionList();
-            
-            for (int i = 0; i < subs.length; i++) {
-            	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-            	starsEntry.setEntryID( subs[i].getSubstationID().intValue() );
-            	starsEntry.setContent( subs[i].getSubstationName() );
-            	starsList.addStarsSelectionListEntry( starsEntry );
-            }
-            selectionListTable.put( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION, starsList );
+            java.util.Hashtable selectionListTable = com.cannontech.stars.util.CommonUtils.getSelectionListTable( energyCompanyID );
             
             if (operator != null) {
             	session.setAttribute( "OPERATOR", operator );

@@ -3,6 +3,7 @@ package com.cannontech.database.data.stars;
 import java.sql.SQLException;
 
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.xml.serialize.*;
 
 /**
  * <p>Title: CustomerSelectionList.java</p>

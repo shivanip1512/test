@@ -80,7 +80,8 @@ public class CallTrackingAction implements ActionBase {
             			account.getCustomerAccount().getAccountID(), conn );
             if (calls == null) return null;
             
-            Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            Hashtable selectionListTable = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            		new Integer((int) operator.getEnergyCompanyID()) );
             StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
             
             StarsGetCallReportHistoryResponse callTrackingResp = new StarsGetCallReportHistoryResponse();

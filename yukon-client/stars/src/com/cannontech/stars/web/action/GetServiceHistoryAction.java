@@ -98,7 +98,9 @@ public class GetServiceHistoryAction implements ActionBase {
             	Transaction.createTransaction( Transaction.RETRIEVE, entry ).execute();
             	servHist.setCurrentState( entry.getEntryText() );
             	
-            	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            	Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            			new Integer((int) operator.getEnergyCompanyID()) );
+            			
             	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList)
             			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
             	for (int j = 0; j < serviceCompanyList.getStarsSelectionListEntryCount(); j++) {

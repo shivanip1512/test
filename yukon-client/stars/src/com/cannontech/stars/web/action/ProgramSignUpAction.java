@@ -95,15 +95,95 @@ public class ProgramSignUpAction implements ActionBase {
         	    		new Integer(energyCompanyID), progSignUp.getAccountNumber() );
         	    		
             StarsLMProgramSignUps programs = progSignUp.getStarsLMProgramSignUps();
-        	for (int i = 0; i < programs.getLMProgramCount(); i++) {
-        		LMProgram program = programs.getLMProgram(i);
-        		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = new com.cannontech.database.db.stars.appliance.ApplianceBase();
-        		appDB.setAccountID( account.getCustomerAccount().getAccountID() );
-        		appDB.setApplianceCategoryID( new Integer(program.getApplianceCategoryID()) );
-        		appDB.setLMProgramID( new Integer(program.getProgramID()) );
-        		
-        		Transaction.createTransaction( Transaction.INSERT, appDB ).execute();
-        	}
+            if (programs.getLMProgramCount() > 0) {
+	        	com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
+	        	
+	        	// Get the primary IDs for table insert
+	        	int nextAppID = 0;
+	        	int nextEventID = 0;
+	        	
+	        	java.sql.Connection conn = null;
+	        	try {
+	        		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+	        				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+	        				
+	        		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = new com.cannontech.database.db.stars.appliance.ApplianceBase();
+	        		appDB.setDbConnection( conn );
+	        		nextAppID = appDB.getNextApplianceID().intValue();
+	        		
+	        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = new com.cannontech.database.db.stars.event.LMCustomerEventBase();
+	        		eventDB.setDbConnection( conn );
+	        		nextEventID = eventDB.getNextEventID().intValue();
+	        	}
+	        	catch (Exception e) {
+	        		e.printStackTrace();
+	        	}
+	        	finally {
+	        		try {
+	        			conn.close();
+	        		}
+	        		catch (Exception e) {}
+	        	}
+	        	
+	        	// Get "Signup" action & event type ID
+            	java.util.Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            			new Integer(energyCompanyID) );
+            			
+            	Integer progEventEntryID = null;
+	        	Integer signUpEntryID = null;
+	        	
+	            StarsCustSelectionList custEventList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMEREVENT );
+	            for (int i = 0; i < custEventList.getStarsSelectionListEntryCount(); i++) {
+	            	StarsSelectionListEntry entry = custEventList.getStarsSelectionListEntry(i);
+	            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_LMPROGRAMEVENT )) {
+	            		progEventEntryID = new Integer( entry.getEntryID() );
+	            		break;
+	            	}
+	            }
+	        	
+	            StarsCustSelectionList actionList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION );
+	            for (int i = 0; i < actionList.getStarsSelectionListEntryCount(); i++) {
+	            	StarsSelectionListEntry entry = actionList.getStarsSelectionListEntry(i);
+	            	if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_SIGNUP )) {
+	            		signUpEntryID = new Integer( entry.getEntryID() );
+	            		break;
+	            	}
+	            }
+	            
+	            java.util.Date now = new java.util.Date();
+	        	
+	        	for (int i = 0; i < programs.getLMProgramCount(); i++) {
+	        		LMProgram program = programs.getLMProgram(i);
+	        		
+	        		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = new com.cannontech.database.db.stars.appliance.ApplianceBase();
+	        		appDB.setApplianceID( new Integer(nextAppID++) );
+	        		appDB.setAccountID( account.getCustomerAccount().getAccountID() );
+	        		appDB.setApplianceCategoryID( new Integer(program.getApplianceCategoryID()) );
+	        		appDB.setLMProgramID( new Integer(program.getProgramID()) );
+	        		
+	        		multiDB.getDBPersistentVector().addElement( appDB );
+	        		
+	        		com.cannontech.database.data.stars.event.LMProgramEvent event =
+	        				new com.cannontech.database.data.stars.event.LMProgramEvent();
+	        		com.cannontech.database.db.stars.event.LMProgramEvent eventDB = event.getLMProgramEvent();
+	        		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+	        		
+	        		event.setEventID( new Integer(nextEventID++) );
+	        		eventDB.setAccountID( account.getCustomerAccount().getAccountID() );
+	        		eventDB.setLMProgramID( new Integer(program.getProgramID()) );
+	        		eventBase.setEventTypeID( progEventEntryID );
+	        		eventBase.setActionID( signUpEntryID );
+	        		eventBase.setEventDateTime( now );
+	        		
+					com.cannontech.database.data.company.EnergyCompanyBase energyCompany = new com.cannontech.database.data.company.EnergyCompanyBase();
+					energyCompany.getEnergyCompany().setEnergyCompanyID( new Integer(energyCompanyID) );
+	        		event.setEnergyCompanyBase( energyCompany );
+	        		
+	        		multiDB.getDBPersistentVector().addElement( event );
+	        	}
+	            
+	            Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+            }
             
             StarsLogin starsLogin = progSignUp.getStarsLogin();
             com.cannontech.database.db.customer.CustomerLogin login = new com.cannontech.database.db.customer.CustomerLogin();

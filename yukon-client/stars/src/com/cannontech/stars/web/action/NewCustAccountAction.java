@@ -182,7 +182,9 @@ public class NewCustAccountAction implements ActionBase {
 	            contactVct.addElement( contact );
             }
             
-            Hashtable selectionList = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+        	Hashtable selectionList = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+        			new Integer((int) operator.getEnergyCompanyID()) );
+        			
             StarsCustSelectionList custTypeList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
             Integer custTypeResID = null;
             for (int i = 0; i < custTypeList.getStarsSelectionListEntryCount(); i++) {

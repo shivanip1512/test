@@ -79,10 +79,11 @@ public class GetCustAccountAction implements ActionBase {
             }
 
         	user.setAttribute("CUSTOMER_ACCOUNT", account);
-            Hashtable selectionList = (Hashtable) user.getAttribute( "CUSTOMER_SELECTION_LIST" );
+            Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+            		new Integer(user.getEnergyCompanyID()) );
             
 			StarsCustAccountInfo accountInfo = StarsCustAccountInfoFactory.getStarsCustAccountInfo(
-					account, selectionList, StarsGetCustomerAccountResponse.class );
+					account, selectionLists, StarsGetCustomerAccountResponse.class );
             respOper.setStarsGetCustomerAccountResponse( (StarsGetCustomerAccountResponse) accountInfo );
 
             return SOAPUtil.buildSOAPMessage( respOper );
