@@ -28,7 +28,7 @@ public class YukonListEntry
 	/**
 	 * Constructor for YukonListEntry.
 	 */
-	protected YukonListEntry() {
+	public YukonListEntry() {
 		super();
 	}
 
