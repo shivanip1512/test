@@ -1299,6 +1299,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
     RWCRExpr    multiplier("mult(iplier)? +kyz *[123] +[0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     RWCRExpr    iedClass("ied +class +[0-9]+ +[0-9]+");
     RWCRExpr    iedScan("ied +scan +[0-9]+ +[0-9]+");
+    RWCRExpr    groupAddr("group +(enable)|(disable)");
 
     char *p;
 
@@ -1333,6 +1334,24 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
 
                 _cmd["scan"] = CtiParseValue( atoi( cmdtok().data() ) );
                 _cmd["scandelay"] = CtiParseValue( atoi( cmdtok().data() ) );
+            }
+        }
+        if(!(CmdStr.match("group")).isNull())
+        {
+            if(!(token = CmdStr.match(groupAddr)).isNull())
+            {
+                RWCTokenizer cmdtok(token);
+                //  go past "group"
+                cmdtok();
+
+                if( strcmp( cmdtok().data(), "enable") == 0 )
+                {
+                    _cmd["groupaddr"] = CtiParseValue( 1 );
+                }
+                else
+                {
+                    _cmd["groupaddr"] = CtiParseValue( 0 );
+                }
             }
         }
         if(!(CmdStr.match("mult")).isNull())
