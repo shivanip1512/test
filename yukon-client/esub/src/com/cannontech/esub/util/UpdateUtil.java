@@ -193,7 +193,7 @@ public class UpdateUtil {
 	
 	public static boolean isControllable(int pointID) {
 		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
-		long tags = pcc.getTags(pointID);
+		int tags = (int) pcc.getTags(pointID);		
 		return ((tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0) &&
 				!((tags & Signal.MASK_ANY_CONTROL_DISABLE) != 0);
 	}
