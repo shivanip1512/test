@@ -198,7 +198,7 @@ public Object[] createNewPanel(int panelIndex)
 			if( "TRUE".equalsIgnoreCase(showItToo) )
 			{
 				objs[0] = new com.cannontech.dbeditor.editor.device.LMIExclusionEditorPanel();
-				objs[1] = "Exclusion Settings";
+				objs[1] = "Exclusion Timing";
 			}
 			else
 				objs = null;
