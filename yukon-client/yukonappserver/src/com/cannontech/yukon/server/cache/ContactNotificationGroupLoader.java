@@ -53,10 +53,11 @@ public class ContactNotificationGroupLoader implements Runnable
 	timerStart = new java.util.Date();
 	//temp code
 		String sqlString = 
-				"SELECT NOTIFICATIONGROUPID,GROUPNAME FROM " + 
-				NotificationGroup.TABLE_NAME + " " + 
-				"WHERE NOTIFICATIONGROUPID > 0 " + 
-				"ORDER BY NOTIFICATIONGROUPID";
+				"SELECT NotificationGroupID, GroupName, EmailFromAddress, EmailMessage, " +
+				"EmailSubject, DisableFlag " +
+				"FROM " + NotificationGroup.TABLE_NAME + " " + 
+				"WHERE NotificationGroupID > 0 " + 
+				"ORDER BY GroupName";
 	
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -69,34 +70,39 @@ public class ContactNotificationGroupLoader implements Runnable
 	
 			while (rset.next())
 			{
-				int notifGroupID = rset.getInt(1);
-				String notifGroupName = rset.getString(2).trim();
-	
-				com.cannontech.database.data.lite.LiteNotificationGroup gr =
-						new com.cannontech.database.data.lite.LiteNotificationGroup(
-							notifGroupID, notifGroupName);
-					
-				allContactNotificationGroups.add(gr);
+				LiteNotificationGroup lGrp =
+						new LiteNotificationGroup( rset.getInt(1), rset.getString(2).trim() );
+
+				lGrp.setEmailFrom( rset.getString(3).trim() );
+				lGrp.setEmailBody( rset.getString(4).trim() );
+				lGrp.setEmailSubject( rset.getString(5).trim() );
+				lGrp.setDisabled( rset.getString(6).trim().equalsIgnoreCase("Y") );
+
+
+				allContactNotificationGroups.add( lGrp );
 			}
 
-/*	
-			// WE MIGHT NEED TO ADD THE LOCATIONS IN THE GROUP HERE		
+	
+			// Add all the contacts
 			sqlString = 
 				"SELECT n.ContactNotifID, n.ContactID, n.NotificationCategoryID, n.DisableFlag, " + 
-				"n.Notification, nd.NotificationID FROM " + 
+				"n.Notification, nd.NotificationgroupID FROM " + 
 		 		ContactNotification.TABLE_NAME + " n, " +
 		 		NotificationDestination.TABLE_NAME + " nd " +
 		 		"WHERE nd.notificationgroupID > " + CtiUtilities.NONE_ID + " " +
-		 		"and n.ContactID = nd.RecipientID " +
+		 		"and n.ContactNotifID = nd.RecipientID " +
 		 		"ORDER BY nd.destinationorder";
-					
+
 			
 			rset = stmt.executeQuery(sqlString);
-			while (rset.next())
+			while( rset.next() )
 			{
 	
 				for( int i = 0; i < allContactNotificationGroups.size(); i++ )
 				{
+					LiteNotificationGroup lGrp = 
+						(LiteNotificationGroup)allContactNotificationGroups.get(i);
+					
 					LiteContactNotification ln = new LiteContactNotification(
 							rset.getInt(1), 
 							rset.getInt(2), 
@@ -104,25 +110,15 @@ public class ContactNotificationGroupLoader implements Runnable
 							rset.getString(4),
 							rset.getString(5) );
 							
-					int notifGroupID = rset.getInt(2);
-					
-					
-					// load all the destinations here regardless of the group 
-					// they belong to
-					allUsedContactNotifications.add( ln ); 
-					
-					// load the destinations for the specific group
-					if( ((LiteNotificationGroup)allContactNotificationGroups.get(i)).
-						getNotificationGroupID() == notifGroupID )
+					// load the destinations for the specific group					
+					if( lGrp.getNotificationGroupID() == rset.getInt(6) )
 					{
-						((LiteNotificationGroup)allContactNotificationGroups.get(i)).
-							getNotificationDestinationsList().add(ln);
-	
+						lGrp.getNotificationDestinations().add(ln);
 						break;
 					}
 				}
 			}
-*/
+
 			
 		}
 		catch( java.sql.SQLException e )
