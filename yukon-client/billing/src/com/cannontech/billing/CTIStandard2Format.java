@@ -1,423 +1,134 @@
 package com.cannontech.billing;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
- * Creation date: (6/28/00 10:47:08 AM)
+ * Creation date: (3/4/2002 3:56:10 PM)
  * @author: 
  */
 public class CTIStandard2Format extends FileFormatBase
 {
-	private String meterNumber;
-	private String pointName;
-	private String reading;
-	private String readDate;
-	private String readTime;
-	private String quality;
+
 /**
- * CTIStandard2Format constructor comment.
+ * CTICSVFormat constructor comment.
  */
 public CTIStandard2Format() {
 	super();
 }
-/**
- * dataToString method comment.
- */
-public String dataToString() {
-	StringBuffer writeToFile = new StringBuffer();
-	writeToFile.append(meterNumber);
-	for (int x=0; x<8-meterNumber.length(); x++)
-		writeToFile.append(" ");
-	writeToFile.append(",");
-	writeToFile.append(pointName);
-	for (int x=0; x<20-pointName.length(); x++)
-		writeToFile.append(" ");
-	writeToFile.append(",");
-	for (int x=0; x<10-reading.length(); x++)
-		writeToFile.append(" ");
-	writeToFile.append(reading);
-	writeToFile.append(",");
-	writeToFile.append(readDate);
-	writeToFile.append(",");
-	writeToFile.append(readTime);
-	writeToFile.append(",");
-	writeToFile.append(quality);
-	writeToFile.append("\r\n");
-	return writeToFile.toString();
-}
+
 /**
  * Insert the method's description here.
- * Creation date: (6/28/00 11:01:54 AM)
- * @return java.lang.String[]
- * @param databasealias java.lang.String
- * @param collectionGroup java.lang.String
+ * Creation date: (3/4/2002 1:41:30 PM)
+ * @return boolean
+ * @param collectionGroups java.util.Vector
+ * @param dbAlias java.lang.String
  */
-public final static String[] getAllPointID(String databaseAlias, String collectionGroup)
+public boolean retrieveBillingData(String dbAlias)
 {
-	StringBuffer sql = new StringBuffer("SELECT POINTID FROM POINT WHERE PAOBJECTID IN ");
-	sql.append(" (SELECT DEVICEID FROM DEVICEMETERGROUP WHERE COLLECTIONGROUP = '" + collectionGroup + "')");
+	long timer = System.currentTimeMillis();
 
-	com.cannontech.database.SqlStatement stmt =	new com.cannontech.database.SqlStatement(sql.toString(), databaseAlias );
+	if( dbAlias == null )
+		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+
+	String [] SELECT_COLUMNS =
+	{
+		SQLStringBuilder.DCS_ADDRESS,
+		SQLStringBuilder.PT_POINTNAME,
+		SQLStringBuilder.PT_POINTID,
+		SQLStringBuilder.RPH_VALUE,
+		SQLStringBuilder.RPH_TIMESTAMP
+	};
+
+	String [] FROM_TABLES =
+	{
+		com.cannontech.database.db.point.RawPointHistory.TABLE_NAME,
+		com.cannontech.database.db.point.Point.TABLE_NAME,
+		com.cannontech.database.db.device.DeviceCarrierSettings.TABLE_NAME
+	};
+
+	SQLStringBuilder builder = new SQLStringBuilder();
+	String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), null, validAccPtOffsets)).toString());
+		sql += " ORDER BY " 
+		+ SQLStringBuilder.DCS_ADDRESS + ", "
+		+ SQLStringBuilder.PT_POINTID + ", " 
+		+ SQLStringBuilder.RPH_TIMESTAMP + " DESC ";
+
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
 
 	try
 	{
-		stmt.execute();
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	String allPointID[] = new String[stmt.getRowCount()];
-
-	for( int i = 0; i < stmt.getRowCount(); i++ )
-	{
-		allPointID[i] = (stmt.getRow(i)[0]).toString();
-		
-	}
-	
-	return allPointID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/28/00 11:23:24 AM)
- * @return java.lang.String
- * @param databaseAlias java.lang.String
- * @param pointID java.lang.String
- */
-public final String getMeterNumber(String databaseAlias, String pointID) {
-	
-	StringBuffer sql = new StringBuffer("SELECT PAONAME FROM YUKONPAOBJECT WHERE PAOBJECTID = ");
-	sql.append(" (SELECT DEVICEID FROM POINT WHERE POINTID = " + pointID + ")");
-	com.cannontech.database.SqlStatement stmt =	new com.cannontech.database.SqlStatement(sql.toString(), databaseAlias );
-												
-	String newMeterNumber = null;	
-	try
-	{
-		stmt.execute();
-		if (stmt.getRowCount() > 0)
-			newMeterNumber = new String( (String)( stmt.getRow(0)[0]));
-		else
-			newMeterNumber = new String("");
-		
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	return newMeterNumber;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/28/00 11:26:56 AM)
- * @return java.lang.String
- * @param databaseAlias java.lang.String
- * @param pointID java.lang.String
- */
-public final String getPointName(String databaseAlias, String pointID) {
-	
-	com.cannontech.database.SqlStatement stmt =
-	new com.cannontech.database.SqlStatement("SELECT POINTNAME FROM POINT WHERE POINTID = " + pointID + ""
-												,databaseAlias );
-	
-	String newPointName = null;	
-	try
-	{
-		stmt.execute();
-		if (stmt.getRowCount() > 0)
-			newPointName = new String( (String)( stmt.getRow(0)[0]));
-		else
-			newPointName = new String("");
-		
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	
-	return newPointName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/28/00 11:16:28 AM)
- * @return java.lang.String
- * @param databaseAlias java.lang.String
- * @param pointID java.lang.String
- */
-public final String getReadDate(String databaseAlias, String pointID) {
-	
-	com.cannontech.database.SqlStatement stmt =
-	new com.cannontech.database.SqlStatement("SELECT TO_CHAR(TIMESTAMP, 'MM/DD/YY') FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + " AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + ")"
-												,databaseAlias );
-	
-	String newReadDate = null;	
-	try
-	{
-		stmt.execute();
-		if (stmt.getRowCount() > 0)
-			newReadDate = new String( (String)( stmt.getRow(0)[0]));
-		else
-			newReadDate = new String("        ");
-		
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	
-	return newReadDate;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/28/00 11:12:44 AM)
- * @return java.lang.String
- * @param databaseAlias java.lang.String
- * @param pointID java.lang.String
- */
-public final String getReading(String databaseAlias, String pointID) {
-
-	com.cannontech.database.SqlStatement stmt =
-	new com.cannontech.database.SqlStatement("SELECT VALUE FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + " AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + ")"
-												,databaseAlias );
-	
-	String newReading = null;
-	try
-	{
-		stmt.execute();
-		if (stmt.getRowCount() > 0)
-			newReading = new String( ((java.math.BigDecimal)( stmt.getRow(0)[0])).toString());
-		else
-			newReading = new String("");
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	
-	return newReading;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/28/00 11:16:28 AM)
- * @return java.lang.String
- * @param databaseAlias java.lang.String
- * @param pointID java.lang.String
- */
-public final String getReadTime(String databaseAlias, String pointID) {
-	
-	com.cannontech.database.SqlStatement stmt =
-	new com.cannontech.database.SqlStatement("SELECT TO_CHAR(TIMESTAMP, 'HH24:MM') FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + " AND TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM RAWPOINTHISTORY WHERE POINTID = " + pointID + ")"
-												,databaseAlias );
-	
-	String newReadTime = null;	
-	try
-	{
-		stmt.execute();
-		if (stmt.getRowCount() > 0)
-			newReadTime = new String( (String)( stmt.getRow(0)[0]));
-		else
-			newReadTime = new String("     ");
-		
-	}
-	catch( Exception e )
-	{
-		e.printStackTrace();
-	}
-
-	
-	return newReadTime;
-}
-/**
- * insertValues method comment.
- */
-public void insertValues(String databaseAlias, String collectionGroup, int itemNumber) throws java.sql.SQLException {
-	
-	String pointID = new String(getAllPointID(databaseAlias, collectionGroup)[itemNumber]);
-	meterNumber = getMeterNumber(databaseAlias, pointID);
-	reading = getReading(databaseAlias, pointID);
-	readDate = getReadDate(databaseAlias, pointID);
-	readTime = getReadTime(databaseAlias, pointID);
-	pointName = getPointName(databaseAlias, pointID);
-	if (!reading.equals(""))
-		quality = "N  ";
-	else 
-		quality = "F  ";
-	
-}
-/**
- * Retrieves values from the database and inserts them in a FileFormatBase object
- * Creation date: (11/30/00)
- */
-public boolean retrieveBillingData(java.util.Vector collectionGroups, String databaseAlias)
-{
-	return false;
-
-	/*String databaseAlias = new String("yukon");
-
-	java.util.List billingDevices = retrieveCurrentBillingMeterList(collectionGroups,databaseAlias);
-	java.util.List points = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPoints();
-
-	String sqlString = new String("SELECT CHANGEID, POINTID, TIMESTAMP, QUALITY, VALUE FROM RAWPOINTHISTORY WHERE POINTID IN SELECT");
-	for(int i=1;i<collectionGroups.size();i++)
-	{
-		sqlString += " OR COLLECTIONGROUP = '" + collectionGroups.get(i) + "'";
-	}
-	sqlString += ")";
-
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-	preparedStatement = conn.prepareStatement(sqlString);
-
-	Integer accountNumber = null;
-	String importType = new String("HH");
-	String serviceGroup = new String("ELEC");
-	String paymentSign = new String(" ");
-	Double payment = new Double(0.0);
-	java.util.GregorianCalendar batchDate = new java.util.GregorianCalendar();
-	String batchNumber = new String("800");
-	java.util.GregorianCalendar readDate = null;
-	String meterNumber = null;
-	Integer meterPositionNumber = null;
-	java.util.Vector registerNumberVector = null;
-	java.util.Vector kwhReadingVector = null;
-	java.util.Vector kwReadingVector = null;
-	java.util.Vector kvarReadingVector = null;
-
-	try
-	{
-		java.sql.ResultSet rset = preparedStatement.executeQuery();
-
-		int tempDeviceType = 0;
-
-		while(rset.next())
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		if( conn == null )
 		{
-			registerNumberVector = new java.util.Vector(4);
-			kwhReadingVector = new java.util.Vector(4);
-			kwReadingVector = new java.util.Vector(4);
-			kvarReadingVector = new java.util.Vector(4);
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+			return false;
 		}
-
-		for(int i=0;i<=100%8+1;i++)
+		else
 		{
-			for(int j=0;j<8;j++)
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
+			rset = pstmt.executeQuery();
+
+			com.cannontech.clientutils.CTILogger.info(" *Start looping through return resultset");
+
+			int currentPointID = 0;
+			int lastPointID = 0;
+			while (rset.next())
 			{
-				int tempRowNumber = (i*8)+j;
-				tempDeviceType = com.cannontech.database.data.device.DeviceTypes.getType( ((String)(stmt.getRow(tempRowNumber)[0])) );
-				if( tempDeviceType == com.cannontech.database.data.device.DeviceTypes.ALPHA ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.VECTRON ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.FULCRUM ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.LANDISGYRS4 ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.MCT360 ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.MCT370 )
+				java.sql.Timestamp ts = rset.getTimestamp(5);
+				Date tsDate = new Date(ts.getTime());
+				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
-					meterNumbers.add( (String)(stmt.getRow(tempRowNumber)[1]) );
-					kwhReadings.add( (String)(stmt.getRow(tempRowNumber)[2]) );
-					kwReadings.add( (String)(stmt.getRow(tempRowNumber)[3]) );
-					kvReadings.add( (String)(stmt.getRow(tempRowNumber)[4]) );
-				}
-				else//regular mct
-				{
-					meterNumbers.add( (String)(stmt.getRow(tempRowNumber)[1]) );
-					kwhReadings.add( (String)(stmt.getRow(tempRowNumber)[2]) );
-					kwReadings.add( "       " );
-					kvReadings.add( "     " );
+					currentPointID = rset.getInt(3);
+					double multiplier = 1;
+					if( getBillingDefaults().isRemoveMultiplier())
+					{
+						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
+					}
+	
+					// Our break label so we can exit the if-else checks
+					inValidTimestamp:
+					if( currentPointID != lastPointID )	//just getting max time for each point
+					{
+						if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							break inValidTimestamp;
+
+						lastPointID = currentPointID;
+	
+						String address = rset.getString(1);
+						String pointName = rset.getString(2);
+						double reading = rset.getDouble(4) / multiplier;
+						
+						com.cannontech.billing.record.CTIStandard2Record cti2Rec = 
+							new com.cannontech.billing.record.CTIStandard2Record(address, pointName, reading, ts);
+						getRecordVector().addElement(cti2Rec);
+	
+					}
 				}
 			}
-			getRecordVector().add(new CADPXL2Record(accountNumber, importType, serviceGroup, paymentSign, payment, batchDate, batchNumber, readDate, meterNumber, meterPositionNumber, registerNumberVector, kwhReadingVector, kwReadingVector, kvarReadingVector));
 		}
 	}
-	catch(Exception e)
+	catch( java.sql.SQLException e )
 	{
 		e.printStackTrace();
-	}*/
-}
-
-/**
- * Retrieves values from the database and inserts them in a FileFormatBase object
- * Creation date: (11/30/00)
- */
-public boolean retrieveBillingData(String databaseAlias)
-{
-	return false;
-
-	/*String databaseAlias = new String("yukon");
-
-	java.util.List billingDevices = retrieveCurrentBillingMeterList(collectionGroups,databaseAlias);
-	java.util.List points = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllPoints();
-
-	String sqlString = new String("SELECT CHANGEID, POINTID, TIMESTAMP, QUALITY, VALUE FROM RAWPOINTHISTORY WHERE POINTID IN SELECT");
-	for(int i=1;i<collectionGroups.size();i++)
-	{
-		sqlString += " OR COLLECTIONGROUP = '" + collectionGroups.get(i) + "'";
 	}
-	sqlString += ")";
-
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( databaseAlias );
-	preparedStatement = conn.prepareStatement(sqlString);
-
-	Integer accountNumber = null;
-	String importType = new String("HH");
-	String serviceGroup = new String("ELEC");
-	String paymentSign = new String(" ");
-	Double payment = new Double(0.0);
-	java.util.GregorianCalendar batchDate = new java.util.GregorianCalendar();
-	String batchNumber = new String("800");
-	java.util.GregorianCalendar readDate = null;
-	String meterNumber = null;
-	Integer meterPositionNumber = null;
-	java.util.Vector registerNumberVector = null;
-	java.util.Vector kwhReadingVector = null;
-	java.util.Vector kwReadingVector = null;
-	java.util.Vector kvarReadingVector = null;
-
-	try
+	finally
 	{
-		java.sql.ResultSet rset = preparedStatement.executeQuery();
-
-		int tempDeviceType = 0;
-
-		while(rset.next())
+		try
 		{
-			registerNumberVector = new java.util.Vector(4);
-			kwhReadingVector = new java.util.Vector(4);
-			kwReadingVector = new java.util.Vector(4);
-			kvarReadingVector = new java.util.Vector(4);
-		}
-
-		for(int i=0;i<=100%8+1;i++)
+			if( rset != null ) rset.close();
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
 		{
-			for(int j=0;j<8;j++)
-			{
-				int tempRowNumber = (i*8)+j;
-				tempDeviceType = com.cannontech.database.data.device.DeviceTypes.getType( ((String)(stmt.getRow(tempRowNumber)[0])) );
-				if( tempDeviceType == com.cannontech.database.data.device.DeviceTypes.ALPHA ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.VECTRON ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.FULCRUM ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.LANDISGYRS4 ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.MCT360 ||
-						tempDeviceType == com.cannontech.database.data.device.DeviceTypes.MCT370 )
-				{
-					meterNumbers.add( (String)(stmt.getRow(tempRowNumber)[1]) );
-					kwhReadings.add( (String)(stmt.getRow(tempRowNumber)[2]) );
-					kwReadings.add( (String)(stmt.getRow(tempRowNumber)[3]) );
-					kvReadings.add( (String)(stmt.getRow(tempRowNumber)[4]) );
-				}
-				else//regular mct
-				{
-					meterNumbers.add( (String)(stmt.getRow(tempRowNumber)[1]) );
-					kwhReadings.add( (String)(stmt.getRow(tempRowNumber)[2]) );
-					kwReadings.add( "       " );
-					kvReadings.add( "     " );
-				}
-			}
-			getRecordVector().add(new CADPXL2Record(accountNumber, importType, serviceGroup, paymentSign, payment, batchDate, batchNumber, readDate, meterNumber, meterPositionNumber, registerNumberVector, kwhReadingVector, kwReadingVector, kvarReadingVector));
-		}
+			e2.printStackTrace();//sometin is up
+		}	
 	}
-	catch(Exception e)
-	{
-		e.printStackTrace();
-	}*/
+	com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
+	return true;
 }
 }
