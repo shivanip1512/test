@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   ctivangogh
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2003/12/31 16:15:36 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2004/01/16 16:52:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -895,6 +896,34 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 pDyn->getDispatch().setTags( tagstoset );
                 pDyn->getDispatch().resetTags( tagstoreset );
             }
+
+            break;
+        }
+    case (CtiCommandMsg::ResetControlHours):
+        {
+            // Vector contains token? ? ? ? ?
+            LONG token      = Cmd->getOpArgList().at(0);
+
+            #if 0
+            CtiLockGuard<CtiMutex> pmguard(server_mux);
+            CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
+
+            for(;itr();)
+            {
+                CtiPoint *TempPoint = itr.value();
+                {
+                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
+                }
+            }
+            #else
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            #endif
+
 
             break;
         }
@@ -2266,7 +2295,14 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                                 }
                             }
 
-                            postList.insert(sigMsg);
+                            if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
+                            {
+                                postList.insert(sigMsg);
+                            }
+                            else
+                            {
+                                delete sigMsg;
+                            }
                         }
 
                     } while( conn.isValid() && sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
@@ -2786,14 +2822,14 @@ INT CtiVanGogh::checkSignalStateQuality(CtiSignalMsg  *pSig, CtiMultiWrapper &aW
 
     }
 
-    #if 0       // 092503 CGP.
+#if 0       // 092503 CGP.
     // This is an alarm if the alarm state indicates anything other than SignalEvent.
     if(pSig->getSignalCategory() > SignalEvent && !(pSig->getTags() & MASK_ANY_ALARM))
     {
         pSig->setTags(TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM);
         pSig->setLogType(AlarmCategoryLogType);
     }
-    #endif
+#endif
 
     return status;
 }
@@ -6484,7 +6520,7 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | (point.getAlarming().getNotifyOnAcknowledge() ? 0 : TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) );
         pSigActive->setText(AlarmTagsToString(pSigActive->getTags()) + pSigActive->getText());
         pSigActive->setMessageTime( RWTime() );
 
@@ -6502,7 +6538,7 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS );
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | (point.getAlarming().getNotifyOnAcknowledge() ? 0 : TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) );
         pSigActive->setText(AlarmTagsToString(pSigActive->getTags()) + pSigActive->getText());
         pSigActive->setMessageTime( RWTime() );
 
@@ -6544,7 +6580,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
             if(pDyn != NULL)
             {
                 pSigNew->setUser( Cmd->getUser() );
-                pSigNew->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+                pSigNew->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | (pPt->getAlarming().getNotifyOnAcknowledge() ? 0 : TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL ));
                 pSigNew->setText(AlarmTagsToString(pSigNew->getTags()) + pSigNew->getText());
 
                 if( !pPt->getAlarming().getNotifyOnAcknowledge() )
@@ -6675,4 +6711,3 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 
     return status;
 }
-
