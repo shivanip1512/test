@@ -7,6 +7,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.database.data.lite.LiteComparators;
+import java.util.Collections;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;
@@ -236,6 +238,7 @@ private javax.swing.JComboBox getJComboBoxConstraint() {
 			// user code begin {1}
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			java.util.List constraints = cache.getAllLMProgramConstraints();
+			Collections.sort( constraints, LiteComparators.liteStringComparator );
 			for( int i = 0; i < constraints.size(); i++ )
 				ivjJComboBoxConstraint.addItem( constraints.get(i) );
 			// user code end
