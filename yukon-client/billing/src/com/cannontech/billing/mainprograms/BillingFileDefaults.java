@@ -28,8 +28,15 @@ public class BillingFileDefaults
 	private java.util.Date energyStartDate = null;
 	private java.util.Date demandStartDate = null;
 
+	public static final int COLLECTION_GROUP = 0;
+	public static final int ALTERNATE_GROUP = 1;
+	public static final int BILLING_GROUP = 2;
 
-	private String billGroupColumn = "COLLECTIONGROUP";
+	private static String COLLECTION_GROUP_COLUMN_STRING = "COLLECTIONGROUP";
+	private static String ALTERNATE_GROUP_COLUMN_STRING = "TESTCOLLECTIONGROUP";
+	private static String BILLING_GROUP_COLUMN_STRING = "BILLINGGROUP";
+
+	private String billGroupColumn = COLLECTION_GROUP_COLUMN_STRING;
 /**
  * DynamicBilling constructor comment.
  */
@@ -42,7 +49,7 @@ public BillingFileDefaults()
  * DynamicBilling constructor comment.
  */
 public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays, 
-				String newSingleBillGrp, String newBillGrpColumn, String newOutFile, 
+				String newSingleBillGrp, int billingGroupIndex, String newOutFile, 
 				String newInFile, java.util.Date newEndDate)
 {
 	super();
@@ -50,7 +57,7 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
 	setDemandDaysPrev( newDemandDays );
 	setEnergyDaysPrev( newEnergyDays );
 	setBillGroup( newSingleBillGrp );
-	setBillGroupColumn( newBillGrpColumn );
+	setBillGroupColumn( billingGroupIndex );
 	setOutputFile( newOutFile );
 	
 	setInputFile( newInFile );
@@ -60,7 +67,7 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
  * DynamicBilling constructor comment.
  */
 public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays, 
-				java.util.Vector newBillGrp, String newBillGrpColumn, String newOutFile, 
+				java.util.Vector newBillGrp, int billingGroupIndex, String newOutFile, 
 				String newInFile, java.util.Date newEndDate)
 {
 	super();
@@ -68,7 +75,7 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
 	setDemandDaysPrev( newDemandDays );
 	setEnergyDaysPrev( newEnergyDays );
 	setBillGroup( newBillGrp );
-	setBillGroupColumn( newBillGrpColumn);
+	setBillGroupColumn( billingGroupIndex);
 	setOutputFile( newOutFile );
 
 	setInputFile( newInFile );
@@ -78,6 +85,34 @@ public java.util.Vector getBillGroup()
 {
 	return billGroup;
 }
+
+public static String getBillGroupComboBoxString(int index)
+{
+	switch(index)
+	{
+		case COLLECTION_GROUP:
+			return "Collection Group";
+		case ALTERNATE_GROUP:
+			return "Alternate Group";
+		case BILLING_GROUP:
+			return "Billing Group";
+		default: //this is bad
+			return "Collection Group";
+	}
+}
+
+public static String getBillGroupComboBoxString(String groupString)
+{
+	if( groupString.equalsIgnoreCase(COLLECTION_GROUP_COLUMN_STRING))
+		return "Collection Group";
+	else if( groupString.equalsIgnoreCase(ALTERNATE_GROUP_COLUMN_STRING))
+		return "Alternate Group";
+	else if( groupString.equalsIgnoreCase(BILLING_GROUP_COLUMN_STRING))
+		return "Billing Group";
+	else 
+		return "Collection Group";
+}
+
 public String getBillGroupColumn()
 {
 	return billGroupColumn;
@@ -312,6 +347,24 @@ private void setBillGroup(java.util.Vector newBillGroup)
 {
 	billGroup = newBillGroup;
 }
+public void setBillGroupColumn(int newbillGroupColumnIndex)
+{
+	switch(newbillGroupColumnIndex)
+	{
+		case COLLECTION_GROUP:
+			billGroupColumn = COLLECTION_GROUP_COLUMN_STRING;
+			break;
+		case ALTERNATE_GROUP:
+			billGroupColumn = ALTERNATE_GROUP_COLUMN_STRING;
+			break;
+		case BILLING_GROUP:
+			billGroupColumn = BILLING_GROUP_COLUMN_STRING;
+			break;
+		default: //this is bad
+			billGroupColumn = COLLECTION_GROUP_COLUMN_STRING;
+	}
+}
+
 public void setBillGroupColumn(String newBillGroupColumn)
 {
 	billGroupColumn = newBillGroupColumn;

@@ -41,19 +41,19 @@ public class BillingFileFormatPanel extends javax.swing.JPanel implements java.a
 	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
 	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
 
-	private String[] billingTypeString = 
-	{ 
-		"COLLECTION GROUP",
-		"ALTERNATE GROUP",
-		"BILLING GROUP"
-	};
-
-	private String[] billingTypeColumn= 
-	{ 
-		"COLLECTIONGROUP",
-		"TESTCOLLECTIONGROUP",
-		"BILLINGGROUP"
-	};
+//	private String[] billingTypeString = 
+//	{ 
+//		"COLLECTION GROUP",
+//		"ALTERNATE GROUP",
+//		"BILLING GROUP"
+//	};
+//
+//	private String[] billingTypeColumn= 
+//	{ 
+//		"COLLECTIONGROUP",
+//		"TESTCOLLECTIONGROUP",
+//		"BILLINGGROUP"
+//	};
 	
 	
 	
@@ -152,7 +152,8 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if ( event.getSource() == getBillingGroupTypeComboBox())
 	{
-		getBillingDefaults().setBillGroupColumn(billingTypeColumn[getBillingGroupTypeComboBox().getSelectedIndex()]);
+//		getBillingDefaults().setBillGroupColumn(billingTypeColumn[getBillingGroupTypeComboBox().getSelectedIndex()]);
+		getBillingDefaults().setBillGroupColumn(getBillingGroupTypeComboBox().getSelectedIndex());
 		getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
 	}
 }
@@ -346,15 +347,11 @@ private javax.swing.JComboBox getBillingGroupTypeComboBox() {
 			ivjBillingGroupTypeComboBox = new javax.swing.JComboBox();
 			ivjBillingGroupTypeComboBox.setName("BillingGroupTypeComboBox");
 			// user code begin {1}
-			
-			for (int i = 0; i < billingTypeString.length; i++)
-			{
-				ivjBillingGroupTypeComboBox.addItem(billingTypeString[i]);
-				if( billingTypeColumn[i].equalsIgnoreCase(getBillingDefaults().getBillGroupColumn().toString()) )
-				{
-					ivjBillingGroupTypeComboBox.setSelectedItem(billingTypeString[i]);
-				}
-			}
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.COLLECTION_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.ALTERNATE_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.BILLING_GROUP));
+
+			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupComboBoxString(getBillingDefaults().getBillGroupColumn()));
 			ivjBillingGroupTypeComboBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1322,7 +1319,7 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	FileFormatTypes.getFormatID(getFileFormatComboBox().getSelectedItem().toString()),
 	(new Integer( getDemandDaysPreviousTextBox().getText())).intValue(),
 	(new Integer( getEnergyDaysPreviousTextBox().getText())).intValue(),
-	selectedCollGrps, getBillingGroupTypeComboBox().getSelectedItem().toString(),
+	selectedCollGrps, getBillingGroupTypeComboBox().getSelectedIndex(),
 	getOutputFileTextField().getText(),
 	getInputFileText(),
 	newEndDate	);
