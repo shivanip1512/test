@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2004/06/30 19:09:26 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2004/07/20 14:01:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -596,6 +596,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_RTC;
     }
+    else if(rwsTemp == "rtm")
+    {
+        nRet = TYPE_RTM;
+    }
     else
     {
         {
@@ -1056,6 +1060,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPELMT2:
     case TYPECBC6510:
     case TYPE_RTC:
+    case TYPE_RTM:
         {
             bRet = true;
             break;
@@ -1417,28 +1422,28 @@ RWCString   resolveDBChanged(INT dbnum)
         }
     case ChangeConfigDb:
         {
-	    rStr = RWCString(" Yukon Config DB");
-	    break;
+        rStr = RWCString(" Yukon Config DB");
+        break;
         }
     case ChangeTagDb:
         {
-	    rStr = RWCString(" Yukon Tag DB");
-	    break;
-	}
+        rStr = RWCString(" Yukon Tag DB");
+        break;
+    }
     case ChangeCICustomerDb:
         {
-	    rStr = RWCString(" Yukon CI Customer DB");
-	    break;
-	}
+        rStr = RWCString(" Yukon CI Customer DB");
+        break;
+    }
     case ChangeLMConstraintDb:
         {
-	    rStr = RWCString(" Yukon LM Constraint DB");
-	    break;
-	}
+        rStr = RWCString(" Yukon LM Constraint DB");
+        break;
+    }
     case ChangeSeasonScheduleDb:
         {
-	    rStr = RWCString(" Yukon Season Schedule DB");
-	    break;
+        rStr = RWCString(" Yukon Season Schedule DB");
+        break;
         }
     default:
         {

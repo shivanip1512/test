@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2004/06/29 14:31:29 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2004/07/20 14:01:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1570,6 +1570,15 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
+                case TYPE_RTM:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        break;
+                    }
                 default:
                     {
                         {
@@ -1715,6 +1724,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_LGS4:
                     case TYPE_KV2:
                     case TYPE_TDMARKV:
+                    case TYPE_RTM:
                     default:
                         {
                             /*  These guys are handled in a special way...  */
