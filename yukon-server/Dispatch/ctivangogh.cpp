@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2003/02/19 16:03:06 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2003/03/12 16:41:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -322,6 +322,7 @@ void CtiVanGogh::VGMainThread()
         _rphThread.join();
         _archiveThread.join();
         _timedOpThread.join();
+        _dbThread.join();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -470,7 +471,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " VGCThread: " << rwThreadId() << " is terminating... " << endl;
+        dout << RWTime() << " Dispatch Connection Handler Thread shutting down " << endl;
     }
 
     return;
@@ -3209,7 +3210,7 @@ void CtiVanGogh::postSignalAsEmail( const CtiSignalMsg &sig )
                     // Check if point identifies a single recipient to be notified on any signal
                     if(rid > 0)
                     {
-		        CtiTableContactNotification *pContactNotif = NULL;
+                CtiTableContactNotification *pContactNotif = NULL;
                         CtiTableNotificationGroup nulGrp;
 
                         nulGrp.setEmailFromAddress(gEmailFrom);
@@ -3559,8 +3560,8 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
             sm.lpszSenderName    = grp.getGroupName();
             sm.lpszRecipient     = cNotif.getNotification();
 
-    	    // Need to add to the CtiTableContactNotification the contacts name if we want to set this field
-	    //            sm.lpszRecipientName = cNotif.getRecipientName(); 
+            // Need to add to the CtiTableContactNotification the contacts name if we want to set this field
+        //            sm.lpszRecipientName = cNotif.getRecipientName();
 
             sm.lpszReplyTo       = NULL;
             sm.lpszReplyToName   = NULL;
@@ -4244,13 +4245,13 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                             dout << RWTime() << " Notification Recipients will be reloaded on next usage." << endl;
                         }
                         // Recipients have changed
-			CtiContactNotificationSet_t::iterator cnit;
-			
-			for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
-			  {
-			    CtiTableContactNotification &CNotif = *cnit;
-			    CNotif.setDirty(true);
-			  }
+            CtiContactNotificationSet_t::iterator cnit;
+            
+            for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
+              {
+                CtiTableContactNotification &CNotif = *cnit;
+                CNotif.setDirty(true);
+              }
                     }
                 }
             }
@@ -4507,9 +4508,9 @@ CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
   CtiTableContactNotification* pCNotif = NULL;
   CtiLockGuard<CtiMutex> guard(server_mux);
   CtiTableContactNotification cNotif(cNotifID);
-  
+
   CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
-  
+
   if(cnit == _contactNotificationSet.end())
     {
       // We need to load it up, and then insert it!
@@ -4517,30 +4518,30 @@ CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
 
       pair< CtiContactNotificationSet_t::iterator, bool > resultpair;
       resultpair = _contactNotificationSet.insert(cNotif);
-      
+
       if(resultpair.second == true)
-	{
-	  cnit = resultpair.first;
-	}
+    {
+      cnit = resultpair.first;
     }
-  
+    }
+
   if(cnit != _contactNotificationSet.end())
     {
       pCNotif = &(*cnit);
-      
+
       if(pCNotif->isDirty())
-	{
-	  {
-	    CtiLockGuard<CtiLogger> guard(dout);
-	    dout << RWTime() << " Reloading ContactNotification " << pCNotif->getContactNotificationID() << endl;
-	  }
-	  pCNotif->Restore();
-	}
+    {
+      {
+        CtiLockGuard<CtiLogger> guard(dout);
+        dout << RWTime() << " Reloading ContactNotification " << pCNotif->getContactNotificationID() << endl;
+      }
+      pCNotif->Restore();
     }
-	
+    }
+    
   return pCNotif;
 }
-/* 
+/*
 CtiTableGroupRecipient* CtiVanGogh::getRecipient( LONG locid )
 {
     CtiTableGroupRecipient *pRecipient = NULL;
@@ -4640,16 +4641,16 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 
         for(r_iter = recipients.begin(); r_iter != recipients.end(); r_iter++ )
         {
-	    CtiTableContactNotification *pCNotif;
-	    int cnotifid = *r_iter;
-	    
-	    {
-	      CtiLockGuard<CtiMutex> guard(server_mux);
-	      if( (pCNotif = getContactNotification(cnotifid)) != NULL)
-		{
-		  //Now we have it ALL!!! send the email
-		  sendMail(sig, theGroup, *pCNotif);
-		}
+        CtiTableContactNotification *pCNotif;
+        int cnotifid = *r_iter;
+    
+        {
+          CtiLockGuard<CtiMutex> guard(server_mux);
+          if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+        {
+          //Now we have it ALL!!! send the email
+          sendMail(sig, theGroup, *pCNotif);
+        }
             }
         }
     }
@@ -4695,15 +4696,15 @@ void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 
         for(r_iter = recipients.begin(); r_iter != recipients.end(); r_iter++ )
         {
-	    CtiTableContactNotification* pCNotif;
+        CtiTableContactNotification* pCNotif;
             int cnotifid = *r_iter;
 
             {
                 CtiLockGuard<CtiMutex> guard(server_mux);
-		if( (pCNotif = getContactNotification(cnotifid)) != NULL)
-		  {
-		    sendMail(email, *pCNotif);
-		  }
+        if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+          {
+            sendMail(email, *pCNotif);
+          }
             }
         }
     }
@@ -4871,27 +4872,27 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
 
                 if( pCustomer != NULL )
                 {
- 		    vector<int> recip = pCustomer->getContactNotificationVector();
+            vector<int> recip = pCustomer->getContactNotificationVector();
                     vector<int>::iterator it;
 
                     try
                     {
-		        CtiTableContactNotification *pCNotif = NULL;
-                        
+                CtiTableContactNotification *pCNotif = NULL;
+
                         for(it = recip.begin(); it != recip.end(); ++it)
                         {
                             vector<int>::reference cnotifid = *it;
-			    
-			    if( (pCNotif = getContactNotification(cnotifid)) != NULL)
-			      {
-				// Now we have it ALL!!!! send the email
-				{
-				  CtiLockGuard<CtiLogger> guard(dout);
-				  dout << RWTime() << " Emailing " << cnotifid << endl;
-				}
-				sendMail(aMail, *pCNotif);
-			      }
-			}
+            
+                if( (pCNotif = getContactNotification(cnotifid)) != NULL)
+                  {
+                // Now we have it ALL!!!! send the email
+                {
+                  CtiLockGuard<CtiLogger> guard(dout);
+                  dout << RWTime() << " Emailing " << cnotifid << endl;
+                }
+                sendMail(aMail, *pCNotif);
+                  }
+            }
                     }
                     catch(...)
                     {
@@ -4939,9 +4940,19 @@ void  CtiVanGogh::shutdown()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Van Gogh Server Shutting Down " << endl;
+        dout << RWTime() << " Dispatch Server Shutting Down " << endl;
     }
-    Inherited::shutdown();
+
+    try
+    {
+        Inherited::shutdown();
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
 }
 
 void CtiVanGogh::VGRPHWriterThread()

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2003/03/06 18:07:28 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2003/03/12 16:41:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -169,6 +169,7 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS 
 INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID);
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage );
+INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device );
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -479,7 +480,7 @@ void RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
 
             if(pInfo)
             {
-                if(Port->getProtocol() == IDLC)
+                if( GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC ) // 031003 CGP // Port->getProtocolWrap() == ProtocolWrapIDLC)
                 {
                     if(Device->getAddress() != RTUGLOBAL && Device->getAddress() != CCUGLOBAL)
                     {
@@ -1017,11 +1018,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
         trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
 
-        switch(Port->getProtocol())
+        switch(  GetPreferredProtocolWrap(Port, Device) ) // 031003 CGP // Port->getProtocolWrap())
         {
         case ProtocolWrapNone:
             {
-                /* check if this is a MasterComm or ILEX device */
                 switch(Device->getType())
                 {
                 case TYPE_ILEXRTU:
@@ -1405,12 +1405,22 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = BADPORT;
                         break;
                     }
-                default:
+                case TYPE_CCU700:
+                case TYPE_CCU710:
                     {
                         /* output the message to the remote */
                         trx.setOutBuffer(OutMessage->Buffer.OutMessage + PREIDLEN);
                         trx.setOutCount(OutMessage->OutLength - 3);
                         status = Port->outMess(trx, Device, traceList);
+                        break;
+                    }
+                default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                        }
                     }
                 }
 
@@ -1560,11 +1570,23 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_LGS4:
                     case TYPE_KV2:
                         break;
-                    default:
-                        // There was an outbound error, the Xfer was not traced...
-                        if(trx.doTrace(status))
+                    case TYPE_CCU700:
+                    case TYPE_CCU710:
                         {
-                            Port->traceXfer(trx, traceList, Device, status);
+                            // There was an outbound error, the Xfer was not traced...
+                            if(trx.doTrace(status))
+                            {
+                                Port->traceXfer(trx, traceList, Device, status);
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                            }
                         }
                     }
                 }
@@ -1616,11 +1638,18 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             break;
                         }
                     case TYPE_CCU711:
-                    default:
                         {
                             CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
                             PreIDLC (OutMessage->Buffer.OutMessage, (USHORT)OutMessage->OutLength, OutMessage->Remote, pInfo->RemoteSequence.Reply, pInfo->RemoteSequence.Request, 1, OutMessage->Source, OutMessage->Destination, OutMessage->Command);
                             break;
+                        }
+                    default:
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                            }
                         }
                     }
                 }
@@ -1651,7 +1680,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         break;
                     }
-                default:
+                case TYPE_CCU711:
                     {
                         PostIDLC (OutMessage->Buffer.OutMessage, (USHORT)(OutMessage->OutLength + PREIDL - 2));
 
@@ -1668,6 +1697,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         }
 
                         break;
+                    }
+                default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                        }
                     }
                 }
 
@@ -1825,7 +1862,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                 break;
                             }
-                        default:
+                        case TYPE_CCU711:
                             {
                                 CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
 
@@ -1935,6 +1972,14 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                 break;
                             }
+                        default:
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  Device Type " << desolveDeviceType( Device->getType() ) << " Not specifically accounted for." << endl;
+                                }
+                            }
                         }
                     }
                 }
@@ -1960,6 +2005,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " Unknown Protocol Type" << endl;
                 }
                 break;
             }
@@ -2038,7 +2084,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     }
 
     if( (CommResult != NORMAL) ||
-        (  (Port->getProtocol() == IDLC) &&
+        (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
            (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ) )
     {
         switch( Device->getType() )
@@ -3172,7 +3218,7 @@ VOID PortDialbackThread(void *pid)
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage )
 {
     /* If this was a VTU message we need to slide things back over */
-    if(Port->getProtocol() == ProtocolWrapIDLC)
+    if(GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC)  // 031003 CGP // Port->getProtocolWrap() == ProtocolWrapIDLC)
     {
         switch(Device->getType())
         {
@@ -3185,3 +3231,16 @@ void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *Out
         }
     }
 }
+
+INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
+{
+    INT protocol = Port->getProtocolWrap();
+
+    if(Device)
+    {
+        protocol = Device->getProtocolWrap();
+    }
+
+    return protocol;
+}
+

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/01/13 18:23:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/12 16:41:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -206,6 +206,10 @@ private:
       return _trxInfo;
    }
 
+   virtual INT getProtocolWrap() const
+   {
+       return ProtocolWrapIDLC;
+   }
 
 };
 #endif // #ifndef __DEV_IDLC_H__

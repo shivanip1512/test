@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/02 19:20:05 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/03/12 16:41:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,26 +45,13 @@ public:
 
    typedef CtiDeviceIDLC Inherited;
 
-   CtiDeviceTCU();// : _sendFiller(false) {}
+   CtiDeviceTCU();
 
-   CtiDeviceTCU(const CtiDeviceTCU& aRef);/*
-   {
-      *this = aRef;
-   }                                        */
+   CtiDeviceTCU(const CtiDeviceTCU& aRef);
 
-   virtual ~CtiDeviceTCU();/*
-   {
-   }                         */
+   virtual ~CtiDeviceTCU();
 
-   CtiDeviceTCU& operator=(const CtiDeviceTCU& aRef);/*
-   {
-      if(this != &aRef)
-      {
-         Inherited::operator=(aRef);
-         setSendFiller( aRef.getSendFiller() );
-      }
-      return *this;
-   }                                                   */
+   CtiDeviceTCU& operator=(const CtiDeviceTCU& aRef);
 
    /*
     *  These guys initiate a scan based upon the type requested.
@@ -106,6 +93,8 @@ public:
 
    CtiDeviceTCU& setSendFiller(bool yesno);
    bool getSendFiller() const;
+
+   virtual INT getProtocolWrap() const;
 
 };
 #endif // #ifndef __DEV_TCU_H__

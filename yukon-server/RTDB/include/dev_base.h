@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/03/06 18:05:04 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/03/12 16:41:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -196,6 +196,7 @@ public:
     virtual INT getStopBits() const;
     virtual INT getParity() const;
 
+    virtual INT getProtocolWrap() const;
     virtual bool hasExclusions() const;
     exclusions getExclusions() const;
 
@@ -270,5 +271,6 @@ inline INT CtiDeviceBase::getBaudRate() const { return 0; }
 inline INT CtiDeviceBase::getBits() const { return 8; }
 inline INT CtiDeviceBase::getStopBits() const { return ONESTOPBIT; }
 inline INT CtiDeviceBase::getParity() const { return NOPARITY; }
+inline INT CtiDeviceBase::getProtocolWrap() const { return ProtocolWrapNone; }
 
 #endif // #ifndef __DEV_BASE_H__

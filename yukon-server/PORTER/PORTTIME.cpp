@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/02/04 17:24:00 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/03/12 16:41:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
         if(PortRecord->getName()(0) == '@') return;
         if(PortRecord->isInhibited()) return;
 
-        if(PortRecord->getProtocol() == IDLC)
+        if(PortRecord->getProtocolWrap() == ProtocolWrapIDLC)
         {
 
             /* make sure that the broadcast ccu is defined */
@@ -500,11 +500,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                         OutMessage->ReturnNexus = NULL;
                         OutMessage->SaveNexus = NULL;
 
-                        if(PortManager.writeQueue(OutMessage->Port,
-                                                  OutMessage->EventCode,
-                                                  sizeof (*OutMessage),
-                                                  (char *) OutMessage,
-                                                  OutMessage->Priority))
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
                             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                             delete (OutMessage);
@@ -527,11 +523,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                         continue;
                     }
 
-                    ILEXHeader (OutMessage->Buffer.OutMessage + PREIDLEN,
-                                RemoteRecord->getAddress(),
-                                ILEXTIMESYNC,
-                                TIMESYNC1,
-                                TIMESYNC2);
+                    ILEXHeader (OutMessage->Buffer.OutMessage + PREIDLEN, RemoteRecord->getAddress(), ILEXTIMESYNC, TIMESYNC1, TIMESYNC2);
 
                     OutMessage->Buffer.OutMessage[PREIDLEN + 2] = ILEXSETTIME;
 
@@ -599,11 +591,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                     OutMessage->ReturnNexus = NULL;
                     OutMessage->SaveNexus = NULL;
 
-                    if(PortManager.writeQueue(OutMessage->Port,
-                                              OutMessage->EventCode,
-                                              sizeof (*OutMessage),
-                                              (char *) OutMessage,
-                                              OutMessage->Priority))
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
                         printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                         delete (OutMessage);

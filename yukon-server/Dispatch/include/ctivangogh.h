@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/02/19 16:03:06 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/03/12 16:41:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,7 +80,6 @@ public:
 
     typedef set< CtiPendingPointOperations >  CtiPendingOpSet_t;
     typedef set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
-    //    typedef set< CtiTableGroupRecipient >     CtiRecipientSet_t;
     typedef set< CtiTableContactNotification >  CtiContactNotificationSet_t;
     typedef set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
     typedef set< CtiTableCICustomerBase >     CtiDeviceCICustSet_t;

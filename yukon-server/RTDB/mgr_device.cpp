@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/02/21 20:30:32 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/03/12 16:41:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,7 +186,10 @@ CtiDeviceBase* CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remot
 
     if(Map.entries() == 0)
     {
-        cerr << "There are no entries in the remote device list" << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " There are no entries in the remote device list" << endl;
+        }
     }
 
     for(;itr();)
@@ -195,13 +198,10 @@ CtiDeviceBase* CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remot
 
         if( p->getAddress() > 0 &&  p->getPortID() == Port && p->getAddress() == Remote )
         {
-            // cout << "Found Port " << Port << " Remote " << Remote << endl;
             break;
         }
-        else
-        {
-            p = NULL;
-        }
+
+        p = NULL;
     }
 
     return p;

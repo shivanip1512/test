@@ -817,4 +817,10 @@ CtiPort::exclusions CtiPort::getExclusions() const
     return _excluded;
 }
 
+CtiPort& CtiPort::setProtocolWrap(INT prot)
+{
+    _tblPortBase.setProtocol(prot);
+    return *this;
+}
+
 

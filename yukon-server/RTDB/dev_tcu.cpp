@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/12 16:41:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include <windows.h>
 
 #include "cmdparse.h"
+#include "cparms.h"
 #include "dsm2.h"
 #include "porter.h"
 
@@ -607,5 +608,21 @@ CtiDeviceTCU& CtiDeviceTCU::operator=(const CtiDeviceTCU& aRef)
       setSendFiller( aRef.getSendFiller() );
    }
    return *this;
+}
+
+INT CtiDeviceTCU::getProtocolWrap() const
+{
+    INT protocol = ProtocolWrapIDLC;
+
+    if(gConfigParms.isOpt("TCU_PROTOCOLWRAP"))
+    {
+        if( !gConfigParms.getValueAsString("TCU_PROTOCOLWRAP").compareTo("mastercom", RWCString::ignoreCase) ||
+            !gConfigParms.getValueAsString("TCU_PROTOCOLWRAP").compareTo("none", RWCString::ignoreCase) )
+        {
+            protocol = ProtocolWrapNone;
+        }
+    }
+
+    return protocol;
 }
 

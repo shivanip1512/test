@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/03/06 18:04:33 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/12 16:41:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,7 +157,9 @@ public:
     virtual ULONG getCDWait() const             { return 0L;}
 
     bool isTCPIPPort() const;
-    INT getProtocol() const;
+    INT getProtocolWrap() const;
+    CtiPort& setProtocolWrap(INT prot);
+
 
     virtual CtiPort &setBaudRate(INT baudRate);
 
@@ -216,7 +218,7 @@ inline RWCString CtiPort::getName() const { return _tblPAO.getName();}
 
 inline RWCString CtiPort::getSharedPortType() const { return _tblPortBase.getSharedPortType();}
 inline INT CtiPort::getSharedSocketNumber() const   { return _tblPortBase.getSharedSocketNumber();}
-inline INT CtiPort::getProtocol() const { return _tblPortBase.getProtocol();}
+inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();}
 
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup)); }
 inline bool CtiPort::isDialin() const { return ((getType() == PortTypeLocalDialBack || getType() == PortTypeTServerDialBack)); }
