@@ -1,3 +1,11 @@
+<%
+	/*
+	 *oper_direct.jsp
+     *	
+	 *Lists all of the lm direct programs and macs schedules associated with the the currently logged in operator.
+	 */
+%>
+
 <%@ include file="oper_header.jsp" %>
 
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
@@ -9,11 +17,15 @@
 <%@ page import="java.util.ArrayList" %> 
 <%@ page import="java.util.Vector" %> 
 <%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.Collections" %>
  
 <cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">  
 <%
    String pending = request.getParameter("pending");
      
+   /*
+   	*	Update quickly if a command was just sent
+    */
    if( pending != null )
       out.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"7;URL=oper_direct.jsp\">");
    else
@@ -24,13 +36,16 @@
      
     session = request.getSession(false);
                             
-    // list to put this customers programs in, contains LMProgramDirect objects
+    // list to put this customers programs in, contains LMProgramDirect and Schedule objects
     ArrayList ourPrograms = new ArrayList();
 
+	/*
+	 * Determine which lm programs we need to display
+	 */
     long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
     java.util.Arrays.sort(programIDs);
     LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
-
+	
     // Match our program ids with the actual programs in the cache so we know what to display
     for( int i = 0; i < allPrograms.length; i++ )
     {
@@ -42,6 +57,9 @@
         }
     }
 
+	/*
+	 * Determine which macs schedules we need to display
+	 */
     Class[] types2 = { Integer.class  };
     Object[][] schedIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT lmmacsscheduleoperatorlist.ScheduleID FROM lmmacsscheduleoperatorlist WHERE lmmacsscheduleoperatorlist.operatorloginid=" + user.getUserID()  + " ORDER BY lmmacsscheduleoperatorlist.ScheduleID", types2 );
     
@@ -55,19 +73,7 @@
         conn = connContainer.getIMACSConnection();
     }
     
-    // Contains 
-    // key -> Schedule
-    // value -> Integer (attribute)
-    // Using a tree map to sort by schedulename
-    // and a custom Comparator to do the ordering
-    TreeMap schedules = new TreeMap(
-        new java.util.Comparator()
-        {
-            public int compare(Object o1, Object o2)
-            {
-                return ((Schedule) o1).getScheduleName().compareTo( ((Schedule) o2).getScheduleName() );
-            }            
-        });
+         
     if( conn != null && schedIDs != null )
     {
         Schedule[] allSchedules = conn.retrieveSchedules();
@@ -79,15 +85,49 @@
                 for( int j = 0; j < allSchedules.length; j++ )
                 {                    
                     if( allSchedules[j].getId() == ((Integer)schedIDs[i][0]).intValue() )
-                    {                    
-                        schedules.put( allSchedules[j],
-                               (Integer) schedIDs[i][0] );                
+                    {                
+                    	ourPrograms.add(allSchedules[j]);    
                     }
                 }
                 
             }
         }
     }
+    
+    /*
+     *	Sort the list of programs and schedules with a fancy custom comparator
+     */
+    Collections.sort(ourPrograms, 
+    	new java.util.Comparator()
+    	{
+    		public int compare(Object o1, Object o2) 
+    		{
+    			String s1 = "";
+    			String s2 = "";
+    			if(o1 instanceof LMProgramDirect)
+    			{
+    				s1 = ((LMProgramDirect) o1).getYukonName();
+    			}
+    			else
+    			if(o1 instanceof Schedule)
+    			{
+    				s1 = ((Schedule) o1).getScheduleName();
+    			}
+    			
+    			if(o2 instanceof LMProgramDirect) 
+    			{
+    				s2 = ((LMProgramDirect) o2).getYukonName();
+    			}
+    			else
+    			if(o2 instanceof Schedule) 
+    			{
+    				s2 = ((Schedule) o2).getScheduleName();
+    			}
+    			
+    			return s1.compareTo(s2);
+    		}
+    	}
+    );
 %>
 <html>
 <head>
@@ -193,86 +233,41 @@
                         <div align="center">Stop Date/Time </div>
                       </td>
                     </tr>
-                    <%
-            //Loop through the user's programs            
-                                                
-            Iterator iter = schedules.entrySet().iterator();
-
+                    <%        
+            Iterator iter = ourPrograms.iterator();
             while( iter.hasNext() )
             {
-                Map.Entry entry = (Map.Entry) iter.next(); 
-                
-                Schedule sched = (Schedule) entry.getKey();                
-                Integer attrib = (Integer) entry.getValue();
-                String actionUrl;
+            	Object val = iter.next();
+            	if(val instanceof LMProgramDirect) 
+            	{
+                	LMProgramDirect p = (LMProgramDirect) val;
 
-              
-                if( sched.getCurrentState().equals(Schedule.STATE_WAITING) )
-                   actionUrl = "start_schedule.jsp?id=" + sched.getId();
-                else
-                  if( sched.getCurrentState().equalsIgnoreCase(Schedule.STATE_RUNNING) ||
-                   sched.getCurrentState().equalsIgnoreCase(Schedule.STATE_PENDING)  )
-                        actionUrl = "stop_schedule.jsp?id=" + sched.getId();
-                  else                    
-                        actionUrl = "schedule_summary.jsp";                    
-              
-        %>
-                    <tr> 
-                      <td width="150" class="TableCell"> 
-                        <center>
-                          <a href="<%= actionUrl %>" class="Link1"><%= sched.getScheduleName() %></a> 
-                        </center>
-                      </td>
-                      <td width="150" class="TableCell"> 
-                        <center>
-                          <%= sched.getCurrentState() %> 
-                        </center>
-                      </td>
-                      <td width="150" class="TableCell"> 
-                        <center>
-                          <%= dlcDateFormat.format(sched.getNextRunTime()) + " " + tz.getDisplayName(tz.inDaylightTime(sched.getNextRunTime()), TimeZone.SHORT) %> 
-                        </center>
-                      </td>
-                      <td width="150" class="TableCell"> 
-                        <center>
-                          <%= dlcDateFormat.format(sched.getNextStopTime()) + " " + tz.getDisplayName(tz.inDaylightTime(sched.getNextRunTime()), TimeZone.SHORT)%> 
-                        </center>
-                      </td>
-                    </tr>
-                    <%
-            } // end schedule while loop 
-
-            iter = ourPrograms.iterator();
-            while( iter.hasNext() )
-            {
-                LMProgramDirect p = (LMProgramDirect) iter.next();
-
-                String status = p.getProgramStatusString( p.getProgramStatus().intValue());
-                String startStr = "-";               
-                String stopStr = "-"; 
-                String actionURI = "oper_direct.jsp";
+	                String status = p.getProgramStatusString( p.getProgramStatus().intValue());
+   		            String startStr = "-";               
+   	    	        String stopStr = "-"; 
+                	String actionURI = "oper_direct.jsp";
 
 
-                if( p.getStartTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    startStr = dlcDateFormat.format(p.getStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStartTime().getTime()), TimeZone.SHORT);
+                	if( p.getStartTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
+                    	startStr = dlcDateFormat.format(p.getStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStartTime().getTime()), TimeZone.SHORT);
 
-                if( p.getStopTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    stopStr =  dlcDateFormat.format(p.getStopTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStopTime().getTime()), TimeZone.SHORT);
+                	if( p.getStopTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
+                    	stopStr =  dlcDateFormat.format(p.getStopTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStopTime().getTime()), TimeZone.SHORT);
 
-                if( pending != null )
-                    actionURI = "oper_direct.jsp";
-                else
-                if( status.equalsIgnoreCase("inactive") )                
-                    actionURI = "oper_direct_start.jsp?id=" + p.getYukonID();               
-                else
-                if( status.equalsIgnoreCase("manual active") )
-                    actionURI = "oper_direct_stop.jsp?id=" + p.getYukonID(); 
+                	if( pending != null )
+                    	actionURI = "oper_direct.jsp";
+                	else
+                	if( status.equalsIgnoreCase("inactive") )
+
+                    	actionURI = "oper_direct_start.jsp?id=" + p.getYukonID();               
+                	else
+                	if( status.equalsIgnoreCase("manual active") ||
+                		status.equalsIgnoreCase("scheduled") )                
+                    	actionURI = "oper_direct_stop.jsp?id=" + p.getYukonID(); 
         %>
                     <tr> 
                       <td width="25%" class="TableCell">
-                        <center>
                           <a href="<%= actionURI %>" class="Link1"><%= p.getYukonName() %></a>
-                        </center>
                       </td>
                       <td width="25%" class="TableCell">
                         <center>
@@ -291,6 +286,45 @@
                       </td>
                     </tr>
                     <%
+               } //end if program is an LMProgramDirect
+               else
+               if(val instanceof Schedule) 
+               {
+               		Schedule sched = (Schedule) val;
+	                String actionUrl;
+					
+                	if( sched.getCurrentState().equals(Schedule.STATE_WAITING) )
+                   		actionUrl = "start_schedule.jsp?id=" + sched.getId();
+                	else
+                  	if( sched.getCurrentState().equalsIgnoreCase(Schedule.STATE_RUNNING) ||
+                   		sched.getCurrentState().equalsIgnoreCase(Schedule.STATE_PENDING)  )
+                        actionUrl = "stop_schedule.jsp?id=" + sched.getId();
+                  	else    
+                        actionUrl = "oper_direct.jsp";                    
+              
+        %>
+                    <tr> 
+                      <td width="150" class="TableCell"> 
+                          <a href="<%= actionUrl %>" class="Link1"><%= sched.getScheduleName() %></a> 
+                      </td>
+                      <td width="150" class="TableCell"> 
+                        <center>
+                          <%= sched.getCurrentState() %> 
+                        </center>
+                      </td>
+                      <td width="150" class="TableCell"> 
+                        <center>
+                          <%= dlcDateFormat.format(sched.getNextRunTime()) + " " + tz.getDisplayName(tz.inDaylightTime(sched.getNextRunTime()), TimeZone.SHORT) %> 
+                        </center>
+                      </td>
+                      <td width="150" class="TableCell"> 
+                        <center>
+                          <%= dlcDateFormat.format(sched.getNextStopTime()) + " " + tz.getDisplayName(tz.inDaylightTime(sched.getNextRunTime()), TimeZone.SHORT)%> 
+                        </center>
+                      </td>
+                    </tr>
+		<%                              
+               } // end if program is a Schedule
             } // end program while loop              
        %>
                   </table>
