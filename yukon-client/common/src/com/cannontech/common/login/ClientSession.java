@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -16,6 +17,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 /**
  * Holds session information for client programs.
  * Start with the static establishSession methods.
+ * 
+ * If a db.properties exists in the classpath it will be used
+ * instead of loggin in.  The default yukon user with id -1 will be used.
  * 
  * Current connection process:
  * 1) Look up current session id via preferences api
@@ -86,13 +90,26 @@ public class ClientSession {
 			ClientSession session = new ClientSession();
 
 			LoginPrefs prefs = LoginPrefs.getInstance();
+			LiteYukonUser user;	
+							
+			Properties dbProps = PoolManager.loadDBProperties();
+			if(dbProps != null && !dbProps.isEmpty()) {
+				CTILogger.info("Local database properties found, skipping logon");
+				user = YukonUserFuncs.getLiteYukonUser(-1);
+				if(user == null) {
+					CTILogger.error("Couldn't locate default user in the database");
+					return null;
+				}
+				session.user = user;
+				instance = session;
+				return instance;
+			}
 			
-			LiteYukonUser user;
+
 			String sessionID = prefs.getCurrentSessionID();
 			String host = prefs.getCurrentYukonHost();
 			int port = prefs.getCurrentYukonPort();
 					
-			Properties dbProps = null;
 			try {										
 				dbProps = 
 					LoginSupport.getDBProperties(sessionID, host, port);
