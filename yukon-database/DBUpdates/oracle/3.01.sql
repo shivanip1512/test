@@ -332,8 +332,8 @@ insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
 
 
 /* New default group for STARS operators and customers */
-insert into yukongroup values (-303,'STARS Operators','The default group of STARS operators');
-insert into yukongroup values (-304,'STARS Customers','The default group of STARS customers');
+insert into yukongroup values (-303,'STARS Operators Grp','The default group of STARS operators');
+insert into yukongroup values (-304,'STARS Customers Grp','The default group of STARS customers');
 
 insert into yukongrouprole values (-2000,-303,-108,-10800,'/operator/Operations.jsp');
 insert into yukongrouprole values (-2002,-303,-108,-10802,'(none)');
@@ -766,12 +766,39 @@ update YukonRoleProperty set DefaultValue='If you would like to temporarily opt 
 
 /* Inventory role properties */
 insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
-insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
-insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
-
 insert into YukonRoleProperty values(-20906,-209,'Create MCT','true','Controls whether to allow creating MCT devices');
+
+insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
 insert into yukongrouprole values (-797,-301,-209,-20906,'(none)');
+insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
 insert into yukongrouprole values (-2086,-303,-209,-20906,'(none)');
+
+/* Override individual hardware */
+insert into YukonRoleProperty values(-20158,-201,'Override Hardware','false','Controls whether to allow overriding individual hardware');
+insert into YukonRoleProperty values(-20817,-201,'Text Override','override','Term for override');
+
+insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
+insert into yukongrouprole values (-817,-301,-201,-20817,'(none)');
+insert into yukongrouprole values (-2058,-303,-201,-20158,'true');
+insert into yukongrouprole values (-2117,-303,-201,-20817,'(none)');
+
+/* More labels and titles */
+insert into YukonRoleProperty values(-20845,-201,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
+insert into YukonRoleProperty values(-20863,-201,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
+insert into YukonRoleProperty values(-20864,-201,'Title Hardware Overriding','HARDWARE - OVERRIDING','Title of the hardware overriding page');
+insert into YukonRoleProperty values(-40139,-400,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
+insert into YukonRoleProperty values(-40159,-400,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
+
+insert into yukongrouprole values (-639,-300,-400,-40139,'(none)');
+insert into yukongrouprole values (-659,-300,-400,-40159,'(none)');
+insert into yukongrouprole values (-845,-301,-201,-20845,'(none)');
+insert into yukongrouprole values (-863,-301,-201,-20863,'(none)');
+insert into yukongrouprole values (-864,-301,-201,-20864,'(none)');
+insert into yukongrouprole values (-2145,-303,-201,-20845,'(none)');
+insert into yukongrouprole values (-2163,-303,-201,-20863,'(none)');
+insert into yukongrouprole values (-2164,-303,-201,-20864,'(none)');
+insert into yukongrouprole values (-2339,-304,-400,-40139,'(none)');
+insert into yukongrouprole values (-2359,-304,-400,-40159,'(none)');
 
 
 
