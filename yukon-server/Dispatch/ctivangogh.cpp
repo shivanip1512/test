@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/04/24 21:37:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/04/25 19:27:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,13 +213,28 @@ void CtiVanGogh::VGMainThread()
 
                         try
                         {
-                            if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
+                            nRet = NORMAL;
+
+                            if( MsgPtr->isValid() )
                             {
-                                nRet = pExec->ServerExecute(this);     // The "this" in question is the CtiVanGogh object...
-                                delete pExec;
+                                if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
+                                {
+                                    nRet = pExec->ServerExecute(this);     // The "this" in question is the CtiVanGogh object...
+                                    delete pExec;
+                                }
+                                else
+                                {
+                                    delete MsgPtr;
+                                }
                             }
                             else
                             {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "  Message reported itserf as invalid " << endl;
+                                }
+
                                 delete MsgPtr;
                             }
 
@@ -230,7 +245,6 @@ void CtiVanGogh::VGMainThread()
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << "  ServerExecute returned an error = " << nRet << endl;
                                 }
-                                // bQuit = TRUE;
                             }
                         }
                         catch( ... )
