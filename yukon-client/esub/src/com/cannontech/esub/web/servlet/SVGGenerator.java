@@ -39,9 +39,19 @@ public class SVGGenerator extends HttpServlet {
 
 		String jlxPath= uri.replaceFirst(conPath, "");
 		jlxPath = sc.getRealPath(jlxPath);
-		
-		//Assume this ends with .svg
-		jlxPath = jlxPath.substring(0, jlxPath.length()-4) + ".jlx";
+
+		//Assume this ends with .svg or .svgz		
+		if(jlxPath.toLowerCase().endsWith(".svg")) {
+			jlxPath = jlxPath.substring(0, jlxPath.length()-4) + ".jlx";
+		}
+		else 
+		if(jlxPath.toLowerCase().endsWith(".svgz")) {		
+			jlxPath = jlxPath.substring(0, jlxPath.length()-5) + ".jlx";
+		}
+		else {
+			CTILogger.error("Request didn't end in svg or svgz, don't know what to do with it!");
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+		}
 		
 		//decode the name just in case it as encoded first
 		jlxPath = URLDecoder.decode( jlxPath, "UTF-8" );
