@@ -62,7 +62,7 @@
                             WELCOME TO CONSUMER ENERGY SERVICES! </strong> <br>
                             <br>
                             <br>
-                            <strong> </strong></div></td>
+                            </div></td>
                       </tr>
                       <tr> 
                         <td><table width="400" border="0" cellspacing="0" cellpadding="5">

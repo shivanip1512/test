@@ -86,9 +86,10 @@ function confirmSubmit(form) { //v1.0
                       <p class="HeaderCell">Temporarily opt out of all programs 
                       </p>
                     </div>
-				  <form name="form1" method="post" action="OptForm.jsp" onsubmit = "return confirmSubmit(this)">
+				  <form name="form1" method="post" action="/servlet/SOAPClient" onsubmit = "return confirmSubmit(this)">
 				  	<input type="hidden" name="action" value="OptOutProgram">
-					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
+					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/OptForm.jsp">
+					<input type="hidden" name="REDIRECT2" value="/OperatorDemos/Consumer/Programs.jsp">
 					<input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 

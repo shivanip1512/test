@@ -101,7 +101,11 @@ function confirmSubmit(form) { //v1.0
               <table  border="0" cellspacing="0" cellpadding="0">
                 <tr align = "center"> 
                   <td width="304" valign="top" align = "center"> 
-                  <form method="post" action="OptForm.jsp" onsubmit="return confirmSubmit(this)">
+                  <form method="post" action="/servlet/SOAPClient" onsubmit="return confirmSubmit(this)">
+				  	<input type="hidden" name="action" value="OptOutProgram">
+					<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/OptForm.jsp">
+					<input type="hidden" name="REDIRECT2" value="/UserDemos/ConsumerStat/stat/General.jsp">
+					<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/stat/OptOut.jsp">
                       <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td align = "center"> 

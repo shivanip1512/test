@@ -39,7 +39,7 @@
 		primContact = account.getPrimaryContact();
 		
 		programs = accountInfo.getStarsLMPrograms();
-		categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+		categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	}
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);

@@ -104,9 +104,9 @@
           </table>
           <input name="USERNAME" value="op1" type="hidden">
           <input name="PASSWORD" value="op1" type="hidden">
-          <input name="ACTION" value="LOGIN" type="hidden">
           <input name="DATABASEALIAS" value="yukon" type="hidden">
 		  <input name="REDIRECT" type="hidden" value="/OperatorDemos/Operations.jsp">
+          <input name="REFERRER" type="hidden" value="/login.jsp">
         </form>
       </td>
     </tr>

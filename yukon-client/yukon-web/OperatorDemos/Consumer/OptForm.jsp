@@ -1,8 +1,4 @@
 <%@ include file="StarsHeader.jsp" %>
-<%
-	String programStatus = "In Service";     
-		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
-%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -78,56 +74,31 @@ function MM_popupMsg(msg) { //v1.0
             <hr width = "90%">
           
 			<form method="post" action="/servlet/SOAPClient">
-			  <input type="hidden" name="action" value="<%= request.getParameter("action") %>">
-			  <input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getParameter("REDIRECT") %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getParameter("REFERRER") %>">
+			  <input type="hidden" name="action" value="SendExitAnswers">
+			  <input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
+			  <input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
+<%
+	StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse) operator.getAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS);
+	for (int i = 0; i < questions.getStarsExitInterviewQuestionCount(); i++) {
+		StarsExitInterviewQuestion question = questions.getStarsExitInterviewQuestion(i);
+%>
+				  <input type="hidden" name="QID" value="<%= question.getQuestionID() %>">
                   <tr> 
-                    <td class="TableCell"> 
-                      
-                  <p>Reason for opting out of the program:</p>
+                    <td class="TableCell">
+					  <%= question.getQuestion() %>
                     </td>
                   </tr>
                   <tr> 
                     <td> 
                       <div align="left"> 
-                        <input type="text" name="textfield4" size="80">
+                        <input type="text" name="Answer" size="80">
                       </div>
                     </td>
                   </tr>
-                  <tr> 
-                    <td class="TableCell"> Satisfaction with the program:</td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="left"> 
-                        <input type="text" name="textfield42" size="80">
-                      </div>
-                    </td>
-                  </tr>
-                  <tr> 
-                    
-                <td class="TableCell"> Would the customer be interested in other 
-                  programs. If so, which ones:</td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="left"> 
-                        <input type="text" name="textfield43" size="80">
-                      </div>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td class="TableCell"> Comments:</td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="left"> 
-                        <input type="text" name="textfield44" size="80">
-                      </div>
-                    </td>
-                  </tr>
+<%
+	}
+%>
                 </table>
               <p align="center"> 
                 <input type="submit" name="Submit" value="Submit">
