@@ -12,10 +12,13 @@
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.util.ServerUtils" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
+<%@ page import="com.cannontech.roles.cicustomer.CommercialMeteringRole" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 
+<%@ page import="com.cannontech.graph.model.TrendModelType" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 <cti:checklogin/>
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
@@ -108,4 +111,24 @@
 	datePart.setTimeZone(tz);
 	dateFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
+	
+   
+    String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+	
+    Class[] types = { Integer.class,String.class };    
+    java.lang.String sqlString =  "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
+                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
+                                  " WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID "+
+                                  " AND GCL.CUSTOMERID = " + account.getCustomerID()+ " ORDER BY GDEF.NAME";
+System.out.println( "**********" + account.getCustomerID());    
+	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types );
 %>
+
+	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
+		<%-- this body is executed only if the bean is created --%>
+	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
+	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(ServletUtil.getToday())%>"/>
+	<jsp:setProperty name="graphBean" property="period" value="<%=ServletUtil.historicalPeriods[0]%>"/>
+	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
+	    <%-- intialize bean properties --%>
+	</jsp:useBean>

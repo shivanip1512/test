@@ -8,6 +8,7 @@
 						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
 						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_OPT_OUT, "Opt Out")},
 						  {"Password.jsp", "Change Login"},
+						  {"Metering.jsp", "Trending"},
 						 };
 
 	String bulletImg = "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -163,6 +164,38 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
+<cti:checkRole roleid="<%=CommercialMeteringRole.ROLEID%>">
+  <tr> 
+    <td height="30" valign="bottom">
+      <div align="left"><span class="NavHeader">Trending</span><br>
+        <%   /* Retrieve all the predefined graphs for this user*/                       
+		if( gData != null )
+		{%>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<%
+			for( int i = 0; i < gData.length; i++ )                                                          
+			{
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[5][0].equalsIgnoreCase(pageName))
+				{%>
+          <tr> 
+            <td width="10"><%= bulletImg %></td>
+            <td style="padding:1"><span class="Nav"><%=gData[i][1] %></span></td>
+          </tr>
+				<%}
+				else 
+				{%>
+          <tr> 
+            <td width="10">&nbsp;</td>
+            <td style="padding:1"><a href="<%=request.getContextPath()%>Metering.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
+          </tr>
+				<%}
+			}%>
+        </table>
+		<%}%>
+	  </div>
+    </td>
+  </tr>
+</cti:checkRole>
 <cti:checkMultiProperty propertyid="<%=Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL)+','+Integer.toString(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)%>">
   <tr> 
     <td> 
