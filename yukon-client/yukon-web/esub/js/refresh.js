@@ -19,12 +19,7 @@ var selectedRect = null;
    periodic updates */   
 function refresh(evt) {	
 	SVGDoc = evt.getTarget().getOwnerDocument();
-
-	updateAll();
-	
-	setInterval('updateAllGraphs()', graphRefreshRate); 
-	setInterval('updateAllPoints()', pointRefreshRate, pointRefreshRate);
-	setInterval('updateAllTables()', tableRefreshRate, tableRefreshRate);
+	updateAll();	
 } //end refresh
 
 /* update everything! */
@@ -57,7 +52,7 @@ function updateAllPoints() {
 		}
 	}
 	
-	
+	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
 } //end updatePoints
 
 function updateAllGraphs() {
@@ -72,6 +67,7 @@ function updateAllGraphs() {
 			continue;
 		}
 	}
+	setTimeout('updateAllGraphs()', graphRefreshRate); 
 } //end updateGraphs
 
 function updateAllTables() {
@@ -86,6 +82,7 @@ function updateAllTables() {
 			continue;
 		}
 	}
+	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
 } //end updateTables
 
 /* update an individual graph */
