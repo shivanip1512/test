@@ -155,7 +155,6 @@ public java.util.Vector getControlAreaHeaderVector()
 {
 	java.util.Vector returnVector = new java.util.Vector();
 
-	java.text.SimpleDateFormat dateFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	returnVector.add("Printed on: " + dateFormatter.format(new java.util.Date()));
 	returnVector.add("Control Summary for Control Area: " + getControlAreaName());
 

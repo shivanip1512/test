@@ -5,7 +5,17 @@ package com.cannontech.report.loadmanagement;
  * Creation date: (3/21/2002 4:04:12 PM)
  * @author: 
  */
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.report.ReportBase;
+import com.cannontech.report.ReportTypes;
 public class DailyPeaksReport extends ReportBase
 {
 	private static final int MAX_NUMBER_OF_PEAK_VALUES = 12;
@@ -76,190 +86,45 @@ public DailyPeaksReport()
 {
 	super();
 }
+
+
 /**
- * Retrieves values from the database and inserts them in a FileFormatBase object
- * Creation date: (11/30/00)
+ * Returns true if the line is a line from Group1Header
+ * @param line
+ * @return
  */
-public com.klg.jclass.page.JCFlow getFlow(com.klg.jclass.page.JCDocument doc)
+public boolean isGroup1HeaderLine(String line)
 {
-	java.text.DecimalFormat doubleFormatter = new java.text.DecimalFormat();
-	doubleFormatter.applyPattern("###,###,##0.00");
-
-	com.klg.jclass.page.JCFlow returnFlow = new com.klg.jclass.page.JCFlow(doc);
-
-	java.util.Vector records = getRecordVector();
-
-	java.awt.Font controlAreaHeaderFont = new java.awt.Font( "Monospaced", java.awt.Font.BOLD, 12 );
-	java.awt.Font peakHeaderFont = new java.awt.Font( "Monospaced", java.awt.Font.BOLD, 8 );
-	java.awt.Font normalFont = new java.awt.Font( "Monospaced", java.awt.Font.PLAIN, 8 );
-
-	com.klg.jclass.page.JCTextStyle currentTextStyle = new com.klg.jclass.page.JCTextStyle("Current");
-	currentTextStyle.setParagraphSpacing(1);
-	returnFlow.setCurrentTextStyle( currentTextStyle );
-
-	String previousControlAreaName = "(null)";
-	boolean printHeader = true;
-	int currentRank = 1;
-	double currentPeakValue = 0.0;
-	double currentThreshold = 0.0;
-	java.util.GregorianCalendar currentPeakTimestamp = null;
-	java.text.SimpleDateFormat dateTimeFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-
-	for(int i=0;i<records.size();i++)
+	if( line.startsWith("                   PEAK") )	//a keyword for the Group name info
 	{
-		DailyPeaksRecord currentRecord = (DailyPeaksRecord)records.get(i);
-		String currentControlAreaName = currentRecord.getControlAreaName();
-
-		if( !currentControlAreaName.equalsIgnoreCase(previousControlAreaName) )
-		{
-			if( !previousControlAreaName.equalsIgnoreCase("(null)") )
-			{
-				returnFlow.newLine();
-				returnFlow.newLine();
-				returnFlow.newLine();
-				returnFlow.print( "Target Threshold Value is: " + doubleFormatter.format( currentThreshold ) );
-				returnFlow.newLine();
-				returnFlow.newLine();
-				returnFlow.print( "Current Peak of " + doubleFormatter.format( currentPeakValue ) + " occurred at " + dateTimeFormatter.format(currentPeakTimestamp.getTime()) );
-				returnFlow.newPage();
-				currentPeakValue = 0.0;
-				currentRank = 1;
-			}
-			previousControlAreaName = currentControlAreaName;
-			currentThreshold = currentRecord.getThreshold().doubleValue();
-			printHeader = true;
-		}
-
-		if( printHeader )
-		{
-			currentTextStyle.setFont(controlAreaHeaderFont);
-			for(int j=0;j<currentRecord.getControlAreaHeaderVector().size();j++)
-			{
-				returnFlow.print( (String)currentRecord.getControlAreaHeaderVector().get(j) );
-				returnFlow.newLine();
-				returnFlow.newLine();
-			}
-			currentTextStyle.setFont(peakHeaderFont);
-			returnFlow.newLine();
-			for(int j=0;j<currentRecord.getPeakHeaderVector().size();j++)
-			{
-				returnFlow.print( (String)currentRecord.getPeakHeaderVector().get(j) );
-				returnFlow.newLine();
-			}
-			returnFlow.newLine();
-			printHeader = false;
-		}
-
-		if( currentRecord.getPeakValue().doubleValue() > currentPeakValue )
-		{
-			currentPeakValue = currentRecord.getPeakValue().doubleValue();
-			currentPeakTimestamp = currentRecord.getPeakTimestamp();
-		}
-		if( currentRecord.getOffPeakValue().doubleValue() > currentPeakValue )
-		{
-			currentPeakValue = currentRecord.getOffPeakValue().doubleValue();
-			currentPeakTimestamp = currentRecord.getOffPeakTimestamp();
-		}
-
-		String dataString = currentRecord.dataToString();
-		if( dataString != null)
-		{
-			currentTextStyle.setFont(normalFont);
-			String rankString = Integer.toString(currentRank);
-			returnFlow.print(rankString);
-			for(int k=0;k<(5-rankString.length());k++)
-			{
-				returnFlow.print(" ");
-			}
-			returnFlow.print(dataString);
-			returnFlow.newLine();
-			currentRank++;
-		}
+	    groupLineCount = 1;
+	    return true;
 	}
-	//this needs to be printed on the last page also
-	if( currentPeakTimestamp != null )
+	else if( groupLineCount < 3  && groupLineCount > 0)
 	{
-		returnFlow.newLine();
-		returnFlow.newLine();
-		returnFlow.newLine();
-		returnFlow.print( "Target Threshold Value is: " + doubleFormatter.format( currentThreshold ) );
-		returnFlow.newLine();
-		returnFlow.newLine();
-		returnFlow.print( "Current Peak of " + doubleFormatter.format( currentPeakValue ) + " occurred at " + dateTimeFormatter.format(currentPeakTimestamp.getTime()) );
+	    groupLineCount++;
+	    return true;
 	}
-
-	return returnFlow;
+	groupLineCount = 0;	//reset the group line count, until the next grouping is found
+    return false;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/29/00)
- */
-public StringBuffer getOutputAsStringBuffer()
+
+public boolean isPageHeaderLine(String line)
 {
-	StringBuffer returnBuffer = new StringBuffer("getOutputAsStringBuffer() ifs not implemented yet!!");
-
-	/*java.util.Vector records = getRecordVector();
-
-	String previousControlAreaName = "(null)";
-	String previousGroupName = "(null)";
-	int linesOnCurrentPage = 0;
-	for(int i=0;i<records.size();i++)
-	{
-		LoadsShedRecord currentRecord = (LoadsShedRecord)records.get(i);
-		String currentControlAreaName = currentRecord.getControlAreaName();
-		String currentGroupName = currentRecord.getPaoName();
-
-		if( linesOnCurrentPage >= 55 || !currentControlAreaName.equalsIgnoreCase(previousControlAreaName) )
-		{
-			if( !previousControlAreaName.equalsIgnoreCase("(null)") )
-			{
-				returnBuffer.append( (char)12 );//form feed
-			}
-			previousControlAreaName = currentControlAreaName;
-			linesOnCurrentPage = 0;
-		}
-
-		if( linesOnCurrentPage == 0 )
-		{
-			previousGroupName = currentGroupName;
-			for(int j=0;j<currentRecord.getControlAreaHeaderVector().size();j++)
-			{
-				returnBuffer.append( (String)currentRecord.getControlAreaHeaderVector().get(j) );
-				returnBuffer.append("\r\n");
-				returnBuffer.append("\r\n");
-			}
-			for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
-			{
-				returnBuffer.append( (String)currentRecord.getGroupHeaderVector().get(j) );
-				returnBuffer.append("\r\n");
-			}
-			returnBuffer.append("\r\n");
-			linesOnCurrentPage += 5;
-		}
-		else if( !currentGroupName.equalsIgnoreCase(previousGroupName) )
-		{
-			previousGroupName = currentGroupName;
-			returnBuffer.append("\r\n");
-			for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
-			{
-				returnBuffer.append( (String)currentRecord.getGroupHeaderVector().get(j) );
-				returnBuffer.append("\r\n");
-			}
-			returnBuffer.append("\r\n");
-			linesOnCurrentPage += 5;
-		}
-
-		String dataString = currentRecord.dataToString();
-		if( dataString != null)
-		{
-			returnBuffer.append(dataString);
-			returnBuffer.append("\r\n");
-			linesOnCurrentPage++;
-		}
-	}*/
-
-	return returnBuffer;
+    if( line.startsWith("Printed on:"))//a keyword from the Page header info
+    {
+        pageLineCount = 1;
+        return true;
+    }
+    else if( pageLineCount < 2 && pageLineCount > 0)
+    {
+        pageLineCount++;
+        return true;
+    }
+    pageLineCount = 0;
+    return false;
 }
+
 /**
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
@@ -267,19 +132,22 @@ public StringBuffer getOutputAsStringBuffer()
 public boolean retrieveReportData(String dbAlias)
 {
 	boolean returnBoolean = false;
+	
+	//clear out all old values if retreiving data
+	outputStringsVector = null;
 
 	if( dbAlias == null )
 	{
-		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+		dbAlias = CtiUtilities.getDatabaseAlias();
 	}
 
 	java.sql.Connection conn = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		conn = PoolManager.getInstance().getConnection(dbAlias);
 		if( conn == null )
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
+			CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 
@@ -349,17 +217,17 @@ public boolean retrieveReportData(String dbAlias)
 						java.util.GregorianCalendar timestamp = new java.util.GregorianCalendar();
 						timestamp.setTime( new java.util.Date((rset2.getTimestamp(5)).getTime()) );
 
-						int timeInSeconds = (timestamp.get(java.util.Calendar.HOUR_OF_DAY) * 3600) + (timestamp.get(java.util.Calendar.MINUTE) * 60) + (timestamp.get(java.util.Calendar.SECOND));
+						int timeInSeconds = (timestamp.get(Calendar.HOUR_OF_DAY) * 3600) + (timestamp.get(Calendar.MINUTE) * 60) + (timestamp.get(Calendar.SECOND));
 						if( controlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES &&
 								( ( defDailyStartTime < timeInSeconds && defDailyStopTime >= timeInSeconds ) ||
 									( defDailyStopTime == 86400 && timeInSeconds == 0 ) ) )
 						{
-							controlTimePeakVector.add(new com.cannontech.database.db.point.RawPointHistory( changeId, pointId, timestamp,	quality, value));
+							controlTimePeakVector.add(new RawPointHistory( changeId, pointId, timestamp,	quality, value));
 						}
 						else if( nonControlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES &&
 									( defDailyStartTime >= timeInSeconds || defDailyStopTime < timeInSeconds ) )
 						{
-							nonControlTimePeakVector.add(new com.cannontech.database.db.point.RawPointHistory( changeId, pointId, timestamp,	quality, value));
+							nonControlTimePeakVector.add(new RawPointHistory( changeId, pointId, timestamp,	quality, value));
 						}
 					}
 
@@ -369,22 +237,22 @@ public boolean retrieveReportData(String dbAlias)
 						if( j<nonControlTimePeakVector.size() )
 						{
 							dailyPeaksRec = new DailyPeaksRecord(((TempControlAreaObject)controlAreaVector.get(i)).getControlAreaName(),
-															((com.cannontech.database.db.point.RawPointHistory)controlTimePeakVector.get(j)).getValue(),
-															((com.cannontech.database.db.point.RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
-															((com.cannontech.database.db.point.RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
-															((com.cannontech.database.db.point.RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
-															((com.cannontech.database.db.point.RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),
-															((com.cannontech.database.db.point.RawPointHistory)nonControlTimePeakVector.get(j)).getTimeStamp(),
+															((RawPointHistory)controlTimePeakVector.get(j)).getValue(),
+															((RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
+															((RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
+															((RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
+															((RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),
+															((RawPointHistory)nonControlTimePeakVector.get(j)).getTimeStamp(),
 															((TempControlAreaObject)controlAreaVector.get(i)).getThreshold());
 						}
 						else
 						{
 							dailyPeaksRec = new DailyPeaksRecord(((TempControlAreaObject)controlAreaVector.get(i)).getControlAreaName(),
-															((com.cannontech.database.db.point.RawPointHistory)controlTimePeakVector.get(j)).getValue(),
-															((com.cannontech.database.db.point.RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
-															((com.cannontech.database.db.point.RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
+															((RawPointHistory)controlTimePeakVector.get(j)).getValue(),
+															((RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
+															((RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
 															new Double(0.0),
-															new Integer(com.cannontech.database.data.point.PointQualities.UNINTIALIZED_QUALITY),
+															new Integer(PointQualities.UNINTIALIZED_QUALITY),
 															new java.util.GregorianCalendar(1990,1,1),
 															((TempControlAreaObject)controlAreaVector.get(i)).getThreshold());
 						}
@@ -403,11 +271,11 @@ public boolean retrieveReportData(String dbAlias)
 							{
 								dailyPeaksRec = new DailyPeaksRecord(((TempControlAreaObject)controlAreaVector.get(i)).getControlAreaName(),
 																new Double(0.0),
-																new Integer(com.cannontech.database.data.point.PointQualities.UNINTIALIZED_QUALITY),
+																new Integer(PointQualities.UNINTIALIZED_QUALITY),
 																new java.util.GregorianCalendar(1990,1,1),
-																((com.cannontech.database.db.point.RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
-																((com.cannontech.database.db.point.RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),
-																((com.cannontech.database.db.point.RawPointHistory)nonControlTimePeakVector.get(j)).getTimeStamp(),
+																((RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
+																((RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),
+																((RawPointHistory)nonControlTimePeakVector.get(j)).getTimeStamp(),
 																((TempControlAreaObject)controlAreaVector.get(i)).getThreshold());
 							}
 
@@ -439,5 +307,124 @@ public boolean retrieveReportData(String dbAlias)
 	}
 
 	return returnBoolean;
+}
+/* (non-Javadoc)
+ * @see com.cannontech.report.ReportBase#getOutputStringsVector()
+ */
+public Vector getOutputStringsVector()
+{
+    if(outputStringsVector == null)
+    {
+        outputStringsVector = new Vector();
+    	DecimalFormat doubleFormatter = new DecimalFormat();
+    	doubleFormatter.applyPattern("###,###,##0.00");
+
+    	String previousControlAreaName = "(null)";
+    	boolean printHeader = true;
+    	int currentRank = 1;
+    	double currentPeakValue = 0.0;
+    	double currentThreshold = 0.0;
+    	java.util.GregorianCalendar currentPeakTimestamp = null;
+    	java.text.SimpleDateFormat dateTimeFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+		//Get some lines anyway!!
+		if( getRecordVector().isEmpty())
+		{
+		    DailyPeaksRecord emptyRecord = new DailyPeaksRecord();
+			for(int j = 0; j < emptyRecord.getControlAreaHeaderVector().size(); j++)
+			{
+				outputStringsVector.add( (String)emptyRecord.getControlAreaHeaderVector().get(j) );
+			}
+		    outputStringsVector.add("\r\n");
+
+		    for(int j = 0; j < emptyRecord.getPeakHeaderVector().size(); j++)
+			{
+				outputStringsVector.add( (String)emptyRecord.getPeakHeaderVector().get(j) );
+			}
+		    outputStringsVector.add("\r\n");
+		    outputStringsVector.add(" *** NO DATA TO REPORT *** ");
+			printHeader = false;
+		}
+		else
+		{
+	    	for(int i = 0; i < getRecordVector().size();i++)
+	    	{
+	    		DailyPeaksRecord currentRecord = (DailyPeaksRecord)getRecordVector().get(i);
+	    		String currentControlAreaName = currentRecord.getControlAreaName();
+	
+	    		if( !currentControlAreaName.equalsIgnoreCase(previousControlAreaName) )
+	    		{
+	    			if( !previousControlAreaName.equalsIgnoreCase("(null)") )
+	    			{
+	    			    outputStringsVector.add("\r\n");
+	    			    outputStringsVector.add("Target Threshold Value is: " + doubleFormatter.format( currentThreshold ) );
+	    			    outputStringsVector.add("\r\n");
+	
+	    				outputStringsVector.add("Current Peak of " + doubleFormatter.format( currentPeakValue ) + " occurred at " + dateTimeFormatter.format(currentPeakTimestamp.getTime()) );
+	    				outputStringsVector.add("\f");
+	    				currentPeakValue = 0.0;
+	    				currentRank = 1;
+	    			}
+	    			previousControlAreaName = currentControlAreaName;
+	    			currentThreshold = currentRecord.getThreshold().doubleValue();
+	    			printHeader = true;
+	    		}
+	
+	    		if( printHeader )
+	    		{
+	    			for(int j = 0; j < currentRecord.getControlAreaHeaderVector().size(); j++)
+	    			{
+	    				outputStringsVector.add( (String)currentRecord.getControlAreaHeaderVector().get(j) );
+	    			}
+				    outputStringsVector.add("\r\n");
+	
+				    for(int j = 0; j <currentRecord.getPeakHeaderVector().size(); j++)
+	    			{
+	    				outputStringsVector.add( (String)currentRecord.getPeakHeaderVector().get(j) );
+	    			}
+				    outputStringsVector.add("\r\n");
+	    			printHeader = false;
+	    		}
+	
+	    		if( currentRecord.getPeakValue().doubleValue() > currentPeakValue )
+	    		{
+	    			currentPeakValue = currentRecord.getPeakValue().doubleValue();
+	    			currentPeakTimestamp = currentRecord.getPeakTimestamp();
+	    		}
+	    		if( currentRecord.getOffPeakValue().doubleValue() > currentPeakValue )
+	    		{
+	    			currentPeakValue = currentRecord.getOffPeakValue().doubleValue();
+	    			currentPeakTimestamp = currentRecord.getOffPeakTimestamp();
+	    		}
+	
+	    		String dataString = currentRecord.dataToString();
+	    		if( dataString != null)
+	    		{
+	    		    String rankString = String.valueOf(currentRank);
+	    			String spaces = "";
+	    			for(int k = 0; k < (3 - rankString.length()); k++)
+	    			{
+	    			    spaces += " ";
+	    			}
+	    			outputStringsVector.add(spaces + rankString + "." + dataString);
+				    currentRank++;
+	    		}
+	    	}
+		}
+    	//this needs to be printed on the last page also
+    	if( currentPeakTimestamp != null )
+    	{
+		    outputStringsVector.add("\r\n");
+    		outputStringsVector.add("Target Threshold Value is: " + doubleFormatter.format( currentThreshold ) );
+		    outputStringsVector.add("\r\n");
+    		outputStringsVector.add("Current Peak of " + doubleFormatter.format( currentPeakValue ) + " occurred at " + dateTimeFormatter.format(currentPeakTimestamp.getTime()) );
+    	}
+    }
+    return outputStringsVector;
+}
+
+public String getReportName()
+{
+    return ReportTypes.REPORT_DAILY_PEAKS;
 }
 }

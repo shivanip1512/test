@@ -6,9 +6,18 @@ package com.cannontech.report.mainprograms;
  * @author: 
  */
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.report.ReportBase;
 import com.cannontech.report.ReportFactory;
 import com.cannontech.report.ReportTypes;
+import com.cannontech.util.ServletUtil;
+import com.klg.jclass.page.JCDocument;
+import com.klg.jclass.page.JCFlow;
+import com.klg.jclass.page.awt.JCAWTPrinter;
 
 public class ReportCommandLine
 {
@@ -31,25 +40,14 @@ public static void main(String[] args)
 	String reportString = null;
 	int reportType = ReportTypes.INVALID;
 	String outputFileName = null;
-	java.util.Date tempStartDate = new java.util.Date();
-	java.util.Date tempStopDate = new java.util.Date();
-	java.util.GregorianCalendar startDate = new java.util.GregorianCalendar();
-	java.util.GregorianCalendar stopDate = new java.util.GregorianCalendar();
-	boolean setStartDateFlag = false;
-	boolean setStopDateFlag = false;
-	boolean printFlag = true;
+	java.util.Date tempStartDate = null;
+	java.util.Date tempStopDate = null;
+	java.util.GregorianCalendar startDate = null;
+	java.util.GregorianCalendar stopDate = null;
+
+	boolean printFlag = false;	//default to false, the argument passed in sets it to true, there is not T/F value on the command line argument.
 	boolean validArguments = true;
-	java.text.SimpleDateFormat[] dateFormatArray =
-	{
-		new java.text.SimpleDateFormat("MM/dd/yy"),
-		new java.text.SimpleDateFormat("MM-dd-yy"),
-		new java.text.SimpleDateFormat("MM.dd.yy"),
-		new java.text.SimpleDateFormat("MM/dd/yyyy"),
-		new java.text.SimpleDateFormat("MM-dd-yyyy"),
-		new java.text.SimpleDateFormat("MM.dd-yyyy"),
-		new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
-		new java.text.SimpleDateFormat("MM:dd:yyyy HH:mm:ss")
-	};
+
 
 	for(int i=0;i<args.length;i++) 
 	{
@@ -70,40 +68,16 @@ public static void main(String[] args)
 			  args[i].substring(0,10).equalsIgnoreCase("startdate=") )
 		{// date where the data starts to be used to generate the billing file
 			
-			for(int j=0;j<dateFormatArray.length;j++)
-			{
-				try
-				{
-					tempStartDate = dateFormatArray[j].parse( args[i].substring(10) );
-                                        setStartDateFlag = true;
-					break;
-				}
-				catch( java.text.ParseException pe )
-				{
-				}
-			}
+			tempStartDate = ServletUtil.parseDateStringLiberally(args[i].substring(10));
 		}
 
 		if( args[i].length() >= 9 &&
 			  args[i].substring(0,9).equalsIgnoreCase("stopdate=") )
 		{// date where the data stops to be used to generate the billing file
-			
-			for(int j=0;j<dateFormatArray.length;j++)
-			{
-				try
-				{
-					tempStopDate = dateFormatArray[j].parse( args[i].substring(9) );
-                                        setStopDateFlag = true;
-					break;
-				}
-				catch( java.text.ParseException pe )
-				{
-				}
-			}
+			tempStopDate = ServletUtil.parseDateStringLiberally(args[i].substring(9));
 		}
 
-		if( args[i].length() >= 5 &&
-			  args[i].equalsIgnoreCase("print") )
+		if( args[i].length() >= 5 && args[i].equalsIgnoreCase("print") )
 		{
 			printFlag = true; // Sets file to overwrite previous data
 		}
@@ -112,12 +86,7 @@ public static void main(String[] args)
 	// Error messages for missing arguments
 	if( reportType == ReportTypes.INVALID )
 	{
-		com.cannontech.clientutils.CTILogger.info("ERROR: Missing File Format Type");
-		validArguments = false;
-	}
-	if( outputFileName == null && !printFlag )
-	{
-		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Output Filename or not to be printed");
+		CTILogger.info("ERROR: Missing File Format Type");
 		validArguments = false;
 	}
 
@@ -127,28 +96,47 @@ public static void main(String[] args)
 		
 		if( reportBase != null )
 		{
-			startDate = new java.util.GregorianCalendar();
-			startDate.setTime(tempStartDate);
-                        if( !setStartDateFlag )
-                            startDate.add(java.util.Calendar.DAY_OF_YEAR,-1);
-			startDate.set(java.util.Calendar.HOUR_OF_DAY,0);
-			startDate.set(java.util.Calendar.MINUTE,0);
-			startDate.set(java.util.Calendar.SECOND,0);
-			startDate.set(java.util.Calendar.MILLISECOND,0);
+			startDate = new GregorianCalendar();
+			if( tempStartDate != null)
+				startDate.setTime(tempStartDate);
+			else
+			{
+				if( tempStopDate != null)	//if we have a stop date and no start date, set startdate to one day before the stop date.
+				{
+					startDate.setTime(tempStopDate);
+				}
+			}
+			//Resolve date to beginning of day.
+			startDate.set(Calendar.HOUR_OF_DAY,0);
+			startDate.set(Calendar.MINUTE,0);
+			startDate.set(Calendar.SECOND,0);
+			startDate.set(Calendar.MILLISECOND,0);
 
-			stopDate = new java.util.GregorianCalendar();
-			stopDate.setTime(tempStartDate);
-                        if( setStopDateFlag )
-                            stopDate.add(java.util.Calendar.DAY_OF_YEAR,1);
-                        stopDate.set(java.util.Calendar.HOUR_OF_DAY,0);
-			stopDate.set(java.util.Calendar.MINUTE,0);
-			stopDate.set(java.util.Calendar.SECOND,0);
-			stopDate.set(java.util.Calendar.MILLISECOND,0);
+			stopDate = new GregorianCalendar();
+			if (tempStopDate != null)
+				stopDate.setTime(tempStopDate);
+			else
+			{
+				if( tempStartDate != null)//if we have a start date and no stop date, set stopdate to one day after the start date.
+				{
+					stopDate.setTime(tempStartDate);	//we actually increment it below
+				}
+			}
+            
+			//increment the day to get the Full day!
+			stopDate.add(Calendar.DATE,1);
+			stopDate.set(Calendar.HOUR_OF_DAY,0);
+			stopDate.set(Calendar.MINUTE,0);
+			stopDate.set(Calendar.SECOND,0);
+			stopDate.set(Calendar.MILLISECOND,0);
 
 			reportBase.setStartDate(startDate);
 			reportBase.setStopDate(stopDate);
 
-			boolean success = reportBase.retrieveReportData(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			reportBase.setOutputFileName(outputFileName);
+			
+			CTILogger.info("Generating Report " + ReportTypes.getType(reportType) + " : Time Period > " + startDate.getTime() +" And < " + stopDate.getTime());
+			boolean success = reportBase.retrieveReportData(CtiUtilities.getDatabaseAlias());
 
 			try
 			{
@@ -160,11 +148,10 @@ public static void main(String[] args)
 						{
 							java.awt.print.PrinterJob pj = java.awt.print.PrinterJob.getPrinterJob();
 							pj.setJobName(ReportTypes.getType(reportType));
-							com.klg.jclass.page.awt.JCAWTPrinter printer = new com.klg.jclass.page.awt.JCAWTPrinter( pj, pj.defaultPage(), false );
+							JCAWTPrinter printer = new JCAWTPrinter( pj, pj.defaultPage(), false );
+							JCDocument document = new JCDocument( printer );
 
-							com.klg.jclass.page.JCDocument document = new com.klg.jclass.page.JCDocument( printer );
-
-							com.klg.jclass.page.JCFlow flow = reportBase.getFlow(document);
+							JCFlow flow = reportBase.getFlow(document);
 							document.setFlow( flow );
 
 							while( printer.isDocumentOpen() )
@@ -175,66 +162,50 @@ public static void main(String[] args)
 								}
 								catch( InterruptedException ex )
 								{
-									com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+									CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 									ex.printStackTrace(System.out);	
 								}
 
-								com.cannontech.clientutils.CTILogger.info("	Waiting for printer");		
+								CTILogger.info("	Waiting for printer");		
 							}	
-
 							document.print( printer );
 							flow.endFlow();
-							/*java.io.StringWriter stringWriter = new java.io.StringWriter();
-							java.io.PrintWriter printWriter = new java.io.PrintWriter(stringWriter,true);
-							stringWriter.write( reportBase.getOutputAsStringBuffer().toString() );
-							printWriter.flush();*/
 						}
-						catch( com.klg.jclass.page.awt.JCAWTPrinter.PrinterJobCancelledException e)
+						catch( JCAWTPrinter.PrinterJobCancelledException e)
 						{
-							com.cannontech.clientutils.CTILogger.info("USER CANCELED PRINT JOB");
+							CTILogger.info("USER CANCELED PRINT JOB");
 						}
 					}
-					else
-					{
-						java.io.FileWriter outputFileWriter = new java.io.FileWriter(outputFileName);
-						outputFileWriter.write(reportBase.getOutputAsStringBuffer().toString());
-						outputFileWriter.flush();
-						outputFileWriter.close();
-					}
+					//Always write to a file!!!
+				    reportBase.writeToFile();
 
-					com.cannontech.clientutils.CTILogger.info("Report successfully created.");
+					CTILogger.info("Report successfully created.");
 				}
 				else
-					com.cannontech.clientutils.CTILogger.info("Unable to create report errors in retrieveReportData().");
+					CTILogger.info("Unable to create report errors in retrieveReportData().");
 				
 			}
 			catch(java.io.IOException ioe)
 			{
-				com.cannontech.clientutils.CTILogger.info("Report not created.");
+				CTILogger.info("Report not created.");
 				ioe.printStackTrace();
 			}
 			
 		}
 		else
 		{
-			com.cannontech.clientutils.CTILogger.info(reportString + " unrecognized report type");
+			CTILogger.info(reportString + " unrecognized report type");
 		}
 	}
 	else
 	{
-		System.out.print("Supported Reports : ");
+		CTILogger.info("Supported Reports : ");
 		for( int i = 0; i < ReportTypes.SUPPORTED_REPORTS.length; i++ )
 		{
-			// do a little formatting for the screen
-			if( i > 0 && (i%5) == 0 )
-			{
-				com.cannontech.clientutils.CTILogger.info("                    ");
-			}
-			
-			com.cannontech.clientutils.CTILogger.info( ReportTypes.SUPPORTED_REPORTS[i] );
+			CTILogger.info( ReportTypes.SUPPORTED_REPORTS[i] );
 		}
 
-		com.cannontech.clientutils.CTILogger.info("*** Sample argument structure: type=loads_shed outputfile=loads_shed.out startdate=10/01/2001 stopdate=10/01/2001 ***");
+		CTILogger.info("*** Sample argument structure: type=loads_shed outputfile=loads_shed.out startdate=10/01/2001 stopdate=10/01/2001 ***");
 	}
 
 	System.exit(0);

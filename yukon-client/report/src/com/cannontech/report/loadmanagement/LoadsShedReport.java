@@ -5,10 +5,15 @@ package com.cannontech.report.loadmanagement;
  * Creation date: (3/21/2002 4:04:12 PM)
  * @author: 
  */
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
 import com.cannontech.report.ReportBase;
+import com.cannontech.report.ReportTypes;
 public class LoadsShedReport extends ReportBase
 {
-  class TempControlAreaIdNameObject
+	
+	class TempControlAreaIdNameObject
 	{
 		// holds just the pao id and name of the control areas
 		private Integer controlAreaId = null;
@@ -38,164 +43,103 @@ public LoadsShedReport()
 {
 	super();
 }
-/**
- * Retrieves values from the database and inserts them in a FileFormatBase object
- * Creation date: (11/30/00)
- */
-public com.klg.jclass.page.JCFlow getFlow(com.klg.jclass.page.JCDocument doc)
+public Vector getOutputStringsVector()
 {
-	com.klg.jclass.page.JCFlow returnFlow = new com.klg.jclass.page.JCFlow(doc);
-
-	java.util.Vector records = getRecordVector();
-
-	java.awt.Font controlAreaHeaderFont = new java.awt.Font( "Monospaced", java.awt.Font.BOLD, 12 );
-	java.awt.Font groupHeaderFont = new java.awt.Font( "Monospaced", java.awt.Font.BOLD, 8 );
-	java.awt.Font normalFont = new java.awt.Font( "Monospaced", java.awt.Font.PLAIN, 8 );
-
-	com.klg.jclass.page.JCTextStyle currentTextStyle = new com.klg.jclass.page.JCTextStyle("Current");
-	currentTextStyle.setParagraphSpacing(1);
-	returnFlow.setCurrentTextStyle( currentTextStyle );
-
-	String previousControlAreaName = "(null)";
-	String previousGroupName = "(null)";
-	int linesOnCurrentPage = 0;
-	for(int i=0;i<records.size();i++)
+	if (outputStringsVector == null)
 	{
-		LoadsShedRecord currentRecord = (LoadsShedRecord)records.get(i);
-		String currentControlAreaName = currentRecord.getControlAreaName();
-		String currentGroupName = currentRecord.getPaoName();
-
-		if( linesOnCurrentPage >= 53 || !currentControlAreaName.equalsIgnoreCase(previousControlAreaName) )
+	    outputStringsVector = new Vector();
+		String previousControlAreaName = "(null)";
+		String previousGroupName = "(null)";
+		int linesOnCurrentPage = 0;
+		
+		//Get some lines anyway!!
+		if( getRecordVector().isEmpty())
 		{
-			if( !previousControlAreaName.equalsIgnoreCase("(null)") )
+		    LoadsShedRecord emptyRecord = new LoadsShedRecord();
+		    if( linesOnCurrentPage == 0 )	//get page header
 			{
-				returnFlow.newPage();
+				for(int j = 0; j < emptyRecord.getControlAreaHeaderVector().size(); j++)
+				{
+				    outputStringsVector.add((String)emptyRecord.getControlAreaHeaderVector().get(j) );
+				    linesOnCurrentPage++;
+				}
+				outputStringsVector.add("\r\n");	//want a blank line
+				outputStringsVector.add("Group: ");// + currentRecord.getPaoName());
+				outputStringsVector.add("\r\n");
+				for(int j = 0; j < emptyRecord.getGroupHeaderVector().size();j++)
+				{
+				    outputStringsVector.add( (String)emptyRecord.getGroupHeaderVector().get(j) );
+					linesOnCurrentPage++;
+				}
+				outputStringsVector.add("\r\n");
+				outputStringsVector.add(" *** NO DATA TO REPORT *** ");
+				linesOnCurrentPage += 5;
 			}
-			previousControlAreaName = currentControlAreaName;
-			linesOnCurrentPage = 0;
 		}
-
-		if( linesOnCurrentPage == 0 )
+		else
 		{
-			previousGroupName = currentGroupName;
-			currentTextStyle.setFont(controlAreaHeaderFont);
-			for(int j=0;j<currentRecord.getControlAreaHeaderVector().size();j++)
+			for(int i = 0; i < getRecordVector().size(); i++)
 			{
-				returnFlow.print( (String)currentRecord.getControlAreaHeaderVector().get(j) );
-				returnFlow.newLine();
-				returnFlow.newLine();
+				LoadsShedRecord currentRecord = (LoadsShedRecord)getRecordVector().get(i);
+				String currentControlAreaName = currentRecord.getControlAreaName();
+				String currentGroupName = currentRecord.getPaoName();
+		
+				if( linesOnCurrentPage >= MAX_LINES_PER_PAGE || !currentControlAreaName.equalsIgnoreCase(previousControlAreaName) )
+				{
+					if( !previousControlAreaName.equalsIgnoreCase("(null)") )
+					{
+					    outputStringsVector.add("\f");
+					}
+					previousControlAreaName = currentControlAreaName;
+					linesOnCurrentPage = 0;
+				}
+		
+				if( linesOnCurrentPage == 0 )	//get page header
+				{
+					previousGroupName = currentGroupName;
+					for(int j = 0; j < currentRecord.getControlAreaHeaderVector().size(); j++)
+					{
+					    outputStringsVector.add((String)currentRecord.getControlAreaHeaderVector().get(j) );
+					    linesOnCurrentPage++;
+					}
+					outputStringsVector.add("\r\n");	//want a blank line
+					outputStringsVector.add("Group: " + currentRecord.getPaoName());
+					outputStringsVector.add("\r\n");
+					for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
+					{
+					    outputStringsVector.add( (String)currentRecord.getGroupHeaderVector().get(j) );
+						linesOnCurrentPage++;
+					}
+					outputStringsVector.add("\r\n");
+					linesOnCurrentPage += 4;
+				}
+				else if( !currentGroupName.equalsIgnoreCase(previousGroupName) )
+				{
+					previousGroupName = currentGroupName;
+					outputStringsVector.add("\r\n");
+					outputStringsVector.add("Group: " + currentRecord.getPaoName());
+					outputStringsVector.add("\r\n");
+					for(int j = 0; j < currentRecord.getGroupHeaderVector().size(); j++)
+					{
+					    outputStringsVector.add( (String)currentRecord.getGroupHeaderVector().get(j) );
+						linesOnCurrentPage++;
+					}
+					outputStringsVector.add("\r\n");
+					linesOnCurrentPage += 4;
+				}
+		
+				String dataString = currentRecord.dataToString();
+				if( dataString != null)
+				{
+				    outputStringsVector.add(dataString);
+					linesOnCurrentPage++;
+				}
 			}
-			currentTextStyle.setFont(groupHeaderFont);
-			returnFlow.print("Group: " + currentRecord.getPaoName());
-			returnFlow.newLine();
-			returnFlow.newLine();
-			for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
-			{
-				returnFlow.print( (String)currentRecord.getGroupHeaderVector().get(j) );
-				returnFlow.newLine();
-			}
-			returnFlow.newLine();
-			linesOnCurrentPage += 7;
-		}
-		else if( !currentGroupName.equalsIgnoreCase(previousGroupName) )
-		{
-			previousGroupName = currentGroupName;
-			returnFlow.newLine();
-			currentTextStyle.setFont(groupHeaderFont);
-			returnFlow.print("Group: " + currentRecord.getPaoName());
-			returnFlow.newLine();
-			returnFlow.newLine();
-			for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
-			{
-				returnFlow.print( (String)currentRecord.getGroupHeaderVector().get(j) );
-				returnFlow.newLine();
-			}
-			returnFlow.newLine();
-			linesOnCurrentPage += 7;
-		}
-
-		String dataString = currentRecord.dataToString();
-		if( dataString != null)
-		{
-			currentTextStyle.setFont(normalFont);
-			returnFlow.print(dataString);
-			returnFlow.newLine();
-			linesOnCurrentPage++;
 		}
 	}
-
-	return returnFlow;
+	return outputStringsVector;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/29/00)
- */
-public StringBuffer getOutputAsStringBuffer()
-{
-	StringBuffer returnBuffer = new StringBuffer();
 
-	java.util.Vector records = getRecordVector();
-
-	String previousControlAreaName = "(null)";
-	String previousGroupName = "(null)";
-	int linesOnCurrentPage = 0;
-	for(int i=0;i<records.size();i++)
-	{
-		LoadsShedRecord currentRecord = (LoadsShedRecord)records.get(i);
-		String currentControlAreaName = currentRecord.getControlAreaName();
-		String currentGroupName = currentRecord.getPaoName();
-
-		if( linesOnCurrentPage >= 55 || !currentControlAreaName.equalsIgnoreCase(previousControlAreaName) )
-		{
-			if( !previousControlAreaName.equalsIgnoreCase("(null)") )
-			{
-				returnBuffer.append( (char)12 );//form feed
-			}
-			previousControlAreaName = currentControlAreaName;
-			linesOnCurrentPage = 0;
-		}
-
-		if( linesOnCurrentPage == 0 )
-		{
-			previousGroupName = currentGroupName;
-			for(int j=0;j<currentRecord.getControlAreaHeaderVector().size();j++)
-			{
-				returnBuffer.append( (String)currentRecord.getControlAreaHeaderVector().get(j) );
-				returnBuffer.append("\r\n");
-				returnBuffer.append("\r\n");
-			}
-			for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
-			{
-				returnBuffer.append( (String)currentRecord.getGroupHeaderVector().get(j) );
-				returnBuffer.append("\r\n");
-			}
-			returnBuffer.append("\r\n");
-			linesOnCurrentPage += 5;
-		}
-		else if( !currentGroupName.equalsIgnoreCase(previousGroupName) )
-		{
-			previousGroupName = currentGroupName;
-			returnBuffer.append("\r\n");
-			for(int j=0;j<currentRecord.getGroupHeaderVector().size();j++)
-			{
-				returnBuffer.append( (String)currentRecord.getGroupHeaderVector().get(j) );
-				returnBuffer.append("\r\n");
-			}
-			returnBuffer.append("\r\n");
-			linesOnCurrentPage += 5;
-		}
-
-		String dataString = currentRecord.dataToString();
-		if( dataString != null)
-		{
-			returnBuffer.append(dataString);
-			returnBuffer.append("\r\n");
-			linesOnCurrentPage++;
-		}
-	}
-
-	return returnBuffer;
-}
 /**
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
@@ -203,6 +147,9 @@ public StringBuffer getOutputAsStringBuffer()
 public boolean retrieveReportData(String dbAlias)
 {
 	boolean returnBoolean = false;
+
+	//Dump the old printLines vector
+	outputStringsVector = null;
 
 	if( dbAlias == null )
 	{
@@ -241,21 +188,21 @@ public boolean retrieveReportData(String dbAlias)
 		for(int i=0;i<controlAreaVector.size();i++)
 		{
 			StringBuffer sqlString2 = new StringBuffer("select pao.paobjectid, startdatetime, paoname, soe_tag, controltype, currentdailytime, " +
-						"currentmonthlytime, currentseasonaltime, currentannualtime, activerestore, reductionvalue, stopdatetime " +
-						"from yukonpaobject pao, lmcontrolhistory ch " +
-						"where pao.paobjectid = ch.paobjectid and " +
-						"(ch.activerestore = 'M' or ch.activerestore = 'T' or ch.activerestore = 'O') and " +
-						"STARTDATETIME > ? and STARTDATETIME <= ? and " +
-						"pao.paobjectid in (select paobjectid from lmgroupmacroexpander_view " +
-						"where (childid IS NULL AND paobjectid = lmgroupdeviceid OR " +
-						"NOT childid IS NULL AND paobjectid = childid) and " +
-						"deviceid in (select lmprogramdeviceid from lmcontrolareaprogram " +
-						"where deviceid = ?)) " +
-						"order by paoname, startdatetime, stopdatetime desc");
+				"currentmonthlytime, currentseasonaltime, currentannualtime, activerestore, reductionvalue, stopdatetime " +
+				"from yukonpaobject pao, lmcontrolhistory ch " +
+				"where pao.paobjectid = ch.paobjectid and " +
+				"(ch.activerestore = 'M' or ch.activerestore = 'T' or ch.activerestore = 'O') and " +
+				"STARTDATETIME > ? and STARTDATETIME <= ? and " +
+				"pao.paobjectid in (select paobjectid from lmgroupmacroexpander_view " +
+				"where (childid IS NULL AND paobjectid = lmgroupdeviceid OR " +
+				"NOT childid IS NULL AND paobjectid = childid) and " +
+				"deviceid in (select lmprogramdeviceid from lmcontrolareaprogram " +
+				"where deviceid = ?)) " +
+				"order by paoname, startdatetime, stopdatetime desc");
 
 			java.sql.PreparedStatement pstmt2 = conn.prepareStatement(sqlString2.toString());
-			pstmt2.setObject(1,new java.sql.Date(getStartDate().getTime().getTime()));
-			pstmt2.setObject(2,new java.sql.Date(getStopDate().getTime().getTime()));
+			pstmt2.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTimeInMillis()));			
+			pstmt2.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTimeInMillis()));
 			pstmt2.setInt(3,((TempControlAreaIdNameObject)controlAreaVector.get(i)).getControlAreaId().intValue());
 			java.sql.ResultSet rset2 = null;
 
@@ -278,7 +225,7 @@ public boolean retrieveReportData(String dbAlias)
 						Integer currentAnnualTime = new Integer(rset2.getInt(9));
 						String activeRestore = rset2.getString(10);
 						Double reductionValue = new Double(rset2.getDouble(11));
-						java.util.GregorianCalendar stopTime = new java.util.GregorianCalendar();
+						GregorianCalendar stopTime = new GregorianCalendar();
 						stopTime.setTime( new java.util.Date((rset2.getTimestamp(12)).getTime()) );
 
 						LoadsShedRecord loadsShedRec = new LoadsShedRecord(controlAreaName, groupId,
@@ -310,4 +257,49 @@ public boolean retrieveReportData(String dbAlias)
 
 	return returnBoolean;
 }
+
+
+/**
+ * Returns true if the line is a line from Group1Header
+ * @param line
+ * @return
+ */
+public boolean isGroup1HeaderLine(String line)
+{
+	if( line.startsWith("Group:") )	//a keyword for the Group name info
+	{
+	    groupLineCount = 1;
+	    return true;
+	}
+	else if( groupLineCount < 4  && groupLineCount > 0)
+	{
+	    groupLineCount++;
+	    return true;
+	}
+	groupLineCount = 0;	//reset the group line count, until the next grouping is found
+    return false;
 }
+
+public boolean isPageHeaderLine(String line)
+{
+    if( line.startsWith("Printed on:"))//a keyword from the Page header info
+    {
+        pageLineCount = 1;
+        return true;
+    }
+    else if( pageLineCount < 2 && pageLineCount > 0)
+    {
+        pageLineCount++;
+        return true;
+    }
+    pageLineCount = 0;
+    return false;
+}
+
+public String getReportName()
+{
+    return ReportTypes.REPORT_LOADS_SHED;
+}
+}
+
+

@@ -18,6 +18,7 @@ public class DailyPeaksRecord implements ReportRecordBase
 	private Integer offPeakDataQuality = null;
 	private java.util.GregorianCalendar offPeakTimestamp = null;
 	private Double threshold = null;
+	
 /**
  * CADPFormat constructor comment.
  */
@@ -176,12 +177,12 @@ public java.util.Vector getControlAreaHeaderVector()
 {
 	java.util.Vector returnVector = new java.util.Vector();
 
-	java.text.SimpleDateFormat dateFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	returnVector.add("Printed on: " + dateFormatter.format(new java.util.Date()));
 	returnVector.add("Control Summary for Control Area: " + getControlAreaName());
 
 	return returnVector;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/3/2002 3:00:38 PM)
@@ -228,10 +229,10 @@ public java.util.Vector getPeakHeaderVector()
 {
 	java.util.Vector returnVector = new java.util.Vector();
 
-	returnVector.add("                  PEAK TIME                                       OFF PEAK TIME                 ");
-	returnVector.add(" ");
-	returnVector.add("Rank Peak Value   Quality    Time                    Peak Value   Quality    Time               ");
-	returnVector.add("---- ------------ ---------- -------------------     ------------ ---------- -------------------");
+	returnVector.add("                   PEAK TIME                                        OFF PEAK TIME               ");
+	returnVector.add("\r\n");
+	returnVector.add("      Peak Value   Quality          Time              Peak Value   Quality          Time        ");
+	returnVector.add("     ------------ ---------- -------------------     ------------ ---------- -------------------");
 	//sample template and ruler
 	//returnVector.add("1    5534.98      Normal     MM/dd/yyyy HH:mm:ss     5534.98      Normal     MM/dd/yyyy HH:mm:ss");
 	//returnVector.add("         1         2         3         4         5         6         7         8         9        10        11");
