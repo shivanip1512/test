@@ -1208,6 +1208,7 @@ private void executePointOffsetLegend_ActionPerformed( ActionEvent event )
 			f, "Point Offset Legend", true, ptLegend );
 
 		diag.setCancelButtonVisible( false );
+		diag.setResizable( true );
 		diag.setSize( 640, 500 );
 		diag.setLocationRelativeTo( f );
 
