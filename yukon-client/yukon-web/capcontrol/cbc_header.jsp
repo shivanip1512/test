@@ -16,6 +16,7 @@
 <%@ page import="com.cannontech.yukon.cbc.Feeder" %>
 <%@ page import="com.cannontech.yukon.cbc.CapBankDevice" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@ page import="com.cannontech.clientutils.commonutils.ModifiedDate" %>
 <%@ page import="com.cannontech.cbc.CBCDisplay" %>
 
@@ -30,6 +31,9 @@
 
 
 <cti:checklogin/>
+<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
+	<% response.sendRedirect( "../operator/Operations.jsp" ); %>
+</cti:isPropertyFalse>
 
 <%  
     CBCConnServlet connServlet = (CBCConnServlet)
@@ -37,7 +41,6 @@
 
 	if( cbcAnnex.getYukonUser() == null )
 		cbcAnnex.setYukonUser( (LiteYukonUser)session.getAttribute("YUKON_USER") );
-
 
    if( !cbcAnnex.hasValidConn() )
 		cbcAnnex.setConnection( connServlet.getConnection() );

@@ -170,8 +170,15 @@
                         <td width="45"> <%= subBusMdl.getColumnName(SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="33"> <%= subBusMdl.getColumnName(SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="36"> <%= subBusMdl.getColumnName(SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="71">Graphs</td>
+                        </cti:isPropertyFalse>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="80">Reports</td>
+                        </cti:isPropertyFalse>
+
                       </tr>
                       <tr valign="top"> 
                         <td width="100" class="TableCell"><a href= "feeders.jsp?paoID=<%= paoID.intValue() %>" class="Link1">
@@ -192,18 +199,25 @@
                         <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="33" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="71" class="TableCell"> 
                           <select name="select2">
                             <option>Graph A</option>
                             <option>Graph B</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="80" class="TableCell"> 
                           <select name="select3">
                             <option>Report A</option>
                             <option>Report B</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+
                       </tr>
                     </table>
                   <br>
@@ -237,8 +251,15 @@
                         <td width="45"> <%= feederMdl.getColumnName(FeederTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="45"> <%= feederMdl.getColumnName(FeederTableModel.WATTS_COLUMN) %></td>
                         <td width="36"> <%= feederMdl.getColumnName(FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="71">Graphs</td>
+                        </cti:isPropertyFalse>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="80">Reports</td>
+                        </cti:isPropertyFalse>
+
                       </tr>
                       
                       <tr valign="top"> 
@@ -258,18 +279,25 @@
                         <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.POWER_FACTOR_COLUMN, parentSub) %></td>
                         <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.WATTS_COLUMN, parentSub) %></td>
                         <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.DAILY_OPERATIONS_COLUMN, parentSub) %></td>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="71" class="TableCell"> 
                           <select name="select5">
                             <option>Graph A</option>
                             <option>Graph B</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+                        
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="80" class="TableCell"> 
                           <select name="select5">
                             <option>Report A</option>
                             <option>Report B</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+
                       </tr>
                     </table>
                     <br>
@@ -423,7 +451,9 @@
 
 
                   <p>
-                    <input name="cmdExecute" type="submit" value="Submit">
+	                <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	                    <input name="cmdExecute" type="submit" value="Submit">
+	                </cti:isPropertyTrue>
                     <input name="cmdExecute" type="submit" value="Cancel">
                                         
                     <input name="redirectURL" type="hidden" value="<%= refererURL %>">

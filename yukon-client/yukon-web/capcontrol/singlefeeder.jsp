@@ -170,8 +170,14 @@
                         <td width="45"> <%= feederMdl.getColumnName(FeederTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="45"> <%= feederMdl.getColumnName(FeederTableModel.WATTS_COLUMN) %></td>
                         <td width="36"> <%= feederMdl.getColumnName(FeederTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="71">Graphs</td>
+                        </cti:isPropertyFalse>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="80">Reports</td>
+                        </cti:isPropertyFalse>
                       </tr>
                       
                       <tr valign="top"> 
@@ -180,11 +186,16 @@
                        	</td>
 
                         <td width="44" class="TableCell">
-                        	<a href= "capcontrols.jsp?paoID=<%= paoID %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
+	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	                        	<a href= "capcontrols.jsp?paoID=<%= paoID %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
+	                        </cti:isPropertyTrue>
                         	<font color="<%= CapControlWebAnnex.convertColor( feederMdl.getCellColor(feeder) ) %>">
                         	<%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.CURRENT_STATE_COLUMN, subBus) %>
-                        </font></a></td>
-                        
+                        	</font>
+	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+                        	</a>
+	                        </cti:isPropertyTrue>
+                        </td>
                         
                         <td width="44" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.TARGET_COLUMN, subBus) %></td>
                         <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.VAR_LOAD_COLUMN, subBus) %></td>
@@ -192,18 +203,25 @@
                         <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.POWER_FACTOR_COLUMN, subBus) %></td>
                         <td width="45" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.WATTS_COLUMN, subBus) %></td>
                         <td width="36" class="TableCell"><%= cbcAnnex.getCBCDisplay().getFeederValueAt(feeder, FeederTableModel.DAILY_OPERATIONS_COLUMN, subBus) %></td>
+                        
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">                        
                         <td width="71" class="TableCell"> 
                           <select name="select5">
                             <option>Feeder kVar</option>
                             <option>Graph B</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+                        
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="80" class="TableCell"> 
                           <select name="select5">
                             <option>Peaks</option>
                             <option>Ops.</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+
                       </tr>
                     </table>
 				</td>
@@ -248,10 +266,16 @@
                         <td width="228" class="TableCell"><%= capBankMdl.getValueAt(i, CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         
                         <td width="43" class="TableCell">
-                        	<a href= "capcontrols.jsp?paoID=<%= capBankMdl.getRowAt(i).getCcId().intValue() %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
+	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	                        	<a href= "capcontrols.jsp?paoID=<%= capBankMdl.getRowAt(i).getCcId().intValue() %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
+	                        </cti:isPropertyTrue>
                         	<font color="<%= CapControlWebAnnex.convertColor(capBankMdl.getCellForegroundColor( i, CapBankTableModel.STATUS_COLUMN ) ) %>">
                         	<%= capBankMdl.getValueAt(i, CapBankTableModel.STATUS_COLUMN) %>
-                        </font></a></td>
+                        	</font>
+	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	                        	</a>
+	                        </cti:isPropertyTrue>
+                        </td>
                         
                         <td width="98" class="TableCell"> <%= capBankMdl.getValueAt(i, CapBankTableModel.TIME_STAMP_COLUMN) %></td>
                         <td width="33" class="TableCell"> <%= capBankMdl.getValueAt(i, CapBankTableModel.BANK_SIZE_COLUMN) %></td>

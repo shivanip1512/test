@@ -118,8 +118,15 @@
                         <td width="70"> <%= subBusMdl.getColumnName(SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
                         <td width="50"> <%= subBusMdl.getColumnName(SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="66"> <%= subBusMdl.getColumnName(SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
+                        
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="72">Graphs</td>
+                        </cti:isPropertyFalse>
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="72">Reports</td>
+                        </cti:isPropertyFalse>
+
                       </tr>       
                       
 	                  <% 
@@ -136,10 +143,16 @@
                         </td>
 
                         <td width="68" class="TableCell">
+	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
                         	<a href= "capcontrols.jsp?paoID=<%= subbusID %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
+	                        </cti:isPropertyTrue>
+                        	
 	                    		<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( i, SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
 	                    		<%= subBusMdl.getValueAt(i, SubBusTableModel.CURRENT_STATE_COLUMN) %> 
-	                    		</font></a>
+	                    		</font>
+	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	                    	</a>
+	                        </cti:isPropertyTrue>
                         </td>
 
                         <td width="70" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.TARGET_COLUMN) %></td>
@@ -149,22 +162,31 @@
                         <td width="50" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="66" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         
-                        
+
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
                         <td width="72" class="TableCell">
 							<select name="selectGraph" onchange="showGraphWin(this.options[this.selectedIndex].value);">
 							  <option value="subs.jsp">Feeder kVar</option>
 							  <option value="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph&pointid=<%=subBusMdl.getRowAt(i).getCurrentVarLoadPointID().intValue()%>&period=<%=ServletUtil.PREVTHIRTYDAYS%>">Sub kVAR</option>
-							  <option value="oneline/<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
+
+	                          <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">
+								  <option value="oneline/<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
+		                      </cti:isPropertyFalse>
+							  
 							</select>
                         </td>
+                        </cti:isPropertyFalse>
                         
                         
+                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
                         <td width="72" class="TableCell"> 
                           <select name="select3">
                             <option>Peaks</option>
                             <option>Ops.</option>
                           </select>
                         </td>
+                        </cti:isPropertyFalse>
+                        
                       </tr>
 						<%
 						}
