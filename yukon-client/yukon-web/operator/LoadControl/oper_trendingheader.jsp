@@ -2,7 +2,7 @@
 
 // Grab their graphdefinitions
    Class[] types = { Integer.class,String.class };
-   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,OperatorLoginGraphList where graphdefinition.graphdefinitionid=OperatorLoginGraphList.graphdefinitionid and OperatorLoginGraphList.OperatorLoginID=" + operator.getOperatorLogin().getOperatorLoginID() + " order by graphdefinition.graphdefinitionid", types );
+   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,OperatorLoginGraphList where graphdefinition.graphdefinitionid=OperatorLoginGraphList.graphdefinitionid and OperatorLoginGraphList.OperatorLoginID=" + user.getUserID() + " order by graphdefinition.graphdefinitionid", types );
                     
    //out.println("select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.LMCustomerDeviceID=" + user.getCustomerId() + " order by GraphCustomerList.CustomerOrder");
    String referrer;

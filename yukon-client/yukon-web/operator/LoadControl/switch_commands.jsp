@@ -7,7 +7,7 @@
 <%
     boolean showSerialNumberTextField = true;
 
-    String sql = "select GENERICMACRO.CHILDID from OPERATORSERIALGROUP,GENERICMACRO WHERE GENERICMACRO.OWNERID=OPERATORSERIALGROUP.LMGROUPID AND OPERATORSERIALGROUP.LOGINID=" + operator.getLoginID()  + " ORDER BY GENERICMACRO.CHILDORDER";
+    String sql = "select GENERICMACRO.CHILDID from OPERATORSERIALGROUP,GENERICMACRO WHERE GENERICMACRO.OWNERID=OPERATORSERIALGROUP.LMGROUPID AND OPERATORSERIALGROUP.LOGINID=" + user.getUserID()  + " ORDER BY GENERICMACRO.CHILDORDER";
    
     Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sql, new Class[] { Integer.class } );
     Object[][] nameSerial = null;

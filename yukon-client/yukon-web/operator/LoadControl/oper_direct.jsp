@@ -5,6 +5,7 @@
 
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.yukon.IMACSConnection" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %>
@@ -26,7 +27,7 @@
     // list to put this customers programs in, contains LMProgramDirect objects
     ArrayList ourPrograms = new ArrayList();
 
-    long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( operator.getLoginID() );       
+    long[] programIDs = com.cannontech.database.db.web.LMDirectOperatorList.getProgramIDs( user.getUserID() );       
     java.util.Arrays.sort(programIDs);
     LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
 
@@ -41,18 +42,17 @@
         }
     }
 
-
     Class[] types2 = { Integer.class  };
-    Object[][] schedIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT lmmacsscheduleoperatorlist.ScheduleID FROM lmmacsscheduleoperatorlist WHERE lmmacsscheduleoperatorlist.operatorloginid=" + operator.getLoginID()  + " ORDER BY lmmacsscheduleoperatorlist.ScheduleID", types2 );
+    Object[][] schedIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT lmmacsscheduleoperatorlist.ScheduleID FROM lmmacsscheduleoperatorlist WHERE lmmacsscheduleoperatorlist.operatorloginid=" + user.getUserID()  + " ORDER BY lmmacsscheduleoperatorlist.ScheduleID", types2 );
     
     com.cannontech.servlet.MACSConnectionServlet connContainer = (com.cannontech.servlet.MACSConnectionServlet)
         application.getAttribute(com.cannontech.servlet.MACSConnectionServlet.SERVLET_CONTEXT_ID);
-
-    com.cannontech.macs.MACSClientConnection conn = null;
-
+				
+	IMACSConnection conn = connContainer.getIMACSConnection();
+	
     if( connContainer != null )
     {
-        conn = connContainer.getConnection();
+        conn = connContainer.getIMACSConnection();
     }
     
     // Contains 
