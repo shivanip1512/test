@@ -513,7 +513,7 @@ private void handleEnergyExchangeProgram(LMProgramEnergyExchange prog)
  * Renew the cache.
  * Creation date: (6/11/2001 3:36:24 PM)
  */
-private synchronized void refresh()
+public synchronized void refresh()
 {
 
 	com.cannontech.clientutils.CTILogger.info("Refreshing customer-energycompany mappings");
