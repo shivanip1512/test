@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2003/12/19 16:23:47 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/01/26 21:32:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 #include "dev_meter.h"
 #include "dev_idlc.h"
 #include "dev_carrier.h"
+#include "dev_mct.h"
 #include "dev_repeater.h"
 #include "dev_tap.h"
 #include "dev_grp_emetcon.h"
@@ -1660,6 +1661,7 @@ void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
     }
 }
 
+
 void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
 {
     int childcount = 0;
@@ -1743,6 +1745,102 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
 }
 
 
+void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
+{
+    CtiDeviceBase *pTempCtiDevice = 0;
+
+    LONG      tmpmctid;
+    int       tmpwire[3],
+              tmpconfigtype;
+    double    tmpmpkh[3];
+    RWCString tmpconfigname,
+              tmpconfigmode;
+
+    {
+        RWDBConnection conn   = getConnection();
+        RWDBDatabase db       = getDatabase();
+        RWDBSelector selector = db.selector();
+        RWDBTable tblPAObject = db.table("yukonpaobject");
+        RWDBTable mappingTbl  = db.table("mctconfigmapping");
+        RWDBTable configTbl   = db.table("mctconfig");
+        RWDBReader rdr;
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Configs" << endl;
+        }
+
+        selector << mappingTbl["mctid"]
+                 << configTbl["configname"]
+                 << configTbl["configtype"]
+                 << configTbl["configmode"]
+                 << configTbl["mctwire1"]
+                 << configTbl["mctwire2"]
+                 << configTbl["mctwire3"]
+                 << configTbl["ke1"]
+                 << configTbl["ke2"]
+                 << configTbl["ke3"];
+
+        selector.where( mappingTbl["mctid"]    == tblPAObject["paobjectid"] &&
+                        mappingTbl["configid"] == configTbl["configid"] );
+
+        if(paoID)
+        {
+            selector.where( selector.where() && tblPAObject["PAObjectID"] == paoID );
+        }
+
+        rdr = selector.reader(conn);
+        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        }
+
+        if(rdr.status().errorCode() == RWDBStatus::ok)
+        {
+            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            {
+                rdr["mctid"]      >> tmpmctid;
+                rdr["configname"] >> tmpconfigname;
+                rdr["configtype"] >> tmpconfigtype;
+                rdr["configmode"] >> tmpconfigmode;
+
+                rdr["mctwire1"]   >> tmpwire[0];
+                rdr["mctwire2"]   >> tmpwire[1];
+                rdr["mctwire3"]   >> tmpwire[2];
+
+                rdr["ke1"]        >> tmpmpkh[0];
+                rdr["ke2"]        >> tmpmpkh[1];
+                rdr["ke3"]        >> tmpmpkh[2];
+
+                pTempCtiDevice = getEqual(tmpmctid);
+
+                if(pTempCtiDevice)
+                {
+                    CtiDeviceMCT *tmpMCT = (CtiDeviceMCT *)pTempCtiDevice;
+
+                    tmpMCT->setConfigData(tmpconfigname,
+                                          tmpconfigtype,
+                                          tmpconfigmode,
+                                          tmpwire,
+                                          tmpmpkh);
+                }
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Error reading MCT Configs from database: " << rdr.status().errorCode() << endl;
+        }
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for MCT Configs" << endl;
+        }
+    }
+}
+
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // This method loads all the device properties/characteristics which must be appended to an already
@@ -1778,6 +1876,15 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load Exclusions" << endl;
+    }
+
+    start = start.now();
+    refreshMCTConfigs(paoID);
+    stop = stop.now();
+    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load MCT Configs" << endl;
     }
 
 

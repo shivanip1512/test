@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.16 $
- * DATE         :  $Date: 2003/08/22 21:43:31 $
+ * REVISION     :  $Revision: 1.17 $
+ * DATE         :  $Date: 2004/01/26 21:32:29 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -53,6 +53,7 @@ private:
    void refreshIONMeterGroups(LONG paoID = 0);
    void refreshMacroSubdevices(LONG paoID = 0);
    void refreshDeviceProperties(LONG paoID = 0);
+   void refreshMCTConfigs(LONG paoID = 0);
 
 
 public:
