@@ -1,27 +1,19 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     3/7/2003 11:42:53 AM                         */
+/* Created on:     3/18/2003 10:31:48 AM                        */
 /*==============================================================*/
-
-
-drop table LMHardwareEvent cascade constraints
-/
 
 
 drop table LMHardwareConfiguration cascade constraints
 /
 
 
+drop table LMHardwareEvent cascade constraints
+/
+
+
 drop table LMHardwareBase cascade constraints
-/
-
-
-drop table LMThermostatSeasonEntry cascade constraints
-/
-
-
-drop table LMThermostatSeason cascade constraints
 /
 
 
@@ -33,6 +25,14 @@ drop table ECToCallReportMapping cascade constraints
 /
 
 
+drop table LMThermostatSeasonEntry cascade constraints
+/
+
+
+drop table LMThermostatSeason cascade constraints
+/
+
+
 drop table InventoryBase cascade constraints
 /
 
@@ -41,7 +41,31 @@ drop table CallReportBase cascade constraints
 /
 
 
-drop table ECToAccountMapping cascade constraints
+drop table ApplianceHeatPump cascade constraints
+/
+
+
+drop table ApplianceIrrigation cascade constraints
+/
+
+
+drop table ApplianceStorageHeat cascade constraints
+/
+
+
+drop table ApplianceGrainDryer cascade constraints
+/
+
+
+drop table ApplianceWaterHeater cascade constraints
+/
+
+
+drop table ApplianceGenerator cascade constraints
+/
+
+
+drop table ApplianceDualFuel cascade constraints
 /
 
 
@@ -53,7 +77,7 @@ drop table ApplianceBase cascade constraints
 /
 
 
-drop table ECToLMCustomerEventMapping cascade constraints
+drop table ECToAccountMapping cascade constraints
 /
 
 
@@ -66,6 +90,10 @@ drop table CustomerAccount cascade constraints
 
 
 drop table AccountSite cascade constraints
+/
+
+
+drop table ECToLMCustomerEventMapping cascade constraints
 /
 
 
@@ -362,6 +390,23 @@ create table ECToWorkOrderMapping  (
 
 
 /*==============================================================*/
+/* Table : ECToLMCustomerEventMapping                           */
+/*==============================================================*/
+
+
+create table ECToLMCustomerEventMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   EventID              NUMBER                           not null,
+   constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID),
+   constraint FK_LCsEv_ECLmCs foreign key (EventID)
+         references LMCustomerEventBase (EventID),
+   constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : AccountSite                                          */
 /*==============================================================*/
 
@@ -444,18 +489,18 @@ create table LMProgramEvent  (
 
 
 /*==============================================================*/
-/* Table : ECToLMCustomerEventMapping                           */
+/* Table : ECToAccountMapping                                   */
 /*==============================================================*/
 
 
-create table ECToLMCustomerEventMapping  (
+create table ECToAccountMapping  (
    EnergyCompanyID      NUMBER                           not null,
-   EventID              NUMBER                           not null,
-   constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID),
-   constraint FK_LCsEv_ECLmCs foreign key (EventID)
-         references LMCustomerEventBase (EventID),
-   constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID)
+   AccountID            NUMBER                           not null,
+   constraint PK_ECTOACCOUNTMAPPING primary key (EnergyCompanyID, AccountID),
+   constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_ECTAcc_CstAcc foreign key (AccountID)
+         references CustomerAccount (AccountID)
 )
 /
 
@@ -476,6 +521,7 @@ create table ApplianceBase  (
    KWCapacity           NUMBER,
    EfficiencyRating     NUMBER,
    Notes                VARCHAR2(100),
+   ModelNumber          VARCHAR2(40)                     not null,
    constraint PK_APPLIANCEBASE primary key (ApplianceID),
    constraint FK_CUS_CSTA_CUS4 foreign key (AccountID)
          references CustomerAccount (AccountID),
@@ -530,18 +576,164 @@ create table ApplianceAirConditioner  (
 
 
 /*==============================================================*/
-/* Table : ECToAccountMapping                                   */
+/* Table : ApplianceDualFuel                                    */
 /*==============================================================*/
 
 
-create table ECToAccountMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   AccountID            NUMBER                           not null,
-   constraint PK_ECTOACCOUNTMAPPING primary key (EnergyCompanyID, AccountID),
-   constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_ECTAcc_CstAcc foreign key (AccountID)
-         references CustomerAccount (AccountID)
+create table ApplianceDualFuel  (
+   ApplianceID          NUMBER                           not null,
+   SwitchOverTypeID     NUMBER                           not null,
+   PrimaryKWCapacity    NUMBER                           not null,
+   SecondaryKWCapacity  NUMBER                           not null,
+   SecondaryEnergySourceID NUMBER                           not null,
+   constraint PK_APPLIANCEDUALFUEL primary key (ApplianceID),
+   constraint FK_AppDlF_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppDuF_YkLst1 foreign key (SecondaryEnergySourceID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppDuF_YkLst2 foreign key (SwitchOverTypeID)
+         references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ApplianceGenerator                                   */
+/*==============================================================*/
+
+
+create table ApplianceGenerator  (
+   ApplianceID          NUMBER                           not null,
+   TransferSwitchTypeID NUMBER                           not null,
+   TransferSwitchMfgID  NUMBER                           not null,
+   PeakKWCapacity       NUMBER                           not null,
+   FuelCapGallons       NUMBER                           not null,
+   StartDelaySeconds    NUMBER                           not null,
+   constraint PK_APPLIANCEGENERATOR primary key (ApplianceID),
+   constraint FK_AppGen_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppGn_YkLst1 foreign key (TransferSwitchMfgID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppGn_YkLst2 foreign key (TransferSwitchTypeID)
+         references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ApplianceWaterHeater                                 */
+/*==============================================================*/
+
+
+create table ApplianceWaterHeater  (
+   ApplianceID          NUMBER                           not null,
+   NumberOfGallons      NUMBER                           not null,
+   EnergySourceID       NUMBER                           not null,
+   NumberOfElements     NUMBER                           not null,
+   constraint PK_APPLIANCEWATERHEATER primary key (ApplianceID),
+   constraint FK_AppWtHt_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppWtHt_YkLst foreign key (EnergySourceID)
+         references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ApplianceGrainDryer                                  */
+/*==============================================================*/
+
+
+create table ApplianceGrainDryer  (
+   ApplianceID          NUMBER                           not null,
+   DryerTypeID          NUMBER                           not null,
+   BinSizeID            NUMBER                           not null,
+   BlowerEnergySourceID NUMBER                           not null,
+   BlowerHorsePowerID   NUMBER                           not null,
+   BlowerHeatSourceID   NUMBER                           not null,
+   constraint PK_APPLIANCEGRAINDRYER primary key (ApplianceID),
+   constraint FK_AppGrD_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppGrDr_YkLst1 foreign key (BinSizeID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppGrDr_YkLst2 foreign key (BlowerEnergySourceID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppGrDr_YkLst3 foreign key (DryerTypeID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppGrDr_YkLst5 foreign key (BlowerHorsePowerID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppGrDr_YkLst6 foreign key (BlowerHeatSourceID)
+         references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ApplianceStorageHeat                                 */
+/*==============================================================*/
+
+
+create table ApplianceStorageHeat  (
+   ApplianceID          NUMBER                           not null,
+   StorageTypeID        NUMBER                           not null,
+   PeakKWCapacity       NUMBER                           not null,
+   HoursToRecharge      NUMBER                           not null,
+   constraint PK_APPLIANCESTORAGEHEAT primary key (ApplianceID),
+   constraint FK_AppStHt_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppStHt_YkLst foreign key (StorageTypeID)
+         references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ApplianceIrrigation                                  */
+/*==============================================================*/
+
+
+create table ApplianceIrrigation  (
+   ApplianceID          NUMBER                           not null,
+   IrrigationTypeID     NUMBER                           not null,
+   HorsePowerID         NUMBER                           not null,
+   EnergySourceID       NUMBER                           not null,
+   SoilTypeID           NUMBER                           not null,
+   MeterLocationID      NUMBER                           not null,
+   MeterVoltage         NUMBER                           not null,
+   constraint PK_APPLIANCEIRRIGATION primary key (ApplianceID),
+   constraint FK_AppIrr_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppIrr_YkLst1 foreign key (EnergySourceID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppIrr_YkLst2 foreign key (HorsePowerID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppIrr_YkLst3 foreign key (IrrigationTypeID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppIrr_YkLst4 foreign key (MeterLocationID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppIrr_YkLst5 foreign key (SoilTypeID)
+         references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ApplianceHeatPump                                    */
+/*==============================================================*/
+
+
+create table ApplianceHeatPump  (
+   ApplianceID          NUMBER                           not null,
+   PumpTypeID           NUMBER                           not null,
+   StandbySourceID      NUMBER                           not null,
+   SecondsDelayToRestart NUMBER                           not null,
+   constraint PK_APPLIANCEHEATPUMP primary key (ApplianceID),
+   constraint FK_AppHtP_AppB foreign key (ApplianceID)
+         references ApplianceBase (ApplianceID),
+   constraint FK_AppHtPm_YkLst1 foreign key (PumpTypeID)
+         references YukonListEntry (EntryID),
+   constraint FK_AppHtPm_YkLst2 foreign key (StandbySourceID)
+         references YukonListEntry (EntryID)
 )
 /
 
@@ -617,40 +809,6 @@ create index HrdInst_CstHrdBs_FK on InventoryBase (
 
 
 /*==============================================================*/
-/* Table : ECToCallReportMapping                                */
-/*==============================================================*/
-
-
-create table ECToCallReportMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   CallReportID         NUMBER                           not null,
-   constraint PK_ECTOCALLREPORTMAPPING primary key (EnergyCompanyID, CallReportID),
-   constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_ECTSrv_Call foreign key (CallReportID)
-         references CallReportBase (CallID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : ECToInventoryMapping                                 */
-/*==============================================================*/
-
-
-create table ECToInventoryMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   InventoryID          NUMBER                           not null,
-   constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID),
-   constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-         references InventoryBase (InventoryID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : LMThermostatSeason                                   */
 /*==============================================================*/
 
@@ -691,6 +849,40 @@ create table LMThermostatSeasonEntry  (
 
 
 /*==============================================================*/
+/* Table : ECToCallReportMapping                                */
+/*==============================================================*/
+
+
+create table ECToCallReportMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   CallReportID         NUMBER                           not null,
+   constraint PK_ECTOCALLREPORTMAPPING primary key (EnergyCompanyID, CallReportID),
+   constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_ECTSrv_Call foreign key (CallReportID)
+         references CallReportBase (CallID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ECToInventoryMapping                                 */
+/*==============================================================*/
+
+
+create table ECToInventoryMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   InventoryID          NUMBER                           not null,
+   constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID),
+   constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+         references InventoryBase (InventoryID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMHardwareBase                                       */
 /*==============================================================*/
 
@@ -704,6 +896,23 @@ create table LMHardwareBase  (
          references InventoryBase (InventoryID),
    constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
          references YukonListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMHardwareEvent                                      */
+/*==============================================================*/
+
+
+create table LMHardwareEvent  (
+   EventID              NUMBER                           not null,
+   InventoryID          NUMBER                           not null,
+   constraint PK_LMHARDWAREEVENT primary key (EventID),
+   constraint FK_IvB_LMHrEv foreign key (InventoryID)
+         references InventoryBase (InventoryID),
+   constraint FK_LmHrEv_LmCsEv foreign key (EventID)
+         references LMCustomerEventBase (EventID)
 )
 /
 
@@ -742,23 +951,6 @@ create index LmHrd_LmHrdCfg_FK on LMHardwareConfiguration (
 /*==============================================================*/
 create index CstLdIn_LMHrdCfg_FK on LMHardwareConfiguration (
    ApplianceID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMHardwareEvent                                      */
-/*==============================================================*/
-
-
-create table LMHardwareEvent  (
-   EventID              NUMBER                           not null,
-   InventoryID          NUMBER                           not null,
-   constraint PK_LMHARDWAREEVENT primary key (EventID),
-   constraint FK_IvB_LMHrEv foreign key (InventoryID)
-         references InventoryBase (InventoryID),
-   constraint FK_LmHrEv_LmCsEv foreign key (EventID)
-         references LMCustomerEventBase (EventID)
 )
 /
 

@@ -77,7 +77,7 @@ select r.recipientid, r.recipientid, 1, r.disableflag, r.emailaddress
 from NotificationRecipient r where r.recipientid > 0;
 
 insert into ContactNotification
-select r.contactid, r.contactid, 2, 'N', r.contphone1
+select r.contactid+1000, r.contactid, 2, 'N', r.contphone1
 from CustomerContact r where r.contactid > 0;
 
 

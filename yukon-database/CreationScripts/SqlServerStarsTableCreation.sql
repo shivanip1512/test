@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     3/7/2003 11:43:14 AM                         */
+/* Created on:     3/18/2003 10:31:26 AM                        */
 /*==============================================================*/
 
 
@@ -34,6 +34,62 @@ if exists (select 1
            where  id = object_id('ApplianceCategory')
             and   type = 'U')
    drop table ApplianceCategory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceDualFuel')
+            and   type = 'U')
+   drop table ApplianceDualFuel
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceGenerator')
+            and   type = 'U')
+   drop table ApplianceGenerator
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceGrainDryer')
+            and   type = 'U')
+   drop table ApplianceGrainDryer
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceHeatPump')
+            and   type = 'U')
+   drop table ApplianceHeatPump
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceIrrigation')
+            and   type = 'U')
+   drop table ApplianceIrrigation
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceStorageHeat')
+            and   type = 'U')
+   drop table ApplianceStorageHeat
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ApplianceWaterHeater')
+            and   type = 'U')
+   drop table ApplianceWaterHeater
 go
 
 
@@ -278,6 +334,7 @@ LocationID           numeric              null,
 KWCapacity           numeric              null,
 EfficiencyRating     numeric              null,
 Notes                varchar(100)         null,
+ModelNumber          varchar(40)          not null,
 constraint PK_APPLIANCEBASE primary key  (ApplianceID)
 )
 go
@@ -310,6 +367,105 @@ Description          varchar(40)          null,
 CategoryID           numeric              null,
 WebConfigurationID   numeric              null,
 constraint PK_APPLIANCECATEGORY primary key  (ApplianceCategoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceDualFuel                                    */
+/*==============================================================*/
+create table ApplianceDualFuel (
+ApplianceID          numeric              not null,
+SwitchOverTypeID     numeric              not null,
+PrimaryKWCapacity    numeric              not null,
+SecondaryKWCapacity  numeric              not null,
+SecondaryEnergySourceID numeric              not null,
+constraint PK_APPLIANCEDUALFUEL primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceGenerator                                   */
+/*==============================================================*/
+create table ApplianceGenerator (
+ApplianceID          numeric              not null,
+TransferSwitchTypeID numeric              not null,
+TransferSwitchMfgID  numeric              not null,
+PeakKWCapacity       numeric              not null,
+FuelCapGallons       numeric              not null,
+StartDelaySeconds    numeric              not null,
+constraint PK_APPLIANCEGENERATOR primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceGrainDryer                                  */
+/*==============================================================*/
+create table ApplianceGrainDryer (
+ApplianceID          numeric              not null,
+DryerTypeID          numeric              not null,
+BinSizeID            numeric              not null,
+BlowerEnergySourceID numeric              not null,
+BlowerHorsePowerID   numeric              not null,
+BlowerHeatSourceID   numeric              not null,
+constraint PK_APPLIANCEGRAINDRYER primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceHeatPump                                    */
+/*==============================================================*/
+create table ApplianceHeatPump (
+ApplianceID          numeric              not null,
+PumpTypeID           numeric              not null,
+StandbySourceID      numeric              not null,
+SecondsDelayToRestart numeric              not null,
+constraint PK_APPLIANCEHEATPUMP primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceIrrigation                                  */
+/*==============================================================*/
+create table ApplianceIrrigation (
+ApplianceID          numeric              not null,
+IrrigationTypeID     numeric              not null,
+HorsePowerID         numeric              not null,
+EnergySourceID       numeric              not null,
+SoilTypeID           numeric              not null,
+MeterLocationID      numeric              not null,
+MeterVoltage         numeric              not null,
+constraint PK_APPLIANCEIRRIGATION primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceStorageHeat                                 */
+/*==============================================================*/
+create table ApplianceStorageHeat (
+ApplianceID          numeric              not null,
+StorageTypeID        numeric              not null,
+PeakKWCapacity       numeric              not null,
+HoursToRecharge      numeric              not null,
+constraint PK_APPLIANCESTORAGEHEAT primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Table : ApplianceWaterHeater                                 */
+/*==============================================================*/
+create table ApplianceWaterHeater (
+ApplianceID          numeric              not null,
+NumberOfGallons      numeric              not null,
+EnergySourceID       numeric              not null,
+NumberOfElements     numeric              not null,
+constraint PK_APPLIANCEWATERHEATER primary key  (ApplianceID)
 )
 go
 
@@ -725,6 +881,108 @@ alter table AccountSite
 go
 
 
+alter table ApplianceDualFuel
+   add constraint FK_AppDuF_YkLst1 foreign key (SecondaryEnergySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceDualFuel
+   add constraint FK_AppDuF_YkLst2 foreign key (SwitchOverTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGenerator
+   add constraint FK_AppGn_YkLst1 foreign key (TransferSwitchMfgID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGenerator
+   add constraint FK_AppGn_YkLst2 foreign key (TransferSwitchTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst1 foreign key (BinSizeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst2 foreign key (BlowerEnergySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst3 foreign key (DryerTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst5 foreign key (BlowerHorsePowerID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrDr_YkLst6 foreign key (BlowerHeatSourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceHeatPump
+   add constraint FK_AppHtPm_YkLst1 foreign key (PumpTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceHeatPump
+   add constraint FK_AppHtPm_YkLst2 foreign key (StandbySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst1 foreign key (EnergySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst2 foreign key (HorsePowerID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst3 foreign key (IrrigationTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst4 foreign key (MeterLocationID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_YkLst5 foreign key (SoilTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceWaterHeater
+   add constraint FK_AppWtHt_YkLst foreign key (EnergySourceID)
+      references YukonListEntry (EntryID)
+go
+
+
 alter table InventoryBase
    add constraint FK_CUS_HRDI_HAR2 foreign key (InstallationCompanyID)
       references ServiceCompany (CompanyID)
@@ -749,20 +1007,56 @@ alter table ApplianceBase
 go
 
 
+alter table ApplianceDualFuel
+   add constraint FK_AppDlF_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceGenerator
+   add constraint FK_AppGen_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceGrainDryer
+   add constraint FK_AppGrD_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceHeatPump
+   add constraint FK_AppHtP_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceIrrigation
+   add constraint FK_AppIrr_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceStorageHeat
+   add constraint FK_AppStHt_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
+alter table ApplianceStorageHeat
+   add constraint FK_AppStHt_YkLst foreign key (StorageTypeID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceWaterHeater
+   add constraint FK_AppWtHt_AppB foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID)
+go
+
+
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
-      references YukonListEntry (EntryID)
-go
-
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
       references YukonListEntry (EntryID)
 go
 
@@ -779,8 +1073,14 @@ alter table WorkOrderBase
 go
 
 
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
+alter table LMThermostatSeasonEntry
+   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references YukonListEntry (EntryID)
 go
 
@@ -791,14 +1091,20 @@ alter table LMThermostatManualEvent
 go
 
 
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
       references YukonListEntry (EntryID)
 go
 
 
 alter table ApplianceAirConditioner
    add constraint FK_CsLsE_Ac foreign key (TonnageID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
 go
 
@@ -863,8 +1169,8 @@ alter table CallReportBase
 go
 
 
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+alter table ApplianceCategory
+   add constraint FK_CstLs_ApCt foreign key (CategoryID)
       references YukonListEntry (EntryID)
 go
 
@@ -875,8 +1181,8 @@ alter table InventoryBase
 go
 
 
-alter table ApplianceCategory
-   add constraint FK_CstLs_ApCt foreign key (CategoryID)
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
       references YukonListEntry (EntryID)
 go
 
@@ -906,14 +1212,14 @@ go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+      references InventoryBase (InventoryID)
 go
 
 
 alter table ECToInventoryMapping
-   add constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
