@@ -58,7 +58,7 @@ public void destroy()
 public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException
 {
 	super.init(config);
-
+/*
 	try
 	{
 		getIMACSConnection().sendRetrieveAllSchedules();
@@ -67,7 +67,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	{
 		CTILogger.error( "Could not RetrieveAllSchedules", e );
 	}
-
+*/
 	// Add this to the context so other servlets can access the connection
 	getServletContext().setAttribute(SERVLET_CONTEXT_ID, this);
 
