@@ -2,6 +2,7 @@ package com.cannontech.yukon.server.cache;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.mbean.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.ClientConnection;
 /**
@@ -10,7 +11,7 @@ import com.cannontech.message.util.ClientConnection;
  * 
  * A undefined generated comment
  */
-class CacheChangeListener implements DBChangeListener
+public class CacheChangeListener implements DBChangeListener
 {
    private ClientConnection connToDispatch = null;
    

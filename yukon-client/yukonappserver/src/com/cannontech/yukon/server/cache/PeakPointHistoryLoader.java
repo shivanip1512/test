@@ -7,7 +7,7 @@ import java.util.Date;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class PeakPointHistoryLoader implements Runnable {
+public class PeakPointHistoryLoader implements Runnable {
 	private java.util.ArrayList allPeakPointHistory = null;
 	private String databaseAlias = null;
 /**

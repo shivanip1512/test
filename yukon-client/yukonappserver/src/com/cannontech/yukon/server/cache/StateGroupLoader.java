@@ -5,7 +5,7 @@ package com.cannontech.yukon.server.cache;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class StateGroupLoader implements Runnable {
+public class StateGroupLoader implements Runnable {
 	private java.util.ArrayList allStateGroups = null;
 	private String databaseAlias = null;
 /**

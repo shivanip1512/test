@@ -5,7 +5,7 @@ package com.cannontech.yukon.server.cache;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class CustomerContactLoader implements Runnable {
+public class CustomerContactLoader implements Runnable {
 	private java.util.ArrayList allCustomerContacts = null;
 	private String databaseAlias = null;
 /**

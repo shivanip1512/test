@@ -1,4 +1,4 @@
-package com.cannontech.yukon.server.cache;
+package com.cannontech.mbean;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,13 +14,19 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
+import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.server.cache.*;
+
+
+import org.jboss.naming.NonSerializableFactory;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/14/00 3:20:44 PM)
  * @author: 
  */ 
 
-public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
+public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 {
 	//stores a soft reference to the cache
 	//private static java.lang.ref.SoftReference cacheReference = null;	
@@ -79,9 +85,11 @@ public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 /**
  * DefaultDatabaseCache constructor comment.
  */
-protected ServerDatabaseCache() {
+public ServerDatabaseCache() 
+{
 	super();
 }
+
 /**
  * DefaultDatabaseCache constructor comment.
  */
@@ -982,26 +990,8 @@ public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
 	}
 
 	return cache;
-/*	DefaultDatabaseCache c = null;
-
-	if( cacheReference != null )
-	{
-		c = (DefaultDatabaseCache)cacheReference.get();
-	}
-
-	if( c == null ) //No cache, or we got GC'd
-	{
-		com.cannontech.clientutils.CTILogger.info("CACHE: CREATING NEW CACHE REFERENCE OBJECT");
-		c = new DefaultDatabaseCache();
-		//create the DBChange listener
-		c.setDbChangeListener( new CacheDBChangeListener() );
-
-		cacheReference = new java.lang.ref.SoftReference(c);
-	}
-
-	return c;
-*/
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -1330,7 +1320,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	{
 		allEnergyCompanies = null;
 		allUserEnergyCompanies = null;
-	}
+	}	
 	else  //let it all go!!
 		releaseAllCache();
 
@@ -1519,7 +1509,6 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 
 	return lBase;
 }
-
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class YukonPAOLoader implements Runnable 
+public class YukonPAOLoader implements Runnable 
 {
 	private java.util.ArrayList allPAObjects = null;
 	private String databaseAlias = null;

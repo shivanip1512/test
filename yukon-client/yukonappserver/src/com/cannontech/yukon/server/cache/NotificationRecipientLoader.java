@@ -5,7 +5,7 @@ package com.cannontech.yukon.server.cache;
  * Creation date: (3/15/00 3:57:58 PM)
  * @author: 
  */
-class NotificationRecipientLoader implements Runnable 
+public class NotificationRecipientLoader implements Runnable 
 {
 	private java.util.ArrayList allLocations = null;
 	

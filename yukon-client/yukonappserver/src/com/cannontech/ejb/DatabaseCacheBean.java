@@ -1,17 +1,27 @@
 package com.cannontech.ejb;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
+import javax.naming.InitialContext;
+import javax.naming.Reference;
+import javax.rmi.PortableRemoteObject;
 
+import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.yukon.server.cache.ServerDatabaseCache;
+
 
 /* Add this to DatabaseCacheHome class */
 //public com.cannontech.ejb.DatabaseCache create() throws javax.ejb.CreateException, java.rmi.RemoteException;
@@ -23,6 +33,8 @@ import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 **/
 public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 {  
+	private IDatabaseCache dbCache = null;
+	
    static
    {
       //Add the DBChange listener connection for Dispatch to our Cache
@@ -37,17 +49,40 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       cnt = cntxt;
    }
    
-   public void ejbRemove() throws EJBException, java.rmi.RemoteException 
-   {
-   }
-   
+   public void ejbRemove() throws EJBException, java.rmi.RemoteException {}
    public void ejbActivate() throws EJBException, java.rmi.RemoteException {}
    public void ejbPassivate() throws EJBException, java.rmi.RemoteException{}
    public void ejbCreate() throws javax.ejb.CreateException {}
 
    private com.cannontech.yukon.IDatabaseCache getCache()
-   {      
-      return ServerDatabaseCache.getInstance();
+   {  
+   	if( dbCache == null )
+   	{
+	   	try
+	   	{
+		      Hashtable props = new Hashtable();		
+		      props.put(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
+		      props.put(InitialContext.PROVIDER_URL, "jnp://127.0.0.1:1099");
+	   		
+
+	   		//get the context of the current VM (We should be inside an App Server!)
+				InitialContext rootCtx = new InitialContext(props);
+				
+				// Get the Cache instance MBean by using JNDI
+				dbCache = (IDatabaseCache)rootCtx.lookup(
+										"com/cannontech/DatabaseCache");
+
+				CTILogger.debug( "CACHE: Found DB_Cache instance in AppServer, using it" );
+	   	}
+	   	catch( Exception e )
+	   	{
+	   		//we must not be inside of an App Server, just create a new cache by ourself
+	   		CTILogger.debug( "CACHE: Unable to find AppServer, creating Cache independently" );
+	   		dbCache = ServerDatabaseCache.getInstance();
+	   	}
+   	}
+   	
+   	return dbCache;      
    }
 
    public DatabaseCacheBean()
