@@ -467,6 +467,18 @@ alter table TagLog
 go
 
 
+/** Just an assurance that all points have a pointalarming entry **/
+insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
+select pointid,
+'',
+'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
+'N', 1, 0  from point where pointid not in (select pointid from pointalarming);
+
+
+insert into tags values(1, 'Out Of Service', 1, 'Y', 1, 0);
+insert into tags values(2, 'Info', 1, 'N', 6, 0);
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
