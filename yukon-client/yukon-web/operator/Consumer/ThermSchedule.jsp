@@ -106,6 +106,7 @@ var schedChanged = false;
 
 function setScheduleChanged() {
 	schedChanged = true;
+	disableRefresh();
 }
 
 function prepareSubmit(form) {
@@ -163,6 +164,26 @@ function confirmExit() {
 		form.submit();
 	}
 }
+
+var timeoutId = -1;
+
+function disableRefresh() {
+	if (timeoutId != -1) {
+		clearTimeout(timeoutId);
+		timeoutId = -1;
+		document.getElementById("RefreshPrompt").style.visibility = "visible";
+	}
+}
+
+function init() {
+	updateLayout(
+		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
+		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
+		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
+		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
+	);
+	timeoutId = setTimeout("location.reload()", 60000);
+}
 </script>
 
 <script language="JavaScript">
@@ -177,7 +198,7 @@ MM_reloadPage(true);
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onunload="confirmExit()">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()" onunload="confirmExit()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -233,7 +254,7 @@ MM_reloadPage(true);
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
-			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
+			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
@@ -284,16 +305,12 @@ MM_reloadPage(true);
                     <td align = "center"> 
                       <table width="478" border="0">
                         <tr> 
-                          <td class = "TableCell" width="71%" height="4" align = "center" valign="middle" > 
-                            <div align="left"> 
-                              <p>1) Select Cooling or Heating.<br>
-                                2) Slide thermometers to change start times.<br>
-                                3) Adjust your cooling or heating temperatures.<br>
-                                <a class="Link1" href="Instructions.jsp">Click 
-                                for hints and details</a>. <br>
-                                <br>
-                              </p>
-                            </div>
+                          <td class = "TableCell" width="71%" height="4" align="left"> 
+                            1) Select Cooling or Heating.<br>
+                            2) Slide thermometers to change start times.<br>
+                            3) Adjust your cooling or heating temperatures.<br>
+                            <a class="Link1" href="Instructions.jsp">Click for 
+                            hints and details</a>. <br>
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
                             <i>Make temporary adjustments to your heating and 
@@ -301,6 +318,8 @@ MM_reloadPage(true);
                             here</a>.</i> </td>
                         </tr>
                       </table>
+					  <div id="RefreshPrompt" style="visibility:hidden" class="ConfirmMsg">Schedule 
+                        changed. Refresh the page to view current schedule.</div>
                       <table width="175" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="68"> 
@@ -325,7 +344,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp1" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
+                                    <div id="temp1" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -354,7 +373,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp2" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
+                                    <div id="temp2" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -383,7 +402,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp3" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
+                                    <div id="temp3" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -412,7 +431,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp4" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
+                                    <div id="temp4" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -438,16 +457,6 @@ MM_reloadPage(true);
                           </td>
                         </tr>
                       </table>
-					
-<script language="JavaScript">
-updateLayout(
-	<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
-	<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
-	<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
-	<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
-);
-</script>
-
                       <table width="100%" border="0" height="27">
                         <tr>
 					  	  <td width="10%">&nbsp;</td> 
@@ -490,9 +499,9 @@ updateLayout(
                         </td>
                       </tr>
                     </table>
-                      <noscript>
-<table width="100%" border="0" class = "TableCell">
-  <tr>
+					<noscript>
+					  <table width="100%" border="0" class = "TableCell">
+					    <tr>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Temp: </div>
                           </td>
@@ -515,8 +524,8 @@ updateLayout(
 						  <td width="15%"> 
                             <input id="temp4" type="text" size="3" name="temp4" onchange="setScheduleChanged()" value="<%= schedule.getTemperature4() %>">
                           </td>
-  </tr>
-</table>
+						</tr>
+					  </table>
                     <div class = "TableCell" align = "left">
                       <table width="100%" border="0">
                         <tr>
@@ -539,7 +548,7 @@ updateLayout(
                       <input type="submit" name="Submit" value="Submit">
                   </td>
                     <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" id="Default" value="<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_REC_SET_BTN %>"/>" onclick="setToDefault()">
+                      <input type="button" id="Default" value="<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>" onclick="setToDefault()">
                   </td>
                 </tr>
               </table>

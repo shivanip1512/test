@@ -20,7 +20,8 @@
 						  {"CreateAppliances.jsp", "New"},
 						  {"CreateHardware.jsp", "New"},
 						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")},
-						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")}
+						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")},
+						  {"Thermostat2.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")},
 						 };
 						   
 	String bulletImg = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED);
@@ -139,13 +140,9 @@
     <td> 
       <div align="left"><span class="PageHeader">Appliances</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>">
-<%
-		for (int i = 0; i < appLinks.length; i++) {
-%>
+<%	for (int i = 0; i < appLinks.length; i++) { %>
         <%= appLinks[i] %><br>
-<%
-		}
-%>
+<%	} %>
 </cti:checkProperty>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE %>">
         <%= links.get("CreateAppliances.jsp") %><br>
@@ -159,12 +156,9 @@
     <td> 
       <div align="left"><span class="PageHeader">Hardware</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>">
-<%
-		for (int i = 0; i < invLinks.length; i++) {
-%>
+<%	for (int i = 0; i < invLinks.length; i++) { %>
         <%= invLinks[i] %><br>
-<%
-			if (thermoSettings != null
+<%		if (thermoSettings != null
 				&& inventories.getStarsLMHardware(i).getInventoryID() == thermoSettings.getInventoryID()
 				&& AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)) {
 %>
@@ -173,12 +167,15 @@
             <td width="12">&nbsp;</td>
             <td width="78">
 			  <%= links.get("ThermSchedule.jsp") %><br>
+<%			if (thermoSettings.getStarsThermostatDynamicData() == null) { %>
               <%= links.get("Thermostat.jsp") %><br>
+<%			} else { %>
+              <%= links.get("Thermostat2.jsp") %><br>
+<%			} %>
 			</td>
           </tr>
         </table>
-<%
-			}
+<%		}
 		}
 %>
 </cti:checkProperty>
