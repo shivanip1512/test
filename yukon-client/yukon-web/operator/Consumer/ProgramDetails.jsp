@@ -57,13 +57,6 @@
 <% } else { %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
 <% } %>
-              <table width="280" border="0" align="center">
-                <tr> 
-                  <td class="TitleHeader" align="center"> <%= ServletUtils.getProgramDisplayNames(program)[0] %> 
-                  </td>
-                </tr>
-              </table>
-              <br>
 <% if (program.getStarsWebConfig().getURL().length() > 0) { %>
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr>
@@ -71,6 +64,13 @@
                 </tr>
               </table>
 <% } else { %>
+              <table width="280" border="0" align="center">
+                <tr> 
+                  <td class="TitleHeader" align="center"> <%= ServletUtils.getProgramDisplayNames(program)[0] %> 
+                  </td>
+                </tr>
+              </table>
+              <br>
               <table width="60%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="TableCell" align="center"><%= program.getStarsWebConfig().getDescription() %></td>
