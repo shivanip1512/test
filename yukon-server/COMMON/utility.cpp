@@ -1202,10 +1202,11 @@ RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate )
     }
     else if(rate == 0)
     {
+        Sleep(10);              // 081604 CGP Added to prevent insane tight loops.
         first = origin.now();
     }
 
-    while(first <= origin)
+    while(rate > 0 && first <= origin)
     {
         first += rate;
     }
