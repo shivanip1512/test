@@ -38,8 +38,12 @@ public class YCDefaults
 	 * YCDefaults constructor comment.
 	 */
 	public YCDefaults() {
+		this(false);
+	}
+	public YCDefaults(boolean loadFromFile) {
 		super();
-		parseDefaultsFile();
+		if( loadFromFile)
+			parseDefaultsFile();
 	}
 	/**
 	 * YCDefaults constructor comment.
@@ -97,7 +101,6 @@ public class YCDefaults
 	 */
 	private void parseDefaultsFile()
 	{
-
 		com.cannontech.common.util.KeysAndValuesFile kavFile = new com.cannontech.common.util.KeysAndValuesFile(YC_DEFAULTS_DIRECTORY + YC_DEFAULTS_FILENAME);
 		com.cannontech.common.util.KeysAndValues keysAndValues = kavFile.getKeysAndValues();
 		
@@ -186,46 +189,6 @@ public class YCDefaults
 	{
 		showMessageLog = isShowing;
 	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/14/2002 1:54:19 PM)
-	 * @param infileDefaultsVector java.util.Vector
-	 * @deprecated KeysAndValues file now used in parseDefaultsFile().
-	 */
-	private  void updateFileDefaults(java.util.Vector infileDefaultsVector)
-	{
-		int index = 0;
-		//*******priority**************//
-		int p = new Integer((String)infileDefaultsVector.get(index++)).intValue();
-		if( p < 1 )
-			p = 14;
-		setCommandPriority( p );
-		
-		//*******queue command**************//
-		String boolValue = (String)infileDefaultsVector.get(index++);
-		if(boolValue.equalsIgnoreCase("true") )
-			setQueueExecuteCommand(true);
-		else
-			setQueueExecuteCommand(false);
-	
-		//*******show log**************//
-		boolValue = (String)infileDefaultsVector.get(index++);
-		if(boolValue.equalsIgnoreCase("true") )
-			setShowMessageLog(true);
-		else
-			setShowMessageLog(false);
-	
-		//*******confirm command**************//
-		boolValue = (String)infileDefaultsVector.get(index++);
-		if(boolValue.equalsIgnoreCase("true") )
-			setConfirmCommandExecute(true);
-		else
-			setConfirmCommandExecute(false);
-	
-		//*******command file dir**************//		
-		setCommandFileDirectory((String)infileDefaultsVector.get(index++));
-	}
-	
 	/**
 	 * Write the TrendProperties to a file, TREND_DEFAULTS_DIRECTORY+TREND_DEFAULTS_FILENAME, 
 	 * in a Keys=Values format (com.cannontech.common.util.KeysAndValues)
