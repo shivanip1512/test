@@ -29,6 +29,7 @@ public class TrendSerie
 	
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
+	public long resolution = 1;
 	private TimeSeriesDataItem minimumTSDataItem = null;
 	private TimeSeriesDataItem maximumTSDataItem = null;
 
@@ -299,7 +300,7 @@ public class TrendSerie
 	 */	
 	public long[] getPeriodsArray()
 	{
-		long resolution = TrendProperties.getResolutionInMillis();
+//		long resolution = this.resolution;
 		if( periodsArray == null)
 		{
 			if( getDataItemArray() == null)
@@ -399,4 +400,12 @@ public class TrendSerie
 	{
 		typeMask = newTypeMask;
 	}
+	/**
+	 * @param l
+	 */
+	public void setResolution(long l)
+	{
+		resolution = l;
+	}
+
 }
