@@ -2,20 +2,38 @@
 <!-- Java script needed for the Calender Function--->
 <%@ include file="../include/user_header.jsp" %>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
-
-<%@ include file="../../include/trending_functions.jsp" %>
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<META NAME="robots" CONTENT="noindex, nofollow">
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css"> 
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
+<META NAME="robots" CONTENT="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script>
+function loadTarget(form)
+{
+	var extGroup = form.ext;
+	for (var i = 0; i < extGroup.length; i++)
+	{
+		if( extGroup[i].checked)
+		{
+			if( extGroup[i].value == 'png')
+			{
+				form.target = '_blank';
+				form.REDIRECT.value = '../user/CILC/user_reporting_png.jsp';
+			}
+			else
+			{
+				form.target = "";
+			}
+		}
+	}
+}
+</script>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td>
+  <tr> 
+    <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="150" height="102" background="../../WebConfig/yukon/MomWide.jpg">&nbsp;</td>
@@ -24,97 +42,167 @@
               <tr> 
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
-              <tr>
-			    <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Trending</td>
+              <tr> 
+                <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Trending</td>
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
   </tr>
-  <tr>
-    <td>
+  <tr> 
+    <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
           <td width="150" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
           <td width="609" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td> 
+          <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
           <td  valign="top" width="150"> 
-            <% String pageName = "user_reporting.jsp"; %> 
+            <% String pageName = "user_reporting.jsp"; %>
             <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF" >
-
-<!--TRENDING OPTIONS-->
-<table width="575" border="0" align="center" cellpadding="4" cellspacing="0">
-  <tr>
-    <td width="303" valign="top">
-      <div>
-        <table width="375" border="0" cellspacing="2" cellpadding="0">
-          <tr>
-            <form id=MForm method="POST" action="<%= request.getContextPath() %>/servlet/ReportGenerator"  name="MForm">
-              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-              
-              <td width="75">
-                <div align="left">
-                  <input type="image" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" name="image" border="0">
-                </div>
-              </td>
-            </form>
-          </tr>
-        </table>
-      </div>
-    </td>
-    <td width="200" valign = "top" align= "center"> 
-      <table width="200" border="0" class = "MainText" cellspacing = "4" height="16">
-        <tr>
-          <td width = "40%"> 
-            <div name = "report" align = "center" style = "border:solid 1px #666999; cursor:default;" onMouseOver = "menuAppear(event, 'reportMenu')" >Report</div>
-          </td>
-        </tr>
-      </table>
-    </td>    
-  </tr>
-</table>
-<table width="575" border="0" align="center" cellpadding="0" cellspacing="0">
-  <tr>
-    <td>
-      <form name="exportForm">
-	    <div id="reportMenu" class = "bgmenu" style = "width:75px" align = "left"> 
-            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "reportData('png')">&nbsp;&nbsp;&nbsp;Export .png</div>
-        </div>
-      </form>
-    </td>
-  </tr>
-</table>
-            <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
+          <td width="657" valign="top" bgcolor="#FFFFFF" > 
+            <table width="575" border="0" align="center" cellpadding="4" cellspacing="0">
               <tr> 
-                <td>
-                  <hr>
-                  <center>
-       	            <img id = "theReport" src="<%=request.getContextPath()%>/servlet/ReportGenerator?action=EncodeReport&type=8">
-				  </center>
+                <td width="80%" valign="top" align="center"> 
+                  <div> <br>
+                    <br>
+                    <br>
+                    <form id="MForm" name="MForm" method="POST" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="loadTarget(document.MForm)">
+                      <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
+                      <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
+                      <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+                      <input type="hidden" name="ACTION" value="DownloadReport">
+                      <table width="538" border="0" cellspacing="2" cellpadding="0">
+                        <tr> 
+                          <td class = "TableCell" width="50%" valign = "top" align="left" height="100%"> 
+                            <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
+                              <tr> 
+                                <td> 
+                                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
+                                    <tr> 
+                                      <td class="HeaderCell" align="center">Please 
+                                        select a Report to Generate</td>
+                                    </tr>
+                                    <tr> 
+                                      <td> 
+                                        <table class="TableCell" align="center" width="33%">
+                                          <%
+                                  for( int j = 0; j < ReportTypes.getGroupToTypeMap()[ReportTypes.STARS_REPORTS_GROUP].length; j++ ){%>
+                                          <tr> 
+                                            <td width="20%"> 
+                                              <input id = "type" type="radio" name="type" value="<%=ReportTypes.getGroupToTypeMap()[ReportTypes.STARS_REPORTS_GROUP][j]%>"
+                                      <% if( j == 0){%>
+                                         checked=true
+                                      <%}
+                                      //Below is the ending tag for radio input%>
+                                      >
+                                              <%=ReportTypes.getReportName(ReportTypes.getGroupToTypeMap()[ReportTypes.STARS_REPORTS_GROUP][j])%> 
+                                            </td>
+                                          </tr>
+                                          <%}%>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="50%" height="100%" valign="top"> 
+                            <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
+                              <tr> 
+                                <td> 
+                                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="111%">
+                                    <tr> 
+                                      <td class="HeaderCell" align="center" colspan="3">Options</td>
+                                    </tr>
+                                    <tr> 
+                                      <td>&nbsp;</td>
+                                    </tr>
+                                    <tr height="100"> 
+                                      <td width="47%" valign="top" align="right"><font face="Arial, Helvetica, sans-serif" size="1">Start Date:</font> 
+                                        <input id="startCal" type="text" name="start" value="<%= datePart.format(ServletUtil.getToday()) %>" size="8">
+                                        <a href="javascript:openCalendar(document.getElementById('MForm').startCal)"
+						                      onMouseOver="window.status='Start Date Calendar';return true;"
+            						          onMouseOut="window.status='';return true;"> 
+                                        <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"> 
+                                        </a></td>
+                                      <td>&nbsp;&nbsp;</td>
+                                      <td width="47%" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Stop Date:</font> 
+                                        <input id="stopCal" type="text" name="stop" value="<%= datePart.format(ServletUtil.getTomorrow()) %>" size="8">
+                                        <a href="javascript:openCalendar(document.getElementById('MForm').stopCal)"
+						                      onMouseOver="window.status='Stop Date Calendar';return true;"
+            						          onMouseOut="window.status='';return true;"> 
+                                        <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"> 
+                                        </a> </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="50%" height="100%" valign="top"> 
+                            <table width="100%" border="1" cellspacing="0" cellpadding="0" class="TableCell">
+                              <tr> 
+                                <td> 
+                                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                    <tr class="HeaderCell"> 
+                                      <td class="HeaderCell" align="center" colspan="3">Generate Report</td>
+                                    </tr>
+                                    <tr> 
+                                      <td width="47%"> 
+                                        <table class="TableCell" align="right">
+                                          <tr> 
+                                            <td align="center"><input type="radio" name="ext" value="png" checked=true>PNG</td>
+                                          </tr>
+                                          <tr> 
+                                            <td align="center"><input type="radio" name="ext" value="pdf">PDF</td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td>&nbsp;</td>
+                                      <td width="47%"> 
+                                        <table class="TableCell" align="left">
+                                          <tr> 
+                                            <td align="center"> 
+                                              <input type="image" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" name="View" border="0" alt="View" align="middle"">
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </form>
+                  </div>
                 </td>
               </tr>
             </table>
-          <br>
-		  </td>
+            <br>
+          </td>
         </tr>
       </table>
-    </td>
-  </tr>
 </table>
 </body>
 </html>
