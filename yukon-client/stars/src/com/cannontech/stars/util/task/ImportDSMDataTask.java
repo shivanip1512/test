@@ -318,9 +318,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			status = STATUS_FINISHED;
 		}
 		catch (Exception e) {
-			status = STATUS_ERROR;
-			
-			CTILogger.error( e.getMessage(), e );
 			if (status == STATUS_CANCELED) {
 				errorMsg = "Operation is canceled by user";
 				if (errorLocation != null)
@@ -329,6 +326,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					errorMsg += " before processing " + resumeLocation;
 			}
 			else {
+				status = STATUS_ERROR;
+				CTILogger.error( e.getMessage(), e );
+				
 				if (errorLocation != null) {
 					errorMsg = "An error occured at " + errorLocation;
 					if (e instanceof WebClientException)
