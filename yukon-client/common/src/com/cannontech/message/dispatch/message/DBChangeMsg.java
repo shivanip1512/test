@@ -29,7 +29,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_GRAPH_DB = 7;
 	public static final int CHANGE_HOLIDAY_SCHEDULE_DB = 8;
 	public static final int CHANGE_ENERGY_COMPANY_DB = 9;
-   public static final int CHANGE_STATE_IMAGE_DB = 10;
+	public static final int CHANGE_STATE_IMAGE_DB = 10;
+	public static final int CHANGE_YUKON_USER_DB = 11;
 
 	
 	public static final String CAT_POINT = "Point";
@@ -41,6 +42,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_GRAPH = "Graph";
 	public static final String CAT_HOLIDAY_SCHEDULE = "HolidaySchedule";
 	public static final String CAT_ENERGY_COMPANY = "EnergyCompany";
+	public static final String CAT_YUKON_USER = "YukonUser";
 
 
 	
