@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/12/20 21:01:02 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/12/21 21:17:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,9 +139,6 @@ IDLCRCont(CtiDeviceSPtr &pDev);
 //INT LCUTime (OUTMESS *&, PULONG);
 INT LCUPreSend (OUTMESS *&, CtiDeviceSPtr );
 INT LCUResultDecode (OUTMESS *, INMESS *, CtiDeviceSPtr , ULONG, bool mayqueuescans);
-//INT MPCPointClear (PCHAR);
-//INT MPCPointSet(PCHAR);
-//INT MPCPointSet( int status, CtiDeviceBase *dev );
 INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter );
 
 INT TraceIn (PBYTE, USHORT, USHORT, USHORT, USHORT);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/20 20:47:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/12/21 21:17:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,6 +78,7 @@ protected:
     UINT                 _numberStarted;
 
     OUTMESS              *_lastControlMessage;
+    bool                 _lockedOut;
 
 private:
 
@@ -114,6 +115,7 @@ public:
     virtual ~CtiDeviceLCU();
     CtiDeviceLCU& operator=(const CtiDeviceLCU& aRef);
 
+    bool           isLCULockedOut( ) const;
     bool           isLCULockedOut( INMESS *InMessage );
     BOOL           isStagedUp(const RWTime &tRef);
     BOOL           isBusyByCommand(const RWTime &aTime) const;
@@ -188,6 +190,7 @@ public:
     virtual bool isExecutionProhibitedByInternalLogic() const;
 
     virtual INT getProtocolWrap() const;
+    INT lcuLockout(OUTMESS *&OutMessage, bool set);
 
     CtiPointDataMsg* getPointSet( int status );   //ecs 12/10/2004
     CtiPointDataMsg* getPointClear( int status );   //ecs 12/20/2004

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/12/20 20:47:28 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/12/21 21:17:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,7 @@ _lcuFlags(0),
 _numberStarted(0),
 _nextCommandTime( rwEpoch ),
 _honktime(DUTYCYCLESIZE, make_pair(RWTime().seconds() - RWTime().seconds() % DUTYCYCLESIZE, 0.0)),
+_lockedOut(false),
 _lastControlMessage(0)
 {
     switch(type)
@@ -520,6 +521,24 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                 }
                 break;
             }
+        case MASTERLOCKOUTSET:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << getName() << " LOCK OUT SET" << endl;
+                }
+                _lockedOut = true;
+                break;
+            }
+        case MASTERLOCKOUTRESET:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << getName() << " LOCK OUT CLEARED" << endl;
+                }
+                _lockedOut = false;
+                break;
+            }
         default:
             {
                 /* This should never happen so reset the scan */
@@ -557,15 +576,32 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     {
     case ControlRequest:
         {
-            if((pOM = lcuControl(OutMessage)) == 0)
+            int ptOffset;
+            if( 0 != (ptOffset = parse.getiValue("point", 0)) )
             {
-                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), RWCString("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  RWOrdered()) );
+                CtiPoint *pPt = getDevicePointEqual(ptOffset);
+
+                if(pPt && pPt->isStatus() && pPt->getControlOffset() == 9)
+                {
+                    if(!lcuLockout(OutMessage, parse.getFlags() & CMD_FLAG_CTL_OPEN ? false : true))
+                    {
+                        outList.insert( OutMessage );
+                        OutMessage = NULL;
+                    }
+                }
             }
             else
             {
-                outList.insert( pOM );
-                pOM = 0;
+                if((pOM = lcuControl(OutMessage)) == 0)
+                {
+                    vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), RWCString("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                    retList.insert( CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), RWCString("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  RWOrdered()) );
+                }
+                else
+                {
+                    outList.insert( pOM );
+                    pOM = 0;
+                }
             }
 
             break;
@@ -689,7 +725,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
         {
             for(Count = 6; Count > 0; Count--)
             {
-                if(OutMessage->Buffer.RSt.Message[Count])
+                if(OutMessage->Buffer.RSt.Message[Count])     // Count backwards from 6 looking for the first byte with bits set.  IE if the 6th byte has bits set, the count will be 6.
                     break;
             }
         }
@@ -1465,7 +1501,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuObserveBusyBit = false;       // Make us go at maximal speed.
         }
 
-        if( !gConfigParms.getValueAsString("RIPPLE_EXCLUDE_ALL_INJECTORS").compareTo("TRUE", RWCString::ignoreCase) ) 
+        if( !gConfigParms.getValueAsString("RIPPLE_EXCLUDE_ALL_INJECTORS").compareTo("TRUE", RWCString::ignoreCase) )
         {
             _excludeAllLCUs = true;
         }
@@ -1701,11 +1737,11 @@ void CtiDeviceLCU::verifyControlLockoutState(INMESS *InMessage)
             /* Database disagrees */
             if(InMessage->Buffer.InMessage[5] & LCULOCKEDOUT)
             {
-                setControlInhibit(TRUE);
+                _lockedOut = true;
             }
             else
             {
-                setControlInhibit(FALSE);
+                _lockedOut = false;
             }
         }
     }
@@ -1945,10 +1981,13 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
 }
 
 
+bool CtiDeviceLCU::isLCULockedOut( ) const
+{
+    return _lockedOut;
+}
+
 bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
 {
-    bool bLockedOut = false;
-
     if( _lcuType == LCU_LANDG || _lcuType == LCU_STANDARD )
     {
         if(InMessage->Buffer.InMessage[5] & LCULOCKEDOUT)
@@ -1957,7 +1996,7 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Local Mode is set on the LCU! " << getName() << endl;
             }
-            bLockedOut = true;
+            _lockedOut = true;
         }
     }
     else if( _lcuType == LCU_EASTRIVER )
@@ -1968,11 +2007,11 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Local Mode is set on the LCU! " << getName() << endl;
             }
-            bLockedOut = true;
+            _lockedOut = true;
         }
     }
 
-    return bLockedOut;
+    return _lockedOut;
 }
 
 void CtiDeviceLCU::lcuResetFlagsAndTags()
@@ -2256,13 +2295,37 @@ INT CtiDeviceLCU::getProtocolWrap() const
     return protocol;
 }
 
+/*  */
+INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool set)
+{
+    INT status = NORMAL;
+    USHORT cmd = (set ? MASTERLOCKOUTSET : MASTERLOCKOUTRESET);
+
+    /* Load the forced scan message */
+    if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), cmd, 0)) != NORMAL)
+        return(status);
+
+    /* Load all the other stuff that is needed */
+    OutMessage->DeviceID        = getID();
+    OutMessage->Port            = getPortID();
+    OutMessage->Remote          = getAddress();
+    OutMessage->TimeOut         = 2;
+    OutMessage->OutLength       = 4;
+    OutMessage->InLength        = -1;
+    OutMessage->EventCode       = RESULT | ENCODED;
+    OutMessage->Sequence        = 0;
+    OutMessage->Retry           = 2;
+
+    return(status);
+}
+
 //make up for the old way of doing mpcpointset and clear
 //ecs 12/10/2004
 CtiPointDataMsg* CtiDeviceLCU::getPointSet( int status )
 {
     CtiPointBase    *pPoint = NULL;
     CtiPointDataMsg *pData = NULL;
-                                         
+
     //put some stuff here
     pPoint = getDevicePointOffsetTypeEqual( status, StatusPointType );
 
@@ -2288,7 +2351,7 @@ CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
 {
     CtiPointBase    *pPoint = NULL;
     CtiPointDataMsg *pData = NULL;
-                                         
+
     //put some stuff here
     pPoint = getDevicePointOffsetTypeEqual( status, StatusPointType );
 
@@ -2309,3 +2372,4 @@ CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
 
     return pData;
 }
+

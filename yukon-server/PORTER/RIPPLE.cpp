@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/12/20 20:48:37 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/12/21 21:17:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,8 +83,9 @@
 
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
-     
+
 void Send4PartToDispatch(RWCString Source, RWCString MajorName, RWCString MinorName, RWCString Message1 = RWCString(""), RWCString Message2 = RWCString(""));
+INT SendTextToDispatch(PCHAR Source, PCHAR Message = NULL, RWCString majorName = RWCString(""), RWCString minorName = RWCString(""));
 INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
 INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
 
@@ -101,7 +102,7 @@ INT ReleaseAnLCU(OUTMESS *&OutMessage, CtiDeviceLCU *lcu);
 bool AnyLCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUPortHasAnLCUScan( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
-        
+
 bool findAnyLCUsTransmitting(const long key, CtiDeviceSPtr Dev, void* ptr)
 {
     bool bStatus = false;
@@ -201,7 +202,8 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU*)vpTXlcu;     // This is the transmitting lcu...  Might be the broadcast LCU (yeah, LCUGLOBAL.. how lazy is that)
 
-    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
+    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() &&
+        Dev->getAddress() != LCUGLOBAL )            // CGP 12202004 Added on a whim.  Be very alert here...
     {
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
@@ -209,7 +211,7 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 
         if( lcu->getAddress() == LCUGLOBAL )
         {
-            if( pOtherLCU->getControlInhibit() )
+            if( pOtherLCU->isLCULockedOut() || pOtherLCU->getControlInhibit() )
             {
                 pOtherLCU->resetFlags( LCUTRANSMITSENT | LCUWASTRANSMITTING );  // This LCU is inhibited, it better not squawk
             }
@@ -217,7 +219,7 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << pOtherLCU->getName() << endl;
+                    dout << RWTime() << " " << pOtherLCU->getName() << " should transmit on this port due to BROADCAST control" << endl;
                 }
                 pOtherLCU->setFlags( LCUTRANSMITSENT );    // Global address will make this LCU squawk
             }
@@ -232,6 +234,10 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
             if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))
             {
                 lcu->setNumberStarted( lcu->getNumberStarted() + 1 );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Command on lcu " << lcu->getName() << " has caused " << lcu->getNumberStarted() << " lcus to be targeted for control" << endl;
+                }
             }
         }
     }
@@ -280,6 +286,7 @@ LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
     BOOL           commandTimeout = FALSE;
     ULONG          QueueCount;
     CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
+
     INT            status = NORMAL;
 
 
@@ -331,6 +338,7 @@ BOOL OverRetry;
 LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
 {
     INT status = Result;
+
     CtiDeviceLCU  *lcu = (CtiDeviceLCU*)Dev.get();
     CtiDeviceSPtr MyRemoteRecord;
     CtiDeviceLCU  *GlobalLCUDev   = (CtiDeviceLCU*)(DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), LCUGLOBAL)).get();
@@ -508,7 +516,7 @@ SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
     }
 
     /* Do it */
-    return(SendTextToLogger (Source, Message, DeviceName));
+    return(SendTextToDispatch (Source, Message, DeviceName));
 }
 
 
@@ -702,7 +710,7 @@ SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 
 
     /* Do it */
-    return(SendTextToLogger (Source, Message, DeviceName));
+    return(SendTextToDispatch (Source, Message, DeviceName));
 }
 
 
@@ -712,11 +720,6 @@ static CHAR saveTelegraph[7] = {0,0,0,0,0,0,0};
 //SendTelegraphStatusToMPC (ULONG Function, const BYTE *MyTelegraph)
 int SendTelegraphStatusToMPC (ULONG Function, const BYTE *MyTelegraph, CtiDeviceBase *dev )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
     //ecs 12/20/2004
     MPCPointSet( MISSED, dev, false );
     MPCPointSet( COMPLETE, dev, false );
@@ -754,8 +757,6 @@ MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
 static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
 {
     bool found = false;
-
-    long temp = Dev->getID();
 
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)ptrlcu;
 
@@ -859,14 +860,12 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             QueueForScan(lcu, true);
             break;
         }
-
     case CtiDeviceLCU::eLCUSlowScan:
         {
             CTISleep( CtiDeviceLCU::getSlowScanDelay() );
             QueueForScan(lcu, true);
             break;
         }
-
     case CtiDeviceLCU::eLCULockedOutSpecificControl:
         {
             /* This means we did not complete so log it */
@@ -877,7 +876,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             ResetLCUsForControl(lcu->getPortID());
             break;
         }
-
     case CtiDeviceLCU::eLCULockedOut:
         {
             // I sent as the GlobalLCU, and got this response from an individual LCU.
@@ -915,7 +913,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             }
             break;
         }
-
     case CtiDeviceLCU::eLCURequeueDeviceControl:
         {
             if( RequeueLCUCommand( lcu ) == RETRY_SUBMITTED )
@@ -937,7 +934,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             }
             break;
         }
-
     case CtiDeviceLCU::eLCURequeueGlobalControl:
         {
             if(GlobalLCUDev!= NULL && GlobalLCUDev->getLastControlMessage()->Sequence)
@@ -987,7 +983,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             }
             break;
         }
-
     case CtiDeviceLCU::eLCUDeviceControlComplete:
         {
             /* Check if we made it... */
@@ -1000,7 +995,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         if(Block)
                         {
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "LCU Lockout");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
                             SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                         }
                         else if(OverRetry)
@@ -1062,6 +1056,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             }
             else
             {
+                Send4PartToDispatch ("Inf", (char*)lcu->getName().data(), "Command Complete", "Normal");    // 20041220 CGP Added.
                 lcu->lcuResetFlagsAndTags();
             }
 
@@ -1078,7 +1073,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
 
             break;
         }
-
     case (CtiDeviceLCU::eLCUDeviceControlCompleteAllowTimeout):
         {
             {
@@ -1096,7 +1090,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
 
             break;
         }
-
     case CtiDeviceLCU::eLCUNotBusyNeverTransmitted:
         {
             if(GlobalLCUDev != NULL && GlobalLCUDev->getLastControlMessage() && GlobalLCUDev->getLastControlMessage()->Sequence)
@@ -1225,7 +1218,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
 
             break;
         }
-
     case CtiDeviceLCU::eLCUAlternateRate:
         {
             {
@@ -1236,7 +1228,8 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             break;
         }
     }
-    
+
+
     return status;
 }
 
@@ -1315,11 +1308,11 @@ INT ReportCompletionStateToLMGroup(CtiDeviceLCU *lcu)     // f.k.a. ReturnTrxID(
         TrxID           = lcu->getLastControlMessage()->TrxID;
 
         // Find the controlling group.
-        CtiDeviceSPtr pDev = DeviceManager.getEqual( LMGIDControl );
+        CtiDeviceSPtr pGroupDev = DeviceManager.getEqual( LMGIDControl );
 
-        if(pDev)
+        if(pGroupDev)
         {
-            pDev->processTrxID( TrxID, vgList );
+            pGroupDev->processTrxID( TrxID, vgList );
         }
 
         SubmitDataToDispatch( vgList );
@@ -1758,74 +1751,43 @@ void Send4PartToDispatch(RWCString Source, RWCString MajorName, RWCString MinorN
     return;
 }
 
-/* Routine to set $_MPC related status points 
-MPCPointSet (PCHAR Name)
+
+INT SendTextToDispatch(PCHAR Source, PCHAR Message, RWCString majorName, RWCString minorName)
 {
-    DRPVALUE DRPValue;
+    RWCString fullString;
+    RWCString sourceandname;
 
-    memcpy (DRPValue.SourceName, "PORTER    ", DESTSIZE);
-
-    DRPValue.Type = DRPTYPEVALUE;
-
-    memcpy (DRPValue.DeviceName, "$_MPC_TRANSMISSION  ", STANDNAMLEN);
-    strcpy (DRPValue.PointName, Name);
-    memset (DRPValue.PointName + strlen (Name), ' ', STANDNAMLEN - strlen (Name));
-
-    DRPValue.Value = (FLOAT) CLOSED;
-
-    if(DSTFlag ())
+    if( Source )
     {
-        DRPValue.Quality = NORMAL | DSTACTIVE;
-    }
-    else
-    {
-        DRPValue.Quality = NORMAL;
+        sourceandname = sourceandname + RWCString(Source);
     }
 
-    DRPValue.TimeStamp = LongTime ();
-    DRPValue.AlarmState = NORMAL;
+    if(!majorName.isNull())
+    {
+        sourceandname = sourceandname + RWCString(" ") + majorName;
+    }
+
+    if(!minorName.isNull())
+    {
+        sourceandname = sourceandname + RWCString(" ") + minorName;
+    }
+
+    if(Message)
+    {
+        fullString = RWCString(Message);
+    }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " " << sourceandname << " " << fullString << endl;
     }
 
-    return(NORMAL);
+    CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
+
+    RWTPtrSlist< CtiMessage >  lst;
+    lst.insert( pSig );
+
+    SubmitDataToDispatch( lst );
+
+    return NORMAL;
 }
-*/
-/* Routine to clear $_MPC related status points 
-MPCPointClear (PCHAR Name)
-{
-    DRPVALUE DRPValue;
-
-    memcpy (DRPValue.SourceName, "PORTER    ", DESTSIZE);
-
-    DRPValue.Type = DRPTYPEVALUE;
-
-    memcpy (DRPValue.DeviceName, "$_MPC_TRANSMISSION  ", STANDNAMLEN);
-    strcpy (DRPValue.PointName, Name);
-    memset (DRPValue.PointName + strlen (Name), ' ', STANDNAMLEN - strlen (Name));
-
-    DRPValue.Value = (FLOAT) OPENED;
-
-    if(DSTFlag ())
-    {
-        DRPValue.Quality = NORMAL | DSTACTIVE;
-    }
-    else
-    {
-        DRPValue.Quality = NORMAL;
-    }
-
-    DRPValue.TimeStamp = LongTime ();
-    DRPValue.AlarmState = NORMAL;
-
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return(NORMAL);
-}
-
-*/

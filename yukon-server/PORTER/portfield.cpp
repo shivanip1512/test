@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.126 $
-* DATE         :  $Date: 2004/12/14 22:35:14 $
+* REVISION     :  $Revision: 1.127 $
+* DATE         :  $Date: 2004/12/21 21:17:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,6 +167,10 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
 static void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId);
 static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion);
+
+CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
+BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
+
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -809,6 +813,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     INT status = NORMAL;
     struct timeb   TimeB;
     ULONG          QueueCount;
+    CtiOutMessage *om = 0;
 
     if( Device->getType() == TYPE_TAPTERM )
     {
@@ -858,6 +863,54 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
             return RETRY_SUBMITTED;
         }
+    }
+    else if( Device->getType() == TYPE_LCU415LG && OutMessage && (OutMessage->EventCode & RIPPLE) ) // A Control message to a LG Ripple group.
+    {
+        // This is where we pause and reflect upon bit mashing.
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Pausing to combine DO bits for Landis and Gyr LCR1000 Groups.  Will sleep " << gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_INITIAL_PAUSE", 10) << " seconds." << endl;
+        }
+
+        Sleep(1000 * gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_INITIAL_PAUSE", 10));
+
+        int mashcnt;
+        do
+        {
+            mashcnt = 0;
+        // Now go find any other RBPs that have matching Group and Area code bit patterns.
+            while( NULL != (om = GetLGRippleGroupAreaBitMatch(Port, OutMessage)) )
+            {
+                mashcnt++;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** MASH IT, MASH IT GOOD! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                BYTE *pGroup = (BYTE*)(OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
+                BYTE *pMatch = (BYTE*)(om->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
+
+                for(int byt=2; byt<6; byt++)
+                {
+                    pGroup[byt] |= pMatch[byt];
+                }
+
+                delete om;
+                om = 0;
+            }
+
+            if(mashcnt && gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_REPEAT_PAUSE", 0))
+            {
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Pausing again to make certain no more groups are on the way...  Will sleep " << gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_REPEAT_PAUSE", 0) << " seconds." << endl;
+                }
+                Sleep(1000 * gConfigParms.getValueAsULong("MINNKOTA_GROUP_DO_MASH_REPEAT_PAUSE", 0));
+            }
+
+        } while( mashcnt );
     }
 
     /*
@@ -3964,3 +4017,55 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
 
     return status;
 }
+
+CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage)
+{
+    ULONG QueueCount, ReadLength;
+    CtiOutMessage *match = 0;
+    INT slot = 0;
+
+    if((slot = SearchQueue(Port->getPortQueueHandle(), (void*)OutMessage, searchFuncForRippleOutMessage)) != 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Additional RIPPLE'd queue entry found for port " << Port->getName() << endl;
+        }
+
+        REQUESTDATA    ReadResult;
+        BYTE           ReadPriority;
+
+        Port->setQueueSlot(slot);
+        if(Port->readQueue( &ReadResult, &ReadLength, (PPVOID)&match, DCWW_NOWAIT, &ReadPriority, &QueueCount))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error Reading Port Queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return match;
+}
+
+BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
+{
+    BOOL match = FALSE;
+    OUTMESS *groupOM = (OUTMESS *)firstOM;       // First OM contains the group and area code to match the bits upon.  All Bits must match.
+    OUTMESS *matchOM = (OUTMESS *)om;            // This is the om on queue which is being evaluated for match.
+
+    if( matchOM->EventCode & RIPPLE )           // This is a control communication to an LCU.
+    {
+        BYTE *pGroup = (BYTE*)(groupOM->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
+        BYTE *pMatch = (BYTE*)(matchOM->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
+
+        if(pGroup[0] == pMatch[0] && pGroup[1] == pMatch[1] )
+        {
+            match = TRUE;   // Don't sweat the petty stuff and don't pet the sweaty stuff.
+        }
+    }
+
+    return( match );
+}
+
+
+
