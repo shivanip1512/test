@@ -1,0 +1,1 @@
+java -Djava.class.path=.;../config;./ webgraph.jar graph.jar common.jar log4j-1.2.4.jar rwav.jar acme.jar yukonappclient.jar yukonappserver.jar j2ee.jar jfreechart.jar jcommon.jar junit.jar jcfield401K.jar jcpagelayout450k.jar jcchart401k.jar batik111.jar SqlServer.jar classes12.zip; com.cannontech.services.WebGraph
