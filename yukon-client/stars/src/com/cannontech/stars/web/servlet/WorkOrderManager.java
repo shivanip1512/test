@@ -26,7 +26,6 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
@@ -189,8 +188,8 @@ public class WorkOrderManager extends HttpServlet {
 		try {
 			operation = CreateServiceRequestAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
 		}
-		catch (WebClientException e) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+		catch (ServletException se) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, se.getMessage());
 			redirect = referer;
 			return;
 		}
@@ -225,8 +224,8 @@ public class WorkOrderManager extends HttpServlet {
 		try {
 			operation = UpdateServiceRequestAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
 		}
-		catch (WebClientException e) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+		catch (ServletException se) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, se.getMessage());
 			redirect = referer;
 			return;
 		}
@@ -236,7 +235,7 @@ public class WorkOrderManager extends HttpServlet {
 	}
 	
 	public static void setStarsServiceRequest(StarsSrvReq starsOrder, HttpServletRequest req, java.util.TimeZone tz)
-	throws WebClientException {
+	throws ServletException {
 		if (req.getParameter("OrderID") != null)
 			starsOrder.setOrderID( Integer.parseInt(req.getParameter("OrderID")) );
 		if (req.getParameter("AccountID") != null)
@@ -266,7 +265,7 @@ public class WorkOrderManager extends HttpServlet {
 			Date dateReported = ServletUtils.parseDateTime(
 					req.getParameter("DateReported"), req.getParameter("TimeReported"), tz );
 			if (dateReported == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateReported") + " " + req.getParameter("TimeReported") + "'");
+				throw new ServletException("Invalid date/time format '" + req.getParameter("DateReported") + " " + req.getParameter("TimeReported") + "'");
 			starsOrder.setDateReported( dateReported );
 		}
 		
@@ -274,7 +273,7 @@ public class WorkOrderManager extends HttpServlet {
 			Date dateScheduled = ServletUtils.parseDateTime(
 					req.getParameter("DateScheduled"), req.getParameter("TimeScheduled"), tz );
 			if (dateScheduled == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled") + "'");
+				throw new ServletException("Invalid date/time format '" + req.getParameter("DateScheduled") + " " + req.getParameter("TimeScheduled") + "'");
 			starsOrder.setDateScheduled( dateScheduled );
 		}
 		
@@ -282,7 +281,7 @@ public class WorkOrderManager extends HttpServlet {
 			Date dateCompleted = ServletUtils.parseDateTime(
 					req.getParameter("DateCompleted"), req.getParameter("TimeCompleted"), tz );
 			if (dateCompleted == null)
-				throw new WebClientException("Invalid date/time format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "'");
+				throw new ServletException("Invalid date/time format '" + req.getParameter("DateCompleted") + " " + req.getParameter("TimeCompleted") + "'");
 			starsOrder.setDateCompleted( dateCompleted );
 		}
 	}

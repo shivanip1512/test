@@ -288,42 +288,46 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		
-		if (action.equalsIgnoreCase("CreateLMHardware")) {
-			// Request from CreateHardware.jsp, no inventory checking
-			// Save the request parameters 
-			StarsOperation operation = CreateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
-			session.setAttribute( STARS_INVENTORY_OPERATION, operation );
-			
-			if (liteInv != null) {
-				operation.getStarsCreateLMHardware().setInventoryID( liteInv.getInventoryID() );
-				operation.getStarsCreateLMHardware().setDeviceID( liteInv.getDeviceID() );
-			}
-			
-			// Redirect to SOAPClient
-			redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-			return;
-		}
-		else if (action.equalsIgnoreCase("UpdateLMHardware")) {
-			// Request from Inventory.jsp, device type or serial # must have been changed
-			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
-			StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
-			deleteHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
-			operation.setStarsDeleteLMHardware( deleteHw );
-			session.setAttribute( STARS_INVENTORY_OPERATION, operation );
-			
-			if (liteInv != null) {
-				operation.getStarsUpdateLMHardware().setInventoryID( liteInv.getInventoryID() );
-				operation.getStarsUpdateLMHardware().setDeviceID( liteInv.getDeviceID() );
-			}
-			
-			// Forward to DeleteInv.jsp to confirm removal of the old hardware
-			LiteInventoryBase liteInvOld = energyCompany.getInventory( deleteHw.getInventoryID(), true );
-			session.setAttribute( INVENTORY_TO_DELETE, liteInvOld );
-			redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
-			return;
-		}
-		
 		redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
+		
+		try {
+			if (action.equalsIgnoreCase("CreateLMHardware")) {
+				// Request from CreateHardware.jsp, no inventory checking
+				// Save the request parameters 
+				StarsOperation operation = CreateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+				session.setAttribute( STARS_INVENTORY_OPERATION, operation );
+				
+				if (liteInv != null) {
+					operation.getStarsCreateLMHardware().setInventoryID( liteInv.getInventoryID() );
+					operation.getStarsCreateLMHardware().setDeviceID( liteInv.getDeviceID() );
+				}
+				
+				// Redirect to SOAPClient
+				redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+			}
+			else if (action.equalsIgnoreCase("UpdateLMHardware")) {
+				// Request from Inventory.jsp, device type or serial # must have been changed
+				StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
+				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
+				deleteHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
+				operation.setStarsDeleteLMHardware( deleteHw );
+				session.setAttribute( STARS_INVENTORY_OPERATION, operation );
+				
+				if (liteInv != null) {
+					operation.getStarsUpdateLMHardware().setInventoryID( liteInv.getInventoryID() );
+					operation.getStarsUpdateLMHardware().setDeviceID( liteInv.getDeviceID() );
+				}
+				
+				// Forward to DeleteInv.jsp to confirm removal of the old hardware
+				LiteInventoryBase liteInvOld = energyCompany.getInventory( deleteHw.getInventoryID(), true );
+				session.setAttribute( INVENTORY_TO_DELETE, liteInvOld );
+				redirect = req.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
+			}
+		}
+		catch (ServletException se) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
+			redirect = referer;
+		}
 	}
 	
 	/**
@@ -1103,7 +1107,7 @@ public class InventoryManager extends HttpServlet {
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
 	 */
-	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) {
+	public static void setStarsInv(StarsInv starsInv, HttpServletRequest req, TimeZone tz) throws ServletException {
 		if (req.getParameter("InvID") != null)
 			starsInv.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 		if (req.getParameter("DeviceID") != null)
@@ -1112,16 +1116,34 @@ public class InventoryManager extends HttpServlet {
 			starsInv.setDeviceLabel( req.getParameter("DeviceLabel") );
 		if (req.getParameter("AltTrackNo") != null)
 			starsInv.setAltTrackingNumber( req.getParameter("AltTrackNo") );
-		if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
-			starsInv.setReceiveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate"), tz) );
-		if (req.getParameter("InstallDate") != null && req.getParameter("InstallDate").length() > 0)
-			starsInv.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("InstallDate"), tz) );
-		if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
-			starsInv.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate"), tz) );
 		if (req.getParameter("Notes") != null)
 			starsInv.setNotes( req.getParameter("Notes").replaceAll(System.getProperty("line.separator"), "<br>") );
 		if (req.getParameter("InstallNotes") != null)
 			starsInv.setInstallationNotes( req.getParameter("InstallNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
+		
+		String recvDateStr = req.getParameter("ReceiveDate");
+		if (recvDateStr != null && recvDateStr.length() > 0) {
+			Date recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, tz);
+			if (recvDate == null)
+				throw new ServletException("Invalid date format '" + recvDateStr + "'");
+			starsInv.setReceiveDate( recvDate );
+		}
+		
+		String instDateStr = req.getParameter("InstallDate");
+		if (instDateStr != null && instDateStr.length() > 0) {
+			Date instDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(instDateStr, tz);
+			if (instDate == null)
+				throw new ServletException("Invalid date format '" + instDateStr + "'");
+			starsInv.setInstallDate( instDate );
+		}
+		
+		String remvDateStr = req.getParameter("RemoveDate");
+		if (remvDateStr != null && remvDateStr.length() > 0) {
+			Date remvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(remvDateStr, tz);
+			if (remvDate == null)
+				throw new ServletException("Invalid date format '" + remvDateStr + "'");
+			starsInv.setRemoveDate( remvDate );
+		}
 		
 		if (req.getParameter("Voltage") != null) {
 			Voltage volt = new Voltage();

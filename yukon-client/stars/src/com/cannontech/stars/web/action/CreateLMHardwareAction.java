@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -80,6 +81,9 @@ public class CreateLMHardwareAction implements ActionBase {
 			}
 			
             return SOAPUtil.buildSOAPMessage( operation );
+        }
+        catch (ServletException se) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -180,7 +184,7 @@ public class CreateLMHardwareAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) {
+	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) throws ServletException {
 		StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 		InventoryManager.setStarsInv( createHw, req, tz );
 		

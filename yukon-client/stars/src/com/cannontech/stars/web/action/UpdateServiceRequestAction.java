@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.TimeZone;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -14,7 +15,6 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.web.servlet.WorkOrderManager;
@@ -59,6 +59,9 @@ public class UpdateServiceRequestAction implements ActionBase {
 				operation = getRequestOperation( req, tz );
 			
 			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (ServletException se) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -185,7 +188,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 	}
 	
 	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz)
-	throws WebClientException {
+	throws ServletException {
 		StarsUpdateServiceRequest updateOrder = new StarsUpdateServiceRequest();
 		WorkOrderManager.setStarsServiceRequest( updateOrder, req, tz );
 			

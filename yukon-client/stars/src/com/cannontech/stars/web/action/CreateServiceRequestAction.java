@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.TimeZone;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -61,6 +62,9 @@ public class CreateServiceRequestAction implements ActionBase {
 				operation = getRequestOperation( req, tz );
 			
 			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (ServletException se) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, se.getMessage() );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -179,10 +183,10 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 	
 	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz)
-	throws WebClientException {
+	throws ServletException {
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 		WorkOrderManager.setStarsServiceRequest( createOrder, req, tz );
-			
+		
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsCreateServiceRequest( createOrder );
 		return operation;
