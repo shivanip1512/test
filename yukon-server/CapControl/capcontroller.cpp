@@ -147,7 +147,10 @@ void CtiCapController::controlLoop()
     try
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        registerForPoints(*store->getCCSubstationBuses(RWDBDateTime().seconds()));
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+            registerForPoints(*store->getCCSubstationBuses(RWDBDateTime().seconds()));
+        }
         store->setReregisterForPoints(FALSE);
         store->verifySubBusAndFeedersStates();
 
@@ -159,100 +162,121 @@ void CtiCapController::controlLoop()
         ULONG lastDailyReset = 0;
         while(TRUE)
         {
-            currentDateTime.now();
-            ULONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-            ULONG secondsFrom1901 = currentDateTime.seconds();
-
-            if(_CC_DEBUG)
             {
-                if( (secondsFrom1901%900) == 0 && secondsFrom1901 != lastThreadPulse )
-                {//every thirty minutes tell the user if the control thread is still alive
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Controller thread pulse" << endl;
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+                currentDateTime.now();
+                ULONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+                ULONG secondsFrom1901 = currentDateTime.seconds();
+    
+                if(_CC_DEBUG)
+                {
+                    if( (secondsFrom1901%900) == 0 && secondsFrom1901 != lastThreadPulse )
+                    {//every thirty minutes tell the user if the control thread is still alive
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Controller thread pulse" << endl;
+                        }
+                        lastThreadPulse = secondsFrom1901;
+                        store->verifySubBusAndFeedersStates();
                     }
-                    lastThreadPulse = secondsFrom1901;
-                    store->verifySubBusAndFeedersStates();
+                    if( secondsFromBeginningOfDay <= 60 && secondsFrom1901 >= lastDailyReset+61 )
+                    {
+                        store->resetDailyOperations();
+                        lastDailyReset = secondsFrom1901;
+                    }
                 }
-                if( secondsFromBeginningOfDay <= 60 && secondsFrom1901 >= lastDailyReset+61 )
-                {
-                    store->resetDailyOperations();
-                    lastDailyReset = secondsFrom1901;
-                }
-            }
-
-            rwRunnable().serviceCancellation();
-
-            RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
-
-            try
-            {
-                if( store->getReregisterForPoints() )
-                {
-                    registerForPoints(ccSubstationBuses);
-                    store->setReregisterForPoints(FALSE);
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            try
-            {
-                checkDispatch(secondsFrom1901);
-                checkPIL(secondsFrom1901);
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            RWOrdered& pointChanges = multiDispatchMsg->getData();
-            RWOrdered& pilMessages = multiPilMsg->getData();
-            for(UINT i=0;i<ccSubstationBuses.entries();i++)
-            {
-                CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-
+    
+                rwRunnable().serviceCancellation();
+    
+                RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+    
                 try
                 {
-                    if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                    if( store->getReregisterForPoints() )
                     {
-                        if( currentSubstationBus->getRecentlyControlledFlag() )
+                        registerForPoints(ccSubstationBuses);
+                        store->setReregisterForPoints(FALSE);
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+    
+                try
+                {
+                    checkDispatch(secondsFrom1901);
+                    checkPIL(secondsFrom1901);
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+    
+                RWOrdered& pointChanges = multiDispatchMsg->getData();
+                RWOrdered& pilMessages = multiPilMsg->getData();
+                for(UINT i=0;i<ccSubstationBuses.entries();i++)
+                {
+                    CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+    
+                    try
+                    {
+                        if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
                         {
-                            try
+                            if( currentSubstationBus->getRecentlyControlledFlag() )
                             {
-                                if( currentSubstationBus->isAlreadyControlled() ||
-                                    currentSubstationBus->isPastResponseTime(currentDateTime) )
+                                try
                                 {
-                                    if( currentSubstationBus->capBankControlStatusUpdate(pointChanges) )
+                                    if( currentSubstationBus->isAlreadyControlled() ||
+                                        currentSubstationBus->isPastResponseTime(currentDateTime) )
                                     {
-                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        if( currentSubstationBus->capBankControlStatusUpdate(pointChanges) )
+                                        {
+                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        }
+                                    }
+                                    else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                                    {
+                                        if( !currentSubstationBus->getDisableFlag() )
+                                        {
+                                            currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
+                                        }
                                     }
                                 }
-                                else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
+                                catch(...)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                }
+                            }
+                            else//not recently controlled
+                            {
+                                try
                                 {
                                     if( !currentSubstationBus->getDisableFlag() )
                                     {
                                         currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
                                     }
                                 }
+                                catch(...)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                }
                             }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        else//not recently controlled
-                        {
+    
                             try
                             {
-                                if( !currentSubstationBus->getDisableFlag() )
+                                if( currentSubstationBus->getControlInterval() == 0 )
+                                {//so we don't do this over and over we need to clear out
+                                    currentSubstationBus->clearOutNewPointReceivedFlags();
+                                }
+                                else
                                 {
-                                    currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
+                                    currentSubstationBus->figureNextCheckTime();
                                 }
                             }
                             catch(...)
@@ -261,103 +285,86 @@ void CtiCapController::controlLoop()
                                 dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
-
-                        try
-                        {
-                            if( currentSubstationBus->getControlInterval() == 0 )
-                            {//so we don't do this over and over we need to clear out
-                                currentSubstationBus->clearOutNewPointReceivedFlags();
-                            }
-                            else
-                            {
-                                currentSubstationBus->figureNextCheckTime();
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-
-                try
-                {
-                    //accumulate all buses with any changes into msg for all clients
-                    if( currentSubstationBus->getBusUpdatedFlag() )
-                    {
-                        substationBusChanges.insert(currentSubstationBus);
-                        currentSubstationBus->setBusUpdatedFlag(FALSE);
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-            }
-
-            try
-            {
-                //send point changes to dispatch
-                if( pointChanges.entries() > 0 )
-                {
-                    getDispatchConnection()->WriteConnQue(multiDispatchMsg);
-                    multiDispatchMsg = new CtiMultiMsg();
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            try
-            {
-                //send pil commands to porter
-                if( multiPilMsg->getCount() > 0 )
-                {
-                    getPILConnection()->WriteConnQue(multiPilMsg);
-                    multiPilMsg = new CtiMultiMsg();
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            try
-            {
-                if( substationBusChanges.entries() > 0 )
-                {
-                    //send the substation bus changes to all cap control clients
-                    store->dumpAllDynamicData();
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
-                    try
-                    {
-                        executor->Execute();
                     }
                     catch(...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
-                    delete executor;
-
-                    substationBusChanges.clear();
+    
+                    try
+                    {
+                        //accumulate all buses with any changes into msg for all clients
+                        if( currentSubstationBus->getBusUpdatedFlag() )
+                        {
+                            substationBusChanges.insert(currentSubstationBus);
+                            currentSubstationBus->setBusUpdatedFlag(FALSE);
+                        }
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
                 }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    
+                try
+                {
+                    //send point changes to dispatch
+                    if( pointChanges.entries() > 0 )
+                    {
+                        getDispatchConnection()->WriteConnQue(multiDispatchMsg);
+                        multiDispatchMsg = new CtiMultiMsg();
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+    
+                try
+                {
+                    //send pil commands to porter
+                    if( multiPilMsg->getCount() > 0 )
+                    {
+                        getPILConnection()->WriteConnQue(multiPilMsg);
+                        multiPilMsg = new CtiMultiMsg();
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+    
+                try
+                {
+                    if( substationBusChanges.entries() > 0 )
+                    {
+                        //send the substation bus changes to all cap control clients
+                        store->dumpAllDynamicData();
+                        CtiCCExecutorFactory f;
+                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
+                        try
+                        {
+                            executor->Execute();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        delete executor;
+    
+                        substationBusChanges.clear();
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
             }
 
             try
