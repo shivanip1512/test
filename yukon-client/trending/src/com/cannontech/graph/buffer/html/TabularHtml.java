@@ -21,7 +21,8 @@ public class TabularHtml extends HTMLBuffer
 	//  we are setting a "tabular" start/end date criteria.
 	public java.util.Date tabularStartDate = null; 
 	public java.util.Date tabularEndDate = null;
-	private java.text.SimpleDateFormat tabularTimeFormat = timeFormat;
+	private java.text.SimpleDateFormat tabularTimeFormat = timeFormat_HH_mm;
+	private long resolution = 1;
 
 	/**
 	 * Writes html into the given buffer.
@@ -181,14 +182,14 @@ public class TabularHtml extends HTMLBuffer
 		
 		buf.append("<tr align=\"center\" valign=\"top\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">\n");
 		//Output html for the timestamps.
-		buf.append("<td width=\"80\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">\n");
+		buf.append("<td class=\"tablecell\" width=\"80\"><font size=\"-1\" face=\"arial\">\n");
 		for( int x = 0; x < keyArray.length; x++ )
 		{
 			Long ts1 = keyArray[x];
 			buf.append(tabularTimeFormat.format(new java.util.Date(ts1.longValue())));
 			buf.append("<br>");
 		}
-		buf.append("</span></font></td>\n");
+		buf.append("</font></td>\n");
 		
 		//Output html for each valid serie's readings.
 		int validIndex = 0;
@@ -345,4 +346,24 @@ public class TabularHtml extends HTMLBuffer
 	{
 		tabularStartDate = start;
 	}
+    /**
+     * @return Returns the resolution.
+     */
+    public long getResolution()
+    {
+        return resolution;
+    }
+    /**
+     * @param resolution The resolution to set.
+     */
+    public void setResolution(long resolution)
+    {
+        this.resolution = resolution;
+        if( resolution == 1)
+            tabularTimeFormat = timeFormat_HH_mm_ss_SSS;
+        else if (resolution == 1000)
+            tabularTimeFormat = timeFormat_HH_mm_ss;
+        else if (resolution > 1000)
+            tabularTimeFormat = timeFormat_HH_mm;
+    }
 }
