@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 16:33:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1243,7 +1243,7 @@ INT RefreshPorterRTDB(void *ptr)
 
    if(pChg == NULL || (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT) )
    {
-      if(pChg != NULL && (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT) )
+      if(pChg != NULL)
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1258,7 +1258,7 @@ INT RefreshPorterRTDB(void *ptr)
 
    if(!PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
    {
-      if(pChg != NULL && (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
+      if(pChg != NULL)
       {
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1275,7 +1275,7 @@ INT RefreshPorterRTDB(void *ptr)
    {
       if(pChg == NULL || (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
       {
-         if(pChg != NULL && (pChg->getDatabase() == ChangePAODb && resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
+         if(pChg != NULL)
          {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1293,17 +1293,22 @@ INT RefreshPorterRTDB(void *ptr)
 
       if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
       {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reloading all points based upon db change" << endl;
-         }
+         LONG paoid = GetPAOIdOfPoint( pChg->getId() );
 
          RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-         CtiRTDB<CtiDeviceBase>::CtiRTDBIterator  itr_dev(DeviceManager.getMap());
-
-         for(; ++itr_dev ;)
+         CtiDevice *pDevToReset = DeviceManager.getEqual( paoid );
+         if(pDevToReset)
          {
-            itr_dev.value()->ResetDevicePoints();  // Mark all pointmanagers as empty.
+             pDevToReset->ResetDevicePoints();
+             {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Reset device " << pDevToReset->getName() << "'s pointmanager due to pointchange on point " <<  pChg->getId() << endl;
+             }
+         }
+         else
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
          }
       }
    }
