@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/03/03 23:41:50 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/03/24 20:49:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,12 +121,12 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair(0, 0);
     s.insert( cs );
-/*
+
     cs._cmd     = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair(0, 0);
     s.insert( cs );
-*/
+
     cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair((int)FuncRead_DemandPos,
@@ -1163,8 +1163,12 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
             else if( !cmd.compare("peak") )
             {
-                function = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
-                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                //  !!!  FIXME: this will not allow any load profile interval smaller than 1 hour to be reported on  !!!
+                if( getLoadProfile().getLoadProfileDemandRate() >= 3600 )
+                {
+                    function = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
+                    found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+                }
 
                 if( found )
                 {
