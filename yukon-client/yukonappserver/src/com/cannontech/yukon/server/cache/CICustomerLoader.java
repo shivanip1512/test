@@ -2,7 +2,7 @@ package com.cannontech.yukon.server.cache;
 
 import java.util.Vector;
 
-import com.cannontech.database.cache.functions.CustomerContactFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
@@ -113,8 +113,7 @@ public class CICustomerLoader implements Runnable
 					int[] map = (int[])vectVals.get(j);
 					if( map[0] == lc.getCustomerID() )
 					{
-						lc.getAdditionalContacts().add(
-							CustomerContactFuncs.getCustomerContact(map[1]) );
+						lc.getAdditionalContacts().add( ContactFuncs.getContact(map[1]) );
 						
 						found = true;
 					}
