@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/07/01 17:54:55 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/07/30 16:51:58 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -274,9 +274,9 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             }
             else
             {
-                nRet = NoRouteGroupDevice;
+                nRet = BADROUTE;
 
-                resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
+                resultString = " ERROR: Route or Route Transmitter not available for device " + getName();
 
                 CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
                                                       RWCString(pOut->Request.CommandStr),

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/07/24 14:38:33 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/07/30 16:51:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -647,9 +647,9 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             }
             else
             {
-                nRet = NoRouteGroupDevice;
+                nRet = BADROUTE;
 
-                resultString = "ERROR: Route or Route Transmitter not available for group device " + getName();
+                resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
 
                 CtiReturnMsg* pRet = new CtiReturnMsg(getID(),
                                                       RWCString(pOut->Request.CommandStr),
