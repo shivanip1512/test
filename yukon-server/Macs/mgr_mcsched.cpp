@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/31 17:08:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/03/25 21:14:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,13 +200,19 @@ bool CtiMCScheduleManager::updateAllSchedules()
 CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+    
+    // Don't allow a new schedule with the same name as any existing schedule
+    if( getID(sched.getScheduleName()) != -1)
+    {
+	return NULL;
+    }
 
     // We have to assign it a schedule id
     long id = nextScheduleID();
 
     CtiMCSchedule* sched_to_add = (CtiMCSchedule*) sched.replicateMessage();
     sched_to_add->setScheduleID( id );
-
+	
     if( !Map.insert( new CtiHashKey(id), sched_to_add ) )
     {
         // Failed!
@@ -226,6 +232,12 @@ bool CtiMCScheduleManager::updateSchedule(const CtiMCSchedule& sched)
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
+        //Don't allow a schedule to have the same name as any existing schedule
+	if( getID(sched.getScheduleName()) )
+	{
+	    return false;
+	}
+	
         CtiMCSchedule* sched_to_update = findSchedule( id );
 
         if( sched_to_update != NULL )
