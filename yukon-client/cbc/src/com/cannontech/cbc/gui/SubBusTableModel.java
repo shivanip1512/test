@@ -21,7 +21,6 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	private CBCClientConnection connection = null;
 
 	/* ROW DATA */
-	private java.util.Hashtable filterTable = new java.util.Hashtable(10);
 	private java.util.Vector allSubBuses = null;
 	private java.util.List currentSubBuses = null;
 	
@@ -100,14 +99,26 @@ public SubBusTableModel() {
  */
 public void clear() 
 {
-	filterTable.clear();
-
 	getAllSubBuses().removeAllElements();
 
 	currentSubBuses = getAllSubBuses();
 
 	fireTableDataChanged();
 }
+
+/**
+ * Used to clear all filters and forces the model to recreate them.
+ * Creation date: (2/24/03 11:40:31 AM)
+ */
+private void clearFilter()
+{
+   //always keep our main list in order by the SubBusArea
+   java.util.Collections.sort( 
+         getAllSubBuses(), 
+         SUB_AREA_COMPARATOR );
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (5/23/00 2:18:04 PM)
@@ -495,52 +506,34 @@ public synchronized void setFilter(java.lang.String newFilter)
 {
    filter = newFilter;
 
-   //need to refresh all of our sublists   
-   if( ALL_FILTER.equalsIgnoreCase(getFilter()) )
-   {
-		currentSubBuses = getAllSubBuses();
-   }
-	else
+	int start = -1, stop = getAllSubBuses().size();
+	for( int i = 0; i < getAllSubBuses().size(); i++ )
 	{
-		java.util.List l = (java.util.List)filterTable.get( getFilter() );
-		if( l != null )
+		SubBus realBus = (SubBus)getAllSubBuses().get(i);
+		if( start <= -1 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
 		{
-			//we already have a sublist for this filter, use it!
-			currentSubBuses = l;
+			start = i;
 		}
-		else
+		else if( start >= 0 
+					 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
 		{
-			int start = -1, stop = getAllSubBuses().size();
-			for( int i = 0; i < getAllSubBuses().size(); i++ )
-			{
-				SubBus realBus = (SubBus)getAllSubBuses().get(i);
-				if( start <= -1 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
-				{
-					start = i;
-				}
-				else if( start >= 0 
-							 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
-				{
-					stop = i;
-					break;
-				}
-
-			}
-
-			
-			if( start < 0 ) //should not occur
-			{
-				currentSubBuses = getAllSubBuses();
-				com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
-			}
-			else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
-				currentSubBuses = getAllSubBuses().subList(
-											start, 
-											(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );
-						
-			filterTable.put( getFilter(), currentSubBuses );
+			stop = i;
+			break;
 		}
+
 	}
+
+	
+	if( start < 0 ) //should not occur
+	{
+		currentSubBuses = getAllSubBuses();
+		com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
+	}
+	else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
+		currentSubBuses = getAllSubBuses().subList(
+									start, 
+									(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );
+				
 
 	javax.swing.SwingUtilities.invokeLater( new Runnable()
 	{
@@ -661,9 +654,6 @@ private synchronized void updateSubBuses(SubBus[] newBuses)
 	
 	if( changeSize )
 	{	
-		//since we increased the size of AllSubBuses, we must release all filter sublist
-	  	filterTable.clear();
-
 	   setFilter( getFilter() );
 	}
 
