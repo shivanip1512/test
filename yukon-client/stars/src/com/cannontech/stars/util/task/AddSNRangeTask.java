@@ -34,12 +34,8 @@ import com.cannontech.stars.web.util.InventoryManagerUtil;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class AddSNRangeTask implements TimeConsumingTask {
+public class AddSNRangeTask extends TimeConsumingTask {
 
-	int status = STATUS_NOT_INIT;
-	boolean isCanceled = false;
-	String errorMsg = null;
-	
 	int snFrom = 0, snTo = 0;
 	Integer devTypeID = null;
 	Date recvDate = null;
@@ -64,30 +60,6 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		this.routeID = routeID;
 		this.request = request;
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getStatus()
-	 */
-	public int getStatus() {
-		return status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#setStatus(int)
-	 */
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
-	 */
-	public void cancel() {
-		if (status == STATUS_RUNNING) {
-			isCanceled = true;
-			status = STATUS_CANCELING;
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
@@ -98,13 +70,6 @@ public class AddSNRangeTask implements TimeConsumingTask {
 			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
 		else
 			return numSuccess + " of " + numTotal + " hardwares have been added.";
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getErrorMsg()
-	 */
-	public String getErrorMsg() {
-		return errorMsg;
 	}
 
 	/* (non-Javadoc)

@@ -112,7 +112,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		return instance;
 	}
 	
-	public void loadData() {	
+	public void loadData() {
 		getAllWebConfigurations();
 		
 		ArrayList allCompanies = getAllEnergyCompanies();
@@ -124,6 +124,10 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 			public void run() {
 				for (int i = 0; i < companies.length; i++) {
 					if (!ECUtils.isDefaultEnergyCompany( companies[i] )) {
+						// Fire the data loading threads off, and wait for all of them to stop
+						companies[i].loadAllInventory( false );
+						companies[i].loadAllCustomerAccounts( false );
+						companies[i].loadAllWorkOrders( false );
 						companies[i].loadAllInventory( true );
 						companies[i].loadAllCustomerAccounts( true );
 						companies[i].loadAllWorkOrders( true );

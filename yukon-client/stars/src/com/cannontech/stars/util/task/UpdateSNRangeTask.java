@@ -35,11 +35,7 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class UpdateSNRangeTask implements TimeConsumingTask {
-	
-	int status = STATUS_NOT_INIT;
-	boolean isCanceled = false;
-	String errorMsg = null;
+public class UpdateSNRangeTask extends TimeConsumingTask {
 	
 	Integer snFrom = null;
 	Integer snTo = null;
@@ -70,30 +66,6 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getStatus()
-	 */
-	public int getStatus() {
-		return status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#setStatus(int)
-	 */
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
-	 */
-	public void cancel() {
-		if (status == STATUS_RUNNING) {
-			isCanceled = true;
-			status = STATUS_CANCELING;
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
 	public String getProgressMsg() {
@@ -111,13 +83,6 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		}
 		else
 			return "Updating hardwares in inventory...";
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getErrorMsg()
-	 */
-	public String getErrorMsg() {
-		return errorMsg;
 	}
 
 	/* (non-Javadoc)

@@ -45,13 +45,9 @@ import com.cannontech.user.UserUtils;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class ImportCustAccountsTask implements TimeConsumingTask {
+public class ImportCustAccountsTask extends TimeConsumingTask {
 
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
-	
-	int status = STATUS_NOT_INIT;
-	boolean isCanceled = false;
-	String errorMsg = null;
 	
 	// Generic import file column names
 	private static final String COL_NAME_LABEL = "COLUMN_NAMES:";
@@ -161,30 +157,6 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getStatus()
-	 */
-	public int getStatus() {
-		return status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#setStatus(int)
-	 */
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
-	 */
-	public void cancel() {
-		if (status == STATUS_RUNNING) {
-			isCanceled = true;
-			status = STATUS_CANCELING;
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
 	public String getProgressMsg() {
@@ -216,13 +188,6 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		}
 		
 		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getErrorMsg()
-	 */
-	public String getErrorMsg() {
-		return errorMsg;
 	}
 
 	/* (non-Javadoc)

@@ -12,7 +12,7 @@ package com.cannontech.stars.util.task;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public interface TimeConsumingTask extends Runnable {
+public abstract class TimeConsumingTask implements Runnable {
 	
 	public static final int STATUS_NOT_INIT = -1;
 	public static final int STATUS_RUNNING = 0;
@@ -21,33 +21,50 @@ public interface TimeConsumingTask extends Runnable {
 	public static final int STATUS_CANCELED = 3;
 	public static final int STATUS_ERROR = 4;
 	
+	int status = STATUS_NOT_INIT;
+	boolean isCanceled = false;
+	String errorMsg = null;
+	
 	/**
 	 * Return the current status of the task, the return value
 	 * could be one of the constants defined above.
 	 */
-	public int getStatus();
+	public int getStatus() {
+		return status;
+	}
 	
 	/**
 	 * Set the current status of the task.
 	 * @param status
 	 */
-	public void setStatus(int status);
+	public void setStatus(int status) {
+		this.status = status;
+	}
 	
 	/**
 	 * Cancel the task. It's up for the implementation to determine
 	 * when is the proper time to terminate the execution.
 	 */
-	public void cancel();
+	public void cancel() {
+		if (status == STATUS_RUNNING) {
+			isCanceled = true;
+			status = STATUS_CANCELING;
+		}
+	}
 	
 	/**
 	 * Return a description of the current progress of the task.
 	 */
-	public String getProgressMsg();
+	public String getProgressMsg() {
+		return null;
+	}
 	
 	/**
 	 * If there is an error occured, return a description of it.
 	 * Otherwise return null.
 	 */
-	public String getErrorMsg();
+	public String getErrorMsg() {
+		return errorMsg;
+	}
 
 }
