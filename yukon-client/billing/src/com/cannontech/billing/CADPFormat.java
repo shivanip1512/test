@@ -314,7 +314,7 @@ public boolean retrieveBillingData(String dbAlias)
 			e2.printStackTrace();//sometin is up
 		}	
 	}
-	com.cannontech.clientutils.CTILogger.info(" @CADP Data Collection : Took " + (System.currentTimeMillis() - timer));
+	com.cannontech.clientutils.CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
 	
 	return true;
 }
