@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2004/11/16 20:51:22 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2004/11/18 23:41:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,6 +138,7 @@ using namespace std;
 
 #include "portgui.h"
 #include "logger.h"
+#include "numstr.h"
 
 /* define the global area */
 #include "portglob.h"
@@ -176,7 +177,7 @@ using namespace std;
 #define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
-#define DO_VERIFICATIONTHREAD          0
+#define DO_VERIFICATIONTHREAD          1
 
 #define DOUT_OUT TRUE
 
@@ -510,6 +511,8 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
 
 void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
+    RWCString printStr;
+
     /* Report on the state of the queues */
 
     if(!ptPort->isInhibited())
@@ -564,18 +567,19 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
         #endif
 
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime()<< " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " Port Queue Entries:  " << QueEntCnt;
+            printStr = RWTime().asString() + " Port: " + CtiNumStr(ptPort->getPortID()).spad(2) + " / " + ptPort->getName() +
+                                             " Port Queue Entries:  " + CtiNumStr(QueEntCnt).spad(4);
 
             if(ptPort->getConnectedDevice())
             {
-                dout << ". Connected To: " << GetDeviceName(ptPort->getConnectedDevice()) << endl;
-            }
-            else
-            {
-                dout << endl;
+                printStr += ". Connected To: " + GetDeviceName(ptPort->getConnectedDevice());
             }
         }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << printStr << endl;
     }
 }
 
