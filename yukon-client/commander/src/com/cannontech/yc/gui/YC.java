@@ -17,7 +17,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
@@ -27,7 +26,6 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.porter.message.Request;
@@ -633,10 +631,6 @@ public class YC extends Observable implements MessageListener
 		if( item_ instanceof DeviceBase)					//ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
 		{
 			deviceType = ((DeviceBase)item_).getPAOType();
-		}
-		else if( item_ instanceof CICustomerBase)		//ModelFactory.CICUSTOMER
-		{
-			deviceType = CommandCategory.STRING_CMD_CICUSTOMER;
 		}
 		else if(item_ instanceof DeviceMeterGroupBase)	//ModelFactory.DEVICE_METERNUMBER,		
 		{
