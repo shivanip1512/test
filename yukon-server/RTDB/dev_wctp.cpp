@@ -1094,9 +1094,14 @@ void CtiDeviceWctpTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 void CtiDeviceWctpTerminal::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    _wctp.DecodeDatabaseReader(rdr);
 
+    if( getDebugLevel() & 0x0800 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    _wctp.DecodeDatabaseReader(rdr);
 }
 
 

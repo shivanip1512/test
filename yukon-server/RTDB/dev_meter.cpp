@@ -104,9 +104,10 @@ void CtiDeviceMeter::DecodeDatabaseReader(RWDBReader &rdr)
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if(getDebugLevel() & 0x0800)
+    if( getDebugLevel() & 0x0800 )
     {
-        cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     MeterGroup.DecodeDatabaseReader(rdr);

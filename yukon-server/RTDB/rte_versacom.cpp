@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/06/26 18:12:03 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/08/29 16:33:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,11 @@ void CtiRouteVersacom::DecodeDatabaseReader(RWDBReader &rdr)
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
-    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    if( getDebugLevel() & 0x0800 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     // Versacom specific data is picked up in the VersacomDecode
 }
@@ -75,7 +79,12 @@ void CtiRouteVersacom::DecodeVersacomDatabaseReader(RWDBReader &rdr)
 
     if(getType() == VersacomRouteType)   // Just make darn sure.
     {
-        if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        if( getDebugLevel() & 0x0800 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
         Versacom.DecodeDatabaseReader(rdr);
     }
 }

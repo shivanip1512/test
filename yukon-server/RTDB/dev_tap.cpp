@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/05 17:41:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/29 16:36:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1436,9 +1436,14 @@ void CtiDeviceTapPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, 
 void CtiDeviceTapPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-    if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    _tap.DecodeDatabaseReader(rdr);
 
+    if( getDebugLevel() & 0x0800 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    _tap.DecodeDatabaseReader(rdr);
 }
 
 
