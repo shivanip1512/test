@@ -264,7 +264,7 @@ private final static DeviceBase setDeviceDefaults( int type, DeviceBase returnDe
       && (type == PAOGroups.MCT360 || type == PAOGroups.MCT370) )
 	{
 		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setConnectedIED("None");
-		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setIEDScanRate(new Integer(60));
+		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setIEDScanRate(new Integer(120));
 		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataClass(new Integer(0));
 		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setDefaultDataOffset(new Integer(0));
 		((MCTIEDBase) returnDevice).getDeviceMCTIEDPort().setPassword("None");
