@@ -13,6 +13,8 @@ import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.JFrame;
+
  public class SplashWindow extends Window 
  {
    private Image splashImage;   
@@ -27,22 +29,22 @@ import java.awt.event.WindowEvent;
   
    private String displayText = " ";
    private Color textColor;
-   
+
    public SplashWindow(Frame f, String imgName  ) 
    {
-		super(f);
+		super( (f == null ? new JFrame() : f) );
 		initialize( f, imgName, "Loading...", new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );
    }
    
 	public SplashWindow(Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
 	{
-		super(f);
+		super( (f == null ? new JFrame() : f) );
 		initialize( f, imgName, displayText, displayFont, textColor, borderColor, borderSize ); 
 	} 
 
    public SplashWindow(Frame f, String imgName, String displayText )
    {
-		super(f);
+		super( (f == null ? new JFrame() : f) );
 		initialize( f, imgName, displayText, new java.awt.Font("dialog", 0, 12), Color.black, Color.black, 1  );			 
 	 } 
 
@@ -69,15 +71,15 @@ import java.awt.event.WindowEvent;
 		 
 		 showSplashScreen();
 	
-		 f.addWindowListener( new WindowAdapter()
-	 	 {
-		 	 public void windowActivated(WindowEvent we )
+		 if( f != null )
+			 f.addWindowListener( new WindowAdapter()
 		 	 {
-			 	 setVisible(false);
-			 	 dispose();
-		 	 }
-		 }
-		 );
+			 	 public void windowActivated(WindowEvent we )
+			 	 {
+				 	 setVisible(false);
+				 	 dispose();
+			 	 }
+			 });
 	}
 
    public Image loadSplashImage() {
