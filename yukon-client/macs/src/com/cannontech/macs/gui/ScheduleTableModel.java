@@ -240,7 +240,7 @@ private synchronized Vector getAllSchedules()
 	return allSchedules;
 }
 
-private synchronized List getCurrentSchedules()
+private List getCurrentSchedules()
 {
 	if( currentSchedules == null )
 		currentSchedules = getAllSchedules();
