@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -18,6 +19,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.InventoryManager;
@@ -106,7 +108,10 @@ public class CreateLMHardwareAction implements ActionBase {
 			LiteStarsLMHardware liteHw = addLMHardware( createHw, liteAcctInfo, energyCompany, conn );
 
             // Send config command
-            StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw.getInventoryID(), false, conn);
+            if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION ))
+	            YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, false, conn);
+            
+			StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );
             

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -19,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -435,12 +437,17 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsInventories starsInvs = new StarsInventories();
 			for (int i = 0; i < hwIDsToConfig.size(); i++) {
 				int invID = ((Integer) hwIDsToConfig.get(i)).intValue();
-				StarsLMHardware starsHw = YukonSwitchCommandAction.sendConfigCommand(energyCompany, invID, false, conn);
+				LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
+				if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION ))
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, false, conn);
+				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
 				starsInvs.addStarsLMHardware( starsHw );
 			}
 			for (int i = 0; i < hwIDsToDisable.size(); i++) {
 				int invID = ((Integer) hwIDsToDisable.get(i)).intValue();
-				StarsLMHardware starsHw = YukonSwitchCommandAction.sendDisableCommand(energyCompany, invID, conn);
+				LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
+				YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, conn);
+				StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany );
 				starsInvs.addStarsLMHardware( starsHw );
 			}
             
@@ -617,7 +624,7 @@ public class ProgramSignUpAction implements ActionBase {
 			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 			if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-				YukonSwitchCommandAction.sendDisableCommand( energyCompany, invID, conn );
+				YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, conn );
 				starsInvs.addStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompany) );
 			}
 		}
