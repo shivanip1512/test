@@ -686,8 +686,8 @@ public class LCUtils
 				// some type of error occured
 				programResp[i].setStatus( responseMsgs[i].getStatus() );
                 
-                success = (programResp[i].getStatus() == ServerResponseMsg.STATUS_OK);
-
+                success &= (programResp[i].getStatus() == ServerResponseMsg.STATUS_OK);
+ 
                 if( !success )
                 {
     				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
