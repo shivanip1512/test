@@ -13,15 +13,18 @@
 <%@ page import="com.cannontech.common.constants.RoleTypes" %>
 
 <%
+	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+	if (lYukonUser == null) {
+		response.sendRedirect("/login.jsp"); return;
+	}
+	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-	if (lYukonUser == null) {
-		response.sendRedirect("/login.jsp"); return;
-	}
+	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
@@ -84,7 +87,4 @@
 			histDateFormat.setTimeZone(tz);
 		}
 	}
-	
-	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
-	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 %>
