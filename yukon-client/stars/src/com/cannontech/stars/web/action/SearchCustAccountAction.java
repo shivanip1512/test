@@ -125,7 +125,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO).getEntryID()) {
             	/* Search by hardware serial number */
-            	accountIDs = CustomerAccount.searchBySerialNumber( new Integer(energyCompanyID), searchAccount.getSearchValue() );
+            	accountIDs = CustomerAccount.searchBySerialNumber( searchAccount.getSearchValue(), energyCompanyID );
             	if (accountIDs != null && accountIDs.length == 1)
             		liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[0], true );
             }

@@ -141,17 +141,17 @@ public class CustomerAccount extends DBPersistent {
 		return null;
     }
     
-    public static int[] searchBySerialNumber(Integer energyCompanyID, String serialNo) {
-    	int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo );
+    public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
+    	int[] invIDs = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
     	if (invIDs == null)
     		return null;
     	if (invIDs.length == 0)
     		return new int[0];
     	
         String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
-    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID.toString() + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + String.valueOf(invIDs[0]);
+    			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID AND acct.AccountID = inv.AccountID AND (inv.InventoryID = " + invIDs[0];
     	for (int i = 1; i < invIDs.length; i++)
-    		sql += " OR inv.InventoryID = " + String.valueOf(invIDs[i]);
+    		sql += " OR inv.InventoryID = " + invIDs[i];
     	sql += ")";
     	
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(

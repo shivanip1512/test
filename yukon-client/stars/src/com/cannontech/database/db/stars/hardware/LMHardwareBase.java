@@ -67,9 +67,32 @@ public class LMHardwareBase extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
     
-    public static int[] searchBySerialNumber(String serialNo) {
-    	String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE InventoryID >= 0 "
-    			   + "AND UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "')";
+    public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID) {
+    	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
+    			"WHERE LMHardwareTypeID = " + deviceType + " AND UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "')" +
+    			" AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		int[] invIDs = new int[ stmt.getRowCount() ];
+    		
+    		for (int i = 0; i < invIDs.length; i++)
+    			invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+    		return invIDs;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
+    
+    public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
+    	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
+    			"WHERE UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "') AND inv.InventoryID >= 0 " +
+    			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
     			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     	

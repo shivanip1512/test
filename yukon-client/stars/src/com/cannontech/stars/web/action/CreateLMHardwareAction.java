@@ -66,7 +66,6 @@ public class CreateLMHardwareAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 			InventoryManager.setStarsLMHardware( createHw, req );

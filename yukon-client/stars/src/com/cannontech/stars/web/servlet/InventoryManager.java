@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.*;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
@@ -71,24 +71,11 @@ public class InventoryManager extends HttpServlet {
 		resp.sendRedirect( redirect );
 	}
 	
+	/**
+	 * Populate the web page with information of selected hardware,
+	 * according to the request from SelectInv.jsp or CheckInv.jsp
+	 */
 	private void selectInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-/*		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		int invID = Integer.parseInt( req.getParameter("InvID") );
-		LiteStarsLMHardware liteHw = energyCompany.getLMHardware(invID, true);
-		
-		if (liteHw.getAccountID() == CtiUtilities.NONE_ID) {
-			// The hardware is in warehouse, so populate the hardware information
-			StarsLMHardware starsHw = (StarsLMHardware) session.getAttribute(STARS_LM_HARDWARE_TEMP);
-			StarsLiteFactory.setStarsLMHardware( starsHw, liteHw, energyCompany );
-			starsHw.setRemoveDate( null );
-			starsHw.setInstallDate( new Date() );
-			redirect = (String) session.getAttribute( ServletUtils.ATT_REFERRER );
-		}
-		else {
-			session.setAttribute(LM_HARDWARE_TO_CHECK, liteHw);
-			redirect = req.getContextPath() + "/operator/Hardware/CheckInv.jsp";
-		}
-*/
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		if (req.getParameter("InvID") != null) {
@@ -130,42 +117,25 @@ public class InventoryManager extends HttpServlet {
 		}
 	}
 	
+	/**
+	 * Search the inventory for hardware with the specified device type and serial #,
+	 * then display the search result on CheckInv.jsp
+	 */
 	private void checkInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-/*		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) session.getAttribute( LM_HARDWARE_TO_CHECK );
-		session.removeAttribute( LM_HARDWARE_TO_CHECK );
-		
-		StarsLMHardware starsHw = (StarsLMHardware) session.getAttribute( STARS_LM_HARDWARE_TEMP );
-		
-		if (req.getParameter("NewHardware") != null) {
-			try {
-				liteHw = createLMHardware(starsHw, energyCompany);
-				StarsLiteFactory.setStarsLMHardware( starsHw, liteHw, energyCompany );
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Failed to create new hardware");
-			}
-		}
-		else if (req.getParameter("SelectHardware") != null) {
-			StarsLiteFactory.setStarsLMHardware( starsHw, liteHw, energyCompany );
-		}
-		else if (req.getParameter("MoveHardware") != null) {
-			session.setAttribute(LM_HARDWARE_TO_MOVE, liteHw);
-			StarsLiteFactory.setStarsLMHardware( starsHw, liteHw, energyCompany );
-		}
-		
-		redirect = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-*/
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		LiteStarsLMHardware liteHw = energyCompany.searchBySerialNumber( req.getParameter("SerialNo") );
+		
+		int deviceType = Integer.parseInt( req.getParameter("DeviceType") );
+		String serialNo = req.getParameter("SerialNo");
+		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType, serialNo );
 		session.setAttribute( LM_HARDWARE_TO_CHECK, liteHw );
 		
 		session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		session.setAttribute( ServletUtils.ATT_REDIRECT, req.getParameter(ServletUtils.ATT_REDIRECT) );
 		
 		StarsLMHardware starsHw = (StarsLMHardware) StarsFactory.newStarsLMHw( StarsLMHardware.class );
-		starsHw.setManufactureSerialNumber( req.getParameter("SerialNo") );
+		starsHw.setLMDeviceType( (LMDeviceType) StarsFactory.newStarsCustListEntry(
+				energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, deviceType), LMDeviceType.class) );
+		starsHw.setManufactureSerialNumber( serialNo );
 		session.setAttribute( STARS_LM_HARDWARE_TEMP, starsHw );
 		
 		redirect = req.getContextPath() + "/operator/Hardware/CheckInv.jsp";
@@ -181,7 +151,8 @@ public class InventoryManager extends HttpServlet {
 		String wizard = req.getParameter( "Wizard" );
 		
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		LiteStarsLMHardware liteHw = energyCompany.searchBySerialNumber( starsHw.getManufactureSerialNumber() );
+		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware(
+				starsHw.getLMDeviceType().getEntryID(), starsHw.getManufactureSerialNumber() );
 		LiteStarsLMHardware liteHwToMove = (LiteStarsLMHardware) session.getAttribute(LM_HARDWARE_TO_MOVE);
 		
 		if (liteHw != null && (liteHw.getAccountID() == CtiUtilities.NONE_ID || liteHw.equals(liteHwToMove))) {
@@ -200,13 +171,15 @@ public class InventoryManager extends HttpServlet {
 		type.setEntryID( Integer.parseInt(req.getParameter("DeviceType")) );
 		starsHw.setLMDeviceType( type );
 		
-		Voltage volt = new Voltage();
-		volt.setEntryID( Integer.parseInt(req.getParameter("Voltage")) );
-		starsHw.setVoltage( volt );
-		
 		InstallationCompany company = new InstallationCompany();
 		company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
 		starsHw.setInstallationCompany( company );
+		
+		if (req.getParameter("Voltage") != null) {
+			Voltage volt = new Voltage();
+			volt.setEntryID( Integer.parseInt(req.getParameter("Voltage")) );
+			starsHw.setVoltage( volt );
+		}
 		
 		if (req.getParameter("InvID") != null)
 			starsHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
