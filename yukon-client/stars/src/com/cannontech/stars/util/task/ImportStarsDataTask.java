@@ -592,7 +592,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			else {
 				status = STATUS_ERROR;
 				e.printStackTrace();
+				
 				stackTrace = new ArrayList();
+				stackTrace.add( "\t" + e.toString() );
 				for (int i = 0; i < e.getStackTrace().length; i++)
 					stackTrace.add( "\tat " + e.getStackTrace()[i].toString() );
 				
