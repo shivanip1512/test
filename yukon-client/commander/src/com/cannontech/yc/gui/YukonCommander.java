@@ -20,7 +20,9 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -39,23 +41,8 @@ import com.cannontech.yc.gui.menu.YCViewMenu;
 
 public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, javax.swing.event.TreeSelectionListener, java.awt.event.MouseListener, java.util.Observer {
 	private YC yc;
-	private static final int treeModels[] =
-	{
-		ModelFactory.DEVICE,
-		ModelFactory.DEVICE_METERNUMBER,		
-		ModelFactory.MCTBROADCAST,
-		ModelFactory.LMGROUPS,		
-		ModelFactory.CAPBANKCONTROLLER,
-		ModelFactory.CICUSTOMER,
-		ModelFactory.COLLECTIONGROUP,
-		ModelFactory.TESTCOLLECTIONGROUP,
-		ModelFactory.EDITABLE_LCR_SERIAL,
-		ModelFactory.EDITABLE_SA305_SERIAL,
-		ModelFactory.EDITABLE_SA205_SERIAL,
-		ModelFactory.EDITABLE_EXPRESSCOM_SERIAL,
-		ModelFactory.EDITABLE_VERSACOM_SERIAL
-	};
-	//-----------------------------------------
+
+	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Commander Help.chm";
 
@@ -1278,7 +1265,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			handleException(ivjExc);
 		}
 		// user code begin {2}
-	
+		  	
 		//--------Setup treeViewPanel and tree models-------------	
 		//This model is created in a weird way.  We can do the model creation similar for all
 		// the models except for the Device model.  In order to use a different constructor
@@ -1287,22 +1274,22 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		// For all other 'normal' types, we can follow through with OO and use the same
 		// constructor template (no parameters).
 		com.cannontech.database.model.LiteBaseTreeModel[] models =
-			new com.cannontech.database.model.LiteBaseTreeModel[treeModels.length];
+			new com.cannontech.database.model.LiteBaseTreeModel[getTreeModels().length];
 		
 		for (int i = 0; i < models.length; i++)
 		{
-			if( treeModels[i] == ModelFactory.DEVICE)
+			if( getTreeModels()[i] == ModelFactory.DEVICE)
 				models[i] =  new com.cannontech.database.model.DeviceTreeModel(false);
-			else if ( treeModels[i] == ModelFactory.LMGROUPS)
+			else if ( getTreeModels()[i] == ModelFactory.LMGROUPS)
 				models[i] = new com.cannontech.database.model.LMGroupsModel(false);
-			else if ( treeModels[i] == ModelFactory.CAPBANKCONTROLLER )
+			else if ( getTreeModels()[i] == ModelFactory.CAPBANKCONTROLLER )
 				models[i] = new com.cannontech.database.model.CapBankControllerModel(false);
-			else		
-				models[i] = ModelFactory.create(treeModels[i]);
+			else
+				models[i] = ModelFactory.create(getTreeModels()[i]);
 		}
-	
+
 		//serial and route panel visible only when first item in tree is Versacom Serial #
-		if (!ModelFactory.isEditableSerial(treeModels[0]))
+		if (!ModelFactory.isEditableSerial(getTreeModels()[0]))
 			enableSerialAndRoute(false);
 	
 		getTreeViewPanel().setTreeModels(models);
@@ -1768,7 +1755,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		if( index < 0 )
 			return;
 			
-		setModelType( treeModels[index] );
+		setModelType( getTreeModels()[index] );
 		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		
 		if (ModelFactory.isEditableSerial(getModelType()))
@@ -1840,7 +1827,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
 		if( index < 0 )
 			return;
-		setModelType( treeModels[index] );
+		setModelType( getTreeModels()[index] );
 		Object selectedItem = getTreeViewPanel().getSelectedItem();
 		getYC().setTreeItem( selectedItem);
 	
@@ -2066,6 +2053,58 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	public void setYC(YC yc_)
 	{
 		yc = yc_;
+	}
+
+	/**
+	 * @return
+	 */
+	public int [] getTreeModels()
+	{
+		if( treeModels == null)
+		{
+			//Vector of ints (ModelFactory types), (Changed from array to remove size constraints)
+			NativeIntVector tempModel = new NativeIntVector(15);
+			tempModel.add(	ModelFactory.DEVICE);
+			tempModel.add( ModelFactory.DEVICE_METERNUMBER);
+			tempModel.add( ModelFactory.MCTBROADCAST);
+			tempModel.add( ModelFactory.LMGROUPS);
+			tempModel.add( ModelFactory.CAPBANKCONTROLLER);
+			tempModel.add( ModelFactory.CICUSTOMER);
+			tempModel.add( ModelFactory.COLLECTIONGROUP);
+			tempModel.add( ModelFactory.TESTCOLLECTIONGROUP);
+
+			boolean needDefault = true;
+			ClientSession session = ClientSession.getInstance();
+
+			AuthFuncs.getRolePropertyValue(session.getUser(), CommanderRole.COMMAND_MSG_PRIORITY);
+						
+			
+			if( Boolean.valueOf(AuthFuncs.getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA305_SERIAL_MODEL)).booleanValue())
+			{
+				tempModel.add( ModelFactory.EDITABLE_SA305_SERIAL);
+				needDefault = false;
+			}
+			if( Boolean.valueOf(AuthFuncs.getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA205_SERIAL_MODEL)).booleanValue())
+			{
+				tempModel.add( ModelFactory.EDITABLE_SA205_SERIAL);
+				needDefault = false;
+			}
+			if( Boolean.valueOf(AuthFuncs.getRolePropertyValue(session.getUser(), CommanderRole.EXPRESSCOM_SERIAL_MODEL)).booleanValue())
+			{
+				tempModel.add( ModelFactory.EDITABLE_EXPRESSCOM_SERIAL);
+				needDefault = false;
+			}
+			if( Boolean.valueOf(AuthFuncs.getRolePropertyValue(session.getUser(), CommanderRole.VERSACOM_SERIAL_MODEL)).booleanValue())
+			{
+				tempModel.add( ModelFactory.EDITABLE_VERSACOM_SERIAL);
+				needDefault = false;
+			}
+			if( needDefault )
+				tempModel.add( ModelFactory.EDITABLE_LCR_SERIAL);
+			
+			treeModels = tempModel.toArray();
+		}
+		return treeModels;
 	}
 
 }
