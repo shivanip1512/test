@@ -153,6 +153,20 @@ public class AuthFuncs {
 		return null;
 	}
 	
+	public static List getRoleProperties(LiteYukonRole role) {
+		ArrayList props = new ArrayList();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized(cache) {
+			for(Iterator i = cache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
+				LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
+				if(p.getRoleID() == role.getRoleID()) {
+					props.add(p);
+				}
+			}
+		}
+		return props;
+	}
+	
 	/**
 	 * Dont let anyone instantiate me
 	 * @see java.lang.Object#Object()
