@@ -52,21 +52,21 @@ public final class YukonListFuncs implements YukonListEntryTypes
 			return entry;
 	}
 	
-	public static Properties getYukonListEntries()
+	public synchronized static Properties getYukonListEntries()
 	{
 		if (yukonListEntries == null)
 			initAllConstants();
 		return yukonListEntries;
 	}
 
-	public static Properties getYukonSelectionLists()
+	public synchronized static Properties getYukonSelectionLists()
 	{
 		if (yukonSelectionLists == null)
 			initAllConstants();
 		return yukonSelectionLists;
 	}
 	
-	public static void releaseAllConstants() {
+	public synchronized static void releaseAllConstants() {
 		yukonListEntries = null;
 		yukonSelectionLists = null;
 	}
@@ -196,7 +196,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	}
 	
     
-    public static YukonSelectionList getYukonSelectionList(int listID) {
+    public synchronized static YukonSelectionList getYukonSelectionList(int listID) {
 		YukonSelectionList list = 
 				(YukonSelectionList) getYukonSelectionLists().get( new Integer(listID) );
 				
@@ -275,7 +275,7 @@ public final class YukonListFuncs implements YukonListEntryTypes
 
 
 
-	public synchronized static boolean isListEntryValid( int entryID_, String entry_ )
+	public static boolean isListEntryValid( int entryID_, String entry_ )
 	{
 		switch( entryID_ )
 		{
@@ -296,6 +296,12 @@ public final class YukonListFuncs implements YukonListEntryTypes
 
 
 		return true;
+	}
+	
+	public static boolean areSameInYukon(int entryID1, int entryID2) {
+		YukonListEntry entry1 = getYukonListEntry( entryID1 );
+		YukonListEntry entry2 = getYukonListEntry( entryID2 );
+		return (entry1 != null && entry2 != null && entry1.getYukonDefID() == entry2.getYukonDefID());
 	}
 	
 }
