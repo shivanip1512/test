@@ -87,21 +87,22 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
-        </tr>
-        <tr> 
-          <td width="101"  valign="top" bgcolor="#666699">
-		    <table width="100" border="0" cellpadding="2" cellspacing="0" height="150">
-              <tr> 
-                <td width="378"> 
-                  <div align="center"><span class="Header">SUB AREA</span>
+          <td width="759" valign="top" bgcolor="#000000"> 
+		  <td width="1" bgcolor="#000000" height="2"></td>
+		</tr>
+        <tr>
+		  <td width="5" bgcolor="#FFFFFF" height="5"></td>
+        </tr>		
 
-						<form name="AreaForm" action='AllSubs.jsp' method="POST" >
-                    <select name="area" onchange="this.form.submit();" >
-	                  <%
+        <tr> 
+          <td width="759" valign="middle" bgcolor="#FFFFFF">
+			<table width="740" border="0" cellspacing="0" cellpadding="0" align="center" >
+              <tr>
+                <td><form name="AreaForm" method="POST" action="AllSubs.jsp">
+                      
+                          <div align="left"><span class="MainText">Substation Area:</span> 
+                            <select name="area" onchange="this.form.submit()" >
+                          <%
 	                  	for( int i = 0; i < connServlet.getAreaNames().size(); i++ )
 	                  	{
 	                  		String area = connServlet.getAreaNames().get(i).toString();
@@ -109,37 +110,29 @@
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
 	                  		%>
-	                  		
-									<option value="<%= area %>" <%= s %>><%= area %></option>
-	                  <% } %>
-                    </select>
-			         </form>
-
-                  </div></td>
+                          <option value="<%= area %>" <%= s %>><%= area %></option>
+                          <% } %>
+                        </select>
+                      </div>
+                    </form>
+				</td>
               </tr>
-            </table> 
-            
-            
-          </td>
-
-          <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
-			<table width="657" border="0" cellspacing="0" cellpadding="0">
+            </table>
+		  
+		  
+		  
+			<table width="740" border="1" align="center" cellspacing="0" cellpadding="0">
 			  <tr> 
-                <td width="650" valign="top" class="MainText"> 
-                  
-                  <p>&nbsp;</p>
-                  <form name="MForm"> 
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                <td>                   
+                  <table width="736" border="0" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
                           <tr class="HeaderCell"> 
                               <td width="409">&nbsp;&nbsp;Single Feeder View for the Sub:
                                 <a href= "Feeders.jsp?subRowID=<%= cbcSession.getLastSubRowNum() %>" class="Link4">
                                 <span class="SchedText"> 
                                 <%= subBusMdl.getValueAt(cbcSession.getLastSubRowNum(), SubBusTableModel.SUB_NAME_COLUMN) %>
-                                </font>
+                                </span>
                                 </a>
                                 </td>
                                 
@@ -166,13 +159,9 @@
 				         </form>
                               
                             </tr>
-                        </table>
-                      </td>
-                    </tr>
                   </table>
-                    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
-
+                    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.TARGET_COLUMN) %></td>
@@ -215,11 +204,15 @@
                         </td>
                       </tr>
                     </table>
+				</td>
+				</tr>
+			</table>
+					
                     <br>
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
                               <td class="HeaderCell">&nbsp;&nbsp;Capacitor Banks for Feeder :
                                 <span class="SchedText"> <%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.NAME_COLUMN) %> </span>
@@ -229,7 +222,7 @@
                       </td>
                     </tr>
                   </table>
-                    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
+                    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
                       <tr class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
@@ -267,7 +260,6 @@
 						%>                      
 
                     </table>
-				  </form>
                   <br>
 				</tr>
 </table>
@@ -276,8 +268,5 @@
         <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
-    </td>
-	</tr>
-</table>
 </body>
 </html>

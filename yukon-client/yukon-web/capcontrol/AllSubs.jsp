@@ -57,16 +57,18 @@
   <tr>
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
-        <tr> 
-          <td width="759" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
+        <tr>
+          <td width="759" bgcolor="#000000" valign="top"></td>
+		  <td width="1" bgcolor="#000000" height="2"></td>
+        </tr>
+        <tr>
+		  <td width="5" bgcolor="#FFFFFF" height="5"></td>
         </tr>
         <tr> 
           <td width="759" valign="top" bgcolor="#FFFFFF"> 
             <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr>
-                <td><form name="AreaForm" method="POST" >
-                      
+                <td><form name="AreaForm" method="POST" >                      
                     <div align="left"><span class="MainText">Substation Area:</span> 
                       <select name="area" onchange="this.form.submit()" >
                           <%
@@ -88,13 +90,12 @@
             <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr>
                 <td width="740" valign="top" class="MainText"> 
-                  <form name="MForm"> 
                   <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
                         <table width="740" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
-                              <td width="409"><span class="HeaderCell">&nbsp;
+                          <tr class="HeaderCell"> 
+                              <td width="409"><span class="HeaderCell">&nbsp;&nbsp;
                                 Substation Buses for the Area : 
                                 <font color="##666699"> <%= cbcSession.getLastArea() %> </font></span></td>
 
@@ -107,7 +108,7 @@
                     </tr>
                   </table>
                   <table width="744" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr valign="top" bgcolor="#CCCCCC" class="HeaderCell"> 
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="110"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="68"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="70"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -146,19 +147,17 @@
                         <td width="50" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.WATTS_COLUMN) %></td>
                         <td width="66" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="72" class="TableCell"> 
-						<form name="GraphForm" >
                           <select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
-                            <option value="AllSubs.jsp">Graph A</option>
-                            <option value="AllSubs.jsp">Graph B</option>
+                            <option value="AllSubs.jsp">Sub kVar</option>
+                            <option value="AllSubs.jsp">Feeder kVar</option>
                             <option value="temp\<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
                           </select>
-                         </form>
                           
                         </td>
                         <td width="72" class="TableCell"> 
                           <select name="select3">
-                            <option>Report A</option>
-                            <option>Report B</option>
+                            <option>Peaks</option>
+                            <option>Ops.</option>
                           </select>
                         </td>
                       </tr>
@@ -168,8 +167,6 @@
                       
                       
                     </table>
-                  <br>
-                  </form>
                   <br>
 				</tr>
 </table>

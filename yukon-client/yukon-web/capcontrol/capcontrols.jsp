@@ -109,56 +109,37 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
-        </tr>
+          <td width="759" valign="top" bgcolor="#000000"> 
+		  <td width="1" bgcolor="#000000" height="2"></td>
+		</tr>
+        <tr>
+		  <td width="5" bgcolor="#FFFFFF" height="5"></td>
+        </tr>		
+
         <tr> 
-          <td width="101"  valign="top" bgcolor="#666699">
-		    <table width="100" border="0" cellpadding="2" cellspacing="0" height="150">
-              <tr> 
-                <td width="378"> 
-                  <div align="center"><span class="Header">Controls View</span>
-
-                  </div></td>
-              </tr>
-            </table> 
-            
-            
-          </td>
-          <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
-			<table width="657" border="0" cellspacing="0" cellpadding="0">
+          <td width="759" valign="middle" bgcolor="#FFFFFF"> 
+			<table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
 			  <tr> 
-                <td width="650" valign="top" class="MainText" align="center"> 
-                  <p>&nbsp;</p>
-
-		<% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
+                <td width="739" valign="top" class="MainText" align="center">
+                  <% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
 			{
 						label = subBusMdl.getRowAt(rowID.intValue()).getCcName();
 						hiddenPAOid = subBusMdl.getRowAt(rowID.intValue()).getCcId();
-%>                    
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+%>
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
-                          <tr bgcolor="#CCCCCC"> 
-                              
-                              <td width="409"><span class="HeaderCell">&nbsp;&nbsp;Substation Bus Data</span></td>
-                              <td width="191"> 
-                                
-                              <div align="right">
-                              </div>
-                              </td>
-                            </tr>
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">						
+                          <tr class="HeaderCell"> 
+                              <td width="409">&nbsp;&nbsp;Substation Bus Data</td>
+                          </tr>
                         </table>
                       </td>
                     </tr>
                   </table>
 
-				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
+				    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -210,10 +191,10 @@
 						label = feederMdl.getRowAt(rowID.intValue()).getCcName();
 						hiddenPAOid = feederMdl.getRowAt(rowID.intValue()).getCcId();
 %>                    
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr > 
                               <td class="HeaderCell">&nbsp;&nbsp; Feeder Data 
                               </td>
@@ -222,9 +203,8 @@
                       </td>
                     </tr>
                   </table>
-                    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
-
+                    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.TARGET_COLUMN) %></td>
@@ -275,10 +255,10 @@
 						label = capBankMdl.getRowAt(rowID.intValue()).getCcName();
 						hiddenPAOid = capBankMdl.getRowAt(rowID.intValue()).getCcId();
 %>                    
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
                             <td class="HeaderCell">&nbsp;&nbsp;Capacitor Bank Data</td>
                           </tr>
@@ -286,8 +266,8 @@
                       </td>
                     </tr>
                   </table>
-                    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
+                    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         <td width="43"> <%=capBankMdl.getColumnName(CapBankTableModel.STATUS_COLUMN) %></td>

@@ -57,7 +57,7 @@
 <!--<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">-->
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -100,20 +100,21 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="101" bgcolor="#000000" height="1"></td>
-          <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="657" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
-        </tr>
+          <td width="759" valign="top" bgcolor="#000000"> 
+		  <td width="1" bgcolor="#000000" height="2"></td>
+		</tr>
+        <tr>
+		  <td width="5" bgcolor="#FFFFFF" height="5"></td>
+        </tr>		
         <tr> 
-          <td width="101"  valign="top" bgcolor="#666699">
-		    <table width="100" border="0" cellpadding="2" cellspacing="0" height="150">
-              <tr> 
-                <td width="378"> 
-                  <div align="center"><span class="Header">SUB AREA</span>
-						<form name="AreaForm" action='AllSubs.jsp' method="POST" >
-                    <select name="area" onchange="this.form.submit();" >
-	                  <%
+          <td width="759" valign="middle" bgcolor="#FFFFFF">
+			<table width="740" border="0" cellspacing="0" cellpadding="0" align="center" >
+              <tr>
+                <td><form name="AreaForm" method="POST" action="AllSubs.jsp">
+                      
+                          <div align="left"><span class="MainText">Substation Area:</span> 
+                            <select name="area" onchange="this.form.submit()" >
+                          <%
 	                  	for( int i = 0; i < connServlet.getAreaNames().size(); i++ )
 	                  	{
 	                  		String area = connServlet.getAreaNames().get(i).toString();
@@ -121,33 +122,22 @@
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
 	                  		%>
-	                  		
-									<option value="<%= area %>" <%= s %>><%= area %></option>
-	                  <% } %>
-                    </select>
-			         </form>
-
-                  </div></td>
+                          <option value="<%= area %>" <%= s %>><%= area %></option>
+                          <% } %>
+                        </select>
+                      </div>
+                    </form>
+				</td>
               </tr>
-            </table> 
-            
-            
-          </td>
-          <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
-			<table width="657" border="0" cellspacing="0" cellpadding="0">
-			  <tr> 
-                <td width="650" valign="top" class="MainText">                   
-                  <p>&nbsp;</p>
-                  <form name="MForm"> 
-
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+            </table>
+							  
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">
 
                           <tr class="HeaderCell"> 
-                              <td width="409">&nbsp;&nbsp;Single Substation Bus View for the Area: 
+                              <td width="409"><span class="HeaderCell">&nbsp;&nbsp;Single Substation Bus View for the Area:</span>
                                 <a href= "AllSubs.jsp" class="Link4">
                                 <span class="SchedText"> 
                                 <%= cbcSession.getLastArea() %> 
@@ -158,14 +148,12 @@
 
 				    		  <form name="SubBusForm" method="POST" > 
                             <td width="300" height="40"> 
-                              <div align="right">&nbsp;&nbsp;Other Subs in Area :
-
+                              <div align="right"><span class="HeaderCell">Other Subs in Area:</span>
                                 <select name="subRowID" onchange="this.form.submit()" >
                                   <%
 			                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
 			                  	{
-			                  		//String busName = cbcAnnex.getAreaNames().get(i).toString();
-			                  		
+			                  		//String busName = cbcAnnex.getAreaNames().get(i).toString();			                  		
 			                  		String s = ( subRowID.intValue() == i 
 			                  						? " selected" : "" ) ;
 			                  		%>
@@ -183,8 +171,8 @@
                       </td>
                     </tr>
                   </table>
-				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
+				    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -200,7 +188,7 @@
                         <td width="100" class="TableCell">
                           <div name = "sub" align = "left" cursor:default;" >
 									<%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </div>
-                          </a></td>
+                          </td>
 
                         <td width="44" class="TableCell">
                         	<a href= "capcontrols.jsp?rowID=<%= subRowID %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
@@ -229,23 +217,22 @@
                       </tr>
                     </table>
                   <br>
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                              <td class="HeaderCell">&nbsp;&nbsp;
-                              Feeders for Substation : 
-                              <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </span>
-                              </td>
+                              
+                      <td class="HeaderCell">&nbsp;&nbsp;Feeders for Substation:
+					  <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> 
+                        </span> </td>
                             </tr>
                         </table>
                       </td>
                     </tr>
                   </table>
-                    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
-
+                    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.TARGET_COLUMN) %></td>
@@ -298,12 +285,12 @@
 						%>                      
                     </table>
                     <br>
-                  <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
+                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td>
-                        <table width="600" border="0" cellspacing="0" cellpadding="0">
+                        <table width="736" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                              <td class="HeaderCell">&nbsp;&nbsp;Capacitor Banks for Substation :
+                              <td class="HeaderCell"><span class="HeaderCell">&nbsp;&nbsp;Capacitor Banks for Substation:</span>
                                 <span class="SchedText"> <%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN) %> </span>
                               </td>
                           </tr>
@@ -311,8 +298,8 @@
                       </td>
                     </tr>
                   </table>
-                    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr class="HeaderCell"> 
+                    <table width="740" border="1" align="center" cellpadding="2" cellspacing="0">
+                      <tr valign="top" class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         <td width="43"> <%=capBankMdl.getColumnName(CapBankTableModel.STATUS_COLUMN) %></td>
@@ -349,17 +336,13 @@
 						%>                      
 
                     </table>
-				  </form>
                   <br>
 				</tr>
 </table>
 
           </td>
-        <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
+		  <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
-    </td>
-	</tr>
-</table>
 </body>
 </html>
