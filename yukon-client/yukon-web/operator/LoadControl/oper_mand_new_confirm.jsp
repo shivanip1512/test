@@ -111,7 +111,7 @@
             <td width="150" class="TableCell">&nbsp;<%= checker.get("programname") %> 
             </td>
           </tr>
-          <tr> 
+          <tr>  
             <td width="150" class="TableCell"> 
               <div align="right">Notify Date:</div>
             </td>
@@ -122,6 +122,8 @@
               <div align="right">Notify Time:</div>
             </td>
             <td width="150" class="TableCell">&nbsp;<%= notifyTimeStr %></td>
+            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+			</td>
           </tr>
           <tr> 
             <td width="150" class="TableCell"> 
@@ -134,6 +136,8 @@
               <div align="right">Curtail Time:</div>
             </td>
             <td width="150" class="TableCell">&nbsp;<%= curtailTimeStr %></td>
+            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+			</td>
           </tr>
           <tr> 
             <td width="150" class="TableCell"> 

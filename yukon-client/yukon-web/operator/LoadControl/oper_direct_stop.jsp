@@ -230,7 +230,7 @@
                   </span></td>
                 <td> <span class="TableCell">Time:</span></td>
                 <td> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
-                  </span></td>
+                  </span></td>             
                 <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
                   </td>
               </tr>

@@ -8,8 +8,8 @@
    String referrer = (String) session.getValue("referrer");
    if( referrer == null )
       referrer = request.getRequestURI() + "?" + request.getQueryString();
-		
-    if( tab == null )
+		  
+    if( tab == null )    
         tab = "";
          
     session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
@@ -25,12 +25,15 @@
     String[] programIds = null;
 	String programStr = "";
 	String notifyDateStr = "";
-	String notifyTimeStr = "";
+	String notifyTimeStr = ""; 
 	String curtailDateStr = "";
 	String curtailTimeStr = "";
 	
 	java.text.SimpleDateFormat mandDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat mandTimeFormat = new java.text.SimpleDateFormat("HH:mm");
+	
+	mandDateFormat.setTimeZone(tz);
+	mandTimeFormat.setTimeZone(tz);
 	
 	if (tab.equalsIgnoreCase(""))
 	{
@@ -49,14 +52,14 @@
 			programNames[i] = programs[i].getYukonName();
 			programIds[i] = programs[i].getYukonID().toString();
 		}
-
+   
 		if (request.getParameter("error") == null) {	// not back from the confirmation page
 			if (request.getParameter("submitted") == null) {	// not submitted yet
 				checker.clear();
 				checker.set("program", programIds[0]);
-				checker.set("notifydate", mandDateFormat.format(com.cannontech.util.ServletUtil.getToday()));
+				checker.set("notifydate", mandDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
 				checker.set("notifytime", mandTimeFormat.format(new java.util.Date()));
-				checker.set("curtaildate", mandDateFormat.format(com.cannontech.util.ServletUtil.getToday()));
+				checker.set("curtaildate", mandDateFormat.format(com.cannontech.util.ServletUtil.getToday(tz)));
 				checker.set("curtailtime", mandTimeFormat.format(new java.util.Date()));
 				checker.set("duration", "4");
 				checker.set("comments", "(none)");
@@ -74,17 +77,18 @@
 
 				if (checker.validate(request)) {
 					response.sendRedirect("oper_mand.jsp?tab=newconfirm");
+					return;
 				}
-			}
+			} 
 		}
 	}
 	else if (tab.equalsIgnoreCase("newconfirm")) {	
 		if (request.getParameter("confirmed") == null) {	// not confirmed yet
 			programStr = checker.get("program");
-			notifyDateStr = mandDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("notifydate")) );
-			notifyTimeStr = mandTimeFormat.format( com.cannontech.validate.PageBean.parseTime(checker.get("notifytime")) );
-			curtailDateStr = mandDateFormat.format( com.cannontech.validate.PageBean.parseDate(checker.get("curtaildate")) );
-			curtailTimeStr = mandTimeFormat.format( com.cannontech.validate.PageBean.parseTime(checker.get("curtailtime")) );
+			notifyDateStr = mandDateFormat.format( ServletUtil.parseDateStringLiberally(checker.get("notifydate"), tz));
+			notifyTimeStr = mandTimeFormat.format( ServletUtil.parseDateStringLiberally(checker.get("notifytime"), tz));
+			curtailDateStr = mandDateFormat.format( ServletUtil.parseDateStringLiberally(checker.get("curtaildate"), tz));
+			curtailTimeStr = mandTimeFormat.format( ServletUtil.parseDateStringLiberally(checker.get("curtailtime"), tz));
 			String commentStr = checker.get("comments");
 			if (commentStr == null || commentStr.length() == 0)
 				checker.set("comments", "(none)");
@@ -97,17 +101,20 @@
 				Class[] qTypes = { java.util.Date.class };
 				Object[][] result = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT MAX(CURTAILMENTSTOPTIME) FROM LMCURTAILPROGRAMACTIVITY WHERE DEVICEID = " + request.getParameter("program"), qTypes );
 
-				if (result != null && result[0] != null && result[0][0] != null)
+				if (result != null && result.length > 0 )
 				{
 					java.util.Date stopCurtail = (java.util.Date)result[0][0];
 
 					if (stopCurtail.getTime() > System.currentTimeMillis())
 					{
-						if (checker == null)
+						if (checker == null) {
 							response.sendRedirect("oper_mand.jsp");
+							return;
+						}
 						checker.setError("duplicate_error", "An active curtailment program has already existed! New program cannot be created until the current one expires.");
 						response.sendRedirect("oper_mand.jsp?tab=new&error=true");
 						duplicateError = true;
+						return;
 					}
 				}
 			}
@@ -120,22 +127,25 @@
 			java.util.GregorianCalendar stopCal = new java.util.GregorianCalendar();
 			java.util.GregorianCalendar timeCal = new java.util.GregorianCalendar();
 			
-			notifyCal.setTime( com.cannontech.validate.PageBean.parseDate(request.getParameter("notifydate")) );
-			timeCal.setTime( com.cannontech.validate.PageBean.parseTime(request.getParameter("notifytime")) );
+			notifyCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("notifydate"), tz) );
+			timeCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("notifytime"), tz) );
 			notifyCal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR_OF_DAY));
 			notifyCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
 			
-			startCal.setTime( com.cannontech.validate.PageBean.parseDate(request.getParameter("startdate")) );
-			timeCal.setTime( com.cannontech.validate.PageBean.parseTime(request.getParameter("starttime")) );
+			startCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("curtaildate"), tz) );
+			timeCal.setTime( ServletUtil.parseDateStringLiberally(checker.get("curtailtime"), tz) );
 			startCal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR_OF_DAY));
 			startCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
 			
 			// check that notify date is before start date
 			if ( !notifyCal.before(startCal) ) {
-				if (checker == null)
+				if (checker == null) {
 					response.sendRedirect("oper_mand.jsp");
+					return;
+				}
 				checker.setError("notifytime", "Notify time must be earlier than curtail time");
 				response.sendRedirect("oper_mand.jsp?tab=new&error=true");
+				return;
 			}
 			else if (!duplicateError)
 			{
@@ -155,6 +165,7 @@
 				if (checker != null)
 					checker.clear();
 				response.sendRedirect("oper_mand.jsp?pending=new");
+				return;
 			}
 		}
 	}
@@ -175,10 +186,10 @@
    
     <td width="650" valign="top"> 
      
-      <p>
+      <p>   
         <%
         if( tab.equalsIgnoreCase("history") )
-        {
+        {   
         %>
         <%@ include file="oper_mand_history.jsp" %>
         <%
@@ -204,7 +215,7 @@
         <%@ include file="oper_mand_new.jsp" %>
         <%
         }
-		else
+		else    
 		if( tab.equalsIgnoreCase("newconfirm") )
 		{
 		%>

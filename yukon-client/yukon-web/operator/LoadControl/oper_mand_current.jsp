@@ -11,17 +11,20 @@
     // Check if a particular program should be shown,
     // if not then just display the summary for today/tommorrow
     Object progParam = request.getParameter("prog");
-
+ 
     Integer programID = null;
-
+   
     if( progParam != null )    
         programID = new Integer( progParam.toString() );    
            
-    java.util.Date today = com.cannontech.util.ServletUtil.getToday();
-    java.util.Date tomorrow = com.cannontech.util.ServletUtil.getTommorow();
-
+    java.util.Date today = com.cannontech.util.ServletUtil.getToday(tz);
+    java.util.Date tomorrow = com.cannontech.util.ServletUtil.getTomorrow(tz);
+ 
     java.text.SimpleDateFormat mandDatePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat mandTimePart = new java.text.SimpleDateFormat("HH:mm");
+    
+    mandDatePart.setTimeZone(tz);  
+    mandTimePart.setTimeZone(tz); 
 %>
   
   <%

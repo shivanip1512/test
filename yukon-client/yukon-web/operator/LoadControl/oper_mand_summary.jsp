@@ -115,8 +115,8 @@
           <tr> 
            
             <td width="25%" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
-            <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
-            <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
+            <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
+            <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
             <td width="25%" class="TableCell"><%= curtailProgs[i].getDuration() / 60 %></td>
           </tr>
           <%
@@ -136,28 +136,30 @@
           <td width="25%" class="HeaderCell">Start Date/Time</td>
           <td width="25%" class="HeaderCell">Duration (Hour)</td>
         </tr>
-        <%
+        <%  
                         {                        
                                 LMProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
-
+								
                                 for( int i = 0; i < curtailProgs.length; i++ )
                                 {
+                                	LMProgramCurtailment prog = curtailProgs[i];
+                                 	
                                     // Check if it is tomorrow                                   
                                     GregorianCalendar nowCal = new GregorianCalendar();
                                     GregorianCalendar progCal = new GregorianCalendar();
 
                                     nowCal.setTime(new Date());
                                     progCal.setTime(curtailProgs[i].getCurtailmentStartTime().getTime());
-                                                                     
+  
                                     if( nowCal.get( Calendar.YEAR ) == progCal.get(Calendar.YEAR) &&
                                         nowCal.get( Calendar.DAY_OF_YEAR )+1 == progCal.get(Calendar.DAY_OF_YEAR) )
-                                    {                                    
+                                    {                                     
                           %>
         <tr> 
          
           <td width="25%" height="23" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
-          <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
-          <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
+          <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
+          <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
           <td width="25%" height="23" class="TableCell"><%= curtailProgs[i].getDuration() / 60 %></td>
         </tr>
         <%

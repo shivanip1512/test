@@ -108,7 +108,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"> 
               <div align="right">Notify Date:</div>
             </td>
-            <td width="150" class="TableCell"><struts:text property="notifydate" size="10" pattern="@date"/> 
+            <td class="TableCell"><struts:text property="notifydate" size="10" pattern="@date"/> 
             </td>
           </tr>
           <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifydate") %></center>
@@ -116,10 +116,12 @@ function confirm_form(f) {
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">Notify Time:</div>
-            </td>
+            </td> 
             <td width="150" class="TableCell"><struts:text property="notifytime" size="10" pattern="@time"/> 
             </td>
-          </tr>
+            <td width="150" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+            </td>
+          </tr> 
           <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifytime") %></center> 
             </cti:errormsg> </tr>
           <tr> 
@@ -137,6 +139,8 @@ function confirm_form(f) {
             </td>
             <td width="150" class="TableCell"><struts:text property="curtailtime" size="10" pattern="@time"/> 
             </td>
+             <td width="150" class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
+            </td> 
           </tr>
           <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("curtailtime") %></center>
             </cti:errormsg> </tr>
@@ -148,7 +152,7 @@ function confirm_form(f) {
             </td>
           </tr>
           <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("duration") %></center></cti:errormsg> 
-          </tr>
+          </tr> 
         </table>
         <br>
         <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
