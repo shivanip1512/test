@@ -22,7 +22,6 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	
 	private java.util.List allPredefinedGraphsList = null;
 	public java.util.Date startDate = null;
-	public java.util.Date stopDate = null;
 
 	private String homeDirectory = null;
 	private Integer createTimeInterval = null;//interval in seconds between calculations
@@ -75,18 +74,17 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 				}
 			}
 					
-			gDef.getGraphDefinition().setStartDate( getStartDate() );
-			gDef.getGraphDefinition().setStopDate( getStopDate() );
 						
 			//graph.setSize(width, height);
+			graph.setStartDate(getStartDate());
 			graph.setGraphDefinition(gDef);
 			graph.setViewType(TrendModelType.LINE_VIEW );
 	
-			// Graph .gif file creation
+			// Graph .png file creation
 			String fileName = getFileName(TrendModelType.LINE_VIEW, gDef.getGraphDefinition().getName());
 			graph.setUpdateTrend(true);
 			graph.update();
-			writeGIF(fileName);
+			writePNG(fileName);
 	
 			StringBuffer buf = new StringBuffer("<HTML><LINK REL=\"stylesheet\" HREF=\"CannonStyle.ccs\" TYPE=\"text/css\"><CENTER>");		
 			//Tabular .html file creation.
@@ -127,8 +125,6 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 			nextRunTime = new GregorianCalendar();
 			nextRunTime.setTime(new java.util.Date(tempSeconds));
 	
-			getStartDate();
-			getStopDate();
 		}
 		com.cannontech.clientutils.CTILogger.info("Next RunTime Interval: " + nextRunTime.getTime());
 	}
@@ -164,7 +160,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 
 			case TrendModelType.LINE_VIEW:
 			default:
-				return getHomeDirectory() + gDefName + ".gif";
+				return getHomeDirectory() + gDefName + ".png";
 		}
 	}
 	/**
@@ -244,24 +240,6 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	{
 		GregorianCalendar tempCal = new GregorianCalendar();
 		tempCal.set( java.util.Calendar.DAY_OF_YEAR, getNextRunTime().get( java.util.Calendar.DAY_OF_YEAR ) );
-		tempCal.set( java.util.Calendar.HOUR_OF_DAY, 0);
-		tempCal.set( java.util.Calendar.MINUTE, 0);
-		tempCal.set( java.util.Calendar.SECOND, 0);
-		GregorianCalendar start = new GregorianCalendar();
-		start.setTime (new java.util.Date(tempCal.getTime().getTime()));
-		startDate = start.getTime();
-	
-		return startDate;
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/24/2001 3:38:05 PM)
-	 * @return java.util.Date
-	 */
-	public java.util.Date getStopDate()
-	{
-		GregorianCalendar tempCal = new GregorianCalendar();
-		tempCal.set( java.util.Calendar.DAY_OF_YEAR, getNextRunTime().get( java.util.Calendar.DAY_OF_YEAR ) + 1);
 		tempCal.set( java.util.Calendar.HOUR_OF_DAY, 0);
 		tempCal.set( java.util.Calendar.MINUTE, 0);
 		tempCal.set( java.util.Calendar.SECOND, 0);
@@ -403,12 +381,11 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 */
 	//private void writeFile(String bufferString, String fileName)
 	//{
-	public void writeGIF( String fileName )
+	public void writePNG( String fileName )
 	{
 		try
 		{
 			java.io.FileOutputStream fOut = new java.io.FileOutputStream(fileName);
-	//		graph.encodeGif(fOut);
 			graph.setSize(700, 500);
 			graph.encodePng(fOut);
 			fOut.close();
@@ -464,7 +441,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	{
 		if (!msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
 		{
-			if( msg.getDatabase() == msg.CHANGE_GRAPH_DB)
+			if( msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB)
 			{
 				com.cannontech.clientutils.CTILogger.info("DBChangeMSG received, updating graphDefinitionCache.");
 				getPredefinedGraphs();
