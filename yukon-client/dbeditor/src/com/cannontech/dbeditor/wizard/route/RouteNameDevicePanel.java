@@ -239,6 +239,14 @@ public Object getValue(Object val) {
 	{		
 		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
 	}
+	else if( type == PAOGroups.RTC )
+	{
+		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.ROUTE_RTC);
+	}
+	else if( type == PAOGroups.SERIES_5_LMI )
+	{
+		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.ROUTE_SERIES_5_LMI);
+	}
 	else //?
 		throw new Error("RouteType2::getValue() - Unknown transmitter type");
 
