@@ -81,7 +81,7 @@ function changeAppSelection(chkBox) {
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvNo" value="<%= inventories.getStarsLMHardwareCount() %>">
 				<input type="hidden" name="Wizard" value="false">
-                <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+                <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0">

@@ -130,8 +130,7 @@ function changeAppSelection(chkBox) {
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "HARDWARE"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="/servlet/SOAPClient">
@@ -140,7 +139,7 @@ function changeAppSelection(chkBox) {
 				<input type="hidden" name="REDIRECT" value="/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
 				<input type="hidden" name="ConfigChanged" value="false">
-                <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+                <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <table width="300" border="0" cellspacing="0" cellpadding="0">
@@ -318,8 +317,7 @@ function changeAppSelection(chkBox) {
                           </td>
                         </tr>
                       </table>
-                      
-                    </div>
+                     </div>
                   </td>
                 </tr>
               </table>

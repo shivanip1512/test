@@ -76,26 +76,31 @@ function updateLayout(hour1, min1, temp1, hour2, min2, temp2, hour3, min3, temp3
 	moveTempArrow('arrow4', 'div4', temp4);
 }
 
-var scheChanged = false;
+var schedChanged = false;
 
 function setScheduleChanged() {
-	scheChanged = true;
+	schedChanged = true;
+}
+
+function prepareSubmit(form) {
+	form.tempval1.value = document.getElementById('div1').innerHTML.substr(0,2);
+	form.tempval2.value = document.getElementById('div2').innerHTML.substr(0,2);
+	form.tempval3.value = document.getElementById('div3').innerHTML.substr(0,2);
+	form.tempval4.value = document.getElementById('div4').innerHTML.substr(0,2);
+	schedChanged = false;
 }
 
 function switchSettings(day, mode) {
 	var form = document.form1;
 	form.REDIRECT.value = "/user/ConsumerStat/stat/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
-	form.tempval1.value = document.getElementById('div1').innerHTML.substr(0,2);
-	form.tempval2.value = document.getElementById('div2').innerHTML.substr(0,2);
-	form.tempval3.value = document.getElementById('div3').innerHTML.substr(0,2);
-	form.tempval4.value = document.getElementById('div4').innerHTML.substr(0,2);
 	
-	if (!scheChanged) {
+	if (!schedChanged) {
 		if (day == "<%= dayStr %>" && mode == "<%= modeStr %>") return;	// Submit button is clicked without changes
 		location = form.REDIRECT.value;
 		return;
 	}
 	
+	prepareSubmit(form);
 	form.attributes('action').value = "/servlet/UpdateThermostat";
 	form.elements('action').value = (scheChanged)? "SaveScheduleChanges" : "";
 	form.submit();
@@ -115,6 +120,17 @@ function setToDefault() {
 	);
 	setScheduleChanged();
 }
+
+function confirmExit() {
+	if (schedChanged &&
+		confirm("If you leave the page, all the changes you have made will be lost. Do you want to submit the changes now?"))
+	{
+		var form = document.form1;
+		prepareSubmit(form);
+		form.submit();
+		return false;
+	}
+}
 </script>
 
 <script language="JavaScript">
@@ -133,7 +149,7 @@ MM_reloadPage(true);
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onunload="return confirmExit()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -194,7 +210,7 @@ MM_reloadPage(true);
               </table>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			<form name="form1" method="POST" action="/servlet/SOAPClient">
+			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
@@ -219,17 +235,17 @@ MM_reloadPage(true);
 <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
 							  <span class="SchedText">Weekday</span>
 <% } else { %>
-							  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>','<%= modeStr %>')">Weekday</span>
+							  <a class="Link1" href="ThermSchedule.jsp?day=<%= StarsThermoDaySettings.WEEKDAY.toString() %>&mode=<%= modeStr %>">Weekday</a>
 <% } %>&nbsp;&nbsp;
 <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
 							  <span class="SchedText">Saturday</span>
 <% } else { %>
-							  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>','<%= modeStr %>')">Saturday</span>
+							  <a class="Link1" href="ThermSchedule.jsp?day=<%= StarsThermoDaySettings.SATURDAY.toString() %>&mode=<%= modeStr %>">Saturday</a>
 <% } %>&nbsp;&nbsp;
 <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
 							  <span class="SchedText">Sunday</span>
 <% } else { %>
-							  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>','<%= modeStr %>')">Sunday</span>
+							  <a class="Link1" href="ThermSchedule.jsp?day=<%= StarsThermoDaySettings.SUNDAY.toString() %>&mode=<%= modeStr %>">Sunday</a>
 <% } %>
                             </tr>
                           </table>
@@ -253,7 +269,7 @@ MM_reloadPage(true);
 		modeStrR = StarsThermoModeSettings.COOL.toString();
 	}
 %>
-                                  <span class="Clickable"><img src="<%= imgStrR %>" width="40" height="39" border="0" onClick="switchSettings('<%= dayStr %>','<%= modeStrR %>')"></span> 
+                                  <a href="ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStrR %>"><img src="<%= imgStrR %>" width="40" height="39" border="0"></a> 
                                 </td>
                                 <td align = "center" width="148" class="TableCell" valign="top">Click 
                                   icon to view <%= seasonStrR %> schedule </td>
@@ -403,7 +419,7 @@ updateLayout(
               <table width="75%" border="0">
                 <tr>
                     <td width="36%" align = "right" class = "TableCell" > 
-                      <input type="submit" name="Submit" value="Submit" onclick="switchSettings('<%= dayStr %>','<%= modeStr %>')">
+                      <input type="submit" name="Submit" value="Submit">
                   </td>
                     <td width="64%" align = "left" class = "TableCell"> 
                       <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">

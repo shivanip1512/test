@@ -137,8 +137,8 @@
                                         <tr> 
                                           <td>
 <%		if (ctrlOdds != null) { %>
-                                            <div align="center">Control odds:<b><i> 
-                                              <%= ctrlOdds %></i></b> </div>
+                                            <div align="center">Control odds:<br>
+                                              <b><i><%= ctrlOdds %></i></b> </div>
 <%		} %>
                                           &nbsp;</td>
                                         </tr>
@@ -192,8 +192,7 @@
                               <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
                               <span class="TableCell3"> I would like to be notified 
-                              by e-mail the day of control.<br>
-                              My e-mail address is:<br>
+                              by e-mail<br> of the chance for control:<br>
                               <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
                               <input type="submit" name="Submit" value="Submit">
                               </span></p>
@@ -205,7 +204,7 @@
 	}
 %>
                     </cti:checkRole></td>
-                  <td width="171"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
+                  <td width="171" valign="top"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
                     <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>

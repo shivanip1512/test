@@ -200,10 +200,10 @@ if (text.length == 2) {
                 <table width="632" border="0" height="47">
                   <tr>
                     <td width="25">&nbsp;</td>
-                    <td width="597"><span class="TableCell"> 
-                      <p>Use the Thermostat - Schedule (clickable at left) to 
-                        set your temperature schedule. If you would like to temporarily 
-                        change these temperatures, use the thermostat below. </p>
+                    <td width="597"><span class="TableCell"> Please use the thermostat 
+                      below to temporarily change your current settings. To adjust 
+                      your thermostat's programming, please click the Thermostat 
+                      - Schedule link at the left. 
                       </span></td>
                   </tr>
                 </table>

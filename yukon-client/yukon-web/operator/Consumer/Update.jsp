@@ -89,7 +89,7 @@ function copyAddress(form) {
 			
 			<form method="POST" action="/servlet/SOAPClient">
 			<input type="hidden" name="action" value="UpdateCustAccount">
-            <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
+            <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                   <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CUSTOMER 
                     CONTACT</b></span> 
