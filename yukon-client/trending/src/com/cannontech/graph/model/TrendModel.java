@@ -544,6 +544,14 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 		
 					}
 					lastPointId = pointID;
+					
+					if( GraphDataSeries.isUsageType(seriesTypeMask))
+					{
+						addNext = true;
+						firstOne = true;
+						start = getStartDate();
+						stop = new java.util.Date (getStartDate().getTime() + 86400000);
+					}
 				}
 				
 				//new pointid in rset.
