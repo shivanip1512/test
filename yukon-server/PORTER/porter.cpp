@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/07/18 16:22:49 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/07/23 21:01:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,7 +185,6 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-extern void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -251,6 +250,14 @@ void applyTAPPortStatus(const long portid, CtiPortSPtr &Port, void *unusedPtr)
     }
 }
 
+/* Routine to load all routes on a system */
+static void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr)
+{
+    extern INT LoadPortRoutes (USHORT Port);
+    LoadPortRoutes(Port->getPortID());
+    return;
+}
+
 static void applyPortVerify(const long unusedid, CtiPortSPtr Port, void *unusedPtr)
 {
     Port->verifyPortIsRunnable(hPorterEvents[P_QUIT_EVENT]);
@@ -300,7 +307,9 @@ static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unused
         {
             CtiDeviceBase *RemoteDevice = itr_dev.value();
 
-            if(ptPort->getPortID() == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711)
+            if(ptPort->getPortID() == RemoteDevice->getPortID() &&
+               RemoteDevice->getType() == TYPE_CCU711 &&
+               !RemoteDevice->isInhibited())
             {
                 if(RemoteDevice->getAddress() != CCUGLOBAL)
                 {

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/23 19:46:12 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/23 21:01:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,14 +76,6 @@ extern CtiRouteManager    RouteManager;
 LoadRemoteRoutes(CtiDeviceBase *Dev);
 LoadPortRoutes (USHORT Port);
 
-/* Routine to load all routes on a system */
-void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr)
-{
-    LoadPortRoutes(Port->getPortID());
-    return;
-}
-
-
 /* Routine to load routes on all remotes on a port */
 LoadPortRoutes (USHORT Port)
 {
@@ -95,7 +87,7 @@ LoadPortRoutes (USHORT Port)
     {
         Device = (CtiDevice*)itr.value();
 
-        if( Port == Device->getPortID() )
+        if( Port == Device->getPortID() && !Device->isInhibited())
         {
             LoadRemoteRoutes(Device);
         }
@@ -122,329 +114,333 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
         {
             CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
-            /* set the initial PARID for routes */
-            RouteCount = 0;
+            if(pInfo)
+            {
+                /* set the initial PARID for routes */
+                RouteCount = 0;
 
-            /* now check if this dude has any routes */
-            {  // get me some SCOPE...
+                /* now check if this dude has any routes */
+                {  // get me some SCOPE...
 
-                CtiRTDB<CtiRoute>::CtiRTDBIterator   rte_itr(RouteManager.getMap());
+                    CtiRTDB<CtiRoute>::CtiRTDBIterator   rte_itr(RouteManager.getMap());
 
-                /* Now do the routes */
-                for( ; ++rte_itr ; )
-                {
-                    CtiRouteCCU *CCURouteRecord = (CtiRouteCCU*)rte_itr.value();
-
-                    //  we only care about routes on this device
-                    if( CCURouteRecord->getCommRoute().getTrxDeviceID() != Dev->getID() )       // if not me.
-                        continue;
-
-                    if( RouteCount > 32 )
-                        break;
-
-                    /* Allocate some memory */
-                    if( (OutMessage = new OUTMESS) == NULL )
+                    /* Now do the routes */
+                    for( ; ++rte_itr ; )
                     {
-                        return(MEMORY);
+                        CtiRouteCCU *CCURouteRecord = (CtiRouteCCU*)rte_itr.value();
+
+                        //  we only care about routes on this device
+                        if( CCURouteRecord->getCommRoute().getTrxDeviceID() != Dev->getID() )       // if not me.
+                            continue;
+
+                        if( RouteCount > 32 )
+                            break;
+
+                        /* Allocate some memory */
+                        if( (OutMessage = new OUTMESS) == NULL )
+                        {
+                            return(MEMORY);
+                        }
+
+                        /* Load up the queue structure */
+                        OutMessage->DeviceID = Dev->getID();
+                        OutMessage->TargetID = Dev->getID();
+                        OutMessage->Port     = Dev->getPortID();
+                        OutMessage->Remote   = Dev->getAddress();
+                        OutMessage->TimeOut  = TIMEOUT;
+                        OutMessage->Retry    = 1;
+                        OutMessage->InLength = 0;
+                        OutMessage->Source   = 0;
+                        OutMessage->Destination = DEST_DLC;
+                        OutMessage->Command  = CMND_WMEMS;
+                        OutMessage->Sequence = 0;
+                        OutMessage->Priority = MAXPRIORITY - 1;
+                        OutMessage->EventCode    = NOWAIT | NORESULT | ENCODED | RCONT;
+                        OutMessage->ReturnNexus  = NULL;
+                        OutMessage->SaveNexus    = NULL;
+
+                        Index = PREIDL;
+
+                        if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Route " << RouteCount << " **** " << endl;
+                        }
+
+                        /* Load route */
+                        OutMessage->Buffer.OutMessage[Index++] = 6;
+
+                        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (2000 + RouteCount);
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (2000 + RouteCount);
+
+                        OutMessage->Buffer.OutMessage[Index++] = CCURouteRecord->getBus();
+                        OutMessage->Buffer.OutMessage[Index++] = ((CCURouteRecord->getCCUVarBits() & 0x07) << 5) | (CCURouteRecord->getCCUFixBits() & 0x1f);     // FIX FIX FIX ... Verify this with old system
+
+                        OutMessage->Buffer.OutMessage[Index++] =  CCURouteRecord->getStages() & 0x07;
+                        if( CCURouteRecord->isDefaultRoute() )
+                            OutMessage->Buffer.OutMessage[Index - 1] |= 0x80;
+
+                        if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << endl << "**** RouteCount: " << RouteCount << " ****" << endl;
+                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-6]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-5]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                        }
+
+                        /* Load the Route set */
+                        OutMessage->Buffer.OutMessage[Index++] = 7;
+
+                        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (3300 + RouteCount);
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (3300 + RouteCount);
+
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
+
+                        if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-7]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-6]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-5]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                        }
+
+                        /* Load the zone */
+                        OutMessage->Buffer.OutMessage[Index++] = 4;
+
+                        OutMessage->Buffer.OutMessage[Index++] = HIBYTE (14000 + RouteCount);
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (14000 + RouteCount);
+
+                        OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
+
+                        if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                        }
+
+                        /* Last SETL */
+                        OutMessage->Buffer.OutMessage[Index++] = 0;
+
+                        if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                        }
+
+                        /* Thats it so send the message */
+                        OutMessage->OutLength = Index - PREIDL + 2;
+
+                        if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "OutLength " << OutMessage->OutLength << endl;
+                        }
+
+                        if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                        {
+                            printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
+                            delete (OutMessage);
+                            continue;
+                        }
+                        else
+                        {
+                            pInfo->PortQueueEnts++;
+                            pInfo->PortQueueConts++;
+                        }
+
+                        RouteCount++;
                     }
-
-                    /* Load up the queue structure */
-                    OutMessage->DeviceID = Dev->getID();
-                    OutMessage->TargetID = Dev->getID();
-                    OutMessage->Port     = Dev->getPortID();
-                    OutMessage->Remote   = Dev->getAddress();
-                    OutMessage->TimeOut  = TIMEOUT;
-                    OutMessage->Retry    = 1;
-                    OutMessage->InLength = 0;
-                    OutMessage->Source   = 0;
-                    OutMessage->Destination = DEST_DLC;
-                    OutMessage->Command  = CMND_WMEMS;
-                    OutMessage->Sequence = 0;
-                    OutMessage->Priority = MAXPRIORITY - 1;
-                    OutMessage->EventCode    = NOWAIT | NORESULT | ENCODED | RCONT;
-                    OutMessage->ReturnNexus  = NULL;
-                    OutMessage->SaveNexus    = NULL;
-
-                    Index = PREIDL;
-
-                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Route " << RouteCount << " **** " << endl;
-                    }
-
-                    /* Load route */
-                    OutMessage->Buffer.OutMessage[Index++] = 6;
-
-                    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (2000 + RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (2000 + RouteCount);
-
-                    OutMessage->Buffer.OutMessage[Index++] = CCURouteRecord->getBus();
-                    OutMessage->Buffer.OutMessage[Index++] = ((CCURouteRecord->getCCUVarBits() & 0x07) << 5) | (CCURouteRecord->getCCUFixBits() & 0x1f);     // FIX FIX FIX ... Verify this with old system
-
-                    OutMessage->Buffer.OutMessage[Index++] =  CCURouteRecord->getStages() & 0x07;
-                    if( CCURouteRecord->isDefaultRoute() )
-                        OutMessage->Buffer.OutMessage[Index - 1] |= 0x80;
-
-                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << endl << "**** RouteCount: " << RouteCount << " ****" << endl;
-                        dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-6]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-5]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-                    }
-
-                    /* Load the Route set */
-                    OutMessage->Buffer.OutMessage[Index++] = 7;
-
-                    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (3300 + RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (3300 + RouteCount);
-
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
-
-                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-7]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-6]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-5]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-                    }
-
-                    /* Load the zone */
-                    OutMessage->Buffer.OutMessage[Index++] = 4;
-
-                    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (14000 + RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (14000 + RouteCount);
-
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
-
-                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                             << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-                    }
-
-                    /* Last SETL */
-                    OutMessage->Buffer.OutMessage[Index++] = 0;
-
-                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-                    }
-
-                    /* Thats it so send the message */
-                    OutMessage->OutLength = Index - PREIDL + 2;
-
-                    if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "OutLength " << OutMessage->OutLength << endl;
-                    }
-
-                    if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
-                    {
-                        printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
-                        delete (OutMessage);
-                        continue;
-                    }
-                    else
-                    {
-                        pInfo->PortQueueEnts++;
-                        pInfo->PortQueueConts++;
-                    }
-
-                    RouteCount++;
                 }
-            }
 
-            /* Allocate some memory for additional functions */
-            if( (OutMessage = new OUTMESS) == NULL )
-            {
-                return(MEMORY);
-            }
+                /* Allocate some memory for additional functions */
+                if( (OutMessage = new OUTMESS) == NULL )
+                {
+                    return(MEMORY);
+                }
 
-            /* Load up the queue structure */
-            OutMessage->DeviceID = Dev->getID();
-            OutMessage->TargetID = Dev->getID();
-            OutMessage->Port = Dev->getPortID();
-            OutMessage->Remote = Dev->getAddress();
-            OutMessage->TimeOut = TIMEOUT;
-            OutMessage->Retry = 1;
-            OutMessage->InLength = 0;
-            OutMessage->Source = 0;
-            OutMessage->Destination = DEST_DLC;
-            OutMessage->Command = CMND_WMEMS;
-            OutMessage->Sequence = 0;
-            OutMessage->Priority = MAXPRIORITY - 1;
-            OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | RCONT;
-            OutMessage->ReturnNexus = NULL;
-            OutMessage->SaveNexus = NULL;
+                /* Load up the queue structure */
+                OutMessage->DeviceID = Dev->getID();
+                OutMessage->TargetID = Dev->getID();
+                OutMessage->Port = Dev->getPortID();
+                OutMessage->Remote = Dev->getAddress();
+                OutMessage->TimeOut = TIMEOUT;
+                OutMessage->Retry = 1;
+                OutMessage->InLength = 0;
+                OutMessage->Source = 0;
+                OutMessage->Destination = DEST_DLC;
+                OutMessage->Command = CMND_WMEMS;
+                OutMessage->Sequence = 0;
+                OutMessage->Priority = MAXPRIORITY - 1;
+                OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | RCONT;
+                OutMessage->ReturnNexus = NULL;
+                OutMessage->SaveNexus = NULL;
 
-            Index = PREIDL;
+                Index = PREIDL;
 
-            /* Load RTE_CNT */
-            OutMessage->Buffer.OutMessage[Index++] = 4;
+                /* Load RTE_CNT */
+                OutMessage->Buffer.OutMessage[Index++] = 4;
 
-            OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1001);
-            OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1001);
+                OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1001);
+                OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1001);
 
-            OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
+                OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << "**** Final Message ****" << endl;
-                dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << endl << "**** Final Message ****" << endl;
+                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                }
 
-            switch( ((CtiDeviceCCU *)Dev)->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
-            {
-                case RouteAmpAltFail:
-                    {
-                        AmpMode = LOBYTE (-4);
-                        break;
-                    }
-                case RouteAmpDefault1Fail2:
-                    {
-                        AmpMode = LOBYTE (-3);
-                        break;
-                    }
-                case RouteAmpDefault2Fail1:
-                    {
-                        AmpMode = LOBYTE (-2);
-                        break;
-                    }
-                case RouteAmpAlternating:
-                    {
-                        AmpMode = LOBYTE (-1);
-                        break;
-                    }
-                case RouteAmp2:
-                    {
-                        AmpMode = LOBYTE (1);
-                        break;
-                    }
-                case RouteAmp1:               // Use primary amp exclusively
-                default:
-                    {
-                        AmpMode = LOBYTE (0);
-                        break;
-                    }
-            }
+                switch( ((CtiDeviceCCU *)Dev)->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
+                {
+                    case RouteAmpAltFail:
+                        {
+                            AmpMode = LOBYTE (-4);
+                            break;
+                        }
+                    case RouteAmpDefault1Fail2:
+                        {
+                            AmpMode = LOBYTE (-3);
+                            break;
+                        }
+                    case RouteAmpDefault2Fail1:
+                        {
+                            AmpMode = LOBYTE (-2);
+                            break;
+                        }
+                    case RouteAmpAlternating:
+                        {
+                            AmpMode = LOBYTE (-1);
+                            break;
+                        }
+                    case RouteAmp2:
+                        {
+                            AmpMode = LOBYTE (1);
+                            break;
+                        }
+                    case RouteAmp1:               // Use primary amp exclusively
+                    default:
+                        {
+                            AmpMode = LOBYTE (0);
+                            break;
+                        }
+                }
 
-            /* Load the amp mode */
-            OutMessage->Buffer.OutMessage[Index++] = 4;
+                /* Load the amp mode */
+                OutMessage->Buffer.OutMessage[Index++] = 4;
 
-            OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1003);
-            OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1003);
+                OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1003);
+                OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1003);
 
-            OutMessage->Buffer.OutMessage[Index++] = LOBYTE (AmpMode);
+                OutMessage->Buffer.OutMessage[Index++] = LOBYTE (AmpMode);
 
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                }
 
-            /* Load the DLC Retries */
-            OutMessage->Buffer.OutMessage[Index++] = 4;
+                /* Load the DLC Retries */
+                OutMessage->Buffer.OutMessage[Index++] = 4;
 
-            OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1006);
-            OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1006);
+                OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1006);
+                OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1006);
 
-            OutMessage->Buffer.OutMessage[Index++] = 0;
+                OutMessage->Buffer.OutMessage[Index++] = 0;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                }
 
-            /* Load the zone count */
-            OutMessage->Buffer.OutMessage[Index++] = 4;
+                /* Load the zone count */
+                OutMessage->Buffer.OutMessage[Index++] = 4;
 
-            OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1007);
-            OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1007);
+                OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1007);
+                OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1007);
 
-            OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
+                OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                }
 
-            /* Load the route set count */
-            OutMessage->Buffer.OutMessage[Index++] = 4;
+                /* Load the route set count */
+                OutMessage->Buffer.OutMessage[Index++] = 4;
 
-            OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1008);
-            OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1008);
+                OutMessage->Buffer.OutMessage[Index++] = HIBYTE (1008);
+                OutMessage->Buffer.OutMessage[Index++] = LOBYTE (1008);
 
-            OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
+                OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                     << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
+                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                }
 
-            /* Last SETL */
-            OutMessage->Buffer.OutMessage[Index++] = 0;
+                /* Last SETL */
+                OutMessage->Buffer.OutMessage[Index++] = 0;
 
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                }
 
-            /* Thats it so send the message */
-            OutMessage->OutLength = Index - PREIDL + 2;
+                /* Thats it so send the message */
+                OutMessage->OutLength = Index - PREIDL + 2;
 
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "OutLength " << OutMessage->OutLength << endl;
-            }
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "OutLength " << OutMessage->OutLength << endl;
+                }
 
-            if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
-            {
-                printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
-                delete (OutMessage);
-                return(QUEUE_WRITE);
-            }
-            else
-            {
-                pInfo->PortQueueEnts++;
-                pInfo->PortQueueConts++;
+                if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                {
+                    printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
+                    delete (OutMessage);
+                    return(QUEUE_WRITE);
+                }
+                else
+                {
+                    pInfo->PortQueueEnts++;
+                    pInfo->PortQueueConts++;
+                }
             }
         }
     }

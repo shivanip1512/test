@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/18 16:22:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/23 21:01:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,8 +176,16 @@ IDLCFunction (CtiDevice *Dev,
     }
     else
     {
-        p711Info->PortQueueEnts++;
-        p711Info->PortQueueConts++;
+        if(p711Info)
+        {
+            p711Info->PortQueueEnts++;
+            p711Info->PortQueueConts++;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return status;
@@ -505,6 +513,61 @@ IDLCSetBaseSList (CtiDevice *Dev)
     return(NORMAL);
 }
 
+/* Excerpt from a technote on spread spectrum radios.
+
+For some time I have been trying to convince the CCU-711 to take communications delays other than the
+defaults.  It never complained about the numbers I sent it, it just ignored the hell out of them.  I learned
+two things yesterday...  If any one of 4 values is out of range it sets all 4 back to the defaults without
+bothering to REQACK the command.  In addition two of the delays had different minimum values in the code
+from what the SSpec specified.  The system point of view geniusus were incapable of following their own
+convuluted and ill concieved SSpec and then didn't bother to update it.  I could go on for years about this...
+
+Anyway Porter looks for a file in the data directory called DELAY.DAT. This file has the format:
+
+Port,Remote,T_RTSON,T_CTSTO,T_KEYOFF,T_INTRATO,BA_TRIG .
+.
+.
+
+Where:
+
+Port is the port number
+
+Remote is the remote number
+
+T_RTSON is the delay from asserting RTS and Radio Keying until the CCU starts looking for CTS.
+ Valid values are 8 to 2040 and it defaults to 600.  Units are milliseconds.
+
+T_CTSTO is the length of time the CCU will wait for CTS to come back from the communications
+ device after T_RTSON is done.  Valid range is 168 to 2040 and it defaults to 304.  Units
+ are milliseconds.
+
+T_KEYOFF is the length of time between end of data (RTS off) and release of radio key-on.
+ Valid range is 0 to 160 and it defaults to 32.  Units are milliseconds.
+
+T_INTRATO is the intra character timeout for a single IDLC frame.  Valid range is 248 to 2040
+and it defaults to 400.  Units are milliseconds.
+
+BA_TRIG is the length time between IDLC messages that CCU waits to reset IDLC communications
+ and the serial port (Communications watchdog so to speak).  Valid values are 0 to 65,535 (65,535
+ disables this timer) and it defaults to 170.  Units are in seconds.
+
+Upon detecting a cold start in the CCU (which by the way sets these values to defaults on cold start)
+porter will check for the the correct port and remote combo in the delay.dat file and if the ccu is
+in the file, download the values found.  Porter forces the values to be in range.  Note that versions
+of porter prior to this Fridays release incorrectly do this for T_CTSTO (which must be a minimum
+of 168) and T_INTRATO (which must be a minimum of 248) so these values must be set to at least
+the minimum...
+
+Please note that if you bother reading the SSpec ignore the hell out of anything it has to say about
+these values.
+
+What I had Les load into the CCU at MVEA was the following
+
+3,10,8,168,32,248,170
+
+Which should work well for any CCU hooked to one of these spread sprectum radios
+
+*/
 
 /* Routine to initialize CCU algorithm status list */
 IDLCSetDelaySets (CtiDevice *Dev)
@@ -515,32 +578,59 @@ IDLCSetDelaySets (CtiDevice *Dev)
 
     /* Defines for file handle */
     FILE *HFile;
-    USHORT MyPort, MyRemote, T_RTSOn, T_CTSTo;
-    USHORT T_KeyOff, T_IntraTo, BA_Trig;
+    USHORT MyPort, MyRemote;
 
-    /* attempt to open the file */
-    if((HFile = fopen ("DATA\\DELAY.DAT", "r")) == NULL)
+    // 072302 CGP. Let's just make this happen by default.
+    USHORT T_RTSOn      = 8;
+    USHORT T_CTSTo      = 168;
+    USHORT T_KeyOff     = 32;
+    USHORT T_IntraTo    = 248;
+    USHORT BA_Trig      = 170;
+
+    /* attempt to open the OLD file */
+    if((HFile = fopen ("DATA\\DELAY.DAT", "r")) != NULL)
     {
-        return(NORMAL);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " DELAY.DAT should be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
+        }
     }
-
-    /* Walk through the file looking for the appropriate port and remote */
-    for(;;)
+    else if((HFile = fopen ("..\\CONFIG\\DELAY.DAT", "r")) != NULL)
     {
-        if(fscanf (HFile,"%hd,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
+        /* Walk through the file looking for the appropriate port and remote */
+        for(;;)
         {
-            fclose (HFile);
-            return(NORMAL);
+            if(fscanf (HFile,"%hd,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
+            {
+                T_RTSOn      = 8;
+                T_CTSTo      = 168;
+                T_KeyOff     = 32;
+                T_IntraTo    = 248;
+                BA_Trig      = 170;
+
+                break;
+            }
+
+            if(MyPort == Dev->getPortID() && MyRemote == Dev->getAddress())
+            {
+                break;
+            }
         }
 
-        if(MyPort == Dev->getPortID() && MyRemote == Dev->getAddress())
-        {
-            fclose (HFile);
-            break;
-        }
+        fclose (HFile);
     }
 
     /* If we get here we got one */
+    if(PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << " " << Dev->getName() << " timings being set to: " << endl;
+        dout << " T_RTSOn    " << T_RTSOn << endl;
+        dout << " T_CTSTo    " << T_CTSTo << endl;
+        dout << " T_KeyOff   " << T_KeyOff << endl;
+        dout << " T_IntraTo  " << T_IntraTo << endl;
+        dout << " BA_Trig    " << BA_Trig << endl;
+    }
 
     /* Allocate some memory */
     if((OutMessage = new OUTMESS) == NULL)
