@@ -8,6 +8,7 @@ import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.message.util.ClientConnection;
+import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -571,6 +572,10 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 		{
 			handleScriptFile( (ScriptFile)msg );
 		}
+        else if( msg instanceof ConnStateChange )
+        {
+            //nothing to do locally
+        }
 		else
 			throw new RuntimeException("Recieved a message of an unknown type: " + msg.getClass() );
 		

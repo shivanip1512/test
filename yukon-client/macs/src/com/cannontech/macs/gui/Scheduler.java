@@ -11,6 +11,8 @@ import javax.swing.JRootPane;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.message.macs.message.MACSCategoryChange;
+import com.cannontech.message.util.ConnStateChange;
+import com.cannontech.message.util.MessageEvent;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.ResourceFactory;
@@ -83,7 +85,6 @@ public void destroy()
 {
 	//remove all the observers from the connection
 	if( mainPanel != null ) {	
-		getIMACSConnection().deleteObserver( mainPanel );
 		getIMACSConnection().removeMessageListener( mainPanel );
 
 		getIMACSConnection().removeMessageListener( mainPanel.getScheduleTableModel() );
@@ -479,9 +480,11 @@ public void setInitialTitle()
 {
 	// we must have the panel realize its the first time the connection
 	//  is being observed
-	mainPanel.update( null, getIMACSConnection() );
-
+    mainPanel.messageReceived(
+            new MessageEvent(this,
+                    new ConnStateChange(getIMACSConnection().isValid())) );    
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/4/00 9:08:24 AM)
