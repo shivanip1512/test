@@ -68,7 +68,12 @@ public class CBCClientConnection extends java.util.Observable implements java.ut
  */
 public CBCClientConnection() 
 {
-	this( "127.0.0.1", 1910 );
+	super();// "127.0.0.1", 1910 );
+	initialize();
+	getExternalResources();
+
+	// the following method will attempt the connection in another thread
+	startInThread();
 }
 
 /**
@@ -80,6 +85,7 @@ public CBCClientConnection( Message registrationMsg_ )
 {
 	super();
 	
+	getExternalResources();
 	initialize();
 	getConnection().setRegistrationMsg( registrationMsg_ );
 	
@@ -95,11 +101,10 @@ public CBCClientConnection( Message registrationMsg_ )
 public CBCClientConnection(String hostStr, int portInt)
 {
 	super();
-
+	initialize();
+	
 	host = hostStr;
 	port = portInt;	
-
-	initialize();
 
 	// the following method will attempt the connection in another thread
 	startInThread();
@@ -343,9 +348,7 @@ private void handleException(Throwable e)
  * Creation date: (8/18/00 5:11:57 PM)
  */
 private void initialize() 
-{
-	getExternalResources();
-	
+{	
 	getConnection().addObserver( this );	
 }
 
