@@ -15,7 +15,8 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.DeviceClasses;
 
-public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPanel {
+public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener
+{
 	private javax.swing.JPanel ivjJPanel1 = null;
 
 	private javax.swing.JScrollPane ivjJScrollPane1 = null;
@@ -58,6 +59,7 @@ public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPa
 				PAOGroups.STRING_QUANTUM[0], 
 				PAOGroups.STRING_VECTRON[0]  }, { //RTUs
 			
+            //PAOGroups.STRING_RTU_DNP[0],  //dont allow this for now
 				PAOGroups.STRING_RTU_ILEX[0],
 				PAOGroups.STRING_RTU_WELCO[0] },
 				{ // Virtual Devices
@@ -399,6 +401,8 @@ private void handleException(Throwable exception) {
 private void initialize() {
 	try {
 		// user code begin {1}
+      
+      getJListDeviceTypes().addListSelectionListener( this );
 		// user code end
 		setName("DeviceNameAddressPanel");
 		setLayout(new java.awt.GridLayout());
@@ -415,10 +419,9 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
-public boolean isInputValid() {
-	
-
-	return true;
+public boolean isInputValid() 
+{
+	return getJListDeviceTypes().getSelectedIndex() >= 0;
 }
 /**
  * main entrypoint - starts the part when it is run as an application
@@ -482,6 +485,13 @@ public void setList(int deviceClass, int type)
 	}
 
 }
+
+public void valueChanged( javax.swing.event.ListSelectionEvent ev )
+{
+   if( ev.getSource() == getJListDeviceTypes() )
+      fireInputUpdate();
+}
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object

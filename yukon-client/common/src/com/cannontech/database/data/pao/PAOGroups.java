@@ -195,6 +195,8 @@ public final static int getDeviceType(String typeString)
       return MCTBROADCAST;
    else if (isStringDevice(compareString, STRING_REPEATER))
 	  return REPEATER;
+   else if (isStringDevice(compareString, STRING_RTU_DNP))
+     return RTU_DNP;
    else if (isStringDevice(compareString, STRING_RTU_ILEX))
 	  return RTUILEX;
    else if (isStringDevice(compareString, STRING_RTU_WELCO))
@@ -317,6 +319,8 @@ public final static String getDeviceTypeString(int type)
 		  return STRING_MCT_210[0];
 	  case REPEATER:
 		  return STRING_REPEATER[0];
+     case RTU_DNP:
+        return STRING_RTU_DNP[0];
 	  case RTUILEX:
 		  return STRING_RTU_ILEX[0];
 	  case RTUWELCO:

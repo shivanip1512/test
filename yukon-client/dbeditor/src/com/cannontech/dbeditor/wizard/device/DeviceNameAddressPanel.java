@@ -318,9 +318,16 @@ public Object getValue(Object val)
 	Integer address = new Integer( getAddressTextField().getText() );
 	
 	if( val instanceof IDLCBase )
-		((IDLCBase)device).getDeviceIDLCRemote().setAddress( address );
-	
-	else if( val instanceof CarrierBase )
+   {
+		((IDLCBase)device).getDeviceIDLCRemote().setAddress( address );	
+   }
+   else if( val instanceof RTUDNP )
+   {
+      ((RTUDNP)val).getDeviceDNP().setMasterAddress( address );
+      //postcommwait
+      //slaveaddress
+   }
+   else if( val instanceof CarrierBase )
 	{
 		if( val instanceof Repeater900 )
 		{
@@ -458,8 +465,14 @@ public static void main(java.lang.String[] args) {
  * Creation date: (4/30/2002 10:02:36 AM)
  * @param newDeviceType int
  */
-public void setDeviceType(int newDeviceType) {
+public void setDeviceType(int newDeviceType) 
+{
 	deviceType = newDeviceType;
+   
+   if( deviceType == com.cannontech.database.data.pao.DeviceTypes.RTU_DNP )
+      getPhysicalAddressLabel().setText("Master Address:");
+   else
+      getPhysicalAddressLabel().setText("Physical Address:");
 }
 /**
  * This method was created in VisualAge.

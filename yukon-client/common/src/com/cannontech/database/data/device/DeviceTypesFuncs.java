@@ -382,6 +382,7 @@ public final static boolean isRTU(int deviceType)
 {
 	switch(deviceType)
 	{	
+      case RTU_DNP:
 		case RTUILEX:
 		case RTUWELCO:
 			return true;

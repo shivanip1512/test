@@ -1296,8 +1296,7 @@ public Object getValue(Object val)
 				else
 					((com.cannontech.database.data.device.CarrierBase) val).getDeviceCarrierSettings().setAddress(address);
 			}
-			else
-			if( val instanceof com.cannontech.database.data.device.IDLCBase )
+			else if( val instanceof com.cannontech.database.data.device.IDLCBase )
 				((com.cannontech.database.data.device.IDLCBase) val).getDeviceIDLCRemote().setAddress(address);
 		}
 		catch(NumberFormatException n )
@@ -1371,6 +1370,37 @@ public Object getValue(Object val)
 		}
 
 	}
+   else if( val instanceof RTUDNP )
+   {
+      RTUDNP dnp = (RTUDNP)val;
+      try
+      {
+         dnp.getDeviceDNP().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
+      }
+      catch( NumberFormatException e )
+      {
+         dnp.getDeviceDNP().setMasterAddress( new Integer(0) );
+      }
+         
+      try
+      {         
+         dnp.getDeviceDNP().setSlaveAddress( new Integer(getSlaveAddressComboBox().getSelectedItem().toString() ) );
+      }
+      catch( NumberFormatException e )
+      {
+         dnp.getDeviceDNP().setSlaveAddress( new Integer(0) );
+      }
+
+      try
+      {
+         dnp.getDeviceDNP().setPostCommWait( new Integer(getPostCommWaitSpinner().getValue().toString()) );
+      }
+      catch( NumberFormatException e )
+      {
+         dnp.getDeviceDNP().setPostCommWait( new Integer(0) );
+      }
+
+   }
 	else
 	{
 		if( val instanceof CarrierBase )
@@ -1504,6 +1534,7 @@ public boolean isInputValid()
 		return false;
 	}
 
+
 	if( getPhysicalAddressTextField().isVisible() )
 		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
 
@@ -1605,64 +1636,96 @@ private void setIDLCBaseValue( IDLCBase idlcBase )
  * Creation date: (9/18/2001 1:58:37 PM)
  */
 private void setNonRemBaseValue( Object base )
-{
-	getRouteLabel().setVisible(true);
-	getRouteComboBox().setVisible(true);
-	getPortLabel().setVisible(false);
-	getPortComboBox().setVisible(false);
-	getPostCommWaitLabel().setVisible(false);
-	getPostCommWaitSpinner().setVisible(false);
-	getJLabelCCUAmpUseType().setVisible(false);
-	getJComboBoxAmpUseType().setVisible(false);
-	getWaitLabel().setVisible(false);
-	getPasswordLabel().setVisible(false);
-	getPasswordTextField().setVisible(false);
-	getSlaveAddressLabel().setVisible(false);
-	getSlaveAddressComboBox().setVisible(false);
+{  
+   getJLabelCCUAmpUseType().setVisible(false);
+   getJComboBoxAmpUseType().setVisible(false);
+   getPortLabel().setVisible(false);
+   getPortComboBox().setVisible(false);
+   getPasswordLabel().setVisible(false);
+   getPasswordTextField().setVisible(false);
+    
+   if( base instanceof RTUDNP )
+   {
+      getPhysicalAddressLabel().setVisible(true);
+      getPhysicalAddressLabel().setText("Master Address:");
+      getPhysicalAddressTextField().setVisible(true);
+      getPhysicalAddressTextField().setText( ((RTUDNP)base).getDeviceDNP().getMasterAddress().toString() );
+      
+      getSlaveAddressLabel().setVisible(true);
+      getSlaveAddressComboBox().setVisible(true);
+      
+      //create a new editor for our combobox so we can set the document
+      getSlaveAddressComboBox().setEditable( true );
+      com.cannontech.common.gui.util.JTextFieldComboEditor editor = new com.cannontech.common.gui.util.JTextFieldComboEditor();
+      editor.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999) );
+      editor.addCaretListener(this);  //be sure to fireInputUpdate() messages!
+      getSlaveAddressComboBox().setEditor( editor );
+      getSlaveAddressComboBox().removeAllItems();
+      getSlaveAddressComboBox().addItem( ((RTUDNP)base).getDeviceDNP().getSlaveAddress() );
 
-	int assignedRouteID = 0;
-	if( getRouteComboBox().getModel().getSize() > 0 )
-		getRouteComboBox().removeAllItems();
+      
+      getPostCommWaitLabel().setVisible(true);
+      getPostCommWaitSpinner().setVisible(true);      
+      getPostCommWaitSpinner().setValue( ((RTUDNP)base).getDeviceDNP().getPostCommWait() );
+      
+      getRouteLabel().setVisible(false);
+      getRouteComboBox().setVisible(false);
+   }
+   else
+   {
+   	getRouteLabel().setVisible(true);
+   	getRouteComboBox().setVisible(true);
+      
+   	getPostCommWaitLabel().setVisible(false);
+   	getPostCommWaitSpinner().setVisible(false);
+   	getWaitLabel().setVisible(false);
+   	getSlaveAddressLabel().setVisible(false);
+   	getSlaveAddressComboBox().setVisible(false);   
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List routes = cache.getAllRoutes();
-		if( base instanceof CarrierBase )
-		{
-			int routeType = 0;
-			assignedRouteID = ((CarrierBase) base).getDeviceRoutes().getRouteID().intValue();
-			
-			for( int i = 0 ; i < routes.size(); i++ )
-			{
-				routeType = ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getType();
-				
-				if( routeType == com.cannontech.database.data.pao.RouteTypes.ROUTE_CCU ||
-						routeType == com.cannontech.database.data.pao.RouteTypes.ROUTE_MACRO )
-				{
-					getRouteComboBox().addItem( routes.get(i) );
-					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-						getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
-				}
-			}
-		}
-		else
-		{
-			if( base instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon )
-				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupEmetcon) base).getLmGroupEmetcon().getRouteID().intValue();
-			else if( base instanceof com.cannontech.database.data.device.lm.LMGroupVersacom )
-				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupVersacom) base).getLmGroupVersacom().getRouteID().intValue();
-			else if (base instanceof com.cannontech.database.data.device.lm.LMGroupRipple) 
-				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupRipple)base).getLmGroupRipple().getRouteID().intValue();
-				for( int i = 0 ; i < routes.size(); i++ )
-			{
-				getRouteComboBox().addItem( routes.get(i) );
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
-			}
-		}
-	}
-
+   	int assignedRouteID = 0;
+   	if( getRouteComboBox().getModel().getSize() > 0 )
+   		getRouteComboBox().removeAllItems();
+   
+   	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   	synchronized(cache)
+   	{
+   		java.util.List routes = cache.getAllRoutes();
+   		if( base instanceof CarrierBase )
+   		{
+   			int routeType = 0;
+   			assignedRouteID = ((CarrierBase) base).getDeviceRoutes().getRouteID().intValue();
+   			
+   			for( int i = 0 ; i < routes.size(); i++ )
+   			{
+   				routeType = ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getType();
+   				
+   				if( routeType == com.cannontech.database.data.pao.RouteTypes.ROUTE_CCU ||
+   						routeType == com.cannontech.database.data.pao.RouteTypes.ROUTE_MACRO )
+   				{
+   					getRouteComboBox().addItem( routes.get(i) );
+   					if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
+   						getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
+   				}
+   			}
+   		}
+   		else
+   		{
+   			if( base instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon )
+   				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupEmetcon) base).getLmGroupEmetcon().getRouteID().intValue();
+   			else if( base instanceof com.cannontech.database.data.device.lm.LMGroupVersacom )
+   				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupVersacom) base).getLmGroupVersacom().getRouteID().intValue();
+   			else if (base instanceof com.cannontech.database.data.device.lm.LMGroupRipple) 
+   				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupRipple)base).getLmGroupRipple().getRouteID().intValue();
+   				for( int i = 0 ; i < routes.size(); i++ )
+   			{
+   				getRouteComboBox().addItem( routes.get(i) );
+   				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
+   					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
+   			}
+   		}
+   	}
+   }
+   
 }
 /**
  * Insert the method's description here.

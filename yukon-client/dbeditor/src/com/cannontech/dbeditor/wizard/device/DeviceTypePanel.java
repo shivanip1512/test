@@ -64,7 +64,8 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 									
 								},								
 								{	//RTUs
-									PAOGroups.STRING_DAVIS_WEATHER[0],									
+                           PAOGroups.STRING_RTU_DNP[0],
+									PAOGroups.STRING_DAVIS_WEATHER[0],
 									PAOGroups.STRING_RTU_ILEX[0],
 									PAOGroups.STRING_RTU_WELCO[0]
 								},

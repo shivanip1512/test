@@ -26,9 +26,13 @@ public DeviceChangeTypeWizardPanel(com.cannontech.database.db.DBPersistent objec
 	setChangeObject(objectToChange);
 	setDeviceClass();
 	
-	getDeviceTypesPanel().setList(
-				getDeviceClass(), 
-				com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((com.cannontech.database.data.device.DeviceBase) getChangeObject()).getPAOType() ));
+   if( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((com.cannontech.database.data.device.DeviceBase) getChangeObject()).getPAOType() )
+        == com.cannontech.database.data.pao.PAOGroups.RTU_DNP )
+   {}
+   else
+     	getDeviceTypesPanel().setList(
+   				getDeviceClass(), 
+   				com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((com.cannontech.database.data.device.DeviceBase) getChangeObject()).getPAOType() ));
 }
 /**
  * Insert the method's description here.

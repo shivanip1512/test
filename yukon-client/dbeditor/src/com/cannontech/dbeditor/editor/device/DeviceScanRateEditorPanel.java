@@ -1518,7 +1518,8 @@ public Object getValue(Object device)
 	else if( (val instanceof RTUBase) 
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
-            || (val instanceof CapBankController6510) )
+            || (val instanceof CapBankController6510)
+            || (val instanceof RTUDNP) )
 	{
 		if( getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -1830,7 +1831,9 @@ public void setDeviceType(int type)
 			getIntegrityRateCheckBox().setText("Demand Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");			
 		}
-		else if( type == PAOGroups.RTUILEX || type == PAOGroups.DNP_CBC_6510 )
+		else if( type == PAOGroups.RTUILEX 
+                || type == PAOGroups.RTU_DNP
+                || type == PAOGroups.DNP_CBC_6510 )
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
@@ -1852,7 +1855,8 @@ public void setDeviceType(int type)
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
 					|| type == PAOGroups.LCU_T3026
-               || type == PAOGroups.DNP_CBC_6510) );
+               || type == PAOGroups.DNP_CBC_6510
+               || type == PAOGroups.RTU_DNP) );
 		
 		setIntegrityObjectsVisible(
 			!(type == PAOGroups.LMT_2
@@ -1956,7 +1960,8 @@ public void setValue(Object val)
 	else if( (val instanceof RTUBase) 
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
-            || (val instanceof CapBankController6510) )            
+            || (val instanceof CapBankController6510)
+            || (val instanceof RTUDNP) )
 	{
 
 		for (int i = 0; i < dScanRate.length; i++)

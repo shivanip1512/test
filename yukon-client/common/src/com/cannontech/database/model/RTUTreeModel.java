@@ -31,6 +31,7 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
 			 &&
 			 (type_ == PAOGroups.RTUILEX 
+            || type_ == PAOGroups.RTU_DNP
 				|| type_ == PAOGroups.RTUWELCO 
 				|| type_ == PAOGroups.DAVISWEATHER)
 			 && category_ == PAOGroups.CAT_DEVICE;

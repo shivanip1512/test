@@ -45,6 +45,10 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.LCU_ER:
 			returnDevice = new LCUER();
 			break;
+      case PAOGroups.RTU_DNP:
+         returnDevice = new RTUDNP();
+         returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
+         break;
 		case PAOGroups.RTUILEX:
 			returnDevice = new RTUILEX();
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);

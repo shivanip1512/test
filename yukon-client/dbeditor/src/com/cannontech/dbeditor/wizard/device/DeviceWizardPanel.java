@@ -326,10 +326,11 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
-	return  ( currentPanel == getDevicePhoneNumberPanel() ||
-			  (currentPanel == getDeviceVirtualPortPanel() && !getDeviceVirtualPortPanel().isDialupPort()) ||
-			  currentPanel == getDeviceRoutePanel() ||
-			  currentPanel == getDeviceVirtualNamePanel() );
+	return  ( currentPanel == getDevicePhoneNumberPanel() 
+            || (currentPanel == getDeviceVirtualPortPanel() && !getDeviceVirtualPortPanel().isDialupPort())
+            || currentPanel == getDeviceRoutePanel() 
+            || currentPanel == getDeviceVirtualNamePanel()
+            || (currentPanel == getDeviceScanRatePanel() && getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.RTU_DNP) );
 }
 
 

@@ -333,6 +333,11 @@ public Object getValue(Object val)
          ((com.cannontech.database.data.capcontrol.CapBankController6510)val).getDeviceDNP().setMasterAddress( 
                new Integer(getAddressTextField().getText()) );
       }
+      else if( val instanceof RTUDNP )
+      {
+         ((RTUDNP)val).getDeviceDNP().setMasterAddress(
+               new Integer(getAddressTextField().getText()) );
+      }
 		else //didn't find it
 			throw new Error("Unable to determine device type when attempting to set the address");
 	}
@@ -576,6 +581,11 @@ public void setValue(Object val )
    {
       getAddressTextField().setText( 
             ((com.cannontech.database.data.capcontrol.CapBankController6510)val).getDeviceDNP().getMasterAddress().toString() );
+   }
+   else if( val instanceof RTUDNP )
+   {
+      getAddressTextField().setText( 
+            ((RTUDNP)val).getDeviceDNP().getMasterAddress().toString() );
    }
 	else if( val instanceof CarrierBase )
    {

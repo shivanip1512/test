@@ -40,6 +40,7 @@ public interface DeviceTypes
 	public final static int RTUILEX	=	40;
 	public final static int RTUWELCO	=	41;
 	public final static int DCT_501	=	42;
+   public final static int RTU_DNP  =  43;
 	
 	public final static int TAPTERMINAL	=	50;
 	public final static int MCT310ID	=	51;
@@ -103,8 +104,9 @@ public interface DeviceTypes
 	public static final String[] STRING_MCT_210 = {"MCT-210", "MCT210"};
 	public static final String[] STRING_MCT_213 = {"MCT-213", "MCT213"};
 	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
-	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};
+	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
+   public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
 	public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
