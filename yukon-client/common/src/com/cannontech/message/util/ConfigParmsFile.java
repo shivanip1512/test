@@ -59,27 +59,30 @@ public java.lang.String[][] getKeysAndValues() {
 
 		while( (line = bufRdr.readLine()) != null )
 		{
-			//Check if this line contains a comment character
-			int commentPos;
-			
-			if( (commentPos = line.indexOf( (int) comment )) != - 1 )
+			if( line.length() > 2 )	// must have at least a=b (3 chars) for a valid length.
 			{
-				//get rid of everything after the command character
-				line = line.substring(0, commentPos);
+				//Check if this line contains a comment character
+				int commentPos;
+				
+				if( (commentPos = line.indexOf( (int) comment )) != - 1 )
+				{
+					//get rid of everything after the command character
+					line = line.substring(0, commentPos);
+				}
+	//			java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character(separator)).toString(), false );
+	
+	//			if( t.countTokens() != 2 )
+	//				continue;	//bad line should we be more wrathfull?
+	
+	//			keys.addElement( t.nextToken().trim() );
+	//			values.addElement( t.nextToken().trim() );				
+				int separatorIndex = line.indexOf(separator);
+				String key = line.substring(0, separatorIndex);
+				String value = line.substring(separatorIndex + 1);
+	
+				keys.addElement( key.trim());
+				values.addElement( value.trim() );				
 			}
-//			java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character(separator)).toString(), false );
-
-//			if( t.countTokens() != 2 )
-//				continue;	//bad line should we be more wrathfull?
-
-//			keys.addElement( t.nextToken().trim() );
-//			values.addElement( t.nextToken().trim() );				
-			int separatorIndex = line.indexOf(separator);
-			String key = line.substring(0, separatorIndex);
-			String value = line.substring(separatorIndex + 1);
-
-			keys.addElement( key.trim());
-			values.addElement( value.trim() );				
 		}
 	}
 	catch( java.io.FileNotFoundException fnfe)
