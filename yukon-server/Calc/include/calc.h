@@ -46,6 +46,8 @@ public:
     const RWTime& getPointCalcWindowEndTime() const;
     CtiCalc&      setPointCalcWindowEndTime(const RWTime& endTime);
 
+    long findDemandAvgComponentPointId();
+
     long getPointId( void )  {  return _pointId;};
 
     CtiCalc &operator=( CtiCalc &toCopy );

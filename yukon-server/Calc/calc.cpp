@@ -303,4 +303,25 @@ CtiCalc& CtiCalc::setPointCalcWindowEndTime(const RWTime& endTime)
     return *this;
 }
 
+long CtiCalc::findDemandAvgComponentPointId()
+{
+    long returnPointId = 0;
+    RWSlistCollectablesIterator iter( _components );
+
+    //  Iterate through all of the calculations in the collection
+    for(;iter();)
+    {
+        CtiCalcComponent* tmpComponent = (CtiCalcComponent*)iter.key();
+        const RWCString& functionName = tmpComponent->getFunctionName();
+        if( !functionName.compareTo("DemandAvg15",RWCString::ignoreCase) ||
+            !functionName.compareTo("DemandAvg30",RWCString::ignoreCase) ||
+            !functionName.compareTo("DemandAvg60",RWCString::ignoreCase) )
+        {
+            returnPointId = tmpComponent->getComponentPointId();
+            break;
+        }
+    }
+
+    return returnPointId;
+}
 
