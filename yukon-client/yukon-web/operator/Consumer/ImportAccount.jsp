@@ -56,7 +56,7 @@
                 <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
-                    <td width="150" align="right" class="SubtitleHeader">*Customer File: </td>
+                    <td width="150" align="right">Customer File: </td>
                     <td width="250"> 
                       <input type="file" name="CustFile" size="35">
                     </td>
