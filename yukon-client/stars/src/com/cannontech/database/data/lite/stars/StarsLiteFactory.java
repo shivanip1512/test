@@ -1461,7 +1461,7 @@ public class StarsLiteFactory {
 				energyCompany.getYukonListEntry( liteInv.getDeviceStatus() ), DeviceStatus.class) );
 	}
 	
-	public static void setStarsLMHardware(StarsLMHardware starsHw, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
+	public static void setStarsLMHw(StarsLMHw starsHw, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		setStarsInventory( starsHw, liteHw, energyCompany );
 		
 		starsHw.setManufactureSerialNumber( ServerUtils.forceNotNull(liteHw.getManufactureSerialNumber()) );
@@ -1508,7 +1508,7 @@ public class StarsLiteFactory {
 	
 	public static StarsLMHardware createStarsLMHardware(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		StarsLMHardware starsHw = new StarsLMHardware();
-		setStarsLMHardware(starsHw, liteHw, energyCompany);
+		setStarsLMHw(starsHw, liteHw, energyCompany);
 		
 		if (liteHw.getThermostatSettings() != null) {
 			StarsThermostatSettings starsSettings = new StarsThermostatSettings();
