@@ -243,10 +243,10 @@
 	</servlet>
 
     <!-- Start JNLP servlets -->
+<!--    
     <servlet>
         <servlet-name>DynamicJNLPServlet</servlet-name>
         <servlet-class>com.cannontech.servlet.DynamicJNLPServlet</servlet-class>
-        <!-- Map URIs to JNLPs and Display Name  -->
         <init-param>
             <param-name>match.list</param-name>
             <param-value>dbeditor|tdc</param-value>
@@ -257,6 +257,7 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+-->
     <!-- END JNLP servlets -->
 	
 	<servlet-mapping>
@@ -279,11 +280,13 @@
 		<servlet-name>CttpServlet</servlet-name>
 		<url-pattern>/cttp/</url-pattern>
 	</servlet-mapping>
-	
+
+<!--
 	<servlet-mapping>
 	    <servlet-name>DynamicJNLPServlet</servlet-name>
 		<url-pattern>*.jnlp</url-pattern>
 	</servlet-mapping>
+-->
 
 	<session-config>
 		<session-timeout>60</session-timeout>
