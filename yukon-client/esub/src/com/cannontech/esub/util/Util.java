@@ -21,8 +21,6 @@ import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.PointSelectionPanel;
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
 
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
