@@ -135,6 +135,17 @@ public class ClientSession {
 			if(u != null) {
 				//score! we found them
 				setSessionInfo(u, Integer.toString(u.getUserID()), "", Integer.MIN_VALUE);
+				boolean saveInfo = lp.isRememberPassword();
+				prefs.setDefaultRememberPassword(saveInfo);
+				if(saveInfo) {
+					prefs.setDefaultUsername(lp.getUsername());
+					prefs.setDefaultPassword(lp.getPassword());
+				}
+				else {
+					prefs.setDefaultUsername("");
+					prefs.setDefaultPassword("");
+				}
+				
 				return true;
 			}
 			else {
@@ -159,6 +170,7 @@ public class ClientSession {
 			// have a session info already lets try it
 			Properties dbProps = LoginSupport.getDBProperties(sessionID, host, port);
 			if(!dbProps.isEmpty()) {
+				PoolManager.setDBProperties(dbProps);
 				LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
 				if(u != null) {
 					//score! we found them
@@ -184,6 +196,17 @@ public class ClientSession {
 				if(u != null) {
 					//score! we found them
 				  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
+				  	
+					boolean saveInfo = lp.isRememberPassword();
+					prefs.setDefaultRememberPassword(saveInfo);
+					if(saveInfo) {
+						prefs.setDefaultUsername(lp.getUsername());
+						prefs.setDefaultPassword(lp.getPassword());
+					}
+					else {
+						prefs.setDefaultUsername("");
+						prefs.setDefaultPassword("");
+					}
 				  	return true;
 				}
 				else {
