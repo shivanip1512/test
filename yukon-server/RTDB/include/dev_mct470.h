@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/25 21:51:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/03/24 20:49:53 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,8 +94,6 @@ public:
     virtual ~CtiDeviceMCT470( );
 
     CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
-
-    void setDisconnectAddress( unsigned long address );
 
     static DLCCommandSet initCommandStore( );
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );

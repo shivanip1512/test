@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/03/16 23:09:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/03/24 20:49:53 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,12 +54,6 @@ CtiDeviceMCT470 &CtiDeviceMCT470::operator=( const CtiDeviceMCT470 &aRef )
     }
 
     return *this;
-}
-
-
-void CtiDeviceMCT470::setDisconnectAddress( unsigned long address )
-{
-    _disconnectAddress = address;
 }
 
 
