@@ -90,7 +90,32 @@
                     </td>
                   </tr>
                 </table>
-<%	} else { // importID="STARS" %>
+                <%	} else { // importID="STARS" %>
+                <table width="500" border="0" cellspacing="0" cellpadding="0">
+                  <tr> 
+                    <td class="MainText"> 
+                      <div align="center">If you want to import the selection 
+                        lists, please do so before importing any other file:</div>
+                    </td>
+                  </tr>
+                </table>
+                <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                  <tr> 
+                    <td width="150"> 
+                      <div align="right">Selection List File: </div>
+                    </td>
+                    <td width="250"> 
+                      <input type="file" name="SelListFile" size="35">
+                    </td>
+                  </tr>
+                </table>
+                <table width="400" border="0" cellspacing="0" cellpadding="5">
+                  <tr> 
+                    <td align="center">
+                      <input type="submit" name="Submit2" value="Submit">
+                    </td>
+                  </tr>
+                </table>
                 <table width="400" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr> 
                     <td width="150"> 

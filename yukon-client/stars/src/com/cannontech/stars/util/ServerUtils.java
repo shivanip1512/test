@@ -265,7 +265,7 @@ public class ServerUtils {
 		return addr.toString();
 	}
 	
-	public static ArrayList readFile(File file, boolean addLineNo) {
+	public static ArrayList readFile(File file, boolean addLineNo, boolean returnEmpty) {
 		if (file.exists()) {
 			try {
 				java.io.BufferedReader fr = new java.io.BufferedReader(
@@ -277,10 +277,14 @@ public class ServerUtils {
 				
 				while ((line = fr.readLine()) != null) {
 					lineNo++;
-					if (line.charAt(0) == '#') continue;
 					
-					if (line.length() > 0)
+					if (line.equals("")) {
+						if (!returnEmpty) continue;
+					}
+					else {
+						if (line.charAt(0) == '#') continue;
 						if (addLineNo) line = lineNo + "," + line;
+					}
 					
 					lines.add(line);
 				}
@@ -300,8 +304,12 @@ public class ServerUtils {
 		return null;
 	}
 	
+	public static ArrayList readFile(File file, boolean addLineNo) {
+		return readFile( file, addLineNo, false );
+	}
+	
 	public static ArrayList readFile(File file) {
-		return readFile( file, false );
+		return readFile( file, false, false );
 	}
 	
 	public static void writeFile(File file, ArrayList lines) throws IOException {

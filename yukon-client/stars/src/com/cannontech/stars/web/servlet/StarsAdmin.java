@@ -476,15 +476,46 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
+	public static LiteApplianceCategory createApplianceCategory(String appCatName, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
+		throws java.sql.SQLException
+	{
+		com.cannontech.database.db.web.YukonWebConfiguration config =
+				new com.cannontech.database.db.web.YukonWebConfiguration();
+		config.setLogoLocation( "" );
+		config.setAlternateDisplayName( appCatName );
+		config.setDescription( "" );
+		config.setURL( "" );
+		
+		int dftCatID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT).getEntryID();
+		
+		com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+				new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+		com.cannontech.database.db.stars.appliance.ApplianceCategory appCatDB = appCat.getApplianceCategory();
+		
+		appCatDB.setCategoryID( new Integer(dftCatID) );
+		appCatDB.setDescription( appCatName );
+		appCat.setWebConfiguration( config );
+		appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		appCat.setDbConnection( conn );
+		appCat.add();
+		
+		LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
+		energyCompany.addApplianceCategory( liteAppCat );
+		LiteWebConfiguration liteConfig = (LiteWebConfiguration) StarsLiteFactory.createLite( appCat.getWebConfiguration() );
+		SOAPServer.addWebConfiguration( liteConfig );
+		
+		StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, energyCompany );
+		energyCompany.getStarsEnrollmentPrograms().addStarsApplianceCategory( starsAppCat );
+		
+		return liteAppCat;
+	}
+	
 	private void updateApplianceCategory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		StarsEnrollmentPrograms starsAppCats = energyCompany.getStarsEnrollmentPrograms();
+		
 		java.sql.Connection conn = null;
-        
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsEnrollmentPrograms starsAppCats = ecSettings.getStarsEnrollmentPrograms();
-			
 			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
@@ -740,27 +771,31 @@ public class StarsAdmin extends HttpServlet {
 				LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( appCatID.intValue() );
 				
 				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( appCatID, conn );
-				for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
-					int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
-					com.cannontech.database.db.web.YukonWebConfiguration cfg =
-							new com.cannontech.database.db.web.YukonWebConfiguration();
-					cfg.setConfigurationID( new Integer(configID) );
-					cfg.setDbConnection( conn );
-					cfg.delete();
-					
-					SOAPServer.deleteWebConfiguration( configID );
-					energyCompany.deleteStarsWebConfig( configID );
-				}
 				
-				int[] programIDs = new int[ liteAppCat.getPublishedPrograms().length ];
-				for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
-					programIDs[j] = liteAppCat.getPublishedPrograms()[j].getProgramID();
+				int[] programIDs = null;
+				if (liteAppCat.getPublishedPrograms() != null) {
+					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
+						int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
+						com.cannontech.database.db.web.YukonWebConfiguration cfg =
+								new com.cannontech.database.db.web.YukonWebConfiguration();
+						cfg.setConfigurationID( new Integer(configID) );
+						cfg.setDbConnection( conn );
+						cfg.delete();
+						
+						SOAPServer.deleteWebConfiguration( configID );
+						energyCompany.deleteStarsWebConfig( configID );
+					}
 					
-					// Delete all program events
-					com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-							energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]), conn );
+					programIDs = new int[ liteAppCat.getPublishedPrograms().length ];
+					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
+						programIDs[j] = liteAppCat.getPublishedPrograms()[j].getProgramID();
+						
+						// Delete all program events
+						com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+								energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]), conn );
+					}
+					Arrays.sort( programIDs );
 				}
-				Arrays.sort( programIDs );
 				
 				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithCategory( appCatID );
 				int[] applianceIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllApplianceIDsWithCategory( appCatID );
@@ -800,11 +835,13 @@ public class StarsAdmin extends HttpServlet {
 						}
 					}
 					
-					Iterator it = liteAcctInfo.getProgramHistory().iterator();
-					while (it.hasNext()) {
-						int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
-						if (Arrays.binarySearch(programIDs, progID) >= 0)
-							it.remove();
+					if (programIDs != null) {
+						Iterator it = liteAcctInfo.getProgramHistory().iterator();
+						while (it.hasNext()) {
+							int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
+							if (Arrays.binarySearch(programIDs, progID) >= 0)
+								it.remove();
+						}
 					}
 					
 					energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
@@ -831,15 +868,40 @@ public class StarsAdmin extends HttpServlet {
         	catch (java.sql.SQLException e) {}
         }
 	}
+	
+	public static LiteServiceCompany createServiceCompany(String companyName, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
+		throws java.sql.SQLException
+	{
+		com.cannontech.database.data.stars.report.ServiceCompany company =
+				new com.cannontech.database.data.stars.report.ServiceCompany();
+		com.cannontech.database.db.stars.report.ServiceCompany companyDB = company.getServiceCompany();
+		
+		companyDB.setCompanyName( companyName );
+		company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		company.setDbConnection( conn );
+		company.add();
+		
+		com.cannontech.database.data.customer.Contact contact =
+				new com.cannontech.database.data.customer.Contact();
+		contact.setCustomerContact( company.getPrimaryContact() );
+		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
+		energyCompany.addContact( liteContact, null );
+		
+		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
+		energyCompany.addServiceCompany( liteCompany );
+		
+		StarsServiceCompany starsCompany = new StarsServiceCompany();
+		StarsLiteFactory.setStarsServiceCompany( starsCompany, liteCompany, energyCompany );
+		energyCompany.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
+		
+		return liteCompany;
+	}
 
 	private void updateServiceCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		StarsServiceCompanies starsCompanies = energyCompany.getStarsServiceCompanies();
         
         try {
-			StarsGetEnergyCompanySettingsResponse ecSettings =
-					(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-			StarsServiceCompanies starsCompanies = ecSettings.getStarsServiceCompanies();
-			
 			int companyID = Integer.parseInt( req.getParameter("CompanyID") );
 			boolean newCompany = (companyID == -1);
 			

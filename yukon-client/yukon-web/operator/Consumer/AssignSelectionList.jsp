@@ -163,7 +163,7 @@ function setEnabled(form, checked, idx) {
 <%
 				}
 			}
-			else if (listName.equals("ApplianceType")) {
+			else if (listName.equals("LoadType")) {
 				for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 					StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
 					String selected = (id != null && category.getApplianceCategoryID() == id.intValue())? "selected" : "";

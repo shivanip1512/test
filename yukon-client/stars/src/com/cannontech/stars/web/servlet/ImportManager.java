@@ -32,6 +32,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -124,7 +125,6 @@ import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
-import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
 import com.cannontech.stars.xml.serialize.StarsUpdateAppliance;
 import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
@@ -163,51 +163,52 @@ public class ImportManager extends HttpServlet {
 	public static final String PREPROCESSED_DATA = "PREPROCESSED_DATA";
 	public static final String UNASSIGNED_LISTS = "UNASSIGNED_LISTS";
 	
-	// Table of list names and list labels
+	// Table of list names, list labels, and old STARS list names
 	public static final String[][] LIST_NAMES = {
-		{"Substation", "Substation"},
-		{"DeviceType", "Device Type"},
-		{"DeviceVoltage", "Device Voltage"},
-		{"ServiceCompany", "Service Company"},
-		{"DeviceStatus", "Device Status"},
-		{"LoadGroup", "Load Group"},
-		{"ApplianceType", "Appliance Type"},
-		{"Manufacturer", "Manufacturer"},
-		{"ACTonnage", "AC Tonnage"},
-		{"WHNumberOfGallons", "WH Size"},
-		{"WHEnergySource", "WH Energy Source"},
-		{"GENTransferSwitchType", "GEN Trans Switch Type"},
-		{"GENTransferSwitchMfg", "GEN Trans Switch Manufacturer"},
-		{"IrrigationType", "IRR Type"},
-		{"IRREnergySource", "IRR Energy Source"},
-		{"IRRHorsePower", "IRR Horse Power"},
-		{"IRRMeterVoltage", "IRR Meter Voltage"},
-		{"IRRMeterLocation", "IRR Location Source"},
-		{"IRRSoilType", "IRR Soil Type"},
-		{"GrainDryerType", "GDry Type"},
-		{"GDEnergySource", "GDry Energy Source"},
-		{"GDHorsePower", "GDry Horse Power"},
-		{"GDHeatSource", "GDry Heat Source"},
-		{"GDBinSize", "GDry Bin Size"},
-		{"HeatPumpType", "HP Type"},
-		{"HeatPumpSize", "HP Size"},
-		{"HPStandbySource", "HP Standby Heat"},
-		{"StorageHeatType", "SH Type"},
-		{"DFSwitchOverType", "DF Secondary Src"},
-		{"DFSecondarySource", "DF Switch Over"},
-		{"ServiceStatus", "Service Status"},
-		{"ServiceType", "Service Type"},
-		{"ResidenceType", "Residence Type"},
-		{"ConstructionMaterial", "Construction Material"},
-		{"DecadeBuilt", "Decade Built"},
-		{"SquareFeet", "Square Feet"},
-		{"InsulationDepth", "Insulation Depth"},
-		{"GeneralCondition", "General Condition"},
-		{"CoolingSystem", "Main Cooling System"},
-		{"HeatingSystem", "Main Heating System"},
-		{"NumberOfOccupants", "Number of Occupants"},
-		{"OwnershipType", "Ownership Type"},
-		{"FuelType", "Main Fuel Type"},
+		{"Substation", "Substation", "[Substations]"},
+		{"DeviceType", "Device Type", ""},
+		{"DeviceVoltage", "Device Voltage", "[Device Voltage]"},
+		{"ServiceCompany", "Service Company", "[Contractor List 1]"},
+		{"DeviceStatus", "Device Status", ""},
+		{"LoadGroup", "Load Group", ""},
+		{"LoadType", "Load Type", "[Load Type Description]"},
+		{"Manufacturer", "Manufacturer", "[Manufacturers]"},
+		{"ACTonnage", "AC Tonnage", "[Air Conditioner Tonage]"},
+		{"WHNumberOfGallons", "WH Size", "[Water Heater Size]"},
+		{"WHEnergySource", "WH Energy Source", "[Water Heater Energy Src]"},
+		{"GENTransferSwitchType", "GEN Trans Switch Type", "[Trans Switch Type]"},
+		{"GENTransferSwitchMfg", "GEN Trans Switch Manufacturer", "[Trans Switch Manu]"},
+		{"IrrigationType", "IRR Type", "[Irrigation Type]"},
+		{"IRREnergySource", "IRR Energy Source", "[Irrigation Energy Src]"},
+		{"IRRHorsePower", "IRR Horse Power", "[Irrigation Horsepower]"},
+		{"IRRMeterVoltage", "IRR Meter Voltage", "[Irrigation Meter Voltage]"},
+		{"IRRMeterLocation", "IRR Meter Source", "[Irrigation Meter Src]"},
+		{"IRRSoilType", "IRR Soil Type", "[Irrigation Soil Type]"},
+		{"GrainDryerType", "GDry Type", "[Grain Dryer Type]"},
+		{"GDEnergySource", "GDry Energy Source", "[Grain Dryer Blower Energy Src]"},
+		{"GDHorsePower", "GDry Horse Power", "[Grain Dryer Blower Horsepower]"},
+		{"GDHeatSource", "GDry Heat Source", "[Grain Dryer Blower Heat Src]"},
+		{"GDBinSize", "GDry Bin Size", "[Grain Dryer Bin Size]"},
+		{"HeatPumpType", "HP Type", "[Heat Pump Type]"},
+		{"HeatPumpSize", "HP Size", "[Heat Pump Size]"},
+		{"HPStandbySource", "HP Standby Heat", "[Heat Pump Standby Heat]"},
+		{"StorageHeatType", "SH Type", "[Storage Heat Type]"},
+		{"DFSwitchOverType", "DF Switch Over", ""},
+		{"DFSecondarySource", "DF Secondary Src", "[Dual Fuel Secondary Src]"},
+		{"ServiceStatus", "Service Status", ""},
+		{"ServiceType", "Service Type", "[Work Order Type]"},
+		{"ResidenceType", "Residence Type", "[Home Type]"},
+		{"ConstructionMaterial", "Construction Material", "[Construction Type]"},
+		{"DecadeBuilt", "Decade Built", "[Year Built]"},
+		{"SquareFeet", "Square Feet", "[Square Footage]"},
+		{"InsulationDepth", "Insulation Depth", "[Insulation Value]"},
+		{"GeneralCondition", "General Condition", "[Caulk Condition]"},
+		{"CoolingSystem", "Main Cooling System", "[Main Cooling System]"},
+		{"HeatingSystem", "Main Heating System", "[Main Heating System]"},
+		{"NumberOfOccupants", "Number of Occupants", ""},
+		{"OwnershipType", "Ownership Type", ""},
+		{"FuelType", "Main Fuel Type", "[Fuel Type]"},
+		{"WHLocation", "", "[Water Heater Location]"},
 	};
 	
 	// Customer account fields
@@ -368,7 +369,7 @@ public class ImportManager extends HttpServlet {
 	};
 	
 	public static final int[][] APP_LIST_FIELDS = {
-		{6, IDX_APP_TYPE},
+		{6, IDX_APP_DESC},
 		{7, IDX_MANUFACTURER},
 	};
 	
@@ -443,6 +444,7 @@ public class ImportManager extends HttpServlet {
 	public static final String HARDWARE_ACTION_REMOVE = "REMOVE";
     
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+	private static final Integer ZERO = new Integer(0);
     
 	private static StreamTokenizer prepareStreamTokenzier(String line) {
 		StreamTokenizer st = new StreamTokenizer( new StringReader(line) );
@@ -2177,7 +2179,7 @@ public class ImportManager extends HttpServlet {
 	}
 
 	private static void setStarsAppliance(StarsApp app, String[] fields, LiteStarsEnergyCompany energyCompany) {
-		app.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_TYPE]) );
+		app.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_DESC]) );
 		app.setYearManufactured( fields[IDX_YEAR_MADE] );
 		app.setNotes( fields[IDX_APP_NOTES] );
 		app.setModelNumber( "" );
@@ -2686,8 +2688,152 @@ public class ImportManager extends HttpServlet {
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
+	private void importSelectionLists(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		java.sql.Connection conn = null;
+		
+		try {
+			File selListFile = new File( req.getParameter("SelListFile") );
+			
+			// Return the empty lines in the import file
+			ArrayList selListLines = ServerUtils.readFile( selListFile, false, true );
+			if (selListLines == null)
+				throw new WebClientException("Unable to read selection list file '" + selListFile.getPath() + "'");
+			
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			
+			String listName = null;
+			ArrayList listEntries = null;
+			boolean isInList = false;
+			boolean hasLoadTypes = false;
+			
+			for (int i = 0; i < selListLines.size(); i++) {
+				String line = (String) selListLines.get(i);
+				
+				if (!isInList) {
+					if (!line.startsWith("[")) continue;
+					
+					for (int j = 0; j < LIST_NAMES.length; j++) {
+						if (LIST_NAMES[j][2].equals( line )) {
+							listName = LIST_NAMES[j][0];
+							listEntries = new ArrayList();
+							isInList = true;
+							break;
+						}
+					}
+				}
+				else {
+					if (line.equals("")) {
+						if (isInList && listEntries.size() > 0) {
+							// Find the end of a list, update the list entries
+							if (listName.equals("ServiceCompany")) {
+								StarsAdmin.deleteAllServiceCompanies( energyCompany, conn );
+								
+								for (int j = 0; j < listEntries.size(); j++) {
+									String entry = (String) listEntries.get(j);
+									StarsAdmin.createServiceCompany(entry, energyCompany, conn);
+								}
+							}
+							else if (listName.equals("LoadType")) {
+								for (int j = 0; j < listEntries.size(); j++) {
+									String entry = (String) listEntries.get(j);
+									StarsAdmin.createApplianceCategory(entry, energyCompany, conn);
+								}
+								
+								hasLoadTypes = true;
+							}
+							else {
+								// Always add an empty entry at the beginning of the list
+								listEntries.add(0, " ");
+								
+								Object[][] entryData = new Object[ listEntries.size() ][];
+								for (int j = 0; j < listEntries.size(); j++) {
+									entryData[j] = new Object[3];
+									entryData[j][0] = ZERO;
+									entryData[j][1] = listEntries.get(j);
+									entryData[j][2] = ZERO;
+								}
+								
+								YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
+								StarsAdmin.updateYukonListEntries(cList, entryData, energyCompany , conn);
+							}
+						}
+						
+						isInList = false;
+					}
+					else {
+						if (line.endsWith("="))
+							line = line.substring(0, line.length() - 1);
+						listEntries.add( line );
+					}
+				}
+			}
+			
+			String msg = "Customer selection lists imported successfully.";
+			if (hasLoadTypes)
+				msg += " Please go to the energy company settings page to update the appliance category information.";
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, msg);
+		}
+		catch (WebClientException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import selection lists");
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+		
+		redirect = referer;
+	}
+	
+	private Integer getTextEntryID(String text, String listName, LiteStarsEnergyCompany energyCompany) {
+		if (listName.equals("ServiceCompany")) {
+			if (text.equals("")) return null;
+			
+			ArrayList companies = energyCompany.getAllServiceCompanies();
+			for (int i = 0; i < companies.size(); i++) {
+				LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
+				if (text.equals( liteCompany.getCompanyName() ))
+					return new Integer( liteCompany.getCompanyID() );
+			}
+		}
+		else if (listName.equals("LoadType")) {
+			if (text.equals("")) return null;
+			
+			ArrayList appCats = energyCompany.getAllApplianceCategories();
+			for (int i = 0; i < appCats.size(); i++) {
+				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(i);
+				if (text.equals( liteAppCat.getDescription() ))
+					return new Integer( liteAppCat.getApplianceCategoryID() );
+			}
+		}
+		else {
+			YukonSelectionList list = energyCompany.getYukonSelectionList( listName );
+			if (list != null) {
+				for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+					YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+					if (text.equals( entry.getEntryText() ))
+						return new Integer( entry.getEntryID() );
+				}
+			}
+		}
+		
+		return ZERO;
+	}
+	
 	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		if (req.getParameter("SelListFile").length() > 0) {
+			importSelectionLists(user, req, session);
+			return;
+		}
 		
 		try {
 			File custFile = new File( req.getParameter("CustFile") );
@@ -2774,15 +2920,10 @@ public class ImportManager extends HttpServlet {
 			
 			// Sorted maps of import value(String) to id(Integer), filled in assignSelectionList()
 			TreeMap[] valueIDMaps = new TreeMap[ LIST_NAMES.length ];
-			int[] valueIDCnt = new int[ LIST_NAMES.length ];
-			
 			for (int i = 0; i < LIST_NAMES.length; i++) {
 				valueIDMaps[i] = (TreeMap) preprocessedData.get( LIST_NAMES[i][0] );
 				if (valueIDMaps[i] == null) valueIDMaps[i] = new TreeMap();
-				valueIDCnt[i] = valueIDMaps[i].size();
 			}
-			
-			Integer zero = new Integer(0);
 			
 			if (custLines != null) {
 				if (custFile.getName().equals("customer.map")) {
@@ -2830,8 +2971,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < SERVINFO_LIST_FIELDS.length; j++) {
 							int listIdx = SERVINFO_LIST_FIELDS[j][0];
 							int fieldIdx = SERVINFO_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -2851,8 +2994,10 @@ public class ImportManager extends HttpServlet {
 					for (int j = 0; j < INV_LIST_FIELDS.length; j++) {
 						int listIdx = INV_LIST_FIELDS[j][0];
 						int fieldIdx = INV_LIST_FIELDS[j][1];
-						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+						}
 					}
 				}
 			}
@@ -2897,8 +3042,10 @@ public class ImportManager extends HttpServlet {
 							for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
 								int listIdx = RECV_LIST_FIELDS[j][0];
 								int fieldIdx = RECV_LIST_FIELDS[j][1];
-								if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-									valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+								if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+									Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+									if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+								}
 							}
 						}
 					}
@@ -2939,8 +3086,10 @@ public class ImportManager extends HttpServlet {
 					for (int j = 0; j < APP_LIST_FIELDS.length; j++) {
 						int listIdx = APP_LIST_FIELDS[j][0];
 						int fieldIdx = APP_LIST_FIELDS[j][1];
-						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+						}
 					}
 				}
 			}
@@ -2968,8 +3117,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < AC_LIST_FIELDS.length; j++) {
 							int listIdx = AC_LIST_FIELDS[j][0];
 							int fieldIdx = AC_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -2997,8 +3148,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < WH_LIST_FIELDS.length; j++) {
 							int listIdx = WH_LIST_FIELDS[j][0];
 							int fieldIdx = WH_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3026,8 +3179,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < GEN_LIST_FIELDS.length; j++) {
 							int listIdx = GEN_LIST_FIELDS[j][0];
 							int fieldIdx = GEN_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3055,8 +3210,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < IRR_LIST_FIELDS.length; j++) {
 							int listIdx = IRR_LIST_FIELDS[j][0];
 							int fieldIdx = IRR_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3084,8 +3241,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < GDRY_LIST_FIELDS.length; j++) {
 							int listIdx = GDRY_LIST_FIELDS[j][0];
 							int fieldIdx = GDRY_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3113,8 +3272,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < HP_LIST_FIELDS.length; j++) {
 							int listIdx = HP_LIST_FIELDS[j][0];
 							int fieldIdx = HP_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3142,8 +3303,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < SH_LIST_FIELDS.length; j++) {
 							int listIdx = SH_LIST_FIELDS[j][0];
 							int fieldIdx = SH_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3171,8 +3334,10 @@ public class ImportManager extends HttpServlet {
 						for (int j = 0; j < DF_LIST_FIELDS.length; j++) {
 							int listIdx = DF_LIST_FIELDS[j][0];
 							int fieldIdx = DF_LIST_FIELDS[j][1];
-							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-								valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+							if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+								Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+								if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+							}
 						}
 					}
 				}
@@ -3210,8 +3375,10 @@ public class ImportManager extends HttpServlet {
 					for (int j = 0; j < ORDER_LIST_FIELDS.length; j++) {
 						int listIdx = ORDER_LIST_FIELDS[j][0];
 						int fieldIdx = ORDER_LIST_FIELDS[j][1];
-						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+						}
 					}
 				}
 			}
@@ -3226,8 +3393,10 @@ public class ImportManager extends HttpServlet {
 					for (int j = 0; j < RES_LIST_FIELDS.length; j++) {
 						int listIdx = RES_LIST_FIELDS[j][0];
 						int fieldIdx = RES_LIST_FIELDS[j][1];
-						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] ))
-							valueIDMaps[listIdx].put( fields[fieldIdx], zero );
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+						}
 					}
 				}
 			}
@@ -3247,10 +3416,9 @@ public class ImportManager extends HttpServlet {
 				session.setAttribute(UNASSIGNED_LISTS, unassignedLists);
 			}
 			
-			Boolean bTrue = new Boolean(true);
 			for (int i = 0; i < LIST_NAMES.length; i++) {
-				if (valueIDMaps[i].size() > valueIDCnt[i])
-					unassignedLists.put( LIST_NAMES[i][0], bTrue );
+				if (valueIDMaps[i].containsValue(ZERO) && LIST_NAMES[i][1].length() > 0)
+					unassignedLists.put( LIST_NAMES[i][0], new Boolean(true) );
 			}
 		}
 		catch (WebClientException e) {
@@ -3303,33 +3471,12 @@ public class ImportManager extends HttpServlet {
 				
 				if (listName.equals("ServiceCompany")) {
 					for (int i = 0; i < entryTexts.length; i++) {
-						com.cannontech.database.data.stars.report.ServiceCompany company =
-								new com.cannontech.database.data.stars.report.ServiceCompany();
-						com.cannontech.database.db.stars.report.ServiceCompany companyDB = company.getServiceCompany();
-						
-						companyDB.setCompanyName( entryTexts[i] );
-						company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-						company.setDbConnection( conn );
-						company.add();
-						
-						com.cannontech.database.data.customer.Contact contact =
-								new com.cannontech.database.data.customer.Contact();
-						contact.setCustomerContact( company.getPrimaryContact() );
-						LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
-						energyCompany.addContact( liteContact, null );
-						
-						LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
-						energyCompany.addServiceCompany( liteCompany );
-						
-						StarsServiceCompany starsCompany = new StarsServiceCompany();
-						StarsLiteFactory.setStarsServiceCompany( starsCompany, liteCompany, energyCompany );
-						ecSettings.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
-						
-						valueIDMap.put( assignedValues.get(i), companyDB.getCompanyID() );
+						LiteServiceCompany liteCompany = StarsAdmin.createServiceCompany( entryTexts[i], energyCompany, conn );
+						valueIDMap.put( assignedValues.get(i), new Integer(liteCompany.getCompanyID()) );
 					}
 				}
 				else {
-					YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
+					YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
 					ArrayList entries = cList.getYukonListEntries();
 					
 					Object[][] entryData = new Object[entries.size() + entryTexts.length][];
@@ -3341,12 +3488,11 @@ public class ImportManager extends HttpServlet {
 						entryData[i][2] = new Integer( cEntry.getYukonDefID() );
 					}
 					
-					Integer zero = new Integer(0);
 					for (int i = 0; i < entryTexts.length; i++) {
 						entryData[entries.size()+i] = new Object[3];
-						entryData[entries.size()+i][0] = zero;
+						entryData[entries.size()+i][0] = ZERO;
 						entryData[entries.size()+i][1] = entryTexts[i];
-						entryData[entries.size()+i][2] = zero;
+						entryData[entries.size()+i][2] = ZERO;
 					}
 					
 					StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany, conn );
