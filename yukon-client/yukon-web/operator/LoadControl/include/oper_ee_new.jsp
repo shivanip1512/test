@@ -72,12 +72,12 @@ function confirm_form(f) {
 				  </form>
                   <form name="form1" method="get" action="oper_ee.jsp?tab=history">
 				    <p> 
-                      <input type="submit" name="new" value="History">
+                      <input type="submit" name="tab" value="History">
                     </p>
 					</form>
 				   <form name="form1" method="get" action="oper_ee.jsp?tab=programs">
                     <p> 
-                      <input type="submit" name="new" value="Programs">
+                      <input type="submit" name="tab" value="Programs">
                     </p>
                   </form>
                   <p>
