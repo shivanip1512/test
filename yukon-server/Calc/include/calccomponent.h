@@ -63,6 +63,9 @@ public:
         _parent = parent;
     };    
 
+    const RWCString& getFunctionName() {return _functionName;};
+    long getComponentPointId() {return _componentPointId;};
+
     BOOL isValid( void )  {  return _valid;};
 
     BOOL isUpdated( void );
