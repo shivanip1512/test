@@ -56,6 +56,7 @@ import com.loox.jloox.LxView;
  */
 public class Editor extends JPanel {
 	
+	private static final String APPLICATION_NAME = "esubeditor";	
 	private static final Dimension defaultSize = new Dimension(800, 600);
 
 	// the drawing to edit
@@ -358,9 +359,7 @@ public class Editor extends JPanel {
 	 * @param args java.lang.String[]
 	 */
 	public static void main(String[] args) {
-		
-		haveFun();
-		
+		System.setProperty("cti.app.name", APPLICATION_NAME);
 		CtiUtilities.setLaF();
 		JFrame frame = new JFrame();
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
