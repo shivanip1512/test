@@ -58,6 +58,7 @@ portfield.obj \
 portfill.obj \
 portgui.obj \
 portgw.obj \
+portdnpudp.obj \
 portload.obj \
 portmain.obj \
 portperf.obj \
