@@ -54,11 +54,14 @@ public:
     LONG getCurrentHoursSeasonal() const;
     LONG getCurrentHoursAnnually() const;
     const RWDBDateTime& getLastControlSent() const;
+    const RWDBDateTime& getControlStartTime() const;
+    const RWDBDateTime& getControlCompleteTime() const;
     LONG getHoursDailyPointId() const;
     LONG getHoursMonthlyPointId() const;
     LONG getHoursSeasonalPointId() const;
     LONG getHoursAnnuallyPointId() const;
     LONG getLMProgramId() const;
+    LONG getControlStatusPointId() const;
 
     CtiLMGroupBase& setPAOId(LONG id);
     CtiLMGroupBase& setPAOCategory(const RWCString& category);
@@ -78,11 +81,14 @@ public:
     CtiLMGroupBase& setCurrentHoursSeasonal(LONG seasonal);
     CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
     CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
+    CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
+    CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
     CtiLMGroupBase& setHoursDailyPointId(LONG dailyid);
     CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
     CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
     CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
     CtiLMGroupBase& setLMProgramId(LONG progid);
+    CtiLMGroupBase& setControlStatusPointId(LONG cntid);
 
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -148,6 +154,8 @@ private:
     LONG _currenthoursseasonal;
     LONG _currenthoursannually;
     RWDBDateTime _lastcontrolsent;
+    RWDBDateTime _controlstarttime;
+    RWDBDateTime _controlcompletetime;
     LONG _hoursdailypointid;
     LONG _hoursmonthlypointid;
     LONG _hoursseasonalpointid;
@@ -155,6 +163,7 @@ private:
 
     //don't stream
     LONG _lmprogramid;
+    LONG _controlstatuspointid;
     BOOL _insertDynamicDataFlag;
 };
 #endif
