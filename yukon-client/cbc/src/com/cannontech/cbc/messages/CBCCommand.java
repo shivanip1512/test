@@ -24,6 +24,7 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 	public static final int CONFIRM_CLOSE = 9;	
 	public static final int REQUEST_ALL_SUBS = 10;
 	public static final int RETURN_BANK_TO_FEEDER = 11;
+	public static final int RESET_OPCOUNT = 12;
 
 	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY	= 20;
@@ -44,7 +45,8 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 		"CONFIRM CLOSE",
 		"REQUEST ALL SUBSTATION BUSES",
 		"RETURN BANK TO FEEDER",   //11
-		"","","","",
+		"UPDATE OPCOUNT",
+		"","","",
 		"","","","",
 		
 		//below are not used by the server

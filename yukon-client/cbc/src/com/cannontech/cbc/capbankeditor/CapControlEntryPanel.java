@@ -4,10 +4,23 @@ package com.cannontech.cbc.capbankeditor;
  * Creation date: (12/14/00 4:00:59 PM)
  * @author: 
  */
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.gui.CapBankTableModel;
+import java.awt.Dimension;
 
-public class CapBankManualEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer {
+import com.cannontech.cbc.data.CBCClientConnection;
+import com.cannontech.cbc.data.CapBankDevice;
+import com.cannontech.cbc.data.StreamableCapObject;
+import com.cannontech.cbc.data.SubBus;
+import com.cannontech.cbc.gui.CapBankTableModel;
+import com.cannontech.cbc.messages.CBCCommand;
+import com.cannontech.common.gui.unchanging.LongRangeDocument;
+import com.cannontech.common.util.MessageEvent;
+import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.Message;
+
+public class CapControlEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer 
+{
 	private CBCClientConnection connectionWrapper = null;
 	private javax.swing.JLabel ivjJLabelCapBank = null;
 	private javax.swing.JLabel ivjJLabelCapBankName = null;
@@ -16,13 +29,18 @@ public class CapBankManualEntryPanel extends javax.swing.JPanel implements java.
 	private javax.swing.JButton ivjJButtonDismiss = null;
 	private javax.swing.JButton ivjJButtonUpdate = null;
 	private ObservableCapBankRow observableCapBankRow = null;
-	private com.cannontech.cbc.data.CapBankDevice capBankDevice = null;
+	private StreamableCapObject capObject = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
+
+
+	private javax.swing.JLabel jLabelOpCount = null;
+	private javax.swing.JTextField jTextFieldOpCount = null;
+	private javax.swing.JCheckBox jCheckBoxOpCount = null;
 
 /**
  * CapBankEntryPanel constructor comment.
  */
-public CapBankManualEntryPanel() {
+public CapControlEntryPanel() {
 	super();
 	initialize();
 }
@@ -31,7 +49,7 @@ public CapBankManualEntryPanel() {
 /**
  * CapBankEntryPanel constructor comment.
  */
-public CapBankManualEntryPanel( CBCClientConnection conn ) 
+public CapControlEntryPanel( CBCClientConnection conn ) 
 {
 	super();
 
@@ -44,16 +62,23 @@ public CapBankManualEntryPanel( CBCClientConnection conn )
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
+public void actionPerformed(java.awt.event.ActionEvent e) 
+{
+
 	if (e.getSource() == getJButtonUpdate()) 
 		connEtoC1(e);
 	if (e.getSource() == getJButtonDismiss()) 
 		connEtoC2(e);
-	// user code begin {2}
-	// user code end
+
+	if( e.getSource() == getJCheckBoxOpCount() )
+	{
+		getJLabelOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
+		getJTextFieldOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
+		
+		getJLabelState().setEnabled( !getJCheckBoxOpCount().isSelected() );
+		getJComboBoxState().setEnabled( !getJCheckBoxOpCount().isSelected() );
+	}
+
 }
 
 
@@ -163,8 +188,8 @@ private static void getBuilderData() {
  * Creation date: (12/14/00 4:50:21 PM)
  * @return com.cannontech.cbc.CapBankDevice
  */
-public com.cannontech.cbc.data.CapBankDevice getCapBankDevice() {
-	return capBankDevice;
+public StreamableCapObject getCapObject() {
+	return capObject;
 }
 
 
@@ -173,7 +198,7 @@ public com.cannontech.cbc.data.CapBankDevice getCapBankDevice() {
  * Creation date: (1/8/2001 3:45:56 PM)
  * @return com.cannontech.cbc.CBCClientConnection
  */
-public com.cannontech.cbc.data.CBCClientConnection getConnectionWrapper() {
+public CBCClientConnection getConnectionWrapper() {
 	return connectionWrapper;
 }
 
@@ -229,6 +254,31 @@ private javax.swing.JButton getJButtonUpdate() {
 
 
 /**
+ * @return javax.swing.JTextField
+ */
+private javax.swing.JTextField getJTextFieldOpCount() 
+{
+	if (jTextFieldOpCount == null) 
+	{
+		try 
+		{
+			jTextFieldOpCount = new javax.swing.JTextField();
+			jTextFieldOpCount.setName("JTextFieldOpCount");
+			
+			jTextFieldOpCount.setDocument( new LongRangeDocument(0, 999999) );
+			
+			jTextFieldOpCount.setEnabled( false );
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jTextFieldOpCount;
+}
+
+/**
  * Return the JComboBox1 property value.
  * @return javax.swing.JComboBox
  */
@@ -267,6 +317,9 @@ private javax.swing.JLabel getJLabelCapBank() {
 			ivjJLabelCapBank.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelCapBank.setText("CapBank:");
 			// user code begin {1}
+			
+			ivjJLabelCapBank.setText("Name:");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -277,6 +330,54 @@ private javax.swing.JLabel getJLabelCapBank() {
 	return ivjJLabelCapBank;
 }
 
+/**
+ * Return the JLabelCapBankName property value.
+ * @return javax.swing.JLabel
+ */
+private javax.swing.JCheckBox getJCheckBoxOpCount() 
+{
+	if( jCheckBoxOpCount == null ) 
+	{
+		try 
+		{
+			jCheckBoxOpCount = new javax.swing.JCheckBox();
+			jCheckBoxOpCount.setName("JLabelOpCount");
+			jCheckBoxOpCount.setFont(new java.awt.Font("dialog", 0, 14));
+			jCheckBoxOpCount.setText("Update Operation Count");			
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+	return jCheckBoxOpCount;
+}
+
+
+/**
+ * Return the JLabelCapBankName property value.
+ * @return javax.swing.JLabel
+ */
+private javax.swing.JLabel getJLabelOpCount() 
+{
+	if( jLabelOpCount == null ) 
+	{
+		try 
+		{
+			jLabelOpCount = new javax.swing.JLabel();
+			jLabelOpCount.setName("JLabelOpCount");
+			jLabelOpCount.setFont(new java.awt.Font("dialog", 0, 14));
+			jLabelOpCount.setText("Op Count:");
+			
+			jLabelOpCount.setEnabled( false );
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+	return jLabelOpCount;
+}
 
 /**
  * Return the JLabelCapBankName property value.
@@ -288,7 +389,7 @@ private javax.swing.JLabel getJLabelCapBankName() {
 		try {
 			ivjJLabelCapBankName = new javax.swing.JLabel();
 			ivjJLabelCapBankName.setName("JLabelCapBankName");
-			ivjJLabelCapBankName.setFont(new java.awt.Font("Arial", 1, 14));
+			ivjJLabelCapBankName.setFont(new java.awt.Font("dialog", 1, 14));
 			ivjJLabelCapBankName.setText("JLabel3");
 			// user code begin {1}
 			// user code end
@@ -367,10 +468,11 @@ private void handleException(java.lang.Throwable exception) {
  * Initializes connections
  * @exception java.lang.Exception The exception description.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
+private void initConnections() throws java.lang.Exception 
+{
+	getJCheckBoxOpCount().addActionListener( this );
+	
+	
 	getJButtonUpdate().addActionListener(this);
 	getJButtonDismiss().addActionListener(this);
 }
@@ -379,29 +481,31 @@ private void initConnections() throws java.lang.Exception {
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
+private void initialize() 
+{
+	try 
+	{
 		setName("CapBankEntryPanel");
 		setLayout(new java.awt.GridBagLayout());
-		setSize(349, 196);
+		setPreferredSize( new Dimension(280, 200) );
 
 		java.awt.GridBagConstraints constraintsJLabelCapBank = new java.awt.GridBagConstraints();
 		constraintsJLabelCapBank.gridx = 1; constraintsJLabelCapBank.gridy = 1;
 		constraintsJLabelCapBank.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelCapBank.ipadx = 2;
-		constraintsJLabelCapBank.ipady = 5;
-		constraintsJLabelCapBank.insets = new java.awt.Insets(37, 11, 10, 2);
+		constraintsJLabelCapBank.insets = new java.awt.Insets(11, 11, 5, 2);
 		add(getJLabelCapBank(), constraintsJLabelCapBank);
+
+		java.awt.GridBagConstraints constraintsJLabelCapBankName = new java.awt.GridBagConstraints();
+		constraintsJLabelCapBankName.gridx = 2; constraintsJLabelCapBankName.gridy = 1;
+		constraintsJLabelCapBankName.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJLabelCapBankName.insets = new java.awt.Insets(11, 3, 5, 5);
+		add(getJLabelCapBankName(), constraintsJLabelCapBankName);
+
 
 		java.awt.GridBagConstraints constraintsJLabelState = new java.awt.GridBagConstraints();
 		constraintsJLabelState.gridx = 1; constraintsJLabelState.gridy = 2;
 		constraintsJLabelState.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelState.ipadx = 20;
-		constraintsJLabelState.ipady = 2;
-		constraintsJLabelState.insets = new java.awt.Insets(12, 11, 26, 9);
+		constraintsJLabelState.insets = new java.awt.Insets(5, 11, 5, 2);
 		add(getJLabelState(), constraintsJLabelState);
 
 		java.awt.GridBagConstraints constraintsJComboBoxState = new java.awt.GridBagConstraints();
@@ -409,38 +513,51 @@ private void initialize() {
 		constraintsJComboBoxState.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		constraintsJComboBoxState.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJComboBoxState.weightx = 1.0;
-		constraintsJComboBoxState.ipadx = 45;
-		constraintsJComboBoxState.insets = new java.awt.Insets(11, 3, 25, 98);
+		constraintsJComboBoxState.insets = new java.awt.Insets(11, 3, 5, 5);
 		add(getJComboBoxState(), constraintsJComboBoxState);
 
-		java.awt.GridBagConstraints constraintsJLabelCapBankName = new java.awt.GridBagConstraints();
-		constraintsJLabelCapBankName.gridx = 2; constraintsJLabelCapBankName.gridy = 1;
-		constraintsJLabelCapBankName.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelCapBankName.ipadx = 192;
-		constraintsJLabelCapBankName.ipady = 8;
-		constraintsJLabelCapBankName.insets = new java.awt.Insets(37, 3, 10, 23);
-		add(getJLabelCapBankName(), constraintsJLabelCapBankName);
+
+		java.awt.GridBagConstraints conOpCntBox = new java.awt.GridBagConstraints();
+		conOpCntBox.gridx = 1; conOpCntBox.gridy = 3;
+		conOpCntBox.gridwidth = 2;
+		conOpCntBox.fill = java.awt.GridBagConstraints.BOTH;
+		conOpCntBox.anchor = java.awt.GridBagConstraints.WEST;
+		conOpCntBox.insets = new java.awt.Insets(5, 11, 2, 2);
+		add(getJCheckBoxOpCount(), conOpCntBox );
+
+
+		java.awt.GridBagConstraints conOpCntLabel = new java.awt.GridBagConstraints();
+		conOpCntLabel.gridx = 1; conOpCntLabel.gridy = 4;
+		conOpCntLabel.anchor = java.awt.GridBagConstraints.WEST;
+		conOpCntLabel.insets = new java.awt.Insets(5, 11, 10, 2);
+		add(getJLabelOpCount(), conOpCntLabel );
+
+		java.awt.GridBagConstraints conOpCntText = new java.awt.GridBagConstraints();
+		conOpCntText.gridx = 2; conOpCntText.gridy = 4;
+		conOpCntText.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		conOpCntText.anchor = java.awt.GridBagConstraints.WEST;
+		conOpCntText.insets = new java.awt.Insets(5, 3, 10, 5);
+		add(getJTextFieldOpCount(), conOpCntText );
+
+
 
 		java.awt.GridBagConstraints constraintsJPanel1 = new java.awt.GridBagConstraints();
-		constraintsJPanel1.gridx = 1; constraintsJPanel1.gridy = 3;
+		constraintsJPanel1.gridx = 1; constraintsJPanel1.gridy = 5;
 		constraintsJPanel1.gridwidth = 2;
 		constraintsJPanel1.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanel1.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJPanel1.anchor = java.awt.GridBagConstraints.SOUTHWEST;
 		constraintsJPanel1.weightx = 1.0;
 		constraintsJPanel1.weighty = 1.0;
-		constraintsJPanel1.ipadx = 173;
-		constraintsJPanel1.insets = new java.awt.Insets(25, 5, 6, 6);
+		constraintsJPanel1.insets = new java.awt.Insets(10, 0, 6, 0);
 		add(getJPanel1(), constraintsJPanel1);
+		
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
 
 	if( observableCapBankRow != null )
-		observableCapBankRow.addObserver(this);
-	
-	// user code end
+		observableCapBankRow.addObserver(this);	
 }
 
 /**
@@ -455,6 +572,26 @@ public void jButtonDismiss_ActionPerformed(java.awt.event.ActionEvent actionEven
 	return;
 }
 
+private PointData createPointData()
+{
+	PointData pt = null;
+	
+	if( getCapObject() instanceof CapBankDevice )
+	{
+		pt = new PointData();
+
+		pt.setId( ((CapBankDevice)getCapObject()).getStatusPointID().intValue() );
+			
+		pt.setValue( (double)getJComboBoxState().getSelectedIndex() );
+		pt.setQuality( PointQualities.MANUAL_QUALITY );
+		pt.setStr("Capacitor Bank manual change from CBC Client");
+		pt.setTime( new java.util.Date() );
+		pt.setTimeStamp( new java.util.Date() );
+		pt.setType( PointTypes.STATUS_POINT );
+	}
+		
+	return pt;
+}
 
 /**
  * Comment
@@ -465,25 +602,31 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	try
 	{
 		// Send new point Here
-		com.cannontech.message.dispatch.message.PointData pt = new com.cannontech.message.dispatch.message.PointData();
+		Message msg = null;
 
-		pt.setId( getCapBankDevice().getStatusPointID().intValue() );
-		pt.setValue( (double)getJComboBoxState().getSelectedIndex() );
-		pt.setQuality( com.cannontech.database.data.point.PointQualities.MANUAL_QUALITY );
-		pt.setStr("Manual change occured from " + com.cannontech.common.util.CtiUtilities.getUserName() + " using CBC Client");
-		pt.setTime( new java.util.Date() );
-		pt.setTimeStamp( new java.util.Date() );
-		pt.setType( com.cannontech.database.data.point.PointTypes.STATUS_POINT );
-		pt.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
+		if( getJComboBoxState().isEnabled() )
+		{
+			msg = createPointData();
+		}
+		else if( getJTextFieldOpCount().isEnabled() )
+		{
+			CBCCommand cmdMsg = new CBCCommand(
+					CBCCommand.RESET_OPCOUNT, getCapObject().getCcId().intValue() );
+			
+			//cmdMsg.set
+			
+			msg = cmdMsg;
+		}
+
 
 		if( getConnectionWrapper() != null )
 		{
-			getConnectionWrapper().write( pt );
+			getConnectionWrapper().write( msg );
 		}
 		else
 		{
-			com.cannontech.common.util.MessageEvent msgEvent = new com.cannontech.common.util.MessageEvent( this, "Unable to send Manual Point Entry, no connection found." );
-			msgEvent.setMessageType( com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE );
+			MessageEvent msgEvent = new MessageEvent( this, "Unable to send message to CapControl Server, no connection found." );
+			msgEvent.setMessageType( MessageEvent.INFORMATION_MESSAGE );
 			getConnectionWrapper().fireMessageEvent(msgEvent);
 		}
 			
@@ -497,55 +640,46 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	return;
 }
 
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		CapBankManualEntryPanel aCapBankManualEntryPanel;
-		aCapBankManualEntryPanel = new CapBankManualEntryPanel();
-		frame.setContentPane(aCapBankManualEntryPanel);
-		frame.setSize(aCapBankManualEntryPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-
-
 /**
  * Insert the method's description here.
  * Creation date: (12/14/00 4:50:21 PM)
  * @param newCapBankDevice com.cannontech.cbc.CapBankDevice
  */
-public void setCapBankDevice(com.cannontech.cbc.data.CapBankDevice newCapBankDevice) 
+public void setCapObject(StreamableCapObject newCapObj_ ) 
 {
-	capBankDevice = newCapBankDevice;
+	capObject = newCapObj_;
 
-	if( getCapBankDevice() != null )
+	if( getCapObject() != null )
 	{
-		getJLabelCapBankName().setText( getCapBankDevice().getCcName() );
+		getJLabelCapBankName().setText( getCapObject().getCcName() );
 
 		try
 		{
-			getJComboBoxState().setSelectedItem( CapBankTableModel.getStateNames()[newCapBankDevice.getControlStatus().intValue()] );
+			if( getCapObject() instanceof CapBankDevice )
+			{
+				CapBankDevice capBank = (CapBankDevice)getCapObject();
+				//getJComboBoxState().setSelectedItem( capBank.getOperationalState() );
+
+				getJTextFieldOpCount().setText( 
+					String.valueOf(capBank.getCurrentDailyOperations()) );
+				
+				getJComboBoxState().setSelectedItem( 
+					CapBankTableModel.getStateNames()[capBank.getControlStatus().intValue()] );				
+			}
+
+			if( getCapObject() instanceof SubBus )
+			{
+				SubBus subBus = (SubBus)getCapObject();
+
+			}
+
 		}
 		catch( ArrayIndexOutOfBoundsException e)
 		{
 		}
 	}
+	
+	
 }
 
 
@@ -579,20 +713,20 @@ public void setObservableCapBankRow(ObservableCapBankRow obsRow)
  */
 public void update( java.util.Observable originator, Object newValue ) 
 {
-	if( newValue instanceof ObservedCapBankChanged )
-	{
-		ObservedCapBankChanged capBank = (ObservedCapBankChanged)newValue;
+	ObservedStreamableCapObject streamObj = null;
+	
+	if( newValue instanceof ObservedStreamableCapObject )
+		streamObj = (ObservedStreamableCapObject)newValue;
 
-		// make sure we are looking at the capbank that was changed		
-		if( capBank.getCapBankDevice().getCcId().intValue() == capBankDevice.getCcId().intValue() )
-		{
-			getJLabelCapBankName().setText( capBank.getCapBankDevice().getCcName() );
-			getJComboBoxState().setSelectedItem( capBank.getCapBankDevice().getOperationalState() );
-			setCapBankDevice( capBank.getCapBankDevice() );
+	// make sure we are looking at the capbank that was changed		
+	if( streamObj != null &&
+		 streamObj.getCapObject().getCcId().intValue() == getCapObject().getCcId().intValue() )
+	{		
+		setCapObject( streamObj.getCapObject() );
 
-			this.revalidate();
-			this.repaint();
-		}
-	}		
+		this.revalidate();
+		this.repaint();
+	}
+
 }
 }

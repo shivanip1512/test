@@ -1,7 +1,7 @@
 package com.cannontech.cbc.capbankeditor;
 
 /**
- * The bean information class for com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel.
+ * The bean information class for com.cannontech.cbc.capbankeditor.CapControlEntryPanel.
  */
 public class CapBankManualEntryPanelBeanInfo extends java.beans.SimpleBeanInfo {
 /**
@@ -362,7 +362,7 @@ public java.beans.BeanInfo[] getAdditionalBeanInfo() {
  * @return java.lang.Class
  */
 public static java.lang.Class getBeanClass() {
-	return com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel.class;
+	return com.cannontech.cbc.capbankeditor.CapControlEntryPanel.class;
 }
 /**
  * Gets the bean class name.
@@ -375,7 +375,7 @@ public java.beans.BeanDescriptor getBeanDescriptor() {
 	java.beans.BeanDescriptor aDescriptor = null;
 	try {
 		/* Create and return the CapBankManualEntryPanelBeanInfo bean descriptor. */
-		aDescriptor = new java.beans.BeanDescriptor(com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel.class);
+		aDescriptor = new java.beans.BeanDescriptor(com.cannontech.cbc.capbankeditor.CapControlEntryPanel.class);
 		/* aDescriptor.setExpert(false); */
 		/* aDescriptor.setHidden(false); */
 		/* aDescriptor.setValue("hidden-state", Boolean.FALSE); */

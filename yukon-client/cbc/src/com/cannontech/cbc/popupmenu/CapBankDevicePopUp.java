@@ -2,7 +2,7 @@ package com.cannontech.cbc.popupmenu;
 
 import javax.swing.JSeparator;
 
-import com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel;
+import com.cannontech.cbc.capbankeditor.CapControlEntryPanel;
 import com.cannontech.cbc.capbankeditor.CapBankTempMovePanel;
 import com.cannontech.cbc.capbankeditor.ObservableCapBankRow;
 import com.cannontech.cbc.data.CBCClientConnection;
@@ -545,7 +545,7 @@ public void jMenuItemManualEntry_ActionPerformed(java.awt.event.ActionEvent acti
 	
 	final javax.swing.JDialog d = new javax.swing.JDialog( pFrame ); 
 
-	CapBankManualEntryPanel panel = new CapBankManualEntryPanel( getConnectionWrapper() )
+	CapControlEntryPanel panel = new CapControlEntryPanel( getConnectionWrapper() )
 	{
 		protected void disposePanel()
 		{
@@ -556,9 +556,10 @@ public void jMenuItemManualEntry_ActionPerformed(java.awt.event.ActionEvent acti
 	if( panel != null )
 	{
 		panel.setObservableCapBankRow( getObservedCapBankRow() );
-		panel.setCapBankDevice( getCapBankDevice() );
+		panel.setCapObject( getCapBankDevice() );
 		
 		d.getContentPane().add(panel);
+		//d.setSize( new Dimension(260, 200) );
 		d.pack();
 		d.setTitle("Cap Bank Manual Entry");
 	}
