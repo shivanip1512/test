@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/09/16 14:37:01 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/09/19 15:52:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -629,6 +629,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 {
                                     if(pDyn->getDispatch().isDirty())
                                     {
+                                        // pDyn->getDispatch().setLastAlarmLogID(0);   // The alarm has been cleared now.
                                         pDyn->getDispatch().Update();
                                     }
 
@@ -2231,7 +2232,8 @@ INT CtiVanGogh::loadPendingSignals()
 
             if( pDyn != NULL )
             {
-                if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) )      // This point seems to have an alarm indication on it.
+                if( (pDyn->getDispatch().getTags() & MASK_ANY_ALARM) &&      // This point seems to have an alarm indication on it.
+                    (pDyn->getDispatch().getLastAlarmLogID() != 0) )
                 {
                     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
@@ -2241,33 +2243,11 @@ INT CtiVanGogh::loadPendingSignals()
                     RWDBTable      keyTable;
                     RWDBReader     rdr;
 
-                    CtiTableSignal::getSQLMaxID( db, keyTable, selector, pTempPoint->getID() );
-                    rdr = selector.reader( conn );
-
-                    if(rdr.status().errorCode() != RWDBStatus::ok)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << selector.asString() << endl;
-                    }
-
-                    LONG maxID;
-
-                    if( rdr() ) // there better be Only one in there!
-                    {
-                        rdr["logid"] >> maxID;
-                    }
-                    else
-                    {
-                        continue;      // This point has no logs!
-                    }
-
-                    selector = conn.database().selector();
-
                     CtiTableSignal::getSQL( db, keyTable, selector );
-                    selector.where( selector.where() && keyTable["logid"] == maxID);
+                    selector.where( selector.where() && keyTable["logid"] == pDyn->getDispatch().getLastAlarmLogID());
 
                     rdr = selector.reader( conn );
+
                     if(rdr.status().errorCode() != RWDBStatus::ok)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2280,7 +2260,6 @@ INT CtiVanGogh::loadPendingSignals()
                         pSig = NULL;
                         rdr["logid"] >> lTemp;            // get the LogID
                         CtiHashKey key(lTemp);
-
 
                         if( _signalsPending.entries() > 0 && ((pSig = _signalsPending.getMap().findValue(&key)) != NULL) )
                         {
@@ -2336,6 +2315,8 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
     UINT           panicCounter = 0;
 
     RWOrdered      postList;
+
+    vector< pair< long, long > > alarmLogSlots;
 
     try
     {
@@ -2393,6 +2374,15 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                                 }
                             }
 
+                            if(Msg->getTags() & MASK_ANY_ALARM)
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                alarmLogSlots.push_back( make_pair(Msg->getId(), sig.getLogID()) );
+                            }
+
                             postList.insert(Msg);
                         }
 
@@ -2433,6 +2423,34 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 }
             }
         }
+
+        if(!alarmLogSlots.empty())
+        {
+            CtiLockGuard<CtiMutex> guard(server_mux, 10000);
+
+            if(guard.isAcquired())
+            {
+                CtiPoint *pPoint = 0;
+                pair< long, long > mypair;
+
+                for(int pos = 0; pos < alarmLogSlots.size(); pos++)
+                {
+                    mypair = alarmLogSlots[pos];
+
+                    long pid = mypair.first;
+                    long logid = mypair.second;
+
+                    pPoint = PointMgr.getMap().findValue( &CtiHashKey(pid) );
+
+                    if(pPoint != NULL)
+                    {
+                        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
+                        pDyn->getDispatch().setLastAlarmLogID( logid );
+                    }
+                }
+            }
+        }
+
     }
     catch(RWxmsg &msg)
     {

@@ -44,6 +44,8 @@ protected:
     UINT           iTags;
     UINT           iStaleCount;
 
+    ULONG          iLastAlarmLogID;
+
 private:
 
     public:
@@ -92,6 +94,9 @@ private:
 
     const RWDBDateTime& getNextArchiveTime() const;
     CtiTablePointDispatch& setNextArchiveTime(const RWDBDateTime& timestamp);
+
+    ULONG getLastAlarmLogID() const;
+    CtiTablePointDispatch& setLastAlarmLogID(ULONG logID);
 
     UINT getTags() const;
     UINT setTags(UINT tags);
