@@ -51,7 +51,7 @@ public class WPSCMain implements Runnable
 				now = new java.util.GregorianCalendar();
 				
 				// Check for new day of month.
-				if (now.get(java.util.Calendar.DATE) > WPSCMain.this.currentDate)
+				if (now.get(java.util.Calendar.DATE) != WPSCMain.this.currentDate)
 				{
 					WPSCMain.this.updateLogWriter();
 				}
