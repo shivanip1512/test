@@ -179,10 +179,14 @@ public class StarsFactory {
         	callRprts[i] = new StarsCallReport();
         	
         	callRprts[i].setCallID( calls[i].getCallID().intValue() );
-			callRprts[i].setCallNumber( ServerUtils.forceNotNull(calls[i].getCallNumber()) );
         	callRprts[i].setCallDate( calls[i].getDateTaken() );
         	callRprts[i].setTakenBy( ServerUtils.forceNotNull(calls[i].getTakenBy()) );
         	callRprts[i].setDescription( ServerUtils.forceNotNull(calls[i].getDescription()) );
+        	
+        	String callNo = ServerUtils.forceNotNull(calls[i].getCallNumber());
+        	if (callNo.startsWith( ServerUtils.CTI_NUMBER ))
+        		callNo = callNo.substring( ServerUtils.CTI_NUMBER.length() );
+			callRprts[i].setCallNumber( callNo );
         	
         	CallType callType = new CallType();
         	StarsLiteFactory.setStarsCustListEntry( callType, YukonListFuncs.getYukonListEntry(calls[i].getCallTypeID().intValue()) );
