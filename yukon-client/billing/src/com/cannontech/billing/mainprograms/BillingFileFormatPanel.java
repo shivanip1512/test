@@ -11,7 +11,8 @@ import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 
-public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer {
+public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
+{
 	private javax.swing.JComboBox ivjFileFormatComboBox = null;
 	private javax.swing.JLabel ivjFileFormatLabel = null;
 	private javax.swing.JPanel ivjFileFormatPanel = null;
@@ -32,8 +33,6 @@ public class BillingFileFormatPanel extends javax.swing.JPanel implements java.a
 	private javax.swing.JLabel ivjDemandStartDateLabel = null;
 	private javax.swing.JLabel ivjEnergyStartDateLabel = null;
 	private Thread timerThread = null;
-	public static final String BILLING_VERSION = 
-			com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "2.3.13";
 	private BillingFile billingFile = null;
 	private java.text.SimpleDateFormat startDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	private javax.swing.JCheckBox ivjIsAppendingCheckBox = null;
@@ -43,42 +42,13 @@ public class BillingFileFormatPanel extends javax.swing.JPanel implements java.a
 	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
 	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
 	private javax.swing.JCheckBox ivjRemoveMultiplierCheckBox = null;
-//	private String[] billingTypeString = 
-//	{ 
-//		"COLLECTION GROUP",
-//		"ALTERNATE GROUP",
-//		"BILLING GROUP"
-//	};
-//
-//	private String[] billingTypeColumn= 
-//	{ 
-//		"COLLECTIONGROUP",
-//		"TESTCOLLECTIONGROUP",
-//		"BILLINGGROUP"
-//	};
-	
-	
-	
-	
-	//private boolean. billingCommandLineInput = false;
+
 /**
  * BillingFile constructor comment.
  */
 public BillingFileFormatPanel() {
 	super();
 	initialize();
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/10/2001 3:21:17 PM)
- */
-private void about()
-{
-	javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-	popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("ctismall.gif"));
-	javax.swing.JOptionPane.showMessageDialog(popupFrame,
-	"This is version " + BILLING_VERSION + "\nCopyright (C) 1999-2002 Cannon Technologies.",
-	"About Yukon Export Client",javax.swing.JOptionPane.INFORMATION_MESSAGE);
 }
 /**
  * Insert the method's description here.
@@ -90,25 +60,10 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	if( event.getSource() == getDateComboBox() )
 	{
 		java.util.Date newEndDate = getDateComboBox().getSelectedDate();
-//		java.util.Date newEndDate = null;
-//		Object tempDate = getDateComboBox().getSelectedDate();
-	
-/*		if( tempDate instanceof java.util.Date )
-		{
-			newEndDate = (java.util.Date) tempDate;
-		}
-		else if( tempDate instanceof java.util.Calendar )
-		{
-			newEndDate = ((java.util.Calendar) tempDate).getTime();
-		}
-		*/
-//		if( newEndDate != null)
-		{
-			getBillingDefaults().setEndDate(newEndDate);
+		getBillingDefaults().setEndDate(newEndDate);
 
-			getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
-			getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
-		}
+		getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
+		getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
 	}
 	else if( event.getSource() == getGenerateFileToggleButton())
 	{
@@ -122,16 +77,6 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		String formatSelected = (String)getFileFormatComboBox().getSelectedItem();
 		getBillingDefaults().setFormatID(FileFormatTypes.getFormatID(formatSelected	));
 	}
-	//else if ( event.getSource() == getInputFileBrowseButton())
-	//{
-		//String file = browseInput();
-		//if( file != null)
-		//{
-			//getInputFileTextField().setText( file );
-			//getBillingDefaults().setInputFile(file);
-		//}
-		//repaint();
-	//}
 	else if ( event.getSource() == getOutputFileBrowseButton())
 	{
 		String file = browseOutput();
@@ -154,7 +99,6 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if ( event.getSource() == getBillingGroupTypeComboBox())
 	{
-//		getBillingDefaults().setBillGroupColumn(billingTypeColumn[getBillingGroupTypeComboBox().getSelectedIndex()]);
 		getBillingDefaults().setBillGroupSQLString(getBillingGroupTypeComboBox().getSelectedIndex());
 		getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
 	}
@@ -186,45 +130,6 @@ private String browseOutput()
 		return chooser.getSelectedFile().getPath();
 	}
 	return null;
-}
-/**
- * Comment
- * Input options removed from gui, this is not needed anymore!
- * Input dir is now a static string, More specific input file details can be implemented later.
- */
-public void enableComponents()
-{
-	/*
-	boolean showInput = true;
-	boolean showOutput = true;
-
-	if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS )
-	{
-		showInput = true;
-		showOutput = true;
-	}
-	else if ( getBillingDefaults().getFormatID() == FileFormatTypes.WLT_40  )
-	{
-		showInput = true;
-		showOutput = false;
-	}
-	else
-	{
-		showInput = false;
-		showOutput = true;
-	}
-
-	
-	getInputFileBrowseButton().setEnabled(showInput);
-	getInputFileLabel().setEnabled(showInput);
-	getInputFileTextField().setEnabled(showInput);
-	
-	getOutputFileBrowseButton().setEnabled(showOutput);
-	getOutputFileLabel().setEnabled(showOutput);
-	getOutputFileTextField().setEnabled(showOutput);
-
-	repaint();
-	*/
 }
 /**
  * Insert the method's description here.
@@ -1218,11 +1123,10 @@ private void initialize() {
 		//** Do this before initializing any JComponents. **
 		//  This application stores it's own default text config file,
 		//	 defined in billingFileDefaults class.
-
 		billingFile = new BillingFile();
 		billingFile.setAllBillGroupsVector(getBillingFile().retreiveAllBillGroupsVector());
 		billingFile.retreiveFileFormats();
-		com.cannontech.clientutils.CTILogger.info("Yukon Billing File Client Version: "  + BILLING_VERSION);
+		
 		// user code end
 		setName("BillingFile");
 		setLayout(new java.awt.GridBagLayout());
@@ -1251,24 +1155,44 @@ private void initialize() {
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
  */
-
- /*
- BillingFileFormatPanel is best run through BillingFileFormatFrame
- or com.cannontech.dbeditor.wizard.billing.BillingFileGenerationPanel through
- com.cannontech.dbeditor.wizard.billing.BillingFileWizardPanel
- */
- 
- 
- public static void main(java.lang.String[] args) {
-	try {
+ public static void main(java.lang.String[] args)
+ {
+	try
+	{
+		System.setProperty("cti.app.name", "Billing");		
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());	
 		final javax.swing.JFrame frame = new javax.swing.JFrame();
-
+		
+		//Create a menuBar for running standalone.
+		javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
+		javax.swing.JMenu fileMenu = new javax.swing.JMenu("File");
+		fileMenu.setMnemonic('f');
+		javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem("Exit", 'e');
+		exitMenuItem.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(java.awt.event.ActionEvent e){
+				System.exit(0);
+			}
+		});
+		fileMenu.add(exitMenuItem);
+		menuBar.add(fileMenu);
+		javax.swing.JMenu helpMenu = new javax.swing.JMenu("Help");
+		helpMenu.setMnemonic('h');
+		javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem("About", 'a');
+		aboutMenuItem.addActionListener(new java.awt.event.ActionListener(){
+			public void actionPerformed(java.awt.event.ActionEvent e){
+				javax.swing.JFrame popupFrame = new javax.swing.JFrame();
+				popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("ctismall.gif"));
+				javax.swing.JOptionPane.showMessageDialog(popupFrame,
+				"This is version " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "\nCopyright (C) 1999-2003 Cannon Technologies.",
+				"About Yukon Export Client",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		helpMenu.add(aboutMenuItem);
+		menuBar.add(helpMenu);
+		frame.setJMenuBar(menuBar);
+		//End menuBar setup
+		
 		BillingFileFormatPanel aBillingFileFormatPanel = new BillingFileFormatPanel();
-
-		frame.setContentPane(aBillingFileFormatPanel);
-		//aBillingFileFormatPanel.initCollectionGroup();
-
 		frame.addWindowListener(new java.awt.event.WindowAdapter()
 		{
 			public void windowClosing(java.awt.event.WindowEvent e)
@@ -1276,48 +1200,20 @@ private void initialize() {
 				System.exit(0);
 			};
 		});
-		
-		frame.setContentPane(aBillingFileFormatPanel);
-		frame.setSize(aBillingFileFormatPanel.getSize());
 
-		/*
-		If BillingFileFormatPanel ever needs to be run by itself,
-		then this event handler should also write default values to a file
-		*/
-		
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0); 
-			};
-		});
-		frame.show();
+		frame.setContentPane(aBillingFileFormatPanel);
+		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("ctismall.gif"));		
+		frame.setSize(aBillingFileFormatPanel.getSize());
 		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
+		java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		frame.setLocation((int)(d.width * .2),(int)(d.height * .1));
+		
+		frame.show();
 	} 
 	catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of javax.swing.JPanel");
 		exception.printStackTrace(System.out);
 	}
-}
-/**
- * Handle a string to specify an input file
- * Creation date: (6/7/2002 10:41:22 AM)
- * @return java.lang.String
- */
-public boolean parseCommandLine(java.lang.String[] args)
-{
-	for (int i = 0; i < args.length; i++)
-	{
-		String argToLower = args[i].toLowerCase();
-		if(argToLower.startsWith("in"))	//as in INput file(full directory path
-		{
-			int startIndex = argToLower.indexOf("=") + 1;
-			String subString = argToLower.substring(startIndex);
-			inputFileText = subString;
-		}
-	}
-	return true;
 }
 /**
  * Insert the method's description here.
@@ -1328,18 +1224,9 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 {
 	java.util.Date newEndDate = null;
 	
-	//Object tempDate = getBillingEndDatePopupField().getValueModel().getValue();
 	Date tempDate = getDateComboBox().getSelectedDate();
 	newEndDate = tempDate;
-/*	if( tempDate instanceof java.util.Date )
-	{
-		newEndDate = (java.util.Date) tempDate;
-	}
-	else if( tempDate instanceof java.util.Calendar )
-	{
-		newEndDate = ((java.util.Calendar) tempDate).getTime();
-	}
-*/	
+
 	// Get all selected collection groups from the groupList scroll panel.
 	java.util.Vector selectedCollGrps = new java.util.Vector(getGroupList().getSelectedValues().length);
 	for (int i = 0; i < getGroupList().getSelectedValues().length; i++)
