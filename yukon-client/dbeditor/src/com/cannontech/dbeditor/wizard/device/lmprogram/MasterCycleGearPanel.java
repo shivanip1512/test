@@ -1619,6 +1619,7 @@ public void setValue(Object o)
 	if(gear.getRampInPercent().intValue() != 0 && gear.getRampInInterval().intValue() != 0)
 	{
 		getJCheckBoxRampIn().setSelected(true);
+		rampItIn(true);
 		getJCSpinFieldRampInPercent().setValue(gear.getRampInPercent());
 		getJTextFieldRampInInterval().setText(gear.getRampInInterval().toString());
 	}
