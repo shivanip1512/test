@@ -1396,18 +1396,17 @@ public long getCurrentDisplayNumber()
  */
 private void getExternalResources() 
 {
-	try
-	{
-		java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-		noCreationAllowed = bundle.getString("tdc_express");
-		TDCDefines.MAX_ROWS = Integer.parseInt( bundle.getString("tdc_max_rows") );
-	}
-	catch( java.util.MissingResourceException mre)
-	{
-		//no resource found, let program execution continue
-		/*handleException( mre );*/
+	noCreationAllowed = ClientSession.getInstance().getRolePropertyValue(
+				TDCRole.TDC_EXPRESS, "no_soup" );
+
+	TDCDefines.MAX_ROWS = Integer.parseInt(
+				ClientSession.getInstance().getRolePropertyValue( TDCRole.TDC_MAX_ROWS, "500" ) ); 
 		
-	}
+		
+	//java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
+	//noCreationAllowed = bundle.getString("tdc_express");
+	//TDCDefines.MAX_ROWS = Integer.parseInt( bundle.getString("tdc_max_rows") );
+
 }
 
 
