@@ -308,7 +308,15 @@ MM_reloadPage(true);
                               <p>1) Select Cooling or Heating.<br>
                                 2) Slide thermometers to change start times.<br>
                                 3) Adjust your cooling or heating temperatures.<br>
-                                <a class="Link1" href="Instructions.jsp">Click 
+<%
+	String instLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS);
+	String targetStr = "target='instructions'";
+	if (ServerUtils.forceNotNone(instLink).length() == 0) {
+		instLink = "Instructions.jsp";
+		targetStr = "";
+	}
+%>
+                                <a class="Link1" href="<%= instLink %>" <%= targetStr %>>Click 
                                 for hints and details</a>. <br>
                                 <br>
                               </p>
