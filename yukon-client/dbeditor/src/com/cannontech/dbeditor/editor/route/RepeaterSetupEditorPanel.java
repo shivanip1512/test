@@ -126,7 +126,7 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
       	else
    		{
 			message = new StringBuffer("Advanced Setup has detected duplicate variable bits.  Duplicate variable bits are not permitted\n" +
-										" on the same route.  Setup has been forced to return to your previous variable bit values. \n" + 
+										"on the same route.  Setup has been forced to return to your previous variable bit values. \n" + 
 										"Please re-edit Advanced Setup appropriately and avoid duplication of variable bits.");
 			JOptionPane.showMessageDialog(getAdvancedRepeaterSetupEditorPanel(), message, "CONFLICTING BIT VALUES", JOptionPane.ERROR_MESSAGE); 
 			getAdvancedSetupButton().doClick(); 
@@ -186,6 +186,14 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
       // user code end
    } catch (java.lang.Throwable ivjExc) {
       // user code begin {3}
+	if(ivjExc instanceof java.lang.NullPointerException )
+	{
+		StringBuffer error = new StringBuffer("Advanced Setup has detected a bit field value that is invalid. \n" + 
+		"The variable bit fields accept values only between 0 and 7. \n " +
+		"Previous values have been restored.");
+		javax.swing.JOptionPane.showMessageDialog(this, error, "BIT VALUE OUT OF RANGE", javax.swing.JOptionPane.ERROR_MESSAGE);
+		getAdvancedSetupButton().doClick();
+	}
       // user code end
       handleException(ivjExc);
    }
