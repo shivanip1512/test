@@ -239,16 +239,18 @@ portfield.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h \
 		dnp_object_binaryoutput.h tbl_dv_dnp.h tbl_dv_idlcremote.h \
 		dev_ied.h ctitypes.h tbl_dv_ied.h dev_schlum.h dev_meter.h \
 		tbl_metergrp.h vcomdefs.h mgr_point.h slctpnt.h dev_kv2.h \
-		prot_ansi.h ansi_application.h ansi_datalink.h \
-		ansi_billing_table.h std_ansi_tbl_zero_zero.h \
-		std_ansi_tbl_zero_one.h std_ansi_tbl_one_zero.h \
-		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
-		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
-		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
-		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_five_two.h msg_trace.h \
-		msg_cmd.h pilserver.h server_b.h con_mgr.h cmdopts.h \
-		mgr_route.h repeaterrole.h prot_711.h trx_info.h trx_711.h
+		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
+		ansi_datalink.h ansi_billing_table.h std_ansi_tbl_base.h \
+		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
+		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
+		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
+		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
+		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
+		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
+		std_ansi_tbl_five_two.h ansi_kv2_mtable_zero.h \
+		ansi_kv2_mtable_seventy.h msg_trace.h msg_cmd.h pilserver.h \
+		server_b.h con_mgr.h cmdopts.h mgr_route.h repeaterrole.h \
+		prot_711.h trx_info.h trx_711.h
 portfill.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h \
 		queues.h dsm2.h mutex.h guard.h dsm2err.h device.h \
 		devicetypes.h routes.h porter.h portdecl.h rte_base.h \
@@ -267,7 +269,8 @@ portfill.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cparms.h \
 		msg_multi.h msg_pdata.h msg_signal.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
 		trx_info.h trx_711.h mgr_point.h slctpnt.h dev_tap.h \
-		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h prot_versacom.h
+		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h dev_wctp.h \
+		prot_versacom.h expresscom.h
 portglob.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h das08.h tcpsup.h ctinexus.h portglob.h logger.h \
@@ -338,8 +341,9 @@ portpool.obj:	connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
 		tbl_2way.h tbl_stats.h tbl_scanrate.h queues.h utility.h \
 		slctdev.h mgr_port.h smartmap.h port_base.h tbl_port_base.h \
 		xfer.h dialup.h tbl_port_statistics.h slctprt.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h portdecl.h dsm2err.h porter.h \
-		devicetypes.h portglob.h tcpsup.h statistics.h counter.h
+		pt_dyn_base.h tbl_pt_base.h port_pool_out.h portdecl.h \
+		dsm2err.h porter.h devicetypes.h portglob.h tcpsup.h \
+		statistics.h counter.h
 portque.obj:	os2_2w32.h dlldefs.h types.h cticalls.h queues.h dsm2.h \
 		mutex.h guard.h dsm2err.h device.h devicetypes.h routes.h \
 		porter.h elogger.h portglob.h tcpsup.h ctinexus.h logger.h \

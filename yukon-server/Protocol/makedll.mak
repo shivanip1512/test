@@ -179,10 +179,14 @@ ansi_application.obj:	guard.h dlldefs.h logger.h thread.h mutex.h \
 		ansi_application.h ansi_datalink.h xfer.h dsm2.h dialup.h \
 		yukon.h ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h
 ansi_billing_table.obj:	ansi_billing_table.h dlldefs.h dsm2.h mutex.h \
-		guard.h ctitypes.h types.h
+		guard.h ctitypes.h types.h std_ansi_tbl_base.h
 ansi_datalink.obj:	ansi_datalink.h xfer.h dsm2.h mutex.h dlldefs.h \
 		guard.h dialup.h yukon.h ctidbgmem.h dllbase.h os2_2w32.h \
 		types.h cticalls.h logger.h thread.h
+ansi_kv2_mtable_seventy.obj:	ansi_kv2_mtable_seventy.h dlldefs.h \
+		std_ansi_tbl_base.h dsm2.h mutex.h guard.h ctitypes.h types.h
+ansi_kv2_mtable_zero.obj:	ansi_kv2_mtable_zero.h dlldefs.h \
+		std_ansi_tbl_base.h dsm2.h mutex.h guard.h ctitypes.h types.h
 dll_prot.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h dll_prot.h \
 		utility.h
@@ -371,13 +375,26 @@ prot_711.obj:	cticalls.h os2_2w32.h dlldefs.h types.h prot_711.h \
 prot_ansi.obj:	guard.h dlldefs.h logger.h thread.h mutex.h prot_ansi.h \
 		ansi_application.h ansi_datalink.h xfer.h dsm2.h dialup.h \
 		yukon.h ctidbgmem.h dllbase.h os2_2w32.h types.h cticalls.h \
-		ansi_billing_table.h ctitypes.h std_ansi_tbl_zero_zero.h \
+		ansi_billing_table.h ctitypes.h std_ansi_tbl_base.h \
+		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
+		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
+		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
+		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
+		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
+		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
+		std_ansi_tbl_five_two.h
+prot_ansi_kv2.obj:	guard.h dlldefs.h logger.h thread.h mutex.h \
+		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
+		ansi_datalink.h xfer.h dsm2.h dialup.h yukon.h ctidbgmem.h \
+		dllbase.h os2_2w32.h types.h cticalls.h ansi_billing_table.h \
+		ctitypes.h std_ansi_tbl_base.h std_ansi_tbl_zero_zero.h \
 		std_ansi_tbl_zero_one.h std_ansi_tbl_one_zero.h \
 		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
 		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
 		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
 		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_five_two.h
+		std_ansi_tbl_two_three.h std_ansi_tbl_five_two.h \
+		ansi_kv2_mtable_zero.h ansi_kv2_mtable_seventy.h
 prot_base.obj:	logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
 		dsm2.h porter.h dsm2err.h devicetypes.h queues.h types.h \
 		prot_base.h msg_pdata.h pointdefs.h message.h ctidbgmem.h \
@@ -402,9 +419,9 @@ prot_fpcbc.obj:	cmdparse.h dlldefs.h parsevalue.h dllbase.h os2_2w32.h \
 		ctidbgmem.h collectable.h prot_fpcbc.h utility.h yukon.h
 prot_ion.obj:	logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
 		dsm2.h porter.h dsm2err.h devicetypes.h queues.h types.h \
-		prot_ion.h pointtypes.h prot_base.h msg_pdata.h pointdefs.h \
-		message.h ctidbgmem.h collectable.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h cticalls.h xfer.h dialup.h \
+		cparms.h prot_ion.h pointtypes.h prot_base.h msg_pdata.h \
+		pointdefs.h message.h ctidbgmem.h collectable.h msg_signal.h \
+		yukon.h dllbase.h os2_2w32.h cticalls.h xfer.h dialup.h \
 		ion_datastream.h ion_value.h ion_serializable.h numstr.h \
 		ion_value_fixed.h ion_value_numeric.h ctitypes.h \
 		ion_value_variable.h ion_value_variable_fixedarray.h \
@@ -424,32 +441,38 @@ prot_versacom.obj:	ctidbgmem.h cparms.h dlldefs.h cmdparse.h \
 		os2_2w32.h types.h cticalls.h master.h msg_pcrequest.h \
 		message.h collectable.h devicetypes.h logger.h thread.h \
 		yukon.h utility.h
+std_ansi_tbl_base.obj:	std_ansi_tbl_base.h dlldefs.h dsm2.h mutex.h \
+		guard.h ctitypes.h types.h
 std_ansi_tbl_five_five.obj:	std_ansi_tbl_five_five.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_five_two.obj:	std_ansi_tbl_five_two.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_one_five.obj:	std_ansi_tbl_one_five.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_one_four.obj:	std_ansi_tbl_one_four.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
-std_ansi_tbl_one_one.obj:	std_ansi_tbl_one_one.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
+std_ansi_tbl_one_one.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		std_ansi_tbl_one_one.h dsm2.h ctitypes.h types.h \
+		std_ansi_tbl_base.h
 std_ansi_tbl_one_six.obj:	std_ansi_tbl_one_six.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_one_three.obj:	std_ansi_tbl_one_three.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
-std_ansi_tbl_one_two.obj:	std_ansi_tbl_one_two.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
+std_ansi_tbl_one_two.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		std_ansi_tbl_one_two.h dsm2.h ctitypes.h types.h \
+		std_ansi_tbl_base.h
 std_ansi_tbl_one_zero.obj:	std_ansi_tbl_one_zero.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_two_one.obj:	std_ansi_tbl_two_one.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_two_three.obj:	std_ansi_tbl_two_three.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
 std_ansi_tbl_two_two.obj:	std_ansi_tbl_two_two.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
-std_ansi_tbl_zero_one.obj:	std_ansi_tbl_zero_one.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h
+std_ansi_tbl_zero_one.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		std_ansi_tbl_zero_one.h dsm2.h ctitypes.h types.h \
+		std_ansi_tbl_base.h
 std_ansi_tbl_zero_zero.obj:	std_ansi_tbl_zero_zero.h dlldefs.h dsm2.h \
-		mutex.h guard.h ctitypes.h types.h
+		mutex.h guard.h ctitypes.h types.h std_ansi_tbl_base.h \
+		logger.h thread.h
 #ENDUPDATE#

@@ -362,7 +362,7 @@ lmprogrambase.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		msg_ptreg.h msg_reg.h queue.h configparms.h cparms.h \
 		lmcontrolareastore.h lmcontrolarea.h lmcontrolareatrigger.h \
 		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h \
-		resolvers.h db_entry_defines.h mgr_holiday.h
+		resolvers.h db_entry_defines.h mgr_holiday.h mgr_season.h
 lmprogramcontrolwindow.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h lmid.h \
 		lmprogramcontrolwindow.h observe.h pointdefs.h pointtypes.h \

@@ -281,6 +281,32 @@ fdrtelegyr.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
 		fdrpoint.h fdrdestination.h fdrpointlist.h queues.h \
 		fdrtelegyr.h fdrasciiimportbase.h device.h devicetypes.h \
 		telegyrgroup.h telegyrcontrolcenter.h
+fdrtextexport.obj:	cparms.h dlldefs.h msg_cmd.h message.h ctidbgmem.h \
+		collectable.h pointtypes.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h TextFileInterfaceParts.h \
+		fdrtextexport.h
+fdrtextfilebase.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
+		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
+		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h fdrtextfilebase.h \
+		fdrinterface.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h TextFileInterfaceParts.h
+fdrtextimport.obj:	cparms.h dlldefs.h msg_cmd.h message.h ctidbgmem.h \
+		collectable.h pointtypes.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		fdrtextfilebase.h fdrinterface.h connection.h exchange.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		msg_ptreg.h msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h TextFileInterfaceParts.h \
+		fdrtextimport.h
 fdrtristate.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
 		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
 		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
@@ -335,4 +361,9 @@ testinterface.obj:	dlldefs.h fdrinterface.h message.h ctidbgmem.h \
 		fdrdebuglevel.h fdrpointlist.h queues.h testinterface.h \
 		fdrinterface.cpp dbaccess.h sema.h ctinexus.h resolvers.h \
 		db_entry_defines.h msg_cmd.h msg_dbchg.h
+textfileinterfaceparts.obj:	cparms.h dlldefs.h msg_multi.h \
+		collectable.h msg_pdata.h pointdefs.h message.h ctidbgmem.h \
+		msg_signal.h yukon.h dllbase.h os2_2w32.h types.h cticalls.h \
+		dsm2.h mutex.h guard.h logger.h thread.h \
+		TextFileInterfaceParts.h
 #ENDUPDATE#
