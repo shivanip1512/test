@@ -106,7 +106,7 @@ public class CustomerResidence extends DBPersistent {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
-	public static CustomerResidence getCustomerResidence(Integer accountSiteID) {
+	public static CustomerResidence getCustomerResidence(int accountSiteID, java.sql.Connection conn) {
 		String sql = "SELECT AccountSiteID, " +
 				SETTER_COLUMNS[0] + ", " +
 				SETTER_COLUMNS[1] + ", " +
@@ -122,9 +122,9 @@ public class CustomerResidence extends DBPersistent {
 				SETTER_COLUMNS[11] +
 				" FROM " + TABLE_NAME +
 				" WHERE AccountSiteID = " + accountSiteID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-				
+		com.cannontech.database.SqlStatement stmt =
+				new com.cannontech.database.SqlStatement( sql, conn );
+		
 		try {
 			stmt.execute();
 			if (stmt.getRowCount() == 0) return null;

@@ -37,7 +37,8 @@ public class LMHardwareBase extends InventoryBase {
 				getInventoryBase().getInventoryID(), getDbConnection() );
     	
 		// delete from LMThermostatSeason
-		LMThermostatSeason[] thermSeasons = LMThermostatSeason.getAllLMThermostatSeasons( getInventoryBase().getInventoryID() );
+		LMThermostatSeason[] thermSeasons = LMThermostatSeason.getAllLMThermostatSeasons(
+				getInventoryBase().getInventoryID().intValue(), getDbConnection() );
 		if (thermSeasons != null) {
 			for (int i = 0; i < thermSeasons.length; i++) {
 				thermSeasons[i].setDbConnection( getDbConnection() );
@@ -47,8 +48,8 @@ public class LMHardwareBase extends InventoryBase {
     	
 		// delete from LMThermostatManualEvent
 		com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents(
-				getInventoryBase().getInventoryID(), getDbConnection() );
-
+				getInventoryBase().getInventoryID().intValue(), getDbConnection() );
+		
 		if (deleteHwInfo)
 			getLMHardwareBase().delete();
 	}

@@ -48,9 +48,10 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
         getLmThermostatManualEvent().retrieve();
     }
     
-    public static void deleteAllLMThermostatManualEvents(Integer invID, java.sql.Connection conn) {
+    public static void deleteAllLMThermostatManualEvents(int invID, java.sql.Connection conn) {
     	try {
-    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID, conn );
+    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs(
+    				invID, conn );
     		com.cannontech.database.db.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( invID, conn );
     		
     		LMCustomerEventBase event = new LMCustomerEventBase();
@@ -65,14 +66,8 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
     	}
     }
     
-    public static LMThermostatManualEvent[] getAllLMThermostatManualEvents(Integer invID) {
-    	java.sql.Connection conn = null;
-
+    public static LMThermostatManualEvent[] getAllLMThermostatManualEvents(int invID, java.sql.Connection conn) {
     	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
 	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID, conn );
 	        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
 	        		new com.cannontech.database.data.stars.event.LMThermostatManualEvent[ eventIDs.length ];
@@ -86,16 +81,8 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
 	        
 	        return events;
     	}
-    	catch (Exception e) {
+    	catch (java.sql.SQLException e) {
     		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
     	}
     	
     	return null;
