@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/09 19:23:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/01/07 21:20:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,10 +212,10 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
             case PORTWRITE:
             case PORTREAD:
             default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
         if( ++_errorCount >= DNPDatalinkRetryCount )
@@ -229,43 +229,44 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
         switch( _ioState )
         {
             case Output:
-                {
-                    //  ACH: someday verify ACK packet
-                    _outSent += xfer.getOutCount();
+            {
+                //  ACH: someday verify ACK packet
+                _outSent += xfer.getOutCount();
 
-                    break;
-                }
+                break;
+            }
 
             case Input:
-                {
-                    _inRecv += _inActual;
+            {
+                _inRecv += _inActual;
 
-                    if( _inRecv >= DNPDatalinkFramingLen && !areFramingBytesValid() )
+                if( _inRecv >= DNPDatalinkFramingLen && !areFramingBytesValid() )
+                {
+                    status = BadFraming;
+                }
+                else if( _inRecv >= DNPDatalinkHeaderLen )
+                {
+                    if( _inRecv == calcPacketLength( _inPacket.header.len ) )
                     {
-                        status = BadFraming;
-                    }
-                    else if( _inRecv >= DNPDatalinkHeaderLen )
-                    {
-                        if( _inRecv == calcPacketLength( _inPacket.header.len ) )
+                        if( !areInPacketCRCsValid() )
                         {
-                            if( !areInPacketCRCsValid() )
-                            {
-                                status = BadCRC;
-                            }
+                            status = BadCRC;
                         }
                     }
-
-
-                    break;
                 }
+
+                break;
+            }
 
             default:
+            {
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                _ioState = Failed;
+            }
         }
     }
 
@@ -280,35 +281,35 @@ bool CtiDNPDatalink::isTransactionComplete( void )
     switch( _ioState )
     {
         case Output:
+        {
+            //  ACH: modify to wait for inbound ACK when secondary enabled
+            if( _outLen == _outSent )
             {
-                //  ACH: modify to wait for inbound ACK when secondary enabled
-                if( _outLen == _outSent )
+                complete = true;
+            }
+
+            break;
+        }
+
+        case Input:
+        {
+            if( _inRecv >= DNPDatalinkHeaderLen )
+            {
+                if( _inRecv == calcPacketLength( _inPacket.header.len ) )
                 {
                     complete = true;
                 }
-
-                break;
             }
 
-        case Input:
-            {
-                if( _inRecv >= DNPDatalinkHeaderLen )
-                {
-                    if( _inRecv == calcPacketLength( _inPacket.header.len ) )
-                    {
-                        complete = true;
-                    }
-                }
-
-                break;
-            }
+            break;
+        }
 
         default:
-            {
-                //  if we're uninitialized, we had nothing to do - so we're finished
-                complete = true;
-                break;
-            }
+        {
+            //  if we're uninitialized, we had nothing to do - so we're finished
+            complete = true;
+            break;
+        }
     }
 
     return complete;
@@ -398,7 +399,9 @@ bool CtiDNPDatalink::areInPacketCRCsValid( void )
     unsigned short crc, blockCRC;
 
     //  compute the header's CRC
-    crc = computeCRC((unsigned char *)(&_inPacket.header.control), 5);
+//  CHECK:  is this right?
+//    crc = computeCRC((unsigned char *)(&_inPacket.header.control), 5);
+    crc = computeCRC((unsigned char *)(&_inPacket.header), 8);
 
     if( crc != _inPacket.header.crc )
     {
