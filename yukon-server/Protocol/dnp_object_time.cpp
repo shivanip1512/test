@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/17 18:42:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/22 22:15:26 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,13 +43,25 @@ double CtiDNPTime::getMilliseconds()
 }
 
 
+void CtiDNPTime::setSeconds( double seconds )
+{
+    _seconds = seconds;
+}
+
+
+void CtiDNPTime::setMilliseconds( double millis )
+{
+    _milliseconds = millis;
+}
+
+
 int CtiDNPTime::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
     _valid = true;
 
-    if( len <= getSerializedLen() )
+    if( len >= getSerializedLen() )
     {
         pos = restoreVariation(buf, len, getVariation());
     }
@@ -277,12 +289,15 @@ CtiDNPTimeDelay::CtiDNPTimeDelay(int variation) : CtiDNPObject(Group, variation)
 
 int CtiDNPTimeDelay::restore(unsigned char *buf, int len)
 {
+    int pos = 0;
+
+    if( len >= 2 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        _delay  = buf[pos++];
+        _delay |= buf[pos++] << 8;
     }
 
-    return len;
+    return pos;
 }
 
 int CtiDNPTimeDelay::serialize(unsigned char *buf)

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/22 22:15:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,6 +53,9 @@ public:
 
     double getSeconds();
     double getMilliseconds();
+
+    void setSeconds( double seconds );
+    void setMilliseconds( double millis );
 };
 
 
@@ -82,6 +85,9 @@ public:
 
 class CtiDNPTimeDelay : public CtiDNPObject
 {
+private:
+    unsigned long _delay;
+
 protected:
 
 public:
