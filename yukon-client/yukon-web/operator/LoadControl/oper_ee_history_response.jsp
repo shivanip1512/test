@@ -210,7 +210,7 @@
                   </tr>
                   <%
 	for (int i = 0; i < 12; i++) {
-		String time = hourFormat.format(i) + ":00";
+		String time = hourFormat.format(i+1) + ":00";
 %>
                   <tr> 
                     <td width="110" class="TableCell"><%= time %></td>
@@ -234,7 +234,7 @@
                   </tr>
                   <%
 	for (int i = 12; i < 24; i++) {
-		String time = hourFormat.format(i) + ":00";
+		String time = hourFormat.format(i+1) + ":00";
 %>
                   <tr> 
                     <td width="110" class="TableCell"><%= time %></td>
