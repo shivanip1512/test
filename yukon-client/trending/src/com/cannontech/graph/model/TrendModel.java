@@ -376,7 +376,9 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			if ((seriesTypeMask & GraphDataSeries.YESTERDAY_MASK) == GraphDataSeries.YESTERDAY_MASK)
 			{
 				day = 86400000;
+//				System.out.println(" Start = " + getStartDate() + " (-1day)");
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
+//				System.out.println(" Stop = " + getStopDate()  + " (-1 day)");
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() - day) );
 			}
 			else if ((seriesTypeMask & GraphDataSeries.PEAK_VALUE_MASK) == GraphDataSeries.PEAK_VALUE_MASK)
@@ -386,14 +388,18 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 					if ((trendSeries[i].getTypeMask() & GraphDataSeries.PEAK_VALUE_MASK) ==  GraphDataSeries.PEAK_VALUE_MASK)
 					{
 						day = retrievePeakIntervalTranslateMillis(trendSeries[i].getPointId().intValue());
+//						System.out.println(" Start = " + getStartDate()  + " (- " + day + ")");						
 						pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
+//						System.out.println(" Stop = " + getStartDate()  + " (-"+ (day + 86400000)+")");
 						pstmt.setTimestamp(2, new java.sql.Timestamp( getStartDate().getTime() - day + 86400000) );
 					}
 				}
 			}
 			else
 			{
+//				System.out.println(" Start = " + getStartDate());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()) );
+//				System.out.println(" Stop = " + getStopDate());
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
 			}
 			
@@ -517,12 +523,12 @@ private long retrievePeakIntervalTranslateMillis(int peakIntervalPointID)
 			java.util.Calendar cal = new java.util.GregorianCalendar();
 			if( ts.getTime() %86400 == 0)	//must have Day+1 00:00:00 instead of Day 00:00:01+
 			{	
-				cal.setTimeInMillis(ts.getTime());
+				cal.setTime(new java.util.Date(ts.getTime()));				
 				cal.roll(java.util.Calendar.DAY_OF_YEAR, false);
 			}
 			else
 			{
-				cal.setTimeInMillis(ts.getTime());
+				cal.setTime(new java.util.Date(ts.getTime()));
 				cal.set(java.util.Calendar.HOUR, 0);
 				cal.set(java.util.Calendar.MINUTE, 0);
 				cal.set(java.util.Calendar.SECOND, 0);
@@ -610,7 +616,7 @@ protected void setChartName(String newChartName)
  * Insert the method's description here.
  * Creation date: (6/20/2002 8:01:46 AM)
  */
-protected void setStartDate(java.util.Date newStartDate)
+public void setStartDate(java.util.Date newStartDate)
 {
 	startDate = newStartDate;
 }
@@ -634,7 +640,7 @@ public void setOptionsMask(int newOptionsMask)
  * Insert the method's description here.
  * Creation date: (6/20/2002 8:01:46 AM)
  */
-protected void setStopDate(java.util.Date newStopDate)
+public void setStopDate(java.util.Date newStopDate)
 {
 	stopDate = newStopDate;
 }
