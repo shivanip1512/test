@@ -24,6 +24,7 @@ public class PointValues
 	private String[] pointMessages = null;
 	private String[] pointRawStates = null;
 	private String[] backGroundColors = null;
+	private int[] imageIDs = null;
 
 	private String initialState = null;
 	private String normalState = null;
@@ -35,25 +36,36 @@ public class PointValues
 	private int currentBackgroundColor = 0;
 
 	private int originalBackgroundColor = 0;
+
+
 /**
  * PointValues constructor comment.
- */
-// Used to make dummy pointValues ONLY
-public PointValues( int pointid, int ptType, String ptName, String[] colors, String[] messages, String[] rawstate, String[] bgColor, int colorCount ) 
+ * Used to make dummy pointValues ONLY
+ * **/
+public PointValues( int pointid, int ptType, String ptName, String[] colors, 
+		String[] messages, String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
 {
-	super();
+	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
 
 	pointName = ptName;
 	pointData = new PointData();	
 	pointData.setId( pointid );
 	pointData.setType( ptType );
-	pointData.setTime( new java.util.Date() );
+}
 
-
+/**
+ * PointValues constructor comment.
+ */
+public PointValues( String[] colors, String[] messages, 
+			String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
+{
+	super();
+	
 	foregroundColors = new String[ colorCount ];
 	pointMessages = new String[ colorCount ];
 	pointRawStates = new String[ colorCount ];
 	backGroundColors = new String[ colorCount ];
+	imageIDs = new int[ colorCount ];
 
 	for( int i = 0; i < colorCount; i++ )
 	{
@@ -61,24 +73,26 @@ public PointValues( int pointid, int ptType, String ptName, String[] colors, Str
 		pointMessages[i] = messages[i];
 		pointRawStates[i] = rawstate[i];
 		backGroundColors[i] = bgColor[i];
+		imageIDs[i] = imgIDs[i];
 	}
 
 	currentForegroundColor = Integer.parseInt( foregroundColors[0] );
 	currentBackgroundColor = Integer.parseInt( backGroundColors[0] );
 	originalBackgroundColor = Integer.parseInt( backGroundColors[0] );
-	
+
 	previuosText = new String(pointMessages[0]);
 }
+
+
 /**
- * PointValues constructor comment.
- */
-// Used to make temporary pointValues ONLY, note: all the color fields and PointData
-// fields are still NULL after creation
+ * Used to make temporary pointValues ONLY, note: all the color fields and PointData
+ * fields are still NULL after creation
+ ***/
 public PointValues( int pointid, Object ptType, Object ptName, Object devName, 
 					Object ptState, Object devType, Object devCurrentState, int devId ) 
 {
 	super();
-
+	
 	pointName = ptName.toString();
 	deviceName = devName.toString();
 	pointState = ptState.toString();
@@ -87,20 +101,24 @@ public PointValues( int pointid, Object ptType, Object ptName, Object devName,
 	deviceID = devId;
 	
 	pointData = new PointData();	
+	pointData.setTime( new java.util.Date() );
 	pointData.setId( pointid );
 	pointData.setType( com.cannontech.database.data.point.PointTypes.getType(ptType.toString()) );
-	pointData.setTime( new java.util.Date() );
-
 }
+
+
+
 /**
  * PointValues constructor comment.
  */
 // USED TO MAKE A NEW POINTVALUE FROM A PREVIOUS EXISTING POINTVALUE
-public PointValues( PointValues point, String[] colors, String[] messages, String[] rawstate, String[] bgColor, int colorCount ) 
+public PointValues( PointValues point, String[] colors, String[] messages, 
+			String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
 {
-	super();
+	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
 	
 	pointData = new PointData();	
+	pointData.setTime( new java.util.Date() );
 	pointData.setId( point.getPointData().getId() );
 	pointData.setType( point.getPointData().getType() );
 	deviceName = point.getDeviceName();
@@ -110,61 +128,26 @@ public PointValues( PointValues point, String[] colors, String[] messages, Strin
 	deviceID = point.getDeviceID();
 	pointName = point.getPointName();
 	decimalPlaces = point.getDecimalPlaces();
-	
-	foregroundColors = new String[ colorCount ];
-	pointMessages = new String[ colorCount ];
-	pointRawStates = new String[ colorCount ];
-	backGroundColors = new String[ colorCount ];
-	pointData.setTime( new java.util.Date() );
-
-	for( int i = 0; i < colorCount; i++ )
-	{
-		foregroundColors[i] = colors[i];
-		pointMessages[i] = messages[i];
-		pointRawStates[i] = rawstate[i];
-		backGroundColors[i] = bgColor[i];
-	}
-
-	currentForegroundColor = Integer.parseInt( foregroundColors[0] );
-	currentBackgroundColor = Integer.parseInt( backGroundColors[0] );
-	originalBackgroundColor = Integer.parseInt( backGroundColors[0] );
-
-	previuosText = new String(pointMessages[0]);
 }
+
 /**
  * PointValues constructor comment.
  */
 // Used to make PSUEDO pointValues ONLY
-public PointValues( Signal signal, int ptType, String ptName, String[] colors, String[] messages, String[] rawstate, String[] bgColor, int colorCount ) 
+public PointValues( Signal signal, int ptType, String ptName, String[] colors, 
+			String[] messages, String[] rawstate, String[] bgColor, int[] imgIDs, int colorCount ) 
 {
-	super();
+	this( colors, messages, rawstate, bgColor, imgIDs, colorCount );
 
 	pointName = ptName;
-	pointData = new PointData();	
+	pointData = new PointData();
+	pointData.setTime( new java.util.Date() );		
 	pointData.setId( signal.getId() );
 	pointData.setType( ptType );
 	pointData.setTime( new java.util.Date() );
 	pointData.setTags( signal.getTags() );
-
-	foregroundColors = new String[ colorCount ];
-	pointMessages = new String[ colorCount ];
-	pointRawStates = new String[ colorCount ];
-	backGroundColors = new String[ colorCount ];
-
-	for( int i = 0; i < colorCount; i++ )
-	{
-		foregroundColors[i] = colors[i];
-		pointMessages[i] = messages[i];
-		pointRawStates[i] = rawstate[i];
-		backGroundColors[i] = bgColor[i];
-	}
-
-	currentForegroundColor = Integer.parseInt( foregroundColors[0] );
-	currentBackgroundColor = Integer.parseInt( backGroundColors[0] );
-	originalBackgroundColor = Integer.parseInt( backGroundColors[0] );
-	
-	previuosText = new String(pointMessages[0]);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 4:59:47 PM)
@@ -198,6 +181,17 @@ public String getColor(int i)
 {
 	return foregroundColors[ i ];
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (2/2/00 4:59:47 PM)
+ * @param i int
+ */
+public int getYukonImageID(int i) 
+{
+	return imageIDs[ i ];
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 5:12:11 PM)

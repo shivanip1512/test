@@ -6,6 +6,11 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
@@ -41,7 +46,8 @@ private void doOncePerTableRefresh(javax.swing.JTable table)
  */
 public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 {
-	Display2WayDataAdapter model = (Display2WayDataAdapter)(((SortTableModelWrapper)table.getModel()).getRealDataModel());
+	Display2WayDataAdapter model = (Display2WayDataAdapter)
+				(((SortTableModelWrapper)table.getModel()).getRealDataModel());
 
 	setBackground( Colors.getColor( model.getRowBackgroundColor( row ) ) );
 
@@ -74,10 +80,36 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 	}
 
 	if( value != null )
-		setText( value.toString() );
-	else
-		setText( "" );
+	{
+		if( value instanceof Image )
+		{
+			/**** This is SLOW and may need another visit when it becomes a problem ****/
+			ImageIcon icon = new ImageIcon( (Image)value );
+		
+	      int width = table.getTableHeader().getColumnModel().getColumn(column).getWidth();
+	      int height = table.getTableHeader().getHeight(); 
 
+
+	      icon.setImage(
+	         icon.getImage().getScaledInstance( 
+	               width,
+	               height,
+	               java.awt.Image.SCALE_FAST ) );
+
+			setText( null );
+			setIcon( icon );
+		}
+		else
+		{
+			setText( value.toString() );
+			setIcon( null );
+		}			
+	}
+	else
+	{
+		setText( "" );
+		setIcon( null );
+	}
 
 	if( value.toString().equalsIgnoreCase("") )
 		((javax.swing.JComponent)this).setToolTipText("FILLER ROW");

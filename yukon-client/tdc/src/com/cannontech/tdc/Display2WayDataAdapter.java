@@ -16,6 +16,9 @@ import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -72,8 +75,7 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	private int[] alarmColors = null;
 
 	private long currentDisplayNumber = Display.UNKNOWN_DISPLAY_NUMBER;
-	private ResultSetMetaData metaData = null;
-	
+		
 	private class BlankLine
 	{
 		private int location = 0;
@@ -89,6 +91,14 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 		}
 
 	};
+
+
+	private final static String[] WHITE_COLOR = {"2"};
+	private final static String[] DUMMY_TEXT = {"DUMMY"};
+	private final static String[] RAW_TEXT = {"1"};
+	private final static String[] DUMMY_BG_COLOR = { String.valueOf( DEFAULT_BACKGROUNDCOLOR )};
+	private final static int[] DUMMY_IMG_IDS = { YukonImage.NONE_IMAGE_ID };
+
 /**
  * This method was created in VisualAge.
  */
@@ -219,15 +229,14 @@ private boolean buildRowQuery()
 			int ptID = Integer.parseInt(pointData[i][0].toString());
 
 			realPoints.addElement( new PointValues(
-													 ptID,
-												    pointData[i][1].toString(),
-												    pointData[i][2].toString(),
-												    pointData[i][3].toString(),
-												    pointData[i][4].toString(),
-												    pointData[i][5].toString(),
-												    pointData[i][6].toString(),
-												    Integer.parseInt(pointData[i][7].toString())
-												    ) );
+							 ptID,
+						    pointData[i][1].toString(),
+						    pointData[i][2].toString(),
+						    pointData[i][3].toString(),
+						    pointData[i][4].toString(),
+						    pointData[i][5].toString(),
+						    pointData[i][6].toString(),
+						    Integer.parseInt(pointData[i][7].toString()) ));
 			
 			// add the decimal places here to each point that is present in the pointunit table
 			PointValues pvalue = ((PointValues)realPoints.elementAt(i));
@@ -362,29 +371,18 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
  * Version: <version>
  * @param id long
  */
-/*createDummyPointValue( Long.parseLong(rowData[i][6].toString()),
-				((Timestamp)rowData[i][0]).getTime(), //TimeStamp
-				CommonUtils.createString( rowData[i][1] ), //DeviceName
-				CommonUtils.createString( rowData[i][2] ), //PointName
-				Integer.parseInt(rowData[i][7].toString()) //SOE_Tag
-				0 );
-*/
 private void createDummyPointValue( long id, long timeStamp, String deviceName, String pointName, int soe_tag, int location ) 
 {
 	if( location >= getRowCount() )
 		return;  // cant add it off the chart
-		
-	final String[] WHITE_COLOR = {"2"};
-	final String[] DUMMY_TEXT = {"DUMMY"};
-	final String[] RAW_TEXT = {"1"};
-	final String[] DUMMY_BG_COLOR = { String.valueOf( DEFAULT_BACKGROUNDCOLOR )};
+
 
 	// create our storage
 	PointValues pointValue = new PointValues( 
 				(int)id,
 				com.cannontech.database.data.point.PointTypes.INVALID_POINT,
 				pointName,
-				WHITE_COLOR, DUMMY_TEXT, RAW_TEXT, DUMMY_BG_COLOR, 1 );  // not really a point
+				WHITE_COLOR, DUMMY_TEXT, RAW_TEXT, DUMMY_BG_COLOR, DUMMY_IMG_IDS, 1 );  // not really a point
 
 	
 	if( location >= getRowCount() ) //Add the new value
@@ -401,12 +399,8 @@ private void createDummyPointValue( long id, long timeStamp, String deviceName, 
 	pointValue.setDeviceName( deviceName );
 	pointValue.getPointData().setSOE_Tag( soe_tag );
 	
-}/**
- * Insert the method's description here.
- * Creation date: (4/13/00 5:04:56 PM)
- * Version: <version>
- * @return java.util.Vector
- */
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/2/00 4:40:07 PM)
@@ -414,7 +408,8 @@ private void createDummyPointValue( long id, long timeStamp, String deviceName, 
  */
 private void createPointValues( Vector realPoints )
 {
-	String query = "select distinct point.pointid, state.foregroundcolor, state.text, state.rawstate,state.backgroundcolor " +
+	String query = "select distinct point.pointid, state.foregroundcolor," + 
+			" state.text, state.rawstate,state.backgroundcolor,state.imageid " +
 			" from state, point, display2waydata " +
 			" where state.stategroupid = point.stategroupid and state.rawstate >= 0 " +
 			" and point.pointid in " +
@@ -430,6 +425,7 @@ private void createPointValues( Vector realPoints )
 	String[] messageBuffer = new String[ pointStatment.length ];
 	String[] rawStateBuffer = new String[ pointStatment.length ];
 	String[] bgColorBuffer = new String[ pointStatment.length ];
+	int[] imageIDs = new int[ pointStatment.length ];
 
 	int rowIndex = 0;
 
@@ -451,8 +447,8 @@ private void createPointValues( Vector realPoints )
 				colorBuffer[ rawStateIndex ] = pointStatment[rowIndex][1].toString();
 				messageBuffer[ rawStateIndex ] = pointStatment[rowIndex][2].toString();
 				rawStateBuffer[ rawStateIndex ] = pointStatment[rowIndex][3].toString();
-				bgColorBuffer[ rawStateIndex++ ] = pointStatment[rowIndex][4].toString();
-
+				bgColorBuffer[ rawStateIndex ] = pointStatment[rowIndex][4].toString();
+				imageIDs[ rawStateIndex++ ] = Integer.parseInt(pointStatment[rowIndex][5].toString());
 			}
 			else if( pointFound ) // get out of the loop now if we found the point
 				break;
@@ -461,7 +457,7 @@ private void createPointValues( Vector realPoints )
 		if( pointFound ) // get out of the loop now if we found the point
 		{
 			pointValues.addElement( new PointValues( point, colorBuffer, messageBuffer,
-				rawStateBuffer, bgColorBuffer, rawStateIndex ) );
+				rawStateBuffer, bgColorBuffer, imageIDs, rawStateIndex ) );
 		}
 	}
 
@@ -476,20 +472,17 @@ private void createPsuedoPointValue( Signal signal )
 {
 	int location = 0;
 		
-	final String[] WHITE_COLOR = {"2"};
-	final String[] DUMMY_TEXT = {"DUMMY"};
-	final String[] RAW_TEXT = {"1"};
-	final String[] DUMMY_BG_COLOR = { String.valueOf( DEFAULT_BACKGROUNDCOLOR )};
-
 	pointValues.insertElementAt(
-		new PointValues( signal, com.cannontech.database.data.point.PointTypes.INVALID_POINT, "BLANK",
-			WHITE_COLOR, DUMMY_TEXT, RAW_TEXT, DUMMY_BG_COLOR, 1 ), location );  // not really a point
+		new PointValues( signal, com.cannontech.database.data.point.PointTypes.INVALID_POINT, 
+			"BLANK", WHITE_COLOR, DUMMY_TEXT, RAW_TEXT, 
+			DUMMY_BG_COLOR, DUMMY_IMG_IDS, 1 ), location );  // not really a point
 	
 	((PointValues)pointValues.elementAt( location )).setStates(	
 			RAW_TEXT[0],  // initital
 			RAW_TEXT[0],  // normal 
 			RAW_TEXT[0] );  // alarm	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/13/00 5:04:56 PM)
@@ -841,25 +834,7 @@ private void deleteRowFromDataBase( long pointid )
 	objs[1] = new Long(pointid);
 	DataBaseInteraction.updateDataBase( query, objs );	
 }
-/**
- * Insert the method's description here.
- * Creation date: (6/13/00 4:24:23 PM)
- * @return java.lang.Object
- * @param column int
- */
-private Object determineColumnObject( int column, Vector row ) 
-{
-	if( row.elementAt(column) instanceof Number ) // includes INTS and FLOATS
-		return (Number)row.elementAt(column);
-	else if( row.elementAt(column) instanceof ModifiedDate )
-		return (ModifiedDate)row.elementAt(column);
-	else // just return as type object
-		return row.elementAt(column);
-}
-protected void finalize() throws Throwable 
-{	
-	super.finalize();
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (5/23/00 2:18:04 PM)
@@ -1074,6 +1049,7 @@ private Object getCellValueObject( PointData point, int loc )
 	switch( point.getType() )
 	{				
 		case com.cannontech.database.data.point.PointTypes.STATUS_POINT:
+		{
 			if( point.getValue() % 1 == 0 )  // make sure we have a whole number
 			{
 				long value = new Long( doubleToLong.format(point.getValue()) ).longValue();
@@ -1084,7 +1060,9 @@ private Object getCellValueObject( PointData point, int loc )
 				return "INVALID FLOAT FOR A STATUS : " + point.getValue();
 			
 			return buffer;
-
+		}
+		
+		
 		case com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT:
 		case com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT:
 		case com.cannontech.database.data.point.PointTypes.CALCULATED_POINT:		
@@ -1123,14 +1101,10 @@ public Class getColumnClass(int column)
 public int getColumnCount() {
 	return columnNames.size();
 }
+
 //////////////////////////////////////////////////////////////////////////
-//
 //             Implementation of the TableModel Interface
-//
 //////////////////////////////////////////////////////////////////////////
-
-// MetaData
-
 public String getColumnName(int column) 
 {
 	/*if( modifiedColumnNames.length > column &&
@@ -1148,6 +1122,7 @@ public String getColumnName(int column)
 	
 }
 /**
+
  * This method was created in VisualAge.
  * @return java.lang.String
  */
@@ -1345,7 +1320,7 @@ public Object getValueAt(int aRow, int aColumn)
 	try
 	{
 		Vector row = (Vector) rows.elementAt(aRow);
-		return determineColumnObject( aColumn, row );
+		return row.get( aColumn );
 	}
 	catch( ArrayIndexOutOfBoundsException ex )
 	{
@@ -1640,50 +1615,7 @@ private void insertBlankLines()
 	for( int i = 0; i < blankPoints.size(); i++ )
 		addBlankRow( ((BlankLine)blankPoints.elementAt(i)).getLocation() );
 }
-private void insertRowByTimeStamp( Vector newRow, int soe_Tag )
-{
-	if( !(columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP)) )
-		return;  // no TimeStamp row found, get outa here!
 
-	checkRowExceedance();
-	
-	if( getRowCount() == 0 )
-	{		
-		rows.addElement( newRow );
-	}
-	else
-	{
-		try
-		{
-// CHECK TO SEE IF THE TIMES ARE ACCURATE OUT TO THE MILLI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			long newRowTime = ((ModifiedDate) newRow.elementAt(columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP))).getTime();
-			long oldRowTime = ((ModifiedDate) ((Vector)rows.elementAt(0)).elementAt( columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )).getTime();
-			
-			for( int i = 0; i < getRowCount(); i++ )
-			{
-				if( newRowTime < oldRowTime )
-				{
-					oldRowTime = ((ModifiedDate) ((Vector)rows.elementAt(i)).elementAt( columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )).getTime();
-				}
-				else
-				{
-
-				}
-			}
-		}
-		catch( ArrayIndexOutOfBoundsException ex )
-		{
-			com.cannontech.clientutils.CTILogger.info("insertRowByTimeStamp() called with a invalid row number of 0");
-		}
-
-		// we are in order, so insert the row at the top
-		//if( inorder )
-			rows.insertElementAt( newRow, 0 );
-		//else		
-			//we are out of order, find the correct place for this row
-	}
-	
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/12/00 12:56:16 PM)
@@ -1819,20 +1751,6 @@ public boolean isRowSelectedBlank( int location )
 private boolean isValidAlarm(long alarmState) 
 {
 	return (alarmState >= Signal.EVENT_SIGNAL && alarmState <= Signal.ALARM_SIGNAL );
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/26/00 10:04:07 AM)
- * Version: <version>
- * @return java.util.GregorianCalendar
- * @param date java.util.Date
- */
-private java.util.GregorianCalendar makeCalendar(java.util.Date date) 
-{
-	java.util.GregorianCalendar calendar = new java.util.GregorianCalendar();
-	calendar.setTime( date );
-
-	return calendar;
 }
 /**
  * This method creates the table
@@ -2190,6 +2108,40 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
 					(int)point.getTags() );
 		}
 
+
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTIMAGE) )
+		{
+			java.awt.Image img = null;
+			int imgID = YukonImage.NONE_IMAGE_ID;
+			
+			try
+			{
+				imgID = getPointValue(location).getYukonImageID( (int)point.getValue() );
+
+				if( imgID > YukonImage.NONE_IMAGE_ID )
+					img = java.awt.Toolkit.getDefaultToolkit().createImage(
+						YukonImageFuncs.getLiteYukonImage( imgID ).getImageValue() );
+			}
+			catch( Exception e ) {}
+			
+			
+			
+			//Object message = getCellValueObject( point, location );
+			if( img == null )
+				dataRow.setElementAt( CtiUtilities.STRING_NONE, 
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE), 
+					ObservedPointDataChange.POINT_VALUE_TYPE, point.getId(), 
+					isRowInAalarmVector( location ),
+					(int)point.getTags() );			
+			else
+				dataRow.setElementAt( img, 
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE), 
+					ObservedPointDataChange.POINT_VALUE_TYPE, point.getId(), 
+					isRowInAalarmVector( location ),
+					(int)point.getTags() );
+		}
+
+
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 		{
  			dataRow.setElementAt(
@@ -2456,51 +2408,6 @@ public void setRowUnAlarmed( Integer rowNumber )
 public void setSound(boolean shouldPlay) 
 {
 	playSound = shouldPlay;	
-}
-/**
- * Insert the method's description here.
- * Creation date: (7/28/00 1:46:45 PM)
- * @return java.lang.Object
- * @param o java.lang.Object
- */
-private Object substituteObject(Object o) 
-{
-	if( o == null )
-		return null;
-	else if( o instanceof Character )
-	{
-		return o.toString();
-	}
-	else if( o instanceof java.util.GregorianCalendar )
-	{
-		java.sql.Timestamp ts = new Timestamp(((java.util.GregorianCalendar)o).getTime().getTime());
-		return ts;
-	}
-	else if( o instanceof java.util.Date )
-	{
-		Timestamp ts = new Timestamp( ((java.util.Date)o).getTime() );
-		return ts;
-	}
-	else
-		return o;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/14/00 11:38:27 AM)
- * Version: <version>
- * @return boolean
- * @param classification long
- */
-public void swapColumnTypes(int fromIndx, int toIndx) 
-{
-	if( fromIndx < 0 || toIndx < 0 || fromIndx >= columnTypeName.size() || toIndx >= columnTypeName.size() )
-		return;
-
-   com.cannontech.clientutils.CTILogger.debug("swapping " + columnTypeName.elementAt(fromIndx) + " with " + columnTypeName.elementAt(toIndx) );
-
-	String tmp = columnTypeName.elementAt(fromIndx).toString();
-	columnTypeName.setElementAt( columnTypeName.elementAt(toIndx), fromIndx );
-	columnTypeName.setElementAt( tmp, toIndx );
 }
 
 private void killRowBlinker()
