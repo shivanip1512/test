@@ -17,6 +17,7 @@ public class StarsConstants {
 	public static final int FAILURE_CODE_NODE_NOT_FOUND = 4;
 	public static final int FAILURE_CODE_SESSION_INVALID = 101;
 	public static final int FAILURE_CODE_OPERATION_FAILED = 102;
+	public static final int FAILURE_CODE_INVALID_PRIMARY_FIELD = 103;
 
     public static final String STARS_OPERATION = "stars-Operation";
     public static final String STARS_LOGIN = "stars-Login";
