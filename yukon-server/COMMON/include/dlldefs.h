@@ -395,6 +395,13 @@
 #else
    #define IM_EX_FDRTELEGYRAPI       __declspec(dllimport)
 #endif
+#ifdef _DLL_FDRPIBASEAPI
+   #define IM_EX_FDRPIBASEAPI       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRPIBASEAPI
+#else
+   #define IM_EX_FDRPIBASEAPI       __declspec(dllimport)
+#endif
 #ifdef _DLL_FDRXA21LM
    #define IM_EX_FDRXA21LM       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )
