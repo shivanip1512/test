@@ -85,6 +85,8 @@ public final static boolean isCarrier(int deviceType)
 		case LMT_2:
 		case MCT310ID:
 		case MCT310IL:
+      case MCT310CT:
+      case MCT310IM:      
 		case MCT318L:
 		case MCTBROADCAST:
 			return true;
@@ -245,6 +247,8 @@ public final static boolean isLoadProfileMultiChannel(int deviceType)
 	switch(deviceType)
 	{	
 		case MCT310IL:
+      case MCT310CT:
+      case MCT310IM:
 		case MCT318L:
 		case DCT_501:
 			return true;
@@ -276,6 +280,8 @@ public final static boolean isMCT(int deviceType)
 		case DCT_501:
 		case MCT310ID:
 		case MCT310IL:
+      case MCT310CT:
+      case MCT310IM:
 		case MCT318L:
 			return true;
 	
@@ -299,6 +305,8 @@ public final static boolean isMCT3xx(int deviceType)
 		case MCT370:
 		case MCT310ID:
 		case MCT310IL:
+      case MCT310CT:
+      case MCT310IM:      
 		case MCT318L:
 			return true;
 	
@@ -324,6 +332,8 @@ public static boolean isMCTiORMCT2XX( int type )
 		case MCT310 :
 		case MCT310ID :
 		case MCT310IL :
+      case MCT310CT:
+      case MCT310IM:      
 			return true;
 		default :
 			return false;

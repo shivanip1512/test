@@ -48,6 +48,8 @@ public interface DeviceTypes
 	public final static int MCT318L	=	53;
 	public final static int MCT213 = 54;
 	public final static int WCTP_TERMINAL	=	55;
+   public final static int MCT310CT =  56;
+   public final static int MCT310IM =  57;
 
 	public final static int LM_GROUP_EMETCON = 100;
 	public final static int LM_GROUP_VERSACOM = 101;
@@ -93,7 +95,9 @@ public interface DeviceTypes
 	public static final String[] STRING_DAVIS_WEATHER = {"DAVIS WEATHER", "DAVISWEATHER"};
 	public static final String[] STRING_MCT_318L = {"MCT-318L", "MCT318L"};
 	public static final String[] STRING_MCT_310ID = {"MCT-310ID", "MCT310ID"};
-	public static final String[] STRING_MCT_310IL = {"MCT-310IL", "MCT310IL"};
+	public static final String[] STRING_MCT_310IL = {"MCT-310IL", "MCT310IL"};   
+   public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
+   public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};

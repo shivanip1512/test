@@ -173,6 +173,10 @@ public final static int getDeviceType(String typeString)
 	  return MCT318L;
    else if (isStringDevice(compareString, STRING_MCT_310IL))
 	  return MCT310IL;
+   else if (isStringDevice(compareString, STRING_MCT_310CT))
+     return MCT310CT;
+   else if (isStringDevice(compareString, STRING_MCT_310IM))
+     return MCT310IM;
    else if (isStringDevice(compareString, STRING_MCT_310ID))
 	  return MCT310ID;
    else if (isStringDevice(compareString, STRING_MCT_310))
@@ -298,6 +302,10 @@ public final static String getDeviceTypeString(int type)
 
 	  case MCT310IL:
 		  return STRING_MCT_310IL[0];
+     case MCT310CT:
+        return STRING_MCT_310CT[0];
+     case MCT310IM:
+        return STRING_MCT_310IM[0];
 	  case MCT310ID:
 		  return STRING_MCT_310ID[0];
 	  case MCT310:
