@@ -41,6 +41,7 @@ public class CommandPanel extends javax.swing.JPanel
 				availableCommandsComboBox = new javax.swing.JComboBox();
 				availableCommandsComboBox.setName("AvailableCommandsComboBox");
 				availableCommandsComboBox.setToolTipText("Select a common command from the drop down list.");
+				availableCommandsComboBox.setMaximumRowCount(12);
 			}
 			catch (java.lang.Throwable t)
 			{
