@@ -1,3 +1,11 @@
+var browser = new Object();
+browser.isNetscape = false;
+browser.isMicrosoft = false;
+if (navigator.appName.indexOf("Netscape") != -1)
+	browser.isNetscape = true;
+else if (navigator.appName.indexOf("Microsoft") != -1)
+	browser.isMicrosoft = true;
+
 var currentMenu;
 var selectedNavItem;
 var invNo;
@@ -8,11 +16,21 @@ var pageName;
 
 function initHardwareMenu(menu, num) {
 	invNo = num;
+	var menuItems, menuItemsSelected;
+	
+	if (browser.isMicrosoft) {
+		menuItems = menu.all(menu.id + "Item");
+		menuItemsSelected = menu.all(menu.id + "ItemSelected");
+	}
+	else {
+		menuItems = document.getElementsByName(menu.id + "Item");
+		menuItemsSelected = document.getElementsByName(menu.id + "ItemSelected");
+	}
+	
 	for (i = 0; i < pageLinks[invNo].length; i++) {
-		var menuItems = menu.all("MenuItem");
-		var menuItemsSelected = menu.all("MenuItemSelected");
 		menuItems[i].className = "navmenu1";
 		menuItemsSelected[i].className = "navmenu2";
+		
 		if (pageLinks[invNo][i] == pageName) {
 			menuItems[i].style.display = "none";
 			menuItemsSelected[i].style.display = "";
@@ -23,34 +41,7 @@ function initHardwareMenu(menu, num) {
 			menuItemsSelected[i].style.display = "none";
 		}
 	}
-/*	
-	if (pageLinks[invNo][0] == pageName) {
-		document.getElementById("ScheduleMenuItem").style.display = "none";
-		document.getElementById("ScheduleMenuItem").className = "navmenu1";
-		document.getElementById("ScheduleMenuItemSelected").style.display = "";
-		document.getElementById("ScheduleMenuItemSelected").className = "navmenu2";
-		selectedNavItem = document.getElementById("ScheduleMenuItemSelected");
-	}
-	else {
-		document.getElementById("ScheduleMenuItem").style.display = "";
-		document.getElementById("ScheduleMenuItem").className = "navmenu1";
-		document.getElementById("ScheduleMenuItemSelected").style.display = "none";
-		document.getElementById("ScheduleMenuItemSelected").className = "navmenu1";
-	}
 	
-	if (pageLinks[invNo][1] == pageName) {
-		document.getElementById("ManualMenuItem").style.display = "none";
-		document.getElementById("ManualMenuItem").className = "navmenu1";
-		document.getElementById("ManualMenuItemSelected").style.display = "";
-		document.getElementById("ManualMenuItemSelected").className = "navmenu2";
-		selectedNavItem = document.getElementById("ManualMenuItemSelected");
-	}
-	else {
-		document.getElementById("ManualMenuItem").style.display = "";
-		document.getElementById("ManualMenuItem").className = "navmenu1";
-		document.getElementById("ManualMenuItemSelected").style.display = "none";
-		document.getElementById("ManualMenuItemSelected").className = "navmenu1";
-	}*/
 	return true;
 }
 
@@ -123,6 +114,7 @@ function trendMenuAppear(event, source, divId)
 		}
 	}
 }
+
 function hardwareMenuAppear(event, source, divId, num)
 {
 	if (currentMenu)
@@ -130,6 +122,7 @@ function hardwareMenuAppear(event, source, divId, num)
 		currentMenu.style.visibility = 'hidden';
 	}
 	currentMenu = document.getElementById(divId);
+	
 	if (!initHardwareMenu(currentMenu, num)) return;
 /*	
 	var source;
@@ -159,13 +152,10 @@ function hardwareMenuAppear(event, source, divId, num)
 	if (window.event)
 	{
  		document.attachEvent("onclick", hideMenu);
-		window.event.cancelBubble = true;
-    	window.event.returnValue = false;
 	}
 	else
 	{
 		document.addEventListener("click", hideMenu, true);
-		event.preventDefault();
     }
 	
 	function hideMenu(event)
@@ -175,11 +165,13 @@ function hardwareMenuAppear(event, source, divId, num)
 		if (window.event)
 		{
 			document.detachEvent("onclick", hideMenu);
+			//window.event.cancelBubble = true;
+	    	//window.event.returnValue = false;
 		}
 		else
 		{
 			document.removeEventListener("click",hideMenu, true);
-			event.preventDefault();
+			//event.preventDefault();
 		}
 	}
 }
