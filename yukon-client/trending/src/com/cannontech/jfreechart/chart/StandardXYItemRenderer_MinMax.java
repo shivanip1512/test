@@ -12,11 +12,11 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
+import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.CrosshairInfo;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
-import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.StandardXYItemRenderer;
 import org.jfree.chart.urls.XYURLGenerator;
@@ -91,9 +91,8 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
      * @param crosshairInfo Information about crosshairs on a plot.
      */
 	public void drawItem(Graphics2D g2,
-						 org.jfree.chart.renderer.XYItemRendererState state,
                          Rectangle2D dataArea,
-                         PlotRenderingInfo info,
+                         ChartRenderingInfo info,
                          XYPlot plot,
                          ValueAxis domainAxis,
                          ValueAxis rangeAxis,
@@ -103,7 +102,7 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          CrosshairInfo crosshairInfo,
                          int pass)
 	{
-		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairInfo, pass);
+		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairInfo, pass);
 		// get the data point...
 		Number x1n = dataset.getXValue(series, item);
 		Number y1n = dataset.getYValue(series, item);
