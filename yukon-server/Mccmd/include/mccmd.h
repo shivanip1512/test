@@ -1,24 +1,24 @@
 /*-----------------------------------------------------------------------------
     Filename:  mccmd.h
-    
+
     Programmer:  Aaron Lauinger
-    
+
     Description:    Header file for metering and control functions that can
                     be added to a Tcl interpreter.
-    
+
     Initial Date:  4/7/99
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786 )
-      
+
 #ifndef MCCMD_H
 #define MCCMD_H
 
 #include <tcl.h>
 
-                             
+
 #include <functional>
 #include <iostream>
 #include <set>
@@ -30,8 +30,8 @@ using namespace std;
 #include <rw/tvhdict.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <rw/thr/threadid.h> 
-#include <rw/thr/countptr.h> 
+#include <rw/thr/threadid.h>
+#include <rw/thr/countptr.h>
 
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
@@ -54,7 +54,7 @@ using namespace std;
 extern unsigned gMccmdDebugLevel;
 
 #ifdef __cplusplus
-extern "C" {      
+extern "C" {
 #endif
 
 
@@ -78,7 +78,9 @@ static int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 static int Loop(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int Control(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
-        
+static int Scan(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+static int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+
 static int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
@@ -113,15 +115,15 @@ static int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 
 static int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
 static int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
-   
+
 static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way);
 
-static void HandleReturnMessage(const CtiReturnMsg& msg, 
+static void HandleReturnMessage(const CtiReturnMsg& msg,
                          set<long, less<long> >& good_set,
                          set<long, less<long> >& bad_set,
                          set<long, less<long> >& device_set );
 
-static void HandleMessage(const RWCollectable& msg, 
+static void HandleMessage(const RWCollectable& msg,
                          set<long, less<long> >& good_set,
                          set<long, less<long> >& bad_set,
                          set<long, less<long> >& device_set );
@@ -139,7 +141,7 @@ static void GetDeviceName(long deviceID, RWCString& name);
 static void StripSelectListCmd(RWCString& cmd, RWSet& sel_set);
 
 static void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd, RWSet& req_set);
-/* Nothing below here should be called from within this dll unless you have a good 
+/* Nothing below here should be called from within this dll unless you have a good
    pretty good reason */
 
 /* StoreQueue casts queue into a CtiCountedPCPtrQueue<RWCollectable>*
@@ -150,7 +152,7 @@ static void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd, RWSet& req_set);
 int StoreQueue(void* queue, int threadid );
 int ReleaseQueue(int threadid);
 
-/* Generates a user message id 
+/* Generates a user message id
    Used to make each request unique */
 unsigned int GenMsgID();
 

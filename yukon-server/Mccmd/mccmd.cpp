@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2002/10/01 18:38:13 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2002/11/13 19:38:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -416,6 +416,14 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "control", Control, NULL, NULL );
     Tcl_CreateCommand( interp, "CONTROL", Control, NULL, NULL );
 
+    Tcl_CreateCommand( interp, "Scan", Scan, NULL, NULL );
+    Tcl_CreateCommand( interp, "scan", Scan, NULL, NULL );
+    Tcl_CreateCommand( interp, "SCAN", Scan, NULL, NULL );
+
+    Tcl_CreateCommand( interp, "Pil", Pil, NULL, NULL );
+    Tcl_CreateCommand( interp, "pil", Pil, NULL, NULL );
+    Tcl_CreateCommand( interp, "PIL", Pil, NULL, NULL );
+
     Tcl_CreateCommand( interp, "Wait", Wait, NULL, NULL );
     Tcl_CreateCommand( interp, "wait", Wait, NULL, NULL );
     Tcl_CreateCommand( interp, "WAIT", Wait, NULL, NULL );
@@ -599,6 +607,35 @@ int Control(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     RWCString cmd;
     AppendToString(cmd, argc, argv);
+    return DoOneWayRequest(interp, cmd);
+}
+
+int Scan(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+    RWCString cmd;
+    AppendToString(cmd, argc, argv);
+    return DoOneWayRequest(interp, cmd);
+}
+
+int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+    RWCString cmd;
+    AppendToString(cmd, argc, argv);
+
+    RWCTokenizer optoken(cmd);
+
+    RWCString firsttok = optoken();
+
+    if(!firsttok.compareTo("pil", RWCString::ignoreCase))
+    {   // Hack slash rip. CGP 11/07/2002  White rabbit entry point.
+        cmd.replace((size_t)0, (size_t)4, "");    // erase the existence of "pil "
+    }
+    else
+    {
+        WriteOutput("Usage: pil command cmd_params");
+        return TCL_ERROR;
+    }
+
     return DoOneWayRequest(interp, cmd);
 }
 
@@ -1260,10 +1297,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     // Nothing to do get outta here
     if( req_set.entries() == 0 )
         return TCL_OK;
-   
+
     //build up a multi and write out all of the requests
     CtiMultiMsg* multi_req = new CtiMultiMsg();
-    
+
     RWSetIterator iter(req_set);
     for( ; iter(); )
     {
@@ -1275,11 +1312,11 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         else
             WriteOutput( (char*) req->CommandString().data() );
 
-        multi_req->getData().insert(req);        
+        multi_req->getData().insert(req);
     }
 
     PILConnection->WriteConnQue(multi_req);
-    
+
     if( timeout == 0 ) // Not waiting for responses so we're done
         return TCL_OK;
 
@@ -1306,10 +1343,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
                 HandleReturnMessage(*ret_msg, good_set, bad_set, device_set);
-                
+
                 // have we received everything expected?
                 if( device_set.size() == 0 )
-                    break;                
+                    break;
             }
             else
             {
@@ -1386,13 +1423,13 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         InQueueStore.remove(msgid);
     }
 
-    return (interrupted ? 
+    return (interrupted ?
                 TCL_ERROR : TCL_OK);
 }
 
 /***
     Handles the sorting of an incoming message form PIL
-****/   
+****/
 void HandleMessage(const RWCollectable& msg,
                    set<long, less<long> >& good_set,
                    set<long, less<long> >& bad_set,
@@ -1405,9 +1442,9 @@ void HandleMessage(const RWCollectable& msg,
     if( msg.isA() == MSG_MULTI )
     {
         CtiMultiMsg& multi_msg = (CtiMultiMsg&) msg;
-        
+
         for( unsigned i = 0; i < multi_msg.getData( ).entries( ); i++ )
-        {        
+        {
             HandleMessage( *(multi_msg.getData()[i]), good_set, bad_set, device_set);
         }
     }
@@ -1419,10 +1456,10 @@ void HandleMessage(const RWCollectable& msg,
     }
 }
 
-void HandleReturnMessage(const CtiReturnMsg& msg, 
+void HandleReturnMessage(const CtiReturnMsg& msg,
                          set<long, less<long> >& good_set,
                          set<long, less<long> >& bad_set,
-                         set<long, less<long> >& device_set )                                                    
+                         set<long, less<long> >& device_set )
 {
     long dev_id = msg.DeviceId();
 
@@ -1468,7 +1505,7 @@ void HandleReturnMessage(const CtiReturnMsg& msg,
                     warn += CtiNumStr(dev_id);
                     WriteOutput(warn);
                 }
-            }                       
+            }
         }
     }
 }
