@@ -2316,7 +2316,7 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
         // This is indeed an OutMessage I like
         int i = OutMessage->Priority;
 
-        if(0 < i && i < 16)
+        if(0 <= i && i < 16)
         {
             pQA->priority_count[i] = pQA->priority_count[i] + 1;    // Accumulate on into this priority bin!
         }
