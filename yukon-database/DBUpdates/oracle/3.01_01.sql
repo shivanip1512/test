@@ -1107,6 +1107,557 @@ insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date t
 insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
 
 
+/*N/A*/
+insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE');
+
+/*MCT-BASE*/
+insert into command values(-1, 'getvalue kWh', 'Read Energy', 'All MCTs');
+insert into command values(-2, 'getvalue demand', 'Read Current Demand', 'All MCTs');
+insert into command values(-3, 'getconfig model', 'Read Options', 'All MCTs');
+insert into command values(-4, 'putvalue kyz 1 reset', 'Clear kWh Reading', 'All MCTs');
+insert into command values(-5, 'getvalue powerfail', 'Read Powerfail', 'All MCTs');
+insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs'); 
+insert into command values(-7, 'getconfig mult kyz 1', 'Read MPKH ()', 'All MCTs');
+insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
+insert into command values(-9, 'getconfig interval ?LP/LI', 'Read Demand Interval (LP or LI)', 'All MCTs');
+insert into command values(-10, 'putconfig emetcon interval ?LP/LI', 'Write Demand Interval (LP or LI)', 'All MCTs');
+/*MCT-213, 310ID*/
+insert into command values(-11, 'getstatus disconnect', 'Read Disconnect Status', 'All Disconnect Meters');
+insert into command values(-12, 'control disconnect', 'Disconnect Meter', 'All Disconnect Meters');
+insert into command values(-13, 'control connect', 'Connect Meter', 'All Disconnect Meters');
+/*MCT-250, 318, 318L, 360, 370*/
+insert into command values(-14, 'getstatus external', 'Read Status Points', 'All Status Input');
+/*LS-BASE*/
+insert into command values(-15, 'getstatus LP', 'Read LS Info', 'All LP Meters');
+insert into command values(-16, 'Not Available Yet', 'Read LS Intervals 1 Thru 6', 'All LP Meters');
+insert into command values(-17, 'Not Available Yet', 'Read  6 LS Intervals Starting at ?', 'All LP Meters');
+insert into command values(-18, 'getconfig time', 'Read Date/Time', 'All LP Meters');
+insert into command values(-19, 'getconfig time sync', 'Read Last TimeSync', 'All LP Meters');
+/*IED-BASE*/
+insert into command values(-20, 'getvalue ied demand', 'Read IED Last Interval Demands', 'All IED Meters');
+insert into command values(-21, 'getvalue ied kwh', 'Read IED KWH/KW', 'All IED Meters');
+insert into command values(-22, 'getconfig ied time', 'Read IED Date/Time', 'All IED Meters');
+insert into command values(-23, 'Not Available', 'Read IED TOU Rate [A,B,C,or D]', 'All IED Meters');
+insert into command values(-24, 'Not Available', 'Read IED Reset Count', 'All IED Meters');
+insert into command values(-25, 'getconfig ied scan', 'Read IED Scan Info', 'All IED Meters');
+insert into command values(-26, 'putvalue ied reset', 'Reset IED Demand', 'All IED Meters');
+/*LoadGroup-BASE*/
+insert into command values(-27, 'control shed 5m', 'Shed Group', 'All Load Group');
+insert into command values(-28, 'control restore', 'Restore Group', 'All Load Group');
+/*Alpha-BASE*/
+insert into command values(-29, 'scan integrity', 'Force Scan', 'All Alpha Meters');
+/*CBC-BASE*/
+insert into command values(-30, 'control open', 'OPEN Cap Bank', 'All CBCs');
+insert into command values(-31, 'control close', 'CLOSE Cap Bank', 'All CBCs');
+insert into command values(-32, 'putstatus ovuv disable', 'Disable OVUV', 'All CBCs');
+insert into command values(-33, 'putstatus ovuv enable', 'Enable OVUV', 'All CBCs');
+/*CCU-BASE, RTU-BASE, LCU-BASE, TCU-BASE*/
+insert into command values(-34, 'ping', 'Ping', 'All Ping-able');
+insert into command values(-35, 'loop', '1 Loopback', 'All Ping-able');
+insert into command values(-36, 'loop 5', '5 Loopbacks', 'All Ping-able');
+/*CCU-711*/
+insert into command values(-37, 'putstatus reset', 'CCU Reset', 'CCU-711');
+/*Emetcon Group*/
+insert into command values(-38, 'control shed 7.m', 'Shed 7.5min', 'Emetcon Group');
+insert into command values(-39, 'control shed 15m', 'Shed 15-min', 'Emetcon Group');
+insert into command values(-40, 'control shed 30m', 'Shed 30-min', 'Emetcon Group');
+insert into command values(-41, 'control shed 60m', 'Shed 60-min', 'Emetcon Group');
+insert into command values(-42, 'control shed ?''NumMins''m', 'Shed x-min', 'Emetcon Group');
+insert into command values(-43, 'control restore', 'Restore', 'Emetcon Group');
+/*Versacom Group*/
+insert into command values(-44, 'control cycle 50 period 30 count 4', 'Cycle 50% / 30min', 'Versacom Group');
+insert into command values(-45, 'control cycle terminate', 'Terminate Cycle', 'Versacom Group');
+insert into command values(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
+insert into command values(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
+insert into command values(-48, 'putstatus reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
+insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'Versacom Group');
+/*TCU-BASE*/
+/*insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs');*/
+/*insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs');*/
+/*Repeater-BASE*/
+insert into command values(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
+insert into command values(-53, 'getconfig emetcon install', 'Download All Roles', 'All Repeaters');
+insert into command values(-54, 'loop locate', 'Locate Device', 'All Repeaters');
+/*ION-BASE*/
+insert into command values(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
+insert into command values(-56, 'scan integrity', 'Scan Power Meter and Status', 'All ION Meters');
+insert into command values(-57, 'getstatus eventlog', 'Retrieve Event Log', 'All ION Meters');
+/*IEDAlpha-BASE*/
+insert into command values(-58, 'putconfig emetcon ied class 72 1', 'Set Current Period (Alpha)', 'DEVICE');
+insert into command values(-59, 'putconfig emetcon ied class 72 2', 'Set Previous Period (Alpha)', 'DEVICE');
+/*EDGEKV-BASE*/
+insert into command values(-60, 'getvalue ied demand', 'Read IED Volts', 'DEVICE');
+insert into command values(-61, 'putconfig emetcon ied class 0 0', 'Set Current Period (GEKV)', 'DEVICE');
+insert into command values(-62, 'putconfig emetcon ied class 0 1', 'Set Previous Period (GEKV)', 'DEVICE');
+/*ExpresscomSerial*/
+insert into command values(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
+insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
+insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
+insert into command values(-68, 'putconfig xcom serv out temp 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
+insert into command values(-69, 'putconfig xcom serv out temp', 'In Service', 'ExpresscomSerial');
+/*LCRSerial*/
+insert into command values(-70, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'LCRSerial');
+insert into command values(-71, 'control restore relay 1', 'Restore Relay 1', 'LCRSerial');
+insert into command values(-72, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'LCRSerial');
+insert into command values(-73, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'LCRSerial');
+insert into command values(-74, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'LCRSerial');
+insert into command values(-75, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
+insert into command values(-76, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'LCRSerial');
+insert into command values(-77, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'LCRSerial');
+insert into command values(-78, 'putconfig xcom raw 40 ?''Weighting (1-8)''', 'Store a TrueCycle Day', 'LCRSerial');
+insert into command values(-79, 'putconfig raw 36 1', 'Set Versacom Mode', 'LCRSerial');
+insert into command values(-80, 'putconfig raw 35 0', 'Set Emetcon Mode', 'LCRSerial');
+/* MCT410IL */
+insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'MCT-410IL');
+insert into command values(-82, 'getvalue voltage', 'Read Min / Max Voltage', 'MCT-410IL');
+insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date to Meter', 'MCT-410IL');
+insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
+
+
+/* N-A */
+insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE');
+
+/* MCT-BASE */
+insert into command values(-1, 'getvalue kWh', 'Read Energy', 'All MCTs');
+insert into command values(-2, 'getvalue demand', 'Read Current Demand', 'All MCTs');
+insert into command values(-3, 'getconfig model', 'Read Options', 'All MCTs');
+insert into command values(-4, 'putvalue kyz 1 reset', 'Clear kWh Reading', 'All MCTs');
+insert into command values(-5, 'getvalue powerfail', 'Read Powerfail', 'All MCTs');
+insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs'); 
+insert into command values(-7, 'getconfig mult kyz 1', 'Read MPKH ()', 'All MCTs');
+insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
+insert into command values(-9, 'getconfig interval ?LP/LI', 'Read Demand Interval (LP or LI)', 'All MCTs');
+insert into command values(-10, 'putconfig emetcon interval ?LP/LI', 'Write Demand Interval (LP or LI)', 'All MCTs');
+/* MCT-213, 310ID */
+insert into command values(-11, 'getstatus disconnect', 'Read Disconnect Status', 'All Disconnect Meters');
+insert into command values(-12, 'control disconnect', 'Disconnect Meter', 'All Disconnect Meters');
+insert into command values(-13, 'control connect', 'Connect Meter', 'All Disconnect Meters');
+/* MCT-250, 318, 318L, 360, 370 */
+insert into command values(-14, 'getstatus external', 'Read Status Points', 'All Status Input');
+/* LS-BASE */
+insert into command values(-15, 'getstatus LP', 'Read LS Info', 'All LP Meters');
+insert into command values(-16, 'Not Available Yet', 'Read LS Intervals 1 Thru 6', 'All LP Meters');
+insert into command values(-17, 'Not Available Yet', 'Read  6 LS Intervals Starting at ?', 'All LP Meters');
+insert into command values(-18, 'getconfig time', 'Read Date/Time', 'All LP Meters');
+insert into command values(-19, 'getconfig time sync', 'Read Last TimeSync', 'All LP Meters');
+/* IED-BASE */
+insert into command values(-20, 'getvalue ied demand', 'Read IED Last Interval Demands', 'All IED Meters');
+insert into command values(-21, 'getvalue ied kwh', 'Read IED KWH/KW', 'All IED Meters');
+insert into command values(-22, 'getconfig ied time', 'Read IED Date/Time', 'All IED Meters');
+insert into command values(-23, 'Not Available', 'Read IED TOU Rate [A,B,C,or D]', 'All IED Meters');
+insert into command values(-24, 'Not Available', 'Read IED Reset Count', 'All IED Meters');
+insert into command values(-25, 'getconfig ied scan', 'Read IED Scan Info', 'All IED Meters');
+insert into command values(-26, 'putvalue ied reset', 'Reset IED Demand', 'All IED Meters');
+/* LoadGroup-BASE */
+insert into command values(-27, 'control shed 5m', 'Shed Group', 'All Load Group');
+insert into command values(-28, 'control restore', 'Restore Group', 'All Load Group');
+/* Alpha-BASE */
+insert into command values(-29, 'scan integrity', 'Force Scan', 'All Alpha Meters');
+/* CBC-BASE */
+insert into command values(-30, 'control open', 'OPEN Cap Bank', 'All CBCs');
+insert into command values(-31, 'control close', 'CLOSE Cap Bank', 'All CBCs');
+insert into command values(-32, 'putstatus ovuv disable', 'Disable OVUV', 'All CBCs');
+insert into command values(-33, 'putstatus ovuv enable', 'Enable OVUV', 'All CBCs');
+/* CCU-BASE, RTU-BASE, LCU-BASE, TCU-BASE */
+insert into command values(-34, 'ping', 'Ping', 'All Ping-able');
+insert into command values(-35, 'loop', '1 Loopback', 'All Ping-able');
+insert into command values(-36, 'loop 5', '5 Loopbacks', 'All Ping-able');
+/* CCU-711 */
+insert into command values(-37, 'putstatus reset', 'CCU Reset', 'CCU-711');
+/* Emetcon Group */
+insert into command values(-38, 'control shed 7.m', 'Shed 7.5min', 'Emetcon Group');
+insert into command values(-39, 'control shed 15m', 'Shed 15-min', 'Emetcon Group');
+insert into command values(-40, 'control shed 30m', 'Shed 30-min', 'Emetcon Group');
+insert into command values(-41, 'control shed 60m', 'Shed 60-min', 'Emetcon Group');
+insert into command values(-42, 'control shed ?''NumMins''m', 'Shed x-min', 'Emetcon Group');
+insert into command values(-43, 'control restore', 'Restore', 'Emetcon Group');
+/* Versacom Group */
+insert into command values(-44, 'control cycle 50 period 30 count 4', 'Cycle 50% / 30min', 'Versacom Group');
+insert into command values(-45, 'control cycle terminate', 'Terminate Cycle', 'Versacom Group');
+insert into command values(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
+insert into command values(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
+insert into command values(-48, 'putstatus reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
+insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'Versacom Group');
+/* TCU-BASE*/
+/* insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs'); */
+/* insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs'); */
+/* Repeater-BASE */
+insert into command values(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
+insert into command values(-53, 'getconfig emetcon install', 'Download All Roles', 'All Repeaters');
+insert into command values(-54, 'loop locate', 'Locate Device', 'All Repeaters');
+/* ION-BASE */
+insert into command values(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
+insert into command values(-56, 'scan integrity', 'Scan Power Meter and Status', 'All ION Meters');
+insert into command values(-57, 'getstatus eventlog', 'Retrieve Event Log', 'All ION Meters');
+/* IEDAlpha-BASE */
+insert into command values(-58, 'putconfig emetcon ied class 72 1', 'Set Current Period (Alpha)', 'DEVICE');
+insert into command values(-59, 'putconfig emetcon ied class 72 2', 'Set Previous Period (Alpha)', 'DEVICE');
+/* EDGEKV-BASE */
+insert into command values(-60, 'getvalue ied demand', 'Read IED Volts', 'DEVICE');
+insert into command values(-61, 'putconfig emetcon ied class 0 0', 'Set Current Period (GEKV)', 'DEVICE');
+insert into command values(-62, 'putconfig emetcon ied class 0 1', 'Set Previous Period (GEKV)', 'DEVICE');
+/* ExpresscomSerial */
+insert into command values(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
+insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
+insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
+insert into command values(-68, 'putconfig xcom serv out temp 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
+insert into command values(-69, 'putconfig xcom serv out temp', 'In Service', 'ExpresscomSerial');
+/* LCRSerial */
+insert into command values(-70, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'LCRSerial');
+insert into command values(-71, 'control restore relay 1', 'Restore Relay 1', 'LCRSerial');
+insert into command values(-72, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'LCRSerial');
+insert into command values(-73, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'LCRSerial');
+insert into command values(-74, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'LCRSerial');
+insert into command values(-75, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
+insert into command values(-76, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'LCRSerial');
+insert into command values(-77, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'LCRSerial');
+insert into command values(-78, 'putconfig xcom raw 40 ?''Weighting (1-8)''', 'Store a TrueCycle Day', 'LCRSerial');
+insert into command values(-79, 'putconfig raw 36 1', 'Set Versacom Mode', 'LCRSerial');
+insert into command values(-80, 'putconfig raw 35 0', 'Set Emetcon Mode', 'LCRSerial');
+/* MCT410IL */
+insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'MCT-410IL');
+insert into command values(-82, 'getvalue voltage', 'Read Min / Max Voltage', 'MCT-410IL');
+insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date to Meter', 'MCT-410IL');
+insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
+
+
+INSERT INTO DEVICETYPECOMMAND VALUES (0, 0, 'System', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-1, 0, 'CICustomer', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-2, 0, 'Davis Weather', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-3, 0, 'Fulcrum', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-4, 0, 'Landis-Gyr S4', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-5, 0, 'MCT Broadcast', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-6, 0, 'Sixnet', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-7, 0, 'Tap Terminal', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-8, 0, 'VersacomSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-9, 0, 'SA205Serial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-10, 0, 'SA305Serial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-11, 0, 'CollectionGroup', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-12, 0, 'TestCollectionGroup', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-13, -1, 'LMT-2', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-14, -2, 'LMT-2', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-15, -3, 'LMT-2', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-16, -4, 'LMT-2', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-17, -5, 'LMT-2', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-18, -6, 'LMT-2', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-19, -7, 'LMT-2', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-20, -8, 'LMT-2', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-21, -9, 'LMT-2', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-22, -10, 'LMT-2', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-23, -27, 'Macro Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-24, -28, 'Macro Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-25, -29, 'Alpha A1', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-26, -29, 'Alpha Power Plus', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-27, -30, 'CBC 6510', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-28, -31, 'CBC 6510', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-29, -32, 'CBC 6510', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-30, -33, 'CBC 6510', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-31, -30, 'CBC FP-2800', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-32, -31, 'CBC FP-2800', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-33, -32, 'CBC FP-2800', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-34, -33, 'CBC FP-2800', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-35, -30, 'CBC Versacom', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-36, -31, 'CBC Versacom', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-37, -32, 'CBC Versacom', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-38, -33, 'CBC Versacom', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-39, -30, 'Cap Bank', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-40, -31, 'Cap Bank', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-41, -32, 'Cap Bank', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-42, -33, 'Cap Bank', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-43, -34, 'CCU-710A', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-44, -35, 'CCU-710A', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-45, -36, 'CCU-710A', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-46, -34, 'CCU-711', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-47, -35, 'CCU-711', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-48, -36, 'CCU-711', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-49, -37, 'CCU-711', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-50, -38, 'Emetcon Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-51, -39, 'Emetcon Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-52, -40, 'Emetcon Group', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-53, -41, 'Emetcon Group', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-54, -42, 'Emetcon Group', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-55, -43, 'Emetcon Group', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-56, -27, 'Expresscom Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-57, -28, 'Expresscom Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-58, -27, 'Golay Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-59, -28, 'Golay Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-60, -27, 'Macro Group', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-61, -28, 'Macro Group', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-62, -27, 'Ripple Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-63, -28, 'Ripple Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-64, -27, 'SA-205 Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-65, -28, 'SA-205 Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-66, -27, 'SA-305 Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-67, -28, 'SA-305 Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-68, -27, 'SA-Digital Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-69, -28, 'SA-Digital Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-70, -27, 'Versacom Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-71, -28, 'Versacom Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-72, -44, 'Versacom Group', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-73, -45, 'Versacom Group', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-74, -46, 'Versacom Group', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-75, -47, 'Versacom Group', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-76, -48, 'Versacom Group', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-77, -49, 'Versacom Group', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-78, -34, 'TCU-5000', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-79, -35, 'TCU-5000', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-80, -36, 'TCU-5000', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-81, -34, 'TCU-5500', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-82, -35, 'TCU-5500', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-83, -36, 'TCU-5500', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-84, -52, 'Repeater 800', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-85, -3, 'Repeater 800', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-86, -53, 'Repeater 800', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-87, -54, 'Repeater 800', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-88, -52, 'Repeater', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-89, -3, 'Repeater', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-90, -53, 'Repeater', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-91, -54, 'Repeater', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-92, -34, 'RTU-DART', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-93, -35, 'RTU-DART', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-94, -36, 'RTU-DART', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-95, -34, 'RTU-DNP', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-96, -35, 'RTU-DNP', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-97, -36, 'RTU-DNP', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-98, -34, 'RTU-ILEX', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-99, -35, 'RTU-ILEX', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-100, -36, 'RTU-ILEX', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-101, -34, 'RTU-WELCO', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-102, -35, 'RTU-WELCO', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-103, -36, 'RTU-WELCO', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-104, -55, 'ION-7330', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-105, -56, 'ION-7330', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-106, -57, 'ION-7330', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-107, -55, 'ION-7700', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-108, -56, 'ION-7700', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-109, -57, 'ION-7700', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-110, -55, 'ION-8300', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-111, -56, 'ION-8300', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-112, -57, 'ION-8300', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-113, -34, 'LCU-415', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-114, -35, 'LCU-415', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-115, -36, 'LCU-415', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-116, -34, 'LCU-EASTRIVER', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-117, -35, 'LCU-EASTRIVER', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-118, -36, 'LCU-EASTRIVER', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-119, -34, 'LCU-LG', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-120, -35, 'LCU-LG', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-121, -36, 'LCU-LG', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-122, -34, 'LCU-T3026', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-123, -35, 'LCU-T3026', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-124, -36, 'LCU-T3026', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-125, -63, 'ExpresscomSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-126, -64, 'ExpresscomSerial', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-127, -65, 'ExpresscomSerial', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-128, -66, 'ExpresscomSerial', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-129, -67, 'ExpresscomSerial', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-130, -68, 'ExpresscomSerial', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-131, -69, 'ExpresscomSerial', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-132, -70, 'LCRSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-133, -71, 'LCRSerial', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-134, -72, 'LCRSerial', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-135, -73, 'LCRSerial', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-136, -74, 'LCRSerial', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-137, -46, 'LCRSerial', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-138, -47, 'LCRSerial', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-139, -75, 'LCRSerial', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-140, -76, 'LCRSerial', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-141, -77, 'LCRSerial', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-142, -78, 'LCRSerial', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-143, -79, 'LCRSerial', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-144, -80, 'LCRSerial', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-145, -49, 'LCRSerial', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-146, -48, 'LCRSerial', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-147, -1, 'MCT-210', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-148, -2, 'MCT-210', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-149, -3, 'MCT-210', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-150, -4, 'MCT-210', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-151, -5, 'MCT-210', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-152, -6, 'MCT-210', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-153, -7, 'MCT-210', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-154, -8, 'MCT-210', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-155, -9, 'MCT-210', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-156, -10, 'MCT-210', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-157, -1, 'MCT-213', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-158, -2, 'MCT-213', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-159, -3, 'MCT-213', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-160, -4, 'MCT-213', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-161, -5, 'MCT-213', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-162, -6, 'MCT-213', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-163, -7, 'MCT-213', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-164, -8, 'MCT-213', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-165, -9, 'MCT-213', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-166, -10, 'MCT-213', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-167, -11, 'MCT-213', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-168, -12, 'MCT-213', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-169, -13, 'MCT-213', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-170, -1, 'MCT-240', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-171, -2, 'MCT-240', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-172, -3, 'MCT-240', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-173, -4, 'MCT-240', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-174, -5, 'MCT-240', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-175, -6, 'MCT-240', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-176, -7, 'MCT-240', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-177, -8, 'MCT-240', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-178, -9, 'MCT-240', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-179, -10, 'MCT-240', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-180, -15, 'MCT-240', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-181, -18, 'MCT-240', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-182, -19, 'MCT-240', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-183, -1, 'MCT-248', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-184, -2, 'MCT-248', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-185, -3, 'MCT-248', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-186, -4, 'MCT-248', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-187, -5, 'MCT-248', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-188, -6, 'MCT-248', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-189, -7, 'MCT-248', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-190, -8, 'MCT-248', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-191, -9, 'MCT-248', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-192, -10, 'MCT-248', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-193, -15, 'MCT-248', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-194, -18, 'MCT-248', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-195, -19, 'MCT-248', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-196, -1, 'MCT-250', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-197, -2, 'MCT-250', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-198, -3, 'MCT-250', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-199, -4, 'MCT-250', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-200, -5, 'MCT-250', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-201, -6, 'MCT-250', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-202, -7, 'MCT-250', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-203, -8, 'MCT-250', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-204, -9, 'MCT-250', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-205, -10, 'MCT-250', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-206, -14, 'MCT-250', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-207, -15, 'MCT-250', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-208, -18, 'MCT-250', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-209, -19, 'MCT-250', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-210, -1, 'MCT-310', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-211, -2, 'MCT-310', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-212, -3, 'MCT-310', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-213, -4, 'MCT-310', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-214, -5, 'MCT-310', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-215, -6, 'MCT-310', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-216, -7, 'MCT-310', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-217, -8, 'MCT-310', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-218, -9, 'MCT-310', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-219, -10, 'MCT-310', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-220, -1, 'MCT-310CT', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-221, -2, 'MCT-310CT', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-222, -3, 'MCT-310CT', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-223, -4, 'MCT-310CT', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-224, -5, 'MCT-310CT', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-225, -6, 'MCT-310CT', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-226, -7, 'MCT-310CT', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-227, -8, 'MCT-310CT', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-228, -9, 'MCT-310CT', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-229, -10, 'MCT-310CT', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-230, -1, 'MCT-310IDL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-231, -2, 'MCT-310IDL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-232, -3, 'MCT-310IDL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-233, -4, 'MCT-310IDL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-234, -5, 'MCT-310IDL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-235, -6, 'MCT-310IDL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-236, -7, 'MCT-310IDL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-237, -8, 'MCT-310IDL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-238, -9, 'MCT-310IDL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-239, -10, 'MCT-310IDL', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-240, -1, 'MCT-310ID', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-241, -2, 'MCT-310ID', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-242, -3, 'MCT-310ID', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-243, -4, 'MCT-310ID', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-244, -5, 'MCT-310ID', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-245, -6, 'MCT-310ID', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-246, -7, 'MCT-310ID', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-247, -8, 'MCT-310ID', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-248, -9, 'MCT-310ID', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-249, -10, 'MCT-310ID', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-250, -11, 'MCT-310ID', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-251, -12, 'MCT-310ID', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-252, -13, 'MCT-310ID', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-253, -1, 'MCT-310IL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-254, -2, 'MCT-310IL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-255, -3, 'MCT-310IL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-256, -4, 'MCT-310IL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-257, -5, 'MCT-310IL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-258, -6, 'MCT-310IL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-259, -7, 'MCT-310IL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-260, -8, 'MCT-310IL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-261, -9, 'MCT-310IL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-262, -10, 'MCT-310IL', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-263, -15, 'MCT-310IL', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-264, -18, 'MCT-310IL', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-265, -19, 'MCT-310IL', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-266, -1, 'MCT-318', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-267, -2, 'MCT-318', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-268, -3, 'MCT-318', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-269, -4, 'MCT-318', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-270, -5, 'MCT-318', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-271, -6, 'MCT-318', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-272, -7, 'MCT-318', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-273, -8, 'MCT-318', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-274, -9, 'MCT-318', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-275, -10, 'MCT-318', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-276, -14, 'MCT-318', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-277, -1, 'MCT-318L', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-278, -2, 'MCT-318L', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-279, -3, 'MCT-318L', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-280, -4, 'MCT-318L', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-281, -5, 'MCT-318L', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-282, -6, 'MCT-318L', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-283, -7, 'MCT-318L', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-284, -8, 'MCT-318L', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-285, -9, 'MCT-318L', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-286, -10, 'MCT-318L', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-287, -14, 'MCT-318L', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-288, -1, 'MCT-360', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-289, -2, 'MCT-360', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-290, -3, 'MCT-360', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-291, -4, 'MCT-360', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-292, -5, 'MCT-360', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-293, -6, 'MCT-360', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-294, -7, 'MCT-360', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-295, -8, 'MCT-360', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-296, -9, 'MCT-360', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-297, -10, 'MCT-360', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-298, -14, 'MCT-360', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-299, -26, 'MCT-360', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-300, -1, 'MCT-370', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-301, -2, 'MCT-370', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-302, -3, 'MCT-370', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-303, -4, 'MCT-370', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-304, -5, 'MCT-370', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-305, -6, 'MCT-370', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-306, -7, 'MCT-370', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-307, -8, 'MCT-370', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-308, -9, 'MCT-370', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-309, -10, 'MCT-370', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-310, -14, 'MCT-370', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-311, -20, 'MCT-370', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-312, -21, 'MCT-370', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-313, -22, 'MCT-370', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-314, -23, 'MCT-370', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-315, -24, 'MCT-370', 16, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-316, -25, 'MCT-370', 17, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-317, -26, 'MCT-370', 18, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-318, -1, 'MCT-410IL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-319, -81, 'MCT-410IL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-320, -3, 'MCT-410IL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-321, -6, 'MCT-410IL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-322, -34, 'MCT-410IL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-323, -82, 'MCT-410IL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-324, -18, 'MCT-410IL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-325, -19, 'MCT-410IL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-326, -83, 'MCT-410IL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-327, -84, 'MCT-410IL', 10, 'Y');
+
+alter table fdrtranslation drop constraint PK_FDRTrans;
+alter table FDRTRANSLATION add constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION);
+
+
 
 
 

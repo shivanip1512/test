@@ -1,111 +1,15 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
-/* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/8/2004 11:45:38 AM                        */
+/* DBMS name:      Microsoft SQL Server 2000                    */
+/* Created on:     11/10/2004 2:48:44 PM                        */
 /*==============================================================*/
 
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('DISPLAY2WAYDATA_VIEW')
+           where  id = object_id('SubstationAddress_View')
             and   type = 'V')
-   drop view DISPLAY2WAYDATA_VIEW
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('ExpressComAddress_View')
-            and   type = 'V')
-   drop view ExpressComAddress_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('FeederAddress_View')
-            and   type = 'V')
-   drop view FeederAddress_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('FullEventLog_View')
-            and   type = 'V')
-   drop view FullEventLog_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('FullPointHistory_View')
-            and   type = 'V')
-   drop view FullPointHistory_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('GeoAddress_View')
-            and   type = 'V')
-   drop view GeoAddress_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('LMCurtailCustomerActivity_View')
-            and   type = 'V')
-   drop view LMCurtailCustomerActivity_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('LMGroupMacroExpander_View')
-            and   type = 'V')
-   drop view LMGroupMacroExpander_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('LMProgram_View')
-            and   type = 'V')
-   drop view LMProgram_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('Peakpointhistory_View')
-            and   type = 'V')
-   drop view Peakpointhistory_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PointEventLog_View')
-            and   type = 'V')
-   drop view PointEventLog_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PointHistory_View')
-            and   type = 'V')
-   drop view PointHistory_View
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('ProgramAddress_View')
-            and   type = 'V')
-   drop view ProgramAddress_View
+   drop view SubstationAddress_View
 go
 
 
@@ -119,9 +23,422 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('SubstationAddress_View')
+           where  id = object_id('ProgramAddress_View')
             and   type = 'V')
-   drop view SubstationAddress_View
+   drop view ProgramAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PointHistory_View')
+            and   type = 'V')
+   drop view PointHistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PointEventLog_View')
+            and   type = 'V')
+   drop view PointEventLog_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Peakpointhistory_View')
+            and   type = 'V')
+   drop view Peakpointhistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgram_View')
+            and   type = 'V')
+   drop view LMProgram_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCurtailCustomerActivity_View')
+            and   type = 'V')
+   drop view LMCurtailCustomerActivity_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GeoAddress_View')
+            and   type = 'V')
+   drop view GeoAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FullPointHistory_View')
+            and   type = 'V')
+   drop view FullPointHistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FullEventLog_View')
+            and   type = 'V')
+   drop view FullEventLog_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FeederAddress_View')
+            and   type = 'V')
+   drop view FeederAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ExpressComAddress_View')
+            and   type = 'V')
+   drop view ExpressComAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DISPLAY2WAYDATA_VIEW')
+            and   type = 'V')
+   drop view DISPLAY2WAYDATA_VIEW
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CALCBASE')
+            and   name  = 'Indx_ClcBaseUpdTyp'
+            and   indid > 0
+            and   indid < 255)
+   drop index CALCBASE.Indx_ClcBaseUpdTyp
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CALCCOMPONENT')
+            and   name  = 'Indx_CalcCmpCmpType'
+            and   indid > 0
+            and   indid < 255)
+   drop index CALCCOMPONENT.Indx_CalcCmpCmpType
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CAPCONTROLSUBSTATIONBUS')
+            and   name  = 'Indx_CSUBVPT'
+            and   indid > 0
+            and   indid < 255)
+   drop index CAPCONTROLSUBSTATIONBUS.Indx_CSUBVPT
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CapControlFeeder')
+            and   name  = 'Indx_CPCNFDVARPT'
+            and   indid > 0
+            and   indid < 255)
+   drop index CapControlFeeder.Indx_CPCNFDVARPT
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Contact')
+            and   name  = 'Indx_ContLstName'
+            and   indid > 0
+            and   indid < 255)
+   drop index Contact.Indx_ContLstName
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DISPLAY')
+            and   name  = 'Indx_DISPLAYNAME'
+            and   indid > 0
+            and   indid < 255)
+   drop index DISPLAY.Indx_DISPLAYNAME
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DynamicVerification')
+            and   name  = 'Index_DYNVER_CS'
+            and   indid > 0
+            and   indid < 255)
+   drop index DynamicVerification.Index_DYNVER_CS
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DynamicVerification')
+            and   name  = 'Indx_DYNV_TIME'
+            and   indid > 0
+            and   indid < 255)
+   drop index DynamicVerification.Indx_DYNV_TIME
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('EnergyCompany')
+            and   name  = 'Indx_EnCmpName'
+            and   indid > 0
+            and   indid < 255)
+   drop index EnergyCompany.Indx_EnCmpName
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('FDRTRANSLATION')
+            and   name  = 'Indx_FdrTransIntTyp'
+            and   indid > 0
+            and   indid < 255)
+   drop index FDRTRANSLATION.Indx_FdrTransIntTyp
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('FDRTRANSLATION')
+            and   name  = 'Indx_FdrTrnsIntTypDir'
+            and   indid > 0
+            and   indid < 255)
+   drop index FDRTRANSLATION.Indx_FdrTrnsIntTypDir
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('GRAPHDATASERIES')
+            and   name  = 'Indx_GrpDSerPtID'
+            and   indid > 0
+            and   indid < 255)
+   drop index GRAPHDATASERIES.Indx_GrpDSerPtID
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('HolidaySchedule')
+            and   name  = 'Indx_HolSchName'
+            and   indid > 0
+            and   indid < 255)
+   drop index HolidaySchedule.Indx_HolSchName
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMControlHistory')
+            and   name  = 'Indx_Start'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMControlHistory.Indx_Start
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCurtailCustomerActivity')
+            and   name  = 'Index_LMCrtCstAckSt'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCurtailCustomerActivity.Index_LMCrtCstAckSt
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCurtailCustomerActivity')
+            and   name  = 'Index_LMCrtCstActID'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCurtailCustomerActivity.Index_LMCrtCstActID
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCurtailProgramActivity')
+            and   name  = 'Indx_LMCrtPrgActStTime'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCurtailProgramActivity.Indx_LMCrtPrgActStTime
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('NotificationGroup')
+            and   name  = 'Indx_NOTIFGRPNme'
+            and   indid > 0
+            and   indid < 255)
+   drop index NotificationGroup.Indx_NOTIFGRPNme
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PAOExclusion')
+            and   name  = 'Indx_PAOExclus'
+            and   indid > 0
+            and   indid < 255)
+   drop index PAOExclusion.Indx_PAOExclus
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'Indx_PointStGrpID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.Indx_PointStGrpID
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('RAWPOINTHISTORY')
+            and   name  = 'Index_PointID'
+            and   indid > 0
+            and   indid < 255)
+   drop index RAWPOINTHISTORY.Index_PointID
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('RAWPOINTHISTORY')
+            and   name  = 'Indx_TimeStamp'
+            and   indid > 0
+            and   indid < 255)
+   drop index RAWPOINTHISTORY.Indx_TimeStamp
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Route')
+            and   name  = 'Indx_RouteDevID'
+            and   indid > 0
+            and   indid < 255)
+   drop index Route.Indx_RouteDevID
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('STATE')
+            and   name  = 'Indx_StateRaw'
+            and   indid > 0
+            and   indid < 255)
+   drop index STATE.Indx_StateRaw
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('STATEGROUP')
+            and   name  = 'Indx_STATEGRP_Nme'
+            and   indid > 0
+            and   indid < 255)
+   drop index STATEGROUP.Indx_STATEGRP_Nme
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_Date'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_Date
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_PtId'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_PtId
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonListEntry')
+            and   name  = 'Indx_YkLstDefID'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonListEntry.Indx_YkLstDefID
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonPAObject')
+            and   name  = 'Indx_PAO'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonPAObject.Indx_PAO
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonRole')
+            and   name  = 'Indx_YukRol_Nm'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonRole.Indx_YukRol_Nm
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonUser')
+            and   name  = 'Indx_YkUsIDNm'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonUser.Indx_YkUsIDNm
+go
+
+
+alter table GRAPHDEFINITION
+   drop constraint AK_GRNMUQ_GRAPHDEF
+go
+
+
+alter table LMProgramDirectGear
+   drop constraint AK_AKEY_LMPRGDIRG_LMPROGRA
+go
+
+
+alter table POINT
+   drop constraint AK_KEY_PTNM_YUKPAOID
 go
 
 
@@ -1367,6 +1684,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('TOUDayRateSwitches')
+            and   type = 'U')
+   drop table TOUDayRateSwitches
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('TOUSchedule')
             and   type = 'U')
    drop table TOUSchedule
@@ -1518,18 +1843,18 @@ go
 
 
 /*==============================================================*/
-/* Table : ActivityLog                                          */
+/* Table: ActivityLog                                           */
 /*==============================================================*/
 create table ActivityLog (
-ActivityLogID        numeric              not null,
-TimeStamp            datetime             not null,
-UserID               numeric              null,
-AccountID            numeric              null,
-EnergyCompanyID      numeric              null,
-CustomerID           numeric              null,
-PaoID                numeric              null,
-Action               varchar(80)          not null,
-Description          varchar(120)         not null
+   ActivityLogID        numeric              not null,
+   TimeStamp            datetime             not null,
+   UserID               numeric              null,
+   AccountID            numeric              null,
+   EnergyCompanyID      numeric              null,
+   CustomerID           numeric              null,
+   PaoID                numeric              null,
+   Action               varchar(80)          not null,
+   Description          varchar(120)         not null
 )
 go
 
@@ -1540,34 +1865,33 @@ go
 
 
 /*==============================================================*/
-/* Table : Address                                              */
+/* Table: Address                                               */
 /*==============================================================*/
 create table Address (
-AddressID            numeric              not null,
-LocationAddress1     varchar(40)          not null,
-LocationAddress2     varchar(40)          not null,
-CityName             varchar(32)          not null,
-StateCode            char(2)              not null,
-ZipCode              varchar(12)          not null,
-County               varchar(30)          not null
+   AddressID            numeric              not null,
+   LocationAddress1     varchar(40)          not null,
+   LocationAddress2     varchar(40)          not null,
+   CityName             varchar(32)          not null,
+   StateCode            char(2)              not null,
+   ZipCode              varchar(12)          not null,
+   County               varchar(30)          not null
 )
 go
 
 
 insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
-
 alter table Address
    add constraint PK_ADDRESS primary key  (AddressID)
 go
 
 
 /*==============================================================*/
-/* Table : AlarmCategory                                        */
+/* Table: AlarmCategory                                         */
 /*==============================================================*/
 create table AlarmCategory (
-AlarmCategoryID      numeric              not null,
-CategoryName         varchar(40)          not null,
-NotificationGroupID  numeric              not null
+   AlarmCategoryID      numeric              not null,
+   CategoryName         varchar(40)          not null,
+   NotificationGroupID  numeric              not null
 )
 go
 
@@ -1606,40 +1930,38 @@ insert into AlarmCategory values(29,'Category 28',1);
 insert into AlarmCategory values(30,'Category 29',1);
 insert into AlarmCategory values(31,'Category 30',1);
 insert into AlarmCategory values(32,'Category 31',1);
-
 alter table AlarmCategory
    add constraint PK_ALARMCATEGORYID primary key  (AlarmCategoryID)
 go
 
 
 /*==============================================================*/
-/* Table : BaseLine                                             */
+/* Table: BaseLine                                              */
 /*==============================================================*/
 create table BaseLine (
-BaselineID           numeric              not null,
-BaselineName         varchar(30)          not null,
-DaysUsed             numeric              not null,
-PercentWindow        numeric              not null,
-CalcDays             numeric              not null,
-ExcludedWeekDays     char(7)              not null,
-HolidaysUsed         numeric              not null
+   BaselineID           numeric              not null,
+   BaselineName         varchar(30)          not null,
+   DaysUsed             numeric              not null,
+   PercentWindow        numeric              not null,
+   CalcDays             numeric              not null,
+   ExcludedWeekDays     char(7)              not null,
+   HolidaysUsed         numeric              not null
 )
 go
 
 
 insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
-
 alter table BaseLine
    add constraint PK_BASELINE primary key  (BaselineID)
 go
 
 
 /*==============================================================*/
-/* Table : BillingFileFormats                                   */
+/* Table: BillingFileFormats                                    */
 /*==============================================================*/
 create table BillingFileFormats (
-FormatID             numeric              not null,
-FormatType           varchar(30)          not null
+   FormatID             numeric              not null,
+   FormatType           varchar(30)          not null
 )
 go
 
@@ -1659,19 +1981,18 @@ insert into billingfileformats values( 12, 'SEDC 5.4');
 insert into billingfileformats values( 13, 'NISC-Turtle');
 insert into billingfileformats values( 14, 'NISC-NCDC');
 
-
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key  (FormatID)
 go
 
 
 /*==============================================================*/
-/* Table : CALCBASE                                             */
+/* Table: CALCBASE                                              */
 /*==============================================================*/
 create table CALCBASE (
-POINTID              numeric              not null,
-UPDATETYPE           varchar(16)          not null,
-PERIODICRATE         numeric              not null
+   POINTID              numeric              not null,
+   UPDATETYPE           varchar(16)          not null,
+   PERIODICRATE         numeric              not null
 )
 go
 
@@ -1691,16 +2012,16 @@ go
 
 
 /*==============================================================*/
-/* Table : CALCCOMPONENT                                        */
+/* Table: CALCCOMPONENT                                         */
 /*==============================================================*/
 create table CALCCOMPONENT (
-PointID              numeric              not null,
-COMPONENTORDER       numeric              not null,
-COMPONENTTYPE        varchar(10)          not null,
-COMPONENTPOINTID     numeric              not null,
-OPERATION            varchar(10)          null,
-CONSTANT             float                not null,
-FUNCTIONNAME         varchar(20)          null
+   PointID              numeric              not null,
+   COMPONENTORDER       numeric              not null,
+   COMPONENTTYPE        varchar(10)          not null,
+   COMPONENTPOINTID     numeric              not null,
+   OPERATION            varchar(10)          null,
+   CONSTANT             float                not null,
+   FUNCTIONNAME         varchar(20)          null
 )
 go
 
@@ -1720,19 +2041,19 @@ go
 
 
 /*==============================================================*/
-/* Table : CAPBANK                                              */
+/* Table: CAPBANK                                               */
 /*==============================================================*/
 create table CAPBANK (
-DEVICEID             numeric              not null,
-OPERATIONALSTATE     varchar(8)           not null,
-ControllerType       varchar(20)          not null,
-CONTROLDEVICEID      numeric              not null,
-CONTROLPOINTID       numeric              not null,
-BANKSIZE             numeric              not null,
-TypeOfSwitch         varchar(20)          not null,
-SwitchManufacture    varchar(20)          not null,
-MapLocationID        numeric              not null,
-RecloseDelay         numeric              not null
+   DEVICEID             numeric              not null,
+   OPERATIONALSTATE     varchar(8)           not null,
+   ControllerType       varchar(20)          not null,
+   CONTROLDEVICEID      numeric              not null,
+   CONTROLPOINTID       numeric              not null,
+   BANKSIZE             numeric              not null,
+   TypeOfSwitch         varchar(20)          not null,
+   SwitchManufacture    varchar(20)          not null,
+   MapLocationID        numeric              not null,
+   RecloseDelay         numeric              not null
 )
 go
 
@@ -1743,30 +2064,30 @@ go
 
 
 /*==============================================================*/
-/* Table : CAPCONTROLSUBSTATIONBUS                              */
+/* Table: CAPCONTROLSUBSTATIONBUS                               */
 /*==============================================================*/
 create table CAPCONTROLSUBSTATIONBUS (
-SubstationBusID      numeric              not null,
-ControlMethod        varchar(20)          not null,
-MAXDAILYOPERATION    numeric              not null,
-MaxOperationDisableFlag char(1)              not null,
-PEAKSETPOINT         float                not null,
-OFFPEAKSETPOINT      float                not null,
-PEAKSTARTTIME        numeric              not null,
-PEAKSTOPTIME         numeric              not null,
-CurrentVarLoadPointID numeric              not null,
-CurrentWattLoadPointID numeric              not null,
-UpperBandwidth       float                not null,
-CONTROLINTERVAL      numeric              not null,
-MINRESPONSETIME      numeric              not null,
-MINCONFIRMPERCENT    numeric              not null,
-FAILUREPERCENT       numeric              not null,
-DAYSOFWEEK           char(8)              not null,
-MapLocationID        numeric              not null,
-LowerBandwidth       float                not null,
-ControlUnits         varchar(20)          not null,
-ControlDelayTime     numeric              not null,
-ControlSendRetries   numeric              not null
+   SubstationBusID      numeric              not null,
+   ControlMethod        varchar(20)          not null,
+   MAXDAILYOPERATION    numeric              not null,
+   MaxOperationDisableFlag char(1)              not null,
+   PEAKSETPOINT         float                not null,
+   OFFPEAKSETPOINT      float                not null,
+   PEAKSTARTTIME        numeric              not null,
+   PEAKSTOPTIME         numeric              not null,
+   CurrentVarLoadPointID numeric              not null,
+   CurrentWattLoadPointID numeric              not null,
+   UpperBandwidth       float                not null,
+   CONTROLINTERVAL      numeric              not null,
+   MINRESPONSETIME      numeric              not null,
+   MINCONFIRMPERCENT    numeric              not null,
+   FAILUREPERCENT       numeric              not null,
+   DAYSOFWEEK           char(8)              not null,
+   MapLocationID        numeric              not null,
+   LowerBandwidth       float                not null,
+   ControlUnits         varchar(20)          not null,
+   ControlDelayTime     numeric              not null,
+   ControlSendRetries   numeric              not null
 )
 go
 
@@ -1786,12 +2107,12 @@ go
 
 
 /*==============================================================*/
-/* Table : CCFeederBankList                                     */
+/* Table: CCFeederBankList                                      */
 /*==============================================================*/
 create table CCFeederBankList (
-FeederID             numeric              not null,
-DeviceID             numeric              not null,
-ControlOrder         numeric              not null
+   FeederID             numeric              not null,
+   DeviceID             numeric              not null,
+   ControlOrder         numeric              not null
 )
 go
 
@@ -1802,12 +2123,12 @@ go
 
 
 /*==============================================================*/
-/* Table : CCFeederSubAssignment                                */
+/* Table: CCFeederSubAssignment                                 */
 /*==============================================================*/
 create table CCFeederSubAssignment (
-SubStationBusID      numeric              not null,
-FeederID             numeric              not null,
-DisplayOrder         numeric              not null
+   SubStationBusID      numeric              not null,
+   FeederID             numeric              not null,
+   DisplayOrder         numeric              not null
 )
 go
 
@@ -1818,15 +2139,15 @@ go
 
 
 /*==============================================================*/
-/* Table : CICustomerBase                                       */
+/* Table: CICustomerBase                                        */
 /*==============================================================*/
 create table CICustomerBase (
-CustomerID           numeric              not null,
-MainAddressID        numeric              not null,
-CustomerDemandLevel  float                not null,
-CurtailmentAgreement varchar(100)         not null,
-CurtailAmount        float                not null,
-CompanyName          varchar(80)          not null
+   CustomerID           numeric              not null,
+   MainAddressID        numeric              not null,
+   CustomerDemandLevel  float                not null,
+   CurtailmentAgreement varchar(100)         not null,
+   CurtailAmount        float                not null,
+   CompanyName          varchar(80)          not null
 )
 go
 
@@ -1837,11 +2158,11 @@ go
 
 
 /*==============================================================*/
-/* Table : COLUMNTYPE                                           */
+/* Table: COLUMNTYPE                                            */
 /*==============================================================*/
 create table COLUMNTYPE (
-TYPENUM              numeric              not null,
-NAME                 varchar(20)          not null
+   TYPENUM              numeric              not null,
+   NAME                 varchar(20)          not null
 )
 go
 
@@ -1861,38 +2182,36 @@ insert into columntype values (12, 'UofM');
 insert into columntype values (13, 'State');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
-
 alter table COLUMNTYPE
    add constraint SYS_C0013414 primary key  (TYPENUM)
 go
 
 
 /*==============================================================*/
-/* Table : CTIDatabase                                          */
+/* Table: CTIDatabase                                           */
 /*==============================================================*/
 create table CTIDatabase (
-Version              varchar(6)           not null,
-CTIEmployeeName      varchar(30)          not null,
-DateApplied          datetime             null,
-Notes                varchar(300)         null,
-Build                numeric              not null
+   Version              varchar(6)           not null,
+   CTIEmployeeName      varchar(30)          not null,
+   DateApplied          datetime             null,
+   Notes                varchar(300)         null,
+   Build                numeric              not null
 )
 go
 
 
 insert into CTIDatabase values('3.01', 'Ryan', '10-MAY-2004', 'Added many load control and protocol changes', 1);
-
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key  (Version, Build)
 go
 
 
 /*==============================================================*/
-/* Table : CalcPointBaseline                                    */
+/* Table: CalcPointBaseline                                     */
 /*==============================================================*/
 create table CalcPointBaseline (
-PointID              numeric              not null,
-BaselineID           numeric              not null
+   PointID              numeric              not null,
+   BaselineID           numeric              not null
 )
 go
 
@@ -1903,17 +2222,17 @@ go
 
 
 /*==============================================================*/
-/* Table : CapControlFeeder                                     */
+/* Table: CapControlFeeder                                      */
 /*==============================================================*/
 create table CapControlFeeder (
-FeederID             numeric              not null,
-PeakSetPoint         float                not null,
-OffPeakSetPoint      float                not null,
-UpperBandwidth       float                not null,
-CurrentVarLoadPointID numeric              not null,
-CurrentWattLoadPointID numeric              not null,
-MapLocationID        numeric              not null,
-LowerBandwidth       float                not null
+   FeederID             numeric              not null,
+   PeakSetPoint         float                not null,
+   OffPeakSetPoint      float                not null,
+   UpperBandwidth       float                not null,
+   CurrentVarLoadPointID numeric              not null,
+   CurrentWattLoadPointID numeric              not null,
+   MapLocationID        numeric              not null,
+   LowerBandwidth       float                not null
 )
 go
 
@@ -1933,15 +2252,15 @@ go
 
 
 /*==============================================================*/
-/* Table : CarrierRoute                                         */
+/* Table: CarrierRoute                                          */
 /*==============================================================*/
 create table CarrierRoute (
-ROUTEID              numeric              not null,
-BUSNUMBER            numeric              not null,
-CCUFIXBITS           numeric              not null,
-CCUVARIABLEBITS      numeric              not null,
-UserLocked           char(1)              not null,
-ResetRptSettings     char(1)              not null
+   ROUTEID              numeric              not null,
+   BUSNUMBER            numeric              not null,
+   CCUFIXBITS           numeric              not null,
+   CCUVARIABLEBITS      numeric              not null,
+   UserLocked           char(1)              not null,
+   ResetRptSettings     char(1)              not null
 )
 go
 
@@ -1952,18 +2271,18 @@ go
 
 
 /*==============================================================*/
-/* Table : CommErrorHistory                                     */
+/* Table: CommErrorHistory                                      */
 /*==============================================================*/
 create table CommErrorHistory (
-CommErrorID          numeric              not null,
-PAObjectID           numeric              not null,
-DateTime             datetime             not null,
-SOE_Tag              numeric              not null,
-ErrorType            numeric              not null,
-ErrorNumber          numeric              not null,
-Command              varchar(50)          not null,
-OutMessage           varchar(160)         not null,
-InMessage            varchar(160)         not null
+   CommErrorID          numeric              not null,
+   PAObjectID           numeric              not null,
+   DateTime             datetime             not null,
+   SOE_Tag              numeric              not null,
+   ErrorType            numeric              not null,
+   ErrorNumber          numeric              not null,
+   Command              varchar(50)          not null,
+   OutMessage           varchar(160)         not null,
+   InMessage            varchar(160)         not null
 )
 go
 
@@ -1974,16 +2293,16 @@ go
 
 
 /*==============================================================*/
-/* Table : CommPort                                             */
+/* Table: CommPort                                              */
 /*==============================================================*/
 create table CommPort (
-PORTID               numeric              not null,
-ALARMINHIBIT         varchar(1)           not null,
-COMMONPROTOCOL       varchar(8)           not null,
-PERFORMTHRESHOLD     numeric              not null,
-PERFORMANCEALARM     varchar(1)           not null,
-SharedPortType       varchar(20)          not null,
-SharedSocketNumber   numeric              not null
+   PORTID               numeric              not null,
+   ALARMINHIBIT         varchar(1)           not null,
+   COMMONPROTOCOL       varchar(8)           not null,
+   PERFORMTHRESHOLD     numeric              not null,
+   PERFORMANCEALARM     varchar(1)           not null,
+   SharedPortType       varchar(20)          not null,
+   SharedSocketNumber   numeric              not null
 )
 go
 
@@ -1994,37 +2313,143 @@ go
 
 
 /*==============================================================*/
-/* Table : Command                                              */
+/* Table: Command                                               */
 /*==============================================================*/
 create table Command (
-CommandID            numeric              not null,
-Command              varchar(256)         not null,
-Label                varchar(256)         not null,
-Category             char(32)             not null
+   CommandID            numeric              not null,
+   Command              varchar(256)         not null,
+   Label                varchar(256)         not null,
+   Category             varchar(32)          not null
 )
 go
 
 
+/* N-A */
+insert into command values(-0, 'Not Available Yet', 'Not Available Yet', 'DEVICE');
+
+/* MCT-BASE */
+insert into command values(-1, 'getvalue kWh', 'Read Energy', 'All MCTs');
+insert into command values(-2, 'getvalue demand', 'Read Current Demand', 'All MCTs');
+insert into command values(-3, 'getconfig model', 'Read Options', 'All MCTs');
+insert into command values(-4, 'putvalue kyz 1 reset', 'Clear kWh Reading', 'All MCTs');
+insert into command values(-5, 'getvalue powerfail', 'Read Powerfail', 'All MCTs');
+insert into command values(-6, 'getstatus internal', 'Read General Info', 'All MCTs'); 
+insert into command values(-7, 'getconfig mult kyz 1', 'Read MPKH ()', 'All MCTs');
+insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
+insert into command values(-9, 'getconfig interval ?LP/LI', 'Read Demand Interval (LP or LI)', 'All MCTs');
+insert into command values(-10, 'putconfig emetcon interval ?LP/LI', 'Write Demand Interval (LP or LI)', 'All MCTs');
+/* MCT-213, 310ID */
+insert into command values(-11, 'getstatus disconnect', 'Read Disconnect Status', 'All Disconnect Meters');
+insert into command values(-12, 'control disconnect', 'Disconnect Meter', 'All Disconnect Meters');
+insert into command values(-13, 'control connect', 'Connect Meter', 'All Disconnect Meters');
+/* MCT-250, 318, 318L, 360, 370 */
+insert into command values(-14, 'getstatus external', 'Read Status Points', 'All Status Input');
+/* LS-BASE */
+insert into command values(-15, 'getstatus LP', 'Read LS Info', 'All LP Meters');
+insert into command values(-16, 'Not Available Yet', 'Read LS Intervals 1 Thru 6', 'All LP Meters');
+insert into command values(-17, 'Not Available Yet', 'Read  6 LS Intervals Starting at ?', 'All LP Meters');
+insert into command values(-18, 'getconfig time', 'Read Date/Time', 'All LP Meters');
+insert into command values(-19, 'getconfig time sync', 'Read Last TimeSync', 'All LP Meters');
+/* IED-BASE */
+insert into command values(-20, 'getvalue ied demand', 'Read IED Last Interval Demands', 'All IED Meters');
+insert into command values(-21, 'getvalue ied kwh', 'Read IED KWH/KW', 'All IED Meters');
+insert into command values(-22, 'getconfig ied time', 'Read IED Date/Time', 'All IED Meters');
+insert into command values(-23, 'Not Available', 'Read IED TOU Rate [A,B,C,or D]', 'All IED Meters');
+insert into command values(-24, 'Not Available', 'Read IED Reset Count', 'All IED Meters');
+insert into command values(-25, 'getconfig ied scan', 'Read IED Scan Info', 'All IED Meters');
+insert into command values(-26, 'putvalue ied reset', 'Reset IED Demand', 'All IED Meters');
+/* LoadGroup-BASE */
+insert into command values(-27, 'control shed 5m', 'Shed Group', 'All Load Group');
+insert into command values(-28, 'control restore', 'Restore Group', 'All Load Group');
+/* Alpha-BASE */
+insert into command values(-29, 'scan integrity', 'Force Scan', 'All Alpha Meters');
+/* CBC-BASE */
+insert into command values(-30, 'control open', 'OPEN Cap Bank', 'All CBCs');
+insert into command values(-31, 'control close', 'CLOSE Cap Bank', 'All CBCs');
+insert into command values(-32, 'putstatus ovuv disable', 'Disable OVUV', 'All CBCs');
+insert into command values(-33, 'putstatus ovuv enable', 'Enable OVUV', 'All CBCs');
+/* CCU-BASE, RTU-BASE, LCU-BASE, TCU-BASE */
+insert into command values(-34, 'ping', 'Ping', 'All Ping-able');
+insert into command values(-35, 'loop', '1 Loopback', 'All Ping-able');
+insert into command values(-36, 'loop 5', '5 Loopbacks', 'All Ping-able');
+/* CCU-711 */
+insert into command values(-37, 'putstatus reset', 'CCU Reset', 'CCU-711');
+/* Emetcon Group */
+insert into command values(-38, 'control shed 7.m', 'Shed 7.5min', 'Emetcon Group');
+insert into command values(-39, 'control shed 15m', 'Shed 15-min', 'Emetcon Group');
+insert into command values(-40, 'control shed 30m', 'Shed 30-min', 'Emetcon Group');
+insert into command values(-41, 'control shed 60m', 'Shed 60-min', 'Emetcon Group');
+insert into command values(-42, 'control shed ?''NumMins''m', 'Shed x-min', 'Emetcon Group');
+insert into command values(-43, 'control restore', 'Restore', 'Emetcon Group');
+/* Versacom Group */
+insert into command values(-44, 'control cycle 50 period 30 count 4', 'Cycle 50% / 30min', 'Versacom Group');
+insert into command values(-45, 'control cycle terminate', 'Terminate Cycle', 'Versacom Group');
+insert into command values(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
+insert into command values(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
+insert into command values(-48, 'putstatus reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
+insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'Versacom Group');
+/* TCU-BASE*/
+/* insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs'); */
+/* insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs'); */
+/* Repeater-BASE */
+insert into command values(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
+insert into command values(-53, 'getconfig emetcon install', 'Download All Roles', 'All Repeaters');
+insert into command values(-54, 'loop locate', 'Locate Device', 'All Repeaters');
+/* ION-BASE */
+insert into command values(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
+insert into command values(-56, 'scan integrity', 'Scan Power Meter and Status', 'All ION Meters');
+insert into command values(-57, 'getstatus eventlog', 'Retrieve Event Log', 'All ION Meters');
+/* IEDAlpha-BASE */
+insert into command values(-58, 'putconfig emetcon ied class 72 1', 'Set Current Period (Alpha)', 'DEVICE');
+insert into command values(-59, 'putconfig emetcon ied class 72 2', 'Set Previous Period (Alpha)', 'DEVICE');
+/* EDGEKV-BASE */
+insert into command values(-60, 'getvalue ied demand', 'Read IED Volts', 'DEVICE');
+insert into command values(-61, 'putconfig emetcon ied class 0 0', 'Set Current Period (GEKV)', 'DEVICE');
+insert into command values(-62, 'putconfig emetcon ied class 0 1', 'Set Previous Period (GEKV)', 'DEVICE');
+/* ExpresscomSerial */
+insert into command values(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
+insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
+insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
+insert into command values(-68, 'putconfig xcom serv out temp 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
+insert into command values(-69, 'putconfig xcom serv out temp', 'In Service', 'ExpresscomSerial');
+/* LCRSerial */
+insert into command values(-70, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'LCRSerial');
+insert into command values(-71, 'control restore relay 1', 'Restore Relay 1', 'LCRSerial');
+insert into command values(-72, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'LCRSerial');
+insert into command values(-73, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'LCRSerial');
+insert into command values(-74, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'LCRSerial');
+insert into command values(-75, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
+insert into command values(-76, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'LCRSerial');
+insert into command values(-77, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'LCRSerial');
+insert into command values(-78, 'putconfig xcom raw 40 ?''Weighting (1-8)''', 'Store a TrueCycle Day', 'LCRSerial');
+insert into command values(-79, 'putconfig raw 36 1', 'Set Versacom Mode', 'LCRSerial');
+insert into command values(-80, 'putconfig raw 35 0', 'Set Emetcon Mode', 'LCRSerial');
+/* MCT410IL */
+insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'MCT-410IL');
+insert into command values(-82, 'getvalue voltage', 'Read Min / Max Voltage', 'MCT-410IL');
+insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date to Meter', 'MCT-410IL');
+insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
 alter table Command
    add constraint PK_COMMAND primary key  (CommandID)
 go
 
 
 /*==============================================================*/
-/* Table : Contact                                              */
+/* Table: Contact                                               */
 /*==============================================================*/
 create table Contact (
-ContactID            numeric              not null,
-ContFirstName        varchar(20)          not null,
-ContLastName         varchar(32)          not null,
-LogInID              numeric              not null,
-AddressID            numeric              not null
+   ContactID            numeric              not null,
+   ContFirstName        varchar(20)          not null,
+   ContLastName         varchar(32)          not null,
+   LogInID              numeric              not null,
+   AddressID            numeric              not null
 )
 go
 
 
 insert into contact values ( 0, '(none)', '(none)', -1, 0 );
-
 alter table Contact
    add constraint PK_CONTACT primary key  (ContactID)
 go
@@ -2040,20 +2465,19 @@ go
 
 
 /*==============================================================*/
-/* Table : ContactNotification                                  */
+/* Table: ContactNotification                                   */
 /*==============================================================*/
 create table ContactNotification (
-ContactNotifID       numeric              not null,
-ContactID            numeric              not null,
-NotificationCategoryID numeric              not null,
-DisableFlag          char(1)              not null,
-Notification         varchar(130)         not null
+   ContactNotifID       numeric              not null,
+   ContactID            numeric              not null,
+   NotificationCategoryID numeric              not null,
+   DisableFlag          char(1)              not null,
+   Notification         varchar(130)         not null
 )
 go
 
 
 insert into ContactNotification values( 0, 0, 0, 'N', '(none)' );
-
 
 alter table ContactNotification
    add constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
@@ -2061,30 +2485,29 @@ go
 
 
 /*==============================================================*/
-/* Table : Customer                                             */
+/* Table: Customer                                              */
 /*==============================================================*/
 create table Customer (
-CustomerID           numeric              not null,
-PrimaryContactID     numeric              not null,
-CustomerTypeID       numeric              not null,
-TimeZone             varchar(40)          not null
+   CustomerID           numeric              not null,
+   PrimaryContactID     numeric              not null,
+   CustomerTypeID       numeric              not null,
+   TimeZone             varchar(40)          not null
 )
 go
 
 
 INSERT INTO Customer VALUES (-1,0,0,'(none)');
-
 alter table Customer
    add constraint PK_CUSTOMER primary key  (CustomerID)
 go
 
 
 /*==============================================================*/
-/* Table : CustomerAdditionalContact                            */
+/* Table: CustomerAdditionalContact                             */
 /*==============================================================*/
 create table CustomerAdditionalContact (
-CustomerID           numeric              not null,
-ContactID            numeric              not null
+   CustomerID           numeric              not null,
+   ContactID            numeric              not null
 )
 go
 
@@ -2095,11 +2518,11 @@ go
 
 
 /*==============================================================*/
-/* Table : CustomerBaseLinePoint                                */
+/* Table: CustomerBaseLinePoint                                 */
 /*==============================================================*/
 create table CustomerBaseLinePoint (
-CustomerID           numeric              not null,
-PointID              numeric              not null
+   CustomerID           numeric              not null,
+   PointID              numeric              not null
 )
 go
 
@@ -2110,11 +2533,11 @@ go
 
 
 /*==============================================================*/
-/* Table : CustomerLoginSerialGroup                             */
+/* Table: CustomerLoginSerialGroup                              */
 /*==============================================================*/
 create table CustomerLoginSerialGroup (
-LoginID              numeric              not null,
-LMGroupID            numeric              not null
+   LoginID              numeric              not null,
+   LMGroupID            numeric              not null
 )
 go
 
@@ -2125,35 +2548,34 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICE                                               */
+/* Table: DEVICE                                                */
 /*==============================================================*/
 create table DEVICE (
-DEVICEID             numeric              not null,
-ALARMINHIBIT         varchar(1)           not null,
-CONTROLINHIBIT       varchar(1)           not null
+   DEVICEID             numeric              not null,
+   ALARMINHIBIT         varchar(1)           not null,
+   CONTROLINHIBIT       varchar(1)           not null
 )
 go
 
 
 INSERT into device values (0, 'N', 'N');
-
 alter table DEVICE
    add constraint PK_DEV_DEVICEID2 primary key  (DEVICEID)
 go
 
 
 /*==============================================================*/
-/* Table : DEVICE2WAYFLAGS                                      */
+/* Table: DEVICE2WAYFLAGS                                       */
 /*==============================================================*/
 create table DEVICE2WAYFLAGS (
-DEVICEID             numeric              not null,
-MONTHLYSTATS         varchar(1)           not null,
-TWENTYFOURHOURSTATS  varchar(1)           not null,
-HOURLYSTATS          varchar(1)           not null,
-FAILUREALARM         varchar(1)           not null,
-PERFORMANCETHRESHOLD numeric              not null,
-PERFORMANCEALARM     varchar(1)           not null,
-PERFORMANCETWENTYFOURALARM varchar(1)           not null
+   DEVICEID             numeric              not null,
+   MONTHLYSTATS         varchar(1)           not null,
+   TWENTYFOURHOURSTATS  varchar(1)           not null,
+   HOURLYSTATS          varchar(1)           not null,
+   FAILUREALARM         varchar(1)           not null,
+   PERFORMANCETHRESHOLD numeric              not null,
+   PERFORMANCEALARM     varchar(1)           not null,
+   PERFORMANCETWENTYFOURALARM varchar(1)           not null
 )
 go
 
@@ -2164,11 +2586,11 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICECARRIERSETTINGS                                */
+/* Table: DEVICECARRIERSETTINGS                                 */
 /*==============================================================*/
 create table DEVICECARRIERSETTINGS (
-DEVICEID             numeric              not null,
-ADDRESS              numeric              not null
+   DEVICEID             numeric              not null,
+   ADDRESS              numeric              not null
 )
 go
 
@@ -2179,15 +2601,15 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICEDIALUPSETTINGS                                 */
+/* Table: DEVICEDIALUPSETTINGS                                  */
 /*==============================================================*/
 create table DEVICEDIALUPSETTINGS (
-DEVICEID             numeric              not null,
-PHONENUMBER          varchar(40)          not null,
-MINCONNECTTIME       numeric              not null,
-MAXCONNECTTIME       numeric              not null,
-LINESETTINGS         varchar(8)           not null,
-BaudRate             numeric              not null
+   DEVICEID             numeric              not null,
+   PHONENUMBER          varchar(40)          not null,
+   MINCONNECTTIME       numeric              not null,
+   MAXCONNECTTIME       numeric              not null,
+   LINESETTINGS         varchar(8)           not null,
+   BaudRate             numeric              not null
 )
 go
 
@@ -2198,13 +2620,13 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICEIDLCREMOTE                                     */
+/* Table: DEVICEIDLCREMOTE                                      */
 /*==============================================================*/
 create table DEVICEIDLCREMOTE (
-DEVICEID             numeric              not null,
-ADDRESS              numeric              not null,
-POSTCOMMWAIT         numeric              not null,
-CCUAmpUseType        varchar(20)          not null
+   DEVICEID             numeric              not null,
+   ADDRESS              numeric              not null,
+   POSTCOMMWAIT         numeric              not null,
+   CCUAmpUseType        varchar(20)          not null
 )
 go
 
@@ -2215,12 +2637,12 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICEIED                                            */
+/* Table: DEVICEIED                                             */
 /*==============================================================*/
 create table DEVICEIED (
-DEVICEID             numeric              not null,
-PASSWORD             varchar(20)          not null,
-SLAVEADDRESS         varchar(20)          not null
+   DEVICEID             numeric              not null,
+   PASSWORD             varchar(20)          not null,
+   SLAVEADDRESS         varchar(20)          not null
 )
 go
 
@@ -2231,15 +2653,15 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICELOADPROFILE                                    */
+/* Table: DEVICELOADPROFILE                                     */
 /*==============================================================*/
 create table DEVICELOADPROFILE (
-DEVICEID             numeric              not null,
-LASTINTERVALDEMANDRATE numeric              not null,
-LOADPROFILEDEMANDRATE numeric              not null,
-LOADPROFILECOLLECTION varchar(4)           not null,
-VoltageDmdInterval   numeric              not null,
-VoltageDmdRate       numeric              not null
+   DEVICEID             numeric              not null,
+   LASTINTERVALDEMANDRATE numeric              not null,
+   LOADPROFILEDEMANDRATE numeric              not null,
+   LOADPROFILECOLLECTION varchar(4)           not null,
+   VoltageDmdInterval   numeric              not null,
+   VoltageDmdRate       numeric              not null
 )
 go
 
@@ -2250,16 +2672,16 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICEMCTIEDPORT                                     */
+/* Table: DEVICEMCTIEDPORT                                      */
 /*==============================================================*/
 create table DEVICEMCTIEDPORT (
-DEVICEID             numeric              not null,
-CONNECTEDIED         varchar(20)          not null,
-IEDSCANRATE          numeric              not null,
-DEFAULTDATACLASS     numeric              not null,
-DEFAULTDATAOFFSET    numeric              not null,
-PASSWORD             varchar(6)           not null,
-REALTIMESCAN         varchar(1)           not null
+   DEVICEID             numeric              not null,
+   CONNECTEDIED         varchar(20)          not null,
+   IEDSCANRATE          numeric              not null,
+   DEFAULTDATACLASS     numeric              not null,
+   DEFAULTDATAOFFSET    numeric              not null,
+   PASSWORD             varchar(6)           not null,
+   REALTIMESCAN         varchar(1)           not null
 )
 go
 
@@ -2270,14 +2692,14 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICEMETERGROUP                                     */
+/* Table: DEVICEMETERGROUP                                      */
 /*==============================================================*/
 create table DEVICEMETERGROUP (
-DEVICEID             numeric              not null,
-CollectionGroup      varchar(20)          not null,
-TestCollectionGroup  varchar(20)          not null,
-METERNUMBER          varchar(15)          not null,
-BillingGroup         varchar(20)          not null
+   DEVICEID             numeric              not null,
+   CollectionGroup      varchar(20)          not null,
+   TestCollectionGroup  varchar(20)          not null,
+   METERNUMBER          varchar(15)          not null,
+   BillingGroup         varchar(20)          not null
 )
 go
 
@@ -2288,14 +2710,14 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICESCANRATE                                       */
+/* Table: DEVICESCANRATE                                        */
 /*==============================================================*/
 create table DEVICESCANRATE (
-DEVICEID             numeric              not null,
-SCANTYPE             varchar(20)          not null,
-INTERVALRATE         numeric              not null,
-SCANGROUP            numeric              not null,
-AlternateRate        numeric              not null
+   DEVICEID             numeric              not null,
+   SCANTYPE             varchar(20)          not null,
+   INTERVALRATE         numeric              not null,
+   SCANGROUP            numeric              not null,
+   AlternateRate        numeric              not null
 )
 go
 
@@ -2306,11 +2728,11 @@ go
 
 
 /*==============================================================*/
-/* Table : DEVICETAPPAGINGSETTINGS                              */
+/* Table: DEVICETAPPAGINGSETTINGS                               */
 /*==============================================================*/
 create table DEVICETAPPAGINGSETTINGS (
-DEVICEID             numeric              not null,
-PAGERNUMBER          varchar(20)          not null
+   DEVICEID             numeric              not null,
+   PAGERNUMBER          varchar(20)          not null
 )
 go
 
@@ -2321,14 +2743,14 @@ go
 
 
 /*==============================================================*/
-/* Table : DISPLAY                                              */
+/* Table: DISPLAY                                               */
 /*==============================================================*/
 create table DISPLAY (
-DISPLAYNUM           numeric              not null,
-NAME                 varchar(40)          not null,
-TYPE                 varchar(40)          not null,
-TITLE                varchar(30)          null,
-DESCRIPTION          varchar(200)         null
+   DISPLAYNUM           numeric              not null,
+   NAME                 varchar(40)          not null,
+   TYPE                 varchar(40)          not null,
+   TITLE                varchar(30)          null,
+   DESCRIPTION          varchar(200)         null
 )
 go
 
@@ -2381,7 +2803,6 @@ insert into display values(51, 'TAG Log', 'Alarms and Events', 'TAG Log Viewer',
 
 insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
 
-
 alter table DISPLAY
    add constraint SYS_C0013412 primary key  (DISPLAYNUM)
 go
@@ -2397,12 +2818,12 @@ go
 
 
 /*==============================================================*/
-/* Table : DISPLAY2WAYDATA                                      */
+/* Table: DISPLAY2WAYDATA                                       */
 /*==============================================================*/
 create table DISPLAY2WAYDATA (
-DISPLAYNUM           numeric              not null,
-ORDERING             numeric              not null,
-POINTID              numeric              not null
+   DISPLAYNUM           numeric              not null,
+   ORDERING             numeric              not null,
+   POINTID              numeric              not null
 )
 go
 
@@ -2413,14 +2834,14 @@ go
 
 
 /*==============================================================*/
-/* Table : DISPLAYCOLUMNS                                       */
+/* Table: DISPLAYCOLUMNS                                        */
 /*==============================================================*/
 create table DISPLAYCOLUMNS (
-DISPLAYNUM           numeric              not null,
-TITLE                varchar(50)          not null,
-TYPENUM              numeric              not null,
-ORDERING             numeric              not null,
-WIDTH                numeric              not null
+   DISPLAYNUM           numeric              not null,
+   TITLE                varchar(50)          not null,
+   TYPENUM              numeric              not null,
+   ORDERING             numeric              not null,
+   WIDTH                numeric              not null
 )
 go
 
@@ -2651,19 +3072,18 @@ insert into displaycolumns values(51, 'Description', 12, 4, 180 );
 insert into displaycolumns values(51, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
-
 alter table DISPLAYCOLUMNS
    add constraint PK_DISPLAYCOLUMNS primary key  (DISPLAYNUM, TITLE)
 go
 
 
 /*==============================================================*/
-/* Table : DYNAMICACCUMULATOR                                   */
+/* Table: DYNAMICACCUMULATOR                                    */
 /*==============================================================*/
 create table DYNAMICACCUMULATOR (
-POINTID              numeric              not null,
-PREVIOUSPULSES       numeric              not null,
-PRESENTPULSES        numeric              not null
+   POINTID              numeric              not null,
+   PREVIOUSPULSES       numeric              not null,
+   PRESENTPULSES        numeric              not null
 )
 go
 
@@ -2674,19 +3094,19 @@ go
 
 
 /*==============================================================*/
-/* Table : DYNAMICDEVICESCANDATA                                */
+/* Table: DYNAMICDEVICESCANDATA                                 */
 /*==============================================================*/
 create table DYNAMICDEVICESCANDATA (
-DEVICEID             numeric              not null,
-LASTFREEZETIME       datetime             not null,
-PREVFREEZETIME       datetime             not null,
-LASTLPTIME           datetime             not null,
-LASTFREEZENUMBER     numeric              not null,
-PREVFREEZENUMBER     numeric              not null,
-NEXTSCAN0            datetime             not null,
-NEXTSCAN1            datetime             not null,
-NEXTSCAN2            datetime             not null,
-NEXTSCAN3            datetime             not null
+   DEVICEID             numeric              not null,
+   LASTFREEZETIME       datetime             not null,
+   PREVFREEZETIME       datetime             not null,
+   LASTLPTIME           datetime             not null,
+   LASTFREEZENUMBER     numeric              not null,
+   PREVFREEZENUMBER     numeric              not null,
+   NEXTSCAN0            datetime             not null,
+   NEXTSCAN1            datetime             not null,
+   NEXTSCAN2            datetime             not null,
+   NEXTSCAN3            datetime             not null
 )
 go
 
@@ -2697,18 +3117,18 @@ go
 
 
 /*==============================================================*/
-/* Table : DYNAMICPOINTDISPATCH                                 */
+/* Table: DYNAMICPOINTDISPATCH                                  */
 /*==============================================================*/
 create table DYNAMICPOINTDISPATCH (
-POINTID              numeric              not null,
-TIMESTAMP            datetime             not null,
-QUALITY              numeric              not null,
-VALUE                float                not null,
-TAGS                 numeric              not null,
-NEXTARCHIVE          datetime             not null,
-STALECOUNT           numeric              not null,
-LastAlarmLogID       numeric              not null,
-millis               smallint             not null
+   POINTID              numeric              not null,
+   TIMESTAMP            datetime             not null,
+   QUALITY              numeric              not null,
+   VALUE                float                not null,
+   TAGS                 numeric              not null,
+   NEXTARCHIVE          datetime             not null,
+   STALECOUNT           numeric              not null,
+   LastAlarmLogID       numeric              not null,
+   millis               smallint             not null
 )
 go
 
@@ -2719,14 +3139,14 @@ go
 
 
 /*==============================================================*/
-/* Table : DateOfHoliday                                        */
+/* Table: DateOfHoliday                                         */
 /*==============================================================*/
 create table DateOfHoliday (
-HolidayScheduleID    numeric              not null,
-HolidayName          varchar(20)          not null,
-HolidayMonth         numeric              not null,
-HolidayDay           numeric              not null,
-HolidayYear          numeric              not null
+   HolidayScheduleID    numeric              not null,
+   HolidayName          varchar(20)          not null,
+   HolidayMonth         numeric              not null,
+   HolidayDay           numeric              not null,
+   HolidayYear          numeric              not null
 )
 go
 
@@ -2737,15 +3157,15 @@ go
 
 
 /*==============================================================*/
-/* Table : DateOfSeason                                         */
+/* Table: DateOfSeason                                          */
 /*==============================================================*/
 create table DateOfSeason (
-SeasonScheduleID     numeric              not null,
-SeasonName           varchar(20)          not null,
-SeasonStartMonth     numeric              not null,
-SeasonStartDay       numeric              not null,
-SeasonEndMonth       numeric              not null,
-SeasonEndDay         numeric              not null
+   SeasonScheduleID     numeric              not null,
+   SeasonName           varchar(20)          not null,
+   SeasonStartMonth     numeric              not null,
+   SeasonStartDay       numeric              not null,
+   SeasonEndMonth       numeric              not null,
+   SeasonEndDay         numeric              not null
 )
 go
 
@@ -2756,13 +3176,13 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceAddress                                        */
+/* Table: DeviceAddress                                         */
 /*==============================================================*/
 create table DeviceAddress (
-DeviceID             numeric              not null,
-MasterAddress        numeric              not null,
-SlaveAddress         numeric              not null,
-PostCommWait         numeric              not null
+   DeviceID             numeric              not null,
+   MasterAddress        numeric              not null,
+   SlaveAddress         numeric              not null,
+   PostCommWait         numeric              not null
 )
 go
 
@@ -2773,12 +3193,12 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceCBC                                            */
+/* Table: DeviceCBC                                             */
 /*==============================================================*/
 create table DeviceCBC (
-DEVICEID             numeric              not null,
-SERIALNUMBER         numeric              not null,
-ROUTEID              numeric              not null
+   DEVICEID             numeric              not null,
+   SERIALNUMBER         numeric              not null,
+   ROUTEID              numeric              not null
 )
 go
 
@@ -2789,11 +3209,11 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceCustomerList                                   */
+/* Table: DeviceCustomerList                                    */
 /*==============================================================*/
 create table DeviceCustomerList (
-CustomerID           numeric              not null,
-DeviceID             numeric              not null
+   CustomerID           numeric              not null,
+   DeviceID             numeric              not null
 )
 go
 
@@ -2804,11 +3224,11 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceDirectCommSettings                             */
+/* Table: DeviceDirectCommSettings                              */
 /*==============================================================*/
 create table DeviceDirectCommSettings (
-DEVICEID             numeric              not null,
-PORTID               numeric              not null
+   DEVICEID             numeric              not null,
+   PORTID               numeric              not null
 )
 go
 
@@ -2819,12 +3239,12 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceMCT400Series                                   */
+/* Table: DeviceMCT400Series                                    */
 /*==============================================================*/
 create table DeviceMCT400Series (
-DeviceID             numeric              not null,
-DisconnectAddress    numeric              not null,
-TOUScheduleID        numeric              not null
+   DeviceID             numeric              not null,
+   DisconnectAddress    numeric              not null,
+   TOUScheduleID        numeric              not null
 )
 go
 
@@ -2835,14 +3255,14 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceRTC                                            */
+/* Table: DeviceRTC                                             */
 /*==============================================================*/
 create table DeviceRTC (
-DeviceID             numeric              not null,
-RTCAddress           numeric              not null,
-Response             varchar(1)           not null,
-LBTMode              numeric              not null,
-DisableVerifies      varchar(1)           not null
+   DeviceID             numeric              not null,
+   RTCAddress           numeric              not null,
+   Response             varchar(1)           not null,
+   LBTMode              numeric              not null,
+   DisableVerifies      varchar(1)           not null
 )
 go
 
@@ -2853,11 +3273,11 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceRoutes                                         */
+/* Table: DeviceRoutes                                          */
 /*==============================================================*/
 create table DeviceRoutes (
-DEVICEID             numeric              not null,
-ROUTEID              numeric              not null
+   DEVICEID             numeric              not null,
+   ROUTEID              numeric              not null
 )
 go
 
@@ -2868,20 +3288,20 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceSeries5RTU                                     */
+/* Table: DeviceSeries5RTU                                      */
 /*==============================================================*/
 create table DeviceSeries5RTU (
-DeviceID             numeric              not null,
-TickTime             numeric              not null,
-TransmitOffset       numeric              not null,
-SaveHistory          char(1)              not null,
-PowerValueHighLimit  numeric              not null,
-PowerValueLowLimit   numeric              not null,
-PowerValueMultiplier float                not null,
-PowerValueOffset     float                not null,
-StartCode            numeric              not null,
-StopCode             numeric              not null,
-Retries              numeric              not null
+   DeviceID             numeric              not null,
+   TickTime             numeric              not null,
+   TransmitOffset       numeric              not null,
+   SaveHistory          char(1)              not null,
+   PowerValueHighLimit  numeric              not null,
+   PowerValueLowLimit   numeric              not null,
+   PowerValueMultiplier float                not null,
+   PowerValueOffset     float                not null,
+   StartCode            numeric              not null,
+   StopCode             numeric              not null,
+   Retries              numeric              not null
 )
 go
 
@@ -2892,31 +3312,359 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceTypeCommand                                    */
+/* Table: DeviceTypeCommand                                     */
 /*==============================================================*/
 create table DeviceTypeCommand (
-DeviceCommandID      numeric              not null,
-CommandID            numeric              not null,
-DeviceType           varchar(32)          not null,
-DisplayOrder         numeric              not null,
-VisibleFlag          varchar(1)           not null
+   DeviceCommandID      numeric              not null,
+   CommandID            numeric              not null,
+   DeviceType           varchar(32)          not null,
+   DisplayOrder         numeric              not null,
+   VisibleFlag          char(1)              not null
 )
 go
 
 
+INSERT INTO DEVICETYPECOMMAND VALUES (0, 0, 'System', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-1, 0, 'CICustomer', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-2, 0, 'Davis Weather', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-3, 0, 'Fulcrum', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-4, 0, 'Landis-Gyr S4', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-5, 0, 'MCT Broadcast', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-6, 0, 'Sixnet', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-7, 0, 'Tap Terminal', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-8, 0, 'VersacomSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-9, 0, 'SA205Serial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-10, 0, 'SA305Serial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-11, 0, 'CollectionGroup', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-12, 0, 'TestCollectionGroup', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-13, -1, 'LMT-2', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-14, -2, 'LMT-2', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-15, -3, 'LMT-2', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-16, -4, 'LMT-2', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-17, -5, 'LMT-2', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-18, -6, 'LMT-2', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-19, -7, 'LMT-2', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-20, -8, 'LMT-2', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-21, -9, 'LMT-2', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-22, -10, 'LMT-2', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-23, -27, 'Macro Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-24, -28, 'Macro Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-25, -29, 'Alpha A1', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-26, -29, 'Alpha Power Plus', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-27, -30, 'CBC 6510', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-28, -31, 'CBC 6510', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-29, -32, 'CBC 6510', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-30, -33, 'CBC 6510', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-31, -30, 'CBC FP-2800', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-32, -31, 'CBC FP-2800', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-33, -32, 'CBC FP-2800', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-34, -33, 'CBC FP-2800', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-35, -30, 'CBC Versacom', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-36, -31, 'CBC Versacom', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-37, -32, 'CBC Versacom', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-38, -33, 'CBC Versacom', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-39, -30, 'Cap Bank', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-40, -31, 'Cap Bank', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-41, -32, 'Cap Bank', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-42, -33, 'Cap Bank', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-43, -34, 'CCU-710A', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-44, -35, 'CCU-710A', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-45, -36, 'CCU-710A', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-46, -34, 'CCU-711', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-47, -35, 'CCU-711', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-48, -36, 'CCU-711', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-49, -37, 'CCU-711', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-50, -38, 'Emetcon Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-51, -39, 'Emetcon Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-52, -40, 'Emetcon Group', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-53, -41, 'Emetcon Group', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-54, -42, 'Emetcon Group', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-55, -43, 'Emetcon Group', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-56, -27, 'Expresscom Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-57, -28, 'Expresscom Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-58, -27, 'Golay Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-59, -28, 'Golay Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-60, -27, 'Macro Group', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-61, -28, 'Macro Group', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-62, -27, 'Ripple Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-63, -28, 'Ripple Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-64, -27, 'SA-205 Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-65, -28, 'SA-205 Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-66, -27, 'SA-305 Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-67, -28, 'SA-305 Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-68, -27, 'SA-Digital Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-69, -28, 'SA-Digital Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-70, -27, 'Versacom Group', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-71, -28, 'Versacom Group', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-72, -44, 'Versacom Group', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-73, -45, 'Versacom Group', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-74, -46, 'Versacom Group', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-75, -47, 'Versacom Group', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-76, -48, 'Versacom Group', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-77, -49, 'Versacom Group', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-78, -34, 'TCU-5000', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-79, -35, 'TCU-5000', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-80, -36, 'TCU-5000', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-81, -34, 'TCU-5500', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-82, -35, 'TCU-5500', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-83, -36, 'TCU-5500', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-84, -52, 'Repeater 800', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-85, -3, 'Repeater 800', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-86, -53, 'Repeater 800', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-87, -54, 'Repeater 800', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-88, -52, 'Repeater', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-89, -3, 'Repeater', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-90, -53, 'Repeater', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-91, -54, 'Repeater', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-92, -34, 'RTU-DART', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-93, -35, 'RTU-DART', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-94, -36, 'RTU-DART', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-95, -34, 'RTU-DNP', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-96, -35, 'RTU-DNP', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-97, -36, 'RTU-DNP', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-98, -34, 'RTU-ILEX', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-99, -35, 'RTU-ILEX', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-100, -36, 'RTU-ILEX', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-101, -34, 'RTU-WELCO', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-102, -35, 'RTU-WELCO', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-103, -36, 'RTU-WELCO', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-104, -55, 'ION-7330', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-105, -56, 'ION-7330', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-106, -57, 'ION-7330', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-107, -55, 'ION-7700', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-108, -56, 'ION-7700', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-109, -57, 'ION-7700', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-110, -55, 'ION-8300', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-111, -56, 'ION-8300', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-112, -57, 'ION-8300', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-113, -34, 'LCU-415', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-114, -35, 'LCU-415', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-115, -36, 'LCU-415', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-116, -34, 'LCU-EASTRIVER', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-117, -35, 'LCU-EASTRIVER', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-118, -36, 'LCU-EASTRIVER', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-119, -34, 'LCU-LG', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-120, -35, 'LCU-LG', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-121, -36, 'LCU-LG', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-122, -34, 'LCU-T3026', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-123, -35, 'LCU-T3026', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-124, -36, 'LCU-T3026', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-125, -63, 'ExpresscomSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-126, -64, 'ExpresscomSerial', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-127, -65, 'ExpresscomSerial', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-128, -66, 'ExpresscomSerial', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-129, -67, 'ExpresscomSerial', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-130, -68, 'ExpresscomSerial', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-131, -69, 'ExpresscomSerial', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-132, -70, 'LCRSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-133, -71, 'LCRSerial', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-134, -72, 'LCRSerial', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-135, -73, 'LCRSerial', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-136, -74, 'LCRSerial', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-137, -46, 'LCRSerial', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-138, -47, 'LCRSerial', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-139, -75, 'LCRSerial', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-140, -76, 'LCRSerial', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-141, -77, 'LCRSerial', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-142, -78, 'LCRSerial', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-143, -79, 'LCRSerial', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-144, -80, 'LCRSerial', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-145, -49, 'LCRSerial', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-146, -48, 'LCRSerial', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-147, -1, 'MCT-210', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-148, -2, 'MCT-210', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-149, -3, 'MCT-210', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-150, -4, 'MCT-210', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-151, -5, 'MCT-210', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-152, -6, 'MCT-210', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-153, -7, 'MCT-210', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-154, -8, 'MCT-210', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-155, -9, 'MCT-210', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-156, -10, 'MCT-210', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-157, -1, 'MCT-213', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-158, -2, 'MCT-213', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-159, -3, 'MCT-213', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-160, -4, 'MCT-213', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-161, -5, 'MCT-213', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-162, -6, 'MCT-213', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-163, -7, 'MCT-213', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-164, -8, 'MCT-213', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-165, -9, 'MCT-213', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-166, -10, 'MCT-213', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-167, -11, 'MCT-213', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-168, -12, 'MCT-213', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-169, -13, 'MCT-213', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-170, -1, 'MCT-240', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-171, -2, 'MCT-240', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-172, -3, 'MCT-240', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-173, -4, 'MCT-240', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-174, -5, 'MCT-240', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-175, -6, 'MCT-240', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-176, -7, 'MCT-240', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-177, -8, 'MCT-240', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-178, -9, 'MCT-240', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-179, -10, 'MCT-240', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-180, -15, 'MCT-240', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-181, -18, 'MCT-240', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-182, -19, 'MCT-240', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-183, -1, 'MCT-248', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-184, -2, 'MCT-248', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-185, -3, 'MCT-248', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-186, -4, 'MCT-248', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-187, -5, 'MCT-248', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-188, -6, 'MCT-248', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-189, -7, 'MCT-248', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-190, -8, 'MCT-248', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-191, -9, 'MCT-248', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-192, -10, 'MCT-248', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-193, -15, 'MCT-248', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-194, -18, 'MCT-248', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-195, -19, 'MCT-248', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-196, -1, 'MCT-250', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-197, -2, 'MCT-250', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-198, -3, 'MCT-250', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-199, -4, 'MCT-250', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-200, -5, 'MCT-250', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-201, -6, 'MCT-250', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-202, -7, 'MCT-250', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-203, -8, 'MCT-250', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-204, -9, 'MCT-250', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-205, -10, 'MCT-250', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-206, -14, 'MCT-250', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-207, -15, 'MCT-250', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-208, -18, 'MCT-250', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-209, -19, 'MCT-250', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-210, -1, 'MCT-310', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-211, -2, 'MCT-310', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-212, -3, 'MCT-310', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-213, -4, 'MCT-310', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-214, -5, 'MCT-310', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-215, -6, 'MCT-310', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-216, -7, 'MCT-310', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-217, -8, 'MCT-310', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-218, -9, 'MCT-310', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-219, -10, 'MCT-310', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-220, -1, 'MCT-310CT', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-221, -2, 'MCT-310CT', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-222, -3, 'MCT-310CT', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-223, -4, 'MCT-310CT', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-224, -5, 'MCT-310CT', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-225, -6, 'MCT-310CT', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-226, -7, 'MCT-310CT', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-227, -8, 'MCT-310CT', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-228, -9, 'MCT-310CT', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-229, -10, 'MCT-310CT', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-230, -1, 'MCT-310IDL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-231, -2, 'MCT-310IDL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-232, -3, 'MCT-310IDL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-233, -4, 'MCT-310IDL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-234, -5, 'MCT-310IDL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-235, -6, 'MCT-310IDL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-236, -7, 'MCT-310IDL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-237, -8, 'MCT-310IDL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-238, -9, 'MCT-310IDL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-239, -10, 'MCT-310IDL', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-240, -1, 'MCT-310ID', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-241, -2, 'MCT-310ID', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-242, -3, 'MCT-310ID', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-243, -4, 'MCT-310ID', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-244, -5, 'MCT-310ID', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-245, -6, 'MCT-310ID', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-246, -7, 'MCT-310ID', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-247, -8, 'MCT-310ID', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-248, -9, 'MCT-310ID', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-249, -10, 'MCT-310ID', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-250, -11, 'MCT-310ID', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-251, -12, 'MCT-310ID', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-252, -13, 'MCT-310ID', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-253, -1, 'MCT-310IL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-254, -2, 'MCT-310IL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-255, -3, 'MCT-310IL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-256, -4, 'MCT-310IL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-257, -5, 'MCT-310IL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-258, -6, 'MCT-310IL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-259, -7, 'MCT-310IL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-260, -8, 'MCT-310IL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-261, -9, 'MCT-310IL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-262, -10, 'MCT-310IL', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-263, -15, 'MCT-310IL', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-264, -18, 'MCT-310IL', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-265, -19, 'MCT-310IL', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-266, -1, 'MCT-318', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-267, -2, 'MCT-318', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-268, -3, 'MCT-318', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-269, -4, 'MCT-318', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-270, -5, 'MCT-318', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-271, -6, 'MCT-318', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-272, -7, 'MCT-318', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-273, -8, 'MCT-318', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-274, -9, 'MCT-318', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-275, -10, 'MCT-318', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-276, -14, 'MCT-318', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-277, -1, 'MCT-318L', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-278, -2, 'MCT-318L', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-279, -3, 'MCT-318L', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-280, -4, 'MCT-318L', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-281, -5, 'MCT-318L', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-282, -6, 'MCT-318L', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-283, -7, 'MCT-318L', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-284, -8, 'MCT-318L', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-285, -9, 'MCT-318L', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-286, -10, 'MCT-318L', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-287, -14, 'MCT-318L', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-288, -1, 'MCT-360', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-289, -2, 'MCT-360', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-290, -3, 'MCT-360', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-291, -4, 'MCT-360', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-292, -5, 'MCT-360', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-293, -6, 'MCT-360', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-294, -7, 'MCT-360', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-295, -8, 'MCT-360', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-296, -9, 'MCT-360', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-297, -10, 'MCT-360', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-298, -14, 'MCT-360', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-299, -26, 'MCT-360', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-300, -1, 'MCT-370', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-301, -2, 'MCT-370', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-302, -3, 'MCT-370', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-303, -4, 'MCT-370', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-304, -5, 'MCT-370', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-305, -6, 'MCT-370', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-306, -7, 'MCT-370', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-307, -8, 'MCT-370', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-308, -9, 'MCT-370', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-309, -10, 'MCT-370', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-310, -14, 'MCT-370', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-311, -20, 'MCT-370', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-312, -21, 'MCT-370', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-313, -22, 'MCT-370', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-314, -23, 'MCT-370', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-315, -24, 'MCT-370', 16, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-316, -25, 'MCT-370', 17, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-317, -26, 'MCT-370', 18, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-318, -1, 'MCT-410IL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-319, -81, 'MCT-410IL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-320, -3, 'MCT-410IL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-321, -6, 'MCT-410IL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-322, -34, 'MCT-410IL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-323, -82, 'MCT-410IL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-324, -18, 'MCT-410IL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-325, -19, 'MCT-410IL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-326, -83, 'MCT-410IL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-327, -84, 'MCT-410IL', 10, 'Y');
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key  (DeviceCommandID)
 go
 
 
 /*==============================================================*/
-/* Table : DeviceVerification                                   */
+/* Table: DeviceVerification                                    */
 /*==============================================================*/
 create table DeviceVerification (
-ReceiverID           numeric              not null,
-TransmitterID        numeric              not null,
-ResendOnFail         char(1)              not null,
-Disable              char(1)              not null
+   ReceiverID           numeric              not null,
+   TransmitterID        numeric              not null,
+   ResendOnFail         char(1)              not null,
+   Disable              char(1)              not null
 )
 go
 
@@ -2927,15 +3675,15 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceWindow                                         */
+/* Table: DeviceWindow                                          */
 /*==============================================================*/
 create table DeviceWindow (
-DeviceID             numeric              not null,
-Type                 varchar(20)          not null,
-WinOpen              numeric              not null,
-WinClose             numeric              not null,
-AlternateOpen        numeric              not null,
-AlternateClose       numeric              not null
+   DeviceID             numeric              not null,
+   Type                 varchar(20)          not null,
+   WinOpen              numeric              not null,
+   WinClose             numeric              not null,
+   AlternateOpen        numeric              not null,
+   AlternateClose       numeric              not null
 )
 go
 
@@ -2946,17 +3694,17 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicCCCapBank                                     */
+/* Table: DynamicCCCapBank                                      */
 /*==============================================================*/
 create table DynamicCCCapBank (
-CapBankID            numeric              not null,
-ControlStatus        numeric              not null,
-CurrentDailyOperations numeric              not null,
-LastStatusChangeTime datetime             not null,
-TagsControlStatus    numeric              not null,
-CTITimeStamp         datetime             not null,
-OriginalFeederID     numeric              not null,
-OriginalSwitchingOrder numeric              not null
+   CapBankID            numeric              not null,
+   ControlStatus        numeric              not null,
+   CurrentDailyOperations numeric              not null,
+   LastStatusChangeTime datetime             not null,
+   TagsControlStatus    numeric              not null,
+   CTITimeStamp         datetime             not null,
+   OriginalFeederID     numeric              not null,
+   OriginalSwitchingOrder numeric              not null
 )
 go
 
@@ -2967,28 +3715,28 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicCCFeeder                                      */
+/* Table: DynamicCCFeeder                                       */
 /*==============================================================*/
 create table DynamicCCFeeder (
-FeederID             numeric              not null,
-CurrentVarPointValue float                not null,
-CurrentWattPointValue float                not null,
-NewPointDataReceivedFlag char(1)              not null,
-LastCurrentVarUpdateTime datetime             not null,
-EstimatedVarPointValue float                not null,
-CurrentDailyOperations numeric              not null,
-RecentlyControlledFlag char(1)              not null,
-LastOperationTime    datetime             not null,
-VarValueBeforeControl float                not null,
-LastCapBankDeviceID  numeric              not null,
-BusOptimizedVarCategory numeric              not null,
-BusOptimizedVarOffset float                not null,
-CTITimeStamp         datetime             not null,
-PowerFactorValue     float                not null,
-KvarSolution         float                not null,
-EstimatedPFValue     float                not null,
-CurrentVarPointQuality numeric              not null,
-WaiveControlFlag     char(1)              not null
+   FeederID             numeric              not null,
+   CurrentVarPointValue float                not null,
+   CurrentWattPointValue float                not null,
+   NewPointDataReceivedFlag char(1)              not null,
+   LastCurrentVarUpdateTime datetime             not null,
+   EstimatedVarPointValue float                not null,
+   CurrentDailyOperations numeric              not null,
+   RecentlyControlledFlag char(1)              not null,
+   LastOperationTime    datetime             not null,
+   VarValueBeforeControl float                not null,
+   LastCapBankDeviceID  numeric              not null,
+   BusOptimizedVarCategory numeric              not null,
+   BusOptimizedVarOffset float                not null,
+   CTITimeStamp         datetime             not null,
+   PowerFactorValue     float                not null,
+   KvarSolution         float                not null,
+   EstimatedPFValue     float                not null,
+   CurrentVarPointQuality numeric              not null,
+   WaiveControlFlag     char(1)              not null
 )
 go
 
@@ -2999,30 +3747,30 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicCCSubstationBus                               */
+/* Table: DynamicCCSubstationBus                                */
 /*==============================================================*/
 create table DynamicCCSubstationBus (
-SubstationBusID      numeric              not null,
-CurrentVarPointValue float                not null,
-CurrentWattPointValue float                not null,
-NextCheckTime        datetime             not null,
-NewPointDataReceivedFlag char(1)              not null,
-BusUpdatedFlag       char(1)              not null,
-LastCurrentVarUpdateTime datetime             not null,
-EstimatedVarPointValue float                not null,
-CurrentDailyOperations numeric              not null,
-PeakTimeFlag         char(1)              not null,
-RecentlyControlledFlag char(1)              not null,
-LastOperationTime    datetime             not null,
-VarValueBeforeControl float                not null,
-LastFeederPAOid      numeric              not null,
-LastFeederPosition   numeric              not null,
-CTITimeStamp         datetime             not null,
-PowerFactorValue     float                not null,
-KvarSolution         float                not null,
-EstimatedPFValue     float                not null,
-CurrentVarPointQuality numeric              not null,
-WaiveControlFlag     char(1)              not null
+   SubstationBusID      numeric              not null,
+   CurrentVarPointValue float                not null,
+   CurrentWattPointValue float                not null,
+   NextCheckTime        datetime             not null,
+   NewPointDataReceivedFlag char(1)              not null,
+   BusUpdatedFlag       char(1)              not null,
+   LastCurrentVarUpdateTime datetime             not null,
+   EstimatedVarPointValue float                not null,
+   CurrentDailyOperations numeric              not null,
+   PeakTimeFlag         char(1)              not null,
+   RecentlyControlledFlag char(1)              not null,
+   LastOperationTime    datetime             not null,
+   VarValueBeforeControl float                not null,
+   LastFeederPAOid      numeric              not null,
+   LastFeederPosition   numeric              not null,
+   CTITimeStamp         datetime             not null,
+   PowerFactorValue     float                not null,
+   KvarSolution         float                not null,
+   EstimatedPFValue     float                not null,
+   CurrentVarPointQuality numeric              not null,
+   WaiveControlFlag     char(1)              not null
 )
 go
 
@@ -3033,11 +3781,11 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicCalcHistorical                                */
+/* Table: DynamicCalcHistorical                                 */
 /*==============================================================*/
 create table DynamicCalcHistorical (
-PointID              numeric              not null,
-LastUpdate           datetime             not null
+   PointID              numeric              not null,
+   LastUpdate           datetime             not null
 )
 go
 
@@ -3048,18 +3796,18 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicLMControlArea                                 */
+/* Table: DynamicLMControlArea                                  */
 /*==============================================================*/
 create table DynamicLMControlArea (
-DeviceID             numeric              not null,
-NextCheckTime        datetime             not null,
-NewPointDataReceivedFlag char(1)              not null,
-UpdatedFlag          char(1)              not null,
-ControlAreaState     numeric              not null,
-CurrentPriority      numeric              not null,
-TimeStamp            datetime             not null,
-CurrentDailyStartTime numeric              not null,
-CurrentDailyStopTime numeric              not null
+   DeviceID             numeric              not null,
+   NextCheckTime        datetime             not null,
+   NewPointDataReceivedFlag char(1)              not null,
+   UpdatedFlag          char(1)              not null,
+   ControlAreaState     numeric              not null,
+   CurrentPriority      numeric              not null,
+   TimeStamp            datetime             not null,
+   CurrentDailyStartTime numeric              not null,
+   CurrentDailyStopTime numeric              not null
 )
 go
 
@@ -3070,15 +3818,15 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicLMControlAreaTrigger                          */
+/* Table: DynamicLMControlAreaTrigger                           */
 /*==============================================================*/
 create table DynamicLMControlAreaTrigger (
-DeviceID             numeric              not null,
-TriggerNumber        numeric              not null,
-PointValue           float                not null,
-LastPointValueTimeStamp datetime             not null,
-PeakPointValue       float                not null,
-LastPeakPointValueTimeStamp datetime             not null
+   DeviceID             numeric              not null,
+   TriggerNumber        numeric              not null,
+   PointValue           float                not null,
+   LastPointValueTimeStamp datetime             not null,
+   PeakPointValue       float                not null,
+   LastPeakPointValueTimeStamp datetime             not null
 )
 go
 
@@ -3089,22 +3837,22 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicLMControlHistory                              */
+/* Table: DynamicLMControlHistory                               */
 /*==============================================================*/
 create table DynamicLMControlHistory (
-PAObjectID           numeric              not null,
-LMCtrlHistID         numeric              not null,
-StartDateTime        datetime             not null,
-SOE_Tag              numeric              not null,
-ControlDuration      numeric              not null,
-ControlType          varchar(32)          not null,
-CurrentDailyTime     numeric              not null,
-CurrentMonthlyTime   numeric              not null,
-CurrentSeasonalTime  numeric              not null,
-CurrentAnnualTime    numeric              not null,
-ActiveRestore        char(1)              not null,
-ReductionValue       float                not null,
-StopDateTime         datetime             not null
+   PAObjectID           numeric              not null,
+   LMCtrlHistID         numeric              not null,
+   StartDateTime        datetime             not null,
+   SOE_Tag              numeric              not null,
+   ControlDuration      numeric              not null,
+   ControlType          varchar(32)          not null,
+   CurrentDailyTime     numeric              not null,
+   CurrentMonthlyTime   numeric              not null,
+   CurrentSeasonalTime  numeric              not null,
+   CurrentAnnualTime    numeric              not null,
+   ActiveRestore        char(1)              not null,
+   ReductionValue       float                not null,
+   StopDateTime         datetime             not null
 )
 go
 
@@ -3115,22 +3863,22 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicLMGroup                                       */
+/* Table: DynamicLMGroup                                        */
 /*==============================================================*/
 create table DynamicLMGroup (
-DeviceID             numeric              not null,
-GroupControlState    numeric              not null,
-CurrentHoursDaily    numeric              not null,
-CurrentHoursMonthly  numeric              not null,
-CurrentHoursSeasonal numeric              not null,
-CurrentHoursAnnually numeric              not null,
-LastControlSent      datetime             not null,
-TimeStamp            datetime             not null,
-LMProgramID          numeric              not null,
-ControlStartTime     datetime             not null,
-ControlCompleteTime  datetime             not null,
-NextControlTime      datetime             not null,
-InternalState        numeric              not null
+   DeviceID             numeric              not null,
+   GroupControlState    numeric              not null,
+   CurrentHoursDaily    numeric              not null,
+   CurrentHoursMonthly  numeric              not null,
+   CurrentHoursSeasonal numeric              not null,
+   CurrentHoursAnnually numeric              not null,
+   LastControlSent      datetime             not null,
+   TimeStamp            datetime             not null,
+   LMProgramID          numeric              not null,
+   ControlStartTime     datetime             not null,
+   ControlCompleteTime  datetime             not null,
+   NextControlTime      datetime             not null,
+   InternalState        numeric              not null
 )
 go
 
@@ -3141,16 +3889,16 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicLMProgram                                     */
+/* Table: DynamicLMProgram                                      */
 /*==============================================================*/
 create table DynamicLMProgram (
-DeviceID             numeric              not null,
-ProgramState         numeric              not null,
-ReductionTotal       float                not null,
-StartedControlling   datetime             not null,
-LastControlSent      datetime             not null,
-ManualControlReceivedFlag char(1)              not null,
-TimeStamp            datetime             not null
+   DeviceID             numeric              not null,
+   ProgramState         numeric              not null,
+   ReductionTotal       float                not null,
+   StartedControlling   datetime             not null,
+   LastControlSent      datetime             not null,
+   ManualControlReceivedFlag char(1)              not null,
+   TimeStamp            datetime             not null
 )
 go
 
@@ -3161,18 +3909,18 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicLMProgramDirect                               */
+/* Table: DynamicLMProgramDirect                                */
 /*==============================================================*/
 create table DynamicLMProgramDirect (
-DeviceID             numeric              not null,
-CurrentGearNumber    numeric              not null,
-LastGroupControlled  numeric              not null,
-StartTime            datetime             not null,
-StopTime             datetime             not null,
-TimeStamp            datetime             not null,
-DailyOps             numeric              not null,
-NotifyTime           datetime             not null,
-StartedRampingOut    datetime             not null
+   DeviceID             numeric              not null,
+   CurrentGearNumber    numeric              not null,
+   LastGroupControlled  numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             not null,
+   TimeStamp            datetime             not null,
+   DailyOps             numeric              not null,
+   NotifyTime           datetime             not null,
+   StartedRampingOut    datetime             not null
 )
 go
 
@@ -3183,19 +3931,19 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicPAOStatistics                                 */
+/* Table: DynamicPAOStatistics                                  */
 /*==============================================================*/
 create table DynamicPAOStatistics (
-PAOBjectID           numeric              not null,
-StatisticType        varchar(16)          not null,
-Requests             numeric              not null,
-Completions          numeric              not null,
-Attempts             numeric              not null,
-CommErrors           numeric              not null,
-ProtocolErrors       numeric              not null,
-SystemErrors         numeric              not null,
-StartDateTime        datetime             not null,
-StopDateTime         datetime             not null
+   PAOBjectID           numeric              not null,
+   StatisticType        varchar(16)          not null,
+   Requests             numeric              not null,
+   Completions          numeric              not null,
+   Attempts             numeric              not null,
+   CommErrors           numeric              not null,
+   ProtocolErrors       numeric              not null,
+   SystemErrors         numeric              not null,
+   StartDateTime        datetime             not null,
+   StopDateTime         datetime             not null
 )
 go
 
@@ -3206,20 +3954,20 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicPointAlarming                                 */
+/* Table: DynamicPointAlarming                                  */
 /*==============================================================*/
 create table DynamicPointAlarming (
-PointID              numeric              not null,
-AlarmCondition       numeric              not null,
-CategoryID           numeric              not null,
-AlarmTime            datetime             not null,
-Action               varchar(60)          not null,
-Description          varchar(120)         not null,
-Tags                 numeric              not null,
-LogID                numeric              not null,
-SOE_TAG              numeric              not null,
-Type                 numeric              not null,
-UserName             varchar(30)          not null
+   PointID              numeric              not null,
+   AlarmCondition       numeric              not null,
+   CategoryID           numeric              not null,
+   AlarmTime            datetime             not null,
+   Action               varchar(60)          not null,
+   Description          varchar(120)         not null,
+   Tags                 numeric              not null,
+   LogID                numeric              not null,
+   SOE_TAG              numeric              not null,
+   Type                 numeric              not null,
+   UserName             varchar(30)          not null
 )
 go
 
@@ -3230,18 +3978,18 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicTags                                          */
+/* Table: DynamicTags                                           */
 /*==============================================================*/
 create table DynamicTags (
-InstanceID           numeric              not null,
-PointID              numeric              not null,
-TagID                numeric              not null,
-UserName             varchar(60)          not null,
-Action               varchar(20)          not null,
-Description          varchar(120)         not null,
-TagTime              datetime             not null,
-RefStr               varchar(60)          not null,
-ForStr               varchar(60)          not null
+   InstanceID           numeric              not null,
+   PointID              numeric              not null,
+   TagID                numeric              not null,
+   UserName             varchar(60)          not null,
+   Action               varchar(20)          not null,
+   Description          varchar(120)         not null,
+   TagTime              datetime             not null,
+   RefStr               varchar(60)          not null,
+   ForStr               varchar(60)          not null
 )
 go
 
@@ -3252,18 +4000,18 @@ go
 
 
 /*==============================================================*/
-/* Table : DynamicVerification                                  */
+/* Table: DynamicVerification                                   */
 /*==============================================================*/
 create table DynamicVerification (
-LogID                numeric              not null,
-TimeArrival          datetime             not null,
-ReceiverID           numeric              not null,
-TransmitterID        numeric              not null,
-Command              varchar(256)         not null,
-Code                 varchar(128)         not null,
-CodeSequence         numeric              not null,
-Received             char(1)              not null,
-CodeStatus           varchar(32)          not null
+   LogID                numeric              not null,
+   TimeArrival          datetime             not null,
+   ReceiverID           numeric              not null,
+   TransmitterID        numeric              not null,
+   Command              varchar(256)         not null,
+   Code                 varchar(128)         not null,
+   CodeSequence         numeric              not null,
+   Received             char(1)              not null,
+   CodeStatus           varchar(32)          not null
 )
 go
 
@@ -3292,19 +4040,18 @@ go
 
 
 /*==============================================================*/
-/* Table : EnergyCompany                                        */
+/* Table: EnergyCompany                                         */
 /*==============================================================*/
 create table EnergyCompany (
-EnergyCompanyID      numeric              not null,
-Name                 varchar(60)          not null,
-PrimaryContactID     numeric              not null,
-UserID               numeric              not null
+   EnergyCompanyID      numeric              not null,
+   Name                 varchar(60)          not null,
+   PrimaryContactID     numeric              not null,
+   UserID               numeric              not null
 )
 go
 
 
 insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
-
 alter table EnergyCompany
    add constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
 go
@@ -3320,11 +4067,11 @@ go
 
 
 /*==============================================================*/
-/* Table : EnergyCompanyCustomerList                            */
+/* Table: EnergyCompanyCustomerList                             */
 /*==============================================================*/
 create table EnergyCompanyCustomerList (
-EnergyCompanyID      numeric              not null,
-CustomerID           numeric              not null
+   EnergyCompanyID      numeric              not null,
+   CustomerID           numeric              not null
 )
 go
 
@@ -3335,30 +4082,29 @@ go
 
 
 /*==============================================================*/
-/* Table : EnergyCompanyOperatorLoginList                       */
+/* Table: EnergyCompanyOperatorLoginList                        */
 /*==============================================================*/
 create table EnergyCompanyOperatorLoginList (
-EnergyCompanyID      numeric              not null,
-OperatorLoginID      numeric              not null
+   EnergyCompanyID      numeric              not null,
+   OperatorLoginID      numeric              not null
 )
 go
 
 
 INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-100);
-
 alter table EnergyCompanyOperatorLoginList
    add constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key  (EnergyCompanyID, OperatorLoginID)
 go
 
 
 /*==============================================================*/
-/* Table : FDRInterface                                         */
+/* Table: FDRInterface                                          */
 /*==============================================================*/
 create table FDRInterface (
-InterfaceID          numeric              not null,
-InterfaceName        varchar(30)          not null,
-PossibleDirections   varchar(100)         not null,
-hasDestination       char(1)              not null
+   InterfaceID          numeric              not null,
+   InterfaceName        varchar(30)          not null,
+   PossibleDirections   varchar(100)         not null,
+   hasDestination       char(1)              not null
 )
 go
 
@@ -3380,21 +4126,20 @@ insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
 insert into fdrinterface values(16,'LODESTAR_STD','Receive','f');
 insert into fdrinterface values(17,'LODESTAR_ENH','Receive','f');
 insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
-
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
 
 
 /*==============================================================*/
-/* Table : FDRInterfaceOption                                   */
+/* Table: FDRInterfaceOption                                    */
 /*==============================================================*/
 create table FDRInterfaceOption (
-InterfaceID          numeric              not null,
-OptionLabel          varchar(20)          not null,
-Ordering             numeric              not null,
-OptionType           varchar(8)           not null,
-OptionValues         varchar(150)         not null
+   InterfaceID          numeric              not null,
+   OptionLabel          varchar(20)          not null,
+   Ordering             numeric              not null,
+   OptionType           varchar(8)           not null,
+   OptionValues         varchar(150)         not null
 )
 go
 
@@ -3432,27 +4177,26 @@ insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
 insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
 insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 
-
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
 go
 
 
 /*==============================================================*/
-/* Table : FDRTRANSLATION                                       */
+/* Table: FDRTRANSLATION                                        */
 /*==============================================================*/
 create table FDRTRANSLATION (
-POINTID              numeric              not null,
-DIRECTIONTYPE        varchar(20)          not null,
-InterfaceType        varchar(20)          not null,
-DESTINATION          varchar(20)          not null,
-TRANSLATION          varchar(100)         not null
+   POINTID              numeric              not null,
+   DIRECTIONTYPE        varchar(20)          not null,
+   InterfaceType        varchar(20)          not null,
+   DESTINATION          varchar(20)          not null,
+   TRANSLATION          varchar(100)         not null
 )
 go
 
 
 alter table FDRTRANSLATION
-   add constraint PK_FDRTrans primary key  (POINTID, InterfaceType, TRANSLATION)
+   add constraint PK_FDRTrans primary key  (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION)
 go
 
 
@@ -3476,19 +4220,19 @@ go
 
 
 /*==============================================================*/
-/* Table : GRAPHDATASERIES                                      */
+/* Table: GRAPHDATASERIES                                       */
 /*==============================================================*/
 create table GRAPHDATASERIES (
-GRAPHDATASERIESID    numeric              not null,
-GRAPHDEFINITIONID    numeric              not null,
-POINTID              numeric              not null,
-Label                varchar(40)          not null,
-Axis                 char(1)              not null,
-Color                numeric              not null,
-Type                 numeric              not null,
-Multiplier           float                not null,
-Renderer             smallint             not null,
-MoreData             varchar(100)         not null
+   GRAPHDATASERIESID    numeric              not null,
+   GRAPHDEFINITIONID    numeric              not null,
+   POINTID              numeric              not null,
+   Label                varchar(40)          not null,
+   Axis                 char(1)              not null,
+   Color                numeric              not null,
+   Type                 numeric              not null,
+   Multiplier           float                not null,
+   Renderer             smallint             not null,
+   MoreData             varchar(100)         not null
 )
 go
 
@@ -3508,21 +4252,21 @@ go
 
 
 /*==============================================================*/
-/* Table : GRAPHDEFINITION                                      */
+/* Table: GRAPHDEFINITION                                       */
 /*==============================================================*/
 create table GRAPHDEFINITION (
-GRAPHDEFINITIONID    numeric              not null,
-NAME                 varchar(40)          not null,
-AutoScaleTimeAxis    char(1)              not null,
-AutoScaleLeftAxis    char(1)              not null,
-AutoScaleRightAxis   char(1)              not null,
-STARTDATE            datetime             not null,
-STOPDATE             datetime             not null,
-LeftMin              float                not null,
-LeftMax              float                not null,
-RightMin             float                not null,
-RightMax             float                not null,
-Type                 char(1)              not null
+   GRAPHDEFINITIONID    numeric              not null,
+   NAME                 varchar(40)          not null,
+   AutoScaleTimeAxis    char(1)              not null,
+   AutoScaleLeftAxis    char(1)              not null,
+   AutoScaleRightAxis   char(1)              not null,
+   STARTDATE            datetime             not null,
+   STOPDATE             datetime             not null,
+   LeftMin              float                not null,
+   LeftMax              float                not null,
+   RightMin             float                not null,
+   RightMax             float                not null,
+   Type                 char(1)              not null
 )
 go
 
@@ -3538,13 +4282,13 @@ go
 
 
 /*==============================================================*/
-/* Table : GatewayEndDevice                                     */
+/* Table: GatewayEndDevice                                      */
 /*==============================================================*/
 create table GatewayEndDevice (
-SerialNumber         varchar(30)          not null,
-HardwareType         numeric              not null,
-DataType             numeric              not null,
-DataValue            varchar(100)         null
+   SerialNumber         varchar(30)          not null,
+   HardwareType         numeric              not null,
+   DataType             numeric              not null,
+   DataValue            varchar(100)         null
 )
 go
 
@@ -3555,13 +4299,13 @@ go
 
 
 /*==============================================================*/
-/* Table : GenericMacro                                         */
+/* Table: GenericMacro                                          */
 /*==============================================================*/
 create table GenericMacro (
-OwnerID              numeric              not null,
-ChildID              numeric              not null,
-ChildOrder           numeric              not null,
-MacroType            varchar(20)          not null
+   OwnerID              numeric              not null,
+   ChildID              numeric              not null,
+   ChildOrder           numeric              not null,
+   MacroType            varchar(20)          not null
 )
 go
 
@@ -3572,12 +4316,12 @@ go
 
 
 /*==============================================================*/
-/* Table : GraphCustomerList                                    */
+/* Table: GraphCustomerList                                     */
 /*==============================================================*/
 create table GraphCustomerList (
-GraphDefinitionID    numeric              not null,
-CustomerID           numeric              not null,
-CustomerOrder        numeric              not null
+   GraphDefinitionID    numeric              not null,
+   CustomerID           numeric              not null,
+   CustomerOrder        numeric              not null
 )
 go
 
@@ -3588,17 +4332,16 @@ go
 
 
 /*==============================================================*/
-/* Table : HolidaySchedule                                      */
+/* Table: HolidaySchedule                                       */
 /*==============================================================*/
 create table HolidaySchedule (
-HolidayScheduleID    numeric              not null,
-HolidayScheduleName  varchar(40)          not null
+   HolidayScheduleID    numeric              not null,
+   HolidayScheduleName  varchar(40)          not null
 )
 go
 
 
 insert into HolidaySchedule values( 0, 'Empty Holiday Schedule' );
-
 alter table HolidaySchedule
    add constraint PK_HOLIDAYSCHEDULE primary key  (HolidayScheduleID)
 go
@@ -3614,13 +4357,13 @@ go
 
 
 /*==============================================================*/
-/* Table : LMCONTROLAREAPROGRAM                                 */
+/* Table: LMCONTROLAREAPROGRAM                                  */
 /*==============================================================*/
 create table LMCONTROLAREAPROGRAM (
-DEVICEID             numeric              not null,
-LMPROGRAMDEVICEID    numeric              not null,
-StartPriority        numeric              not null,
-StopPriority         numeric              not null
+   DEVICEID             numeric              not null,
+   LMPROGRAMDEVICEID    numeric              not null,
+   StartPriority        numeric              not null,
+   StopPriority         numeric              not null
 )
 go
 
@@ -3631,21 +4374,21 @@ go
 
 
 /*==============================================================*/
-/* Table : LMCONTROLAREATRIGGER                                 */
+/* Table: LMCONTROLAREATRIGGER                                  */
 /*==============================================================*/
 create table LMCONTROLAREATRIGGER (
-DEVICEID             numeric              not null,
-TRIGGERNUMBER        numeric              not null,
-TRIGGERTYPE          varchar(20)          not null,
-POINTID              numeric              not null,
-NORMALSTATE          numeric              not null,
-THRESHOLD            float                not null,
-PROJECTIONTYPE       varchar(14)          not null,
-PROJECTIONPOINTS     numeric              not null,
-PROJECTAHEADDURATION numeric              not null,
-THRESHOLDKICKPERCENT numeric              not null,
-MINRESTOREOFFSET     float                not null,
-PEAKPOINTID          numeric              not null
+   DEVICEID             numeric              not null,
+   TRIGGERNUMBER        numeric              not null,
+   TRIGGERTYPE          varchar(20)          not null,
+   POINTID              numeric              not null,
+   NORMALSTATE          numeric              not null,
+   THRESHOLD            float                not null,
+   PROJECTIONTYPE       varchar(14)          not null,
+   PROJECTIONPOINTS     numeric              not null,
+   PROJECTAHEADDURATION numeric              not null,
+   THRESHOLDKICKPERCENT numeric              not null,
+   MINRESTOREOFFSET     float                not null,
+   PEAKPOINTID          numeric              not null
 )
 go
 
@@ -3656,16 +4399,16 @@ go
 
 
 /*==============================================================*/
-/* Table : LMControlArea                                        */
+/* Table: LMControlArea                                         */
 /*==============================================================*/
 create table LMControlArea (
-DEVICEID             numeric              not null,
-DEFOPERATIONALSTATE  varchar(20)          not null,
-CONTROLINTERVAL      numeric              not null,
-MINRESPONSETIME      numeric              not null,
-DEFDAILYSTARTTIME    numeric              not null,
-DEFDAILYSTOPTIME     numeric              not null,
-REQUIREALLTRIGGERSACTIVEFLAG varchar(1)           not null
+   DEVICEID             numeric              not null,
+   DEFOPERATIONALSTATE  varchar(20)          not null,
+   CONTROLINTERVAL      numeric              not null,
+   MINRESPONSETIME      numeric              not null,
+   DEFDAILYSTARTTIME    numeric              not null,
+   DEFDAILYSTOPTIME     numeric              not null,
+   REQUIREALLTRIGGERSACTIVEFLAG varchar(1)           not null
 )
 go
 
@@ -3676,22 +4419,22 @@ go
 
 
 /*==============================================================*/
-/* Table : LMControlHistory                                     */
+/* Table: LMControlHistory                                      */
 /*==============================================================*/
 create table LMControlHistory (
-LMCtrlHistID         numeric              not null,
-PAObjectID           numeric              not null,
-StartDateTime        datetime             not null,
-SOE_Tag              numeric              not null,
-ControlDuration      numeric              not null,
-ControlType          varchar(20)          not null,
-CurrentDailyTime     numeric              not null,
-CurrentMonthlyTime   numeric              not null,
-CurrentSeasonalTime  numeric              not null,
-CurrentAnnualTime    numeric              not null,
-ActiveRestore        char(1)              not null,
-ReductionValue       float                not null,
-StopDateTime         datetime             not null
+   LMCtrlHistID         numeric              not null,
+   PAObjectID           numeric              not null,
+   StartDateTime        datetime             not null,
+   SOE_Tag              numeric              not null,
+   ControlDuration      numeric              not null,
+   ControlType          varchar(20)          not null,
+   CurrentDailyTime     numeric              not null,
+   CurrentMonthlyTime   numeric              not null,
+   CurrentSeasonalTime  numeric              not null,
+   CurrentAnnualTime    numeric              not null,
+   ActiveRestore        char(1)              not null,
+   ReductionValue       float                not null,
+   StopDateTime         datetime             not null
 )
 go
 
@@ -3711,14 +4454,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMControlScenarioProgram                             */
+/* Table: LMControlScenarioProgram                              */
 /*==============================================================*/
 create table LMControlScenarioProgram (
-ScenarioID           numeric              not null,
-ProgramID            numeric              not null,
-StartOffset          numeric              not null,
-StopOffset           numeric              not null,
-StartGear            numeric              not null
+   ScenarioID           numeric              not null,
+   ProgramID            numeric              not null,
+   StartOffset          numeric              not null,
+   StopOffset           numeric              not null,
+   StartGear            numeric              not null
 )
 go
 
@@ -3729,19 +4472,19 @@ go
 
 
 /*==============================================================*/
-/* Table : LMCurtailCustomerActivity                            */
+/* Table: LMCurtailCustomerActivity                             */
 /*==============================================================*/
 create table LMCurtailCustomerActivity (
-CustomerID           numeric              not null,
-CurtailReferenceID   numeric              not null,
-AcknowledgeStatus    varchar(30)          not null,
-AckDateTime          datetime             not null,
-IPAddressOfAckUser   varchar(15)          not null,
-UserIDName           varchar(40)          not null,
-NameOfAckPerson      varchar(40)          not null,
-CurtailmentNotes     varchar(120)         not null,
-CurrentPDL           float                not null,
-AckLateFlag          char(1)              not null
+   CustomerID           numeric              not null,
+   CurtailReferenceID   numeric              not null,
+   AcknowledgeStatus    varchar(30)          not null,
+   AckDateTime          datetime             not null,
+   IPAddressOfAckUser   varchar(15)          not null,
+   UserIDName           varchar(40)          not null,
+   NameOfAckPerson      varchar(40)          not null,
+   CurtailmentNotes     varchar(120)         not null,
+   CurrentPDL           float                not null,
+   AckLateFlag          char(1)              not null
 )
 go
 
@@ -3770,17 +4513,17 @@ go
 
 
 /*==============================================================*/
-/* Table : LMCurtailProgramActivity                             */
+/* Table: LMCurtailProgramActivity                              */
 /*==============================================================*/
 create table LMCurtailProgramActivity (
-DeviceID             numeric              not null,
-CurtailReferenceID   numeric              not null,
-ActionDateTime       datetime             not null,
-NotificationDateTime datetime             not null,
-CurtailmentStartTime datetime             not null,
-CurtailmentStopTime  datetime             not null,
-RunStatus            varchar(20)          not null,
-AdditionalInfo       varchar(100)         not null
+   DeviceID             numeric              not null,
+   CurtailReferenceID   numeric              not null,
+   ActionDateTime       datetime             not null,
+   NotificationDateTime datetime             not null,
+   CurtailmentStartTime datetime             not null,
+   CurtailmentStopTime  datetime             not null,
+   RunStatus            varchar(20)          not null,
+   AdditionalInfo       varchar(100)         not null
 )
 go
 
@@ -3800,11 +4543,11 @@ go
 
 
 /*==============================================================*/
-/* Table : LMDirectCustomerList                                 */
+/* Table: LMDirectCustomerList                                  */
 /*==============================================================*/
 create table LMDirectCustomerList (
-ProgramID            numeric              not null,
-CustomerID           numeric              not null
+   ProgramID            numeric              not null,
+   CustomerID           numeric              not null
 )
 go
 
@@ -3815,11 +4558,11 @@ go
 
 
 /*==============================================================*/
-/* Table : LMDirectNotifGrpList                                 */
+/* Table: LMDirectNotifGrpList                                  */
 /*==============================================================*/
 create table LMDirectNotifGrpList (
-ProgramID            numeric              not null,
-NotificationGrpID    numeric              not null
+   ProgramID            numeric              not null,
+   NotificationGrpID    numeric              not null
 )
 go
 
@@ -3830,12 +4573,12 @@ go
 
 
 /*==============================================================*/
-/* Table : LMEnergyExchangeCustomerList                         */
+/* Table: LMEnergyExchangeCustomerList                          */
 /*==============================================================*/
 create table LMEnergyExchangeCustomerList (
-ProgramID            numeric              not null,
-CustomerID           numeric              not null,
-CustomerOrder        numeric              not null
+   ProgramID            numeric              not null,
+   CustomerID           numeric              not null,
+   CustomerOrder        numeric              not null
 )
 go
 
@@ -3846,18 +4589,18 @@ go
 
 
 /*==============================================================*/
-/* Table : LMEnergyExchangeCustomerReply                        */
+/* Table: LMEnergyExchangeCustomerReply                         */
 /*==============================================================*/
 create table LMEnergyExchangeCustomerReply (
-CustomerID           numeric              not null,
-OfferID              numeric              not null,
-AcceptStatus         varchar(30)          not null,
-AcceptDateTime       datetime             not null,
-RevisionNumber       numeric              not null,
-IPAddressOfAcceptUser varchar(15)          not null,
-UserIDName           varchar(40)          not null,
-NameOfAcceptPerson   varchar(40)          not null,
-EnergyExchangeNotes  varchar(120)         not null
+   CustomerID           numeric              not null,
+   OfferID              numeric              not null,
+   AcceptStatus         varchar(30)          not null,
+   AcceptDateTime       datetime             not null,
+   RevisionNumber       numeric              not null,
+   IPAddressOfAcceptUser varchar(15)          not null,
+   UserIDName           varchar(40)          not null,
+   NameOfAcceptPerson   varchar(40)          not null,
+   EnergyExchangeNotes  varchar(120)         not null
 )
 go
 
@@ -3868,14 +4611,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMEnergyExchangeHourlyCustomer                       */
+/* Table: LMEnergyExchangeHourlyCustomer                        */
 /*==============================================================*/
 create table LMEnergyExchangeHourlyCustomer (
-CustomerID           numeric              not null,
-OfferID              numeric              not null,
-RevisionNumber       numeric              not null,
-Hour                 numeric              not null,
-AmountCommitted      float                not null
+   CustomerID           numeric              not null,
+   OfferID              numeric              not null,
+   RevisionNumber       numeric              not null,
+   Hour                 numeric              not null,
+   AmountCommitted      float                not null
 )
 go
 
@@ -3886,14 +4629,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMEnergyExchangeHourlyOffer                          */
+/* Table: LMEnergyExchangeHourlyOffer                           */
 /*==============================================================*/
 create table LMEnergyExchangeHourlyOffer (
-OfferID              numeric              not null,
-RevisionNumber       numeric              not null,
-Hour                 numeric              not null,
-Price                numeric              not null,
-AmountRequested      float                not null
+   OfferID              numeric              not null,
+   RevisionNumber       numeric              not null,
+   Hour                 numeric              not null,
+   Price                numeric              not null,
+   AmountRequested      float                not null
 )
 go
 
@@ -3904,15 +4647,15 @@ go
 
 
 /*==============================================================*/
-/* Table : LMEnergyExchangeOfferRevision                        */
+/* Table: LMEnergyExchangeOfferRevision                         */
 /*==============================================================*/
 create table LMEnergyExchangeOfferRevision (
-OfferID              numeric              not null,
-RevisionNumber       numeric              not null,
-ActionDateTime       datetime             not null,
-NotificationDateTime datetime             not null,
-OfferExpirationDateTime datetime             not null,
-AdditionalInfo       varchar(100)         not null
+   OfferID              numeric              not null,
+   RevisionNumber       numeric              not null,
+   ActionDateTime       datetime             not null,
+   NotificationDateTime datetime             not null,
+   OfferExpirationDateTime datetime             not null,
+   AdditionalInfo       varchar(100)         not null
 )
 go
 
@@ -3923,13 +4666,13 @@ go
 
 
 /*==============================================================*/
-/* Table : LMEnergyExchangeProgramOffer                         */
+/* Table: LMEnergyExchangeProgramOffer                          */
 /*==============================================================*/
 create table LMEnergyExchangeProgramOffer (
-DeviceID             numeric              not null,
-OfferID              numeric              not null,
-RunStatus            varchar(20)          not null,
-OfferDate            datetime             not null
+   DeviceID             numeric              not null,
+   OfferID              numeric              not null,
+   RunStatus            varchar(20)          not null,
+   OfferDate            datetime             not null
 )
 go
 
@@ -3940,32 +4683,31 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroup                                              */
+/* Table: LMGroup                                               */
 /*==============================================================*/
 create table LMGroup (
-DeviceID             numeric              not null,
-KWCapacity           float                not null
+   DeviceID             numeric              not null,
+   KWCapacity           float                not null
 )
 go
 
 
 insert into lmgroup values( 0, 0 );
-
 alter table LMGroup
    add constraint PK_LMGROUP primary key  (DeviceID)
 go
 
 
 /*==============================================================*/
-/* Table : LMGroupEmetcon                                       */
+/* Table: LMGroupEmetcon                                        */
 /*==============================================================*/
 create table LMGroupEmetcon (
-DEVICEID             numeric              not null,
-GOLDADDRESS          numeric              not null,
-SILVERADDRESS        numeric              not null,
-ADDRESSUSAGE         char(1)              not null,
-RELAYUSAGE           char(1)              not null,
-ROUTEID              numeric              not null
+   DEVICEID             numeric              not null,
+   GOLDADDRESS          numeric              not null,
+   SILVERADDRESS        numeric              not null,
+   ADDRESSUSAGE         char(1)              not null,
+   RELAYUSAGE           char(1)              not null,
+   ROUTEID              numeric              not null
 )
 go
 
@@ -3976,22 +4718,22 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupExpressCom                                    */
+/* Table: LMGroupExpressCom                                     */
 /*==============================================================*/
 create table LMGroupExpressCom (
-LMGroupID            numeric              not null,
-RouteID              numeric              not null,
-SerialNumber         varchar(10)          not null,
-ServiceProviderID    numeric              not null,
-GeoID                numeric              not null,
-SubstationID         numeric              not null,
-FeederID             numeric              not null,
-ZipID                numeric              not null,
-UserID               numeric              not null,
-ProgramID            numeric              not null,
-SplinterID           numeric              not null,
-AddressUsage         varchar(10)          not null,
-RelayUsage           char(15)             not null
+   LMGroupID            numeric              not null,
+   RouteID              numeric              not null,
+   SerialNumber         varchar(10)          not null,
+   ServiceProviderID    numeric              not null,
+   GeoID                numeric              not null,
+   SubstationID         numeric              not null,
+   FeederID             numeric              not null,
+   ZipID                numeric              not null,
+   UserID               numeric              not null,
+   ProgramID            numeric              not null,
+   SplinterID           numeric              not null,
+   AddressUsage         varchar(10)          not null,
+   RelayUsage           char(15)             not null
 )
 go
 
@@ -4002,34 +4744,33 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupExpressComAddress                             */
+/* Table: LMGroupExpressComAddress                              */
 /*==============================================================*/
 create table LMGroupExpressComAddress (
-AddressID            numeric              not null,
-AddressType          varchar(20)          not null,
-Address              numeric              not null,
-AddressName          varchar(30)          not null
+   AddressID            numeric              not null,
+   AddressType          varchar(20)          not null,
+   Address              numeric              not null,
+   AddressName          varchar(30)          not null
 )
 go
 
 
 insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
-
 alter table LMGroupExpressComAddress
    add constraint PK_LMGROUPEXPRESSCOMADDRESS primary key  (AddressID)
 go
 
 
 /*==============================================================*/
-/* Table : LMGroupMCT                                           */
+/* Table: LMGroupMCT                                            */
 /*==============================================================*/
 create table LMGroupMCT (
-DeviceID             numeric              not null,
-MCTAddress           numeric              not null,
-MCTLevel             char(1)              not null,
-RelayUsage           char(7)              not null,
-RouteID              numeric              not null,
-MCTDeviceID          numeric              not null
+   DeviceID             numeric              not null,
+   MCTAddress           numeric              not null,
+   MCTLevel             char(1)              not null,
+   RelayUsage           char(7)              not null,
+   RouteID              numeric              not null,
+   MCTDeviceID          numeric              not null
 )
 go
 
@@ -4040,13 +4781,13 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupPoint                                         */
+/* Table: LMGroupPoint                                          */
 /*==============================================================*/
 create table LMGroupPoint (
-DEVICEID             numeric              not null,
-DeviceIDUsage        numeric              not null,
-PointIDUsage         numeric              not null,
-StartControlRawState numeric              not null
+   DEVICEID             numeric              not null,
+   DeviceIDUsage        numeric              not null,
+   PointIDUsage         numeric              not null,
+   StartControlRawState numeric              not null
 )
 go
 
@@ -4057,14 +4798,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupRipple                                        */
+/* Table: LMGroupRipple                                         */
 /*==============================================================*/
 create table LMGroupRipple (
-DeviceID             numeric              not null,
-RouteID              numeric              not null,
-ShedTime             numeric              not null,
-ControlValue         char(50)             not null,
-RestoreValue         char(50)             not null
+   DeviceID             numeric              not null,
+   RouteID              numeric              not null,
+   ShedTime             numeric              not null,
+   ControlValue         char(50)             not null,
+   RestoreValue         char(50)             not null
 )
 go
 
@@ -4075,13 +4816,13 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupSA205105                                      */
+/* Table: LMGroupSA205105                                       */
 /*==============================================================*/
 create table LMGroupSA205105 (
-GroupID              numeric              not null,
-RouteID              numeric              not null,
-OperationalAddress   numeric              not null,
-LoadNumber           varchar(64)          not null
+   GroupID              numeric              not null,
+   RouteID              numeric              not null,
+   OperationalAddress   numeric              not null,
+   LoadNumber           varchar(64)          not null
 )
 go
 
@@ -4092,21 +4833,21 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupSA305                                         */
+/* Table: LMGroupSA305                                          */
 /*==============================================================*/
 create table LMGroupSA305 (
-GroupID              numeric              not null,
-RouteID              numeric              not null,
-AddressUsage         varchar(8)           not null,
-UtilityAddress       numeric              not null,
-GroupAddress         numeric              not null,
-DivisionAddress      numeric              not null,
-SubstationAddress    numeric              not null,
-IndividualAddress    varchar(16)          not null,
-RateFamily           numeric              not null,
-RateMember           numeric              not null,
-RateHierarchy        numeric              not null,
-LoadNumber           varchar(8)           not null
+   GroupID              numeric              not null,
+   RouteID              numeric              not null,
+   AddressUsage         varchar(8)           not null,
+   UtilityAddress       numeric              not null,
+   GroupAddress         numeric              not null,
+   DivisionAddress      numeric              not null,
+   SubstationAddress    numeric              not null,
+   IndividualAddress    varchar(16)          not null,
+   RateFamily           numeric              not null,
+   RateMember           numeric              not null,
+   RateHierarchy        numeric              not null,
+   LoadNumber           varchar(8)           not null
 )
 go
 
@@ -4117,15 +4858,15 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupSASimple                                      */
+/* Table: LMGroupSASimple                                       */
 /*==============================================================*/
 create table LMGroupSASimple (
-GroupID              numeric              not null,
-RouteID              numeric              not null,
-OperationalAddress   varchar(8)           not null,
-NominalTimeout       numeric              not null,
-MarkIndex            numeric              not null,
-SpaceIndex           numeric              not null
+   GroupID              numeric              not null,
+   RouteID              numeric              not null,
+   OperationalAddress   varchar(8)           not null,
+   NominalTimeout       numeric              not null,
+   MarkIndex            numeric              not null,
+   SpaceIndex           numeric              not null
 )
 go
 
@@ -4136,18 +4877,18 @@ go
 
 
 /*==============================================================*/
-/* Table : LMGroupVersacom                                      */
+/* Table: LMGroupVersacom                                       */
 /*==============================================================*/
 create table LMGroupVersacom (
-DEVICEID             numeric              not null,
-ROUTEID              numeric              not null,
-UTILITYADDRESS       numeric              not null,
-SECTIONADDRESS       numeric              not null,
-CLASSADDRESS         numeric              not null,
-DIVISIONADDRESS      numeric              not null,
-ADDRESSUSAGE         char(4)              not null,
-RELAYUSAGE           char(7)              not null,
-SerialAddress        varchar(15)          not null
+   DEVICEID             numeric              not null,
+   ROUTEID              numeric              not null,
+   UTILITYADDRESS       numeric              not null,
+   SECTIONADDRESS       numeric              not null,
+   CLASSADDRESS         numeric              not null,
+   DIVISIONADDRESS      numeric              not null,
+   ADDRESSUSAGE         char(4)              not null,
+   RELAYUSAGE           char(7)              not null,
+   SerialAddress        varchar(15)          not null
 )
 go
 
@@ -4158,12 +4899,12 @@ go
 
 
 /*==============================================================*/
-/* Table : LMMacsScheduleCustomerList                           */
+/* Table: LMMacsScheduleCustomerList                            */
 /*==============================================================*/
 create table LMMacsScheduleCustomerList (
-ScheduleID           numeric              not null,
-LMCustomerDeviceID   numeric              not null,
-CustomerOrder        numeric              not null
+   ScheduleID           numeric              not null,
+   LMCustomerDeviceID   numeric              not null,
+   CustomerOrder        numeric              not null
 )
 go
 
@@ -4174,59 +4915,57 @@ go
 
 
 /*==============================================================*/
-/* Table : LMPROGRAM                                            */
+/* Table: LMPROGRAM                                             */
 /*==============================================================*/
 create table LMPROGRAM (
-DeviceID             numeric              not null,
-ControlType          varchar(20)          not null,
-ConstraintID         numeric              not null
+   DeviceID             numeric              not null,
+   ControlType          varchar(20)          not null,
+   ConstraintID         numeric              not null
 )
 go
 
 
 insert into LMProgram values(0, 'Automatic', 0);
-
 alter table LMPROGRAM
    add constraint PK_LMPROGRAM primary key  (DeviceID)
 go
 
 
 /*==============================================================*/
-/* Table : LMProgramConstraints                                 */
+/* Table: LMProgramConstraints                                  */
 /*==============================================================*/
 create table LMProgramConstraints (
-ConstraintID         numeric              not null,
-ConstraintName       varchar(60)          not null,
-AvailableWeekDays    varchar(8)           not null,
-MaxHoursDaily        numeric              not null,
-MaxHoursMonthly      numeric              not null,
-MaxHoursSeasonal     numeric              not null,
-MaxHoursAnnually     numeric              not null,
-MinActivateTime      numeric              not null,
-MinRestartTime       numeric              not null,
-MaxDailyOps          numeric              not null,
-MaxActivateTime      numeric              not null,
-HolidayScheduleID    numeric              not null,
-SeasonScheduleID     numeric              not null
+   ConstraintID         numeric              not null,
+   ConstraintName       varchar(60)          not null,
+   AvailableWeekDays    varchar(8)           not null,
+   MaxHoursDaily        numeric              not null,
+   MaxHoursMonthly      numeric              not null,
+   MaxHoursSeasonal     numeric              not null,
+   MaxHoursAnnually     numeric              not null,
+   MinActivateTime      numeric              not null,
+   MinRestartTime       numeric              not null,
+   MaxDailyOps          numeric              not null,
+   MaxActivateTime      numeric              not null,
+   HolidayScheduleID    numeric              not null,
+   SeasonScheduleID     numeric              not null
 )
 go
 
 
 insert into LMProgramConstraints values (0, 'Default Constraint', 'YYYYYYYN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
 alter table LMProgramConstraints
    add constraint PK_PRGCONSTR primary key  (ConstraintID)
 go
 
 
 /*==============================================================*/
-/* Table : LMProgramControlWindow                               */
+/* Table: LMProgramControlWindow                                */
 /*==============================================================*/
 create table LMProgramControlWindow (
-DeviceID             numeric              not null,
-WindowNumber         numeric              not null,
-AvailableStartTime   numeric              not null,
-AvailableStopTime    numeric              not null
+   DeviceID             numeric              not null,
+   WindowNumber         numeric              not null,
+   AvailableStartTime   numeric              not null,
+   AvailableStopTime    numeric              not null
 )
 go
 
@@ -4237,13 +4976,13 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramCurtailCustomerList                         */
+/* Table: LMProgramCurtailCustomerList                          */
 /*==============================================================*/
 create table LMProgramCurtailCustomerList (
-ProgramID            numeric              not null,
-CustomerID           numeric              not null,
-CustomerOrder        numeric              not null,
-RequireAck           char(1)              not null
+   ProgramID            numeric              not null,
+   CustomerID           numeric              not null,
+   CustomerOrder        numeric              not null,
+   RequireAck           char(1)              not null
 )
 go
 
@@ -4254,17 +4993,17 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramCurtailment                                 */
+/* Table: LMProgramCurtailment                                  */
 /*==============================================================*/
 create table LMProgramCurtailment (
-DeviceID             numeric              not null,
-MinNotifyTime        numeric              not null,
-Heading              varchar(40)          not null,
-MessageHeader        varchar(160)         not null,
-MessageFooter        varchar(160)         not null,
-AckTimeLimit         numeric              not null,
-CanceledMsg          varchar(80)          not null,
-StoppedEarlyMsg      varchar(80)          not null
+   DeviceID             numeric              not null,
+   MinNotifyTime        numeric              not null,
+   Heading              varchar(40)          not null,
+   MessageHeader        varchar(160)         not null,
+   MessageFooter        varchar(160)         not null,
+   AckTimeLimit         numeric              not null,
+   CanceledMsg          varchar(80)          not null,
+   StoppedEarlyMsg      varchar(80)          not null
 )
 go
 
@@ -4275,14 +5014,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramDirect                                      */
+/* Table: LMProgramDirect                                       */
 /*==============================================================*/
 create table LMProgramDirect (
-DeviceID             numeric              not null,
-NotifyOffset         numeric              not null,
-Heading              varchar(40)          not null,
-MessageHeader        varchar(160)         not null,
-MessageFooter        varchar(160)         not null
+   DeviceID             numeric              not null,
+   NotifyOffset         numeric              not null,
+   Heading              varchar(40)          not null,
+   MessageHeader        varchar(160)         not null,
+   MessageFooter        varchar(160)         not null
 )
 go
 
@@ -4293,32 +5032,32 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramDirectGear                                  */
+/* Table: LMProgramDirectGear                                   */
 /*==============================================================*/
 create table LMProgramDirectGear (
-DeviceID             numeric              not null,
-GearName             varchar(30)          not null,
-GearNumber           numeric              not null,
-ControlMethod        varchar(30)          not null,
-MethodRate           numeric              not null,
-MethodPeriod         numeric              not null,
-MethodRateCount      numeric              not null,
-CycleRefreshRate     numeric              not null,
-MethodStopType       varchar(20)          not null,
-ChangeCondition      varchar(24)          not null,
-ChangeDuration       numeric              not null,
-ChangePriority       numeric              not null,
-ChangeTriggerNumber  numeric              not null,
-ChangeTriggerOffset  float                not null,
-PercentReduction     numeric              not null,
-GroupSelectionMethod varchar(30)          not null,
-MethodOptionType     varchar(30)          not null,
-MethodOptionMax      numeric              not null,
-GearID               numeric              not null,
-RampInInterval       numeric              not null,
-RampInPercent        numeric              not null,
-RampOutInterval      numeric              not null,
-RampOutPercent       numeric              not null
+   DeviceID             numeric              not null,
+   GearName             varchar(30)          not null,
+   GearNumber           numeric              not null,
+   ControlMethod        varchar(30)          not null,
+   MethodRate           numeric              not null,
+   MethodPeriod         numeric              not null,
+   MethodRateCount      numeric              not null,
+   CycleRefreshRate     numeric              not null,
+   MethodStopType       varchar(20)          not null,
+   ChangeCondition      varchar(24)          not null,
+   ChangeDuration       numeric              not null,
+   ChangePriority       numeric              not null,
+   ChangeTriggerNumber  numeric              not null,
+   ChangeTriggerOffset  float                not null,
+   PercentReduction     numeric              not null,
+   GroupSelectionMethod varchar(30)          not null,
+   MethodOptionType     varchar(30)          not null,
+   MethodOptionMax      numeric              not null,
+   GearID               numeric              not null,
+   RampInInterval       numeric              not null,
+   RampInPercent        numeric              not null,
+   RampOutInterval      numeric              not null,
+   RampOutPercent       numeric              not null
 )
 go
 
@@ -4334,12 +5073,12 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramDirectGroup                                 */
+/* Table: LMProgramDirectGroup                                  */
 /*==============================================================*/
 create table LMProgramDirectGroup (
-DeviceID             numeric              not null,
-LMGroupDeviceID      numeric              not null,
-GroupOrder           numeric              not null
+   DeviceID             numeric              not null,
+   LMGroupDeviceID      numeric              not null,
+   GroupOrder           numeric              not null
 )
 go
 
@@ -4350,16 +5089,16 @@ go
 
 
 /*==============================================================*/
-/* Table : LMProgramEnergyExchange                              */
+/* Table: LMProgramEnergyExchange                               */
 /*==============================================================*/
 create table LMProgramEnergyExchange (
-DeviceID             numeric              not null,
-MinNotifyTime        numeric              not null,
-Heading              varchar(40)          not null,
-MessageHeader        varchar(160)         not null,
-MessageFooter        varchar(160)         not null,
-CanceledMsg          varchar(80)          not null,
-StoppedEarlyMsg      varchar(80)          not null
+   DeviceID             numeric              not null,
+   MinNotifyTime        numeric              not null,
+   Heading              varchar(40)          not null,
+   MessageHeader        varchar(160)         not null,
+   MessageFooter        varchar(160)         not null,
+   CanceledMsg          varchar(80)          not null,
+   StoppedEarlyMsg      varchar(80)          not null
 )
 go
 
@@ -4370,23 +5109,23 @@ go
 
 
 /*==============================================================*/
-/* Table : LMThermoStatGear                                     */
+/* Table: LMThermoStatGear                                      */
 /*==============================================================*/
 create table LMThermoStatGear (
-GearID               numeric              not null,
-Settings             varchar(10)          not null,
-MinValue             numeric              not null,
-MaxValue             numeric              not null,
-ValueB               numeric              not null,
-ValueD               numeric              not null,
-ValueF               numeric              not null,
-Random               numeric              not null,
-ValueTa              numeric              not null,
-ValueTb              numeric              not null,
-ValueTc              numeric              not null,
-ValueTd              numeric              not null,
-ValueTe              numeric              not null,
-ValueTf              numeric              not null
+   GearID               numeric              not null,
+   Settings             varchar(10)          not null,
+   MinValue             numeric              not null,
+   MaxValue             numeric              not null,
+   ValueB               numeric              not null,
+   ValueD               numeric              not null,
+   ValueF               numeric              not null,
+   Random               numeric              not null,
+   ValueTa              numeric              not null,
+   ValueTb              numeric              not null,
+   ValueTc              numeric              not null,
+   ValueTd              numeric              not null,
+   ValueTe              numeric              not null,
+   ValueTf              numeric              not null
 )
 go
 
@@ -4397,14 +5136,14 @@ go
 
 
 /*==============================================================*/
-/* Table : LOGIC                                                */
+/* Table: LOGIC                                                 */
 /*==============================================================*/
 create table LOGIC (
-LOGICID              numeric              not null,
-LOGICNAME            varchar(20)          not null,
-PERIODICRATE         numeric              not null,
-STATEFLAG            varchar(10)          not null,
-SCRIPTNAME           varchar(20)          not null
+   LOGICID              numeric              not null,
+   LOGICNAME            varchar(20)          not null,
+   PERIODICRATE         numeric              not null,
+   STATEFLAG            varchar(10)          not null,
+   SCRIPTNAME           varchar(20)          not null
 )
 go
 
@@ -4415,12 +5154,12 @@ go
 
 
 /*==============================================================*/
-/* Table : MACROROUTE                                           */
+/* Table: MACROROUTE                                            */
 /*==============================================================*/
 create table MACROROUTE (
-ROUTEID              numeric              not null,
-SINGLEROUTEID        numeric              not null,
-ROUTEORDER           numeric              not null
+   ROUTEID              numeric              not null,
+   SINGLEROUTEID        numeric              not null,
+   ROUTEORDER           numeric              not null
 )
 go
 
@@ -4431,27 +5170,27 @@ go
 
 
 /*==============================================================*/
-/* Table : MACSchedule                                          */
+/* Table: MACSchedule                                           */
 /*==============================================================*/
 create table MACSchedule (
-ScheduleID           numeric              not null,
-CategoryName         varchar(50)          not null,
-HolidayScheduleID    numeric              null,
-CommandFile          varchar(180)         null,
-CurrentState         varchar(12)          not null,
-StartPolicy          varchar(20)          not null,
-StopPolicy           varchar(20)          not null,
-LastRunTime          datetime             null,
-LastRunStatus        varchar(12)          null,
-StartDay             numeric              null,
-StartMonth           numeric              null,
-StartYear            numeric              null,
-StartTime            varchar(8)           null,
-StopTime             varchar(8)           null,
-ValidWeekDays        char(8)              null,
-Duration             numeric              null,
-ManualStartTime      datetime             null,
-ManualStopTime       datetime             null
+   ScheduleID           numeric              not null,
+   CategoryName         varchar(50)          not null,
+   HolidayScheduleID    numeric              null,
+   CommandFile          varchar(180)         null,
+   CurrentState         varchar(12)          not null,
+   StartPolicy          varchar(20)          not null,
+   StopPolicy           varchar(20)          not null,
+   LastRunTime          datetime             null,
+   LastRunStatus        varchar(12)          null,
+   StartDay             numeric              null,
+   StartMonth           numeric              null,
+   StartYear            numeric              null,
+   StartTime            varchar(8)           null,
+   StopTime             varchar(8)           null,
+   ValidWeekDays        char(8)              null,
+   Duration             numeric              null,
+   ManualStartTime      datetime             null,
+   ManualStopTime       datetime             null
 )
 go
 
@@ -4462,14 +5201,14 @@ go
 
 
 /*==============================================================*/
-/* Table : MACSimpleSchedule                                    */
+/* Table: MACSimpleSchedule                                     */
 /*==============================================================*/
 create table MACSimpleSchedule (
-ScheduleID           numeric              not null,
-TargetSelect         varchar(40)          null,
-StartCommand         varchar(120)         null,
-StopCommand          varchar(120)         null,
-RepeatInterval       numeric              null
+   ScheduleID           numeric              not null,
+   TargetSelect         varchar(40)          null,
+   StartCommand         varchar(120)         null,
+   StopCommand          varchar(120)         null,
+   RepeatInterval       numeric              null
 )
 go
 
@@ -4480,12 +5219,12 @@ go
 
 
 /*==============================================================*/
-/* Table : MCTBroadCastMapping                                  */
+/* Table: MCTBroadCastMapping                                   */
 /*==============================================================*/
 create table MCTBroadCastMapping (
-MCTBroadCastID       numeric              not null,
-MctID                numeric              not null,
-Ordering             numeric              not null
+   MCTBroadCastID       numeric              not null,
+   MctID                numeric              not null,
+   Ordering             numeric              not null
 )
 go
 
@@ -4496,20 +5235,20 @@ go
 
 
 /*==============================================================*/
-/* Table : MCTConfig                                            */
+/* Table: MCTConfig                                             */
 /*==============================================================*/
 create table MCTConfig (
-ConfigID             numeric              not null,
-ConfigName           varchar(30)          not null,
-ConfigType           numeric              not null,
-ConfigMode           varchar(30)          not null,
-MCTWire1             numeric              not null,
-Ke1                  float                not null,
-MCTWire2             numeric              not null,
-Ke2                  float                not null,
-MCTWire3             numeric              not null,
-Ke3                  float                not null,
-DisplayDigits        numeric              not null
+   ConfigID             numeric              not null,
+   ConfigName           varchar(30)          not null,
+   ConfigType           numeric              not null,
+   ConfigMode           varchar(30)          not null,
+   MCTWire1             numeric              not null,
+   Ke1                  float                not null,
+   MCTWire2             numeric              not null,
+   Ke2                  float                not null,
+   MCTWire3             numeric              not null,
+   Ke3                  float                not null,
+   DisplayDigits        numeric              not null
 )
 go
 
@@ -4520,11 +5259,11 @@ go
 
 
 /*==============================================================*/
-/* Table : MCTConfigMapping                                     */
+/* Table: MCTConfigMapping                                      */
 /*==============================================================*/
 create table MCTConfigMapping (
-MctID                numeric              not null,
-ConfigID             numeric              not null
+   MctID                numeric              not null,
+   ConfigID             numeric              not null
 )
 go
 
@@ -4535,12 +5274,12 @@ go
 
 
 /*==============================================================*/
-/* Table : NotificationDestination                              */
+/* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination (
-DestinationOrder     numeric              not null,
-NotificationGroupID  numeric              not null,
-RecipientID          numeric              not null
+   DestinationOrder     numeric              not null,
+   NotificationGroupID  numeric              not null,
+   RecipientID          numeric              not null
 )
 go
 
@@ -4551,22 +5290,21 @@ go
 
 
 /*==============================================================*/
-/* Table : NotificationGroup                                    */
+/* Table: NotificationGroup                                     */
 /*==============================================================*/
 create table NotificationGroup (
-NotificationGroupID  numeric              not null,
-GroupName            varchar(40)          not null,
-EmailSubject         varchar(60)          not null,
-EmailFromAddress     varchar(100)         not null,
-EmailMessage         varchar(160)         not null,
-NumericPagerMessage  varchar(14)          not null,
-DisableFlag          char(1)              not null
+   NotificationGroupID  numeric              not null,
+   GroupName            varchar(40)          not null,
+   EmailSubject         varchar(60)          not null,
+   EmailFromAddress     varchar(100)         not null,
+   EmailMessage         varchar(160)         not null,
+   NumericPagerMessage  varchar(14)          not null,
+   DisableFlag          char(1)              not null
 )
 go
 
 
 insert into notificationgroup values(1,'(none)','(none)','(none)','(none)','(none)','N');
-
 alter table NotificationGroup
    add constraint PK_NOTIFICATIONGROUP primary key  (NotificationGroupID)
 go
@@ -4582,11 +5320,11 @@ go
 
 
 /*==============================================================*/
-/* Table : OperatorLoginGraphList                               */
+/* Table: OperatorLoginGraphList                                */
 /*==============================================================*/
 create table OperatorLoginGraphList (
-OperatorLoginID      numeric              not null,
-GraphDefinitionID    numeric              not null
+   OperatorLoginID      numeric              not null,
+   GraphDefinitionID    numeric              not null
 )
 go
 
@@ -4597,18 +5335,18 @@ go
 
 
 /*==============================================================*/
-/* Table : PAOExclusion                                         */
+/* Table: PAOExclusion                                          */
 /*==============================================================*/
 create table PAOExclusion (
-ExclusionID          numeric              not null,
-PaoID                numeric              not null,
-ExcludedPaoID        numeric              not null,
-PointID              numeric              not null,
-Value                numeric              not null,
-FunctionID           numeric              not null,
-FuncName             varchar(100)         not null,
-FuncRequeue          numeric              not null,
-FuncParams           varchar(200)         not null
+   ExclusionID          numeric              not null,
+   PaoID                numeric              not null,
+   ExcludedPaoID        numeric              not null,
+   PointID              numeric              not null,
+   Value                numeric              not null,
+   FunctionID           numeric              not null,
+   FuncName             varchar(100)         not null,
+   FuncRequeue          numeric              not null,
+   FuncParams           varchar(200)         not null
 )
 go
 
@@ -4629,11 +5367,11 @@ go
 
 
 /*==============================================================*/
-/* Table : PAOowner                                             */
+/* Table: PAOowner                                              */
 /*==============================================================*/
 create table PAOowner (
-OwnerID              numeric              not null,
-ChildID              numeric              not null
+   OwnerID              numeric              not null,
+   ChildID              numeric              not null
 )
 go
 
@@ -4644,21 +5382,21 @@ go
 
 
 /*==============================================================*/
-/* Table : POINT                                                */
+/* Table: POINT                                                 */
 /*==============================================================*/
 create table POINT (
-POINTID              numeric              not null,
-POINTTYPE            varchar(20)          not null,
-POINTNAME            varchar(60)          not null,
-PAObjectID           numeric              not null,
-LOGICALGROUP         varchar(14)          not null,
-STATEGROUPID         numeric              not null,
-SERVICEFLAG          varchar(1)           not null,
-ALARMINHIBIT         varchar(1)           not null,
-PSEUDOFLAG           varchar(1)           not null,
-POINTOFFSET          numeric              not null,
-ARCHIVETYPE          varchar(12)          not null,
-ARCHIVEINTERVAL      numeric              not null
+   POINTID              numeric              not null,
+   POINTTYPE            varchar(20)          not null,
+   POINTNAME            varchar(60)          not null,
+   PAObjectID           numeric              not null,
+   LOGICALGROUP         varchar(14)          not null,
+   STATEGROUPID         numeric              not null,
+   SERVICEFLAG          varchar(1)           not null,
+   ALARMINHIBIT         varchar(1)           not null,
+   PSEUDOFLAG           varchar(1)           not null,
+   POINTOFFSET          numeric              not null,
+   ARCHIVETYPE          varchar(12)          not null,
+   ARCHIVEINTERVAL      numeric              not null
 )
 go
 
@@ -4671,7 +5409,6 @@ INSERT into point  values (-4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S'
 INSERT into point  values (-5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
 INSERT into point  values (-10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 INSERT into point  values (-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-
 alter table POINT
    add constraint Key_PT_PTID primary key  (POINTID)
 go
@@ -4692,12 +5429,12 @@ go
 
 
 /*==============================================================*/
-/* Table : POINTACCUMULATOR                                     */
+/* Table: POINTACCUMULATOR                                      */
 /*==============================================================*/
 create table POINTACCUMULATOR (
-POINTID              numeric              not null,
-MULTIPLIER           float                not null,
-DATAOFFSET           float                not null
+   POINTID              numeric              not null,
+   MULTIPLIER           float                not null,
+   DATAOFFSET           float                not null
 )
 go
 
@@ -4708,14 +5445,14 @@ go
 
 
 /*==============================================================*/
-/* Table : POINTANALOG                                          */
+/* Table: POINTANALOG                                           */
 /*==============================================================*/
 create table POINTANALOG (
-POINTID              numeric              not null,
-DEADBAND             float                not null,
-TRANSDUCERTYPE       varchar(14)          not null,
-MULTIPLIER           float                not null,
-DATAOFFSET           float                not null
+   POINTID              numeric              not null,
+   DEADBAND             float                not null,
+   TRANSDUCERTYPE       varchar(14)          not null,
+   MULTIPLIER           float                not null,
+   DATAOFFSET           float                not null
 )
 go
 
@@ -4726,14 +5463,14 @@ go
 
 
 /*==============================================================*/
-/* Table : POINTLIMITS                                          */
+/* Table: POINTLIMITS                                           */
 /*==============================================================*/
 create table POINTLIMITS (
-POINTID              numeric              not null,
-LIMITNUMBER          numeric              not null,
-HIGHLIMIT            float                not null,
-LOWLIMIT             float                not null,
-LIMITDURATION        numeric              not null
+   POINTID              numeric              not null,
+   LIMITNUMBER          numeric              not null,
+   HIGHLIMIT            float                not null,
+   LOWLIMIT             float                not null,
+   LIMITDURATION        numeric              not null
 )
 go
 
@@ -4744,19 +5481,19 @@ go
 
 
 /*==============================================================*/
-/* Table : POINTSTATUS                                          */
+/* Table: POINTSTATUS                                           */
 /*==============================================================*/
 create table POINTSTATUS (
-POINTID              numeric              not null,
-INITIALSTATE         numeric              not null,
-CONTROLTYPE          varchar(12)          not null,
-CONTROLINHIBIT       varchar(1)           not null,
-ControlOffset        numeric              not null,
-CloseTime1           numeric              not null,
-CloseTime2           numeric              not null,
-StateZeroControl     varchar(100)         not null,
-StateOneControl      varchar(100)         not null,
-CommandTimeOut       numeric              not null
+   POINTID              numeric              not null,
+   INITIALSTATE         numeric              not null,
+   CONTROLTYPE          varchar(12)          not null,
+   CONTROLINHIBIT       varchar(1)           not null,
+   ControlOffset        numeric              not null,
+   CloseTime1           numeric              not null,
+   CloseTime2           numeric              not null,
+   StateZeroControl     varchar(100)         not null,
+   StateOneControl      varchar(100)         not null,
+   CommandTimeOut       numeric              not null
 )
 go
 
@@ -4767,14 +5504,14 @@ go
 
 
 /*==============================================================*/
-/* Table : POINTUNIT                                            */
+/* Table: POINTUNIT                                             */
 /*==============================================================*/
 create table POINTUNIT (
-POINTID              numeric              not null,
-UOMID                numeric              not null,
-DECIMALPLACES        numeric              not null,
-HighReasonabilityLimit float                not null,
-LowReasonabilityLimit float                not null
+   POINTID              numeric              not null,
+   UOMID                numeric              not null,
+   DECIMALPLACES        numeric              not null,
+   HighReasonabilityLimit float                not null,
+   LowReasonabilityLimit float                not null
 )
 go
 
@@ -4785,14 +5522,14 @@ go
 
 
 /*==============================================================*/
-/* Table : PORTDIALUPMODEM                                      */
+/* Table: PORTDIALUPMODEM                                       */
 /*==============================================================*/
 create table PORTDIALUPMODEM (
-PORTID               numeric              not null,
-MODEMTYPE            varchar(30)          not null,
-INITIALIZATIONSTRING varchar(50)          not null,
-PREFIXNUMBER         varchar(10)          not null,
-SUFFIXNUMBER         varchar(10)          not null
+   PORTID               numeric              not null,
+   MODEMTYPE            varchar(30)          not null,
+   INITIALIZATIONSTRING varchar(50)          not null,
+   PREFIXNUMBER         varchar(10)          not null,
+   SUFFIXNUMBER         varchar(10)          not null
 )
 go
 
@@ -4803,11 +5540,11 @@ go
 
 
 /*==============================================================*/
-/* Table : PORTLOCALSERIAL                                      */
+/* Table: PORTLOCALSERIAL                                       */
 /*==============================================================*/
 create table PORTLOCALSERIAL (
-PORTID               numeric              not null,
-PHYSICALPORT         varchar(8)           not null
+   PORTID               numeric              not null,
+   PHYSICALPORT         varchar(8)           not null
 )
 go
 
@@ -4818,14 +5555,14 @@ go
 
 
 /*==============================================================*/
-/* Table : PORTRADIOSETTINGS                                    */
+/* Table: PORTRADIOSETTINGS                                     */
 /*==============================================================*/
 create table PORTRADIOSETTINGS (
-PORTID               numeric              not null,
-RTSTOTXWAITSAMED     numeric              not null,
-RTSTOTXWAITDIFFD     numeric              not null,
-RADIOMASTERTAIL      numeric              not null,
-REVERSERTS           numeric              not null
+   PORTID               numeric              not null,
+   RTSTOTXWAITSAMED     numeric              not null,
+   RTSTOTXWAITDIFFD     numeric              not null,
+   RADIOMASTERTAIL      numeric              not null,
+   REVERSERTS           numeric              not null
 )
 go
 
@@ -4836,13 +5573,13 @@ go
 
 
 /*==============================================================*/
-/* Table : PORTSETTINGS                                         */
+/* Table: PORTSETTINGS                                          */
 /*==============================================================*/
 create table PORTSETTINGS (
-PORTID               numeric              not null,
-BAUDRATE             numeric              not null,
-CDWAIT               numeric              not null,
-LINESETTINGS         varchar(8)           not null
+   PORTID               numeric              not null,
+   BAUDRATE             numeric              not null,
+   CDWAIT               numeric              not null,
+   LINESETTINGS         varchar(8)           not null
 )
 go
 
@@ -4853,12 +5590,12 @@ go
 
 
 /*==============================================================*/
-/* Table : PORTTERMINALSERVER                                   */
+/* Table: PORTTERMINALSERVER                                    */
 /*==============================================================*/
 create table PORTTERMINALSERVER (
-PORTID               numeric              not null,
-IPADDRESS            varchar(64)          not null,
-SOCKETPORTNUMBER     numeric              not null
+   PORTID               numeric              not null,
+   IPADDRESS            varchar(64)          not null,
+   SOCKETPORTNUMBER     numeric              not null
 )
 go
 
@@ -4869,15 +5606,15 @@ go
 
 
 /*==============================================================*/
-/* Table : PointAlarming                                        */
+/* Table: PointAlarming                                         */
 /*==============================================================*/
 create table PointAlarming (
-PointID              numeric              not null,
-AlarmStates          varchar(32)          not null,
-ExcludeNotifyStates  varchar(32)          not null,
-NotifyOnAcknowledge  char(1)              not null,
-NotificationGroupID  numeric              not null,
-RecipientID          numeric              not null
+   PointID              numeric              not null,
+   AlarmStates          varchar(32)          not null,
+   ExcludeNotifyStates  varchar(32)          not null,
+   NotifyOnAcknowledge  char(1)              not null,
+   NotificationGroupID  numeric              not null,
+   RecipientID          numeric              not null
 )
 go
 
@@ -4888,22 +5625,21 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
-
 alter table PointAlarming
    add constraint PK_POINTALARMING primary key  (PointID)
 go
 
 
 /*==============================================================*/
-/* Table : PortTiming                                           */
+/* Table: PortTiming                                            */
 /*==============================================================*/
 create table PortTiming (
-PORTID               numeric              not null,
-PRETXWAIT            numeric              not null,
-RTSTOTXWAIT          numeric              not null,
-POSTTXWAIT           numeric              not null,
-RECEIVEDATAWAIT      numeric              not null,
-EXTRATIMEOUT         numeric              not null
+   PORTID               numeric              not null,
+   PRETXWAIT            numeric              not null,
+   RTSTOTXWAIT          numeric              not null,
+   POSTTXWAIT           numeric              not null,
+   RECEIVEDATAWAIT      numeric              not null,
+   EXTRATIMEOUT         numeric              not null
 )
 go
 
@@ -4914,15 +5650,15 @@ go
 
 
 /*==============================================================*/
-/* Table : RAWPOINTHISTORY                                      */
+/* Table: RAWPOINTHISTORY                                       */
 /*==============================================================*/
 create table RAWPOINTHISTORY (
-CHANGEID             numeric              not null,
-POINTID              numeric              not null,
-TIMESTAMP            datetime             not null,
-QUALITY              numeric              not null,
-VALUE                float                not null,
-millis               smallint             not null
+   CHANGEID             numeric              not null,
+   POINTID              numeric              not null,
+   TIMESTAMP            datetime             not null,
+   QUALITY              numeric              not null,
+   VALUE                float                not null,
+   millis               smallint             not null
 )
 go
 
@@ -4951,13 +5687,13 @@ go
 
 
 /*==============================================================*/
-/* Table : RepeaterRoute                                        */
+/* Table: RepeaterRoute                                         */
 /*==============================================================*/
 create table RepeaterRoute (
-ROUTEID              numeric              not null,
-DEVICEID             numeric              not null,
-VARIABLEBITS         numeric              not null,
-REPEATERORDER        numeric              not null
+   ROUTEID              numeric              not null,
+   DEVICEID             numeric              not null,
+   VARIABLEBITS         numeric              not null,
+   REPEATERORDER        numeric              not null
 )
 go
 
@@ -4968,18 +5704,17 @@ go
 
 
 /*==============================================================*/
-/* Table : Route                                                */
+/* Table: Route                                                 */
 /*==============================================================*/
 create table Route (
-RouteID              numeric              not null,
-DeviceID             numeric              not null,
-DefaultRoute         char(1)              not null
+   RouteID              numeric              not null,
+   DeviceID             numeric              not null,
+   DefaultRoute         char(1)              not null
 )
 go
 
 
 INSERT INTO Route VALUES (0,0,'N');
-
 alter table Route
    add constraint SYS_RoutePK primary key  (RouteID)
 go
@@ -4996,15 +5731,15 @@ go
 
 
 /*==============================================================*/
-/* Table : STATE                                                */
+/* Table: STATE                                                 */
 /*==============================================================*/
 create table STATE (
-STATEGROUPID         numeric              not null,
-RAWSTATE             numeric              not null,
-TEXT                 varchar(20)          not null,
-FOREGROUNDCOLOR      numeric              not null,
-BACKGROUNDCOLOR      numeric              not null,
-ImageID              numeric              not null
+   STATEGROUPID         numeric              not null,
+   RAWSTATE             numeric              not null,
+   TEXT                 varchar(20)          not null,
+   FOREGROUNDCOLOR      numeric              not null,
+   BACKGROUNDCOLOR      numeric              not null,
+   ImageID              numeric              not null
 )
 go
 
@@ -5040,7 +5775,6 @@ INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6, 0);
 INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
 INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
 INSERT INTO State VALUES(-5, 10, 'Priority 10', 9, 6, 0);
-
 alter table STATE
    add constraint PK_STATE primary key  (STATEGROUPID, RAWSTATE)
 go
@@ -5056,12 +5790,12 @@ go
 
 
 /*==============================================================*/
-/* Table : STATEGROUP                                           */
+/* Table: STATEGROUP                                            */
 /*==============================================================*/
 create table STATEGROUP (
-STATEGROUPID         numeric              not null,
-NAME                 varchar(20)          not null,
-GroupType            varchar(20)          not null
+   STATEGROUPID         numeric              not null,
+   NAME                 varchar(20)          not null,
+   GroupType            varchar(20)          not null
 )
 go
 
@@ -5074,7 +5808,6 @@ INSERT INTO StateGroup VALUES ( 0, 'SystemState', 'System' );
 INSERT INTO StateGroup VALUES ( 1, 'TwoStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES ( 2, 'ThreeStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES ( 3, 'CapBankStatus', 'Status' );
-
 alter table STATEGROUP
    add constraint SYS_C0013128 primary key  (STATEGROUPID)
 go
@@ -5090,19 +5823,19 @@ go
 
 
 /*==============================================================*/
-/* Table : SYSTEMLOG                                            */
+/* Table: SYSTEMLOG                                             */
 /*==============================================================*/
 create table SYSTEMLOG (
-LOGID                numeric              not null,
-POINTID              numeric              not null,
-DATETIME             datetime             not null,
-SOE_TAG              numeric              not null,
-TYPE                 numeric              not null,
-PRIORITY             numeric              not null,
-ACTION               varchar(60)          null,
-DESCRIPTION          varchar(120)         null,
-USERNAME             varchar(30)          null,
-millis               smallint             not null
+   LOGID                numeric              not null,
+   POINTID              numeric              not null,
+   DATETIME             datetime             not null,
+   SOE_TAG              numeric              not null,
+   TYPE                 numeric              not null,
+   PRIORITY             numeric              not null,
+   ACTION               varchar(60)          null,
+   DESCRIPTION          varchar(120)         null,
+   USERNAME             varchar(30)          null,
+   millis               smallint             not null
 )
 go
 
@@ -5131,29 +5864,28 @@ go
 
 
 /*==============================================================*/
-/* Table : SeasonSchedule                                       */
+/* Table: SeasonSchedule                                        */
 /*==============================================================*/
 create table SeasonSchedule (
-ScheduleID           numeric              not null,
-ScheduleName         varchar(40)          not null
+   ScheduleID           numeric              not null,
+   ScheduleName         varchar(40)          not null
 )
 go
 
 
 insert into SeasonSchedule values( 0, 'Empty Schedule' );
-
 alter table SeasonSchedule
    add constraint PK_SEASONSCHEDULE primary key  (ScheduleID)
 go
 
 
 /*==============================================================*/
-/* Table : TEMPLATE                                             */
+/* Table: TEMPLATE                                              */
 /*==============================================================*/
 create table TEMPLATE (
-TEMPLATENUM          numeric              not null,
-NAME                 varchar(40)          not null,
-DESCRIPTION          varchar(200)         null
+   TEMPLATENUM          numeric              not null,
+   NAME                 varchar(40)          not null,
+   DESCRIPTION          varchar(200)         null
 )
 go
 
@@ -5162,21 +5894,20 @@ insert into template values( 1, 'Standard', 'First Standard Cannon Template');
 insert into template values( 2, 'Standard - No PtName', 'Second Standard Cannon  Template');
 insert into template values( 3, 'Standard - No DevName', 'Third Standard Cannon  Template');
 
-
 alter table TEMPLATE
    add constraint SYS_C0013425 primary key  (TEMPLATENUM)
 go
 
 
 /*==============================================================*/
-/* Table : TEMPLATECOLUMNS                                      */
+/* Table: TEMPLATECOLUMNS                                       */
 /*==============================================================*/
 create table TEMPLATECOLUMNS (
-TEMPLATENUM          numeric              not null,
-TITLE                varchar(50)          not null,
-TYPENUM              numeric              not null,
-ORDERING             numeric              not null,
-WIDTH                numeric              not null
+   TEMPLATENUM          numeric              not null,
+   TITLE                varchar(50)          not null,
+   TYPENUM              numeric              not null,
+   ORDERING             numeric              not null,
+   WIDTH                numeric              not null
 )
 go
 
@@ -5200,19 +5931,17 @@ insert into templatecolumns values( 3, 'Quality', 10, 3, 80 );
 insert into templatecolumns values( 3, 'Time', 11, 4, 135 );
 insert into templatecolumns values( 3, 'State', 13, 5, 80 );
 
-
 alter table TEMPLATECOLUMNS
    add constraint PK_TEMPLATECOLUMNS primary key  (TEMPLATENUM, TITLE)
 go
 
 
 /*==============================================================*/
-/* Table : TOUDay                                               */
+/* Table: TOUDay                                                */
 /*==============================================================*/
 create table TOUDay (
-TOUDayID             numeric              not null,
-SwitchRate           varchar(4)           not null,
-SwitchOffset         numeric              not null
+   TOUDayID             numeric              not null,
+   TOUDayName           varchar(32)          not null
 )
 go
 
@@ -5223,28 +5952,45 @@ go
 
 
 /*==============================================================*/
-/* Table : TOUDayMapping                                        */
+/* Table: TOUDayMapping                                         */
 /*==============================================================*/
 create table TOUDayMapping (
-TOUScheduleID        numeric              not null,
-TOUDayID             numeric              not null,
-TOUDayOffset         numeric              not null
+   TOUScheduleID        numeric              not null,
+   TOUDayID             numeric              not null,
+   TOUDayOffset         numeric              not null
 )
 go
 
 
 alter table TOUDayMapping
-   add constraint PK_TOUDAYMAPPING primary key  (TOUScheduleID, TOUDayID)
+   add constraint PK_TOUDAYMAPPING primary key  (TOUScheduleID, TOUDayOffset)
 go
 
 
 /*==============================================================*/
-/* Table : TOUSchedule                                          */
+/* Table: TOUDayRateSwitches                                    */
+/*==============================================================*/
+create table TOUDayRateSwitches (
+   TOURateSwitchID      numeric              not null,
+   SwitchRate           varchar(4)           not null,
+   SwitchOffset         numeric              not null,
+   TOUDayID             numeric              not null
+)
+go
+
+
+alter table TOUDayRateSwitches
+   add constraint PK_TOURATESWITCH primary key  (TOURateSwitchID)
+go
+
+
+/*==============================================================*/
+/* Table: TOUSchedule                                           */
 /*==============================================================*/
 create table TOUSchedule (
-TOUScheduleID        numeric              not null,
-TOUScheduleName      varchar(32)          not null,
-TOUDefaultRate       varchar(8)           not null
+   TOUScheduleID        numeric              not null,
+   TOUScheduleName      varchar(32)          not null,
+   TOUDefaultRate       varchar(4)           not null
 )
 go
 
@@ -5255,19 +6001,19 @@ go
 
 
 /*==============================================================*/
-/* Table : TagLog                                               */
+/* Table: TagLog                                                */
 /*==============================================================*/
 create table TagLog (
-LogID                numeric              not null,
-InstanceID           numeric              not null,
-PointID              numeric              not null,
-TagID                numeric              not null,
-UserName             varchar(60)          not null,
-Action               varchar(20)          not null,
-Description          varchar(120)         not null,
-TagTime              datetime             not null,
-RefStr               varchar(60)          not null,
-ForStr               varchar(60)          not null
+   LogID                numeric              not null,
+   InstanceID           numeric              not null,
+   PointID              numeric              not null,
+   TagID                numeric              not null,
+   UserName             varchar(60)          not null,
+   Action               varchar(20)          not null,
+   Description          varchar(120)         not null,
+   TagTime              datetime             not null,
+   RefStr               varchar(60)          not null,
+   ForStr               varchar(60)          not null
 )
 go
 
@@ -5278,36 +6024,35 @@ go
 
 
 /*==============================================================*/
-/* Table : Tags                                                 */
+/* Table: Tags                                                  */
 /*==============================================================*/
 create table Tags (
-TagID                numeric              not null,
-TagName              varchar(60)          not null,
-TagLevel             numeric              not null,
-Inhibit              char(1)              not null,
-ColorID              numeric              not null,
-ImageID              numeric              not null
+   TagID                numeric              not null,
+   TagName              varchar(60)          not null,
+   TagLevel             numeric              not null,
+   Inhibit              char(1)              not null,
+   ColorID              numeric              not null,
+   ImageID              numeric              not null
 )
 go
 
 
 insert into tags values(-1, 'Out Of Service', 1, 'Y', 1, 0);
 insert into tags values(-2, 'Info', 1, 'N', 6, 0);
-
 alter table Tags
    add constraint PK_TAGS primary key  (TagID)
 go
 
 
 /*==============================================================*/
-/* Table : UNITMEASURE                                          */
+/* Table: UNITMEASURE                                           */
 /*==============================================================*/
 create table UNITMEASURE (
-UOMID                numeric              not null,
-UOMName              varchar(8)           not null,
-CalcType             numeric              not null,
-LongName             varchar(40)          not null,
-Formula              varchar(80)          not null
+   UOMID                numeric              not null,
+   UOMName              varchar(8)           not null,
+   CalcType             numeric              not null,
+   LongName             varchar(40)          not null,
+   Formula              varchar(80)          not null
 )
 go
 
@@ -5368,18 +6113,17 @@ INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
 INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES( 55,'A', 0,'Amps (A)','(none)' );
-
 alter table UNITMEASURE
    add constraint SYS_C0013344 primary key  (UOMID)
 go
 
 
 /*==============================================================*/
-/* Table : UserPAOowner                                         */
+/* Table: UserPAOowner                                          */
 /*==============================================================*/
 create table UserPAOowner (
-UserID               numeric              not null,
-PaoID                numeric              not null
+   UserID               numeric              not null,
+   PaoID                numeric              not null
 )
 go
 
@@ -5390,16 +6134,16 @@ go
 
 
 /*==============================================================*/
-/* Table : VersacomRoute                                        */
+/* Table: VersacomRoute                                         */
 /*==============================================================*/
 create table VersacomRoute (
-ROUTEID              numeric              not null,
-UTILITYID            numeric              not null,
-SECTIONADDRESS       numeric              not null,
-CLASSADDRESS         numeric              not null,
-DIVISIONADDRESS      numeric              not null,
-BUSNUMBER            numeric              not null,
-AMPCARDSET           numeric              not null
+   ROUTEID              numeric              not null,
+   UTILITYID            numeric              not null,
+   SECTIONADDRESS       numeric              not null,
+   CLASSADDRESS         numeric              not null,
+   DIVISIONADDRESS      numeric              not null,
+   BUSNUMBER            numeric              not null,
+   AMPCARDSET           numeric              not null
 )
 go
 
@@ -5410,12 +6154,12 @@ go
 
 
 /*==============================================================*/
-/* Table : YukonGroup                                           */
+/* Table: YukonGroup                                            */
 /*==============================================================*/
 create table YukonGroup (
-GroupID              numeric              not null,
-GroupName            varchar(120)         not null,
-GroupDescription     varchar(200)         not null
+   GroupID              numeric              not null,
+   GroupName            varchar(120)         not null,
+   GroupDescription     varchar(200)         not null
 )
 go
 
@@ -5430,21 +6174,20 @@ insert into yukongroup values (-300,'Residential Customers Grp','The default gro
 insert into yukongroup values (-302, 'Web Client Customers Grp', 'The default group of web client customers');
 insert into yukongroup values (-303,'STARS Operators Grp','The default group for STARS operators');
 insert into yukongroup values (-304,'STARS Residential Customers Grp','The default group for STARS residential customers');
-
 alter table YukonGroup
    add constraint PK_YUKONGROUP primary key  (GroupID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonGroupRole                                       */
+/* Table: YukonGroupRole                                        */
 /*==============================================================*/
 create table YukonGroupRole (
-GroupRoleID          numeric              not null,
-GroupID              numeric              not null,
-RoleID               numeric              not null,
-RolePropertyID       numeric              not null,
-Value                varchar(1000)        not null
+   GroupRoleID          numeric              not null,
+   GroupID              numeric              not null,
+   RoleID               numeric              not null,
+   RolePropertyID       numeric              not null,
+   Value                varchar(1000)        not null
 )
 go
 
@@ -6119,40 +6862,38 @@ insert into yukongrouprole values (-2393,-304,-400,-40193,'(none)');
 insert into yukongrouprole values (-2394,-304,-400,-40194,'(none)');
 insert into yukongrouprole values (-2395,-304,-400,-40195,'(none)');
 insert into yukongrouprole values (-2396,-304,-400,-40196,'(none)');
-
 alter table YukonGroupRole
    add constraint PK_YUKONGRPROLE primary key  (GroupRoleID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonImage                                           */
+/* Table: YukonImage                                            */
 /*==============================================================*/
 create table YukonImage (
-ImageID              numeric              not null,
-ImageCategory        varchar(20)          not null,
-ImageName            varchar(80)          not null,
-ImageValue           image                null
+   ImageID              numeric              not null,
+   ImageCategory        varchar(20)          not null,
+   ImageName            varchar(80)          not null,
+   ImageValue           ntext                null
 )
 go
 
 
 insert into YukonImage values( 0, '(none)', '(none)', null );
-
 alter table YukonImage
    add constraint PK_YUKONIMAGE primary key  (ImageID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonListEntry                                       */
+/* Table: YukonListEntry                                        */
 /*==============================================================*/
 create table YukonListEntry (
-EntryID              numeric              not null,
-ListID               numeric              not null,
-EntryOrder           numeric              not null,
-EntryText            varchar(50)          not null,
-YukonDefinitionID    numeric              not null
+   EntryID              numeric              not null,
+   ListID               numeric              not null,
+   EntryOrder           numeric              not null,
+   EntryText            varchar(50)          not null,
+   YukonDefinitionID    numeric              not null
 )
 go
 
@@ -6516,7 +7257,6 @@ insert into YukonListEntry values (1813,1031,0,'Natural Gas',0);
 insert into YukonListEntry values (1814,1031,0,'Oil',0);
 
 insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
-
 alter table YukonListEntry
    add constraint PK_YUKONLISTENTRY primary key  (EntryID)
 go
@@ -6532,23 +7272,22 @@ go
 
 
 /*==============================================================*/
-/* Table : YukonPAObject                                        */
+/* Table: YukonPAObject                                         */
 /*==============================================================*/
 create table YukonPAObject (
-PAObjectID           numeric              not null,
-Category             varchar(20)          not null,
-PAOClass             varchar(20)          not null,
-PAOName              varchar(60)          not null,
-Type                 varchar(30)          not null,
-Description          varchar(60)          not null,
-DisableFlag          char(1)              not null,
-PAOStatistics        varchar(10)          not null
+   PAObjectID           numeric              not null,
+   Category             varchar(20)          not null,
+   PAOClass             varchar(20)          not null,
+   PAOName              varchar(60)          not null,
+   Type                 varchar(30)          not null,
+   Description          varchar(60)          not null,
+   DisableFlag          char(1)              not null,
+   PAOStatistics        varchar(10)          not null
 )
 go
 
 
 INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
-
 alter table YukonPAObject
    add constraint PK_YUKONPAOBJECT primary key  (PAObjectID)
 go
@@ -6567,13 +7306,13 @@ go
 
 
 /*==============================================================*/
-/* Table : YukonRole                                            */
+/* Table: YukonRole                                             */
 /*==============================================================*/
 create table YukonRole (
-RoleID               numeric              not null,
-RoleName             varchar(120)         not null,
-Category             varchar(60)          not null,
-RoleDescription      varchar(200)         not null
+   RoleID               numeric              not null,
+   RoleName             varchar(120)         not null,
+   Category             varchar(60)          not null,
+   RoleDescription      varchar(200)         not null
 )
 go
 
@@ -6631,7 +7370,6 @@ insert into YukonRole values (-500,'Billing','AMR','Access to billing file gener
 /* Reporting Analysis role */
 insert into YukonRole values (-600,'Reporting','Analysis','Access to reports generation.');
 insert into YukonRole values (-601,'Trending','Analysis','Access to trending functionality.');
-
 alter table YukonRole
    add constraint PK_YUKONROLE primary key  (RoleID)
 go
@@ -6647,14 +7385,14 @@ go
 
 
 /*==============================================================*/
-/* Table : YukonRoleProperty                                    */
+/* Table: YukonRoleProperty                                     */
 /*==============================================================*/
 create table YukonRoleProperty (
-RolePropertyID       numeric              not null,
-RoleID               numeric              not null,
-KeyName              varchar(100)         not null,
-DefaultValue         varchar(1000)        not null,
-Description          varchar(1000)        not null
+   RolePropertyID       numeric              not null,
+   RoleID               numeric              not null,
+   KeyName              varchar(100)         not null,
+   DefaultValue         varchar(1000)        not null,
+   Description          varchar(1000)        not null
 )
 go
 
@@ -7037,22 +7775,21 @@ insert into yukonroleproperty values(-60116, -601, 'View Button Label', 'View', 
 insert into yukonroleproperty values(-60117, -601, 'Trending Usage', 'false', 'Allow access to trending time of use.');
 insert into yukonroleproperty values(-60118, -601, 'Default Start Date Offset', '0', 'Offset the start date by this number.');
 insert into yukonroleproperty values(-60119, -601, 'Default Time Period', '(none)', 'Default the time period.');
-
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key  (RolePropertyID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonSelectionList                                   */
+/* Table: YukonSelectionList                                    */
 /*==============================================================*/
 create table YukonSelectionList (
-ListID               numeric              not null,
-Ordering             varchar(1)           not null,
-SelectionLabel       varchar(30)          not null,
-WhereIsList          varchar(100)         not null,
-ListName             varchar(40)          not null,
-UserUpdateAvailable  varchar(1)           not null
+   ListID               numeric              not null,
+   Ordering             varchar(1)           not null,
+   SelectionLabel       varchar(30)          not null,
+   WhereIsList          varchar(100)         not null,
+   ListName             varchar(40)          not null,
+   UserUpdateAvailable  varchar(1)           not null
 )
 go
 
@@ -7126,21 +7863,20 @@ insert into YukonSelectionList values (1062,'N','(none)','Irrigation meter volta
 insert into YukonSelectionList values (1063,'N','(none)','Water heater location selection','WHLocation','Y');
 insert into YukonSelectionList values (1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y');
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
-
 alter table YukonSelectionList
    add constraint PK_YUKONSELECTIONLIST primary key  (ListID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonServices                                        */
+/* Table: YukonServices                                         */
 /*==============================================================*/
 create table YukonServices (
-ServiceID            numeric              not null,
-ServiceName          varchar(60)          not null,
-ServiceClass         varchar(100)         not null,
-ParamNames           varchar(300)         not null,
-ParamValues          varchar(300)         not null
+   ServiceID            numeric              not null,
+   ServiceName          varchar(60)          not null,
+   ServiceClass         varchar(100)         not null,
+   ParamNames           varchar(300)         not null,
+   ParamValues          varchar(300)         not null
 )
 go
 
@@ -7149,22 +7885,21 @@ insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.
 /* insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' ); */
 /* insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' ); */
 /* insert into YukonServices values( 4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)'); */
-
 alter table YukonServices
    add constraint PK_YUKSER primary key  (ServiceID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonUser                                            */
+/* Table: YukonUser                                             */
 /*==============================================================*/
 create table YukonUser (
-UserID               numeric              not null,
-UserName             varchar(64)          not null,
-Password             varchar(64)          not null,
-LoginCount           numeric              not null,
-LastLogin            datetime             not null,
-Status               varchar(20)          not null
+   UserID               numeric              not null,
+   UserName             varchar(64)          not null,
+   Password             varchar(64)          not null,
+   LoginCount           numeric              not null,
+   LastLogin            datetime             not null,
+   Status               varchar(20)          not null
 )
 go
 
@@ -7173,7 +7908,6 @@ insert into YukonUser values(-1,'admin','admin',0,'01-JAN-00','Enabled');
 insert into YukonUser values(-2,'yukon','yukon',0,'01-JAN-00','Enabled');
 insert into YukonUser values(-100,'DefaultCTI','$cti_default',0,'01-JAN-00','Enabled');
 insert into YukonUser values(-9999,'(none)','(none)',0,'01-JAN-00','Disabled');
-
 alter table YukonUser
    add constraint PK_YUKONUSER primary key  (UserID)
 go
@@ -7189,11 +7923,11 @@ go
 
 
 /*==============================================================*/
-/* Table : YukonUserGroup                                       */
+/* Table: YukonUserGroup                                        */
 /*==============================================================*/
 create table YukonUserGroup (
-UserID               numeric              not null,
-GroupID              numeric              not null
+   UserID               numeric              not null,
+   GroupID              numeric              not null
 )
 go
 
@@ -7201,21 +7935,20 @@ go
 insert into YukonUserGroup values(-1,-1);
 insert into YukonUserGroup values(-2,-1);
 insert into YukonUserGroup values(-2,-2);
-
 alter table YukonUserGroup
    add constraint PK_YUKONUSERGROUP primary key  (UserID, GroupID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonUserRole                                        */
+/* Table: YukonUserRole                                         */
 /*==============================================================*/
 create table YukonUserRole (
-UserRoleID           numeric              not null,
-UserID               numeric              not null,
-RoleID               numeric              not null,
-RolePropertyID       numeric              not null,
-Value                varchar(1000)        not null
+   UserRoleID           numeric              not null,
+   UserID               numeric              not null,
+   RoleID               numeric              not null,
+   RolePropertyID       numeric              not null,
+   Value                varchar(1000)        not null
 )
 go
 
@@ -7417,21 +8150,20 @@ insert into YukonUserRole values (-1010, -100, -200, -20000, '(none)');
 insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
 insert into YukonUserRole values (-1012, -100, -200, -20002, '(none)');
 insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
-
 alter table YukonUserRole
    add constraint PK_YKONUSRROLE primary key  (UserRoleID)
 go
 
 
 /*==============================================================*/
-/* Table : YukonWebConfiguration                                */
+/* Table: YukonWebConfiguration                                 */
 /*==============================================================*/
 create table YukonWebConfiguration (
-ConfigurationID      numeric              not null,
-LogoLocation         varchar(100)         null,
-Description          varchar(500)         null,
-AlternateDisplayName varchar(100)         null,
-URL                  varchar(100)         null
+   ConfigurationID      numeric              not null,
+   LogoLocation         varchar(100)         null,
+   Description          varchar(500)         null,
+   AlternateDisplayName varchar(100)         null,
+   URL                  varchar(100)         null
 )
 go
 
@@ -7439,7 +8171,6 @@ go
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
 INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
-
 alter table YukonWebConfiguration
    add constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID)
 go
@@ -7448,8 +8179,7 @@ go
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
-go
-create view DISPLAY2WAYDATA_VIEW (POINTID, POINTNAME , POINTTYPE , POINTSTATE , DEVICENAME, DEVICETYPE, DEVICECURRENTSTATE, DEVICEID, POINTVALUE, POINTQUALITY, POINTTIMESTAMP, UofM, TAGS) as
+create view DISPLAY2WAYDATA_VIEW (POINTID, POINTNAME, POINTTYPE, POINTSTATE, DEVICENAME, DEVICENAME, DEVICENAME, DEVICENAME, TAGS, TAGS, TAGS, UofM, TAGS) as
 select POINTID, POINTNAME, POINTTYPE, SERVICEFLAG, YukonPAObject.PAOName, YukonPAObject.Type, YukonPAObject.Description, YukonPAObject.PAObjectID, '**DYNAMIC**', '**DYNAMIC**', '**DYNAMIC**', (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid), '**DYNAMIC**'
 from YukonPAObject, POINT
 where YukonPAObject.PAObjectID = POINT.PAObjectID
@@ -7459,11 +8189,10 @@ go
 /*==============================================================*/
 /* View: ExpressComAddress_View                                 */
 /*==============================================================*/
-go
-create view ExpressComAddress_View  as
+create view ExpressComAddress_View as
 select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
 g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
-z.Address as ZipAddress, us.Address as UDAddress, p.Address as programaddress, sp.Address as SplinterAddress, x.AddressUsage, x.RelayUsage
+z.Address as ZipCodeAddress, us.Address as UDAddress, p.Address as programaddress, sp.Address as SplinterAddress, x.AddressUsage, x.RelayUsage
 from LMGroupExpressCom x, LMGroupExpressComAddress s, 
 LMGroupExpressComAddress g, LMGroupExpressComAddress b, LMGroupExpressComAddress f,
 LMGroupExpressComAddress p,
@@ -7482,8 +8211,7 @@ go
 /*==============================================================*/
 /* View: FeederAddress_View                                     */
 /*==============================================================*/
-go
-create view FeederAddress_View  as
+create view FeederAddress_View as
 select x.LMGroupID, a.Address as FeederAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
 where ( x.FeederID = a.AddressID and ( a.AddressType = 'FEEDER' or a.AddressID = 0 ) )
@@ -7493,7 +8221,6 @@ go
 /*==============================================================*/
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
-go
 create view FullEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from YukonPAObject y, POINT p, SYSTEMLOG s
@@ -7504,7 +8231,6 @@ go
 /*==============================================================*/
 /* View: FullPointHistory_View                                  */
 /*==============================================================*/
-go
 create view FullPointHistory_View (PointID, DeviceName, PointName, DataValue, DataTimeStamp, DataQuality) as
 select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from YukonPAObject y, POINT p, RAWPOINTHISTORY r
@@ -7515,8 +8241,7 @@ go
 /*==============================================================*/
 /* View: GeoAddress_View                                        */
 /*==============================================================*/
-go
-create view GeoAddress_View  as
+create view GeoAddress_View as
 select x.LMGroupID, a.Address as GeoAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
 where ( x.GeoID = a.AddressID and ( a.AddressType = 'GEO' or a.AddressID = 0 ) )
@@ -7526,8 +8251,7 @@ go
 /*==============================================================*/
 /* View: LMCurtailCustomerActivity_View                         */
 /*==============================================================*/
-go
-create view LMCurtailCustomerActivity_View  as
+create view LMCurtailCustomerActivity_View as
 select cust.CustomerID, prog.CurtailmentStartTime, prog.CurtailReferenceID, prog.CurtailmentStopTime, cust.AcknowledgeStatus, cust.AckDateTime, cust.NameOfAckPerson, cust.AckLateFlag
 from LMCurtailProgramActivity prog, LMCurtailCustomerActivity cust
 where prog.CurtailReferenceID = cust.CurtailReferenceID
@@ -7535,26 +8259,9 @@ go
 
 
 /*==============================================================*/
-/* View: LMGroupMacroExpander_View                              */
-/*==============================================================*/
-go
-create view LMGroupMacroExpander_View  as
-select distinct PAObjectID, Category, PAOClass, PAOName, Type, Description, DisableFlag, 
-ALARMINHIBIT, CONTROLINHIBIT, KWCapacity, dg.DeviceID, 
-LMGroupDeviceID, GroupOrder, OwnerID, ChildID, ChildOrder
-from YukonPAObject y, DEVICE d, LMGroup g,
-LMProgramDirectGroup dg, GenericMacro m
-where y.PAObjectID = d.DEVICEID 
-and d.DEVICEID = g.DeviceID
-and dg.lmgroupdeviceid *= m.ownerid
-go
-
-
-/*==============================================================*/
 /* View: LMProgram_View                                         */
 /*==============================================================*/
-go
-create view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
+create view LMProgram_View (DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID, DeviceID) as
 select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u
 where u.ConstraintID = t.ConstraintID
@@ -7564,19 +8271,17 @@ go
 /*==============================================================*/
 /* View: Peakpointhistory_View                                  */
 /*==============================================================*/
-go
-create view Peakpointhistory_View  as
+create view Peakpointhistory_View as
 select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
 from RAWPOINTHISTORY rph1
-where value in ( select max ( value ) from rawpointhistory rph2 where rph1.pointid = rph2.pointid )
-group by pointid, value
+where VALUE in ( select max ( value ) from rawpointhistory rph2 where rph1.pointid = rph2.pointid )
+group by POINTID, VALUE
 go
 
 
 /*==============================================================*/
 /* View: PointEventLog_View                                     */
 /*==============================================================*/
-go
 create view PointEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, PointName, EventDescription, AdditionalInfo, EventUserName) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from POINT p, SYSTEMLOG s
@@ -7587,7 +8292,6 @@ go
 /*==============================================================*/
 /* View: PointHistory_View                                      */
 /*==============================================================*/
-go
 create view PointHistory_View (PointID, PointName, DataValue, DataTimeStamp, DataQuality) as
 select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from POINT p, RAWPOINTHISTORY r
@@ -7598,8 +8302,7 @@ go
 /*==============================================================*/
 /* View: ProgramAddress_View                                    */
 /*==============================================================*/
-go
-create view ProgramAddress_View  as
+create view ProgramAddress_View as
 select x.LMGroupID, a.Address as ProgramAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
 where ( x.ProgramID = a.AddressID and ( a.AddressType = 'PROGRAM' or a.AddressID = 0 ) )
@@ -7609,8 +8312,7 @@ go
 /*==============================================================*/
 /* View: ServiceAddress_View                                    */
 /*==============================================================*/
-go
-create view ServiceAddress_View  as
+create view ServiceAddress_View as
 select x.LMGroupID, a.Address as ServiceAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
 where ( x.ServiceProviderID = a.AddressID and ( a.AddressType = 'SERVICE' or a.AddressID = 0 ) )
@@ -7620,8 +8322,7 @@ go
 /*==============================================================*/
 /* View: SubstationAddress_View                                 */
 /*==============================================================*/
-go
-create view SubstationAddress_View  as
+create view SubstationAddress_View as
 select x.LMGroupID, a.Address as SubstationAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
 where ( x.SubstationID = a.AddressID and ( a.AddressType = 'SUBSTATION' or a.AddressID = 0 ) )
@@ -7634,75 +8335,9 @@ alter table AlarmCategory
 go
 
 
-alter table DeviceVerification
-   add constraint FK_DevV_Dev1 foreign key (ReceiverID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table LMGroupEmetcon
-   add constraint SYS_C0013356 foreign key (DEVICEID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table LMProgramControlWindow
-   add constraint FK_LMPrg_LMPrgCntWind foreign key (DeviceID)
-      references LMPROGRAM (DeviceID)
-go
-
-
-alter table DynamicLMProgramDirect
-   add constraint FK_DYN_LMPR_LMP foreign key (DeviceID)
-      references LMProgramDirect (DeviceID)
-go
-
-
-alter table MACSimpleSchedule
-   add constraint FK_MACSIMPLE_MACSCHED_ID foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
-go
-
-
-alter table NotificationDestination
-   add constraint FK_NotifDest_NotifGrp foreign key (NotificationGroupID)
-      references NotificationGroup (NotificationGroupID)
-go
-
-
-alter table PointAlarming
-   add constraint FK_POINTALAARM_POINT_POINTID foreign key (PointID)
+alter table CALCBASE
+   add constraint SYS_C0013434 foreign key (POINTID)
       references POINT (POINTID)
-go
-
-
-alter table PointAlarming
-   add constraint FK_POINTALARMING foreign key (NotificationGroupID)
-      references NotificationGroup (NotificationGroupID)
-go
-
-
-alter table LMDirectCustomerList
-   add constraint FK_CICstB_LMPrDi foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table LMCurtailCustomerActivity
-   add constraint FK_CICBas_LMCrtCstAct foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table LMProgramCurtailCustomerList
-   add constraint FK_CICstBase_LMProgCList foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table CICustomerBase
-   add constraint FK_CICstBas_CstAddrs foreign key (MainAddressID)
-      references Address (AddressID)
 go
 
 
@@ -7718,218 +8353,38 @@ alter table CALCCOMPONENT
 go
 
 
-alter table CustomerAdditionalContact
-   add constraint FK_CstCont_CICstCont foreign key (ContactID)
-      references Contact (ContactID)
-go
-
-
-alter table Contact
-   add constraint FK_RefCstLg_CustCont foreign key (LogInID)
-      references YukonUser (UserID)
-go
-
-
-alter table LMGroup
-   add constraint FK_Device_LMGrpBase2 foreign key (DeviceID)
+alter table CAPBANK
+   add constraint SYS_C0013453 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
 go
 
 
-alter table LMEnergyExchangeOfferRevision
-   add constraint FK_EExOffR_ExPrOff foreign key (OfferID)
-      references LMEnergyExchangeProgramOffer (OfferID)
-go
-
-
-alter table LMEnergyExchangeProgramOffer
-   add constraint FK_EnExOff_PrgEnEx foreign key (DeviceID)
-      references LMProgramEnergyExchange (DeviceID)
-go
-
-
-alter table LMEnergyExchangeCustomerList
-   add constraint FK_ExCsLs_CstBs foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table LMEnergyExchangeCustomerList
-   add constraint FK_ExCsLs_PrEx foreign key (ProgramID)
-      references LMProgramEnergyExchange (DeviceID)
-go
-
-
-alter table LMEnergyExchangeCustomerReply
-   add constraint FK_ExCsRp_CstBs foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table LMEnergyExchangeCustomerReply
-   add constraint FK_LME_REFE_LME foreign key (OfferID, RevisionNumber)
-      references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
-go
-
-
-alter table LMEnergyExchangeHourlyCustomer
-   add constraint FK_ExHrCs_ExCsRp foreign key (CustomerID, OfferID, RevisionNumber)
-      references LMEnergyExchangeCustomerReply (CustomerID, OfferID, RevisionNumber)
-go
-
-
-alter table LMEnergyExchangeHourlyOffer
-   add constraint FK_ExHrOff_ExOffRv foreign key (OfferID, RevisionNumber)
-      references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
-go
-
-
-alter table FDRInterfaceOption
-   add constraint FK_FDRINTER_REFERENCE_FDRINTER foreign key (InterfaceID)
-      references FDRInterface (InterfaceID)
-go
-
-
-alter table GraphCustomerList
-   add constraint FK_GRA_REFG_GRA foreign key (GraphDefinitionID)
-      references GRAPHDEFINITION (GRAPHDEFINITIONID)
-go
-
-
-alter table DynamicLMControlAreaTrigger
-   add constraint FK_LMCntArTr_DyLMCnArTr foreign key (DeviceID, TriggerNumber)
-      references LMCONTROLAREATRIGGER (DEVICEID, TRIGGERNUMBER)
-go
-
-
-alter table DynamicLMControlArea
-   add constraint FK_LMCntlAr_DynLMCntAr foreign key (DeviceID)
-      references LMControlArea (DEVICEID)
-go
-
-
-alter table LMCONTROLAREATRIGGER
-   add constraint FK_LMCntlArea_LMCntlArTrig foreign key (DEVICEID)
-      references LMControlArea (DEVICEID)
-go
-
-
-alter table LMCurtailCustomerActivity
-   add constraint FK_LMC_REFL_LMC foreign key (CurtailReferenceID)
-      references LMCurtailProgramActivity (CurtailReferenceID)
-go
-
-
-alter table LMCONTROLAREAPROGRAM
-   add constraint FK_LMCntlArea_LMCntlArProg foreign key (DEVICEID)
-      references LMControlArea (DEVICEID)
-go
-
-
-alter table LMProgramDirectGroup
-   add constraint FK_LMGrp_LMPrgDGrp foreign key (LMGroupDeviceID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table LMGroupVersacom
-   add constraint FK_LMGrp_LMGrpVers foreign key (DEVICEID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table DynamicLMGroup
-   add constraint FK_LMGrp_DynLmGrp foreign key (DeviceID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table LMDirectCustomerList
-   add constraint FK_LMD_REFL_LMP foreign key (ProgramID)
-      references LMProgramDirect (DeviceID)
-go
-
-
-alter table LMCurtailProgramActivity
-   add constraint FK_LMPrgCrt_LMCrlPAct foreign key (DeviceID)
-      references LMProgramCurtailment (DeviceID)
-go
-
-
-alter table LMProgramCurtailCustomerList
-   add constraint FK_LMPrgCrt_LMPrCstLst foreign key (ProgramID)
-      references LMProgramCurtailment (DeviceID)
-go
-
-
-alter table LMProgramDirectGear
-   add constraint FK_LMProgD_LMProgDGr foreign key (DeviceID)
-      references LMProgramDirect (DeviceID)
-go
-
-
-alter table LMProgramDirectGroup
-   add constraint FK_LMPrgD_LMPrgDGrp foreign key (DeviceID)
-      references LMProgramDirect (DeviceID)
-go
-
-
-alter table LMCONTROLAREAPROGRAM
-   add constraint FK_LMPrg_LMCntlArProg foreign key (LMPROGRAMDEVICEID)
-      references LMPROGRAM (DeviceID)
-go
-
-
-alter table DynamicLMProgram
-   add constraint FK_LMProg_DynLMPrg foreign key (DeviceID)
-      references LMPROGRAM (DeviceID)
-go
-
-
-alter table LMProgramCurtailment
-   add constraint FK_LMPrg_LMPrgCurt foreign key (DeviceID)
-      references LMPROGRAM (DEVICEID)
-go
-
-
-alter table LMProgramDirect
-   add constraint FK_LMPrg_LMPrgDirect foreign key (DeviceID)
-      references LMPROGRAM (DeviceID)
-go
-
-
-alter table LMGroupRipple
-   add constraint FK_LmGr_LmGrpRip foreign key (DeviceID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table LMGroupRipple
-   add constraint FK_LmGrpRip_Rout foreign key (RouteID)
-      references Route (RouteID)
-go
-
-
-alter table LMMacsScheduleCustomerList
-   add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
-go
-
-
-alter table LMMacsScheduleCustomerList
-   add constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
-      references CICustomerBase (CustomerID)
-go
-
-
-alter table LMCONTROLAREATRIGGER
-   add constraint FK_Point_LMCntlArTrig foreign key (POINTID)
+alter table CAPBANK
+   add constraint SYS_C0013454 foreign key (CONTROLPOINTID)
       references POINT (POINTID)
 go
 
 
-alter table LMCONTROLAREATRIGGER
-   add constraint FK_Point_LMCtrlArTrigPk foreign key (PEAKPOINTID)
+alter table CAPBANK
+   add constraint SYS_C0013455 foreign key (CONTROLDEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CpSbBus_YPao foreign key (SubstationBusID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint SYS_C0013478 foreign key (CurrentWattLoadPointID)
+      references POINT (POINTID)
+go
+
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint SYS_C0013479 foreign key (CurrentVarLoadPointID)
       references POINT (POINTID)
 go
 
@@ -7952,27 +8407,21 @@ alter table CCFeederSubAssignment
 go
 
 
-alter table DynamicCCFeeder
-   add constraint FK_CCFeed_DyFeed foreign key (FeederID)
-      references CapControlFeeder (FeederID)
-go
-
-
-alter table DynamicCCSubstationBus
-   add constraint FK_CCSubBs_DySubBs foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
-go
-
-
 alter table CCFeederSubAssignment
    add constraint FK_CCSub_CCFeed foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
 go
 
 
-alter table EnergyCompanyCustomerList
-   add constraint FK_CICstBsEnCmpCsLs foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
+alter table CICustomerBase
+   add constraint FK_CICstBas_CstAddrs foreign key (MainAddressID)
+      references Address (AddressID)
+go
+
+
+alter table CICustomerBase
+   add constraint FK_CstCI_Cst foreign key (CustomerID)
+      references Customer (CustomerID)
 go
 
 
@@ -7988,33 +8437,15 @@ alter table CalcPointBaseline
 go
 
 
-alter table ContactNotification
-   add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
-      references YukonListEntry (EntryID)
+alter table CapControlFeeder
+   add constraint FK_PAObj_CCFeed foreign key (FeederID)
+      references YukonPAObject (PAObjectID)
 go
 
 
-alter table NotificationDestination
-   add constraint FK_CntNt_NtDst foreign key (RecipientID)
-      references ContactNotification (ContactNotifID)
-go
-
-
-alter table PointAlarming
-   add constraint FK_CntNt_PtAl foreign key (RecipientID)
-      references ContactNotification (ContactNotifID)
-go
-
-
-alter table Contact
-   add constraint FK_CON_REF__ADD foreign key (AddressID)
-      references Address (AddressID)
-go
-
-
-alter table ContactNotification
-   add constraint FK_Cnt_CntNot foreign key (ContactID)
-      references Contact (ContactID)
+alter table CarrierRoute
+   add constraint SYS_C0013264 foreign key (ROUTEID)
+      references Route (RouteID)
 go
 
 
@@ -8025,32 +8456,50 @@ go
 
 
 alter table CommPort
-   add constraint FK_COM_REF__YUK foreign key (PORTID)
+   add constraint FK_COMMPORT_REF_COMPO_YUKONPAO foreign key (PORTID)
       references YukonPAObject (PAObjectID)
 go
 
 
-alter table DynamicCCCapBank
-   add constraint FK_CpBnk_DynCpBnk foreign key (CapBankID)
-      references CAPBANK (DEVICEID)
-go
-
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CpSbBus_YPao foreign key (SubstationBusID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table CustomerLoginSerialGroup
-   add constraint FK_CsLgSG_CsL foreign key (LoginID)
+alter table Contact
+   add constraint FK_RefCstLg_CustCont foreign key (LogInID)
       references YukonUser (UserID)
 go
 
 
-alter table CustomerLoginSerialGroup
-   add constraint FK_CsLgSG_LMG foreign key (LMGroupID)
-      references LMGroup (DeviceID)
+alter table Contact
+   add constraint FK_CONTACT_REF_CNT_A_ADDRESS foreign key (AddressID)
+      references Address (AddressID)
+go
+
+
+alter table ContactNotification
+   add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
+      references YukonListEntry (EntryID)
+go
+
+
+alter table ContactNotification
+   add constraint FK_Cnt_CntNot foreign key (ContactID)
+      references Contact (ContactID)
+go
+
+
+alter table Customer
+   add constraint FK_Cst_Cnt foreign key (PrimaryContactID)
+      references Contact (ContactID)
+go
+
+
+alter table CustomerAdditionalContact
+   add constraint FK_CstCont_CICstCont foreign key (ContactID)
+      references Contact (ContactID)
+go
+
+
+alter table CustomerAdditionalContact
+   add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
+      references Customer (CustomerID)
 go
 
 
@@ -8066,75 +8515,15 @@ alter table CustomerBaseLinePoint
 go
 
 
-alter table CICustomerBase
-   add constraint FK_CstCI_Cst foreign key (CustomerID)
-      references Customer (CustomerID)
+alter table CustomerLoginSerialGroup
+   add constraint FK_CsLgSG_CsL foreign key (LoginID)
+      references YukonUser (UserID)
 go
 
 
-alter table Customer
-   add constraint FK_Cst_Cnt foreign key (PrimaryContactID)
-      references Contact (ContactID)
-go
-
-
-alter table CustomerAdditionalContact
-   add constraint FK_Cust_CustAddCnt foreign key (CustomerID)
-      references Customer (CustomerID)
-go
-
-
-alter table DynamicLMControlHistory
-   add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table DateOfSeason
-   add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
-      references SeasonSchedule (ScheduleID)
-go
-
-
-alter table DeviceMCT400Series
-   add constraint FK_Dev4_DevC foreign key (DeviceID)
-      references DEVICECARRIERSETTINGS (DEVICEID)
-go
-
-
-alter table DeviceMCT400Series
-   add constraint FK_Dev4_TOU foreign key (TOUScheduleID)
-      references TOUSchedule (TOUScheduleID)
-go
-
-
-alter table DeviceTypeCommand
-   add constraint FK_DevCmd_Cmd foreign key (CommandID)
-      references Command (CommandID)
-go
-
-
-alter table DeviceWindow
-   add constraint FK_DevScWin_Dev foreign key (DeviceID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceVerification
-   add constraint FK_DevV_Dev2 foreign key (TransmitterID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceAddress
-   add constraint FK_Dev_DevDNP foreign key (DeviceID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceRTC
-   add constraint FK_Dev_DevRTC foreign key (DeviceID)
-      references DEVICE (DEVICEID)
+alter table CustomerLoginSerialGroup
+   add constraint FK_CsLgSG_LMG foreign key (LMGroupID)
+      references LMGroup (DeviceID)
 go
 
 
@@ -8144,9 +8533,135 @@ alter table DEVICE
 go
 
 
-alter table DeviceSeries5RTU
-   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
-      references DEVICE2WAYFLAGS (DEVICEID)
+alter table DEVICE2WAYFLAGS
+   add constraint SYS_C0013208 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICECARRIERSETTINGS
+   add constraint SYS_C0013216 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEDIALUPSETTINGS
+   add constraint SYS_C0013193 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEIDLCREMOTE
+   add constraint SYS_C0013241 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEIED
+   add constraint SYS_C0013245 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICELOADPROFILE
+   add constraint SYS_C0013234 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEMCTIEDPORT
+   add constraint SYS_C0013253 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICEMETERGROUP
+   add constraint SYS_C0013213 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICESCANRATE
+   add constraint SYS_C0013198 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DEVICETAPPAGINGSETTINGS
+   add constraint SYS_C0013237 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DISPLAY2WAYDATA
+   add constraint FK_DISPLAY2W_REF_POINT foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table DISPLAY2WAYDATA
+   add constraint SYS_C0013422 foreign key (DISPLAYNUM)
+      references DISPLAY (DISPLAYNUM)
+go
+
+
+alter table DISPLAYCOLUMNS
+   add constraint SYS_C0013418 foreign key (DISPLAYNUM)
+      references DISPLAY (DISPLAYNUM)
+go
+
+
+alter table DISPLAYCOLUMNS
+   add constraint SYS_C0013419 foreign key (TYPENUM)
+      references COLUMNTYPE (TYPENUM)
+go
+
+
+alter table DYNAMICACCUMULATOR
+   add constraint SYS_C0015129 foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table DYNAMICDEVICESCANDATA
+   add constraint SYS_C0015139 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DYNAMICPOINTDISPATCH
+   add constraint SYS_C0013331 foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table DateOfHoliday
+   add constraint FK_HolSchID foreign key (HolidayScheduleID)
+      references HolidaySchedule (HolidayScheduleID)
+go
+
+
+alter table DateOfSeason
+   add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
+      references SeasonSchedule (ScheduleID)
+go
+
+
+alter table DeviceAddress
+   add constraint FK_Dev_DevDNP foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceCBC
+   add constraint SYS_C0013459 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceCBC
+   add constraint SYS_C0013460 foreign key (ROUTEID)
+      references Route (RouteID)
 go
 
 
@@ -8162,15 +8677,147 @@ alter table DeviceCustomerList
 go
 
 
-alter table DynamicLMGroup
-   add constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
-      references LMProgramDirect (DeviceID)
+alter table DeviceDirectCommSettings
+   add constraint SYS_C0013186 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceDirectCommSettings
+   add constraint SYS_C0013187 foreign key (PORTID)
+      references CommPort (PORTID)
+go
+
+
+alter table DeviceMCT400Series
+   add constraint FK_Dev4_DevC foreign key (DeviceID)
+      references DEVICECARRIERSETTINGS (DEVICEID)
+go
+
+
+alter table DeviceMCT400Series
+   add constraint FK_Dev4_TOU foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
+go
+
+
+alter table DeviceRTC
+   add constraint FK_Dev_DevRTC foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceRoutes
+   add constraint SYS_C0013219 foreign key (DEVICEID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceRoutes
+   add constraint SYS_C0013220 foreign key (ROUTEID)
+      references Route (RouteID)
+go
+
+
+alter table DeviceSeries5RTU
+   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
+      references DEVICE2WAYFLAGS (DEVICEID)
+go
+
+
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Cmd foreign key (CommandID)
+      references Command (CommandID)
+go
+
+
+alter table DeviceVerification
+   add constraint FK_DevV_Dev1 foreign key (ReceiverID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceVerification
+   add constraint FK_DevV_Dev2 foreign key (TransmitterID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DeviceWindow
+   add constraint FK_DevScWin_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table DynamicCCCapBank
+   add constraint FK_CpBnk_DynCpBnk foreign key (CapBankID)
+      references CAPBANK (DEVICEID)
+go
+
+
+alter table DynamicCCFeeder
+   add constraint FK_CCFeed_DyFeed foreign key (FeederID)
+      references CapControlFeeder (FeederID)
+go
+
+
+alter table DynamicCCSubstationBus
+   add constraint FK_CCSubBs_DySubBs foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
 go
 
 
 alter table DynamicCalcHistorical
    add constraint FK_DynClc_ClcB foreign key (PointID)
       references CALCBASE (POINTID)
+go
+
+
+alter table DynamicLMControlArea
+   add constraint FK_LMCntlAr_DynLMCntAr foreign key (DeviceID)
+      references LMControlArea (DEVICEID)
+go
+
+
+alter table DynamicLMControlAreaTrigger
+   add constraint FK_LMCntArTr_DyLMCnArTr foreign key (DeviceID, TriggerNumber)
+      references LMCONTROLAREATRIGGER (DEVICEID, TRIGGERNUMBER)
+go
+
+
+alter table DynamicLMControlHistory
+   add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table DynamicLMGroup
+   add constraint FK_LMGrp_DynLmGrp foreign key (DeviceID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table DynamicLMGroup
+   add constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
+      references LMProgramDirect (DeviceID)
+go
+
+
+alter table DynamicLMProgram
+   add constraint FK_LMProg_DynLMPrg foreign key (DeviceID)
+      references LMPROGRAM (DeviceID)
+go
+
+
+alter table DynamicLMProgramDirect
+   add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
+      references LMProgramDirect (DeviceID)
+go
+
+
+alter table DynamicPAOStatistics
+   add constraint FK_PASt_YkPA foreign key (PAOBjectID)
+      references YukonPAObject (PAObjectID)
 go
 
 
@@ -8193,7 +8840,7 @@ go
 
 
 alter table DynamicTags
-   add constraint FK_DYN_REF__TAG foreign key (TagID)
+   add constraint FK_DYNAMICT_REF_DYNTG_TAGS foreign key (TagID)
       references Tags (TagID)
 go
 
@@ -8216,6 +8863,18 @@ alter table EnergyCompany
 go
 
 
+alter table EnergyCompany
+   add constraint FK_EngCmp_YkUs foreign key (UserID)
+      references YukonUser (UserID)
+go
+
+
+alter table EnergyCompanyCustomerList
+   add constraint FK_CICstBsEnCmpCsLs foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
 alter table EnergyCompanyCustomerList
    add constraint FK_EnCmpEnCmpCsLs foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID)
@@ -8228,9 +8887,209 @@ alter table EnergyCompanyOperatorLoginList
 go
 
 
-alter table EnergyCompany
-   add constraint FK_EngCmp_YkUs foreign key (UserID)
+alter table EnergyCompanyOperatorLoginList
+   add constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
       references YukonUser (UserID)
+go
+
+
+alter table FDRInterfaceOption
+   add constraint FK_FDRINTER_REFERENCE_FDRINTER foreign key (InterfaceID)
+      references FDRInterface (InterfaceID)
+go
+
+
+alter table FDRTRANSLATION
+   add constraint SYS_C0015066 foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table GRAPHDATASERIES
+   add constraint GrphDSeri_GrphDefID foreign key (GRAPHDEFINITIONID)
+      references GRAPHDEFINITION (GRAPHDEFINITIONID)
+go
+
+
+alter table GRAPHDATASERIES
+   add constraint GrphDSeris_ptID foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table GraphCustomerList
+   add constraint FK_GRAPHCUS_REFGRPHCU_GRAPHDEF foreign key (GraphDefinitionID)
+      references GRAPHDEFINITION (GRAPHDEFINITIONID)
+go
+
+
+alter table GraphCustomerList
+   add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
+      references Customer (CustomerID)
+go
+
+
+alter table LMCONTROLAREAPROGRAM
+   add constraint FK_LMCntlArea_LMCntlArProg foreign key (DEVICEID)
+      references LMControlArea (DEVICEID)
+go
+
+
+alter table LMCONTROLAREAPROGRAM
+   add constraint FK_LMPrg_LMCntlArProg foreign key (LMPROGRAMDEVICEID)
+      references LMPROGRAM (DeviceID)
+go
+
+
+alter table LMCONTROLAREATRIGGER
+   add constraint FK_LMCntlArea_LMCntlArTrig foreign key (DEVICEID)
+      references LMControlArea (DEVICEID)
+go
+
+
+alter table LMCONTROLAREATRIGGER
+   add constraint FK_Point_LMCntlArTrig foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table LMCONTROLAREATRIGGER
+   add constraint FK_Point_LMCtrlArTrigPk foreign key (PEAKPOINTID)
+      references POINT (POINTID)
+go
+
+
+alter table LMControlArea
+   add constraint FK_LmCntAr_YukPAO foreign key (DEVICEID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table LMControlHistory
+   add constraint FK_LmCtrlHis_YPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table LMControlScenarioProgram
+   add constraint FK_LmCScP_YkPA foreign key (ScenarioID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table LMControlScenarioProgram
+   add constraint FK_LMCONTRO_REF_LMSCP_LMPROGRA foreign key (ProgramID)
+      references LMPROGRAM (DeviceID)
+go
+
+
+alter table LMCurtailCustomerActivity
+   add constraint FK_CICBas_LMCrtCstAct foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table LMCurtailCustomerActivity
+   add constraint FK_LMCURTAI_REFLMCST__LMCURTAI foreign key (CurtailReferenceID)
+      references LMCurtailProgramActivity (CurtailReferenceID)
+go
+
+
+alter table LMCurtailProgramActivity
+   add constraint FK_LMPrgCrt_LMCrlPAct foreign key (DeviceID)
+      references LMProgramCurtailment (DeviceID)
+go
+
+
+alter table LMDirectCustomerList
+   add constraint FK_CICstB_LMPrDi foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table LMDirectCustomerList
+   add constraint FK_LMDIRECT_REFLMPDIR_LMPROGRA foreign key (ProgramID)
+      references LMProgramDirect (DeviceID)
+go
+
+
+alter table LMDirectNotifGrpList
+   add constraint FK_LMDi_DNGrpL foreign key (ProgramID)
+      references LMProgramDirect (DeviceID)
+go
+
+
+alter table LMDirectNotifGrpList
+   add constraint FK_NtGr_DNGrpL foreign key (NotificationGrpID)
+      references NotificationGroup (NotificationGroupID)
+go
+
+
+alter table LMEnergyExchangeCustomerList
+   add constraint FK_ExCsLs_CstBs foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table LMEnergyExchangeCustomerList
+   add constraint FK_ExCsLs_PrEx foreign key (ProgramID)
+      references LMProgramEnergyExchange (DeviceID)
+go
+
+
+alter table LMEnergyExchangeCustomerReply
+   add constraint FK_ExCsRp_CstBs foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table LMEnergyExchangeCustomerReply
+   add constraint FK_LMENERGY_REFEXCSTR_LMENERGY foreign key (OfferID, RevisionNumber)
+      references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
+      on delete cascade
+go
+
+
+alter table LMEnergyExchangeHourlyCustomer
+   add constraint FK_ExHrCs_ExCsRp foreign key (CustomerID, OfferID, RevisionNumber)
+      references LMEnergyExchangeCustomerReply (CustomerID, OfferID, RevisionNumber)
+      on delete cascade
+go
+
+
+alter table LMEnergyExchangeHourlyOffer
+   add constraint FK_ExHrOff_ExOffRv foreign key (OfferID, RevisionNumber)
+      references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
+go
+
+
+alter table LMEnergyExchangeOfferRevision
+   add constraint FK_EExOffR_ExPrOff foreign key (OfferID)
+      references LMEnergyExchangeProgramOffer (OfferID)
+go
+
+
+alter table LMEnergyExchangeProgramOffer
+   add constraint FK_EnExOff_PrgEnEx foreign key (DeviceID)
+      references LMProgramEnergyExchange (DeviceID)
+go
+
+
+alter table LMGroup
+   add constraint FK_Device_LMGrpBase2 foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table LMGroupEmetcon
+   add constraint SYS_C0013356 foreign key (DEVICEID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table LMGroupEmetcon
+   add constraint SYS_C0013357 foreign key (ROUTEID)
+      references Route (RouteID)
 go
 
 
@@ -8264,30 +9123,6 @@ alter table LMGroupExpressCom
 go
 
 
-alter table OperatorLoginGraphList
-   add constraint FK_OpLgOpLgGrLs foreign key (GraphDefinitionID)
-      references GRAPHDEFINITION (GRAPHDEFINITIONID)
-go
-
-
-alter table GraphCustomerList
-   add constraint FK_GrphCstLst_Cst foreign key (CustomerID)
-      references Customer (CustomerID)
-go
-
-
-alter table LMProgramConstraints
-   add constraint FK_HlSc_LmPrC foreign key (HolidayScheduleID)
-      references HolidaySchedule (HolidayScheduleID)
-go
-
-
-alter table DateOfHoliday
-   add constraint FK_HolSchID foreign key (HolidayScheduleID)
-      references HolidaySchedule (HolidayScheduleID)
-go
-
-
 alter table LMGroupExpressCom
    add constraint FK_LGrEx_LMG foreign key (LMGroupID)
       references LMGroup (DeviceID)
@@ -8297,36 +9132,6 @@ go
 alter table LMGroupExpressCom
    add constraint FK_LGrEx_Rt foreign key (RouteID)
       references Route (RouteID)
-go
-
-
-alter table LMGroupSA205105
-   add constraint FK_LGrS205_LmG foreign key (GroupID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table LMGroupSA205105
-   add constraint FK_LGrS205_Rt foreign key (RouteID)
-      references Route (RouteID)
-go
-
-
-alter table LMGroupSA305
-   add constraint FK_LGrS305_LmGrp foreign key (GroupID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table LMGroupSA305
-   add constraint FK_LGrS305_Rt foreign key (RouteID)
-      references Route (RouteID)
-go
-
-
-alter table LMDirectNotifGrpList
-   add constraint FK_LMDi_DNGrpL foreign key (ProgramID)
-      references LMProgramDirect (DeviceID)
 go
 
 
@@ -8366,27 +9171,39 @@ alter table LMGroupPoint
 go
 
 
-alter table LMPROGRAM
-   add constraint FK_LMPr_PrgCon foreign key (ConstraintID)
-      references LMProgramConstraints (ConstraintID)
+alter table LMGroupRipple
+   add constraint FK_LmGr_LmGrpRip foreign key (DeviceID)
+      references LMGroup (DeviceID)
 go
 
 
-alter table LMControlScenarioProgram
-   add constraint FK_LmCScP_YkPA foreign key (ScenarioID)
-      references YukonPAObject (PAObjectID)
+alter table LMGroupRipple
+   add constraint FK_LmGrpRip_Rout foreign key (RouteID)
+      references Route (RouteID)
 go
 
 
-alter table LMControlArea
-   add constraint FK_LmCntAr_YukPAO foreign key (DEVICEID)
-      references YukonPAObject (PAObjectID)
+alter table LMGroupSA205105
+   add constraint FK_LGrS205_LmG foreign key (GroupID)
+      references LMGroup (DeviceID)
 go
 
 
-alter table LMControlHistory
-   add constraint FK_LmCtrlHis_YPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
+alter table LMGroupSA205105
+   add constraint FK_LGrS205_Rt foreign key (RouteID)
+      references Route (RouteID)
+go
+
+
+alter table LMGroupSA305
+   add constraint FK_LGrS305_LmGrp foreign key (GroupID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table LMGroupSA305
+   add constraint FK_LGrS305_Rt foreign key (RouteID)
+      references Route (RouteID)
 go
 
 
@@ -8402,9 +9219,33 @@ alter table LMGroupSASimple
 go
 
 
-alter table LMProgramEnergyExchange
-   add constraint FK_LmPrg_LmPrEEx foreign key (DeviceID)
-      references LMPROGRAM (DeviceID)
+alter table LMGroupVersacom
+   add constraint FK_LMGrp_LMGrpVers foreign key (DEVICEID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table LMGroupVersacom
+   add constraint SYS_C0013367 foreign key (ROUTEID)
+      references Route (RouteID)
+go
+
+
+alter table LMMacsScheduleCustomerList
+   add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
+      references MACSchedule (ScheduleID)
+go
+
+
+alter table LMMacsScheduleCustomerList
+   add constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table LMPROGRAM
+   add constraint FK_LMPr_PrgCon foreign key (ConstraintID)
+      references LMProgramConstraints (ConstraintID)
 go
 
 
@@ -8414,15 +9255,100 @@ alter table LMPROGRAM
 go
 
 
-alter table LMControlScenarioProgram
-   add constraint FK_LMC_REF__LMP foreign key (ProgramID)
+alter table LMProgramConstraints
+   add constraint FK_HlSc_LmPrC foreign key (HolidayScheduleID)
+      references HolidaySchedule (HolidayScheduleID)
+go
+
+
+alter table LMProgramConstraints
+   add constraint FK_SesSch_LmPrC foreign key (SeasonScheduleID)
+      references SeasonSchedule (ScheduleID)
+go
+
+
+alter table LMProgramControlWindow
+   add constraint FK_LMPrg_LMPrgCntWind foreign key (DeviceID)
       references LMPROGRAM (DeviceID)
 go
 
 
-alter table YukonListEntry
-   add constraint FK_LstEnty_SelLst foreign key (ListID)
-      references YukonSelectionList (ListID)
+alter table LMProgramCurtailCustomerList
+   add constraint FK_CICstBase_LMProgCList foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+go
+
+
+alter table LMProgramCurtailCustomerList
+   add constraint FK_LMPrgCrt_LMPrCstLst foreign key (ProgramID)
+      references LMProgramCurtailment (DeviceID)
+      on delete cascade
+go
+
+
+alter table LMProgramCurtailment
+   add constraint FK_LMPrg_LMPrgCurt foreign key (DeviceID)
+      references LMPROGRAM (DEVICEID)
+go
+
+
+alter table LMProgramDirect
+   add constraint FK_LMPrg_LMPrgDirect foreign key (DeviceID)
+      references LMPROGRAM (DeviceID)
+go
+
+
+alter table LMProgramDirectGear
+   add constraint FK_LMProgD_LMProgDGr foreign key (DeviceID)
+      references LMProgramDirect (DeviceID)
+go
+
+
+alter table LMProgramDirectGroup
+   add constraint FK_LMGrp_LMPrgDGrp foreign key (LMGroupDeviceID)
+      references LMGroup (DeviceID)
+go
+
+
+alter table LMProgramDirectGroup
+   add constraint FK_LMPrgD_LMPrgDGrp foreign key (DeviceID)
+      references LMProgramDirect (DeviceID)
+go
+
+
+alter table LMProgramEnergyExchange
+   add constraint FK_LmPrg_LmPrEEx foreign key (DeviceID)
+      references LMPROGRAM (DeviceID)
+go
+
+
+alter table LMThermoStatGear
+   add constraint FK_ThrmStG_PrDiGe foreign key (GearID)
+      references LMProgramDirectGear (GearID)
+go
+
+
+alter table MACROROUTE
+   add constraint SYS_C0013274 foreign key (ROUTEID)
+      references Route (RouteID)
+go
+
+
+alter table MACROROUTE
+   add constraint SYS_C0013275 foreign key (SINGLEROUTEID)
+      references Route (RouteID)
+go
+
+
+alter table MACSchedule
+   add constraint FK_SchdID_PAOID foreign key (ScheduleID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table MACSimpleSchedule
+   add constraint FK_MACSIMPLE_MACSCHED_ID foreign key (ScheduleID)
+      references MACSchedule (ScheduleID)
 go
 
 
@@ -8450,15 +9376,21 @@ alter table MCTConfigMapping
 go
 
 
-alter table LMDirectNotifGrpList
-   add constraint FK_NtGr_DNGrpL foreign key (NotificationGrpID)
+alter table NotificationDestination
+   add constraint FK_NotifDest_NotifGrp foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID)
 go
 
 
-alter table EnergyCompanyOperatorLoginList
-   add constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
-      references YukonUser (UserID)
+alter table NotificationDestination
+   add constraint FK_CntNt_NtDst foreign key (RecipientID)
+      references ContactNotification (ContactNotifID)
+go
+
+
+alter table OperatorLoginGraphList
+   add constraint FK_OpLgOpLgGrLs foreign key (GraphDefinitionID)
+      references GRAPHDEFINITION (GRAPHDEFINITIONID)
 go
 
 
@@ -8481,170 +9413,8 @@ go
 
 
 alter table PAOExclusion
-   add constraint FK_PAO_REF__YUK foreign key (ExcludedPaoID)
+   add constraint FK_PAOEXCLU_REF_PAOEX_YUKONPAO foreign key (ExcludedPaoID)
       references YukonPAObject (PAObjectID)
-go
-
-
-alter table CapControlFeeder
-   add constraint FK_PAObj_CCFeed foreign key (FeederID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table DynamicPAOStatistics
-   add constraint FK_PASt_YkPA foreign key (PAOBjectID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table POINTUNIT
-   add constraint FK_PtUnit_UoM foreign key (UOMID)
-      references UNITMEASURE (UOMID)
-go
-
-
-alter table POINT
-   add constraint FK_Pt_YukPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table RAWPOINTHISTORY
-   add constraint FK_RawPt_Point foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table Route
-   add constraint FK_Route_DevID foreign key (DeviceID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table Route
-   add constraint FK_Route_YukPAO foreign key (RouteID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table POINT
-   add constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
-      references STATEGROUP (STATEGROUPID)
-go
-
-
-alter table MACSchedule
-   add constraint FK_SchdID_PAOID foreign key (ScheduleID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table LMProgramConstraints
-   add constraint FK_SesSch_LmPrC foreign key (SeasonScheduleID)
-      references SeasonSchedule (ScheduleID)
-go
-
-
-alter table TOUDayMapping
-   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
-      references TOUSchedule (TOUScheduleID)
-go
-
-
-alter table TOUDayMapping
-   add constraint FK_TOUm_TOUd foreign key (TOUDayID)
-      references TOUDay (TOUDayID)
-go
-
-
-alter table TagLog
-   add constraint FK_TagLg_Pt foreign key (PointID)
-      references POINT (POINTID)
-go
-
-
-alter table TagLog
-   add constraint FK_TagLg_Tgs foreign key (TagID)
-      references Tags (TagID)
-go
-
-
-alter table LMThermoStatGear
-   add constraint FK_ThrmStG_PrDiGe foreign key (GearID)
-      references LMProgramDirectGear (GearID)
-go
-
-
-alter table UserPAOowner
-   add constraint FK_UsPow_YkP foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
-go
-
-
-alter table UserPAOowner
-   add constraint FK_UsPow_YkUsr foreign key (UserID)
-      references YukonUser (UserID)
-go
-
-
-alter table YukonGroupRole
-   add constraint FK_YkGrRl_YkGrp foreign key (GroupID)
-      references YukonGroup (GroupID)
-go
-
-
-alter table YukonGroupRole
-   add constraint FK_YkGrRl_YkRle foreign key (RoleID)
-      references YukonRole (RoleID)
-go
-
-
-alter table YukonGroupRole
-   add constraint FK_YkGrpR_YkRlPr foreign key (RolePropertyID)
-      references YukonRoleProperty (RolePropertyID)
-go
-
-
-alter table STATE
-   add constraint FK_YkIm_St foreign key (ImageID)
-      references YukonImage (ImageID)
-go
-
-
-alter table YukonRoleProperty
-   add constraint FK_YkRlPrp_YkRle foreign key (RoleID)
-      references YukonRole (RoleID)
-go
-
-
-alter table YukonUserGroup
-   add constraint FK_YkUsGr_YkGr foreign key (GroupID)
-      references YukonGroup (GroupID)
-go
-
-
-alter table YukonUserGroup
-   add constraint FK_YUK_REF__YUK foreign key (UserID)
-      references YukonUser (UserID)
-go
-
-
-alter table YukonUserRole
-   add constraint FK_YkUsRl_RlPrp foreign key (RolePropertyID)
-      references YukonRoleProperty (RolePropertyID)
-go
-
-
-alter table YukonUserRole
-   add constraint FK_YkUsRl_YkRol foreign key (RoleID)
-      references YukonRole (RoleID)
-go
-
-
-alter table YukonUserRole
-   add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
-      references YukonUser (UserID)
 go
 
 
@@ -8660,213 +9430,15 @@ alter table PAOowner
 go
 
 
-alter table POINTSTATUS
-   add constraint Ref_ptstatus_pt foreign key (POINTID)
-      references POINT (POINTID)
+alter table POINT
+   add constraint FK_Pt_YukPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
 go
 
 
-alter table POINTUNIT
-   add constraint Ref_ptunit_point foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table CALCBASE
-   add constraint SYS_C0013434 foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table DEVICE2WAYFLAGS
-   add constraint SYS_C0013208 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICECARRIERSETTINGS
-   add constraint SYS_C0013216 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceCBC
-   add constraint SYS_C0013459 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceCBC
-   add constraint SYS_C0013460 foreign key (ROUTEID)
-      references Route (RouteID)
-go
-
-
-alter table DEVICEDIALUPSETTINGS
-   add constraint SYS_C0013193 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceDirectCommSettings
-   add constraint SYS_C0013186 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceDirectCommSettings
-   add constraint SYS_C0013187 foreign key (PORTID)
-      references CommPort (PORTID)
-go
-
-
-alter table DISPLAY2WAYDATA
-   add constraint FK_DISPLAY2W_REF_POINT foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table DEVICEIDLCREMOTE
-   add constraint SYS_C0013241 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICEIED
-   add constraint SYS_C0013245 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICELOADPROFILE
-   add constraint SYS_C0013234 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICEMCTIEDPORT
-   add constraint SYS_C0013253 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICEMETERGROUP
-   add constraint SYS_C0013213 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceRoutes
-   add constraint SYS_C0013219 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DeviceRoutes
-   add constraint SYS_C0013220 foreign key (ROUTEID)
-      references Route (RouteID)
-go
-
-
-alter table DEVICESCANRATE
-   add constraint SYS_C0013198 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DEVICETAPPAGINGSETTINGS
-   add constraint SYS_C0013237 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table CAPBANK
-   add constraint SYS_C0013453 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table DISPLAY2WAYDATA
-   add constraint SYS_C0013422 foreign key (DISPLAYNUM)
-      references DISPLAY (DISPLAYNUM)
-go
-
-
-alter table DISPLAYCOLUMNS
-   add constraint SYS_C0013418 foreign key (DISPLAYNUM)
-      references DISPLAY (DISPLAYNUM)
-go
-
-
-alter table DISPLAYCOLUMNS
-   add constraint SYS_C0013419 foreign key (TYPENUM)
-      references COLUMNTYPE (TYPENUM)
-go
-
-
-alter table DYNAMICACCUMULATOR
-   add constraint SYS_C0015129 foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table DYNAMICDEVICESCANDATA
-   add constraint SYS_C0015139 foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
-go
-
-
-alter table FDRTRANSLATION
-   add constraint SYS_C0015066 foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table GRAPHDATASERIES
-   add constraint GrphDSeri_GrphDefID foreign key (GRAPHDEFINITIONID)
-      references GRAPHDEFINITION (GRAPHDEFINITIONID)
-go
-
-
-alter table GRAPHDATASERIES
-   add constraint GrphDSeris_ptID foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-
-alter table CAPBANK
-   add constraint SYS_C0013454 foreign key (CONTROLPOINTID)
-      references POINT (POINTID)
-go
-
-
-alter table LMGroupEmetcon
-   add constraint SYS_C0013357 foreign key (ROUTEID)
-      references Route (RouteID)
-go
-
-
-alter table LMGroupVersacom
-   add constraint SYS_C0013367 foreign key (ROUTEID)
-      references Route (RouteID)
-go
-
-
-alter table MACROROUTE
-   add constraint SYS_C0013274 foreign key (ROUTEID)
-      references Route (RouteID)
-go
-
-
-alter table MACROROUTE
-   add constraint SYS_C0013275 foreign key (SINGLEROUTEID)
-      references Route (RouteID)
-go
-
-
-alter table CAPBANK
-   add constraint SYS_C0013455 foreign key (CONTROLDEVICEID)
-      references DEVICE (DEVICEID)
+alter table POINT
+   add constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
+      references STATEGROUP (STATEGROUPID)
 go
 
 
@@ -8882,14 +9454,26 @@ alter table POINTANALOG
 go
 
 
-alter table DYNAMICPOINTDISPATCH
-   add constraint SYS_C0013331 foreign key (POINTID)
+alter table POINTLIMITS
+   add constraint SYS_C0013289 foreign key (POINTID)
       references POINT (POINTID)
 go
 
 
-alter table POINTLIMITS
-   add constraint SYS_C0013289 foreign key (POINTID)
+alter table POINTSTATUS
+   add constraint Ref_ptstatus_pt foreign key (POINTID)
+      references POINT (POINTID)
+go
+
+
+alter table POINTUNIT
+   add constraint FK_PtUnit_UoM foreign key (UOMID)
+      references UNITMEASURE (UOMID)
+go
+
+
+alter table POINTUNIT
+   add constraint Ref_ptunit_point foreign key (POINTID)
       references POINT (POINTID)
 go
 
@@ -8903,12 +9487,6 @@ go
 alter table PORTLOCALSERIAL
    add constraint SYS_C0013147 foreign key (PORTID)
       references CommPort (PORTID)
-go
-
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint SYS_C0013478 foreign key (CurrentWattLoadPointID)
-      references POINT (POINTID)
 go
 
 
@@ -8930,9 +9508,33 @@ alter table PORTTERMINALSERVER
 go
 
 
+alter table PointAlarming
+   add constraint FK_POINTALAARM_POINT_POINTID foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table PointAlarming
+   add constraint FK_POINTALARMING foreign key (NotificationGroupID)
+      references NotificationGroup (NotificationGroupID)
+go
+
+
+alter table PointAlarming
+   add constraint FK_CntNt_PtAl foreign key (RecipientID)
+      references ContactNotification (ContactNotifID)
+go
+
+
 alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
       references CommPort (PORTID)
+go
+
+
+alter table RAWPOINTHISTORY
+   add constraint FK_RawPt_Point foreign key (POINTID)
+      references POINT (POINTID)
 go
 
 
@@ -8948,9 +9550,21 @@ alter table RepeaterRoute
 go
 
 
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint SYS_C0013479 foreign key (CurrentVarLoadPointID)
-      references POINT (POINTID)
+alter table Route
+   add constraint FK_Route_DevID foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table Route
+   add constraint FK_Route_YukPAO foreign key (RouteID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table STATE
+   add constraint FK_YkIm_St foreign key (ImageID)
+      references YukonImage (ImageID)
 go
 
 
@@ -8978,15 +9592,111 @@ alter table TEMPLATECOLUMNS
 go
 
 
-alter table CarrierRoute
-   add constraint SYS_C0013264 foreign key (ROUTEID)
-      references Route (RouteID)
+alter table TOUDayMapping
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
+go
+
+
+alter table TOUDayMapping
+   add constraint FK_TOUm_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID)
+go
+
+
+alter table TOUDayRateSwitches
+   add constraint FK_TOUdRS_TOUd foreign key (TOUDayID)
+      references TOUDay (TOUDayID)
+go
+
+
+alter table TagLog
+   add constraint FK_TagLg_Pt foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table TagLog
+   add constraint FK_TagLg_Tgs foreign key (TagID)
+      references Tags (TagID)
+go
+
+
+alter table UserPAOowner
+   add constraint FK_UsPow_YkP foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+
+alter table UserPAOowner
+   add constraint FK_UsPow_YkUsr foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 
 alter table VersacomRoute
-   add constraint FK_VER_ROUT_ROU foreign key (ROUTEID)
+   add constraint FK_VERSACOM_ROUTE_VER_ROUTE foreign key (ROUTEID)
       references Route (RouteID)
+go
+
+
+alter table YukonGroupRole
+   add constraint FK_YkGrRl_YkGrp foreign key (GroupID)
+      references YukonGroup (GroupID)
+go
+
+
+alter table YukonGroupRole
+   add constraint FK_YkGrRl_YkRle foreign key (RoleID)
+      references YukonRole (RoleID)
+go
+
+
+alter table YukonGroupRole
+   add constraint FK_YkGrpR_YkRlPr foreign key (RolePropertyID)
+      references YukonRoleProperty (RolePropertyID)
+go
+
+
+alter table YukonListEntry
+   add constraint FK_LstEnty_SelLst foreign key (ListID)
+      references YukonSelectionList (ListID)
+go
+
+
+alter table YukonRoleProperty
+   add constraint FK_YkRlPrp_YkRle foreign key (RoleID)
+      references YukonRole (RoleID)
+go
+
+
+alter table YukonUserGroup
+   add constraint FK_YkUsGr_YkGr foreign key (GroupID)
+      references YukonGroup (GroupID)
+go
+
+
+alter table YukonUserGroup
+   add constraint FK_YUKONUSE_REF_YKUSG_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID)
+go
+
+
+alter table YukonUserRole
+   add constraint FK_YkUsRl_RlPrp foreign key (RolePropertyID)
+      references YukonRoleProperty (RolePropertyID)
+go
+
+
+alter table YukonUserRole
+   add constraint FK_YkUsRl_YkRol foreign key (RoleID)
+      references YukonRole (RoleID)
+go
+
+
+alter table YukonUserRole
+   add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 
