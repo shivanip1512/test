@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/22 19:52:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,37 @@ ApplyClearMacroDeviceList(const CtiHashKey *key, CtiDeviceBase *&pDevice, void *
 }
 
 
+void CtiDeviceManager::RefreshList(LONG paoID)
+{
+    CtiHashKey key(paoID);
+    CtiDeviceBase *pDev = Map.findValue(&key);
+
+    if(pDev)
+    {
+        RWDBConnection conn = getConnection();
+        RWLockGuard<RWDBConnection> conn_guard(conn);
+        RWDBDatabase db = getDatabase();
+
+        RWDBTable   keyTable;
+        RWDBSelector selector = db.selector();
+
+        pDev->getSQL( db, keyTable, selector );
+        selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+        RWDBReader rdr = selector.reader(conn);
+
+        RefreshDevices(rdr, DeviceFactory, isADevice, NULL);
+
+        // if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Done reloading " << pDev->getName() << endl;
+        }
+    }
+    else
+    {
+        RefreshList();
+    }
+}
+
 void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiDeviceBase*,void*), void *arg)
 {
     CtiDeviceBase *pTempCtiDevice = NULL;
@@ -106,7 +137,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Looking for Sixnet IEDs" << endl;
                     }
-                    CtiDeviceIED::getSQL( db, keyTable, selector );
+                    CtiDeviceIED().getSQL( db, keyTable, selector );
 
                     selector.where( keyTable["type"] == "SIXNET" && selector.where() );
 
@@ -136,7 +167,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Meters & IEDs" << endl;
                     }
-                    CtiDeviceMeter::getSQL( db, keyTable, selector );
+                    CtiDeviceMeter().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -163,7 +194,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Tap Devices" << endl;
                     }
-                    CtiDeviceTapPagingTerminal::getSQL( db, keyTable, selector );
+                    CtiDeviceTapPagingTerminal().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -190,7 +221,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for IDLC Target Devices" << endl;
                     }
-                    CtiDeviceIDLC::getSQL( db, keyTable, selector );
+                    CtiDeviceIDLC().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -217,7 +248,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DLC Devices" << endl;
                     }
-                    CtiDeviceCarrier::getSQL( db, keyTable, selector );
+                    CtiDeviceCarrier().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -244,7 +275,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for REPEATER Devices" << endl;
                     }
-                    CtiDeviceDLCBase::getSQL( db, keyTable, selector );
+                    CtiDeviceDLCBase().getSQL( db, keyTable, selector );
 
                     selector.where( (keyTable["type"]==RWDBExpr("REPEATER 800") ||
                                      keyTable["type"]==RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
@@ -275,7 +306,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CBC Devices" << endl;
                     }
-                    CtiDeviceCBC::getSQL( db, keyTable, selector );
+                    CtiDeviceCBC().getSQL( db, keyTable, selector );
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
                     {
@@ -301,7 +332,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Emetcon Group Devices" << endl;
                     }
-                    CtiDeviceGroupEmetcon::getSQL( db, keyTable, selector );
+                    CtiDeviceGroupEmetcon().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -328,7 +359,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Group Devices" << endl;
                     }
-                    CtiDeviceGroupVersacom::getSQL( db, keyTable, selector );
+                    CtiDeviceGroupVersacom().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -356,7 +387,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Ripple Group Devices" << endl;
                     }
-                    CtiDeviceGroupRipple::getSQL( db, keyTable, selector );
+                    CtiDeviceGroupRipple().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -383,7 +414,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Devices" << endl;
                     }
-                    CtiDeviceMacro::getSQL( db, keyTable, selector );
+                    CtiDeviceMacro().getSQL( db, keyTable, selector );
 
                     RWDBReader rdr = selector.reader(conn);
                     if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
@@ -464,7 +495,7 @@ void CtiDeviceManager::RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &), BOOL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Devices" << endl;
                     }
-                    CtiDevice::getSQL( db, keyTable, selector );
+                    CtiDevice().getSQL( db, keyTable, selector );
                     selector.where( keyTable["type"]==RWDBExpr("System") && selector.where() );   // Need to attach a few conditions!
 
                     RWDBReader rdr = selector.reader(conn);
