@@ -333,8 +333,8 @@ private javax.swing.JScrollPane getJScrollPaneTable() {
 			ivjLocalBorder1.setTitle("");
 			ivjJScrollPaneTable = new javax.swing.JScrollPane();
 			ivjJScrollPaneTable.setName("JScrollPaneTable");
-			ivjJScrollPaneTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			ivjJScrollPaneTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			ivjJScrollPaneTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+			ivjJScrollPaneTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			ivjJScrollPaneTable.setBorder(ivjLocalBorder1);
 			ivjJScrollPaneTable.setPreferredSize(new java.awt.Dimension(311, 305));
 			ivjJScrollPaneTable.setMinimumSize(new java.awt.Dimension(311, 305));
