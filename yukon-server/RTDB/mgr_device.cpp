@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/03/14 00:52:01 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,57 @@
 #include "slctdev.h"
 #include "rtdb.h"
 
+
+bool findExecutingAndExcludedDevice(CtiDeviceManager::val_pair vpd, void* d)
+{
+    bool bstatus = false;
+
+    CtiDeviceBase* Device = vpd.second;
+
+    CtiDeviceBase *pAnxiousDevice = (CtiDeviceBase *)d;       // This is the port that wishes to execute!
+
+    if(pAnxiousDevice->getID() != Device->getID())      // And it is not me...
+    {
+        bool excluded = pAnxiousDevice->isDeviceExcluded(Device->getID());
+
+        if(excluded)
+        {
+            // Ok, now decide if that excluded port is executing....
+            bstatus = Device->isExecuting();
+        }
+    }
+
+    return bstatus;
+}
+
+inline void applyRemoveProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
+{
+    LONG did = (LONG)d;                     // This is the id which is to be pulled from the prohibition list.
+
+    if(Device->isExecutionProhibited())     // There is at least one entry in the list...
+    {
+        Device->removeExecutionProhibited( did );
+    }
+
+    return;
+}
+
+inline void applyProhibit(const CtiHashKey *unusedkey, CtiDeviceBase *&Device, void* d)
+{
+    CtiDevice *pAnxiousDevice = (CtiDevice *)d;       // This is the port that wishes to execute!
+
+    if(pAnxiousDevice->getID() != Device->getID())      // And it is not me...
+    {
+        bool excluded = pAnxiousDevice->isDeviceExcluded( Device->getID() );
+
+        if(excluded)
+        {
+            Device->setExecutionProhibited( pAnxiousDevice->getID() );
+        }
+    }
+
+    return;
+}
 
 inline RWBoolean
 isDeviceIdStaticId(CtiDeviceBase *pDevice, void* d)
@@ -1452,3 +1503,82 @@ bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID)
 
     return status;
 }
+
+
+
+/*
+ * ptr_type anxiousDevice has asked to execute.  We make certain that no other device which is in his exclusion list is executing.
+ */
+bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceBase* anxiousDevice)
+{
+    bool bstatus = false;
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
+
+    try
+    {
+        if(anxiousDevice)
+        {
+            // Make sure no other device out there has begun executing and doesn't want us to until they are done.
+            if( !anxiousDevice->isExecutionProhibited() )
+            {
+                if(anxiousDevice->hasExclusions())
+                {
+                    CtiDeviceManager::val_pair result = Map.find(findExecutingAndExcludedDevice, (void*)anxiousDevice);
+
+                    CtiDeviceBase *device = result.second;
+                    // Find any single device which should keep the anxious device from executing.
+                    if(!device)   // There is NOT any device which is excluding us....
+                    {
+                        apply( applyProhibit, (void*)anxiousDevice);    // Mark all excluded devices as prohibited.
+                        bstatus = true;
+                    }
+                }
+                else
+                {
+                    bstatus = true;
+                }
+            }
+
+            if(bstatus)
+            {
+                anxiousDevice->setExecuting(true);                    // Mark ourselves as executing!
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return bstatus;
+}
+
+/*
+ * ptr_type anxiousDevice has completed an execution.  We must cleanup his mess.
+ */
+bool CtiDeviceManager::removeDeviceExclusionBlocks(CtiDeviceBase* anxiousDevice)
+{
+    bool bstatus = false;
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(getMux());
+
+    try
+    {
+        if(anxiousDevice)
+        {
+            apply( applyRemoveProhibit, (void*)anxiousDevice->getID());   // Remove prohibit mark from any device.
+            anxiousDevice->setExecuting(false);                               // Mark ourselves as executing!
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return bstatus;
+}
+
+

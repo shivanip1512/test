@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2003/04/29 13:44:49 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -375,7 +375,7 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
     }
 }
 
-static void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
     /* Report on the state of the queues */
 

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/04/29 13:44:49 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,25 @@
 /* Seems far more efficient that using 4 simpler queries without outer join */
 // static const CHAR AllPortSql[] = "SELECT DISTINCT COMMPORT.PORTID,COMMPORT.PORTTYPE,COMMPORT.DISABLEFLAG,COMMPORT.ALARMINHIBIT,COMMPORT.DESCRIPTION,COMMPORT.COMMONPROTOCOL,PORTTIMING.PRETXWAIT,PORTTIMING.RTSTOTXWAIT,PORTTIMING.POSTTXWAIT,PORTTIMING.RECEIVEDATAWAIT,PORTSETTINGS.CDWAIT,PORTSETTINGS.BAUDRATE,PORTLOCALSERIAL.PHYSICALPORT,PORTTERMINALSERVER.IPADDRESS,PORTTERMINALSERVER.SOCKETPORTNUMBER,PORTDIALUPMODEM.INITIALIZATIONSTRING FROM COMMPORT,PORTTIMING,PORTRADIOSETTINGS,PORTLOCALSERIAL,PORTTERMINALSERVER,PORTSETTINGS,PORTDIALUPMODEM WHERE PORTSETTINGS.PORTID(+)=COMMPORT.PORTID AND PORTTIMING.PORTID(+)=COMMPORT.PORTID AND PORTRADIOSETTINGS.PORTID(+)=COMMPORT.PORTID AND PORTLOCALSERIAL.PORTID(+)=COMMPORT.PORTID AND PORTTERMINALSERVER.PORTID(+)=COMMPORT.PORTID AND PORTDIALUPMODEM.PORTID(+)=COMMPORT.PORTID";
 
+bool findExecutingAndExcludedPort(const long key, CtiPortSPtr Port, void* d)
+{
+    bool bstatus = false;
+
+    CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
+
+    if(pAnxiousPort->getPortID() != Port->getPortID())      // And it is not me...
+    {
+        bool portexcluded = pAnxiousPort->isPortExcluded(Port->getPortID());
+
+        if(portexcluded)
+        {
+            // Ok, now decide if that excluded port is executing....
+            bstatus = Port->isExecuting();
+        }
+    }
+
+    return bstatus;
+}
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -79,6 +98,35 @@ inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 {
     // Return TRUE if it is NOT SET
     return( !Port->getUpdatedFlag() );
+}
+
+inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
+{
+    LONG pid = (LONG)d;       // This is the port id which is to be pulled from the prohibition list.
+
+    if(Port->isExecutionProhibited())   // There is at least one entry in the list...
+    {
+        Port->removeExecutionProhibited( pid );
+    }
+
+    return;
+}
+
+inline void applyProhibit(const long key, CtiPortSPtr Port, void* d)
+{
+    CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
+
+    if(pAnxiousPort->getPortID() != Port->getPortID())      // And it is not me...
+    {
+        bool portexcluded = pAnxiousPort->isPortExcluded( Port->getPortID() );
+
+        if(portexcluded)
+        {
+            Port->setExecutionProhibited( pAnxiousPort->getPortID() );
+        }
+    }
+
+    return;
 }
 
 inline void ApplyResetUpdated(const long key, CtiPortSPtr Port, void* d)
@@ -560,10 +608,7 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
                 if((pChildPort = _smartMap.find(child)))
                 {
                     pOwnerPort->addPort(pChildPort);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ***** Adding " << pChildPort->getName() << " to port pool " << pOwnerPort->getName() << endl;
-                    }
+                    pChildPort->setParentPort(pOwnerPort);  // Link child back to parent.
                 }
                 else
                 {
@@ -587,4 +632,81 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
+
+
+/*
+ * ptr_type anxiousPort has asked to execute.  We make certain that no other port which is in his exclusion list is executing.
+ */
+bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort)
+{
+    bool bstatus = false;
+
+    try
+    {
+        CtiLockGuard<CtiMutex> gaurd(_mux);
+
+        if(anxiousPort)
+        {
+            // Make sure no other port out there has begun executing and doesn't want us to until they are done.
+            if( !anxiousPort->isExecutionProhibited() )
+            {
+                ptr_type port;
+                spiterator itr;
+
+                if(anxiousPort->hasExclusions())
+                {
+                    // Find any single port which should keep the anxious port from executing.
+                    port = find( findExecutingAndExcludedPort, (void*)anxiousPort.get());
+
+                    if(!port)   // There is NOT any port which is excluding us....
+                    {
+                        apply( applyProhibit, (void*)anxiousPort.get());    // Mark all excluded ports as prohibited.
+                        bstatus = true;
+                    }
+                }
+                else
+                {
+                    bstatus = true;
+                }
+            }
+
+            if(bstatus)
+            {
+                anxiousPort->setExecuting(true);                    // Mark ourselves as executing!
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return bstatus;
+}
+
+/*
+ * ptr_type anxiousPort has completed an execution.  We must cleanup his mess.
+ */
+bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
+{
+    bool bstatus = false;
+
+    try
+    {
+        if(anxiousPort)
+        {
+            apply( applyRemoveProhibit, (void*)anxiousPort->getPortID());   // Remove prohibit mark from any port.
+            anxiousPort->setExecuting(false);                               // Mark ourselves as executing!
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return bstatus;
+}
+
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/04/16 21:25:07 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/05/09 16:09:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -577,7 +577,9 @@ INT CtiDeviceBase::deviceMaxCommFails() const
     return gDefaultCommFailCount;
 }
 
-#define COMM_FAIL_REPORT_TIME 300
+#ifndef  COMM_FAIL_REPORT_TIME
+ #define COMM_FAIL_REPORT_TIME 300
+#endif
 
 bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
 {
@@ -778,5 +780,66 @@ CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 bool CtiDeviceBase::hasLongScanRate(const RWCString &cmd) const
 {
     return false;
+}
+
+
+/*
+ *  Check if the passed id is in the exclusion list?
+ */
+bool CtiDeviceBase::isDeviceExcluded(long id) const
+{
+    bool bstatus = false;
+
+    if(hasExclusions())
+    {
+        exclusions::const_iterator itr;
+
+        for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
+        {
+            if(*itr == id)
+            {
+                bstatus = true;
+                break;
+            }
+        }
+    }
+    return bstatus;
+}
+
+bool CtiDeviceBase::isExecuting() const
+{
+    return _executing;
+}
+
+void CtiDeviceBase::setExecuting(bool set)
+{
+    _executing = set;
+    return;
+}
+
+bool CtiDeviceBase::isExecutionProhibited() const
+{
+    return (_executionProhibited.size() != 0);
+}
+
+size_t CtiDeviceBase::setExecutionProhibited(unsigned long id)
+{
+    _executionProhibited.push_back( id );
+    return _executionProhibited.size();
+}
+
+void CtiDeviceBase::removeExecutionProhibited(unsigned long id)
+{
+    CtiDeviceBase::exclusions::iterator itr;
+
+    for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); itr++)
+    {
+        if(*itr == id)
+        {
+            _executionProhibited.erase(itr);
+            break;
+        }
+    }
+    return;
 }
 

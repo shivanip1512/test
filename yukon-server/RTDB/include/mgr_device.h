@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.12 $
- * DATE         :  $Date: 2003/03/13 19:36:15 $
+ * REVISION     :  $Revision: 1.13 $
+ * DATE         :  $Date: 2003/05/09 16:09:55 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -71,6 +71,9 @@ public:
 
    void setIncludeScanInfo();
    void resetIncludeScanInfo();
+
+   bool mayDeviceExecuteExclusionFree(CtiDeviceBase *anxiousDevice);
+   bool removeDeviceExclusionBlocks(CtiDeviceBase *anxiousDevice);
 };
 
 #endif                  // #ifndef __MGR_DEVICE_H__

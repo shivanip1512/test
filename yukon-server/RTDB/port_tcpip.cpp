@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/04/29 13:43:46 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -850,9 +850,6 @@ bool CtiPortTCPIPDirect::isViable() const
 
 INT CtiPortTCPIPDirect::reset(INT trace)
 {
-    setConnectedDevice(0);
-    setConnectedDeviceUID(-1);
-
     if(_dialable)
     {
         _dialable->reset(trace);
@@ -863,9 +860,6 @@ INT CtiPortTCPIPDirect::reset(INT trace)
 
 INT CtiPortTCPIPDirect::setup(INT trace)
 {
-    setConnectedDevice(0);
-    setConnectedDeviceUID(-1);
-
     if(_dialable)
     {
         _dialable->setup(trace);

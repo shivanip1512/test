@@ -12,8 +12,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.11 $
- * DATE         :  $Date: 2003/04/29 13:44:49 $
+ * REVISION     :  $Revision: 1.12 $
+ * DATE         :  $Date: 2003/05/09 16:09:55 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -80,6 +80,9 @@ public:
     {
         return _mux;
     }
+
+    bool mayPortExecuteExclusionFree(ptr_type anxiousPort);
+    bool removePortExclusionBlocks(ptr_type anxiousPort);
 };
 
 #endif                  // #ifndef __PORT_MGR_H__

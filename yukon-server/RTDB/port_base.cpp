@@ -239,13 +239,18 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     {
         if(_portQueue != NULL)
         {
-            status = WriteQueue(_portQueue, Request, DataSize, Data, Priority, &QueEntries);
+            if(_postEvent != INVALID_HANDLE_VALUE)
+            {
+                SetEvent( _postEvent );                 // Just in case someone is sleeping at the wheel
+            }
+
+            status = WriteQueue( _portQueue, Request, DataSize, Data, Priority, &QueEntries);
 
             if(QueEntries > QueueGripe)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << getName() << " has just received a CTIDBG_new port queue entry.  There are " << QueEntries << " pending." << endl;
+                    dout << RWTime() << " " << getName() << " has just received a new port queue entry.  There are " << QueEntries << " pending." << endl;
                 }
 
                 ULONG gripemore = QueueGripe * 2;
@@ -400,6 +405,12 @@ CtiPort::~CtiPort()
         _portQueue = NULL;
     }
 
+    if(_postEvent != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle( _postEvent );
+        _postEvent = INVALID_HANDLE_VALUE;
+    }
+
     haltLog();
 }
 
@@ -431,16 +442,27 @@ INT CtiPort::outInMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > 
 
 
 CtiPort::CtiPort() :
+_poolAssignedGUID(0),
+_quitEvent(INVALID_HANDLE_VALUE),
+_postEvent(INVALID_HANDLE_VALUE),
 _portFunc(0),
 _portQueue(NULL),
 _connectedDevice(0L),
 _connectedDeviceUID(-1),
-_tapPort(FALSE)
+_tapPort(FALSE),
+_minMaxIdle(false),
+_commFailCount(0),
+_attemptCount(0),
+_attemptCommFailCount(0),
+_attemptOtherFailCount(0),
+_attemptSuccessCount(0)
 {
+    _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
 
 CtiPort::CtiPort(const CtiPort& aRef) :
-_portFunc(0)
+_portFunc(0),
+_minMaxIdle(false)
 {
     *this = aRef;
 }
@@ -549,7 +571,8 @@ INT CtiPort::disconnect(CtiDevice *Device, INT trace)
         Device->setLogOnNeeded(TRUE);
     }
 
-    setConnectedDevice(-1L);
+    setConnectedDevice(0L);
+    setConnectedDeviceUID(-1);
 
     return NORMAL;
 }
@@ -822,15 +845,75 @@ bool CtiPort::setPortForDevice(CtiDevice* Device)
 
 bool CtiPort::hasExclusions() const
 {
-    bool bret = _excluded.size() != 0;
-
-    return bret;
+    return _excluded.size() != 0;
 }
 
 CtiPort::exclusions CtiPort::getExclusions() const
 {
     return _excluded;
 }
+
+/*
+ *  Check if the passed portid is in the exclusion list?
+ */
+bool CtiPort::isPortExcluded(long portid) const
+{
+    bool bstatus = false;
+
+    if(hasExclusions())
+    {
+        exclusions::const_iterator itr;
+
+        for(itr = _excluded.begin(); itr != _excluded.end(); itr++)
+        {
+            if(*itr == portid)
+            {
+                bstatus = true;
+                break;
+            }
+        }
+    }
+    return bstatus;
+}
+
+bool CtiPort::isExecuting() const
+{
+    return _executing;
+}
+
+void CtiPort::setExecuting(bool set)
+{
+    _executing = set;
+    return;
+}
+
+bool CtiPort::isExecutionProhibited() const
+{
+    return (_executionProhibited.size() != 0);
+}
+
+size_t CtiPort::setExecutionProhibited(unsigned long pid)
+{
+    _executionProhibited.push_back( pid );
+    return _executionProhibited.size();
+}
+
+void CtiPort::removeExecutionProhibited(unsigned long pid)
+{
+
+    CtiPort::exclusions::iterator itr;
+
+    for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); itr++)
+    {
+        if(*itr == pid)
+        {
+            _executionProhibited.erase(itr);
+            break;
+        }
+    }
+    return;
+}
+
 
 CtiPort& CtiPort::setProtocolWrap(INT prot)
 {
@@ -849,5 +932,203 @@ ULONG CtiPort::queueCount() const
     }
 
     return QueEntries;
+}
+
+INT CtiPort::searchPortQueue(void *ptr, BOOL (*myFunc)(void*, void*))
+{
+    INT qEnt = 0;
+
+    if(_portQueue)
+    {
+        qEnt = SearchQueue(_portQueue, ptr, myFunc);
+    }
+
+    return qEnt;
+}
+
+INT CtiPort::searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*))
+{
+    INT qEnt = 0;
+
+    if(connected() && _portQueue)
+    {
+        qEnt = SearchQueue(_portQueue, (void*)getConnectedDeviceUID(), myFunc);
+    }
+
+    return qEnt;
+}
+
+
+INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount )
+{
+    INT status = QUEUE_READ;
+
+    if(_portQueue)
+    {
+        status = status = ReadQueue(_portQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+    }
+
+    return status;
+}
+
+#ifndef  COMM_FAIL_REPORT_TIME
+ #define COMM_FAIL_REPORT_TIME 300
+#endif
+
+INT CtiPort::portMaxCommFails() const
+{
+    return gDefaultPortCommFailCount;
+}
+
+bool CtiPort::adjustCommCounts( INT CommResult )
+{
+    LockGuard  guard(monitor());
+    bool bAdjust = false;
+    bool bStateChange = false;
+    bool success = (CommResult == NORMAL);
+    bool isCommClassError = (GetErrorType(CommResult) == ERRTYPECOMM);      // is this a comm class error (else device attributable)
+
+    bool isCommFail;
+
+    RWTime now;
+    INT lastCommCount = _commFailCount;
+
+    ++_attemptCount;
+
+    if(success)
+    {
+        _commFailCount = 0;             // reset the consecutive fails.
+        ++_attemptSuccessCount;
+    }
+    else
+    {
+        if(isCommClassError)
+        {
+            ++_attemptCommFailCount;        // This is a comm error.
+            ++_commFailCount;               // These are the only errors which count towards port failures.
+        }
+        else
+        {
+            ++_attemptOtherFailCount;       // This is not a comm error must be protocol or device related.
+        }
+    }
+
+    bool badtogood = ( success && lastCommCount >= portMaxCommFails() );
+    bool goodtobad = ( !success && (lastCommCount < portMaxCommFails()) && (_commFailCount >= portMaxCommFails()) );
+
+    if( goodtobad )
+    {
+        bStateChange = true;
+    }
+    else if( badtogood )
+    {
+        bStateChange = true;
+    }
+
+    if( bStateChange || now > _lastReport )
+    {
+        bAdjust = true;
+        _lastReport = ((now - (now.seconds() % COMM_FAIL_REPORT_TIME)) + COMM_FAIL_REPORT_TIME);
+    }
+
+    return(bAdjust);
+}
+
+// Return all queue entries to the processing parent.
+INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
+{
+    INT status = NORMAL;
+
+    if(_parentPort) // Do we have this ability??
+    {
+        CtiOutMessage *NewOutMessage = 0;
+        setPoolAssignedGUID(0L);        // Keep us from grabbing this one!
+
+        if(OutMessage)
+        {
+            // Deal with the failed OM which was passed in...
+            NewOutMessage = CTIDBG_new CtiOutMessage(*OutMessage);
+
+            NewOutMessage->Retry = 2;
+            _parentPort->writeQueue( NewOutMessage->EventCode, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
+        }
+
+        REQUESTDATA    ReadResult;
+        BYTE           ReadPriority;
+        ULONG          QueEntries;
+        ULONG          ReadLength;
+
+        while(queueCount())
+        {
+            // Move the OM from the pool queue to the child queue.
+            if( readQueue( &ReadResult, &ReadLength, (PPVOID) &NewOutMessage, 0, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+            {
+                _parentPort->writeQueue( NewOutMessage->EventCode, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << getName() << " Moving OutMessage back to parent port " << _parentPort->getName() << endl;
+                }
+            }
+        }
+
+        status = RETRY_SUBMITTED;
+    }
+
+    return status;
+}
+
+void CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
+{
+    if(_postEvent != INVALID_HANDLE_VALUE)
+    {
+        HANDLE hWaitObjects[2];
+        DWORD cnt = (quitEvent != INVALID_HANDLE_VALUE ? 2 : 1);
+
+        ResetEvent( _postEvent );
+
+        hWaitObjects[0] = _postEvent;
+        hWaitObjects[1] = quitEvent;
+
+        DWORD dwWaitResult = WaitForMultipleObjects( cnt, hWaitObjects, FALSE, timeout );
+
+        switch(dwWaitResult)
+        {
+        case WAIT_OBJECT_0:         // This is a post... Wake up!
+        case WAIT_OBJECT_0 + 1:     // This is QUIT by the way.
+        case WAIT_TIMEOUT:
+            {
+                break;
+            }
+        default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << dwWaitResult << endl;
+                }
+                break;
+            }
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
+
+void CtiPort::postParent()
+{
+    if(_parentPort)
+    {
+        _parentPort->postEvent();
+    }
+}
+
+void CtiPort::postEvent()
+{
+    if(_postEvent != INVALID_HANDLE_VALUE)
+    {
+        SetEvent(_postEvent);
+    }
 }
 

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2003/04/29 13:44:49 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,9 +144,6 @@ extern HCTIQUEUE* QueueHandle(LONG pid);
 
 bool deviceCanSurviveThisStatus(INT status);
 void commFail(CtiDeviceBase *Device, INT state);
-BOOL areAnyOutMessagesForMyDevID(void *pId, void* d);
-BOOL areAnyOutMessagesForMyRteID(void *pId, void* d);
-BOOL areAnyOutMessagesForUniqueID(void *pId, void* d);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
 INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
@@ -256,6 +253,23 @@ VOID PortThread(void *pid)
             return;  // We've been nixed!
         }
 
+        if( Port->getParentPort() )
+        {
+            Port->getParentPort()->postParent();
+
+            // Make sure the parent port can assign new work onto this port.
+            if(Port->queueCount() == 0)
+            {
+                Port->setPoolAssignedGUID(0);
+            }
+        }
+
+        if(gQueSlot == 0)
+        {
+            PortManager.removePortExclusionBlocks(Port);
+            DeviceManager.removeDeviceExclusionBlocks(Device);
+        }
+
         /*
          *  This is a Read from the CTI queueing structures which will originate from
          *  some other requestor.  This is where this thread blocks and waits if there are
@@ -263,7 +277,7 @@ VOID PortThread(void *pid)
          *  previous ReadQueue's operation. Note that the ReadQueue call mallocs space for the
          *  OutMessage pointer, and fills it from it's queue entries!
          */
-        if((status = ReadQueue (Port->getPortQueueHandle(), &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
+        if((status = Port->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
         {
             if(status == ERROR_QUE_EMPTY)
             {
@@ -354,11 +368,20 @@ VOID PortThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Port " << Port->getPortID() << " just received a message for device id " << OutMessage->DeviceID << endl << \
+                    dout << RWTime() << " Port " << Port->getName() << " just received a message for device id " << OutMessage->DeviceID << endl << \
                     " Porter does not seem to know about him and is throwing away the message!" << endl;
                 }
 
-                SendError(OutMessage, UnknownError);
+                try
+                {
+                    SendError(OutMessage, status);
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
                 continue;
             }
         }
@@ -560,7 +583,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
         ULONG stayConnectedMin = Device->getMinConnectTime();
         ULONG stayConnectedMax = Device->getMaxConnectTime();
 
-        if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
+        if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
         {
             if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device)
             {
@@ -570,12 +593,14 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
         }
         else
         {
+            Port->setMinMaxIdle(false);
+
             if(stayConnectedMin)
             {
                 for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++)
                 {
                     /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
-                    if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
+                    if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
                     {
                         break;
                     }
@@ -584,13 +609,15 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
                 }
             }
 
+            Port->setMinMaxIdle(true);
+
             /* do not reinit i since times are non cumulative! */
             for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
             {
                 /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
                 if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
                 {
-                    gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID);
+                    gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID);
 
                     if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
                     {
@@ -605,6 +632,8 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
 
                 CTISleep (250L);
             }
+
+            Port->setMinMaxIdle(false);
         }
 
         if(gQueSlot == 0 || bDisconnect)
@@ -815,6 +844,9 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     struct timeb   TimeB;
     ULONG          QueueCount;
 
+    bool portMayExecute;
+    bool deviceMayExecute;
+
 
     // 030503 CGP Adding Exclusion logic in this location.
     /*
@@ -828,15 +860,25 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
      *
      */
 
-    if(Port->hasExclusions())
     {
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+        portMayExecute = PortManager.mayPortExecuteExclusionFree(Port);
+
+        if(portMayExecute)
+        {
+            deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device);
+        }
     }
 
-    if(Device->hasExclusions())
+
+    if( !portMayExecute || !deviceMayExecute )
     {
+        // There is an exclusion conflict for this device!
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** ACH ACH For a queue shuffle! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
-
-
 
     // 030503 CGP END Exclusion logic.
 
@@ -1198,6 +1240,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     {
                         try
                         {
+                            Port->setTAP( TRUE );
+
                             CtiDeviceIED        *IED = (CtiDeviceIED*)Device;
 
                             IED->setLogOnNeeded(FALSE);
@@ -1209,6 +1253,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             IED->freeDataBins();
 
                             Port->close(0);         // 06062002 CGP  Make it reopen when needed.
+                            Port->setTAP( FALSE );
                         }
                         catch(...)
                         {
@@ -1222,6 +1267,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     {
                         LONG oldid = 0L;
                         CtiDeviceIED *IED= (CtiDeviceIED*)Device;
+
+                        Port->setTAP( TRUE );
 
                         IED->allocateDataBins(OutMessage);
                         IED->setInitialState(oldid);
@@ -1239,7 +1286,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             }
                             else
                             {
-                                if( SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID) == 0 )
+                                if( SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID) == 0 )
                                 {
                                     IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
                                 }
@@ -1257,6 +1304,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         }
 
                         IED->freeDataBins();
+                        Port->setTAP( FALSE );
 
                         break;
                     }
@@ -2086,9 +2134,10 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     INT            status = CommResult;
     ULONG          j;
     ULONG          QueueCount;
-    REMOTEPERF     RemotePerf;
-    ERRSTRUCT      ErrStruct;
     bool           iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
+    INT port = OutMessage->Port;
+    INT deviceID = OutMessage->DeviceID;
+    INT targetID = OutMessage->TargetID;
 
     if(Device->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ))
     {
@@ -2113,7 +2162,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
     if( (CommResult != NORMAL) ||
         (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
-           (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ) )
+           (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) ))
     {
         switch( Device->getType() )
         {
@@ -2148,7 +2197,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
             }
         default:
             {
-                if(OutMessage->Retry > 0)
+                if(OutMessage && OutMessage->Retry > 0)
                 {
                     /* decrement the retry counter */
                     --OutMessage->Retry;
@@ -2210,9 +2259,43 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         }
     }
 
+    // 050603 CGP The deal with the port/port pool logic!
+    try
+    {
+        bool portwasquestionable = Port->isQuestionable();      // true if this is not his fist time...
+
+        if(CommResult && GetErrorType( CommResult ) == ERRTYPECOMM)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port " << Port->getName() << " has a COMM category error. " << CommResult << endl;
+        }
+
+         // This tallies success/fail on the port.  The port decides when he has become questionable.
+        bool reportablechange = Port->adjustCommCounts(CommResult);     // returns true if there is a reportable change!
+
+        if(reportablechange)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  It is now " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << endl;
+            }
+        }
+
+        if(CommResult && portwasquestionable)
+        {
+            status = Port->requeueToParent(OutMessage);     // Return all queue entries to the processing parent.
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " EXCEPTION CAUGHT " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
     if(status == RETRY_SUBMITTED)
     {
-        statisticsNewAttempt( OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, CommResult );
+        statisticsNewAttempt( port, deviceID, targetID, CommResult );
     }
 
     return status;
@@ -2229,7 +2312,6 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     ULONG          j, QueueCount;
     struct timeb   TimeB;
     REMOTEPERF     RemotePerf;
-    ERRSTRUCT      ErrStruct;
 
     InMessage->EventCode = (USHORT)CommResult;
 
@@ -2908,39 +2990,6 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
     return status;
 }
 
-BOOL areAnyOutMessagesForMyDevID(void *pId, void* d)
-{
-    LONG Id = (LONG)pId;
-    OUTMESS *OutMessage = (OUTMESS *)d;
-
-    return(OutMessage->DeviceID == Id);
-}
-
-BOOL areAnyOutMessagesForMyRteID(void *pId, void* d)
-{
-    LONG Id = (LONG)pId;
-    OUTMESS *OutMessage = (OUTMESS *)d;
-
-    return(OutMessage->Request.RouteID == Id);
-}
-
-BOOL areAnyOutMessagesForUniqueID(void *pId, void* d)
-{
-    LONG Id = (LONG)pId;
-    OUTMESS *OutMessage = (OUTMESS *)d;
-
-    if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && OutMessage->Request.CheckSum == 0)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " OutMessage detected zero valued checksum " << __FILE__ << " (" << __LINE__ << ") " <<
-        OutMessage->Request.CheckSum << " ?=? " << Id << endl;
-        dout << " Device ID " << OutMessage->DeviceID << endl;
-        dout << "   " << OutMessage->Buffer.OutMessage << endl;
-    }
-
-    return(OutMessage->Request.CheckSum == Id);
-}
-
 void commFail(CtiDeviceBase *Device, INT state)
 {
     extern CtiConnection VanGoghConnection;
@@ -3304,3 +3353,14 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
 
     return protocol;
 }
+
+INT DevicePostProcessing(CtiPortSPtr Port, CtiDevice *Device)
+{
+    INT status = NORMAL;
+
+    PortManager.removePortExclusionBlocks(Port);
+    DeviceManager.removeDeviceExclusionBlocks(Device);
+
+    return status;
+}
+

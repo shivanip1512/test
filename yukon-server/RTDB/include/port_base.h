@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/04/29 13:43:47 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,7 +130,8 @@ public:
     virtual void Dump() const;
 
     HCTIQUEUE&  getPortQueueHandle();
-    INT         writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);
+    INT writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);
+    INT readQueue( PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount );
 
     INT queueInit(HANDLE hQuit);                 // Sets up the PortQueue
     INT queueDeInit();               // Blasts the PortQueue
@@ -180,12 +181,38 @@ public:
     virtual ULONG getDelay(int Offset) const { return 0L; }
     virtual CtiPort& setDelay(int Offset, int D) { return *this; }
 
-    virtual bool hasExclusions() const;
+    bool hasExclusions() const;
     exclusions getExclusions() const;
+    bool isPortExcluded(long portid) const;
+    bool isExecuting() const;
+    void setExecuting(bool set);
+    bool isExecutionProhibited() const;
+    size_t setExecutionProhibited(unsigned long pid);
+    void removeExecutionProhibited(unsigned long pid);
 
     virtual size_t addPort(CtiPortSPtr port);
+    void setParentPort(CtiPortSPtr port);
+    CtiPortSPtr& getParentPort();
 
     ULONG queueCount() const;
+
+    INT searchPortQueue(void *ptr, BOOL (*myFunc)(void*, void*));
+    INT searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*));
+
+
+    virtual INT portMaxCommFails() const;
+    bool adjustCommCounts( INT CommResult );
+    bool isQuestionable() const;
+    INT requeueToParent(OUTMESS *&OutMessage);            // Return all queue entries to the processing parent.
+    bool isMinMaxIdle() const;
+    void setMinMaxIdle(bool mmi);
+    void waitForPost(HANDLE quitEvent = INVALID_HANDLE_VALUE, LONG timeout = -1L) const;
+    void postParent();
+    void postEvent();
+    LONG getPoolAssignedGUID() const;
+    void setPoolAssignedGUID(LONG guid);
+    HANDLE setQuitEventHandle(HANDLE quit);
+    HANDLE getQuitEventHandle();
 
 
 protected:
@@ -203,17 +230,33 @@ protected:
     mutable CtiLogger _portLog;
 
     // Port pooling constructs.
-    bool _isServicingBadDevices;            // Indicates that this port has been designated for poor performers.  Typ. false.
-    bool _isBadPort;                        // Indicates that this port is performing in a questionable fashion.. Should be COMM FAILED if applicable.
+    CtiPortSPtr _parentPort;                // Record parent port if any to this child
+
+    LONG _poolAssignedGUID;                 // This is the "device" executing on this port!
+
+    INT _commFailCount;                     // Consecutive failures to this port.
+    INT _attemptCount;                      // Cumulative. Attempts to communicate with the port
+    INT _attemptCommFailCount;              // Cumulative. Failed ERRTYPE_COMM class error.
+    INT _attemptOtherFailCount;             // Cumulative. Failed !ERRTYPE_COMM class error.
+    INT _attemptSuccessCount;               // Cumulative. Comms successful.
+
+    HANDLE _postEvent;                      // This is an event handle which I will be able to wait on.
+    HANDLE _quitEvent;                      // This is an event handle assigned to us to check for quit occasionally or sooner.
+
 
 private:
 
     size_t                      _traceListOffset;
     CTI_PORTTHREAD_FUNC_PTR     _portFunc;
 
+    bool                        _executing;             // Port is currently executing work...
+    exclusions                  _executionProhibited;   // Port is currently prohibited from executing because of this list of portids.
     exclusions                  _excluded;
-
+    RWTime                      _lastReport;    // Last comm fail report happened here.
+    bool                        _minMaxIdle;
 };
+
+inline bool CtiPort::isQuestionable() const   { return _commFailCount >= portMaxCommFails();}
 
 inline INT CtiPort::getType() const   { return _tblPAO.getType();}
 inline LONG CtiPort::getPortID() const { return _tblPAO.getID();}
@@ -224,7 +267,7 @@ inline RWCString CtiPort::getSharedPortType() const { return _tblPortBase.getSha
 inline INT CtiPort::getSharedSocketNumber() const   { return _tblPortBase.getSharedSocketNumber();}
 inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();}
 
-inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup)); }
+inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup || getType() == PortTypePoolDialout)); }
 inline bool CtiPort::isDialin() const { return ((getType() == PortTypeLocalDialBack || getType() == PortTypeTServerDialBack)); }
 inline bool CtiPort::isTCPIPPort() const { return ((getType() == PortTypeTServerDirect) || (getType() == PortTypeTServerDialup)); }
 
@@ -242,6 +285,18 @@ inline INT CtiPort::getStopBits() const { return 1; }
 inline INT CtiPort::getParity() const { return NOPARITY; }
 
 inline size_t CtiPort::addPort(CtiPortSPtr port) { return (size_t)0; }
+inline void CtiPort::setParentPort(CtiPortSPtr port) { _parentPort = port; return; }
+inline CtiPortSPtr& CtiPort::getParentPort() { return _parentPort; }
+
+inline bool CtiPort::isMinMaxIdle() const { return _minMaxIdle; }
+inline void CtiPort::setMinMaxIdle(bool mmi) { _minMaxIdle = mmi; return;}
+
+inline LONG CtiPort::getPoolAssignedGUID() const { return _poolAssignedGUID; }
+inline void CtiPort::setPoolAssignedGUID(LONG guid) { _poolAssignedGUID = guid; }
+
+inline HANDLE CtiPort::setQuitEventHandle(HANDLE quit) { HANDLE oldQuit = _quitEvent; _quitEvent = quit; return oldQuit; }
+inline HANDLE CtiPort::getQuitEventHandle() { return _quitEvent; }
+
 
 
 

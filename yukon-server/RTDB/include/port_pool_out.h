@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/29 13:18:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,13 @@
 #pragma warning( disable : 4786)
 
 #include "port_base.h"
+
+
+#define PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY            0x00000010
+#define PORTPOOL_DEBUGLEVL_CHILDSELECTION               0x00000020
+#define PORTPOOL_DEBUGLEVL_CHILDALLOCATION              0x00000040
+#define PORTPOOL_DEBUGLEVL_POOLQUEUE                    0x00010000  // Used on the porter side...
+#define PORTPOOL_DEBUGLEVL_QUEUEDUMPS                   0x00020000
 
 class IM_EX_PRTDB CtiPortPoolDialout : public CtiPort
 {
@@ -30,7 +37,16 @@ protected:
 
 private:
 
+    static int _poolDebugLevel;
+
 public:
+
+    enum
+    {
+        PPSC_ParentQueueEmpty,
+        PPSC_AllChildrenBusy
+    }
+    CtiPortPoolDialoutStatusCode;
 
     typedef CtiPort Inherited;
 
@@ -58,6 +74,7 @@ public:
     static void getPooledPortsSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
     CtiPortSPtr getAvailableChildPort(CtiDevice* Device);
+    INT allocateQueueEntsToChildPort();
 
 };
 #endif // #ifndef __PORT_POOL_OUT_H__

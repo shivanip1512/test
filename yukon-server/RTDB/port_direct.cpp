@@ -241,7 +241,7 @@ INT CtiPortDirect::lowerRTS()
 {
 #if 1
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
-    return(EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
+    return(EscapeCommFunction(_portHandle, CLRRTS) ? NORMAL : SYSTEM);
 #else
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
     return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
@@ -884,9 +884,6 @@ bool CtiPortDirect::isViable() const
 
 INT CtiPortDirect::reset(INT trace)
 {
-    setConnectedDevice(0);
-    setConnectedDeviceUID(-1);
-
     if(_dialable)
     {
         _dialable->reset(trace);
@@ -897,9 +894,6 @@ INT CtiPortDirect::reset(INT trace)
 
 INT CtiPortDirect::setup(INT trace)
 {
-    setConnectedDevice(0);
-    setConnectedDeviceUID(-1);
-
     if(_dialable)
     {
         _dialable->setup(trace);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/04/16 21:25:08 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/05/09 16:09:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -198,8 +198,16 @@ public:
     virtual INT getParity() const;
 
     virtual INT getProtocolWrap() const;
-    virtual bool hasExclusions() const;
+
+
+    bool hasExclusions() const;
     exclusions getExclusions() const;
+    bool isDeviceExcluded(long id) const;
+    bool isExecuting() const;
+    void setExecuting(bool set);
+    bool isExecutionProhibited() const;
+    size_t setExecutionProhibited(unsigned long id);
+    void removeExecutionProhibited(unsigned long id);
 
 protected:
 
@@ -231,7 +239,9 @@ private:
     int _responsesOnTrxID;
     RWTime _lastReport;
 
+    bool        _executing;             // Device is currently executing...
     exclusions  _excluded;
+    exclusions  _executionProhibited;   // Device is currently prohibited from executing because of this list of devids.
 
 };
 
