@@ -43,6 +43,16 @@ public LitePoint( int pntID, String pntName, int pntType, int paoID, int pntOffs
 	setLiteType(LiteTypes.POINT);
 	stateGroupID = stateGroupid;
 }
+
+/**
+ * LiteDevice
+ */
+public LitePoint( int pntID, String pntName ) 
+{
+	this( pntID );	
+	setPointName( pntName );
+}
+
 /**
  * LiteDevice
  */

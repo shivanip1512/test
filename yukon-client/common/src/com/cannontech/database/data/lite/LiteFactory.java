@@ -146,47 +146,40 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 { 
 	LiteBase returnLite = null;
 
-	if( val instanceof com.cannontech.database.data.port.DirectPort )
-	{
-		returnLite = new LiteYukonPAObject( 
-			((com.cannontech.database.data.port.DirectPort)val).getPAObjectID().intValue() );
-	}
-	else if( val instanceof com.cannontech.database.data.route.RouteBase )
-	{
-		returnLite = new LiteYukonPAObject( 
-			((com.cannontech.database.data.route.RouteBase)val).getPAObjectID().intValue() );
-	}
-	else if( val instanceof CICustomerBase )
-	{
-		returnLite = new LiteCICustomer(
-				((CICustomerBase)val).getCustomerID().intValue() );
-	}
-	else if( val instanceof com.cannontech.database.data.capcontrol.CapControlYukonPAOBase )
-	{
-		returnLite = new LiteYukonPAObject( ((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)val).getPAObjectID().intValue() );
-	}
-	else if( val instanceof com.cannontech.database.data.point.PointBase )
-	{
-		returnLite = new LitePoint( 
-			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointID().intValue() );
-	}
-	else if( val instanceof com.cannontech.database.data.state.GroupState )
-	{
-		returnLite = new LiteStateGroup( 
-			((com.cannontech.database.data.state.GroupState)val).getStateGroup().getStateGroupID().intValue() );
-	}
-	else if( val instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
+	if( val instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
 	{
 		returnLite = createLite( ((com.cannontech.database.db.DBPersistent)(((com.cannontech.database.data.multi.SmartMultiDBPersistent)val).getOwnerDBPersistent())) );
-	}
-	else if( val instanceof com.cannontech.database.data.holiday.HolidaySchedule )
-	{
-		returnLite = new LiteHolidaySchedule( 
-			((com.cannontech.database.data.holiday.HolidaySchedule)val).getHolidayScheduleID().intValue() );
 	}
 	else if( val instanceof com.cannontech.database.data.multi.MultiDBPersistent )
 	{
 		returnLite = createLite( ((com.cannontech.database.db.DBPersistent)(((com.cannontech.database.data.multi.MultiDBPersistent)val).getDBPersistentVector().get(0))) );
+	}
+	else if( val instanceof CICustomerBase )
+	{
+		returnLite = new LiteCICustomer(
+				((CICustomerBase)val).getCustomerID().intValue(),
+				((CICustomerBase)val).getCiCustomerBase().getCompanyName() );
+	}
+	else if( val instanceof com.cannontech.database.data.point.PointBase )
+	{
+		returnLite = new LitePoint(
+			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointID().intValue(),
+			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointName() );
+			
+	}
+	else if( val instanceof com.cannontech.database.data.state.GroupState )
+	{
+		returnLite = new LiteStateGroup(
+			((com.cannontech.database.data.state.GroupState)val).getStateGroup().getStateGroupID().intValue(),
+			((com.cannontech.database.data.state.GroupState)val).getStateGroup().getName() );
+			
+	}
+	else if( val instanceof com.cannontech.database.data.holiday.HolidaySchedule )
+	{
+		returnLite = new LiteHolidaySchedule(
+			((com.cannontech.database.data.holiday.HolidaySchedule)val).getHolidayScheduleID().intValue(),
+			((com.cannontech.database.data.holiday.HolidaySchedule)val).getHolidayScheduleName() );
+			
 	}
 	else if( val instanceof com.cannontech.database.data.graph.GraphDefinition )
 	{
@@ -196,35 +189,50 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}
 	else if( val instanceof com.cannontech.database.data.notification.GroupNotification )
 	{
-		returnLite = new LiteNotificationGroup( ((com.cannontech.database.data.notification.GroupNotification)val).getNotificationGroup().getNotificationGroupID().intValue() );
+		returnLite = new LiteNotificationGroup( 
+				((com.cannontech.database.data.notification.GroupNotification)val).getNotificationGroup().getNotificationGroupID().intValue(),
+				((com.cannontech.database.data.notification.GroupNotification)val).getNotificationGroup().getGroupName() );
 	}		
 	else if( val instanceof com.cannontech.database.db.notification.AlarmCategory )
 	{
-		returnLite = new LiteAlarmCategory( ((com.cannontech.database.db.notification.AlarmCategory)val).getAlarmCategoryID().intValue() );
+		returnLite = new LiteAlarmCategory( 
+				((com.cannontech.database.db.notification.AlarmCategory)val).getAlarmCategoryID().intValue(),
+				((com.cannontech.database.db.notification.AlarmCategory)val).getCategoryName() );
+
 	}
 	else if( val instanceof com.cannontech.database.data.customer.Contact )
 	{
-		returnLite = new LiteContact( ((com.cannontech.database.data.customer.Contact)val).getContact().getContactID().intValue() );
+		returnLite = new LiteContact(
+				((com.cannontech.database.data.customer.Contact)val).getContact().getContactID().intValue(),
+				((com.cannontech.database.data.customer.Contact)val).getContact().getContFirstName(),
+				((com.cannontech.database.data.customer.Contact)val).getContact().getContLastName() );
+
 	}
 	else if( val instanceof com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)
 	{
-		returnLite = new LiteDeviceMeterNumber( ((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
-												((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber());
+		returnLite = new LiteDeviceMeterNumber(
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
+				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber());
 	}
 	else if( val instanceof YukonUser )
 	{
-		returnLite = new LiteYukonUser( 
-			((YukonUser)val).getUserID().intValue() );
+		returnLite = new LiteYukonUser(
+			((YukonUser)val).getUserID().intValue(),
+			((YukonUser)val).getUsername(),
+			((YukonUser)val).getPassword() );
 	}
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		returnLite = new LiteYukonPAObject( 
-			((com.cannontech.database.data.pao.YukonPAObject)val).getPAObjectID().intValue() );
+			((com.cannontech.database.data.pao.YukonPAObject)val).getPAObjectID().intValue(),
+			((com.cannontech.database.data.pao.YukonPAObject)val).getPAOName() );
+			
 	}
    else if( val instanceof com.cannontech.database.db.state.YukonImage )
    {
-      returnLite = new LiteYukonImage( 
-         ((com.cannontech.database.db.state.YukonImage)val).getImageID().intValue() );
+      returnLite = new LiteYukonImage(
+         ((com.cannontech.database.db.state.YukonImage)val).getImageID().intValue(),
+         ((com.cannontech.database.db.state.YukonImage)val).getImageName() );
    }
 
 		

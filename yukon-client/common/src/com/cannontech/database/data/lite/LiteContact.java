@@ -27,6 +27,16 @@ public class LiteContact extends LiteBase
 		setContactID(contID_);
 		setLiteType(LiteTypes.CONTACT);
 	}
+
+	/**
+	 * LiteContact
+	 */
+	public LiteContact( int contID_, String fName_, String lName_ ) {
+		this(contID_);
+		setContFirstName( fName_ );
+		setContLastName( lName_ );
+	}
+
 	/**
 	 * LiteContact
 	 */

@@ -26,6 +26,11 @@ public class LiteYukonImage extends LiteBase
       setLiteType(LiteTypes.STATE_IMAGE);
    }
 
+   public LiteYukonImage( int imageID, String imgName_  )
+   {
+      this(imageID);
+      setImageName( imgName_ );
+   }
    /**
     * LiteDevice
     */
@@ -135,4 +140,9 @@ public class LiteYukonImage extends LiteBase
 		this.imageValue = imageValue;
 	}
 
+	public String toString()
+	{
+		return getImageName();
+	}
+	
 }

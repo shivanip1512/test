@@ -21,6 +21,15 @@ public LiteStateGroup( int sgID )
 /**
  * LiteDevice
  */
+public LiteStateGroup( int sgID, String sgName ) 
+{
+	this( sgID );
+	setStateGroupName( sgName );
+}
+
+/**
+ * LiteDevice
+ */
 public LiteStateGroup( int sgID, String sgName, String groupType_ ) 
 {
 	super();

@@ -1796,136 +1796,18 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 				{
 					//be sure we have a owner for each editor frame
 					if( getInternalEditorFrames()[i].getOwnerNode() != null )
-					{
+					{						
 						PropertyPanel current = (PropertyPanel)getEditorFrame(getInternalEditorFrames()[i].getOwnerNode()).getContentPane();
-						Object userObject = current.getOriginalObjectToEdit();
 
+						//handle the GUI change in a seperate location
+						new DBChangeGUIHandler( current, txtMsg ).handleGUIChange( msg ); 
 
-					/* For YukonPAOBjects and PointBase objects, we care about ALL change types since
-					   they both have a DISABLE field */
-					if( msg.getDatabase() == msg.CHANGE_PAO_DB
-						 && userObject instanceof com.cannontech.database.data.pao.YukonPAObject )
-					{
-						boolean hasDisable = (userObject instanceof com.cannontech.database.data.device.DeviceBase) || msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE;
-						
-						com.cannontech.database.data.pao.YukonPAObject obj = (com.cannontech.database.data.pao.YukonPAObject)userObject;
-						if( obj.getPAOCategory().equalsIgnoreCase(msg.getCategory())
-							 && obj.getPAOType().equalsIgnoreCase(msg.getObjectType())
-							 && obj.getPAObjectID().intValue() == msg.getId()
-							 && hasDisable )
-						{
-							txtMsg.append(". Editing of '" + obj.getPAOName() + "' was canceled.");
-							current.fireCancelButtonPressed();
-						}
 					}
-					else if( msg.getDatabase() == msg.CHANGE_POINT_DB 
-								&& userObject instanceof com.cannontech.database.data.point.PointBase )
-					{
-						com.cannontech.database.data.point.PointBase obj = (com.cannontech.database.data.point.PointBase)userObject;
-						if( obj.getPoint().getPointType().equalsIgnoreCase(msg.getObjectType())
-							 && obj.getPoint().getPointID().intValue() == msg.getId() )
-						{
-							
-							txtMsg.append( ". Editing of '"+
-								com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(obj.getPoint().getPaoID().intValue()) + "/" +
-								obj.getPoint().getPointName() + "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}
-					}
-
-					/* WE ONLY CARE ABOUT THE DELETE CHANGE TYPE FOR THE ITEMS BELOW */
-					else if( msg.getDatabase() == msg.CHANGE_STATE_GROUP_DB 
-								&& userObject instanceof com.cannontech.database.data.state.GroupState )
-					{
-						com.cannontech.database.data.state.GroupState obj = (com.cannontech.database.data.state.GroupState)userObject;
-						if( obj.getStateGroup().getStateGroupID().intValue() == msg.getId()
-							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
-						{
-							txtMsg.append( ". Editing of '"+
-								obj.getStateGroup().getName() + "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}			
-					}
-					else if( msg.getDatabase() == msg.CHANGE_GRAPH_DB 
-								&& userObject instanceof com.cannontech.database.data.graph.GraphDefinition )
-					{
-						com.cannontech.database.data.graph.GraphDefinition obj = (com.cannontech.database.data.graph.GraphDefinition)userObject;
-						if( obj.getGraphDefinition().getGraphDefinitionID().intValue() == msg.getId()
-							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
-						{
-							txtMsg.append( ". Editing of '"+
-								obj.getGraphDefinition().getName() + "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}
-					}
-					else if( msg.getDatabase() == msg.CHANGE_NOTIFICATION_GROUP_DB 
-								&& userObject instanceof com.cannontech.database.data.notification.GroupNotification )
-					{
-						com.cannontech.database.data.notification.GroupNotification obj = (com.cannontech.database.data.notification.GroupNotification)userObject;
-						if( obj.getNotificationGroup().getNotificationGroupID().intValue() == msg.getId()
-							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
-						{
-							txtMsg.append( ". Editing of '"+
-								obj.getNotificationGroup().getGroupName() + "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}			
-					}
-/*
-					else if( msg.getDatabase() == msg.CHANGE_NOTIFICATION_RECIPIENT_DB 
-								&& userObject instanceof com.cannontech.database.data.notification.ContactNotification )
-					{	
-						com.cannontech.database.data.notification.ContactNotification obj = (com.cannontech.database.data.notification.ContactNotification)userObject;
-						if( obj.getContactNotification().getRecipientID().intValue() == msg.getId()
-							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
-						{
-							txtMsg.append( ". Editing of '"+
-								obj.getContactNotification().getRecipientName() + "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}			
-					}
-*/
-					else if( msg.getDatabase() == msg.CHANGE_ALARM_CATEGORY_DB 
-								&& userObject instanceof com.cannontech.database.db.notification.AlarmCategory )
-					{
-						com.cannontech.database.db.notification.AlarmCategory obj = (com.cannontech.database.db.notification.AlarmCategory)userObject;
-						if( obj.getAlarmCategoryID().intValue() == msg.getId()
-							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
-						{
-							txtMsg.append( ". Editing of '"+
-								obj.getCategoryName()+ "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}			
-					}		
-					else if( msg.getDatabase() == msg.CHANGE_CONTACT_DB 
-								&& userObject instanceof com.cannontech.database.data.customer.Contact )
-					{
-						com.cannontech.database.data.customer.Contact obj = (com.cannontech.database.data.customer.Contact)userObject;
-						if( obj.getContact().getContactID().intValue() == msg.getId()
-							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
-						{
-							txtMsg.append( ". Editing of '"+
-								obj.getContact().getContFirstName() + " " +
-								obj.getContact().getContLastName() + "' was canceled." );
-
-							current.fireCancelButtonPressed();
-						}			
-					}
-					else
-						com.cannontech.clientutils.CTILogger.info("**** Unable to find matching object for the DBChangeMsg = " + msg.getDatabase() +
-									" and the object is = " + userObject.getClass().getName() );
-
 				}
+
 			} //end of synchronize block
 
 			
-		} //end of for loop
-
 
 		//tell our tree we may need to change the display
 		updateTreePanel( liteBase, msg.getTypeOfChange() );

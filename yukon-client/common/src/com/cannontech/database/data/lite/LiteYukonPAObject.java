@@ -38,6 +38,16 @@ public LiteYukonPAObject( int paoID)
 	setLiteID( paoID );
 	setLiteType( LiteTypes.YUKON_PAOBJECT );
 }
+
+/**
+ * LiteDevice
+ */
+public LiteYukonPAObject( int paoID, String name_ ) 
+{
+	this( paoID );
+	setPaoName( name_ );
+}
+
 /**
  * LiteDevice
  */

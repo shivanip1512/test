@@ -29,6 +29,15 @@ public LiteHolidaySchedule(int scheduleID)
 }
 
 /**
+ * LiteHolidaySchedule constructor comment.
+ */
+public LiteHolidaySchedule(int scheduleID, String schdName_ )
+{
+	this( scheduleID );
+	setHolidayScheduleName( schdName_ );
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (8/24/2001 11:13:50 AM)
  * @return int
