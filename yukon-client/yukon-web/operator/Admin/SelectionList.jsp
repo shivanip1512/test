@@ -17,6 +17,8 @@
 			sameAsOp = true;
 		}
 	}
+	
+	String viewOnly = (liteEC.getParent() != null)? viewOnly = "disabled" : "";
 %>
 <html>
 <head>
@@ -218,6 +220,7 @@ function restoreDefault(form) {
 }
 
 function prepareSubmit(form) {
+<% if (liteEC.getParent() == null) { %>
 	for (idx = 0; idx < entryTexts.length; idx++) {
 		var html = "<input type='hidden' name='EntryIDs' value='" + entryIDs[idx] + "'>";
 		form.insertAdjacentHTML("beforeEnd", html);
@@ -226,6 +229,10 @@ function prepareSubmit(form) {
 		html = "<input type='hidden' name='YukonDefIDs' value='" + entryYukDefIDs[idx] + "'>";
 		form.insertAdjacentHTML("beforeEnd", html);
 	}
+	return true;
+<% } else { %>
+	return false;
+<% } %>
 }
 
 <%	if (isOptOutPeriodCus) { %>
@@ -289,7 +296,7 @@ function init() {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="prepareSubmit(this)">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return prepareSubmit(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td class="HeaderCell">Edit Customer Selection List</td>
@@ -376,14 +383,14 @@ function init() {
                                 view or edit it.</span></td>
                               <td width="50%"> 
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)">
+                                <input type="button" name="MoveUp" value="Move Up" style="width:80" onclick="moveUp(this.form)" <%= viewOnly %>>
                                 <br>
-                                <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)">
+                                <input type="button" name="MoveDown" value="Move Down" style="width:80" onclick="moveDown(this.form)" <%= viewOnly %>>
                                 <br>
 <%	} %>
-                                <input type="button" name="Delete" value="Delete" style="width:80" onclick="deleteEntry(this.form)">
+                                <input type="button" name="Delete" value="Delete" style="width:80" onclick="deleteEntry(this.form)" <%= viewOnly %>>
                                 <br>
-                                <input type="button" name="DeleteAll" value="Delete All" style="width:80" onclick="deleteAllEntries(this.form)">
+                                <input type="button" name="DeleteAll" value="Delete All" style="width:80" onclick="deleteAllEntries(this.form)" <%= viewOnly %>>
                               </td>
                             </tr>
                           </table>
@@ -442,7 +449,7 @@ function init() {
                                   </tr>
                                 </table>
                                 <div align="center"> 
-                                  <input type="button" name="Save" value="Add" onClick="saveEntry(this.form)">
+                                  <input type="button" name="Save" value="Add" onClick="saveEntry(this.form)" <%= viewOnly %>>
                                 </div>
                               </td>
                             </tr>
@@ -456,10 +463,10 @@ function init() {
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 
-                    <input type="submit" name="Submit" value="Submit">
+                    <input type="submit" name="Submit" value="Submit" <%= viewOnly %>>
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %>>
                   </td>
                   <td width="75" align="right"> 
                     <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
