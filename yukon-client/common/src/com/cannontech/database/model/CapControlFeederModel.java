@@ -10,7 +10,7 @@ public class CapControlFeederModel extends DeviceTreeModel
  * @param root javax.swing.tree.TreeNode
  */
 public CapControlFeederModel() {
-	super(false, new DBTreeNode("Cap Feeders") );
+	super(true, new DBTreeNode("Cap Feeders") );
 }
 /**
  * Insert the method's description here.
@@ -31,15 +31,6 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 {
 	return( type_ == com.cannontech.database.data.pao.PAOGroups.CAP_CONTROL_FEEDER
 			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL );
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/22/2002 2:05:03 PM)
- * @return com.cannontech.database.data.lite.LiteBase[]
- */
-public boolean isLiteTypeSupported( int liteType )
-{
-	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT );
 }
 /**
  * This method was created in VisualAge.

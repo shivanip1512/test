@@ -204,22 +204,22 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.CAPBANK:
 			returnDevice = new com.cannontech.database.data.capcontrol.CapBank();
 			returnDevice.setDeviceType( PAOGroups.STRING_CAP_BANK[0] );
-			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
+			returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
 			break;
 		case PAOGroups.CAPBANKCONTROLLER:
 			returnDevice = new com.cannontech.database.data.capcontrol.CapBankControllerVersacom();
 			returnDevice.setDeviceType( PAOGroups.STRING_CAP_BANK_CONTROLLER[0] );
-			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
+			returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
 			break;
 		case PAOGroups.CBC_FP_2800:
 			returnDevice = new com.cannontech.database.data.capcontrol.CapBankController_FP_2800();
 			returnDevice.setDeviceType( PAOGroups.STRING_CBC_FP_2800[0] );
-			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
+			returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
 			break;
       case PAOGroups.DNP_CBC_6510:
          returnDevice = new com.cannontech.database.data.capcontrol.CapBankController6510();
          returnDevice.setDeviceType( PAOGroups.STRING_DNP_CBC_6510[0] );
-         returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_CAPCONTROL);
+         returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
          break;
 
 

@@ -11,7 +11,6 @@ public final class DeviceClasses
    public final static int METER             = 1003;
    public final static int CARRIER           = 1004;
    public final static int GROUP             = 1005;
-   public final static int CAPCONTROL        = 1006;
    public final static int VIRTUAL           = 1007;
    public final static int LOADMANAGEMENT    = 1008;
    public final static int SYSTEM            = 1009;
@@ -24,7 +23,6 @@ public final class DeviceClasses
    public static final String STRING_CLASS_IED = "IED";
    public static final String STRING_CLASS_GROUP = "GROUP";
    public static final String STRING_CLASS_SYSTEM = "SYSTEM";
-   public static final String STRING_CLASS_CAPCONTROL = "CAPCONTROL";
    public static final String STRING_CLASS_VIRTUAL = "VIRTUAL";
    public static final String STRING_CLASS_LOADMANAGER = "LOADMANAGEMENT";
    
@@ -70,9 +68,9 @@ public final static int getClass(String classString) {
 	if( compareString.equals(STRING_CLASS_SYSTEM) )
 		return SYSTEM;	
 	else
-	if( compareString.equals(STRING_CLASS_CAPCONTROL) )
-		return CAPCONTROL;
-	else
+//	if( compareString.equals(STRING_CLASS_CAPCONTROL) )
+//		return CAPCONTROL;
+//	else
 	if( compareString.equals(STRING_CLASS_VIRTUAL) )
 		return VIRTUAL;			
 	else

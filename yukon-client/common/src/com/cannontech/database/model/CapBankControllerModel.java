@@ -30,7 +30,7 @@ public CapBankControllerModel( boolean showPointNodes)
 public boolean isDeviceValid( int category_, int class_, int type_ )
 {
 	return( com.cannontech.database.data.device.DeviceTypesFuncs.isCapBankController(type_)
-			  && class_ == com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL
+			  && class_ == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL
 			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE );
 }
 /**

@@ -594,7 +594,7 @@ public final static boolean isCapControl( com.cannontech.database.data.lite.Lite
 {
 	return ( (lite.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL
 				   || lite.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
-				 && lite.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL );
+				 && lite.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL);
 }
 /**
  * This method was created in VisualAge.

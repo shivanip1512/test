@@ -431,51 +431,7 @@ public void jComboBoxPoint_ActionPerformed(java.awt.event.ActionEvent actionEven
 
 	return;
 }
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		JPanelDevicePoint aDevicePointJPanel;
-		aDevicePointJPanel = new JPanelDevicePoint();
 
-		int[][][] t =
-		{ {{com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE,
-			 com.cannontech.database.data.pao.DeviceClasses.CAPCONTROL,
-			 com.cannontech.database.data.pao.PAOGroups.CAPBANK}}
-		};
-
-		int[] p = { com.cannontech.database.data.point.PointTypes.STATUS_POINT,
-						com.cannontech.database.data.point.PointTypes.ANALOG_POINT };
-			
-		aDevicePointJPanel.setPAOFilter( t );
-		aDevicePointJPanel.setPointTypeFilter( p );
-
-		aDevicePointJPanel.addComboBoxPropertyChangeListener( new java.beans.PropertyChangeListener()
-		{
-			public void propertyChange(java.beans.PropertyChangeEvent evt)
-			{ com.cannontech.clientutils.CTILogger.info( evt.getSource() ); }
-			
-		});
-		
-		frame.setContentPane(aDevicePointJPanel);
-		frame.setSize(aDevicePointJPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
 /**
  * Insert the method's description here.
  * Creation date: (5/15/2002 11:19:20 AM)
