@@ -1,4 +1,4 @@
-<%@ page import="com.cannontech.graph.model.TrendModelType" %>
+<%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session"></jsp:useBean>
 	<%
 	if( graphBean.getGdefid() <= 0 )
@@ -7,12 +7,12 @@
 		<p class="MainText"> No Data Set Selected 
 	<%
 	}
-	else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW)
+	else if( graphBean.getViewType() == GraphRenderers.SUMMARY)
 	{
 		graphBean.updateCurrentPane();				
 		out.println(graphBean.getHtmlString());
 	}
-	else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
+	else if( graphBean.getViewType() == GraphRenderers.TABULAR)
 	{
 		graphBean.updateCurrentPane();
 		out.println(graphBean.getHtmlString());

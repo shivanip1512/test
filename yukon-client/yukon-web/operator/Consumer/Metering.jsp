@@ -67,12 +67,12 @@
 				{%>
 					<p> No Data Set Selected 
 				<%}
-				else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
+				else if( graphBean.getViewType() == GraphRenderers.SUMMARY )
 				{
 					graphBean.updateCurrentPane();
 					out.println(graphBean.getHtmlString());
 				}
-				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
+				else if( graphBean.getViewType() == GraphRenderers.TABULAR)
 				{%>
 					<%@ include file="../../include/trending_tabular.jsp" %>					
 					<%

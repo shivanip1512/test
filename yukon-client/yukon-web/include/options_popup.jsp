@@ -1,7 +1,7 @@
 <html>
 <%@ page language="java" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
-<%@ page import="com.cannontech.graph.model.TrendModelType" %>
+<%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>
@@ -12,11 +12,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <SCRIPT LANGUAGE="JavaScript">
-//variable options mapped to com.cannontech.graph.model.TrendModelType options.
-var MULT = parseInt(<%=com.cannontech.graph.model.TrendModelType.GRAPH_MULTIPLIER%>); 
-var MIN_MAX = parseInt(<%=com.cannontech.graph.model.TrendModelType.PLOT_MIN_MAX_MASK%>);
-var LEGEND_MIN_MAX = parseInt(<%=com.cannontech.graph.model.TrendModelType.LEGEND_MIN_MAX_MASK%>);
-var LEGEND_LOAD_FACTOR = parseInt(<%=com.cannontech.graph.model.TrendModelType.LEGEND_LOAD_FACTOR_MASK%>);
+//variable options mapped to com.cannontech.database.db.graph.GraphRenderers options.
+var MULT = parseInt(<%=GraphRenderers.GRAPH_MULTIPLIER%>); 
+var MIN_MAX = parseInt(<%=GraphRenderers.PLOT_MIN_MAX_MASK%>);
+var LEGEND_MIN_MAX = parseInt(<%=GraphRenderers.LEGEND_MIN_MAX_MASK%>);
+var LEGEND_LOAD_FACTOR = parseInt(<%=GraphRenderers.LEGEND_LOAD_FACTOR_MASK%>);
 
 function submitMForm()
 {

@@ -11,17 +11,17 @@
 
 <SCRIPT> <!--trend/view menu items-->
 //view types
-var LINE  = parseInt(<%=TrendModelType.LINE_VIEW%>);
-var BAR   = parseInt(<%=TrendModelType.BAR_VIEW%>);
-var DBAR  = parseInt(<%=TrendModelType.BAR_3D_VIEW%>);
-var STEP  = parseInt(<%=TrendModelType.STEP_VIEW%>);
-var SHAPE = parseInt(<%=TrendModelType.SHAPES_LINE_VIEW%>);
-var TABULAR = parseInt(<%=TrendModelType.TABULAR_VIEW%>);
-var SUMMARY = parseInt(<%=TrendModelType.SUMMARY_VIEW%>);
+var LINE  = parseInt(<%=GraphRenderers.LINE%>);
+var BAR   = parseInt(<%=GraphRenderers.BAR%>);
+var DBAR  = parseInt(<%=GraphRenderers.BAR_3D%>);
+var STEP  = parseInt(<%=GraphRenderers.STEP%>);
+var SHAPE = parseInt(<%=GraphRenderers.SHAPES_LINE%>);
+var TABULAR = parseInt(<%=GraphRenderers.TABULAR%>);
+var SUMMARY = parseInt(<%=GraphRenderers.SUMMARY%>);
 
 //options
-var BASIC = parseInt(<%=TrendModelType.BASIC_MASK%>); 
-var LD = parseInt(<%=TrendModelType.LOAD_DURATION_MASK%>); 
+var BASIC = parseInt(<%=GraphRenderers.BASIC_MASK%>); 
+var LD = parseInt(<%=GraphRenderers.LOAD_DURATION_MASK%>); 
 
 //Global variables
 var viewType = parseInt(<%=graphBean.getViewType()%>);
@@ -41,25 +41,25 @@ function initViewMenu()
 	switch(viewType)
 	{
 		case LINE:
-			document.getElementById('LINEID').innerHTML = "&nbsp;&#149;&nbsp;<%=TrendModelType.LINE_VIEW_STRING%>";
+			document.getElementById('LINEID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.LINE_STRING%>";
 			break;
 		case BAR:
-			document.getElementById('BARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.BAR_VIEW_STRING%>";
+			document.getElementById('BARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.BAR_STRING%>";
 			break;
 		case DBAR:
-			document.getElementById('3DBARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%>";
+			document.getElementById('3DBARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.BAR_3D_STRING%>";
 			break;
 		case STEP:
-			document.getElementById('STEPID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%>";
+			document.getElementById('STEPID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.STEP_STRING%>";
 			break;
 		case SHAPE:
-			document.getElementById('SHAPEID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%>";
+			document.getElementById('SHAPEID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.SHAPES_LINE_STRING%>";
 			break;
 		case TABULAR:
-			document.getElementById('TABULARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.TABULAR_VIEW_STRING%>";
+			document.getElementById('TABULARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.TABULAR_STRING%>";
 			break;
 		case SUMMARY:
-			document.getElementById('SUMMARYID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%>";
+			document.getElementById('SUMMARYID').innerHTML =  "&nbsp;&#149;&nbsp;<%=GraphRenderers.SUMMARY_STRING%>";
 		break;
 	}
 	

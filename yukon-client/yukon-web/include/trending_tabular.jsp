@@ -1,5 +1,5 @@
 <%
-if( (graphBean.getOption() & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+if( (graphBean.getOption() & GraphRenderers.LOAD_DURATION_MASK) == GraphRenderers.LOAD_DURATION_MASK)
 {
 	graphBean.updateCurrentPane();
 	out.println(graphBean.getHtmlString());

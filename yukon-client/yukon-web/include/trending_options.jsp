@@ -1,4 +1,4 @@
-<!--TRENDING OPTIONS-->
+GraphRenderers<!--TRENDING OPTIONS-->
 <table width="575" border="0" align="center" cellpadding="4" cellspacing="0">
   <tr>
     <td width="303" valign="top">
@@ -62,24 +62,24 @@
   <tr>
     <td>
       <div id="viewMenu" class = "bgmenu" style = "width:120px" align = "left"> 
-        <div id = "LINEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.LINE_VIEW%>);">&nbsp;&nbsp;&nbsp;<%=TrendModelType.LINE_VIEW_STRING%></div>
-        <div id = "BARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.BAR_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.BAR_VIEW_STRING%></div>
-        <div id = "3DBARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.BAR_3D_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%></div>
-        <div id = "SHAPEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.SHAPES_LINE_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%></div>
-        <div id = "STEPID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.STEP_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%></div>
-        <div id = "TABULARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.TABULAR_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.TABULAR_VIEW_STRING%></div>
-        <div id = "SUMMARYID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.SUMMARY_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%></div>
+        <div id = "LINEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_STRING%></div>
+        <div id = "BARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.BAR%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.BAR_STRING%></div>
+        <div id = "3DBARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.BAR_3D%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.BAR_3D_STRING%></div>
+        <div id = "SHAPEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.SHAPES_LINE%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.SHAPES_LINE_STRING%></div>
+        <div id = "STEPID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.STEP%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.STEP_STRING%></div>
+        <div id = "TABULARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.TABULAR%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.TABULAR_STRING%></div>
+        <div id = "SUMMARYID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.SUMMARY%>)">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.SUMMARY_STRING%></div>
           <hr>
         <div id = "LDID" onmouseover = "changeOptionStyle(this)" style = "width:120px" class = "optmenu1" onclick = "changeLD()">&nbsp;&nbsp;&nbsp;Load Duration</div>
       </div>
       <form name="exportForm">
 	    <div id="trendMenu" class = "bgmenu" style = "width:75px" align = "left"> 
-          <%if (graphBean.getViewType() == TrendModelType.TABULAR_VIEW || graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
+          <%if (graphBean.getViewType() == GraphRenderers.TABULAR || graphBean.getViewType() == GraphRenderers.SUMMARY )
           {%>
             <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('csv')">&nbsp;&nbsp;&nbsp;Export .csv</div>
             <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
           <%}
-          else if (graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
+          else if (graphBean.getViewType() == GraphRenderers.SUMMARY )
           {%>
             <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
           <%}
