@@ -281,6 +281,7 @@ private javax.swing.JPanel getRelayPanel() {
 	}
 	return ivjRelayPanel;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -413,8 +414,18 @@ public void setValue(Object o)
 		getJTextFieldOpAddress().setText(twoOhFive.getLMGroupSA205105().getOperationalAddress().toString());
 		
 		getRelayCombosJComboBox().setSelectedItem(twoOhFive.getLMGroupSA205105().getLoadNumber() );
-			
+	}
+}
+
+public boolean isInputValid() 
+{
+	String utilityAddress = getJTextFieldOpAddress().getText();
+	if(utilityAddress.compareTo("") == 0)
+	{
+		setErrorString("The Name text field must be filled in");
+		return false;
 	}
 
+	return true;
 }
 }
