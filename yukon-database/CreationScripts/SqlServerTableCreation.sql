@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/13/2004 3:59:22 PM                        */
+/* Created on:     12/15/2004 3:20:45 PM                        */
 /*==============================================================*/
 
 
@@ -424,21 +424,6 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index YukonUser.Indx_YkUsIDNm
-go
-
-
-alter table GRAPHDEFINITION
-   drop constraint AK_GRNMUQ_GRAPHDEF
-go
-
-
-alter table LMProgramDirectGear
-   drop constraint AK_AKEY_LMPRGDIRG_LMPROGRA
-go
-
-
-alter table POINT
-   drop constraint AK_KEY_PTNM_YUKPAOID
 go
 
 
@@ -6426,7 +6411,6 @@ insert into yukongrouprole values (-754,-301,-201,-20154,'false');
 insert into yukongrouprole values (-755,-301,-201,-20155,'true');
 insert into yukongrouprole values (-756,-301,-201,-20156,'true');
 insert into yukongrouprole values (-757,-301,-201,-20157,'(none)');
-insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
 
 insert into yukongrouprole values (-765,-301,-210,-21000,'(none)');
 insert into yukongrouprole values (-766,-301,-210,-21001,'(none)');
@@ -6455,7 +6439,6 @@ insert into yukongrouprole values (-813,-301,-201,-20813,'(none)');
 insert into yukongrouprole values (-814,-301,-201,-20814,'(none)');
 insert into yukongrouprole values (-815,-301,-201,-20815,'(none)');
 insert into yukongrouprole values (-816,-301,-201,-20816,'(none)');
-insert into yukongrouprole values (-817,-301,-201,-20817,'(none)');
 insert into yukongrouprole values (-819,-301,-201,-20819,'(none)');
 insert into yukongrouprole values (-820,-301,-201,-20820,'(none)');
 
@@ -6726,7 +6709,6 @@ insert into yukongrouprole values (-2054,-303,-201,-20154,'(none)');
 insert into yukongrouprole values (-2055,-303,-201,-20155,'true');
 insert into yukongrouprole values (-2056,-303,-201,-20156,'(none)');
 insert into yukongrouprole values (-2057,-303,-201,-20157,'(none)');
-insert into yukongrouprole values (-2058,-303,-201,-20158,'true');
 
 insert into yukongrouprole values (-2070,-303,-210,-21000,'(none)');
 insert into yukongrouprole values (-2071,-303,-210,-21001,'(none)');
@@ -6746,7 +6728,6 @@ insert into yukongrouprole values (-2113,-303,-201,-20813,'(none)');
 insert into yukongrouprole values (-2114,-303,-201,-20814,'(none)');
 insert into yukongrouprole values (-2115,-303,-201,-20815,'(none)');
 insert into yukongrouprole values (-2116,-303,-201,-20816,'(none)');
-insert into yukongrouprole values (-2117,-303,-201,-20817,'(none)');
 insert into yukongrouprole values (-2119,-303,-201,-20819,'(none)');
 insert into yukongrouprole values (-2120,-303,-201,-20820,'(none)');
 
@@ -8196,8 +8177,8 @@ go
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
-create view DISPLAY2WAYDATA_VIEW (POINTID, POINTNAME, POINTTYPE, POINTSTATE, DEVICENAME, DEVICENAME, DEVICENAME, DEVICENAME, TAGS, TAGS, TAGS, UofM, TAGS) as
-select POINTID, POINTNAME, POINTTYPE, SERVICEFLAG, YukonPAObject.PAOName, YukonPAObject.Type, YukonPAObject.Description, YukonPAObject.PAObjectID, '**DYNAMIC**', '**DYNAMIC**', '**DYNAMIC**', (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid), '**DYNAMIC**'
+create view DISPLAY2WAYDATA_VIEW as
+select POINTID as PointID, POINTNAME as PointName, POINTTYPE as PointType, SERVICEFLAG as PointState, YukonPAObject.PAOName as DeviceName, YukonPAObject.Type as DeviceType, YukonPAObject.Description as DeviceCurrentState, YukonPAObject.PAObjectID as DeviceID, '**DYNAMIC**' as PointValue, '**DYNAMIC**' as PointQuality, '**DYNAMIC**' as PointTimeStamp, (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid) as UofM, '**DYNAMIC**' as Tags
 from YukonPAObject, POINT
 where YukonPAObject.PAObjectID = POINT.PAObjectID
 go
