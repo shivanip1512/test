@@ -609,7 +609,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	
 	public static StarsUpdateThermostatScheduleResponse updateThermostatSchedule(
 			StarsUpdateThermostatSchedule updateSched, LiteLMThermostatSchedule liteSchedule, LiteStarsEnergyCompany energyCompany)
-			throws Exception
+			throws WebClientException
 	{
 		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
 		
@@ -659,7 +659,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					season.setScheduleID( new Integer(liteSchedule.getScheduleID()) );
 					season.setWebConfigurationID( new Integer(webConfigID) );
 					season.setStartDate( new Date(liteDftSeason.getStartDate()) );
-					season = (LMThermostatSeason) Transaction.createTransaction(Transaction.INSERT, season).execute();
+					season.setDbConnection( conn );
+					season.add();
 					
 					liteSeason = (LiteLMThermostatSeason) StarsLiteFactory.createLite( season );
 					liteSchedule.getThermostatSeasons().add( liteSeason );
@@ -670,7 +671,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					season2.setScheduleID( new Integer(liteSchedule.getScheduleID()) );
 					season2.setWebConfigurationID( new Integer(liteDftSeason2.getWebConfigurationID()) );
 					season2.setStartDate( new Date(liteDftSeason2.getStartDate()) );
-					season2 = (LMThermostatSeason) Transaction.createTransaction(Transaction.INSERT, season2).execute();
+					season2.setDbConnection( conn );
+					season2.add();
 					
 					liteSeason2 = (LiteLMThermostatSeason) StarsLiteFactory.createLite( season2 );
 					liteSchedule.getThermostatSeasons().add( liteSeason2 );
@@ -789,7 +791,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						
 						if (liteEntries.size() > 0 && liteEntries.size() != 4) {
 							// Currently this should not happen, so remove these entries
-							throw new Exception( "Invalid number of thermostat season entries: " + liteEntries.size() + ", for season id = " + liteSeason.getSeasonID() );
+							throw new WebClientException( "Invalid number of thermostat season entries: " + liteEntries.size() + ", for season id = " + liteSeason.getSeasonID() );
 						}
 						else if (liteEntries.size() == 4) {
 							// Update the season entries
@@ -821,7 +823,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						}
 						
 						if (liteEntries2.size() > 0 && liteEntries2.size() != 4) {
-							throw new Exception( "Invalid number of thermostat season entries: " + liteEntries2.size() + ", for season id = " + liteSeason2.getSeasonID() );
+							throw new WebClientException( "Invalid number of thermostat season entries: " + liteEntries2.size() + ", for season id = " + liteSeason2.getSeasonID() );
 						}
 						else if (liteEntries2.size() == 4) {
 							// Update the season entries for the other season
@@ -833,7 +835,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 								}
 								else if (liteEntry.getTemperature() == -1) {
 									if (liteDftEntries2.size() != 4)
-										throw new Exception( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
+										throw new WebClientException( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
 									int dftTemp = ((LiteLMThermostatSeasonEntry) liteDftEntries2.get(l)).getTemperature();
 									if (dftTemp < 0) dftTemp = 72;
 									liteEntry.setTemperature( dftTemp );
@@ -847,7 +849,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						else {
 							// Add season entries to the other season, using the new time schedule and the default temperatures
 							if (liteDftEntries2.size() != 4)
-								throw new Exception( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
+								throw new WebClientException( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
 							
 							for (int l = 0; l < 4; l++) {
 								LMThermostatSeasonEntry entry = new LMThermostatSeasonEntry();
@@ -878,7 +880,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
 			catch (java.sql.SQLException e2) {}
     		
-			throw e;
+			throw new WebClientException( "Failed to update thermostat schedule" );
 		}
 		finally {
 			try {
