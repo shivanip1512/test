@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/09 20:52:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/02/25 17:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,8 +49,25 @@ int main(int argc, char* argv[] )
 {
     LPTSTR szName = MC_SERVICE_NAME;
     LPTSTR szDisplay = MC_SERVICE_DISPLAY_NAME;
+    HANDLE hExclusion;
 
     RWWinSockInfo sockInfo;
+
+    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "MC_EXCLUSION_EVENT")) != NULL )
+    {
+       // Oh no, macs is running on this machine already.
+       CloseHandle(hExclusion);
+       cout << "Macs is already running, exiting." << endl;
+       exit(-1);
+    }
+
+    hExclusion = CreateEvent(NULL, TRUE, FALSE, "MC_EXCLUSION_EVENT"); 
+
+    if( hExclusion == (HANDLE)NULL )
+    {
+       cout << "Couldn't create macs" << endl;
+       exit(-1);
+    }
 
     // Hack to detect whether we are running as a service
     // or in a console

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:11 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/02/25 17:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,6 +71,8 @@
 #define DEFAULT_MC_FTP_INTERFACE_DIR "c:\\yukon\\server\\macsftp"
 #define DEFAULT_MC_FTP_INTERFACE_EXT ".ctl"
 
+#define MC_EXCLUSION_EVENT "macs"
+ 
 extern unsigned gMacsDebugLevel;
 
 #endif
