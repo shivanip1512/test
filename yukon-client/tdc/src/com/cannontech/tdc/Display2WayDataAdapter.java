@@ -139,8 +139,6 @@ public void addBlankRow( int location )
 					"",
 					0,		
 					location );
-
-	//fireTableRowsInserted( location, location ); // Tell the listeners a new row has arrived.	
 }
 
 protected Vector getColumnNames()
@@ -1083,7 +1081,7 @@ public int getRowNumber( final Signal signal_ )
 		}
 	}
 	
-	return ( -1 );	
+	return -1;	
 	
 }
 
@@ -1097,7 +1095,7 @@ public Object getValueAt(int aRow, int aColumn)
 	}
 	catch( ArrayIndexOutOfBoundsException ex )
 	{
-		CTILogger.info(getClass().toString() + ".getValueAt("+aColumn+","+aRow+") threw ArrayIndexOutOfBounds, no major problem");
+		CTILogger.debug(getClass().toString() + ".getValueAt("+aColumn+","+aRow+") threw ArrayIndexOutOfBounds, no major problem");
 		
 		// we need to return a new Object to make the renderer happy
 		return new Object();
@@ -1673,8 +1671,7 @@ private boolean checkFilter( Signal signal )
 
 /**
  * This method was created in VisualAge.
-
- ONLY SIGNALS SHOULD BE ALLOWED IN HERE
+ *    ONLY SIGNALS SHOULD BE ALLOWED IN HERE
  */
 
 public synchronized void processSignalReceived( Signal signal )
@@ -1772,11 +1769,18 @@ private void removeRow( int rowNumber )
 
 	forcePaintTableRowDeleted( rowNumber );
 
-	//if there is a blank row here row, remove it
+	//if there is a blank row below this row, remove it
 	if( isRowSelectedBlank(rowNumber) )
 	{
 		removeRow( rowNumber );
 		forcePaintTableRowDeleted( rowNumber );
+	}
+	
+	//if there is a blank row above this row, remove it
+	if( isRowSelectedBlank(rowNumber-1) )
+	{
+		removeRow( rowNumber-1 );
+		forcePaintTableRowDeleted( rowNumber-1 );
 	}
 	
 }
