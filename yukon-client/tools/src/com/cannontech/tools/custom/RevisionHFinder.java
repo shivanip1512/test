@@ -9,8 +9,10 @@ package com.cannontech.tools.custom;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -33,6 +35,9 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	
 	//file to write results report to
 	private String reportFile = "C:/yukon/RevisionHReport.txt";
+
+	//file to write results report to
+	private String missedListFileName = "";
 	
 	//Vector of Strings (results from sql query)
 	public Vector sqlData = new Vector();
@@ -52,10 +57,14 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	/** HashSet of userMessageIds for this instance */
 	private java.util.Set requestMessageIDs = new java.util.HashSet(10);
 	
+	/** HashSet of deviceIDs for this instance */
+	private java.util.Set receivedDevIDs = new java.util.HashSet(10);
+	
 	// Number of retries if reading from collection group only.
-	private int numRetries = 3;
+//	private int numRetries = 3;
 	private String collGroup = "";
 	
+	private int numDevices = 0;
 	/**
 	 * logfile = the filename and path of the log file to be parsed
 	 * coll[group] = the collection group to read the model from
@@ -82,9 +91,9 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 				{
 					finder.logFileName = value;
 				}
-				else if( key.startsWith("retry"))
+				if( key.startsWith("file"))
 				{
-					finder.numRetries = Integer.valueOf(value).intValue();
+					finder.missedListFileName = value;
 				}
 				else if( key.startsWith("coll"))
 				{
@@ -96,9 +105,40 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 				}
 			}
 		}
+		finder.getPilConn();
 		if( finder.logFileName != "")
 		{	//Find revH meters from the log file
 			finder.retrieveFromLogFile();
+		}
+		if( finder.missedListFileName != "")
+		{	
+//			Add messageListener
+			finder.getPilConn().addMessageListener(finder);
+						
+			//Find revH meters from the log file
+			finder.readFromMissedList();
+			
+			long timeout = 2000;
+
+			CTILogger.info ("Timing out after ("+ finder.numDevices +" * 3secs) = " + finder.numDevices * 3l +" secs");
+			timeout = (long)finder.numDevices * 3000l;
+
+			long totalTime = 0;				
+			while(!finder.getRequestMessageIDs().isEmpty() && totalTime < timeout)
+			{
+				try
+				{
+					//Sleep for a moment and let the return messages complete
+					Thread.sleep(1000);
+					totalTime += 1000;
+					System.out.print('.');
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
 		}
 		else if( finder.collGroup != "")
 		{
@@ -107,40 +147,31 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 			
 			//Find revH meters from the collection group
 			finder.readCollectionGroup(finder.collGroup);
-			while(!finder.getRequestMessageIDs().isEmpty())
+			long timeout = 2000;
+
+			CTILogger.info ("Timing out after ("+ finder.numDevices +" * 3secs) = " + finder.numDevices * 3l +" secs");
+			timeout = (long)finder.numDevices * 3000l;
+
+			long totalTime = 0;				
+			while(!finder.getRequestMessageIDs().isEmpty() && totalTime < timeout)
 			{
 				try
 				{
 					//Sleep for a moment and let the return messages complete
 					Thread.sleep(1000);
+					totalTime += 1000;
+					System.out.print('.');
 				}
 				catch (InterruptedException e)
 				{
 					e.printStackTrace();
 				}
 			}
-			//Attempt to retry reading the missed meter reads
-			while(finder.numRetries > 0 && !finder.missedIDs.isEmpty())
-			{
-				finder.numRetries--;
-				finder.readDevIDs((Vector)finder.missedIDs.clone());
-				while(!finder.getRequestMessageIDs().isEmpty())
-				{
-					try
-					{
-						//Sleep for a moment and let the return messages complete
-						Thread.sleep(1000);
-					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-				}			
-			}
 		}
 
 		finder.sqlData = finder.getSQLData();
 		finder.writeToFile();		
+		finder.writeToMissedListFile();
 		System.exit(0);
 	}
 	
@@ -177,7 +208,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
-		System.out.println(sql);
+		CTILogger.info(sql);
 		try
 		{
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
@@ -232,7 +263,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	 */
 	public void retrieveFromLogFile()
 	{
-		System.out.println("Attempting to parse Revision H meters from log file: " + logFileName);
+		CTILogger.info("Attempting to parse Revision H meters from log file: " + logFileName);
 		File file = new File(logFileName);	
 		java.io.RandomAccessFile raFile = null;
 		try
@@ -314,6 +345,61 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 		}	
 	}
 	
+
+	public void readFromMissedList()
+	{
+		CTILogger.info("Attempting to parse Missed List for deviceIDS from file: " + missedListFileName);
+		Vector devIDs = new Vector();
+		File file = new File(missedListFileName);	
+		java.io.RandomAccessFile raFile = null;
+		try
+		{
+			// open file		
+			if( file.exists() )
+			{
+				raFile = new RandomAccessFile( file, "r" );
+							
+				long readLinePointer = 0;
+				long fileLength = raFile.length();
+					
+				while ( readLinePointer < fileLength )  // loop until the end of the file
+				{
+					String line = raFile.readLine();  // read a line in
+					Integer devID = new Integer(Integer.parseInt(line));
+					devIDs.add(devID);
+					readLinePointer = raFile.getFilePointer();
+				}
+			}
+			else
+				return;
+		
+			// Close file
+			raFile.close();						
+		}
+		catch( java.io.FileNotFoundException fnfe)
+		{
+			com.cannontech.clientutils.CTILogger.info("*** File Not Found Exception:");
+			com.cannontech.clientutils.CTILogger.info("  " + fnfe.getMessage());
+			com.cannontech.clientutils.CTILogger.error( fnfe.getMessage(), fnfe );
+		}
+		catch( java.io.IOException ioe )
+		{
+			com.cannontech.clientutils.CTILogger.error( ioe.getMessage(), ioe );
+		}
+		finally
+		{
+			try
+			{
+				if( raFile != null)
+					raFile.close();
+			}
+			catch (java.io.IOException e)
+			{
+				e.printStackTrace();		
+			}
+		}
+		readDevIDs(devIDs);	
+	}		
 	public void readCollectionGroup(String collGroup)
 	{
 		try
@@ -337,6 +423,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 	 */
 	private void readDevIDs(Vector deviceIDs)
 	{
+		numDevices = deviceIDs.size();
 		//remove all previously missed deviceIds...this is new life
 		missedIDs.clear();
 		for(int i = 0; i < deviceIDs.size(); i++)
@@ -347,6 +434,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 			{
 				getPilConn().write( porterRequest);
 				getRequestMessageIDs().add(new Long(currentUserMessageID));
+				receivedDevIDs.add(deviceIDs.get(i));
 				generateMessageID();
 			}
 		}
@@ -390,7 +478,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 					return;
 
-				System.out.println(returnMsg.getDeviceID() + " " + returnMsg.getResultString() + "  " + returnMsg.getExpectMore());
+				CTILogger.info(returnMsg.getDeviceID() + " " + returnMsg.getResultString() + "  " + returnMsg.getExpectMore());
 				synchronized ( RevisionHFinder.class )
 				{
 					if( returnMsg.getExpectMore() == 0)	//Only send next message when ret expects nothing more
@@ -405,6 +493,7 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 								Pair revH = new Pair(new Integer(devID), result); 
 								revHReads.add(revH);
 							}
+							receivedDevIDs.remove(new Integer(returnMsg.getDeviceID()));
 						}
 						else
 						{
@@ -477,4 +566,37 @@ public class RevisionHFinder implements com.cannontech.message.util.MessageListe
 			e.printStackTrace();
 		}
 	}
+	
+
+	public void writeToMissedListFile()
+	{
+		try
+		{
+			int index = missedListFileName.lastIndexOf('/');
+			if( index < 0)
+				index = missedListFileName.lastIndexOf('\\');
+			String path = missedListFileName.substring(0, index);
+			
+			java.io.File file = new java.io.File(path);
+			file.mkdirs();
+
+			java.io.FileWriter writer = new java.io.FileWriter( missedListFileName);
+			String endline = "\r\n";
+
+			writer.write("Writing new MissedList"+ endline);
+			writer.write("Missed " + receivedDevIDs.size()+ " devices" + endline + endline);
+			Iterator iter = receivedDevIDs.iterator();
+			while (iter.hasNext())
+			{
+				Integer val = (Integer)iter.next();
+				writer.write(val.toString()+ endline);
+			}
+			writer.close();
+		}
+		catch ( java.io.IOException e )
+		{
+			System.out.print(" IOException in writeDatFile");
+			e.printStackTrace();
+		}
+	}	
 }
