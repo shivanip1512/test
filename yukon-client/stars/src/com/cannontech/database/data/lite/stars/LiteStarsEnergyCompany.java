@@ -747,9 +747,35 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			selectionLists = new ArrayList();
 	        
 			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
-			if (items != null) {
-				for (int i = 0; i < items.length; i++)
-					selectionLists.add( YukonListFuncs.getYukonSelectionList(items[i].getItemID().intValue()) );
+			if (items == null) return null;
+			
+			for (int i = 0; i < items.length; i++) {
+				YukonSelectionList cList = YukonListFuncs.getYukonSelectionList( items[i].getItemID().intValue() );
+				if (cList == null) continue;
+				
+				if (ECUtils.isDefaultEnergyCompany(this) || cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
+					selectionLists.add( cList );
+				}
+				else {
+					try {
+						com.cannontech.database.data.constants.YukonSelectionList list =
+								new com.cannontech.database.data.constants.YukonSelectionList();
+						list.setListID( new Integer(cList.getListID()) );
+						Transaction.createTransaction( Transaction.DELETE, list ).execute();
+						
+						java.util.Properties entries = YukonListFuncs.getYukonListEntries();
+						synchronized (entries) {
+							for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
+								YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(j);
+								entries.remove( new Integer(entry.getEntryID()) );
+							}
+						}
+						YukonListFuncs.getYukonSelectionLists().remove( new Integer(cList.getListID()) );
+					}
+					catch (TransactionException e) {
+						CTILogger.error( e.getMessage(), e );
+					}
+				}
 			}
 		}
 		

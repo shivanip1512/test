@@ -2,6 +2,9 @@ package com.cannontech.database.db.stars;
 
 import java.sql.SQLException;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -68,10 +71,8 @@ public class ECToGenericMapping extends DBPersistent {
 	
 	public static ECToGenericMapping[] getAllMappingItems(Integer energyCompanyID) {
 		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EnergyCompanyID = " + energyCompanyID.toString();
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-				
 		try {
 			stmt.execute();
 			ECToGenericMapping[] items = new ECToGenericMapping[ stmt.getRowCount() ];
@@ -88,7 +89,7 @@ public class ECToGenericMapping extends DBPersistent {
 			return items;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -97,10 +98,8 @@ public class ECToGenericMapping extends DBPersistent {
 	public static ECToGenericMapping[] getAllMappingItems(Integer energyCompanyID, String category) {
 		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EnergyCompanyID = " + energyCompanyID.toString()
 				   + " AND MappingCategory LIKE '" + category + "%'";
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-				
 		try {
 			stmt.execute();
 			ECToGenericMapping[] items = new ECToGenericMapping[ stmt.getRowCount() ];
@@ -117,7 +116,7 @@ public class ECToGenericMapping extends DBPersistent {
 			return items;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
