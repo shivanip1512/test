@@ -75,7 +75,7 @@ public class CustomerAccount extends DBPersistent {
 			}
 			catch (java.sql.SQLException e) {}
 		}
-
+		
         return null;
     }
     
@@ -190,7 +190,7 @@ public class CustomerAccount extends DBPersistent {
     				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
     		
 			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
-					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID, conn );
+					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
 			if (hardwares.length == 0) return new int[0];
     		
 			String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "

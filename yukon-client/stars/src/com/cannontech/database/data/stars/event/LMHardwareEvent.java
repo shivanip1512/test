@@ -1,6 +1,7 @@
 package com.cannontech.database.data.stars.event;
 
-
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 
 /**
  * <p>Title: </p>
@@ -51,128 +52,61 @@ public class LMHardwareEvent extends LMCustomerEventBase {
         getLMHardwareEvent().retrieve();
     }
     
-    public static void deleteAllLMHardwareEvents(Integer invID, java.sql.Connection conn) {
+    public static void deleteAllLMHardwareEvents(Integer invID) {
     	try {
-    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID, conn );
-    		com.cannontech.database.db.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents( invID, conn );
+    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID );
+    		com.cannontech.database.db.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents( invID );
     		
     		LMCustomerEventBase event = new LMCustomerEventBase();
     		for (int i = 0; i < eventIDs.length; i++) {
     			event.setEventID( eventIDs[i] );
-    			event.setDbConnection( conn );
-    			event.delete();
+    			Transaction.createTransaction( Transaction.DELETE, event ).execute();
     		}
     	}
-    	catch (java.sql.SQLException e) {
+    	catch (TransactionException e) {
     		e.printStackTrace();
     	}
     }
     
     public static LMHardwareEvent[] getAllLMHardwareEvents(Integer invID) {
-    	java.sql.Connection conn = null;
-
     	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID, conn );
+	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID );
 	        com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
 	        		new com.cannontech.database.data.stars.event.LMHardwareEvent[ eventIDs.length ];
 	        
 	        for (int i = 0; i < events.length; i++) {
 	        	events[i] = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-	        	events[i].setDbConnection(conn);
-	        	events[i].setEventID( eventIDs[i] );
-	        	events[i].retrieve();
+				events[i].setEventID( eventIDs[i] );
+				
+				events[i] = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+						Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 	        }
 	        
 	        return events;
     	}
-    	catch (Exception e) {
+    	catch (TransactionException e) {
     		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
     	}
     	
     	return null;
     }
 
-/*
- * Commented out since cache is used now
- *     
-    public static StarsLMHardwareHistory getStarsLMHardwareHistory(Integer invID) {
-    	java.sql.Connection conn = null;
-
-    	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-	        LMHardwareEvent[] events = LMHardwareEvent.getAllLMHardwareEvents( invID );
-	        StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-	        
-	        for (int i = 0; i < events.length; i++) {
-	        	StarsLMHardwareEvent hwEvent = new StarsLMHardwareEvent();
-	        	hwEvent.setEventAction( events[i].getAction().getEntryText() );
-	        	hwEvent.setYukonDefinition( events[i].getAction().getYukonDefinition() );
-	        	hwEvent.setEventDateTime( events[i].getLMCustomerEventBase().getEventDateTime() );
-	        	hwEvent.setNotes( events[i].getLMCustomerEventBase().getNotes() );
-	        	hwHist.addStarsLMHardwareEvent( hwEvent );
-	        }
-	        
-	        return hwHist;
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	
-    	return null;
-    }
-*/    
     public static LMHardwareEvent getLastLMHardwareEvent(Integer invID) {
-    	java.sql.Connection conn = null;
-
     	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
 	        com.cannontech.database.db.stars.event.LMHardwareEvent eventDB =
-	        		com.cannontech.database.db.stars.event.LMHardwareEvent.getLastLMHardwareEvent( invID, conn );
+	        		com.cannontech.database.db.stars.event.LMHardwareEvent.getLastLMHardwareEvent( invID );
 	        if (eventDB == null) return null;
 	        
         	com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-        	event.setDbConnection(conn);
-        	event.setEventID( eventDB.getEventID() );
-        	event.retrieve();
+			event.setEventID( eventDB.getEventID() );
+			
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction( Transaction.RETRIEVE, event ).execute();
 	        
 	        return event;
     	}
     	catch (Exception e) {
     		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
     	}
     	
     	return null;

@@ -21,6 +21,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -347,22 +348,6 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			if (req.getParameter("FaxNo").length() > 0) {
-				if (notifFax != null) {
-					notifFax.setNotification( req.getParameter("FaxNo") );
-					notifFax.setOpCode( Transaction.UPDATE );
-				}
-				else {
-					notifFax = new com.cannontech.database.db.contact.ContactNotification();
-					notifFax.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_FAX) );
-					notifFax.setDisableFlag( "Y" );
-					notifFax.setNotification( req.getParameter("FaxNo") );
-					notifFax.setOpCode( Transaction.INSERT );
-					
-					contact.getContactNotifVect().add( notifFax );
-				}
-			}
-			
 			if (req.getParameter("Email").length() > 0) {
 				if (notifEmail != null) {
 					notifEmail.setNotification( req.getParameter("Email") );
@@ -451,8 +436,8 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	public static LiteApplianceCategory createApplianceCategory(String appCatName, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws java.sql.SQLException
+	public static LiteApplianceCategory createApplianceCategory(String appCatName, LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
 	{
 		com.cannontech.database.db.web.YukonWebConfiguration config =
 				new com.cannontech.database.db.web.YukonWebConfiguration();
@@ -471,8 +456,9 @@ public class StarsAdmin extends HttpServlet {
 		appCatDB.setDescription( appCatName );
 		appCat.setWebConfiguration( config );
 		appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-		appCat.setDbConnection( conn );
-		appCat.add();
+		
+		appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
+				Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
 		
 		LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
 		energyCompany.addApplianceCategory( liteAppCat );
@@ -489,10 +475,7 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		StarsEnrollmentPrograms starsAppCats = energyCompany.getStarsEnrollmentPrograms();
 		
-		java.sql.Connection conn = null;
         try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
 			boolean newAppCat = (appCatID == -1);
 			
@@ -516,8 +499,9 @@ public class StarsAdmin extends HttpServlet {
 			LiteApplianceCategory liteAppCat = null;
 			if (newAppCat) {
 				appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				appCat.setDbConnection( conn );
-				appCat.add();
+				
+				appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
+						Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
 				
 				liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
 				energyCompany.addApplianceCategory( liteAppCat );
@@ -528,8 +512,9 @@ public class StarsAdmin extends HttpServlet {
 				liteAppCat = energyCompany.getApplianceCategory( appCatID );
 				appCat.setApplianceCategoryID( new Integer(appCatID) );
 				appCatDB.setWebConfigurationID( new Integer(liteAppCat.getWebConfigurationID()) );
-				appCat.setDbConnection( conn );
-				appCat.update();
+				
+				appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
+						Transaction.createTransaction( Transaction.UPDATE, appCat ).execute();
 				
 				StarsLiteFactory.setLiteApplianceCategory( liteAppCat, appCat.getApplianceCategory() );
 				LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( appCat.getWebConfiguration().getConfigurationID().intValue() );
@@ -582,8 +567,9 @@ public class StarsAdmin extends HttpServlet {
 					
 					if (pubPrograms[i] != null) {
 						pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(pubPrograms[i].getWebSettingsID()) );
-						pubProg.setDbConnection( conn );
-						pubProg.update();
+						
+						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
+								Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
 						
 						pubPrograms[i].setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
 						
@@ -641,7 +627,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				// Delete all events of this program
 				com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-						energyCompany.getEnergyCompanyID(), programID, conn );
+						energyCompany.getEnergyCompanyID(), programID );
 				
 				// Delete all control history of this program
 				if (liteProg.getGroupIDs() != null) {
@@ -666,8 +652,9 @@ public class StarsAdmin extends HttpServlet {
 						
 						StarsLiteFactory.setApplianceBase( app, liteApp );
 						appDB.setLMProgramID( new Integer(CtiUtilities.NONE_ID) );
-						appDB.setDbConnection( conn );
-						appDB.update();
+						
+						appDB = (com.cannontech.database.db.stars.appliance.ApplianceBase)
+								Transaction.createTransaction( Transaction.UPDATE, appDB ).execute();
 						
 						liteApp.setLmProgramID( CtiUtilities.NONE_ID );
 					}
@@ -694,9 +681,9 @@ public class StarsAdmin extends HttpServlet {
 				pubProg.setApplianceCategoryID( applianceCategoryID );
 				pubProg.setLMProgramID( programID );
 				pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
-				pubProg.setDbConnection( conn );
-				pubProg.delete();
-			
+				
+				Transaction.createTransaction( Transaction.DELETE, pubProg ).execute();
+				
 				energyCompany.deleteLMProgram( liteProg.getProgramID() );
 				SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
 				energyCompany.deleteStarsWebConfig( liteProg.getWebSettingsID() );
@@ -722,17 +709,10 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update appliance category information");
 			redirect = referer;
         }
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
 	}
 	
 	private void deleteApplianceCategory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        java.sql.Connection conn = null;
         
         try {
 			StarsGetEnergyCompanySettingsResponse ecSettings =
@@ -742,8 +722,6 @@ public class StarsAdmin extends HttpServlet {
 			int applianceCategoryID = Integer.parseInt( req.getParameter("AppCatID") );
 			boolean deleteAll = (applianceCategoryID == -1);
 			
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
 			for (int i = starsAppCats.getStarsApplianceCategoryCount() - 1; i >= 0; i--) {
 				StarsApplianceCategory starsAppCat = starsAppCats.getStarsApplianceCategory(i);
 				if (!deleteAll && starsAppCat.getApplianceCategoryID() != applianceCategoryID) continue;
@@ -751,7 +729,7 @@ public class StarsAdmin extends HttpServlet {
 				Integer appCatID = new Integer( starsAppCat.getApplianceCategoryID() );
 				LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( appCatID.intValue() );
 				
-				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( appCatID, conn );
+				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( appCatID );
 				
 				LiteLMProgram[] programs = liteAppCat.getPublishedPrograms();
 				int[] programIDs = null;
@@ -762,8 +740,8 @@ public class StarsAdmin extends HttpServlet {
 						com.cannontech.database.db.web.YukonWebConfiguration cfg =
 								new com.cannontech.database.db.web.YukonWebConfiguration();
 						cfg.setConfigurationID( new Integer(configID) );
-						cfg.setDbConnection( conn );
-						cfg.delete();
+						
+						Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
 						
 						SOAPServer.deleteWebConfiguration( configID );
 						energyCompany.deleteStarsWebConfig( configID );
@@ -775,7 +753,7 @@ public class StarsAdmin extends HttpServlet {
 						
 						// Delete all program events
 						com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-								energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]), conn );
+								energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]) );
 						
 						// Delete all program control history
 						if (programs[j].getGroupIDs() != null) {
@@ -793,15 +771,15 @@ public class StarsAdmin extends HttpServlet {
 						new com.cannontech.database.data.stars.appliance.ApplianceBase();
 				for (int j = 0; j < applianceIDs.length; j++) {
 					app.setApplianceID( new Integer(applianceIDs[j]) );
-					app.setDbConnection( conn );
-					app.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, app ).execute();
 				}
 				
 				com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
 						new com.cannontech.database.data.stars.appliance.ApplianceCategory();
 				StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
-				appCat.setDbConnection( conn );
-				appCat.delete();
+				
+				Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
 				
 				SOAPServer.deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 				energyCompany.deleteStarsWebConfig( liteAppCat.getWebConfigurationID() );
@@ -850,16 +828,10 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete appliance category");
 			redirect = referer;
         }
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
 	}
 	
-	public static LiteServiceCompany createServiceCompany(String companyName, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws java.sql.SQLException
+	public static LiteServiceCompany createServiceCompany(String companyName, LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
 	{
 		com.cannontech.database.data.stars.report.ServiceCompany company =
 				new com.cannontech.database.data.stars.report.ServiceCompany();
@@ -867,8 +839,9 @@ public class StarsAdmin extends HttpServlet {
 		
 		companyDB.setCompanyName( companyName );
 		company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-		company.setDbConnection( conn );
-		company.add();
+		
+		company = (com.cannontech.database.data.stars.report.ServiceCompany)
+				Transaction.createTransaction( Transaction.INSERT, company ).execute();
 		
 		com.cannontech.database.data.customer.Contact contact =
 				new com.cannontech.database.data.customer.Contact();
@@ -1001,8 +974,8 @@ public class StarsAdmin extends HttpServlet {
         }
 	}
 	
-	public static void deleteServiceCompany(int companyID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws java.sql.SQLException
+	public static void deleteServiceCompany(int companyID, LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
 	{
 		// set InstallationCompanyID = 0 for all inventory assigned to this service company
 		ArrayList inventory = energyCompany.getAllInventory();
@@ -1014,11 +987,11 @@ public class StarsAdmin extends HttpServlet {
 				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
 						new com.cannontech.database.db.stars.hardware.InventoryBase();
 				StarsLiteFactory.setInventoryBase( invDB, liteInv );
-		    	
 				invDB.setInstallationCompanyID( new Integer(CtiUtilities.NONE_ID) );
-				invDB.setDbConnection( conn );
-				invDB.update();
-		    	
+				
+				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+	    		
 				liteInv.setInstallationCompanyID( CtiUtilities.NONE_ID );
 			}
 		}
@@ -1031,8 +1004,9 @@ public class StarsAdmin extends HttpServlet {
 				com.cannontech.database.db.stars.report.WorkOrderBase order =
 						(com.cannontech.database.db.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
 				order.setServiceCompanyID( new Integer(CtiUtilities.NONE_ID) );
-				order.setDbConnection( conn );
-				order.update();
+				
+				order = (com.cannontech.database.db.stars.report.WorkOrderBase)
+						Transaction.createTransaction( Transaction.UPDATE, order ).execute();
 				
 				liteOrder.setServiceCompanyID( CtiUtilities.NONE_ID );
 			}
@@ -1043,8 +1017,8 @@ public class StarsAdmin extends HttpServlet {
 		com.cannontech.database.data.stars.report.ServiceCompany company =
 				new com.cannontech.database.data.stars.report.ServiceCompany();
 		StarsLiteFactory.setServiceCompany( company.getServiceCompany(), liteCompany );
-		company.setDbConnection( conn );
-		company.delete();
+		
+		Transaction.createTransaction( Transaction.DELETE, company ).execute();
 		
 		energyCompany.deleteAddress( liteCompany.getAddressID() );
 		energyCompany.deleteContact( liteCompany.getPrimaryContactID() );
@@ -1059,44 +1033,35 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws java.sql.SQLException
+	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
 	{
 		ArrayList companies = energyCompany.getAllServiceCompanies();
 		
 		for (int i = 0; i < companies.size(); i++) {
 			LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
-			deleteServiceCompany( liteCompany.getCompanyID(), energyCompany, conn );
+			deleteServiceCompany( liteCompany.getCompanyID(), energyCompany );
 		}
 	}
 	
 	private void deleteServiceCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        java.sql.Connection conn = null;
         
         try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			int companyID = Integer.parseInt( req.getParameter("CompanyID") );
-			
 			if (companyID == -1) {
-				deleteAllServiceCompanies( energyCompany, conn );
+				deleteAllServiceCompanies( energyCompany );
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service companies have been deleted successfully");
 			}
 			else {
-				deleteServiceCompany( companyID, energyCompany, conn );
+				deleteServiceCompany( companyID, energyCompany );
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
 			}
         }
-        catch (java.sql.SQLException e) {
+        catch (Exception e) {
 			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete service company");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the service company");
 			redirect = referer;
-        }
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
         }
 	}
 	
@@ -1198,7 +1163,6 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void updateCustomerFAQs(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        java.sql.Connection conn = null;
         
         try {
 			StarsGetEnergyCompanySettingsResponse ecSettings =
@@ -1207,8 +1171,6 @@ public class StarsAdmin extends HttpServlet {
 			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
 			boolean newGroup = (subjectID == -1);
-			
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
 			String subject = req.getParameter("Subject");
 			String[] questions = req.getParameterValues("Questions");
@@ -1232,8 +1194,9 @@ public class StarsAdmin extends HttpServlet {
 				entry.setListID( new Integer(cList.getListID()) );
 				entry.setEntryOrder( new Integer(nextOrderNo) );
 				entry.setEntryText( subject );
-				entry.setDbConnection( conn );
-				entry.add();
+				
+				entry = (com.cannontech.database.db.constants.YukonListEntry)
+						Transaction.createTransaction( Transaction.INSERT, entry ).execute();
 				
 				com.cannontech.common.constants.YukonListEntry cEntry =
 						new com.cannontech.common.constants.YukonListEntry();
@@ -1255,9 +1218,8 @@ public class StarsAdmin extends HttpServlet {
 							com.cannontech.database.db.stars.CustomerFAQ faq =
 									new com.cannontech.database.db.stars.CustomerFAQ();
 							faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-							faq.setDbConnection( conn );
-							faq.delete();
 							
+							Transaction.createTransaction( Transaction.DELETE, faq ).execute();
 							it.remove();
 						}
 					}
@@ -1275,8 +1237,9 @@ public class StarsAdmin extends HttpServlet {
 				if (!cEntry.getEntryText().equals( subject )) {
 					com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry( cEntry );
 					entry.setEntryText( subject );
-					entry.setDbConnection( conn );
-					entry.update();
+					
+					entry = (com.cannontech.database.db.constants.YukonListEntry)
+							Transaction.createTransaction( Transaction.UPDATE, entry ).execute();
 					
 					cEntry.setEntryText( subject );
 					starsGroup.setSubject( subject );
@@ -1290,8 +1253,9 @@ public class StarsAdmin extends HttpServlet {
 					faq.setSubjectID( new Integer(starsGroup.getSubjectID()) );
 					faq.setQuestion( questions[i] );
 					faq.setAnswer( answers[i] );
-					faq.setDbConnection( conn );
-					faq.add();
+					
+					faq = (com.cannontech.database.db.stars.CustomerFAQ)
+							Transaction.createTransaction( Transaction.INSERT, faq ).execute();
 					
 					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faq );
 					synchronized (liteFAQs) { liteFAQs.add(liteFAQ); }
@@ -1303,7 +1267,7 @@ public class StarsAdmin extends HttpServlet {
 					starsGroup.addStarsCustomerFAQ( starsFAQ );
 				}
 			}
-
+			
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
         }
         catch (Exception e) {
@@ -1311,17 +1275,10 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer FAQs");
 			redirect = referer;
         }
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
 	}
 	
 	private void deleteFAQSubject(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        java.sql.Connection conn = null;
         
         try {
 			StarsGetEnergyCompanySettingsResponse ecSettings =
@@ -1330,8 +1287,6 @@ public class StarsAdmin extends HttpServlet {
 			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
 			boolean deleteAll = (subjectID == -1);
-			
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
 			ArrayList liteFAQs = energyCompany.getAllCustomerFAQs();
 			
@@ -1347,9 +1302,8 @@ public class StarsAdmin extends HttpServlet {
 							com.cannontech.database.db.stars.CustomerFAQ faq =
 									new com.cannontech.database.db.stars.CustomerFAQ();
 							faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-							faq.setDbConnection( conn );
-							faq.delete();
 							
+							Transaction.createTransaction( Transaction.DELETE, faq ).execute();
 							it.remove();
 						}
 					}
@@ -1358,8 +1312,8 @@ public class StarsAdmin extends HttpServlet {
 				YukonListEntry cEntry = YukonListFuncs.getYukonListEntry( starsGroup.getSubjectID() );
 				com.cannontech.database.db.constants.YukonListEntry entry =
 						StarsLiteFactory.createYukonListEntry( cEntry );
-				entry.setDbConnection( conn );
-				entry.delete();
+				
+				Transaction.createTransaction( Transaction.DELETE, entry ).execute();
 				
 				YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
 				cList.getYukonListEntries().remove( cEntry );
@@ -1377,12 +1331,6 @@ public class StarsAdmin extends HttpServlet {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete service company");
 			redirect = referer;
-        }
-        finally {
-        	try {
-	        	if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
         }
 	}
 	
@@ -1465,12 +1413,14 @@ public class StarsAdmin extends HttpServlet {
 	 * Update entries of a customer selection list. The entryData parameter
 	 * is an array of {entryID(Integer), entryText(String), yukDefID(Integer)}
 	 */
-	public static void updateYukonListEntries(YukonSelectionList cList, Object[][] entryData, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws java.sql.SQLException, WebClientException
+	public static void updateYukonListEntries(YukonSelectionList cList, Object[][] entryData, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException, java.sql.SQLException
 	{
+		java.sql.Connection conn = null;
 		boolean autoCommit = true;
 		
 		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			autoCommit = conn.getAutoCommit();
 			conn.setAutoCommit( false );
 			
@@ -1534,6 +1484,7 @@ public class StarsAdmin extends HttpServlet {
 					}
 					catch (java.sql.SQLException e) {
 						e.printStackTrace();
+						conn.rollback();
 						throw new WebClientException("Cannot delete substation with id = " + entryID + ", make sure it is not referenced");
 					}
 				}
@@ -1603,6 +1554,7 @@ public class StarsAdmin extends HttpServlet {
 					}
 					catch (java.sql.SQLException e) {
 						e.printStackTrace();
+						conn.rollback();
 						throw new WebClientException("Cannot delete list entry with id = " + entryID + ", make sure it is not referenced");
 					}
 				}
@@ -1622,18 +1574,16 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 		}
-		catch (WebClientException e) {
-			conn.rollback();
-			throw e;
-		}
 		finally {
-			conn.setAutoCommit( autoCommit );
+			if (conn != null) {
+				conn.setAutoCommit( autoCommit );
+				conn.close();
+			}
 		}
 	}
 	
 	private void updateCustomerSelectionList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
         
 		try {
 			String listName = req.getParameter("ListName");
@@ -1648,8 +1598,6 @@ public class StarsAdmin extends HttpServlet {
 			YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
 			Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
 			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS)) {
 				// Handle customer opt out period list
 				boolean sameAsOp = Boolean.valueOf( req.getParameter("SameAsOp") ).booleanValue();
@@ -1660,8 +1608,8 @@ public class StarsAdmin extends HttpServlet {
 					com.cannontech.database.data.constants.YukonSelectionList list =
 							new com.cannontech.database.data.constants.YukonSelectionList();
 					list.setListID( new Integer(cList.getListID()) );
-					list.setDbConnection( conn );
-					list.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, list ).execute();
 					
 					for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
 						YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(i);
@@ -1694,7 +1642,7 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			updateYukonListEntries( cList, entryData, energyCompany, conn );
+			updateYukonListEntries( cList, entryData, energyCompany );
 			
 			if (!listName.equalsIgnoreCase(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION)) {
 				// Update yukon selection list
@@ -1703,8 +1651,9 @@ public class StarsAdmin extends HttpServlet {
 				list.setOrdering( ordering );
 				list.setSelectionLabel( label );
 				list.setWhereIsList( whereIsList );
-				list.setDbConnection( conn );
-				list.update();
+				
+				list = (com.cannontech.database.db.constants.YukonSelectionList)
+						Transaction.createTransaction( Transaction.UPDATE, list ).execute();
 				
 				StarsLiteFactory.setConstantYukonSelectionList( cList, list );
 			}
@@ -1721,16 +1670,10 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 			redirect = referer;
 		}
-		catch (java.sql.SQLException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer selection list");
 			redirect = referer;
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
 		}
 	}
 	
@@ -1861,44 +1804,24 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void deleteOperatorLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
 		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			int userID = Integer.parseInt( req.getParameter("UserID") );
-			ArrayList operLoginIDs = energyCompany.getOperatorLoginIDs();
-			
-			synchronized (operLoginIDs) {
-				Iterator it = operLoginIDs.iterator();
-				while (it.hasNext()) {
-					int loginID = ((Integer) it.next()).intValue();
-					if (userID == -1 || loginID == userID) {
-						if (loginID == energyCompany.getUserID()) continue;
-						
-						com.cannontech.database.data.user.YukonUser yukonUser =
-								new com.cannontech.database.data.user.YukonUser();
-						yukonUser.setUserID( new Integer(loginID) );
-						yukonUser.setDbConnection( conn );
-						yukonUser.deleteOperatorLogin();
-						
-						LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID );
-						ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
-						it.remove();
-					}
+		int userID = Integer.parseInt( req.getParameter("UserID") );
+		ArrayList operLoginIDs = energyCompany.getOperatorLoginIDs();
+		
+		synchronized (operLoginIDs) {
+			Iterator it = operLoginIDs.iterator();
+			while (it.hasNext()) {
+				int loginID = ((Integer) it.next()).intValue();
+				if (userID == -1 || loginID == userID) {
+					if (loginID == energyCompany.getUserID()) continue;
+					
+					com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(loginID) );
+					
+					LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID );
+					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
+					it.remove();
 				}
 			}
-		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete operator login(s)");
-			redirect = referer;
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e2) {}
 		}
 	}
 	

@@ -29,7 +29,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -1876,13 +1875,13 @@ public class ImportManager extends HttpServlet {
 		return NewCustAccountAction.newCustomerAccount(newAccount, user, energyCompany, checkConstraint);
 	}
 
-	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
+	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 	    StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
 	    ImportManager.setStarsCustAccount( updateAccount, fields, energyCompany );
 	    
-	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany, conn );
+	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
 	}
 
 	public static void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
@@ -2023,7 +2022,7 @@ public class ImportManager extends HttpServlet {
 	}
 
 	public static LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn, boolean checkConstraint) throws Exception
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
 	{
 		// Check inventory and build request message
 		int devTypeID = ImportManager.getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
@@ -2063,11 +2062,11 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		ImportManager.setStarsInventory( createHw, fields, energyCompany );
 	    
-	    return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
+	    return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 	}
 
 	public static void updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
+		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		if (liteAcctInfo.getInventories().size() != 1)
 			throw new WebClientException( "More than one hardware in the account, cannot determine which one to be updated" );
@@ -2122,16 +2121,16 @@ public class ImportManager extends HttpServlet {
 				}
 			}
 	        
-			DeleteLMHardwareAction.removeInventory(deleteHw, liteAcctInfo, energyCompany, conn);
-			CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
+			DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
+			CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 		}
 		else {
-			UpdateLMHardwareAction.updateInventory(updateHw, liteHw, energyCompany, conn);
+			UpdateLMHardwareAction.updateInventory( updateHw, liteHw, energyCompany );
 		}
 	}
 
 	public static void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
+		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		// Check if the hardware to be deleted exists
 		LiteStarsLMHardware liteHw = null;
@@ -2156,12 +2155,11 @@ public class ImportManager extends HttpServlet {
 					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
 		}
 		
-		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany, conn );
+		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
 	}
 
 	public static void programSignUp(ArrayList programs, LiteStarsCustAccountInformation liteAcctInfo,
-		Integer invID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws Exception
+		Integer invID, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		// Build request message
 		StarsSULMPrograms suPrograms = new StarsSULMPrograms();
@@ -2178,7 +2176,7 @@ public class ImportManager extends HttpServlet {
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
-	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, invID, energyCompany, conn );
+	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, invID, energyCompany );
 	}
 
 	private static void setStarsAppliance(StarsApp app, String[] fields, LiteStarsEnergyCompany energyCompany) {
@@ -2693,7 +2691,6 @@ public class ImportManager extends HttpServlet {
 	
 	private void importSelectionLists(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
 		
 		try {
 			File selListFile = new File( req.getParameter("SelListFile") );
@@ -2702,8 +2699,6 @@ public class ImportManager extends HttpServlet {
 			ArrayList selListLines = ServerUtils.readFile( selListFile, false, true );
 			if (selListLines == null)
 				throw new WebClientException("Unable to read selection list file '" + selListFile.getPath() + "'");
-			
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 			
 			String listName = null;
 			ArrayList listEntries = null;
@@ -2730,17 +2725,17 @@ public class ImportManager extends HttpServlet {
 						if (isInList && listEntries.size() > 0) {
 							// Find the end of a list, update the list entries
 							if (listName.equals("ServiceCompany")) {
-								StarsAdmin.deleteAllServiceCompanies( energyCompany, conn );
+								StarsAdmin.deleteAllServiceCompanies( energyCompany );
 								
 								for (int j = 0; j < listEntries.size(); j++) {
 									String entry = (String) listEntries.get(j);
-									StarsAdmin.createServiceCompany(entry, energyCompany, conn);
+									StarsAdmin.createServiceCompany( entry, energyCompany );
 								}
 							}
 							else if (listName.equals("LoadType")) {
 								for (int j = 0; j < listEntries.size(); j++) {
 									String entry = (String) listEntries.get(j);
-									StarsAdmin.createApplianceCategory(entry, energyCompany, conn);
+									StarsAdmin.createApplianceCategory( entry, energyCompany );
 								}
 								
 								hasLoadTypes = true;
@@ -2758,7 +2753,7 @@ public class ImportManager extends HttpServlet {
 								}
 								
 								YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
-								StarsAdmin.updateYukonListEntries(cList, entryData, energyCompany , conn);
+								StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany );
 							}
 						}
 						
@@ -2784,12 +2779,6 @@ public class ImportManager extends HttpServlet {
 		catch (Exception e) {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import selection lists");
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
 		}
 		
 		redirect = referer;
@@ -3468,13 +3457,10 @@ public class ImportManager extends HttpServlet {
 				valueIDMap.put( assignedValues.get(i), Integer.valueOf(entryIDs[i]) );
 		}
 		else if (entryTexts != null) {
-			java.sql.Connection conn = null;
 			try {
-				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				
 				if (listName.equals("ServiceCompany")) {
 					for (int i = 0; i < entryTexts.length; i++) {
-						LiteServiceCompany liteCompany = StarsAdmin.createServiceCompany( entryTexts[i], energyCompany, conn );
+						LiteServiceCompany liteCompany = StarsAdmin.createServiceCompany( entryTexts[i], energyCompany );
 						valueIDMap.put( assignedValues.get(i), new Integer(liteCompany.getCompanyID()) );
 					}
 				}
@@ -3498,7 +3484,7 @@ public class ImportManager extends HttpServlet {
 						entryData[entries.size()+i][2] = ZERO;
 					}
 					
-					StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany, conn );
+					StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany );
 					
 					StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 					selectionListTable.put( starsList.getListName(), starsList );
@@ -3518,16 +3504,10 @@ public class ImportManager extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 				redirect = referer;
 			}
-			catch (java.sql.SQLException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to assign import values to selection list");
 				redirect = referer;
-			}
-			finally {
-				try {
-					if (conn != null) conn.close();
-				}
-				catch (java.sql.SQLException e) {}
 			}
 		}
 		

@@ -1,5 +1,8 @@
 package com.cannontech.database.data.stars.event;
 
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+
 /**
  * @author yao
  *
@@ -48,40 +51,39 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
         getLmThermostatManualEvent().retrieve();
     }
     
-    public static void deleteAllLMThermostatManualEvents(int invID, java.sql.Connection conn) {
+    public static void deleteAllLMThermostatManualEvents(int invID) {
     	try {
-    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs(
-    				invID, conn );
-    		com.cannontech.database.db.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( invID, conn );
+    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID );
+    		com.cannontech.database.db.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( invID );
     		
     		LMCustomerEventBase event = new LMCustomerEventBase();
     		for (int i = 0; i < eventIDs.length; i++) {
     			event.setEventID( eventIDs[i] );
-    			event.setDbConnection( conn );
-    			event.delete();
+    			Transaction.createTransaction( Transaction.DELETE, event ).execute();
     		}
     	}
-    	catch (java.sql.SQLException e) {
+    	catch (TransactionException e) {
     		e.printStackTrace();
     	}
     }
     
-    public static LMThermostatManualEvent[] getAllLMThermostatManualEvents(int invID, java.sql.Connection conn) {
+    public static LMThermostatManualEvent[] getAllLMThermostatManualEvents(int invID) {
     	try {
-	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID, conn );
+	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEventIDs( invID );
 	        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
 	        		new com.cannontech.database.data.stars.event.LMThermostatManualEvent[ eventIDs.length ];
 	        
 	        for (int i = 0; i < events.length; i++) {
 	        	events[i] = new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
-	        	events[i].setDbConnection(conn);
-	        	events[i].setEventID( eventIDs[i] );
-	        	events[i].retrieve();
+				events[i].setEventID( eventIDs[i] );
+				
+				events[i] = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
+						Transaction.createTransaction( Transaction.RETRIEVE, events[i] ).execute();
 	        }
 	        
 	        return events;
     	}
-    	catch (java.sql.SQLException e) {
+    	catch (TransactionException e) {
     		e.printStackTrace();
     	}
     	
@@ -89,35 +91,22 @@ public class LMThermostatManualEvent extends LMCustomerEventBase {
     }
 
     public static LMThermostatManualEvent getLastLMThermostatManualEvent(Integer invID) {
-    	java.sql.Connection conn = null;
-
     	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
 	        com.cannontech.database.db.stars.event.LMThermostatManualEvent eventDB =
-	        		com.cannontech.database.db.stars.event.LMThermostatManualEvent.getLastLMThermostatManualEvent( invID, conn );
+	        		com.cannontech.database.db.stars.event.LMThermostatManualEvent.getLastLMThermostatManualEvent( invID );
 	        if (eventDB == null) return null;
 	        
         	com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
         			new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
-        	event.setDbConnection(conn);
-        	event.setEventID( eventDB.getEventID() );
-        	event.retrieve();
+			event.setEventID( eventDB.getEventID() );
+        	
+        	event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
+        			Transaction.createTransaction( Transaction.RETRIEVE, event ).execute();
 	        
 	        return event;
     	}
-    	catch (Exception e) {
+    	catch (TransactionException e) {
     		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
     	}
     	
     	return null;

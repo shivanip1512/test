@@ -3,6 +3,7 @@ package com.cannontech.database.db.stars.hardware;
 import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -142,13 +143,15 @@ public class InventoryBase extends DBPersistent {
         return new Integer( nextInventoryID );
     }
     
-	public static int[] searchByAccountID(int accountID, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static int[] searchByAccountID(int accountID) {
 		String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
+		
+		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
     	
     	try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
     		stmt = conn.createStatement();
     		rset = stmt.executeQuery( sql );
     		
@@ -162,24 +165,35 @@ public class InventoryBase extends DBPersistent {
 			
 			return invIDs;
     	}
-    	finally {
-    		if (rset != null) rset.close();
-    		if (stmt != null) stmt.close();
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
     	}
+    	finally {
+    		try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	
+    	return null;
 	}
 	
-	public static int[] searchForDevice(int categoryID, String deviceName, int energyCompanyID, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static int[] searchForDevice(int categoryID, String deviceName, int energyCompanyID) {
 		String sql = "SELECT inv.InventoryID " +
 				"FROM " + TABLE_NAME + " inv, ECToInventoryMapping map, YukonPAObject pao " +
 				"WHERE inv.CategoryID = ? AND inv.DeviceID > 0 " +
 				"AND inv.DeviceID = pao.PAObjectID AND UPPER(pao.PAOName) LIKE UPPER(?) " +
 				"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
 		
+		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
 		java.sql.ResultSet rset = null;
     	
     	try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
     		stmt = conn.prepareStatement( sql );
 			stmt.setInt( 1, categoryID );
 			stmt.setString( 2, deviceName );
@@ -197,14 +211,22 @@ public class InventoryBase extends DBPersistent {
 			
 			return invIDs;
     	}
-    	finally {
-    		if (rset != null) rset.close();
-    		if (stmt != null) stmt.close();
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
     	}
+    	finally {
+    		try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	
+    	return null;
 	}
 	
-	public static InventoryBase searchByDeviceID(int deviceID, int energyCompanyID, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static InventoryBase searchByDeviceID(int deviceID, int energyCompanyID) {
 		String sql = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID, " +
 				"ReceiveDate, InstallDate, RemoveDate, AlternateTrackingNumber, " +
 				"VoltageID, Notes, DeviceID, DeviceLabel " +
@@ -212,10 +234,13 @@ public class InventoryBase extends DBPersistent {
 				"WHERE DeviceID = ? AND inv.InventoryID = map.InventoryID " +
 				"AND map.EnergyCompanyID = ?";
 		
+		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
 		java.sql.ResultSet rset = null;
 		
 		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
 			stmt = conn.prepareStatement( sql );
 			stmt.setInt( 1, deviceID );
 			stmt.setInt( 2, energyCompanyID );
@@ -239,13 +264,20 @@ public class InventoryBase extends DBPersistent {
 				
 				return inv;
 			}
-			
-			return null;
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
 		}
 		finally {
-			if (rset != null) rset.close();
-			if (stmt != null) stmt.close();
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
 		}
+		
+		return null;
 	}
 
     public Integer getInventoryID() {

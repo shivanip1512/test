@@ -15,6 +15,8 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -421,18 +423,15 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void updateInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
 			int devTypeID = Integer.parseInt( req.getParameter("DeviceType") );
 			int invID = Integer.parseInt( req.getParameter("InvID") );
 			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 			
 			StarsOperation operation = UpdateLMHardwareAction.getRequestOperation(req, energyCompany.getDefaultTimeZone());
 			if (liteInv.getAccountID() ==  0) {
-				UpdateLMHardwareAction.updateInventory(operation.getStarsUpdateLMHardware(), liteInv, energyCompany, conn);
+				UpdateLMHardwareAction.updateInventory( operation.getStarsUpdateLMHardware(), liteInv, energyCompany );
 			}
 			else {
 				session.setAttribute( STARS_INVENTORY_OPERATION, operation );
@@ -447,12 +446,6 @@ public class InventoryManager extends HttpServlet {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update hardware information");
 		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
 	}
 	
 	/**
@@ -465,27 +458,15 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 		
 		if (liteInv.getAccountID() == 0) {
-			java.sql.Connection conn = null;
+			com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+					new com.cannontech.database.data.stars.hardware.InventoryBase();
+			inventory.setInventoryID( new Integer(invID) );
+			
 			try {
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				 
-				com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-						new com.cannontech.database.data.stars.hardware.InventoryBase();
-				inventory.setInventoryID( new Integer(invID) );
-				inventory.setDbConnection( conn );
-				inventory.delete();
-				
-				energyCompany.deleteInventory( invID );
+				Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
 			}
-			catch (java.sql.SQLException e) {
+			catch (TransactionException e) {
 				e.printStackTrace();
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete hardware from inventory");
-			}
-			finally {
-				try {
-					if (conn != null) conn.close();
-				}
-				catch (java.sql.SQLException e) {}
 			}
 		}
 		else {
@@ -538,62 +519,52 @@ public class InventoryManager extends HttpServlet {
 		ArrayList serialNoSet = new ArrayList();
 		int numSuccess = 0, numFailure = 0;
 		
-		java.sql.Connection conn = null;
-		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-					devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID(), conn );
-			
-			for (int sn = snFrom; sn <= snTo; sn++) {
-				String serialNo = String.valueOf(sn);
-				Integer invID = (Integer) snTable.get( serialNo );
-				if (invID != null) {
-					hardwareSet.add( energyCompany.getInventoryBrief(invID.intValue(), true) );
-					numFailure++;
-					continue;
-				}
-				
-				try {
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
-					com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
-					
-					invDB.setInstallationCompanyID( companyID );
-					invDB.setCategoryID( categoryID );
-					if (recvDate != null)
-						invDB.setReceiveDate( recvDate );
-					invDB.setVoltageID( voltageID );
-					invDB.setDeviceLabel( serialNo );
-					hwDB.setManufacturerSerialNumber( serialNo );
-					hwDB.setLMHardwareTypeID( devTypeID );
-					hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					hardware.setDbConnection( conn );
-					hardware.add();
-					
-					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
-					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-					energyCompany.addInventory( liteHw );
-					
-					numSuccess++;
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-					serialNoSet.add( serialNo );
-					numFailure++;
-				}
+		TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
+				devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID() );
+		if (snTable == null) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to add serial range" );
+			return;
+		}
+		
+		for (int sn = snFrom; sn <= snTo; sn++) {
+			String serialNo = String.valueOf(sn);
+			Integer invID = (Integer) snTable.get( serialNo );
+			if (invID != null) {
+				hardwareSet.add( energyCompany.getInventoryBrief(invID.intValue(), true) );
+				numFailure++;
+				continue;
 			}
-		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add hardwares to inventory");
-		}
-		finally {
+			
 			try {
-				if (conn != null) conn.close();
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
+				
+				invDB.setInstallationCompanyID( companyID );
+				invDB.setCategoryID( categoryID );
+				if (recvDate != null)
+					invDB.setReceiveDate( recvDate );
+				invDB.setVoltageID( voltageID );
+				invDB.setDeviceLabel( serialNo );
+				hwDB.setManufacturerSerialNumber( serialNo );
+				hwDB.setLMHardwareTypeID( devTypeID );
+				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				
+				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+						Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
+				
+				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
+				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
+				energyCompany.addInventory( liteHw );
+				
+				numSuccess++;
 			}
-			catch (java.sql.SQLException e) {}
+			catch (TransactionException e) {
+				CTILogger.error( e.getMessage(), e );
+				serialNoSet.add( serialNo );
+				numFailure++;
+			}
 		}
 		
 		session.removeAttribute( INVENTORY_SET );
@@ -678,52 +649,41 @@ public class InventoryManager extends HttpServlet {
 		ArrayList hardwareSet = new ArrayList();
 		int numSuccess = 0, numFailure = 0;
 		
-		java.sql.Connection conn = null;
-		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-					devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID(), conn );
-			
-			java.util.Iterator it = snTable.values().iterator();
-			while (it.hasNext()) {
-				Integer invID = (Integer) it.next();
-				LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
-				
-				try {
-					com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-							new com.cannontech.database.db.stars.hardware.InventoryBase();
-					StarsLiteFactory.setInventoryBase( invDB, liteInv );
-					
-					if (companyID != null)
-						invDB.setInstallationCompanyID( companyID );
-					if (recvDate != null)
-						invDB.setReceiveDate( recvDate );
-					if (voltageID != null)
-						invDB.setVoltageID( voltageID );
-					invDB.setDbConnection( conn );
-					invDB.update();
-					
-					StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-					numSuccess++;
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-					hardwareSet.add( liteInv );
-					numFailure++;
-				}
-			}
-			
+		TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
+				devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID() );
+		if (snTable == null) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to update serial range" );
+			return;
 		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update hardware information");
-		}
-		finally {
+		
+		java.util.Iterator it = snTable.values().iterator();
+		while (it.hasNext()) {
+			Integer invID = (Integer) it.next();
+			LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
+			
 			try {
-				if (conn != null) conn.close();
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
+						new com.cannontech.database.db.stars.hardware.InventoryBase();
+				StarsLiteFactory.setInventoryBase( invDB, liteInv );
+				
+				if (companyID != null)
+					invDB.setInstallationCompanyID( companyID );
+				if (recvDate != null)
+					invDB.setReceiveDate( recvDate );
+				if (voltageID != null)
+					invDB.setVoltageID( voltageID );
+				
+				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+				
+				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+				numSuccess++;
 			}
-			catch (java.sql.SQLException e) {}
+			catch (TransactionException e) {
+				CTILogger.error( e.getMessage(), e );
+				hardwareSet.add( liteInv );
+				numFailure++;
+			}
 		}
 		
 		session.removeAttribute( INVENTORY_SET );
@@ -787,90 +747,86 @@ public class InventoryManager extends HttpServlet {
 		int numSuccess = 0, numFailure = 0;
 		ArrayList hardwareSet = new ArrayList();
 		
-		java.sql.Connection conn = null;
-		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+		if (ECUtils.isMCT(categoryID)) {
+			ArrayList inventory = energyCompany.loadAllInventory();
+			ArrayList mctList = new ArrayList();
 			
-			if (ECUtils.isMCT(categoryID)) {
-				ArrayList inventory = energyCompany.loadAllInventory();
-				ArrayList mctList = new ArrayList();
-				
-				synchronized (inventory) {
-					for (int i = 0; i < inventory.size(); i++) {
-						LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-						if (ECUtils.isMCT( liteInv.getCategoryID() )) {
-							if (liteInv.getAccountID() > 0) {
-								hardwareSet.add( liteInv );
-								numFailure++;
-							}
-							else
-								mctList.add( liteInv );
+			synchronized (inventory) {
+				for (int i = 0; i < inventory.size(); i++) {
+					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+					if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+						if (liteInv.getAccountID() > 0) {
+							hardwareSet.add( liteInv );
+							numFailure++;
 						}
+						else
+							mctList.add( liteInv );
 					}
 				}
+			}
+			
+			for (int i = 0; i < mctList.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) mctList.get(i);
 				
-				for (int i = 0; i < mctList.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) mctList.get(i);
-					
+				try {
 					com.cannontech.database.data.stars.hardware.InventoryBase inv =
 							new com.cannontech.database.data.stars.hardware.InventoryBase();
 					inv.setInventoryID( new Integer(liteInv.getInventoryID()) );
-					inv.setDbConnection( conn );
-					inv.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, inv ).execute();
 					
 					energyCompany.deleteInventory( liteInv.getInventoryID() );
 					numSuccess++;
 				}
-			}
-			else {
-				java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-						devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID(), conn );
-				
-				java.util.Iterator it = snTable.values().iterator();
-				while (it.hasNext()) {
-					Integer invID = (Integer) it.next();
-					LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
-					
-					if (liteInv.getAccountID() > 0) {
-						hardwareSet.add( liteInv );
-						numFailure++;
-						continue;
-					}
-					
-					try {
-						com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-								new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-						hardware.setInventoryID( invID );
-						hardware.setDbConnection( conn );
-						hardware.delete();
-						
-						energyCompany.deleteInventory( invID.intValue() );
-						numSuccess++;
-					}
-					catch (java.sql.SQLException e) {
-						CTILogger.error( e.getMessage(), e );
-						hardwareSet.add( liteInv );
-						numFailure++;
-					}
+				catch (TransactionException e) {
+					e.printStackTrace();
+					hardwareSet.add( liteInv );
+					numFailure++;
 				}
 			}
 		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to configure hardwares");
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
+		else {
+			java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
+					devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID() );
+			if (snTable == null) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete serial range" );
+				return;
 			}
-			catch (java.sql.SQLException e) {}
+			
+			java.util.Iterator it = snTable.values().iterator();
+			while (it.hasNext()) {
+				Integer invID = (Integer) it.next();
+				LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
+				
+				if (liteInv.getAccountID() > 0) {
+					hardwareSet.add( liteInv );
+					numFailure++;
+					continue;
+				}
+				
+				try {
+					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+					hardware.setInventoryID( invID );
+					
+					Transaction.createTransaction( Transaction.DELETE, hardware ).execute();
+					
+					energyCompany.deleteInventory( invID.intValue() );
+					numSuccess++;
+				}
+				catch (TransactionException e) {
+					CTILogger.error( e.getMessage(), e );
+					hardwareSet.add( liteInv );
+					numFailure++;
+				}
+			}
 		}
 		
 		session.removeAttribute( INVENTORY_SET );
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares deleted successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (you must remove a hardware from the account it is assigned to before deleting it). " +
+					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (If a hardware is assigned to an account, you must remove it from the account before deleting it). " +
 					"They are listed below:</span><br>";
 			
 			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
@@ -928,58 +884,46 @@ public class InventoryManager extends HttpServlet {
 		int numSuccess = 0, numFailure = 0;
 		ArrayList hardwareSet = new ArrayList();
 		
-		java.sql.Connection conn = null;
-		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-					devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID(), conn );
-			
-			java.util.Iterator it = snTable.values().iterator();
-			while (it.hasNext()) {
-				Integer invID = (Integer) it.next();
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(invID.intValue(), true);
-				
-				try {
-					if (configNow) {
-						YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, conn);
-					}
-					else {
-						SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-						cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
-						cmd.setInventoryID( invID.intValue() );
-						cmd.setSerialNumber( liteHw.getManufacturerSerialNumber() );
-						cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
-						cmdQueue.addCommand( cmd, false );
-					}
-					
-					numSuccess++;
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage() , e );
-					hardwareSet.add( liteHw );
-					numFailure++;
-				}
-			}
-			
-			if (!configNow) cmdQueue.addCommand( null, true );
-			
+		java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
+				devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID() );
+		if (snTable == null) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to config serial range" );
+			return;
 		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to configure hardwares");
-		}
-		finally {
+		
+		java.util.Iterator it = snTable.values().iterator();
+		while (it.hasNext()) {
+			Integer invID = (Integer) it.next();
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(invID.intValue(), true);
+			
 			try {
-				if (conn != null) conn.close();
+				if (configNow) {
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true);
+				}
+				else {
+					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
+					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
+					cmd.setInventoryID( invID.intValue() );
+					cmd.setSerialNumber( liteHw.getManufacturerSerialNumber() );
+					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
+					cmdQueue.addCommand( cmd, false );
+				}
+				
+				numSuccess++;
 			}
-			catch (java.sql.SQLException e) {}
+			catch (WebClientException e) {
+				CTILogger.error( e.getMessage() , e );
+				hardwareSet.add( liteHw );
+				numFailure++;
+			}
 		}
+		
+		if (!configNow) cmdQueue.addCommand( null, true );
 		
 		session.removeAttribute( INVENTORY_SET );
 		
 		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares' configuration " +
+			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " hardwares " +
 					((configNow)? "sent out" : "scheduled") + " successfully.</span><br>";
 			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed. They are listed below:</span><br>";
 			
@@ -989,7 +933,7 @@ public class InventoryManager extends HttpServlet {
 			redirect = req.getContextPath() + "/operator/Hardware/ResultSet.jsp";
 		}
 		else if (numSuccess > 0) {
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardwares configuration " +
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration of " + numSuccess + " hardwares " +
 					((configNow)? "sent out" : "scheduled") + " successfully.");
 		}
 	}
@@ -999,10 +943,8 @@ public class InventoryManager extends HttpServlet {
 	 */
 	private void sendSwitchCommands(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			SwitchCommandQueue.SwitchCommand[] commands =
 					energyCompany.getSwitchCommandQueue().getCommands( user.getEnergyCompanyID() );
 			if (commands.length == 0) {
@@ -1014,24 +956,18 @@ public class InventoryManager extends HttpServlet {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(commands[i].getInventoryID(), true);
 				
 				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, conn);
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
 				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-					YukonSwitchCommandAction.sendEnableCommand(energyCompany, liteHw, conn);
+					YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
 				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-					YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, conn);
+					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
 			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, commands.length + " scheduled switch commands sent out successfully");
 		}
-		catch (java.sql.SQLException e) {
+		catch (WebClientException e) {
 			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to send scheduled switch commands");
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 	}
 	
@@ -1046,93 +982,78 @@ public class InventoryManager extends HttpServlet {
 	
 	private void searchInventory(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
 		
 		session.removeAttribute( INVENTORY_SET );
 		
-		try {
-			int searchBy = Integer.parseInt( req.getParameter("SearchBy") );
-			String searchValue = req.getParameter( "SearchValue" );
-			if (searchValue.trim().length() == 0) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search value cannot be empty");
-				return;
-			}
-			
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			int[] inventoryIDs = null; 
-			
-			if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
-				com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
-						com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber(searchValue, user.getEnergyCompanyID(), conn);
-				
-				inventoryIDs = new int[ hardwares.length ];
-				for (int i = 0 ; i < hardwares.length; i++)
-					inventoryIDs[i] = hardwares[i].getInventoryID().intValue();
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-				int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
-				if (acctIDs != null && acctIDs.length > 0)
-					inventoryIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[0], conn); 
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
-				int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPhoneNumber(energyCompany.getEnergyCompanyID(), searchValue);
-				if (acctIDs != null && acctIDs.length > 0) {
-					ArrayList invIDList = new ArrayList();
-					for (int i = 0; i < acctIDs.length; i++) {
-						int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[i], conn);
-						for (int j = 0; j < invIDs.length; j++)
-							invIDList.add( new Integer(invIDs[j]) );
-					}
-					
-					inventoryIDs = new int[ invIDList.size() ];
-					for (int i = 0; i< invIDList.size(); i++)
-						inventoryIDs[i] = ((Integer) invIDList.get(i)).intValue();
+		int searchBy = Integer.parseInt( req.getParameter("SearchBy") );
+		String searchValue = req.getParameter( "SearchValue" );
+		if (searchValue.trim().length() == 0) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search value cannot be empty");
+			return;
+		}
+		
+		int[] inventoryIDs = null; 
+		
+		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
+			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
+					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber(searchValue, user.getEnergyCompanyID());
+			inventoryIDs = new int[ hardwares.length ];
+			for (int i = 0 ; i < hardwares.length; i++)
+				inventoryIDs[i] = hardwares[i].getInventoryID().intValue();
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
+			int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
+			if (acctIDs != null && acctIDs.length > 0)
+				inventoryIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID( acctIDs[0] ); 
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
+			int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPhoneNumber( energyCompany.getEnergyCompanyID(), searchValue );
+			if (acctIDs != null && acctIDs.length > 0) {
+				ArrayList invIDList = new ArrayList();
+				for (int i = 0; i < acctIDs.length; i++) {
+					int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID( acctIDs[i] );
+					for (int j = 0; j < invIDs.length; j++)
+						invIDList.add( new Integer(invIDs[j]) );
 				}
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-				int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByLastName(energyCompany.getEnergyCompanyID(), searchValue);
-				if (acctIDs != null && acctIDs.length > 0) {
-					ArrayList invIDList = new ArrayList();
-					for (int i = 0; i < acctIDs.length; i++) {
-						int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID(acctIDs[i], conn);
-						for (int j = 0; j < invIDs.length; j++)
-							invIDList.add( new Integer(invIDs[j]) );
-					}
-					
-					inventoryIDs = new int[ invIDList.size() ];
-					for (int i = 0; i< invIDList.size(); i++)
-						inventoryIDs[i] = ((Integer) invIDList.get(i)).intValue();
-				}
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
-				// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
-			}
-			
-			if (inventoryIDs == null || inventoryIDs.length == 0) {
-				session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardwares found matching the search criteria.</div>");
-			}
-			else if (inventoryIDs.length == 1) {
-				redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + inventoryIDs[0] + "&src=Search";
-			}
-			else {
-				ArrayList invList = new ArrayList();
-				for (int i = 0; i < inventoryIDs.length; i++)
-					invList.add( energyCompany.getInventoryBrief(inventoryIDs[i], true) );
 				
-				session.setAttribute(INVENTORY_SET, invList);
-				session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # (device name) to view the hardware details, or click on an account # (if available) to view the account information.");
-				session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+				inventoryIDs = new int[ invIDList.size() ];
+				for (int i = 0; i< invIDList.size(); i++)
+					inventoryIDs[i] = ((Integer) invIDList.get(i)).intValue();
 			}
 		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to search for hardware(s)");
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
+			int[] acctIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByLastName(energyCompany.getEnergyCompanyID(), searchValue);
+			if (acctIDs != null && acctIDs.length > 0) {
+				ArrayList invIDList = new ArrayList();
+				for (int i = 0; i < acctIDs.length; i++) {
+					int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAccountID( acctIDs[i] );
+					for (int j = 0; j < invIDs.length; j++)
+						invIDList.add( new Integer(invIDs[j]) );
+				}
+				
+				inventoryIDs = new int[ invIDList.size() ];
+				for (int i = 0; i< invIDList.size(); i++)
+					inventoryIDs[i] = ((Integer) invIDList.get(i)).intValue();
 			}
-			catch (java.sql.SQLException e) {}
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
+			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
+		}
+		
+		if (inventoryIDs == null || inventoryIDs.length == 0) {
+			session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardwares found matching the search criteria.</div>");
+		}
+		else if (inventoryIDs.length == 1) {
+			redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + inventoryIDs[0] + "&src=Search";
+		}
+		else {
+			ArrayList invList = new ArrayList();
+			for (int i = 0; i < inventoryIDs.length; i++)
+				invList.add( energyCompany.getInventoryBrief(inventoryIDs[i], true) );
+			
+			session.setAttribute(INVENTORY_SET, invList);
+			session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # (device name) to view the hardware details, or click on an account # (if available) to view the account information.");
+			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		}
 	}
 	

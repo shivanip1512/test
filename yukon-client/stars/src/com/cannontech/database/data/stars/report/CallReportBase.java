@@ -1,5 +1,7 @@
 package com.cannontech.database.data.stars.report;
 
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -59,7 +61,7 @@ public class CallReportBase extends DBPersistent {
         getCallReportBase().retrieve();
     }
     
-    public static void deleteAllCallReports(Integer accountID, java.sql.Connection conn) {
+    public static void deleteAllCallReports(Integer accountID) {
     	try {
 	    	com.cannontech.database.db.stars.report.CallReportBase[] calls =
 	    			com.cannontech.database.db.stars.report.CallReportBase.getAllCallReports( accountID );
@@ -68,12 +70,12 @@ public class CallReportBase extends DBPersistent {
 	    		for (int i = 0; i < calls.length; i++) {
 	    			CallReportBase call = new CallReportBase();
 	    			call.setCallID( calls[i].getCallID() );
-	    			call.setDbConnection( conn );
-	    			call.delete();
+	    			
+	    			Transaction.createTransaction( Transaction.DELETE, call ).execute();
 	    		}
 	    	}
     	}
-    	catch (java.sql.SQLException e) {
+    	catch (TransactionException e) {
     		e.printStackTrace();
     	}
     }

@@ -6,12 +6,11 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.util.ArrayList;
-
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -130,11 +129,9 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 		}
 		else {
 			status = STATUS_RUNNING;
-			java.sql.Connection conn = null;
+			String dbAlias = CtiUtilities.getDatabaseAlias();
 			
 			try {
-				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				
 				// Delete all customer accounts
 				currentAction = "Deleting customer accounts";
 				
@@ -160,28 +157,23 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				// Delete all inventory
 				currentAction = "Deleting inventory";
 				
-				String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?";
-				java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
-				stmt.setInt(1, user.getEnergyCompanyID());
-				java.sql.ResultSet rset = stmt.executeQuery();
+				String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID=" + user.getEnergyCompanyID();
+				SqlStatement stmt = new SqlStatement( sql, dbAlias );
+				stmt.execute();
 				
-				ArrayList invIDs = new ArrayList();
-				while (rset.next())
-					invIDs.add( new Integer(rset.getInt(1)) );
-				numInventory = invIDs.size();
+				int[] invIDs = new int[ stmt.getRowCount() ];
+				for (int i = 0; i < stmt.getRowCount(); i++)
+					invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				numInventory = invIDs.length;
 				
-				rset.close();
-				stmt.close();
-				
-				for (int i = 0; i < invIDs.size(); i++) {
-					int inventoryID = ((Integer) invIDs.get(i)).intValue();
-					currentAction = "Deleting inventory id = " + inventoryID;
+				for (int i = 0; i < invIDs.length; i++) {
+					currentAction = "Deleting inventory id = " + invIDs[i];
 					
 					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
 							new com.cannontech.database.data.stars.hardware.InventoryBase();
-					inventory.setInventoryID( new Integer(inventoryID) );
-					inventory.setDbConnection( conn );
-					inventory.delete();
+					inventory.setInventoryID( new Integer(invIDs[i]) );
+					
+					Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
 					
 					numInvDeleted++;
 					if (isCanceled) {
@@ -194,28 +186,23 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				// Delete all work orders that don't belong to any account
 				currentAction = "Deleting work orders";
 				
-				sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?";
-				stmt = conn.prepareStatement( sql );
-				stmt.setInt(1, user.getEnergyCompanyID());
-				rset = stmt.executeQuery();
+				sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID=" + user.getEnergyCompanyID();
+				stmt.setSQLString( sql );
+				stmt.execute();
 				
-				ArrayList orderIDs = new ArrayList();
-				while (rset.next())
-					orderIDs.add( new Integer(rset.getInt(1)) );
-				numWorkOrder = orderIDs.size();
+				int[] orderIDs = new int[ stmt.getRowCount() ];
+				for (int i = 0; i < stmt.getRowCount(); i++)
+					orderIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				numWorkOrder = orderIDs.length;
 				
-				rset.close();
-				stmt.close();
-				
-				for (int i = 0; i < orderIDs.size(); i++) {
-					int orderID = ((Integer) orderIDs.get(i)).intValue();
-					currentAction = "Deleting work order id = " + orderID;
+				for (int i = 0; i < orderIDs.length; i++) {
+					currentAction = "Deleting work order id = " + orderIDs[i];
 					
 					com.cannontech.database.data.stars.report.WorkOrderBase order =
 							new com.cannontech.database.data.stars.report.WorkOrderBase();
-					order.setOrderID( new Integer(orderID) );
-					order.setDbConnection( conn );
-					order.delete();
+					order.setOrderID( new Integer(orderIDs[i]) );
+					
+					Transaction.createTransaction( Transaction.DELETE, order ).execute();
 					
 					numOrderDeleted++;
 					if (isCanceled) {
@@ -235,8 +222,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 						com.cannontech.database.data.stars.Substation substation =
 								new com.cannontech.database.data.stars.Substation();
 						substation.setSubstationID( substations[i].getItemID() );
-						substation.setDbConnection( conn );
-						substation.delete();
+						
+						Transaction.createTransaction( Transaction.DELETE, substation ).execute();
 					}
 				}
 				
@@ -248,8 +235,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					com.cannontech.database.data.stars.report.ServiceCompany company =
 							new com.cannontech.database.data.stars.report.ServiceCompany();
 					StarsLiteFactory.setServiceCompany( company.getServiceCompany(), liteCompany );
-					company.setDbConnection( conn );
-					company.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, company ).execute();
 				}
 				
 				// Delete all appliance categories
@@ -259,21 +246,22 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) energyCompany.getAllApplianceCategories().get(i);
 					
 					com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing(
-							new Integer(liteAppCat.getApplianceCategoryID()), conn );
+							new Integer(liteAppCat.getApplianceCategoryID()) );
+					
 					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
 						int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
 						com.cannontech.database.db.web.YukonWebConfiguration cfg =
 								new com.cannontech.database.db.web.YukonWebConfiguration();
 						cfg.setConfigurationID( new Integer(configID) );
-						cfg.setDbConnection( conn );
-						cfg.delete();
+						
+						Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
 					}
 					
 					com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
 							new com.cannontech.database.data.stars.appliance.ApplianceCategory();
 					StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
-					appCat.setDbConnection( conn );
-					appCat.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
 				}
 				
 				// Delete all interview questions
@@ -284,8 +272,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					com.cannontech.database.data.stars.InterviewQuestion question =
 							new com.cannontech.database.data.stars.InterviewQuestion();
 					question.setQuestionID( new Integer(liteQuestion.getQuestionID()) );
-					question.setDbConnection( conn );
-					question.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, question ).execute();
 				}
 				
 				// Delete all customer FAQs
@@ -296,8 +284,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					com.cannontech.database.db.stars.CustomerFAQ faq =
 							new com.cannontech.database.db.stars.CustomerFAQ();
 					faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-					faq.setDbConnection( conn );
-					faq.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, faq ).execute();
 				}
 				
 				// Delete customer selection lists
@@ -311,8 +299,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					com.cannontech.database.data.constants.YukonSelectionList list =
 							new com.cannontech.database.data.constants.YukonSelectionList();
 					list.setListID( listID );
-					list.setDbConnection( conn );
-					list.delete();
+					
+					Transaction.createTransaction( Transaction.DELETE, list ).execute();
 					
 					YukonListFuncs.getYukonSelectionLists().remove( listID );
 					for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
@@ -324,29 +312,19 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				// Delete operator logins (except the default login)
 				currentAction = "Deleting operator logins";
 				
-				sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID = ?";
-				stmt = conn.prepareStatement( sql );
-				stmt.setInt(1, energyCompany.getLiteID());
-				rset = stmt.executeQuery();
+				sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + user.getEnergyCompanyID();
+				stmt.setSQLString( sql );
+				stmt.execute();
 				
-				ArrayList userIDs = new ArrayList();
-				while (rset.next())
-					userIDs.add( new Integer(rset.getInt(1)) );
+				int[] userIDs = new int[ stmt.getRowCount() ];
+				for (int i = 0; i < stmt.getRowCount(); i++)
+					userIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 				
-				rset.close();
-				stmt.close();
-				
-				for (int i = 0; i < userIDs.size(); i++) {
-					int userID = ((Integer) userIDs.get(i)).intValue();
-					if (userID == energyCompany.getUserID()) continue;
+				for (int i = 0; i < userIDs.length; i++) {
+					if (userIDs[i] == energyCompany.getUserID()) continue;
 					
-					com.cannontech.database.data.user.YukonUser yukonUser =
-							new com.cannontech.database.data.user.YukonUser();
-					yukonUser.setUserID( new Integer(userID) );
-					yukonUser.setDbConnection( conn );
-					yukonUser.deleteOperatorLogin();
-					
-					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+					com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(userIDs[i]) );
+					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userIDs[i]), DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
 				// Delete the energy company!
@@ -356,8 +334,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 						new com.cannontech.database.data.company.EnergyCompanyBase();
 				ec.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				ec.getEnergyCompany().setPrimaryContactID( new Integer(energyCompany.getPrimaryContactID()) );
-				ec.setDbConnection( conn );
-				ec.delete();
+				
+				Transaction.createTransaction( Transaction.DELETE, ec ).execute();
 				
 				SOAPServer.deleteEnergyCompany( energyCompany.getLiteID() );
 				ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
@@ -373,12 +351,7 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID &&
 					energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 				{
-					com.cannontech.database.data.user.YukonUser yukonUser =
-							new com.cannontech.database.data.user.YukonUser();
-					yukonUser.setUserID( new Integer(energyCompany.getUserID()) );
-					yukonUser.setDbConnection( conn );
-					yukonUser.deleteOperatorLogin();
-					
+					com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(energyCompany.getUserID()) );
 					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
@@ -387,9 +360,8 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					com.cannontech.database.data.user.YukonGroup dftGroup =
 							new com.cannontech.database.data.user.YukonGroup();
 					dftGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
-					dftGroup.setDbConnection( conn );
-					dftGroup.delete();
 					
+					Transaction.createTransaction( Transaction.DELETE, dftGroup ).execute();
 					ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_DELETE );
 				}
 				
@@ -403,12 +375,6 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					errorMsg = currentAction + " failed";
 				else
 					errorMsg = "Failed to delete the energy company";
-			}
-			finally {
-				try {
-					if (conn != null) conn.close();
-				}
-				catch (java.sql.SQLException e) {}
 			}
 		}
 	}

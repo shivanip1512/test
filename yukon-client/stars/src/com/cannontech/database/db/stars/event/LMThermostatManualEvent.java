@@ -3,6 +3,7 @@ package com.cannontech.database.db.stars.event;
 import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -87,135 +88,102 @@ public class LMThermostatManualEvent extends DBPersistent {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
-    public static Integer[] getAllLMThermostatManualEventIDs(int inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID = ? ORDER BY EventID";
-
-        java.sql.PreparedStatement pstmt = null;
+    public static Integer[] getAllLMThermostatManualEventIDs(int inventoryID) {
+        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + " ORDER BY EventID";
+        
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
         java.sql.ResultSet rset = null;
-        java.util.ArrayList eventList = new java.util.ArrayList();
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID );
-                rset = pstmt.executeQuery();
-
-                while (rset.next())
-                    eventList.add( new Integer(rset.getInt("EventID")) );
-            }
+        try {
+        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+        	stmt = conn.createStatement();
+            rset = stmt.executeQuery( sql );
+            
+			java.util.ArrayList eventList = new java.util.ArrayList();
+            while (rset.next())
+                eventList.add( new Integer(rset.getInt("EventID")) );
+			
+			Integer[] eventIDs = new Integer[ eventList.size() ];
+			eventList.toArray( eventIDs );
+			return eventIDs;
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
+        finally {
+            try {
                 if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            catch( java.sql.SQLException e2 ) {}
         }
-
-        Integer[] eventIDs = new Integer[ eventList.size() ];
-        eventList.toArray( eventIDs );
-        return eventIDs;
+        
+        return null;
     }
 
-    public static void deleteAllLMThermostatManualEvents(int inventoryID, java.sql.Connection conn) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID );
-                pstmt.execute();
-            }
+    public static void deleteAllLMThermostatManualEvents(int inventoryID) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
+        
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
+        
+        try {
+        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+        	stmt = conn.createStatement();
+        	stmt.execute( sql );
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
+        finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            catch( java.sql.SQLException e2 ) {}
         }
     }
     
-    public static LMThermostatManualEvent getLastLMThermostatManualEvent(Integer inventoryID, java.sql.Connection conn) {
+    public static LMThermostatManualEvent getLastLMThermostatManualEvent(Integer inventoryID) {
         String sql = "SELECT EventID, InventoryID, PreviousTemperature, HoldTemperature, OperationStateID, FanOperationID "
         		   + "FROM " + TABLE_NAME + " WHERE EventID = ("
-        		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID = ?)";
-
-        java.sql.PreparedStatement pstmt = null;
+        		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + ")";
+        
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
         java.sql.ResultSet rset = null;
 
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
-                rset = pstmt.executeQuery();
-
-                if (rset.next()) {
-                    LMThermostatManualEvent event = new LMThermostatManualEvent();
-                    event.setEventID( new Integer(rset.getInt(0)) );
-                    event.setInventoryID( new Integer(rset.getInt(1)) );
-                    event.setPreviousTemperature( new Integer(rset.getInt(2)) );
-                    event.setHoldTemperature( (String) rset.getString(3) );
-                    event.setOperationStateID( new Integer(rset.getInt(4)) );
-                    event.setFanOperationID( new Integer(rset.getInt(5)) );
-                    
-                    return event;
-                }
+        try {
+        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+        	stmt = conn.createStatement();
+        	rset = stmt.executeQuery( sql );
+        	
+            if (rset.next()) {
+                LMThermostatManualEvent event = new LMThermostatManualEvent();
+                event.setEventID( new Integer(rset.getInt(0)) );
+                event.setInventoryID( new Integer(rset.getInt(1)) );
+                event.setPreviousTemperature( new Integer(rset.getInt(2)) );
+                event.setHoldTemperature( (String) rset.getString(3) );
+                event.setOperationStateID( new Integer(rset.getInt(4)) );
+                event.setFanOperationID( new Integer(rset.getInt(5)) );
+                
+                return event;
             }
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
+        finally {
+            try {
                 if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            catch( java.sql.SQLException e2 ) {}
         }
-
+        
         return null;
     }
 

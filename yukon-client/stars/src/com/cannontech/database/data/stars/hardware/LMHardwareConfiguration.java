@@ -64,19 +64,5 @@ public class LMHardwareConfiguration extends DBPersistent {
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration lmHardwareConfiguration) {
 		this.lmHardwareConfiguration = lmHardwareConfiguration;
 	}
-	
-	public static void deleteLMHardwareConfiguration(Integer applianceID) {
-		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-		if (conn != null) {
-			com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration( applianceID, conn );
-			try {
-				conn.close();
-			}
-			catch (java.sql.SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 }

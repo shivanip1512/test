@@ -136,7 +136,6 @@ public class UpdateCustAccountAction implements ActionBase {
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
-		java.sql.Connection conn = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -152,10 +151,8 @@ public class UpdateCustAccountAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-            
             try {
-            	updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany, conn );
+            	updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
             }
             catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -174,20 +171,14 @@ public class UpdateCustAccountAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update the customer account information") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to update the customer account information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
             	e2.printStackTrace();
             }
         }
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-
+        
         return null;
     }
 
@@ -221,121 +212,155 @@ public class UpdateCustAccountAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
     }
     
-    public static void updateCustomerAccount(StarsUpdateCustomerAccount updateAccount, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-    throws WebClientException, java.sql.SQLException {
-		/* Update customer account */
-		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-        
-		if (!liteAccount.getAccountNumber().equalsIgnoreCase( updateAccount.getAccountNumber() )) {
-			// Check to see if the account number has duplicates
-			int[] result = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
-					energyCompany.getEnergyCompanyID(), updateAccount.getAccountNumber() );
-			if (result != null && result.length > 0)
-				throw new WebClientException( "Account number already exists" );
-		}
-        
-		LiteAddress liteBillAddr = energyCompany.getAddress( liteAccount.getBillingAddressID() );
-		BillingAddress starsBillAddr = updateAccount.getBillingAddress();
-        
-		if (!StarsLiteFactory.isIdenticalCustomerAddress( liteBillAddr, starsBillAddr )) {
-			com.cannontech.database.db.customer.Address billAddr =
-					(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteBillAddr );
-			StarsFactory.setCustomerAddress( billAddr, starsBillAddr );
+    public static void updateCustomerAccount(StarsUpdateCustomerAccount updateAccount, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+    	throws WebClientException
+    {
+    	java.sql.Connection conn = null;
+    	boolean autoCommit = true;
+    	
+    	try {
+    		conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		autoCommit = conn.getAutoCommit();
+    		conn.setAutoCommit( false );
+    		
+			/* Update customer account */
+			LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
         	
-			billAddr.setDbConnection( conn );
-			billAddr.update();
-			StarsLiteFactory.setLiteAddress( liteBillAddr, billAddr );
-		}
-        
-		if (!StarsLiteFactory.isIdenticalCustomerAccount( liteAccount, updateAccount )) {
-			com.cannontech.database.db.stars.customer.CustomerAccount account =
-					(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
-			StarsFactory.setCustomerAccount( account, updateAccount );
-        	
-			account.setDbConnection( conn );
-			account.update();
-			StarsLiteFactory.setLiteCustomerAccount( liteAccount, account );
-		}
-		
-		/* Update customer */
-		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
-		com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
-		StarsLiteFactory.setCustomer( customerDB, liteCustomer );
-        
-		LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
-		PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
-        
-		if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
-			com.cannontech.database.data.customer.Contact primContact =
-					(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
-			StarsFactory.setCustomerContact( primContact, starsPrimContact );
-        	
-			primContact.setDbConnection( conn );
-			primContact.update();
-			StarsLiteFactory.setLiteContact( litePrimContact, primContact );
-			
-			ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-		}
-        
-		if (liteCustomer instanceof LiteCICustomer) {
-			LiteCICustomer liteCICust = (LiteCICustomer) liteCustomer;
-			
-			if (!liteCICust.getCompanyName().equals( updateAccount.getCompany() )) {
-				// Company name of a CI customer is changed
-				com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
-				ciDB.setCustomerID( customerDB.getCustomerID() );
-				ciDB.setDbConnection( conn );
-				ciDB.retrieve();
-        		
-				ciDB.setCompanyName( updateAccount.getCompany() );
-				ciDB.setDbConnection( conn );
-				ciDB.update();
-        		
-				liteCICust.setCompanyName( ciDB.getCompanyName() );
-				ServerUtils.handleDBChange( liteCICust, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			if (!liteAccount.getAccountNumber().equalsIgnoreCase( updateAccount.getAccountNumber() )) {
+				// Check to see if the account number has duplicates
+				int[] result = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
+						energyCompany.getEnergyCompanyID(), updateAccount.getAccountNumber() );
+				if (result != null && result.length > 0)
+					throw new WebClientException( "Account number already exists" );
 			}
-		}
-        
-		/* Update account site */
-		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
-        
-		LiteAddress liteStAddr = energyCompany.getAddress( liteAcctSite.getStreetAddressID() );
-		StreetAddress starsStAddr = updateAccount.getStreetAddress();
-        
-		if (!StarsLiteFactory.isIdenticalCustomerAddress( liteStAddr, starsStAddr )) {
-			com.cannontech.database.db.customer.Address stAddr =
-					(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteStAddr );
-			StarsFactory.setCustomerAddress( stAddr, starsStAddr );
         	
-			stAddr.setDbConnection( conn );
-			stAddr.update();
-			StarsLiteFactory.setLiteAddress( liteStAddr, stAddr );
-		}
-        
-		if (!StarsLiteFactory.isIdenticalAccountSite( liteAcctSite, updateAccount )) {
-			com.cannontech.database.db.stars.customer.AccountSite acctSite =
-					(com.cannontech.database.db.stars.customer.AccountSite) StarsLiteFactory.createDBPersistent( liteAcctSite );
-			StarsFactory.setAccountSite( acctSite, updateAccount );
+			LiteAddress liteBillAddr = energyCompany.getAddress( liteAccount.getBillingAddressID() );
+			BillingAddress starsBillAddr = updateAccount.getBillingAddress();
         	
-			acctSite.setDbConnection( conn );
-			acctSite.update();
-			StarsLiteFactory.setLiteAccountSite( liteAcctSite, acctSite );
-		}
-        
-		/* Update site information */
-		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
-		StarsSiteInformation starsSiteInfo = updateAccount.getStarsSiteInformation();
-        
-		if (!StarsLiteFactory.isIdenticalSiteInformation(liteSiteInfo, starsSiteInfo)) {
-			com.cannontech.database.db.stars.customer.SiteInformation siteInfo =
-					(com.cannontech.database.db.stars.customer.SiteInformation) StarsLiteFactory.createDBPersistent( liteSiteInfo );
-			StarsFactory.setSiteInformation( siteInfo, updateAccount );
+			if (!StarsLiteFactory.isIdenticalCustomerAddress( liteBillAddr, starsBillAddr )) {
+				com.cannontech.database.db.customer.Address billAddr =
+						(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteBillAddr );
+				StarsFactory.setCustomerAddress( billAddr, starsBillAddr );
+        		
+				billAddr.setDbConnection( conn );
+				billAddr.update();
+				StarsLiteFactory.setLiteAddress( liteBillAddr, billAddr );
+			}
         	
-			siteInfo.setDbConnection( conn );
-			siteInfo.update();
-			StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
-		}
-        
-		//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			if (!StarsLiteFactory.isIdenticalCustomerAccount( liteAccount, updateAccount )) {
+				com.cannontech.database.db.stars.customer.CustomerAccount account =
+						(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
+				StarsFactory.setCustomerAccount( account, updateAccount );
+        		
+				account.setDbConnection( conn );
+				account.update();
+				StarsLiteFactory.setLiteCustomerAccount( liteAccount, account );
+			}
+			
+			/* Update customer */
+			LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
+			com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
+			StarsLiteFactory.setCustomer( customerDB, liteCustomer );
+        	
+			LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
+			PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
+			
+			boolean primContChanged = false;
+			boolean ciCustChanged = false;
+        	
+			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
+				com.cannontech.database.data.customer.Contact primContact =
+						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
+				StarsFactory.setCustomerContact( primContact, starsPrimContact );
+        		
+				primContact.setDbConnection( conn );
+				primContact.update();
+				
+				StarsLiteFactory.setLiteContact( litePrimContact, primContact );
+				primContChanged = true;
+			}
+        	
+			if (liteCustomer instanceof LiteCICustomer) {
+				LiteCICustomer liteCICust = (LiteCICustomer) liteCustomer;
+				
+				if (!liteCICust.getCompanyName().equals( updateAccount.getCompany() )) {
+					// Company name of a CI customer is changed
+					com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
+					ciDB.setCustomerID( customerDB.getCustomerID() );
+					ciDB.setDbConnection( conn );
+					ciDB.retrieve();
+        			
+					ciDB.setCompanyName( updateAccount.getCompany() );
+					ciDB.setDbConnection( conn );
+					ciDB.update();
+        			
+					liteCICust.setCompanyName( ciDB.getCompanyName() );
+					ciCustChanged = true;
+				}
+			}
+        	
+			/* Update account site */
+			LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
+        	
+			LiteAddress liteStAddr = energyCompany.getAddress( liteAcctSite.getStreetAddressID() );
+			StreetAddress starsStAddr = updateAccount.getStreetAddress();
+        	
+			if (!StarsLiteFactory.isIdenticalCustomerAddress( liteStAddr, starsStAddr )) {
+				com.cannontech.database.db.customer.Address stAddr =
+						(com.cannontech.database.db.customer.Address) StarsLiteFactory.createDBPersistent( liteStAddr );
+				StarsFactory.setCustomerAddress( stAddr, starsStAddr );
+        		
+				stAddr.setDbConnection( conn );
+				stAddr.update();
+				StarsLiteFactory.setLiteAddress( liteStAddr, stAddr );
+			}
+        	
+			if (!StarsLiteFactory.isIdenticalAccountSite( liteAcctSite, updateAccount )) {
+				com.cannontech.database.db.stars.customer.AccountSite acctSite =
+						(com.cannontech.database.db.stars.customer.AccountSite) StarsLiteFactory.createDBPersistent( liteAcctSite );
+				StarsFactory.setAccountSite( acctSite, updateAccount );
+        		
+				acctSite.setDbConnection( conn );
+				acctSite.update();
+				StarsLiteFactory.setLiteAccountSite( liteAcctSite, acctSite );
+			}
+        	
+			/* Update site information */
+			LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
+			StarsSiteInformation starsSiteInfo = updateAccount.getStarsSiteInformation();
+        	
+			if (!StarsLiteFactory.isIdenticalSiteInformation(liteSiteInfo, starsSiteInfo)) {
+				com.cannontech.database.db.stars.customer.SiteInformation siteInfo =
+						(com.cannontech.database.db.stars.customer.SiteInformation) StarsLiteFactory.createDBPersistent( liteSiteInfo );
+				StarsFactory.setSiteInformation( siteInfo, updateAccount );
+        		
+				siteInfo.setDbConnection( conn );
+				siteInfo.update();
+				StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
+			}
+			
+			conn.commit();
+			
+			if (primContChanged) ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			if (ciCustChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
+    	}
+    	catch (java.sql.SQLException e) {
+    		try {
+				if (conn != null) conn.rollback();
+    		}
+    		catch (java.sql.SQLException e2) {}
+    		
+    		throw new WebClientException( "Failed to update the customer account information" );
+    	}
+    	finally {
+    		try {
+				if (conn != null) {
+					conn.setAutoCommit( autoCommit );
+					conn.close();
+				}
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
     }
 }

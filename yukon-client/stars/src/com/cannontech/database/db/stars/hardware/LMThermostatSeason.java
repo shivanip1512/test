@@ -118,11 +118,11 @@ public class LMThermostatSeason extends DBPersistent {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
-	public static LMThermostatSeason[] getAllLMThermostatSeasons(int inventoryID, java.sql.Connection conn) {
+	public static LMThermostatSeason[] getAllLMThermostatSeasons(int inventoryID) {
 		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = " + inventoryID
 				   + " ORDER BY DisplayOrder";
 		com.cannontech.database.SqlStatement stmt =
-				new com.cannontech.database.SqlStatement( sql, conn );
+				new com.cannontech.database.SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
 			stmt.execute();

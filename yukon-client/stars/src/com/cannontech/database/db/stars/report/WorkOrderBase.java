@@ -1,5 +1,7 @@
 package com.cannontech.database.db.stars.report;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -18,16 +20,16 @@ public class WorkOrderBase extends DBPersistent {
 
     private Integer orderID = null;
     private String orderNumber = "";
-    private Integer workTypeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
-    private Integer currentStateID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
-    private Integer serviceCompanyID = new Integer( ServiceCompany.NONE_INT );
+    private Integer workTypeID = new Integer( CtiUtilities.NONE_ID );
+    private Integer currentStateID = new Integer( CtiUtilities.NONE_ID );
+    private Integer serviceCompanyID = new Integer( CtiUtilities.NONE_ID );
     private java.util.Date dateReported = new java.util.Date(0);
     private String orderedBy = "";
     private String description = "";
     private java.util.Date dateScheduled = new java.util.Date(0);
     private java.util.Date dateCompleted = new java.util.Date(0);
     private String actionTaken = "";
-    private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
+    private Integer accountID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "OrderNumber", "WorkTypeID", "CurrentStateID", "ServiceCompanyID", "DateReported",
@@ -127,17 +129,22 @@ public class WorkOrderBase extends DBPersistent {
         return new Integer( nextOrderID );
     }
     
-	public static int[] searchByOrderNumber(String orderNo, int energyCompanyID, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static int[] searchByOrderNumber(String orderNo, int energyCompanyID) {
 		String sql = "SELECT OrderID FROM " + TABLE_NAME + " wo, ECToWorkOrderMapping map " +
 				"WHERE UPPER(OrderNumber) = UPPER(?) AND wo.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ?";
+		
+		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
+		java.sql.ResultSet rset = null;
 		
 		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			
 			stmt = conn.prepareStatement( sql );
 			stmt.setString(1, orderNo);
 			stmt.setInt(2, energyCompanyID);
-			java.sql.ResultSet rset = stmt.executeQuery();
+			
+			rset = stmt.executeQuery();
 	    	
 			java.util.ArrayList orderIDList = new java.util.ArrayList();
 			while (rset.next())
@@ -148,20 +155,33 @@ public class WorkOrderBase extends DBPersistent {
 				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
 	    	
 			return orderIDs;
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
 		}
 		finally {
-			if (stmt != null) stmt.close();
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
 		}
+		
+		return null;
 	}
     
-    public static int[] searchByAccountID(int accountID, java.sql.Connection conn) throws java.sql.SQLException {
-    	String sql = "SELECT OrderID FROM " + TABLE_NAME + " WHERE AccountID = ? ORDER BY DateReported DESC";
-    	java.sql.PreparedStatement stmt = null;
+    public static int[] searchByAccountID(int accountID) {
+    	String sql = "SELECT OrderID FROM " + TABLE_NAME + " WHERE AccountID=" + accountID + " ORDER BY DateReported DESC";
+    	
+    	java.sql.Connection conn = null;
+    	java.sql.Statement stmt = null;
+    	java.sql.ResultSet rset = null;
     	
     	try {
-			stmt = conn.prepareStatement( sql );
-			stmt.setInt(1, accountID);
-			java.sql.ResultSet rset = stmt.executeQuery();
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery( sql );
 	    	
 			java.util.ArrayList orderIDList = new java.util.ArrayList();
 			while (rset.next())
@@ -173,9 +193,19 @@ public class WorkOrderBase extends DBPersistent {
 	    	
 			return orderIDs;
     	}
-    	finally {
-    		if (stmt != null) stmt.close();
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
     	}
+    	finally {
+    		try {
+    			if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	
+    	return null;
     }
 
 	/**

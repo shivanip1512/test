@@ -1,6 +1,8 @@
 package com.cannontech.database.db.stars.hardware;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.PoolManager;
 
 
 /**
@@ -67,17 +69,19 @@ public class LMHardwareBase extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
     
-    public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID, java.sql.Connection conn)
-    throws java.sql.SQLException {
+    public static int[] searchForLMHardware(int deviceType, String serialNo, int energyCompanyID) {
     	String sql = "SELECT hw.InventoryID " +
     			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +
     			"WHERE hw.LMHardwareTypeID = ? AND UPPER(hw.ManufacturerSerialNumber) LIKE UPPER(?) " +
     			"AND hw.InventoryID >= 0 AND hw.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
     	
+    	java.sql.Connection conn = null;
     	java.sql.PreparedStatement stmt = null;
     	java.sql.ResultSet rset = null;
     	
     	try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
     		stmt = conn.prepareStatement( sql );
 			stmt.setInt( 1, deviceType );
 			stmt.setString( 2, serialNo );
@@ -95,19 +99,25 @@ public class LMHardwareBase extends DBPersistent {
 			
 			return invIDs;
     	}
-    	finally {
-    		if (rset != null) rset.close();
-    		if (stmt != null) stmt.close();
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
     	}
+    	finally {
+    		try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	
+    	return null;
     }
     
     /**
      * Return map from serial number (String) to inventory id (Integer)
      */
-    public static java.util.TreeMap searchBySNRange(
-    	int deviceType, String serialNoLB, String serialNoUB, int energyCompanyID, java.sql.Connection conn)
-    	throws java.sql.SQLException
-    {
+    public static java.util.TreeMap searchBySNRange(int deviceType, String serialNoLB, String serialNoUB, int energyCompanyID) {
 		String sql = "SELECT inv.InventoryID, ManufacturerSerialNumber FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
 				"WHERE LMHardwareTypeID = " + deviceType + " AND inv.InventoryID >= 0 AND inv.InventoryID = map.InventoryID " +
 				"AND map.EnergyCompanyID = " + energyCompanyID;
@@ -118,10 +128,12 @@ public class LMHardwareBase extends DBPersistent {
 		if (serialNoUB != null)
 			sql += " AND ManufacturerSerialNumber <= " + serialNoUB;
 		
+		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
 		
 		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery( sql );
 			
@@ -134,23 +146,34 @@ public class LMHardwareBase extends DBPersistent {
 			
 			return snTable;
 		}
-		finally {
-			if (rset != null) rset.close();
-			if (stmt != null) stmt.close();
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
 		}
+		finally {
+			try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+		
+		return null;
     }
     
-    public static LMHardwareBase[] searchBySerialNumber(String serialNo, int energyCompanyID, java.sql.Connection conn)
-    throws java.sql.SQLException {
+    public static LMHardwareBase[] searchBySerialNumber(String serialNo, int energyCompanyID) {
     	String sql = "SELECT hw.InventoryID, hw.ManufacturerSerialNumber, hw.LMHardwareTypeID " +
     			"FROM " + TABLE_NAME + " hw, ECToInventoryMapping map " +
     			"WHERE UPPER(hw.ManufacturerSerialNumber) = UPPER(?) AND hw.InventoryID >= 0 " +
     			"AND hw.InventoryID = map.InventoryID AND map.EnergyCompanyID = ?";
     	
+    	java.sql.Connection conn = null;
     	java.sql.PreparedStatement stmt = null;
     	java.sql.ResultSet rset = null;
     	
     	try {
+    		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+    		
     		stmt = conn.prepareStatement(sql);
 			stmt.setString(1, serialNo);
 			stmt.setInt(2, energyCompanyID);
@@ -172,10 +195,19 @@ public class LMHardwareBase extends DBPersistent {
 			
 			return hardwares;
     	}
-    	finally {
-    		if (rset != null) rset.close();
-    		if (stmt != null) stmt.close();
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
     	}
+    	finally {
+    		try {
+				if (rset != null) rset.close();
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+    		}
+    		catch (java.sql.SQLException e) {}
+    	}
+    	
+    	return null;
     }
 
     public Integer getInventoryID() {

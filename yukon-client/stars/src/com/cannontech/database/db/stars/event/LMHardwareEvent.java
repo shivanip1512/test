@@ -1,5 +1,7 @@
 package com.cannontech.database.db.stars.event;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -15,7 +17,7 @@ import com.cannontech.database.db.DBPersistent;
 public class LMHardwareEvent extends DBPersistent {
 
     private Integer eventID = null;
-    private Integer inventoryID = new Integer( com.cannontech.database.db.stars.appliance.ApplianceBase.NONE_INT );
+    private Integer inventoryID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = { "InventoryID" };
 
@@ -64,129 +66,96 @@ public class LMHardwareEvent extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public static Integer[] getAllLMHardwareEventIDs(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID = ? ORDER BY EventID";
-
-        java.sql.PreparedStatement pstmt = null;
+    public static Integer[] getAllLMHardwareEventIDs(Integer inventoryID) {
+        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID =" + inventoryID + " ORDER BY EventID";
+        
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
         java.sql.ResultSet rset = null;
-        java.util.ArrayList eventList = new java.util.ArrayList();
-
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next())
-                    eventList.add( new Integer(rset.getInt("EventID")) );
-            }
+        
+        try {
+        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+        	stmt = conn.createStatement();
+        	rset = stmt.executeQuery( sql );
+        	
+			java.util.ArrayList eventList = new java.util.ArrayList();
+            while (rset.next())
+                eventList.add( new Integer(rset.getInt("EventID")) );
+			
+			Integer[] eventIDs = new Integer[ eventList.size() ];
+			eventList.toArray( eventIDs );
+			return eventIDs;
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
+        finally {
+            try {
                 if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            catch( java.sql.SQLException e2 ) {}
         }
-
-        Integer[] eventIDs = new Integer[ eventList.size() ];
-        eventList.toArray( eventIDs );
-        return eventIDs;
+        
+        return null;
     }
 
-    public static void deleteAllLMHardwareEvents(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
-                pstmt.execute();
-            }
+    public static void deleteAllLMHardwareEvents(Integer inventoryID) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
+        
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
+        
+        try {
+        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+        	stmt = conn.createStatement();
+        	stmt.execute( sql );
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
+        finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            catch( java.sql.SQLException e2 ) {}
         }
     }
     
-    public static LMHardwareEvent getLastLMHardwareEvent(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventID = ("
-        		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID = ?)";
-
-        java.sql.PreparedStatement pstmt = null;
+    public static LMHardwareEvent getLastLMHardwareEvent(Integer inventoryID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventID = (" +
+        		"SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID + ")";
+        
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
         java.sql.ResultSet rset = null;
-
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
-                rset = pstmt.executeQuery();
-
-                if (rset.next()) {
-                    LMHardwareEvent event = new LMHardwareEvent();
-                    event.setEventID( new Integer(rset.getInt("EventID")) );
-                    event.setInventoryID( new Integer(rset.getInt("InventoryID")) );
-                    return event;
-                }
+        
+        try {
+        	conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+        	stmt = conn.createStatement();
+            rset = stmt.executeQuery( sql );
+            
+            if (rset.next()) {
+                LMHardwareEvent event = new LMHardwareEvent();
+                event.setEventID( new Integer(rset.getInt("EventID")) );
+                event.setInventoryID( new Integer(rset.getInt("InventoryID")) );
+                return event;
             }
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
+        catch( java.sql.SQLException e ) {
+            e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
+        finally {
+            try {
                 if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+            catch( java.sql.SQLException e2 ) {}
         }
-
+        
         return null;
     }
 

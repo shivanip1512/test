@@ -10,6 +10,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -132,9 +134,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 					}
             	}
             	
-            	DeleteLMHardwareAction.removeInventory(deleteHw, liteAcctInfo, energyCompany, conn);
+            	DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
             	
-				liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
+				liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 				origInvID = deleteHw.getInventoryID();
             }
             else {
@@ -148,16 +150,15 @@ public class UpdateLMHardwareAction implements ActionBase {
 				}
 				
 				if (ServerUtils.isOperator(user)) {
-					updateInventory(updateHw, liteInv, energyCompany, conn);
+					updateInventory( updateHw, liteInv, energyCompany );
 				}
 				else {
 					com.cannontech.database.db.stars.hardware.InventoryBase invDB =
 							new com.cannontech.database.db.stars.hardware.InventoryBase();
-					
-					StarsLiteFactory.setInventoryBase( invDB, liteInv );
 					invDB.setDeviceLabel( updateHw.getDeviceLabel() );
-					invDB.setDbConnection( conn );
-					invDB.update();
+					
+					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 					
 					liteInv.setDeviceLabel( invDB.getDeviceLabel() );
 				}
@@ -185,13 +186,7 @@ public class UpdateLMHardwareAction implements ActionBase {
             	e2.printStackTrace();
             }
         }
-        finally {
-        	try {
-        		if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
-
+        
 		return null;
 	}
 
@@ -245,71 +240,77 @@ public class UpdateLMHardwareAction implements ActionBase {
 		return operation;
 	}
 	
-	public static void updateInventory(StarsUpdateLMHardware updateHw, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-		throws WebClientException, java.sql.SQLException
+	public static void updateInventory(StarsUpdateLMHardware updateHw, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException
 	{
-		if (liteInv instanceof LiteStarsLMHardware) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-			String serialNo = updateHw.getLMHardware().getManufacturerSerialNumber();
-			
-			if (serialNo.equals(""))
-				throw new WebClientException( "Serial # cannot be empty" );
-			
-			try {
-				if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
-					energyCompany.searchForLMHardware(updateHw.getDeviceType().getEntryID(), serialNo) != null)
-					throw new WebClientException( "Serial # already exists" );
-			}
-			catch (ObjectInOtherEnergyCompanyException e) {
-				throw new WebClientException( "The hardware is found in another energy company. Please contact " + energyCompany.getParent().getName() + " for more information." );
-			}
-			
-			com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
-					new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-			StarsLiteFactory.setLMHardwareBase( hw, liteHw );
-			
-			hw.getLMHardwareBase().setManufacturerSerialNumber( serialNo );
-			StarsFactory.setInventoryBase( hw.getInventoryBase(), updateHw );
-			
-			hw.setDbConnection( conn );
-			hw.update();
-			
-			StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
-		}
-		else {
-			com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-					new com.cannontech.database.db.stars.hardware.InventoryBase();
-			StarsLiteFactory.setInventoryBase( invDB, liteInv );
-			StarsFactory.setInventoryBase( invDB, updateHw );
-			
-			invDB.setDbConnection( conn );
-			invDB.update();
-			
-			StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-		}
-		
-		// Update the "install" event if necessary
-		int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
-					
-		ArrayList hwHist = liteInv.getInventoryHistory();
-		for (int i = hwHist.size() - 1; i >= 0; i--) {
-			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
-			
-			if (liteEvent.getActionID() == installEntryID) {
-				if (!liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
-					com.cannontech.database.data.stars.event.LMHardwareEvent event =
-							(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
-					com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
-								
-					eventDB.setNotes( updateHw.getInstallationNotes() );
-					eventDB.setDbConnection( conn );
-					eventDB.update();
-	            					
-					StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
+		try {
+			if (liteInv instanceof LiteStarsLMHardware) {
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+				String serialNo = updateHw.getLMHardware().getManufacturerSerialNumber();
+				
+				if (serialNo.equals(""))
+					throw new WebClientException( "Serial # cannot be empty" );
+				
+				try {
+					if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
+						energyCompany.searchForLMHardware(updateHw.getDeviceType().getEntryID(), serialNo) != null)
+						throw new WebClientException( "Serial # already exists" );
+				}
+				catch (ObjectInOtherEnergyCompanyException e) {
+					throw new WebClientException( "The hardware is found in another energy company. Please contact " + energyCompany.getParent().getName() + " for more information." );
 				}
 				
-				break;
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				StarsLiteFactory.setLMHardwareBase( hw, liteHw );
+				
+				hw.getLMHardwareBase().setManufacturerSerialNumber( serialNo );
+				StarsFactory.setInventoryBase( hw.getInventoryBase(), updateHw );
+				
+				hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+						Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
+				
+				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
 			}
+			else {
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
+						new com.cannontech.database.db.stars.hardware.InventoryBase();
+				StarsLiteFactory.setInventoryBase( invDB, liteInv );
+				StarsFactory.setInventoryBase( invDB, updateHw );
+				
+				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+				
+				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+			}
+			
+			// Update the "install" event if necessary
+			int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
+			
+			ArrayList hwHist = liteInv.getInventoryHistory();
+			for (int i = hwHist.size() - 1; i >= 0; i--) {
+				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
+				
+				if (liteEvent.getActionID() == installEntryID) {
+					if (!liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
+						com.cannontech.database.data.stars.event.LMHardwareEvent event =
+								(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
+						com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
+						eventDB.setNotes( updateHw.getInstallationNotes() );
+						
+						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
+								Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
+	            		
+						StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
+					}
+					
+					break;
+				}
+			}
+		}
+		catch (TransactionException e) {
+			e.printStackTrace();
+			throw new WebClientException( "Failed to update the hardware information" );
 		}
 	}
 	

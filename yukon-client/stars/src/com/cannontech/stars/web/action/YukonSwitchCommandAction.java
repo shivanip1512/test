@@ -7,11 +7,14 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.SendConfigCommandTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -95,7 +98,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
-        java.sql.Connection conn = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -108,34 +110,39 @@ public class YukonSwitchCommandAction implements ActionBase {
             }
                 
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             
             StarsYukonSwitchCommand command = reqOper.getStarsYukonSwitchCommand();
             StarsYukonSwitchCommandResponse cmdResp = new StarsYukonSwitchCommandResponse();
             
-            if (command.getStarsDisableService() != null) {
-            	int invID = command.getStarsDisableService().getInventoryID();
-            	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-            	sendDisableCommand(energyCompany, liteHw, conn);
-				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-            	cmdResp.setStarsInventory( starsInv );
+            try {
+				if (command.getStarsDisableService() != null) {
+					int invID = command.getStarsDisableService().getInventoryID();
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+					sendDisableCommand( energyCompany, liteHw );
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+					cmdResp.setStarsInventory( starsInv );
+				}
+				else if (command.getStarsEnableService() != null) {
+					int invID = command.getStarsEnableService().getInventoryID();
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+					sendEnableCommand( energyCompany, liteHw );
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+					cmdResp.setStarsInventory( starsInv );
+				}
+				else if (command.getStarsConfig() != null) {
+					int invID = command.getStarsConfig().getInventoryID();
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+					sendConfigCommand( energyCompany, liteHw, true );
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+					cmdResp.setStarsInventory( starsInv );
+				}
             }
-            else if (command.getStarsEnableService() != null) {
-            	int invID = command.getStarsEnableService().getInventoryID();
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-            	sendEnableCommand(energyCompany, liteHw, conn);
-				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-            	cmdResp.setStarsInventory( starsInv );
-            }
-            else if (command.getStarsConfig() != null) {
-                int invID = command.getStarsConfig().getInventoryID();
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-                sendConfigCommand(energyCompany, liteHw, true, conn);
-				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-				cmdResp.setStarsInventory( starsInv );
-            }
-
+			catch (WebClientException e) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			
             respOper.setStarsYukonSwitchCommandResponse( cmdResp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -144,20 +151,14 @@ public class YukonSwitchCommandAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot complete the switch command") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send the switch command") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
             	e2.printStackTrace();
             }
         }
-        finally {
-        	try {
-        		if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
-
+        
         return null;
     }
 
@@ -199,10 +200,9 @@ public class YukonSwitchCommandAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
     }
     
-	public static void sendDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static void sendDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw) throws WebClientException {
 		if (liteHw.getManufacturerSerialNumber().trim().length() == 0)
-			throw new java.sql.SQLException( "The manufacturer serial # of the hardware cannot be empty" );
+			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
         
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
@@ -218,28 +218,32 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 		
 		// Add "Termination" to hardware events
-		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-		
-		eventDB.setInventoryID( new Integer(liteHw.getInventoryID()) );
-		eventBase.setEventTypeID( hwEventEntryID );
-		eventBase.setActionID( termEntryID );
-		eventBase.setEventDateTime( new Date() );
-		
-		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-		event.setDbConnection( conn );
-		event.add();
-		
-		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-		liteHw.getInventoryHistory().add( liteEvent );
-		liteHw.updateDeviceStatus();
+		try {
+			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+			
+			eventDB.setInventoryID( new Integer(liteHw.getInventoryID()) );
+			eventBase.setEventTypeID( hwEventEntryID );
+			eventBase.setActionID( termEntryID );
+			eventBase.setEventDateTime( new Date() );
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+			liteHw.getInventoryHistory().add( liteEvent );
+			liteHw.updateDeviceStatus();
+		}
+		catch (TransactionException e) {
+			e.printStackTrace();
+		}
 	}
     
-	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw) throws WebClientException {
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
-			throw new java.sql.SQLException( "The manufacturer serial # of the hardware cannot be empty" );
+			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
         
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
@@ -255,28 +259,32 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 		
 		// Add "Activation Completed" to hardware events
-		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-		
-		eventDB.setInventoryID( new Integer(liteHw.getInventoryID()) );
-		eventBase.setEventTypeID( hwEventEntryID );
-		eventBase.setActionID( actCompEntryID );
-		eventBase.setEventDateTime( new Date() );
-		
-		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-		event.setDbConnection( conn );
-		event.add();
-		
-		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-		liteHw.getInventoryHistory().add( liteEvent );
-		liteHw.updateDeviceStatus();
+		try {
+			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+			
+			eventDB.setInventoryID( new Integer(liteHw.getInventoryID()) );
+			eventBase.setEventTypeID( hwEventEntryID );
+			eventBase.setActionID( actCompEntryID );
+			eventBase.setEventDateTime( new Date() );
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			
+			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+			liteHw.getInventoryHistory().add( liteEvent );
+			liteHw.updateDeviceStatus();
+		}
+		catch (TransactionException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static void sendConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService, java.sql.Connection conn)
-	throws java.sql.SQLException {
+	public static void sendConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService) throws WebClientException {
 		if (liteHw.getManufacturerSerialNumber().length() == 0)
-			throw new java.sql.SQLException( "The manufacturer serial # of the hardware cannot be empty" );
+			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
         
         Integer invID = new Integer( liteHw.getInventoryID() );
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
@@ -305,22 +313,27 @@ public class YukonSwitchCommandAction implements ActionBase {
 			}
 			
 			// Add "Activation Completed" to hardware events
-			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-			
-			eventDB.setInventoryID( invID );
-			eventBase.setEventTypeID( hwEventEntryID );
-			eventBase.setActionID( actCompEntryID );
-			eventBase.setEventDateTime( now );
-			
-			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			event.setDbConnection( conn );
-			event.add();
-			
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getInventoryHistory().add( liteEvent );
-			liteHw.updateDeviceStatus();
+			try {
+				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+				
+				eventDB.setInventoryID( invID );
+				eventBase.setEventTypeID( hwEventEntryID );
+				eventBase.setActionID( actCompEntryID );
+				eventBase.setEventDateTime( now );
+				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				
+				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+				liteHw.getInventoryHistory().add( liteEvent );
+				liteHw.updateDeviceStatus();
+			}
+			catch (TransactionException e) {
+				e.printStackTrace();
+			}
         }
         else {
         	// Only send a config command
@@ -341,21 +354,26 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		if (configs.length > 0) {
 			// Add "Config" to hardware events
-			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-			
-			eventDB.setInventoryID( invID );
-			eventBase.setEventTypeID( hwEventEntryID );
-			eventBase.setActionID( configEntryID );
-			eventBase.setEventDateTime( now );
-			
-			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			event.setDbConnection( conn );
-			event.add();
-			
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getInventoryHistory().add( liteEvent );
+			try {
+				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+				
+				eventDB.setInventoryID( invID );
+				eventBase.setEventTypeID( hwEventEntryID );
+				eventBase.setActionID( configEntryID );
+				eventBase.setEventDateTime( now );
+				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				
+				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+				liteHw.getInventoryHistory().add( liteEvent );
+			}
+			catch (TransactionException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

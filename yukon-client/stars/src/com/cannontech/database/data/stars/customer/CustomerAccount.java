@@ -54,7 +54,7 @@ public class CustomerAccount extends DBPersistent {
 			hw.setDbConnection( getDbConnection() );
 			
 			// Don't delete hardware information from the database
-			hw.deleteLMHardwareBase( false );
+			hw.clearLMHardware();
 			
 			com.cannontech.database.db.stars.hardware.InventoryBase invDB = hw.getInventoryBase();
 			invDB.retrieve();
@@ -63,9 +63,10 @@ public class CustomerAccount extends DBPersistent {
 			invDB.update();
 		}
 		
+		// Delete program events
         com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-            getCustomerAccount().getAccountID(), getDbConnection() );
-
+				getCustomerAccount().getAccountID() );
+    	
     	// hardware configuration has already been deleted, so we just need to use the DB object here
 		com.cannontech.database.data.stars.appliance.ApplianceBase app =
     			new com.cannontech.database.data.stars.appliance.ApplianceBase();
@@ -78,17 +79,16 @@ public class CustomerAccount extends DBPersistent {
     	
     	// Delete work orders
     	com.cannontech.database.data.stars.report.WorkOrderBase.deleteAllWorkOrders(
-    			getCustomerAccount().getAccountID().intValue(), getDbConnection() );
+    			getCustomerAccount().getAccountID().intValue() );
     	
     	// Delete call reports
     	com.cannontech.database.data.stars.report.CallReportBase.deleteAllCallReports(
-    			getCustomerAccount().getAccountID(), getDbConnection() );
+    			getCustomerAccount().getAccountID() );
         
         getCustomerAccount().delete();
         getAccountSite().delete();
         getBillingAddress().delete();
 		
-		// Delete customer
 		// TODO: In the future, a CICustomer may not be deleted when its account is deleted
 		if (getCustomer() != null) getCustomer().delete();
         

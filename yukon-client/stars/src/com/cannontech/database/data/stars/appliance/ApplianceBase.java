@@ -39,7 +39,7 @@ public class ApplianceBase extends DBPersistent {
     public void delete() throws java.sql.SQLException {
         // delete from LMHardwareConfiguration
         com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration(
-	            getApplianceBase().getApplianceID(), getDbConnection() );
+	            getApplianceBase().getApplianceID() );
         
         // delete from tables of each appliance type
         delete( "ApplianceAirConditioner", "ApplianceID", getApplianceBase().getApplianceID() );
@@ -66,7 +66,8 @@ public class ApplianceBase extends DBPersistent {
         getApplianceBase().update();
         
         com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteLMHardwareConfiguration(
-	            getApplianceBase().getApplianceID(), getDbConnection() );
+	            getApplianceBase().getApplianceID() );
+        
         if (getLMHardwareConfig().getInventoryID() != null)
         	getLMHardwareConfig().add();
     }
@@ -75,7 +76,7 @@ public class ApplianceBase extends DBPersistent {
         getApplianceBase().retrieve();
 
         setLMHardwareConfig( com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getLMHardwareConfiguration(
-                    getApplianceBase().getApplianceID(), getDbConnection()) );
+                    getApplianceBase().getApplianceID()) );
     }
 
     public com.cannontech.database.db.stars.appliance.ApplianceBase getApplianceBase() {

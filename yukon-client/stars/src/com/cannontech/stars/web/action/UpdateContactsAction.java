@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -113,7 +114,6 @@ public class UpdateContactsAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
-		java.sql.Connection conn = null;
         
 		try {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -134,9 +134,6 @@ public class UpdateContactsAction implements ActionBase {
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			
 			StarsUpdateContacts updateContacts = reqOper.getStarsUpdateContacts();
 			StarsUpdateContactsResponse resp = new StarsUpdateContactsResponse(); 
 			
@@ -149,8 +146,8 @@ public class UpdateContactsAction implements ActionBase {
 						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
 				StarsFactory.setCustomerContact( primContact, starsPrimContact );
             	
-				primContact.setDbConnection( conn );
-				primContact.update();
+            	primContact= (com.cannontech.database.data.customer.Contact)
+            			Transaction.createTransaction( Transaction.UPDATE, primContact ).execute();
 				
 				StarsLiteFactory.setLiteContact( litePrimContact, primContact );
 				StarsLiteFactory.setStarsCustomerContact( starsPrimContact, litePrimContact );
@@ -178,8 +175,8 @@ public class UpdateContactsAction implements ActionBase {
 									(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 							StarsFactory.setCustomerContact( contact, starsContact );
 			            	
-							contact.setDbConnection( conn );
-							contact.update();
+							contact= (com.cannontech.database.data.customer.Contact)
+									Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
 							
 							StarsLiteFactory.setLiteContact( liteContact, contact );
 							StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
@@ -197,8 +194,8 @@ public class UpdateContactsAction implements ActionBase {
 					com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 					StarsFactory.setCustomerContact( contact, starsContact );
 		            
-					contact.setDbConnection( conn );
-					contact.add();
+					contact= (com.cannontech.database.data.customer.Contact)
+							Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 		            
 					liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
 					energyCompany.addContact( liteContact, liteAcctInfo );
@@ -216,8 +213,7 @@ public class UpdateContactsAction implements ActionBase {
 				com.cannontech.database.data.customer.Contact contact =
 						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
             	
-				contact.setDbConnection( conn );
-				contact.delete();
+            	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
 				energyCompany.deleteContact( liteContact.getContactID() );
 			}
             
@@ -238,13 +234,7 @@ public class UpdateContactsAction implements ActionBase {
 				e2.printStackTrace();
 			}
 		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-
+		
 		return null;
 	}
 

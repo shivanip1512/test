@@ -445,17 +445,11 @@ public class InventoryBean {
             
             if (getEnergyCompany().getChildren().size() > 0) {
 				htmlBuf.append("          <td class='TableCell' width='17%'>");
-				if (getEnergyCompany().getInventory(liteInv.getInventoryID(), false) != null) {
-					htmlBuf.append( getEnergyCompany().getName() );
-				}
-				else {
-					for (int j = 0; j < getEnergyCompany().getChildren().size(); j++) {
-						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getEnergyCompany().getChildren().get(j);
-						if (company.getInventoryBrief(liteInv.getInventoryID(), false) != null) {
-							htmlBuf.append( company.getName() );
-							break;
-						}
-					}
+				ArrayList descendants = ECUtils.getAllDescendants( getEnergyCompany() );
+				for (int j = 0; j < descendants.size(); j++) {
+					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
+					if (company.getInventoryBrief(liteInv.getInventoryID(), false) != null)
+						htmlBuf.append( company.getName() );
 				}
 				htmlBuf.append("</td>").append(LINE_SEPARATOR);
             }

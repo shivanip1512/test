@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -223,15 +224,11 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		
 		String position = null;
 		ArrayList logMsg = new ArrayList();
-		
-		java.sql.Connection conn = null;
 		java.io.PrintWriter fw = null;
 		
 		startTime = System.currentTimeMillis();
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
 			File custMapFile = new File(path, "customer.map");
 			fw = new java.io.PrintWriter(new java.io.FileWriter(custMapFile, true), true);	// Append to file and auto flush
 			boolean first = true;
@@ -296,7 +293,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				
 				LiteInventoryBase liteInv = null;
 				try {
-					liteInv = ImportManager.insertLMHardware(fields, liteAcctInfo, energyCompany, conn, first);
+					liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first );
 				}
 				catch (ImportProblem ipe) {
 					if (ipe.getMessage().equals( ImportProblem.DUPLICATE_HARDWARE ))
@@ -311,20 +308,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 								devCarrSettings = new Hashtable();
 								
 								String sql = "SELECT DeviceID, Address FROM DeviceCarrierSettings";
-								java.sql.Statement stmt = null;
-								java.sql.ResultSet rset = null;
-								try {
-									stmt = conn.createStatement();
-									rset = stmt.executeQuery( sql );
-									while (rset.next()) {
-										int deviceID = rset.getInt(1);
-										int address = rset.getInt(2);
-										devCarrSettings.put( String.valueOf(address), new Integer(deviceID) );
-									}
-								}
-								finally {
-									if (rset != null) rset.close();
-									if (stmt != null) stmt.close();
+								SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+								stmt.execute();
+								
+								for (int i = 0; i < stmt.getRowCount(); i++) {
+									int deviceID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+									int address = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
+									devCarrSettings.put( String.valueOf(address), new Integer(deviceID) );
 								}
 							}
 							
@@ -389,7 +379,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					}
 					
 					if (programs.size() > 0) {
-						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
+						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
 						
 						int[] appIDs = new int[3];
 						for (int i = 0; i < 3; i++) {
@@ -601,13 +591,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				if (e instanceof WebClientException)
 					errorMsg += ": " + e.getMessage();
 			}
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-			if (fw != null) fw.close();
 		}
 		
 		stopTime = System.currentTimeMillis();

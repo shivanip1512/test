@@ -8,7 +8,6 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
@@ -96,11 +95,8 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String lineNo = null;
-		java.sql.Connection conn = null;
 		
 		try {
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
 			for (numAcctImported = 0; numAcctImported < fieldsList.size(); numAcctImported++) {
 				String[] custFields = (String[]) fieldsList.get(numAcctImported);
 				String[] invFields = new String[ ImportManager.NUM_INV_FIELDS ];
@@ -138,39 +134,39 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[ImportManager.IDX_ACCOUNT_NO] );
 				
 				if (liteAcctInfo == null) {
-					liteAcctInfo = ImportManager.newCustomerAccount(custFields, user, energyCompany, false);
+					liteAcctInfo = ImportManager.newCustomerAccount( custFields, user, energyCompany, false );
 					
 					LiteInventoryBase liteInv = null;
 					if (!invFields[ImportManager.IDX_SERIAL_NO].equalsIgnoreCase(""))
-						liteInv = ImportManager.insertLMHardware(invFields, liteAcctInfo, energyCompany, conn, true);
+						liteInv = ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, true );
 					
 					Integer invID = null;
 					if (liteInv != null)
 						invID = new Integer( liteInv.getInventoryID() );
-					ImportManager.programSignUp(programs, liteAcctInfo, invID, energyCompany, conn);
+					ImportManager.programSignUp( programs, liteAcctInfo, invID, energyCompany );
 					
 					numAcctAdded++;
 				}
 				else {
-					ImportManager.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, conn );
+					ImportManager.updateCustomerAccount( custFields, liteAcctInfo, energyCompany );
 					//updateLogin( fields, liteAcctInfo, energyCompany, session );
 					
 					if (!invFields[ImportManager.IDX_SERIAL_NO].equalsIgnoreCase(""))
 					{
 						if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_INSERT )) {
-							ImportManager.insertLMHardware(invFields, liteAcctInfo, energyCompany, conn, true);
+							ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, true );
 						}
 						else if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_UPDATE )) {
-							ImportManager.updateLMHardware(invFields, liteAcctInfo, energyCompany, conn);
+							ImportManager.updateLMHardware( invFields, liteAcctInfo, energyCompany );
 						}
 						else if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_REMOVE )) {
-							ImportManager.removeLMHardware(invFields, liteAcctInfo, energyCompany, conn);
+							ImportManager.removeLMHardware( invFields, liteAcctInfo, energyCompany );
 						}
 						else {	// Hardware action field not specified
 							if (liteAcctInfo.getInventories().size() == 0)
-								ImportManager.insertLMHardware(invFields, liteAcctInfo, energyCompany, conn, true);
+								ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, true );
 							else
-								ImportManager.updateLMHardware(invFields, liteAcctInfo, energyCompany, conn);
+								ImportManager.updateLMHardware( invFields, liteAcctInfo, energyCompany );
 						}
 					}
 					
@@ -178,7 +174,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						Integer dftInvID = null;
 						if (liteAcctInfo.getInventories().size() == 1)
 							dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
-						ImportManager.programSignUp(programs, liteAcctInfo, dftInvID, energyCompany, conn);
+						ImportManager.programSignUp( programs, liteAcctInfo, dftInvID, energyCompany );
 					}
 					
 					numAcctUpdated++;
@@ -202,12 +198,6 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 				errorMsg = "Failed to import customer accounts";
 			if (e instanceof WebClientException)
 				errorMsg += ": " + e.getMessage();
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
 		}
 	}
 

@@ -36,7 +36,7 @@ public class InventoryBase extends DBPersistent {
     public void deleteInventoryBase() throws java.sql.SQLException {
 		// delete from LMHardwareEvent
 		com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
-				getInventoryBase().getInventoryID(), getDbConnection() );
+				getInventoryBase().getInventoryID() );
 		
 		delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
 		getInventoryBase().delete();
@@ -47,7 +47,8 @@ public class InventoryBase extends DBPersistent {
     	LMHardwareBase hw = new LMHardwareBase();
     	hw.setInventoryID( getInventoryBase().getInventoryID() );
     	hw.setDbConnection( getDbConnection() );
-    	hw.deleteLMHardwareBase( true );
+    	hw.clearLMHardware();
+    	hw.getLMHardwareBase().delete();
     	
     	deleteInventoryBase();
     }

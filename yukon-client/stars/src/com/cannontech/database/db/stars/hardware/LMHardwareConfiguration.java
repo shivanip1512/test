@@ -1,5 +1,7 @@
 package com.cannontech.database.db.stars.hardware;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -16,7 +18,7 @@ public class LMHardwareConfiguration extends DBPersistent {
 
     private Integer inventoryID = null;
     private Integer applianceID = null;
-    private Integer addressingGroupID = new Integer(0);
+    private Integer addressingGroupID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "AddressingGroupID"
@@ -32,69 +34,43 @@ public class LMHardwareConfiguration extends DBPersistent {
         super();
     }
 
-    public static LMHardwareConfiguration getLMHardwareConfiguration(Integer applianceID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, applianceID.intValue() );
-                rset = pstmt.executeQuery();
-
-                if (rset.next()) {
-                    LMHardwareConfiguration config = new LMHardwareConfiguration();
-
-                    config.setInventoryID( new Integer(rset.getInt("InventoryID")) );
-                    config.setApplianceID( new Integer(rset.getInt("ApplianceID")) );
-                    config.setAddressingGroupID( new Integer(rset.getInt("AddressingGroupID")) );
-                    
-                    return config;
-                }
+    public static LMHardwareConfiguration getLMHardwareConfiguration(Integer applianceID) {
+        String sql = "SELECT InventoryID, ApplianceID, AddressingGroupID FROM " +
+        		TABLE_NAME + " WHERE ApplianceID=" + applianceID;
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
+        	stmt.execute();
+        	
+        	if (stmt.getRowCount() > 0) {
+                LMHardwareConfiguration config = new LMHardwareConfiguration();
+                
+                config.setInventoryID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[0]).intValue()) );
+                config.setApplianceID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[1]).intValue()) );
+                config.setAddressingGroupID( new Integer(((java.math.BigDecimal) stmt.getRow(0)[2]).intValue()) );
+                
+                return config;
             }
         }
-        catch( java.sql.SQLException e )
-        {
+        catch( Exception e ) {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
+        
         return null;
     }
 
     public static LMHardwareConfiguration[] getALLHardwareConfigs(Integer inventoryID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = " + inventoryID;
-        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
-        try
-        {
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
         	stmt.execute();
+        	
         	LMHardwareConfiguration[] configs = new LMHardwareConfiguration[ stmt.getRowCount() ];
-
             for (int i = 0; i < configs.length; i++) {
             	Object[] row = stmt.getRow(i);
                 configs[i] = new LMHardwareConfiguration();
-
+                
                 configs[i].setInventoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
                 configs[i].setApplianceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
                 configs[i].setAddressingGroupID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
@@ -102,79 +78,34 @@ public class LMHardwareConfiguration extends DBPersistent {
             
             return configs;
         }
-        catch(com.cannontech.common.util.CommandExecutionException e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
         }
         
         return null;
     }
 
-    public static void deleteLMHardwareConfiguration(Integer applianceID, java.sql.Connection conn) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, applianceID.intValue() );
-                pstmt.execute();
-            }
+    public static void deleteLMHardwareConfiguration(Integer applianceID) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceID=" + applianceID;
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
+        	stmt.execute();
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+        catch( Exception e ) {
+            e.printStackTrace();
         }
     }
 
-    public static void deleteAllLMHardwareConfiguration(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
-                pstmt.execute();
-            }
+    public static void deleteAllLMHardwareConfiguration(Integer inventoryID) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
+        SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+        
+        try {
+        	stmt.execute();
         }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+        catch( Exception e ) {
+            e.printStackTrace();
         }
     }
 

@@ -11,6 +11,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -98,7 +100,6 @@ public class CreateLMHardwareAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
-        java.sql.Connection conn = null;
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -118,16 +119,24 @@ public class CreateLMHardwareAction implements ActionBase {
         	}
         	
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	
             StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+            LiteInventoryBase liteInv = null;
             
-			LiteInventoryBase liteInv = addInventory( createHw, liteAcctInfo, energyCompany, conn );
-
-            // Send config command
-            if (liteInv instanceof LiteStarsLMHardware &&
-            	AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION ))
-            {
-	            YukonSwitchCommandAction.sendConfigCommand(energyCompany, (LiteStarsLMHardware)liteInv, false, conn);
+            try {
+				liteInv = addInventory( createHw, liteAcctInfo, energyCompany );
+				
+				// Send config command
+				if (liteInv instanceof LiteStarsLMHardware &&
+					AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION ))
+				{
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, (LiteStarsLMHardware)liteInv, false);
+				}
+            }
+            catch (WebClientException e) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
+				return SOAPUtil.buildSOAPMessage( respOper );
             }
             
 			// Response will be handled here, instead of in parse()
@@ -145,20 +154,14 @@ public class CreateLMHardwareAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the hardware") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to create the hardware") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
             	e2.printStackTrace();
             }
         }
-        finally {
-        	try {
-        		if (conn != null) conn.close();
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
-
+        
 		return null;
 	}
 
@@ -204,83 +207,100 @@ public class CreateLMHardwareAction implements ActionBase {
 		return operation;
 	}
 	
-	public static LMThermostatSeason[] populateThermostatTables(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
-	throws java.sql.SQLException {
-		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
-				new com.cannontech.database.data.multi.MultiDBPersistent();
+	public static LMThermostatSeason[] populateThermostatTables(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) 
+		throws java.sql.SQLException
+	{
+		java.sql.Connection conn = null;
+		boolean autoCommit = true;
 		
-		int weekdayID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
-		int[] weekdayIDs = new int[] {
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY).getEntryID(),
-				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID()
-		};
-		
-		int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
-		// If we are populating the default commercial thermostat tables
-		boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
-				&& (energyCompany.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID);
-		
-		ArrayList liteSeasons = energyCompany.getDefaultLMHardware(hwTypeDefID).getThermostatSettings().getThermostatSeasons();
-		LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];
-		
-		for (int i = 0; i < liteSeasons.size(); i++) {
-			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
+		try {
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit( false );
 			
-			seasons[i] = new LMThermostatSeason();
-			StarsLiteFactory.setLMThermostatSeason( seasons[i].getLMThermostatSeason(), liteSeason );
-			seasons[i].getLMThermostatSeason().setSeasonID( null );
-			seasons[i].getLMThermostatSeason().setInventoryID( new Integer(liteHw.getInventoryID()) );
+			int weekdayID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
+			int[] weekdayIDs = new int[] {
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID(),
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY).getEntryID(),
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY).getEntryID(),
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY).getEntryID(),
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID()
+			};
 			
-			ArrayList entries = seasons[i].getLMThermostatSeasonEntries();
+			int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
+			// If we are populating the default commercial thermostat tables
+			boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+					&& (energyCompany.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID);
 			
-			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
-				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
+			ArrayList liteSeasons = energyCompany.getDefaultLMHardware(hwTypeDefID).getThermostatSettings().getThermostatSeasons();
+			LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];
+			
+			for (int i = 0; i < liteSeasons.size(); i++) {
+				LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
 				
-				if (!liteHw.isTwoWayThermostat() || liteEntry.getTimeOfWeekID() != weekdayID) {
-					com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
-							new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
-					StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
-					entry.setEntryID( null );
+				seasons[i] = new LMThermostatSeason();
+				StarsLiteFactory.setLMThermostatSeason( seasons[i].getLMThermostatSeason(), liteSeason );
+				seasons[i].getLMThermostatSeason().setSeasonID( null );
+				seasons[i].getLMThermostatSeason().setInventoryID( new Integer(liteHw.getInventoryID()) );
+				
+				ArrayList entries = seasons[i].getLMThermostatSeasonEntries();
+				
+				for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
+					LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
 					
-					if (isDftCommTstat) {
-						// Because Occupied(Sleep) time should be earlier than Unoccupied(Wake) time,
-						// the insert order of time schedules need to be changed to Sleep, Leave, Return, Wake
-						if (j % 4 == 0) {	// Wake(Unoccupied)
-							entries.add( entry );
-						}
-						else if (j % 4 == 1 || j % 4 == 2) {	// Leave, Return
-							entry.setTemperature( new Integer(-1) );
-							entries.add( entries.size() - 1, entry );
-						}
-						else {	// Sleep(Occupied)
-							entries.add( entries.size() - 3, entry );
-						}
-					}
-					else
-						entries.add( entry );
-				}
-				else {
-					for (int k= 0; k < weekdayIDs.length; k++) {
+					if (!liteHw.isTwoWayThermostat() || liteEntry.getTimeOfWeekID() != weekdayID) {
 						com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
 								new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
 						StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
 						entry.setEntryID( null );
-						entry.setTimeOfWeekID( new Integer(weekdayIDs[k]) );
-						seasons[i].getLMThermostatSeasonEntries().add( entry );
+						
+						if (isDftCommTstat) {
+							// Because Occupied(Sleep) time should be earlier than Unoccupied(Wake) time,
+							// the insert order of time schedules need to be changed to Sleep, Leave, Return, Wake
+							if (j % 4 == 0) {	// Wake(Unoccupied)
+								entries.add( entry );
+							}
+							else if (j % 4 == 1 || j % 4 == 2) {	// Leave, Return
+								entry.setTemperature( new Integer(-1) );
+								entries.add( entries.size() - 1, entry );
+							}
+							else {	// Sleep(Occupied)
+								entries.add( entries.size() - 3, entry );
+							}
+						}
+						else
+							entries.add( entry );
+					}
+					else {
+						for (int k= 0; k < weekdayIDs.length; k++) {
+							com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
+									new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
+							StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
+							entry.setEntryID( null );
+							entry.setTimeOfWeekID( new Integer(weekdayIDs[k]) );
+							seasons[i].getLMThermostatSeasonEntries().add( entry );
+						}
 					}
 				}
+				
+				seasons[i].setDbConnection( conn );
+				seasons[i].add();
 			}
 			
-			multiDB.getDBPersistentVector().add( seasons[i] );
+			conn.commit();
+			return seasons;
 		}
-		
-		multiDB.setDbConnection( conn );
-		multiDB.add();
-		
-		return seasons;
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+			conn.rollback();
+			throw e;
+		}
+		finally {
+			if (conn != null) {
+				conn.setAutoCommit( autoCommit );
+				conn.close();
+			}
+		}
 	}
 	
 	/**
@@ -290,197 +310,204 @@ public class CreateLMHardwareAction implements ActionBase {
 	 * just add it to the account. If it's currently assigned to another account,
 	 * remove it from that account first, then add it to the new account. 
 	 */
-	public static LiteInventoryBase addInventory(StarsCreateLMHardware createHw, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws WebClientException, java.sql.SQLException
+	public static LiteInventoryBase addInventory(StarsCreateLMHardware createHw, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		throws WebClientException
 	{
 		if (createHw.getLMHardware() != null && createHw.getLMHardware().getManufacturerSerialNumber().equals(""))
 			throw new WebClientException( "Serial # cannot be empty" );
 		
-		com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
-		StarsFactory.setInventoryBase( invDB, createHw );
-		
-		int categoryID = ECUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
-		invDB.setCategoryID( new Integer(categoryID) );
-		
-		if (liteAcctInfo != null)
-			invDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
-		
-		LiteInventoryBase liteInv = null;
-		int invID = createHw.getInventoryID();
-		
-		if (invID == -1) {
-			// Create new hardware
-			if (createHw.getLMHardware() != null) {
-				com.cannontech.database.data.stars.hardware.LMHardwareBase hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
-				
-				hwDB.setManufacturerSerialNumber( createHw.getLMHardware().getManufacturerSerialNumber() );
-				hwDB.setLMHardwareTypeID( new Integer(createHw.getDeviceType().getEntryID()) );
-				hw.setInventoryBase( invDB );
-				hw.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				
-				hw.setDbConnection( conn );
-				hw.add();
-				
-				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
-				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
-				if (liteHw.isThermostat())
-					populateThermostatTables( liteHw, energyCompany, conn );
-	            
-	            liteInv = liteHw;
-				energyCompany.addInventory( liteInv );
+		try {
+			com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
+			StarsFactory.setInventoryBase( invDB, createHw );
+			
+			int categoryID = ECUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
+			invDB.setCategoryID( new Integer(categoryID) );
+			
+			if (liteAcctInfo != null)
+				invDB.setAccountID( new Integer(liteAcctInfo.getAccountID()) );
+			
+			LiteInventoryBase liteInv = null;
+			int invID = createHw.getInventoryID();
+			
+			if (invID == -1) {
+				// Create new hardware
+				if (createHw.getLMHardware() != null) {
+					com.cannontech.database.data.stars.hardware.LMHardwareBase hw = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+					com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
+					
+					hwDB.setManufacturerSerialNumber( createHw.getLMHardware().getManufacturerSerialNumber() );
+					hwDB.setLMHardwareTypeID( new Integer(createHw.getDeviceType().getEntryID()) );
+					hw.setInventoryBase( invDB );
+					hw.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					
+					hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+							Transaction.createTransaction( Transaction.INSERT, hw ).execute();
+					
+					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
+					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
+					if (liteHw.isThermostat())
+						populateThermostatTables( liteHw, energyCompany );
+	            	
+					liteInv = liteHw;
+					energyCompany.addInventory( liteInv );
+				}
+				else {
+					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+							new com.cannontech.database.data.stars.hardware.InventoryBase();
+					inventory.setInventoryBase( invDB );
+					inventory.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					
+					inventory = (com.cannontech.database.data.stars.hardware.InventoryBase)
+							Transaction.createTransaction( Transaction.INSERT, inventory ).execute();
+					
+					liteInv = new LiteInventoryBase();
+					StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+					energyCompany.addInventory( liteInv );
+				}
 			}
 			else {
-				com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-						new com.cannontech.database.data.stars.hardware.InventoryBase();
-				inventory.setInventoryBase( invDB );
-				inventory.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				// Add hardware in the inventory to customer account
+				liteInv = energyCompany.getInventory( invID, true );
 				
-				inventory.setDbConnection( conn );
-				inventory.add();
-				
-				liteInv = new LiteInventoryBase();
-				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-				energyCompany.addInventory( liteInv );
-			}
-		}
-		else {
-			// Add hardware in the inventory to customer account
-			liteInv = energyCompany.getInventory( invID, true );
-			
-			if (liteInv.getAccountID() > 0) {
-				// Remove hardware from previous account
-				LiteStarsCustAccountInformation litePrevAccount = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );
-				
-				StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
-				deleteHw.setInventoryID( invID );
-				deleteHw.setDeleteFromInventory( false );
-				
-				DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany, conn);
-				
-				// The liteInv object is changed in the method above, so we need to retrieve it again
-				liteInv = energyCompany.getInventoryBrief( invID, true );
-				
-				StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
-				if (starsPrevAccount != null)
-					DeleteLMHardwareAction.parseResponse( invID, starsPrevAccount );
-			}
-            
-			invDB.setInventoryID( new Integer(invID) );
-			invDB.setDbConnection( conn );
-			invDB.update();
-			
-			StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-		}
-		
-		if (liteAcctInfo != null) {
-			if (liteInv instanceof LiteStarsLMHardware) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-				
-				// If this is a two-way thermostat, set the account for receiving dynamic data
-				if (liteHw.isTwoWayThermostat()) {
-					java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
-					synchronized (accountList) {
-						if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
-					}
+				if (liteInv.getAccountID() > 0) {
+					// Remove hardware from previous account
+					LiteStarsCustAccountInformation litePrevAccount = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );
+					
+					StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
+					deleteHw.setInventoryID( invID );
+					deleteHw.setDeleteFromInventory( false );
+					
+					DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany);
+					
+					// The liteInv object is changed in the method above, so we need to retrieve it again
+					liteInv = energyCompany.getInventoryBrief( invID, true );
+					
+					StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
+					if (starsPrevAccount != null)
+						DeleteLMHardwareAction.parseResponse( invID, starsPrevAccount );
 				}
+            	
+				invDB.setInventoryID( new Integer(invID) );
+				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 				
-				for (int i = 0; i < createHw.getLMHardware().getStarsLMHardwareConfigCount(); i++) {
-					StarsLMHardwareConfig starsConfig = createHw.getLMHardware().getStarsLMHardwareConfig(i);
-					if (starsConfig.getGroupID() == 0) continue;
-            		
-					com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
-							new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
-					config.setInventoryID( invDB.getInventoryID() );
-					config.setApplianceID( new Integer(starsConfig.getApplianceID()) );
-					config.setAddressingGroupID( new Integer(starsConfig.getGroupID()) );
-					config.setDbConnection( conn );
-					config.add();
-            		
-					for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-						if (liteApp.getApplianceID() == starsConfig.getApplianceID()) {
-							liteApp.setInventoryID( liteHw.getInventoryID() );
-							liteApp.setAddressingGroupID( config.getAddressingGroupID().intValue() );
+				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
+			}
+			
+			if (liteAcctInfo != null) {
+				if (liteInv instanceof LiteStarsLMHardware) {
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+					
+					// If this is a two-way thermostat, set the account for receiving dynamic data
+					if (liteHw.isTwoWayThermostat()) {
+						java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+						synchronized (accountList) {
+							if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
+						}
+					}
+					
+					for (int i = 0; i < createHw.getLMHardware().getStarsLMHardwareConfigCount(); i++) {
+						StarsLMHardwareConfig starsConfig = createHw.getLMHardware().getStarsLMHardwareConfig(i);
+						if (starsConfig.getGroupID() == 0) continue;
             			
-							for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
-								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-								if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
-									liteProg.setGroupID( config.getAddressingGroupID().intValue() );
-									break;
+						com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
+								new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
+						config.setInventoryID( invDB.getInventoryID() );
+						config.setApplianceID( new Integer(starsConfig.getApplianceID()) );
+						config.setAddressingGroupID( new Integer(starsConfig.getGroupID()) );
+						
+						config = (com.cannontech.database.db.stars.hardware.LMHardwareConfiguration)
+								Transaction.createTransaction( Transaction.INSERT, config ).execute();
+            			
+						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+							if (liteApp.getApplianceID() == starsConfig.getApplianceID()) {
+								liteApp.setInventoryID( liteHw.getInventoryID() );
+								liteApp.setAddressingGroupID( config.getAddressingGroupID().intValue() );
+            					
+								for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
+									LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
+									if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
+										liteProg.setGroupID( config.getAddressingGroupID().intValue() );
+										break;
+									}
 								}
+								break;
 							}
-							break;
 						}
 					}
 				}
-			}
-			
-			int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-			int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
-			
-			// Add "Install" to hardware events
-			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-			com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBaseDB = event.getLMCustomerEventBase();
-			
-			eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
-			eventBaseDB.setActionID( new Integer(installActID) );
-			eventBaseDB.setEventDateTime( new Date(liteInv.getInstallDate()) );
-			eventBaseDB.setNotes( createHw.getInstallationNotes() );
-			eventDB.setInventoryID( invDB.getInventoryID() );
-			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			event.setDbConnection( conn );
-			event.add();
-			
-			int statusDefID = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
-			if (createHw.getDeviceStatus() != null)
-				statusDefID = YukonListFuncs.getYukonListEntry(
-						createHw.getDeviceStatus().getEntryID() ).getYukonDefID();
-			
-			if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-				// If device status is unavailable, add "Termination" event
-				int termActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
 				
-				event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-				eventDB = event.getLMHardwareEvent();
-				eventBaseDB = event.getLMCustomerEventBase();
+				int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
+				int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
+				
+				// Add "Install" to hardware events
+				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+				com.cannontech.database.db.stars.event.LMCustomerEventBase eventBaseDB = event.getLMCustomerEventBase();
 				
 				eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
-				eventBaseDB.setActionID( new Integer(termActID) );
-				eventBaseDB.setEventDateTime( new Date() );
-				eventBaseDB.setNotes( "Event added to match the device status" );
+				eventBaseDB.setActionID( new Integer(installActID) );
+				eventBaseDB.setEventDateTime( new Date(liteInv.getInstallDate()) );
+				eventBaseDB.setNotes( createHw.getInstallationNotes() );
 				eventDB.setInventoryID( invDB.getInventoryID() );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				event.setDbConnection( conn );
-				event.add();
-			}
-			else if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL) {
-				// If device status is temporary unavailable, add "Temp Termination" event
-				int tempTermActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
 				
-				event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-				eventDB = event.getLMHardwareEvent();
-				eventBaseDB = event.getLMCustomerEventBase();
+				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+						Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
-				eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
-				eventBaseDB.setActionID( new Integer(tempTermActID) );
-				eventBaseDB.setEventDateTime( new Date() );
-				eventBaseDB.setNotes( "Event added to match the device status" );
-				eventDB.setInventoryID( invDB.getInventoryID() );
-				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				event.setDbConnection( conn );
-				event.add();
+				int statusDefID = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
+				if (createHw.getDeviceStatus() != null)
+					statusDefID = YukonListFuncs.getYukonListEntry(
+							createHw.getDeviceStatus().getEntryID() ).getYukonDefID();
+				
+				if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+					// If device status is unavailable, add "Termination" event
+					int termActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
+					
+					event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+					eventDB = event.getLMHardwareEvent();
+					eventBaseDB = event.getLMCustomerEventBase();
+					
+					eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+					eventBaseDB.setActionID( new Integer(termActID) );
+					eventBaseDB.setEventDateTime( new Date() );
+					eventBaseDB.setNotes( "Event added to match the device status" );
+					eventDB.setInventoryID( invDB.getInventoryID() );
+					event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					
+					event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+							Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				}
+				else if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL) {
+					// If device status is temporary unavailable, add "Temp Termination" event
+					int tempTermActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
+					
+					event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+					eventDB = event.getLMHardwareEvent();
+					eventBaseDB = event.getLMCustomerEventBase();
+					
+					eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+					eventBaseDB.setActionID( new Integer(tempTermActID) );
+					eventBaseDB.setEventDateTime( new Date() );
+					eventBaseDB.setNotes( "Event added to match the device status" );
+					eventDB.setInventoryID( invDB.getInventoryID() );
+					event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					
+					event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+							Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				}
+				
+				StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany );
+				liteAcctInfo.getInventories().add( invDB.getInventoryID() );
 			}
 			
-			// The DB changes must be commited to prevent deadlock in the event table
-			conn.commit();
-			
-			StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany );
-			liteAcctInfo.getInventories().add( invDB.getInventoryID() );
+			return liteInv;
 		}
-		
-		return liteInv;
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new WebClientException( "Failed to create the hardware" );
+		}
 	}
 	
 	private void parseResponse(StarsCreateLMHardware createHw, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {

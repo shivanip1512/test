@@ -95,89 +95,75 @@ public class WorkOrderManager extends HttpServlet {
 	
 	private void searchWorkOrder(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		java.sql.Connection conn = null;
 		
 		session.removeAttribute( WORK_ORDER_SET );
 		
-		try {
-			int searchBy = Integer.parseInt( req.getParameter("SearchBy") );
-			String searchValue = req.getParameter( "SearchValue" );
-			if (searchValue.trim().length() == 0) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search value cannot be empty");
-				return;
-			}
-			
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			int[] orderIDs = null; 
-			
-			if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-				if (AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN))
-					searchValue = ServerUtils.AUTO_GEN_NUM_PREC + searchValue;
-				orderIDs = WorkOrderBase.searchByOrderNumber(searchValue, user.getEnergyCompanyID(), conn);
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-				int[] acctIDs = CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
-				if (acctIDs != null && acctIDs.length > 0)
-					orderIDs = WorkOrderBase.searchByAccountID(acctIDs[0], conn); 
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
-				int[] acctIDs = CustomerAccount.searchByPhoneNumber(energyCompany.getEnergyCompanyID(), searchValue);
-				if (acctIDs != null && acctIDs.length > 0) {
-					ArrayList orderIDList = new ArrayList();
-					for (int i = 0; i < acctIDs.length; i++) {
-						int[] woIDs = WorkOrderBase.searchByAccountID(acctIDs[i], conn);
-						for (int j = 0; j < woIDs.length; j++)
-							orderIDList.add( new Integer(woIDs[j]) );
-					}
-					
-					orderIDs = new int[ orderIDList.size() ];
-					for (int i = 0; i< orderIDList.size(); i++)
-						orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+		int searchBy = Integer.parseInt( req.getParameter("SearchBy") );
+		String searchValue = req.getParameter( "SearchValue" );
+		if (searchValue.trim().length() == 0) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search value cannot be empty");
+			return;
+		}
+		
+		int[] orderIDs = null; 
+		
+		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
+			if (AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN))
+				searchValue = ServerUtils.AUTO_GEN_NUM_PREC + searchValue;
+			orderIDs = WorkOrderBase.searchByOrderNumber( searchValue, user.getEnergyCompanyID() );
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
+			int[] acctIDs = CustomerAccount.searchByAccountNumber(energyCompany.getEnergyCompanyID(), searchValue);
+			if (acctIDs != null && acctIDs.length > 0)
+				orderIDs = WorkOrderBase.searchByAccountID( acctIDs[0] ); 
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
+			int[] acctIDs = CustomerAccount.searchByPhoneNumber( energyCompany.getEnergyCompanyID(), searchValue );
+			if (acctIDs != null && acctIDs.length > 0) {
+				ArrayList orderIDList = new ArrayList();
+				for (int i = 0; i < acctIDs.length; i++) {
+					int[] woIDs = WorkOrderBase.searchByAccountID( acctIDs[i] );
+					for (int j = 0; j < woIDs.length; j++)
+						orderIDList.add( new Integer(woIDs[j]) );
 				}
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-				int[] acctIDs = CustomerAccount.searchByLastName(energyCompany.getEnergyCompanyID(), searchValue);
-				if (acctIDs != null && acctIDs.length > 0) {
-					ArrayList orderIDList = new ArrayList();
-					for (int i = 0; i < acctIDs.length; i++) {
-						int[] woIDs = WorkOrderBase.searchByAccountID(acctIDs[i], conn);
-						for (int j = 0; j < woIDs.length; j++)
-							orderIDList.add( new Integer(woIDs[j]) );
-					}
-					
-					orderIDs = new int[ orderIDList.size() ];
-					for (int i = 0; i< orderIDList.size(); i++)
-						orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
-				}
-			}
-			else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-				// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
-			}
-			
-			if (orderIDs == null || orderIDs.length == 0) {
-				session.setAttribute(WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service orders found matching the search criteria.</div>");
-			}
-			else if (orderIDs.length == 1) {
-				redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp?OrderId=" + orderIDs[0];
-			}
-			else {
-				ArrayList soList = new ArrayList();
-				for (int i = 0; i < orderIDs.length; i++)
-					soList.add( energyCompany.getWorkOrderBase(orderIDs[i], true) );
-				session.setAttribute(WORK_ORDER_SET, soList);
-				session.setAttribute(WORK_ORDER_SET_DESC, "Click on a Order # to view the service order details.");
-				session.setAttribute(ServletUtils.ATT_REFERRER, referer);
+				
+				orderIDs = new int[ orderIDList.size() ];
+				for (int i = 0; i< orderIDList.size(); i++)
+					orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
 			}
 		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to search for hardware(s)");
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
+			int[] acctIDs = CustomerAccount.searchByLastName(energyCompany.getEnergyCompanyID(), searchValue);
+			if (acctIDs != null && acctIDs.length > 0) {
+				ArrayList orderIDList = new ArrayList();
+				for (int i = 0; i < acctIDs.length; i++) {
+					int[] woIDs = WorkOrderBase.searchByAccountID( acctIDs[i] );
+					for (int j = 0; j < woIDs.length; j++)
+						orderIDList.add( new Integer(woIDs[j]) );
+				}
+				
+				orderIDs = new int[ orderIDList.size() ];
+				for (int i = 0; i< orderIDList.size(); i++)
+					orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
 			}
-			catch (java.sql.SQLException e) {}
+		}
+		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
+			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
+		}
+		
+		if (orderIDs == null || orderIDs.length == 0) {
+			session.setAttribute(WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service orders found matching the search criteria.</div>");
+		}
+		else if (orderIDs.length == 1) {
+			redirect = req.getContextPath() + "/operator/WorkOrder/WorkOrder.jsp?OrderId=" + orderIDs[0];
+		}
+		else {
+			ArrayList soList = new ArrayList();
+			for (int i = 0; i < orderIDs.length; i++)
+				soList.add( energyCompany.getWorkOrderBase(orderIDs[i], true) );
+			session.setAttribute(WORK_ORDER_SET, soList);
+			session.setAttribute(WORK_ORDER_SET_DESC, "Click on a Order # to view the service order details.");
+			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		}
 	}
 	

@@ -49,7 +49,7 @@ public class UpdateLoginAction implements ActionBase {
             StarsUpdateLogin updateLogin = new StarsUpdateLogin();
             updateLogin.setUsername( req.getParameter("Username") );
             updateLogin.setPassword( req.getParameter("Password") );
-            if (req.getParameter("CustomerGroup").length() > 0)
+            if (req.getParameter("CustomerGroup") != null && req.getParameter("CustomerGroup").length() > 0)
             	updateLogin.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
             
             StarsOperation operation = new StarsOperation();

@@ -3,6 +3,7 @@ package com.cannontech.database.data.stars.hardware;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
 
@@ -83,9 +84,9 @@ public class LMThermostatSeason extends DBPersistent {
 		}
 	}
 	
-	public static LMThermostatSeason[] getAllLMThermostatSeasons(int inventoryID, java.sql.Connection conn) {
+	public static LMThermostatSeason[] getAllLMThermostatSeasons(int inventoryID) {
 		com.cannontech.database.db.stars.hardware.LMThermostatSeason[] seasonDBs =
-				com.cannontech.database.db.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( inventoryID, conn );
+				com.cannontech.database.db.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( inventoryID );
 		if (seasonDBs == null) return null;
 		
 		try {
@@ -93,9 +94,11 @@ public class LMThermostatSeason extends DBPersistent {
 			for (int i = 0; i < seasonDBs.length; i++) {
 				seasons[i] = new LMThermostatSeason();
 				seasons[i].setSeasonID( seasonDBs[i].getSeasonID() );
-				seasons[i].setDbConnection( conn );
-				seasons[i].retrieve();
+				
+				seasons[i] = (LMThermostatSeason)
+						Transaction.createTransaction( Transaction.RETRIEVE, seasons[i] ).execute();
 			}
+			
 			return seasons;
 		}
 		catch (Exception e) {
