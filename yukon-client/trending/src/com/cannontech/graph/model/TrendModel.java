@@ -36,6 +36,7 @@ import com.cannontech.jfreechart.chart.YukonStandardLegend;
 public class TrendModel implements com.cannontech.graph.GraphDefines 
 {
     private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
+	private java.text.SimpleDateFormat LEGEND_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMM dd, yyyy");
 	private java.text.SimpleDateFormat TRANSLATE_DATE= new java.text.SimpleDateFormat("HHmmss");
     private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
     private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
@@ -440,13 +441,11 @@ private Axis getDomainAxis()
 		else
 		{
 			DateAxis domainAxis = new DateAxis("Date/Time");
-//			DateAxis domainAxis = new HorizontalDateAxis("Date/Time");
 			domainAxis.setAutoRange(false);
 			domainAxis.setMaximumDate(getStopDate());
 			domainAxis.setMinimumDate(getStartDate());
 		
 			domainAxis.setTickMarksVisible(true);	
-//			((HorizontalDateAxis)domainAxis).setVerticalTickLabels(false);
 			((DateAxis)domainAxis).setVerticalTickLabels(false);
 			return domainAxis;
 		}
@@ -454,9 +453,9 @@ private Axis getDomainAxis()
 	else if( rendererType == TrendModelType.BAR_VIEW || rendererType == TrendModelType.BAR_3D_VIEW)
 	{
 		CategoryAxis catAxis = new CategoryAxis("Date/Time");
-//		CategoryAxis catAxis = new HorizontalCategoryAxis("Date/Time");
-//		((HorizontalCategoryAxis)catAxis).setVerticalCategoryLabels(false);
-//		((HorizontalCategoryAxis)catAxis).setSkipCategoryLabelsToFit(true);
+		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+			catAxis.setLabel("Percentage");
+
 		((CategoryAxis)catAxis).setVerticalCategoryLabels(false);
 		((CategoryAxis)catAxis).setSkipCategoryLabelsToFit(true);
 		catAxis.setTickMarksVisible(true);
@@ -573,7 +572,7 @@ private YukonStandardLegend getLegend(JFreeChart fChart)
 	return legend;
 }
 
-private int getOptionsMaskSettings()
+public int getOptionsMaskSettings()
 {
 	return optionsMaskSettings;
 }
@@ -695,6 +694,13 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				day = 86400000;
 				startTS = getStartDate().getTime() - day;
 				stopTS = getStopDate().getTime() - day;
+				for (int i = 0; i < trendSeries.length; i++)
+				{
+					if (GraphDataSeries.isYesterdayType(trendSeries[i].getTypeMask()))
+					{
+						trendSeries[i].setLabel(trendSeries[i].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
+					}
+				}
 			}
 			else if (GraphDataSeries.isUsageType(seriesTypeMask))
 			{
@@ -708,10 +714,11 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				for (int i = 0; i < trendSeries.length; i++)
 				{
 					if (GraphDataSeries.isPeakType(trendSeries[i].getTypeMask()))
-					{
+					{ /*TODO unfortunately, only able to do peak for one point right now*/
 						day = retrievePeakIntervalTranslateMillis(trendSeries[i].getPointId().intValue());
 						startTS = getStartDate().getTime() - day;
 						stopTS = getStartDate().getTime() - day + 86400000;
+						trendSeries[i].setLabel(trendSeries[i].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
 						break;
 					}
 				}
