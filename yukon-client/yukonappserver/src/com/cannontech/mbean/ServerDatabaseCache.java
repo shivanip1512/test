@@ -943,7 +943,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 			if(userRoleMap != null) {			
 				addRolesAndPropertiesToLookupMap(userRoleMap, userRoleIDsLookupMap,userRolePropertyIDsLookupMap);
 			}
-System.out.println("user: " + user.getUserID() + " size: " + userRoleIDsLookupMap.size());			
+			
 			allYukonUserLookupRoleIDs.put(user, userRoleIDsLookupMap);
 			allYukonUserLookupRolePropertyIDs.put(user, userRolePropertyIDsLookupMap);
 		}
@@ -1355,6 +1355,8 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		allYukonUserGroups = null;
 		allYukonGroupUsers = null;
 		allUserEnergyCompanies = null;
+		allYukonUserLookupRoleIDs = null;
+	    allYukonUserLookupRolePropertyIDs = null;
 	}
 	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
