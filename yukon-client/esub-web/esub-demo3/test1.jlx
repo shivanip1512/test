@@ -1,0 +1,54 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+6
+
+com.loox.jloox.LxLine
+! 111101100 60;30;300;0 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 ! 0 0
+2
+0 -150;0
+1 150;0
+0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 50;60;280;20 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 ! 0 0
+0 0 0
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 56;105;240;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+40 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 73.578125;176.46875;137.271484;26.65625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 36 "STATIC!"
+"Arial Bold" 36 255 255 255 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 250;160;173.988281;26.328125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffff0033 0 0
+0 0
+"Arial Bold" 0 36 "-78.12 MW"
+764 3 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 110101100 69;228;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+956 ""
+
+
+0

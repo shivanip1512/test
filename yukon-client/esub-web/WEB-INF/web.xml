@@ -15,6 +15,12 @@
  	<filter-name>authFilter</filter-name>
  	<filter-class>com.cannontech.esub.web.filter.AuthFilter</filter-class>
  </filter>
+ 
+ <filter>
+ 	<filter-name>jsFilter</filter-name>
+ 	<filter-class>com.cannontech.esub.web.filter.JSFilter</filter-class>
+ </filter>
+ 
 <!-- 
  <filter>
  	<filter-name>svgFilter</filter-name>
@@ -38,6 +44,11 @@
  	<url-pattern>*.svg</url-pattern>
  </filter-mapping> 
  
+ <filter-mapping>
+ 	<filter-name>jsFilter</filter-name>
+ 	<url-pattern>*.js</url-pattern>
+ </filter-mapping> 
+ 
 <!--  <filter-mapping>
   	<filter-name>svgFilter</filter-name>
   	<url-pattern>*.svg</url-pattern>
@@ -54,10 +65,15 @@
   </servlet>
   
   <servlet>
-    <servlet-name>PointData</servlet-name>
-    <servlet-class>com.cannontech.esub.web.servlet.PointData</servlet-class>
+    <servlet-name>DynamicTextServlet</servlet-name>
+    <servlet-class>com.cannontech.esub.web.servlet.DynamicTextServlet</servlet-class>
   </servlet>
-  
+
+  <servlet>
+    <servlet-name>StateImageServlet</servlet-name>
+    <servlet-class>com.cannontech.esub.web.servlet.StateImageServlet</servlet-class>
+  </servlet>
+      
   <servlet-mapping>
  	<servlet-name>svgGenerator</servlet-name>
  	<url-pattern>*.svg</url-pattern>
@@ -67,6 +83,7 @@
    <servlet-name>htmlGenerator</servlet-name>
    <url-pattern>*.html</url-pattern>
  </servlet-mapping>
+
  
   <session-config>
   <session-timeout>60</session-timeout>

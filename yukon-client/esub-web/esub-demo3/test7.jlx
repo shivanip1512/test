@@ -1,0 +1,98 @@
+JLoox 2.0.2
+"UTF8"
+A 0 2 0 0 ffff0000 1 ! 0
+!
+"Default" 0 32
+5 0 001
+1
+"0" 1
+
+12
+
+com.loox.jloox.LxLine
+! 111101100 60;120;380;0 5 0 $ ! ! 0
+A 0 3 0 0 ffff0000 1 ! 0 0
+2
+0 -190;0
+1 190;0
+0 0
+
+com.loox.jloox.LxLine
+! 111101100 70;20;410;60 5 0 $ ! ! 0
+A 0 1 0 0 ffff0000 1 ! 0 0
+2
+0 -205;-30
+1 205;30
+0 5
+
+com.loox.jloox.LxRectangle
+! 111101100 60;50;260;70 5 0 $ ! ! 0
+A 0 1 0 0 ffff0000 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxLine
+! 111101100 60;130;390;0 5 0 $ ! ! 0
+A 0 1 0 0 ffff0000 1 ! 0 0
+2
+0 -195;0
+1 195;0
+0 5
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 60;140;71;22 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+8 ""
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 60;170;60.095703;8.890625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "Static Text"
+"Arial Bold" 12 255 255 255 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 60;190;32.757812;8.78125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "-78.12"
+764 1 ""
+
+com.cannontech.esub.editor.element.StateImage
+! 110101100 60;210;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+956 ""
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 130;140;310;310 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+611 $
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 550;50;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+13 ""
+
+com.loox.jloox.LxLine
+! 111101100 560;70;0;120 5 0 $ ! ! 0
+A 0 2 0 0 ffff0000 1 ! 0 0
+2
+0 0;60
+1 0;-60
+0 5
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 470;480;176.105469;11.109375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffff00 0 0
+0 0
+"Arial Bold" 0 12 "Wed Sep 18 12:34:03 CDT 2002"
+764 8 ""
+
+
+0

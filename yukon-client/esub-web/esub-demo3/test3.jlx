@@ -1,0 +1,19 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+1
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 47;32;640;480 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+-1 $
+
+
+0

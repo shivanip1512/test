@@ -4,5 +4,5 @@
     <exportSource>false</exportSource>
     <updateXml>true</updateXml>
     <warLocation>c:/temp/esub-web.war</warLocation>
-    <webPath>/esub</webPath>
+    <webPath></webPath>
 </tomcatProjectProperties>

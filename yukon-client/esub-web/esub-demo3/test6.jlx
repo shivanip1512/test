@@ -1,0 +1,39 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 B ffffffff ffffffff 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+4
+
+com.loox.jloox.LxLine
+! 111101100 50;40;210;10 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 ! 0 0
+2
+0 -105;-5
+1 105;5
+0 0
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 50;20;410;270 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+611 $
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 150;420;640;480 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+611 $
+
+com.cannontech.esub.editor.element.DynamicGraphElement
+! 111101100 700;60;590;290 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 C ffffffff 0 0
+0 0 0
+611 $
+
+
+0
