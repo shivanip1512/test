@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/02/17 23:14:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "rte_macro.h"
 #include "logger.h"
 #include "guard.h"
+#include "porter.h"
 
 CtiRouteMacro::CtiRouteMacro()
 {
@@ -101,7 +102,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     try
     {
         CtiLockGuard< CtiMutex > listguard(getRouteListMux());
-        if( onebasedoffset > 0 )
+        if( (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
         {
             if( offset < RoutePtrList.length())
             {
@@ -202,11 +203,6 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                     if(NewOMess)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
-                        }
                         delete NewOMess;
                         NewOMess = 0;
                     }
@@ -220,11 +216,11 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             dout << RWTime() << " ERROR: Macro Route " << getName() << " has not resolved any sub-routes. " << endl;
         }
 
-        if(OutMessage)
+        /* if(OutMessage)       // 20050217 CGP.  This OM will be deleted elsewhere dev_base.cpp as OutMessageTemplate.
         {
             delete OutMessage;
             OutMessage = 0;
-        }
+        } */
     }
     catch(...)
     {
