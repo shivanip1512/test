@@ -1441,6 +1441,9 @@ insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePropertyID=-10805;
 
 
+alter table MacSchedule add template NUMBER;
+update MacSchedule set template = 0 where commandfile is not null;
+alter table MacSchedule MODIFY template NULL;
 
 
 
