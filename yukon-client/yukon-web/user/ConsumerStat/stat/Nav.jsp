@@ -1,5 +1,5 @@
 <%
-	// Pairs of page name / link text
+	// Table of (link, page name) pairs
 	String linkPairs[][] = {{"General.jsp", "General"},
 						  {"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTROL_HISTORY, "Control History")},
