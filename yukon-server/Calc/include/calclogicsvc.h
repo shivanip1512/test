@@ -28,6 +28,7 @@ protected:
     BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
 
 private:
+    RWTime _dispatchPingedFailed;
     bool _ok, _dbChange;
     RWCString _dispatchMachine;
     INT _dispatchPort;

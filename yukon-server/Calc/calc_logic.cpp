@@ -21,6 +21,8 @@ int remove( void );
 LPTSTR szServiceName = "CALCLOGIC";
 LPTSTR szDisplayName = "Yukon Calc-Logic Service";
 
+extern RWCString CALCVERSION;
+
 int main( int argc, char *argv[] )
 {
     RWWinSockInfo sock_init;        // global declare for winsock
@@ -57,7 +59,7 @@ int main( int argc, char *argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-version" ) == 0 )
         {
-            cout << " - Yukon Calculation and Logic Version 1.13b" << endl;
+            cout << " - Yukon Calculation and Logic Version " << CALCVERSION << endl;
         }
         else
         {
@@ -71,7 +73,7 @@ int main( int argc, char *argv[] )
     {
         // run as a service
         CtiCalcLogicService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
-    
+
         //Set up an entry for the one service and go
         BEGIN_SERVICE_MAP
         SERVICE_MAP_ENTRY(CtiCalcLogicService, CALCLOGIC)
@@ -103,7 +105,7 @@ int install( void )
         cout << "Couldn't locate any services that this service is to be dependent upon" << endl
              << "installing anyway" << endl;
     }
-    
+
     /*
     // Attempt to determine any services we are going to be dependent on
     HINSTANCE hLib = LoadLibrary( "cparms.dll" );

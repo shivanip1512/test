@@ -9,6 +9,7 @@
 #include "msg_multi.h"
 #include "logger.h"
 #include "guard.h"
+#include "utility.h"
 
 #include "calcthread.h"
 
@@ -85,20 +86,29 @@ void CtiCalculateThread::periodicLoop( void )
         BOOL interrupted = FALSE, messageInMulti;
         clock_t now;
 
+        RWTime rwnow, announceTime;
+        announceTime = nextScheduledTimeAlignedOnRate( RWTime(), 300);
+
         while( !interrupted )
         {
+            rwnow = rwnow.now();
+            if(rwnow > announceTime)
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " PeriodicLoop thread active" << endl;
+                }
+            }
+
             //  while it's still the same second /and/ i haven't been interrupted
             for( ; newTime == tempTime && !interrupted; )
             {
-    //            {
-    //                RWMutexLock::LockGuard coutGuard(coutMux);
-    //                cout << "(periodicloop keepalive) ";
-    //            }
                 tempTime = RWTime( );
                 if( _pSelf.serviceInterrupt( ) )
                     interrupted = TRUE;
                 else
-                    _pSelf.sleep( 200 );
+                    _pSelf.sleep( 250 );
             }
 
             if( interrupted )
@@ -203,18 +213,31 @@ void CtiCalculateThread::onUpdateLoop( void )
         int calcQuality;
         RWTime calcTime;
 
+        RWTime rwnow, announceTime;
+        announceTime = nextScheduledTimeAlignedOnRate( RWTime(), 300);
+
         while( !interrupted )
         {
             //  this is the cleanest way to do it;  i know it's a do-while, but that gets rid of an unnecessary if statement
             do
             {
+                rwnow = rwnow.now();
+                if(rwnow > announceTime)
+                {
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " OnUpdateLoop thread active" << endl;
+                    }
+                }
+
                 if( _auSelf.serviceInterrupt( ) )
                 {
                     interrupted = TRUE;
                 }
                 else
                 {
-                    _auSelf.sleep( 66 );
+                    _auSelf.sleep( 250 );
                 }
 
             } while( !_auAffectedPoints.entries( ) && !interrupted );
@@ -359,9 +382,8 @@ void CtiCalculateThread::calcLoop( void )
     //  while nobody's bothering me...
     while( !_self.serviceInterrupt( ) )
     {
-        _self.sleep( 333 );
+        _self.sleep( 1000 );
     }
-
 
     //  scream at the other threads, tell them it's time for dinner
     periodicThreadFunc.requestInterrupt( );
