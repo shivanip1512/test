@@ -67,6 +67,8 @@ public interface DeviceTypes extends TypeBase
 	public final static int EDITABLEVERSACOMSERIAL       = DEVICE_OFFSET + 57;
 	public final static int MCTBROADCAST                 = DEVICE_OFFSET + 58;
    public final static int ION_7700                     = DEVICE_OFFSET + 59;
+   public final static int ION_8300                     = DEVICE_OFFSET + 60;
+   public final static int ION_7330                     = DEVICE_OFFSET + 61;
 
 
 
@@ -130,5 +132,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_LM_ENERGY_EXCHANGE_PROGRAM = {"LM ENERGY EXCHANGE", "ENERGY EXCHANGE" };
 	public static final String[] STRING_SIXNET = {"SIXNET"};
    public static final String[] STRING_DNP_CBC_6510 = {"CBC 6510", "CBC-6510" };
-   public static final String[] STRING_ION_7700 = {"ION", "ION 7700", "ION-7700" };
+   public static final String[] STRING_ION_7700 = {"ION-7700", "ION 7700" };
+   public static final String[] STRING_ION_8300 = {"ION-8300", "ION 8300" };
+   public static final String[] STRING_ION_7330 = {"ION-7330", "ION 7330" };
+   
 }

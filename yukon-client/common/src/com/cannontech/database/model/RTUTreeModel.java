@@ -3,6 +3,7 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
 public class RTUTreeModel extends DeviceTreeModel 
@@ -30,13 +31,11 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.RTU
 				|| class_ == com.cannontech.database.data.pao.DeviceClasses.SYSTEM)
 			 &&
-			 (type_ == PAOGroups.RTUILEX 
-            || type_ == PAOGroups.RTU_DNP
-            || type_ == PAOGroups.ION_7700
-				|| type_ == PAOGroups.RTUWELCO 
+			 (DeviceTypesFuncs.isRTU(type_) 
 				|| type_ == PAOGroups.DAVISWEATHER)
 			 && category_ == PAOGroups.CAT_DEVICE;
 }
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String

@@ -52,6 +52,8 @@ public final static boolean hasMasterAddress(int intType)
    {
       case RTU_DNP:
       case ION_7700:
+      case ION_7330:
+      case ION_8300:
          return true;
       default:
          return false;
@@ -431,6 +433,8 @@ public final static boolean isRTU(int deviceType)
 	switch(deviceType)
 	{	
       case ION_7700:
+      case ION_7330:
+      case ION_8300:
       case RTU_DNP:
 		case RTUILEX:
 		case RTUWELCO:

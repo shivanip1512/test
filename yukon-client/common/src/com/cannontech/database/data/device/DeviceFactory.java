@@ -51,10 +51,15 @@ public final static DeviceBase createDevice(int deviceType) {
          returnDevice = new DNPBase();
          returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
          break;
+
+		//use only 1 ION class for now!! 1-7-2003
       case PAOGroups.ION_7700:
+      case PAOGroups.ION_7330:
+      case PAOGroups.ION_8300:
          returnDevice = new Ion7700();
          returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
          break;
+
 		case PAOGroups.RTUILEX:
 			returnDevice = new RTUILEX();
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);

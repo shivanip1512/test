@@ -1,4 +1,7 @@
 package com.cannontech.dbeditor.wizard.device;
+
+import com.cannontech.database.data.pao.PAOGroups;
+
 /**
  * This type was created in VisualAge.
  */
@@ -334,8 +337,10 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || currentPanel == getDeviceVirtualNamePanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
-                (getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.RTU_DNP
-                 || getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.ION_7700)) );
+                (getDeviceTypePanel().getDeviceType() == PAOGroups.RTU_DNP
+                 || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700
+                 || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7330
+                 || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_8300) ) );
 }
 
 

@@ -1875,7 +1875,9 @@ public void setDeviceType(int type)
 		else if( type == PAOGroups.RTUILEX 
                 || type == PAOGroups.RTU_DNP
                 || type == PAOGroups.DNP_CBC_6510
-                || type == PAOGroups.ION_7700 )
+                || type == PAOGroups.ION_7700
+                || type == PAOGroups.ION_7330
+                || type == PAOGroups.ION_8300 )
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
@@ -1899,7 +1901,6 @@ public void setDeviceType(int type)
          !(type == PAOGroups.LMT_2
           || type == PAOGroups.RTUILEX
           || type == PAOGroups.RTU_DNP
-          || type == PAOGroups.ION_7700
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
@@ -1910,6 +1911,9 @@ public void setDeviceType(int type)
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
                || type == PAOGroups.DNP_CBC_6510
+	            || type == PAOGroups.ION_7700
+				   || type == PAOGroups.ION_7330
+				   || type == PAOGroups.ION_8300               
 					|| type == PAOGroups.LCU_T3026) );
 		
 

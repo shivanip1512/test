@@ -203,6 +203,10 @@ public final static int getDeviceType(String typeString)
      return RTU_DNP;
    else if (isStringDevice(compareString, STRING_ION_7700))
      return ION_7700;
+   else if (isStringDevice(compareString, STRING_ION_7330))
+     return ION_7330;
+   else if (isStringDevice(compareString, STRING_ION_8300))
+     return ION_8300;
    else if (isStringDevice(compareString, STRING_RTU_ILEX))
 	  return RTUILEX;
    else if (isStringDevice(compareString, STRING_RTU_WELCO))
@@ -333,6 +337,10 @@ public final static String getDeviceTypeString(int type)
         return STRING_RTU_DNP[0];
      case ION_7700:
         return STRING_ION_7700[0];
+     case ION_7330:
+        return STRING_ION_7330[0];
+     case ION_8300:
+        return STRING_ION_8300[0];
 	  case RTUILEX:
 		  return STRING_RTU_ILEX[0];
 	  case RTUWELCO:
