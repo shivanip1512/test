@@ -27,6 +27,7 @@ PARAMETERS
  timeOut			- Time in millis to wait for a response to come back from YC before ignoring it.
  REDIRECT			- where the servlet should go after the post
  updateDB			- flag for writing command result to the database(RPH)
+ action				- values [updateDB]
 */
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,12 +61,20 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		  while (enum1.hasMoreElements()) {
 		  	String ele = enum1.nextElement().toString();
 			 System.out.println(" --" + ele + "  " + req.getParameter(ele));
-		 }
+		}
+		 
+		String redirectURL = req.getParameter("REDIRECT");
 		
 		/**deviceID(opt1) or SerialNumber(opt2) must exist!
 		 * deviceID/serialNumber command is sent. */
 		String deviceID = req.getParameter("deviceID");
+		if( deviceID != null )
+			localBean.setDeviceID(Integer.parseInt(deviceID));
+		
 		String serialNumber = req.getParameter("serialNumber");
+		if( serialNumber != null)
+			localBean.setSerialNumber(serialNumber);
+		
 
 		/** Specific route to send on, only used in the case of loops or serial number is used
 		 * When sending to a device, the route is ignored and the porter connection takes care
@@ -74,10 +83,19 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		//Flag to clear the resultText, no commands sent
 		String clear = req.getParameter("clearText");
 
+		//Action to do:  "SelectDevice", set deviceID and redirect to commander page.
+		String action = req.getParameter("action");
+
 		//Flag to write to the database
 		String updateDB = req.getParameter("updateDB");
 		if (clear != null)
 			localBean.clearResultText();
+		else if( action!= null && action.equalsIgnoreCase("SelectDevice"))
+		{
+			redirectURL = redirectURL.substring(0, redirectURL.lastIndexOf('/')+1).concat("CommandDevice.jsp");
+			System.out.println("Redirect: "+req.getParameter("REDIRECT"));
+			System.out.println("Referrer: "+req.getParameter("REFERRER"));
+		}
 		else
 		{
 			String function = req.getParameter("function");	//user friendly command string
@@ -111,12 +129,10 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			//Send the command out on deviceID/serialNumber
 			if( deviceID != null )
 			{	
-				localBean.setDeviceID(Integer.parseInt(deviceID));
 				localBean.handleDevice();
 			}
 			else if( serialNumber != null)
 			{
-				localBean.setSerialNumber(serialNumber);
 				localBean.handleSerialNumber();
 			}
 
@@ -135,8 +151,6 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			}
 			
 		}
-		
-		String redirectURL = req.getParameter("REDIRECT");
 		
 		if( redirectURL != null ) {
 			resp.sendRedirect(redirectURL);
