@@ -16,13 +16,13 @@ import com.cannontech.stars.util.ServerUtils;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class CPSImportRegulator {
+public class CPSImport {
 	
 	private static final String OUTPUT_FILE = "cps_import.csv";
 	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			System.out.println( "Usage: java " + CPSImportRegulator.class.getName() + " input_file [output_file]" );
+			System.out.println( "Usage: java " + CPSImport.class.getName() + " input_file [output_file]" );
 			return;
 		}
 		
