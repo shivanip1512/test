@@ -27,7 +27,7 @@
 using namespace std;
 
 #include <rw/tphdict.h>
-
+#include <rw/tpslist.h>
 
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
@@ -57,6 +57,8 @@ protected:
    // This is a keyed Mapping which does not allow duplicates!
    RWTPtrHashMap<CtiHashKey, T, my_hash<CtiHashKey> , equal_to<CtiHashKey> > Map;
 
+   RWTPtrSlist< T > _orphans;
+
    int _dberrorcode;
 
 public:
@@ -71,6 +73,28 @@ public:
    {
       LockGuard guard(monitor());
       Map.clearAndDestroy();
+      _orphans.clearAndDestroy();       // Clean up the leftovers if there are any.
+   }
+
+   bool orphan( long id )
+   {
+       bool status = false;
+
+       T* temp = NULL;
+       LockGuard  gaurd(monitor());
+       CtiHashKey key(id);
+
+       temp = (T*)Map.find( &key );
+       CtiHashKey *foundKey = Map.remove( &key );
+       delete foundKey;
+
+       if(temp)
+       {
+           status = true;
+           _orphans.insert( temp );     // Save this guy out so we know we found him
+       }
+
+       return status;
    }
 
    void apply(void (*applyFun)(const CtiHashKey*, T*&, void*), void* d)
