@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/08/22 21:43:29 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/11/17 15:21:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1935,17 +1935,16 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         MyOutMessage->Buffer.OutMessage[6] = 3;
                         MyOutMessage->Buffer.OutMessage[7] = LOBYTE(ctloffset - 1);
 
-
                         /* Load the appropriate times into the message */
-                        if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                        if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
                         {
-                            controlState = OPENED;
+                            controlState = STATEZERO;
                             MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10);
                             MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10) & 0x3f) | 0x40;
                         }
-                        else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                        else if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                         {
-                            controlState = CLOSED;
+                            controlState = STATEONE;
                             MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10);
                             MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10) & 0x3f) | 0x80;
                         }

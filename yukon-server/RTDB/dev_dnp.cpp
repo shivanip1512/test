@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/11/12 20:08:03 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/11/17 15:21:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,7 +165,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     //  ACH:  This is where we'd make a decision about PULSE vs LATCH.
                     //          Currently, if we get in here, it's all pulse.
 
-                    if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+                    if( parse.getCommandStr().contains(control->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
                     {
                         controltype = CtiDNPBinaryOutputControl::PulseOn;
 
@@ -175,9 +175,9 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                         on_time     = control->getPointStatus().getCloseTime1();
                         off_time    = 0;
 
-                        hist->setRawState(0);
+                        hist->setRawState(STATEZERO);
                     }
-                    else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                    else if( parse.getCommandStr().contains(control->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                     {
                         controltype = CtiDNPBinaryOutputControl::PulseOn;
 
@@ -187,7 +187,7 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                         on_time     = control->getPointStatus().getCloseTime2();
                         off_time    = 0;
 
-                        hist->setRawState(1);
+                        hist->setRawState(STATEONE);
                     }
 
                     hist->setMessagePriority(MAXPRIORITY - 1);

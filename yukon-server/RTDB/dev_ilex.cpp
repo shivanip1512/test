@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:55 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/11/17 15:21:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -957,18 +957,18 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         /* This actually takes two messages... a select and an execute */
                         MyOutMessage->OutLength = 4;
 
-                        if(parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                        if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateZeroControl(), RWCString::ignoreCase) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
                         {
-                            controlState = OPENED;
+                            controlState = STATEZERO;
 
                             header(MyOutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOSELECT, 0, 0);
                             /* set the operation time */
                             MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = ctlPoint->getPointStatus().getCloseTime1() / 100;
 
                         }
-                        else if(parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                        else if( parse.getCommandStr().contains(ctlPoint->getPointStatus().getStateOneControl(), RWCString::ignoreCase) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                         {
-                            controlState = CLOSED;
+                            controlState = STATEONE;
                             header(MyOutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOSELECT, 1, 0);
                             /* set the operation time */
                             MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = ctlPoint->getPointStatus().getCloseTime2() / 100;
