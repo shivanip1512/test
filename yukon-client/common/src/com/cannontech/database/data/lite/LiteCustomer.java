@@ -47,8 +47,9 @@ public class LiteCustomer extends LiteBase {
 	}
 	
 	public void retrieve(String dbAlias) {
+		java.sql.Connection conn = null;
 		try {
-			java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 			
 			com.cannontech.database.SqlStatement stat = new com.cannontech.database.SqlStatement(
 					"SELECT PrimaryContactID, CustomerTypeID, TimeZone" +
@@ -111,6 +112,12 @@ public class LiteCustomer extends LiteBase {
 		}
 		catch (Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
 		}
 	}
 
