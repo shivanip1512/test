@@ -30,7 +30,7 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
-<cti:checkMultiProperty propertyid="<%= Integer.toString(InventoryRole.INVENTORY_SHOW_ALL) + ',' + Integer.toString(InventoryRole.INVENTORY_CREATE_HARDWARE) + ',' + Integer.toString(InventoryRole.INVENTORY_CREATE_MCT) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(InventoryRole.INVENTORY_SHOW_ALL) + ',' + Integer.toString(InventoryRole.INVENTORY_CREATE_HARDWARE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Inventory</span><br>
