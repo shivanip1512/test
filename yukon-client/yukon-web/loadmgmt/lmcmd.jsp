@@ -205,7 +205,10 @@ function setStopPixTime()
 							( prg instanceof IGearProgram
 								? ((IGearProgram)prg).getDirectGearVector()
 								: new java.util.Vector(0) );
-						
+
+						if( gearList.size() <= 0 )
+							gearList.toArray( new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
+
 						for( int i = 0; i < gearList.size(); i++ )
 						{
 				%>
@@ -358,6 +361,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
         </td>
       </tr>
     </table>
+	<BR>
 <%
 	}
 
@@ -664,9 +668,12 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
           </table>
         </td>
       </tr>
-    </table>
 <%
 		}
+%>
+	  
+    </table>
+<%
 	}
 %>
 
