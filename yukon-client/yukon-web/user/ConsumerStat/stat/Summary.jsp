@@ -22,6 +22,9 @@
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<script language="JavaScript">
+	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
