@@ -17,7 +17,7 @@ public class KeysAndValuesFile extends java.io.File
 	public static final char DEFAULT_VALUE_PROMPT = '?'; //the chars that follow the question mark(?), may be grouped by quotes(" or '), is the value 
 														 //that will be displayed on a prompt.  The returned prompted value will replace the ?string value.
 	
-	private char separator = DEFAULT_SEPARATOR;
+	private char separator = DEFAULT_SEPARATOR;	//override java.io.File.separator parameter
 	private char comment = DEFAULT_COMMENT;
 	
 	private KeysAndValues keysAndValues = null;
@@ -328,5 +328,31 @@ public class KeysAndValuesFile extends java.io.File
 		}
 		return valueString;
 	}
-
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/13/2002 9:23:11 AM)
+	 */
+	public void writeToFile()
+	{
+		try
+		{
+			mkdirs();
+			java.io.FileWriter writer = new java.io.FileWriter(this);
+	
+			for (int i = 0; i < getKeysAndValues().getKeys().length; i++)
+			{
+				writer.write(getKeysAndValues().getKeys()[i]);
+				writer.write(separator);
+				writer.write(getKeysAndValues().getValues()[i]);
+				writer.write("\r\n");
+			}
+			writer.close();
+		}
+		catch ( java.io.IOException e )
+		{
+			System.out.print(" IOException in writeToFile");
+			e.printStackTrace();
+		}
+		
+	}
 }
