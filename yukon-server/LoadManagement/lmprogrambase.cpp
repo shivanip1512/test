@@ -1173,10 +1173,16 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 
 CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBeginningOfDay)
 {
+    //Control Windows can span midnight, in which case getAvailableStopTime will represent more than 24 hours worth of seconds
+    //So add 24 hours worth of seconds and do an additional test
+    LONG secondsFromBeginningOfYesterday = secondsFromBeginningOfDay + 24 * 60 * 60;
+    
     for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
     {
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
-        if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() )
+
+        if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() ||
+            currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfYesterday && secondsFromBeginningOfYesterday <= currentControlWindow->getAvailableStopTime() )
         {
             return currentControlWindow;
         }
