@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.season;
 
+import com.cannontech.database.db.season.DateOfSeason;
+
 /**
  * This type was created in VisualAge.
  */
@@ -14,6 +16,10 @@ public class SeasonScheduleBasePanel extends com.cannontech.common.gui.util.Data
 	private javax.swing.JButton ivjJButtonCreate = null;
 	private javax.swing.JButton ivjJButtonEdit = null;
 	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
+	
+	private final String SEASON_SPLIT_FIRST_HALF = "&1&";
+	private final String SEASON_SPLIT_SECOND_HALF = "&2&";  
+
 /**
  * Constructor
  */
@@ -508,11 +514,41 @@ public Object getValue(Object val)
 	sSched.getSeasonDatesVector().removeAllElements();
 	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
 	{
-		com.cannontech.database.db.season.DateOfSeason d = getJTableModel().getRowAt(i);
+		DateOfSeason d = getJTableModel().getRowAt(i);
 		d.setSeasonScheduleID( sSched.getScheduleID() );
-		sSched.getSeasonDatesVector().add( getJTableModel().getRowAt(i) );
+		
+		//this is where the gaminess starts...
+		//the server can't handle the december to january jump, so it must be split into two seasons
+		int startMonth = d.getSeasonStartMonth().intValue();
+		int endMonth = d.getSeasonEndMonth().intValue();
+		if(endMonth < startMonth)
+		//if(startMonth == 12 && endMonth < startMonth)
+		{
+			DateOfSeason firstHalf = new DateOfSeason();
+			DateOfSeason secondHalf = new DateOfSeason();
+			firstHalf.setSeasonScheduleID(sSched.getScheduleID());
+			secondHalf.setSeasonScheduleID(sSched.getScheduleID());
+			secondHalf.setSeasonName(SEASON_SPLIT_SECOND_HALF + d.getSeasonName().replaceAll(SEASON_SPLIT_FIRST_HALF, ""));
+			//set start date to January 1st.
+			secondHalf.setSeasonStartMonth(new Integer(1));
+			secondHalf.setSeasonStartDay(new Integer(1));
+			//set end date to the end date of the original
+			secondHalf.setSeasonEndMonth(d.getSeasonEndMonth());
+			secondHalf.setSeasonEndDay(d.getSeasonEndDay());
+			
+			//adjust the first half to end on December 31st.
+			firstHalf.setSeasonStartMonth(d.getSeasonStartMonth());
+			firstHalf.setSeasonStartDay(d.getSeasonStartDay());
+			firstHalf.setSeasonEndMonth(new Integer(12));
+			firstHalf.setSeasonEndDay(new Integer(31));
+			firstHalf.setSeasonName(SEASON_SPLIT_FIRST_HALF + d.getSeasonName().replaceAll(SEASON_SPLIT_FIRST_HALF, ""));
+			
+			sSched.getSeasonDatesVector().add(firstHalf);
+			sSched.getSeasonDatesVector().add(secondHalf);
+		}
+		else		
+			sSched.getSeasonDatesVector().add( getJTableModel().getRowAt(i) );
 	}
-
 
 	return sSched;
 }
@@ -608,21 +644,40 @@ public boolean isInputValid()
 		com.cannontech.database.db.season.DateOfSeason d = getJTableModel().getRowAt(i);
 		int startMonth = d.getSeasonStartMonth().intValue();
 		int endMonth = d.getSeasonEndMonth().intValue();
+		int startDay = d.getSeasonStartDay().intValue();
+		int endDay = d.getSeasonEndDay().intValue();
+		
+		//if the days are in the same month, then doublecheck for proper chronology
+		if(startMonth == endMonth && endDay < startDay)
+		{			
+			setErrorString("Row " + (i + 1) + " contains an improperly defined season.  The end day must be later than the start day.");
+			return false;
+		}
+		
 		for( int j = i + 1; j < getJTableModel().getRowCount(); j++ )
 		{
 			com.cannontech.database.db.season.DateOfSeason nextDate = getJTableModel().getRowAt(j);
 			int nextStartMonth = nextDate.getSeasonStartMonth().intValue();
-			if(nextStartMonth < endMonth)
+			int nextEndMonth = nextDate.getSeasonEndMonth().intValue();
+			int nextStartDay = nextDate.getSeasonStartDay().intValue();
+			int nextEndDay = nextDate.getSeasonEndDay().intValue();
+
+			//If the next season starts before this one ends, or if it is
+			//a December to January jump, then make sure there is no overlap
+			if((nextStartMonth < endMonth && endMonth <= nextEndMonth) 
+				|| (startMonth < nextEndMonth && nextEndMonth <= endMonth))
+			{
+				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
+				return false;
+			}
+			if((endMonth == nextStartMonth && !(endDay < nextStartDay)) 
+				|| (nextEndMonth == startMonth && !(nextEndDay < startDay)))
 			{
 				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
 				return false;
 			}
 		}
-		if(endMonth < startMonth)
-		{			
-			setErrorString("Row " + (i + 1) + " contains an improperly defined season.  The end date MUST be later than the start date.");
-			return false;
-		}
+		
 	}
 			
 	return true;
@@ -808,6 +863,8 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
 public void setValue(Object val) 
 {
 	com.cannontech.database.data.season.SeasonSchedule sSched = null;
+	DateOfSeason firstHalf = null;
+	DateOfSeason secondHalf = null;
 	
 	if( val != null )
 	{
@@ -816,9 +873,33 @@ public void setValue(Object val)
 		getJTextFieldSeasonScName().setText( sSched.getScheduleName() );
 
 		for( int i = 0; i < sSched.getSeasonDatesVector().size(); i++ )
-			getJTableModel().addRow( 
-				(com.cannontech.database.db.season.DateOfSeason)sSched.getSeasonDatesVector().get(i) );
+		{		
+			DateOfSeason theSeason = (DateOfSeason)sSched.getSeasonDatesVector().get(i);
+			
+			//more gaminess here...
+			//the server can't handle the december to january jump, so it was split into two seasons
+			//now they must become one again
+			String sName = theSeason.getSeasonName();
+			if(sName.startsWith(SEASON_SPLIT_FIRST_HALF))
+				firstHalf = theSeason;
 
+			else if(sName.startsWith(SEASON_SPLIT_SECOND_HALF))
+				secondHalf = theSeason;
+
+			else
+				getJTableModel().addRow(theSeason);
+		}
+		
+		if(firstHalf != null && secondHalf != null)
+		{
+			//make the name acceptable
+			firstHalf.setSeasonName(firstHalf.getSeasonName().replaceFirst(SEASON_SPLIT_FIRST_HALF, ""));
+			//get the proper end date
+			firstHalf.setSeasonEndMonth(secondHalf.getSeasonEndMonth());
+			firstHalf.setSeasonEndDay(secondHalf.getSeasonEndDay());
+			
+			getJTableModel().addRow(firstHalf);
+		}
 	}
 
 

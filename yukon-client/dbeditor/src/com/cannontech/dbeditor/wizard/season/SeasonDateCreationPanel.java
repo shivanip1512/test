@@ -804,8 +804,13 @@ public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent
  */
 public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	response = PRESSED_OK;
-	disposePanel();
+	
+	if( getJTextFieldSeasonName().getText() != null
+			 && getJTextFieldSeasonName().getText().length() > 0 )
+	{
+		response = PRESSED_OK;
+		disposePanel();
+	}
 	
 	return;
 }
