@@ -48,7 +48,7 @@ public double checkInput(String proposedValue) throws NumberFormatException
 			if( proposedValue.length() == 1 ) //allow the user to have the decimal point here
 				newValue = 0.0;   //just act like the decimal point is a 0.0 value
 			else
-				newValue = Double.parseDouble( proposedValue.substring(1) );
+				newValue = Double.parseDouble(proposedValue);
 		}
 		else
 	   	newValue = Double.parseDouble(proposedValue);
