@@ -33,19 +33,20 @@ public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 	private java.util.ArrayList allDeviceMeterGroups = null;
 	private java.util.ArrayList allPointsUnits = null;
 	private java.util.ArrayList allPointLimits = null;
-    private java.util.ArrayList allYukonImages = null;
+   private java.util.ArrayList allYukonImages = null;
+
 
 	//lists that are created by the joining/parsing of existing lists
-	private java.util.ArrayList allGraphTaggedPoints = null;
-	private java.util.ArrayList allUnusedCCDevices = null;
-	private java.util.ArrayList allCapControlFeeders = null;
-	private java.util.ArrayList allCapControlSubBuses = null;	
-	private java.util.ArrayList allCustomers = null;
-	private java.util.ArrayList allDevices = null;
-	private java.util.ArrayList allLMPrograms = null;
-	private java.util.ArrayList allLoadManagement = null;
-	private java.util.ArrayList allPorts = null;
-	private java.util.ArrayList allRoutes = null;
+	private java.util.ArrayList allGraphTaggedPoints = null; //Points
+	private java.util.ArrayList allUnusedCCDevices = null; //PAO
+	private java.util.ArrayList allCapControlFeeders = null; //PAO
+	private java.util.ArrayList allCapControlSubBuses = null; //PAO	
+	private java.util.ArrayList allCustomers = null; //PAO
+	private java.util.ArrayList allDevices = null; //PAO
+	private java.util.ArrayList allLMPrograms = null; //PAO
+	private java.util.ArrayList allLoadManagement = null; //PAO
+	private java.util.ArrayList allPorts = null; //PAO
+	private java.util.ArrayList allRoutes = null; //PAO
 	
 	
 	private java.util.HashMap allPointidMultiplierHashMap = null;
@@ -1025,6 +1026,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB )
 	{
 		retLBase = handleYukonPAOChange( dbType, id);
+		
 
 		//if any device changes, 
 		// reload all the DeviceMeterGroup data (may be inefficient!!)
@@ -1032,6 +1034,7 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 		{
 			allDevices = null;
 			allUnusedCCDevices = null;
+			allLoadManagement = null; //PAOGroups are here, oops!
 			
 			//we should not have to return the DeviceMeterGroup since
 			// the liteObject that was edited/added was actually a Device

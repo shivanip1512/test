@@ -392,6 +392,10 @@ public void jMenuItemClearAlarm_ActionPerformed(java.awt.event.ActionEvent actio
  */
 public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
+	//do not confirm disabled cap banks
+	if( getCapBankDevice() == null || getCapBankDevice().getCcDisableFlag().booleanValue() )
+		return;
+	
 	try
 	{
 		if( CapBankDevice.isInAnyOpenState(getCapBankDevice()) )
