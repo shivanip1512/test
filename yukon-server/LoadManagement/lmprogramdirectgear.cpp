@@ -648,7 +648,6 @@ const RWCString CtiLMProgramDirectGear::RotationMethod = "Rotation";
 const RWCString CtiLMProgramDirectGear::LatchingMethod = "Latching";
 const RWCString CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
 const RWCString CtiLMProgramDirectGear::ThermostatSetbackMethod = "ThermostatSetback";
-const RWCString CtiLMProgramDirectGear::ThermostatPreOperateMethod = "ThermostatPre-operate";
 
 //Possible method stop types
 const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";

@@ -95,7 +95,6 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString LatchingMethod;
     static const RWCString TrueCycleMethod;
     static const RWCString ThermostatSetbackMethod;
-    static const RWCString ThermostatPreOperateMethod;
 
     //Possible method stop types
     static const RWCString RestoreStopType;
