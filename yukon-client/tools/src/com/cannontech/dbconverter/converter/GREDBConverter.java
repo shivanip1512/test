@@ -21,6 +21,7 @@ import com.cannontech.database.data.device.lm.LMGroupSADigital;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -45,6 +46,7 @@ import com.cannontech.database.db.device.lm.LMProgramConstraint;
 import com.cannontech.database.db.device.lm.LMProgramControlWindow;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
+import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.state.YukonImage;
@@ -153,7 +155,8 @@ public class GREDBConverter extends MessageFrameAdaptor
 	private String unxConstrFileName = "constraints.txt";
 	private String unxLGrpFileName = "lgroup.txt";
 	private String unxPrgToGrpFileName = "cglg_assoc.txt";
-	private String unxScenFileName = "mgroup.txt";
+	private String unxScenFileName = "mgroup.txt";	
+	private String unxGearFileName = "ctrl_method.txt";
 
 		
 	private class GroupStateMod extends GroupState
@@ -531,7 +534,7 @@ public boolean processLoadPrograms()
 		/* Create a default gear */
 		TimeRefreshGear gear = (TimeRefreshGear)LMProgramDirectGear.createGearFactory(
 									LMProgramDirectGear.CONTROL_TIME_REFRESH );
-		gear.setGearName("Time Refresh");
+		gear.setGearName("Refresh");
 		gear.setDeviceID( lmProgram.getPAObjectID() );
 		gear.setShedTime( new Integer(900) ); //15 minutes
 		gear.setRefreshRate( new Integer(600) ); //10 minutes
@@ -560,7 +563,6 @@ public boolean processLoadPrograms()
 		}
 
 
-		
 		String constrName = line[0].trim();
 		LMProgramConstraint constraint = (LMProgramConstraint)constByNameMap.get( constrName );
 		if( constraint != null )
@@ -1430,7 +1432,16 @@ public boolean processTransmitterFile()
 		device.getSeries5RTU().setStartCode( pInt(line[4].trim()) );
 		device.getSeries5RTU().setStopCode( pInt(line[5].trim()) );
 		device.getSeries5RTU().setTransmitOffset( pInt(line[6].trim()) );
-		
+
+		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+		device.getPAOExclusionVector().add(
+			PAOExclusion.createExclusTiming(
+				device.getPAObjectID(),
+				new Integer(300),
+				device.getSeries5RTU().getTransmitOffset(),
+				new Integer(60) ) );
+
+
 		String dis = line[7].trim();
 		device.setDisableFlag( new Character(
 				(dis.equalsIgnoreCase("N") ? 'Y' : 'N')) );
@@ -1665,7 +1676,16 @@ public boolean processUnxRTCFile()
 				(dis.equalsIgnoreCase("ACTIVE") ? 'N' : 'Y')) );
 
 //		device.setCyc( pInt(line[7].trim()) );
-//		device.setTimOffset( pInt(line[8].trim()) );
+
+		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
+		device.getPAOExclusionVector().add(
+			PAOExclusion.createExclusTiming(
+				rtcID,
+				new Integer(300),
+				pInt(line[8].trim()),
+				new Integer(60) ) );
+				
+
 		device.getDeviceRTC().setLBTMode( pInt(line[9].trim()) );
 
 
@@ -1710,8 +1730,8 @@ public boolean processUnxRTCFile()
 		macRoute.setRouteName( "@" + macName + " #" + macRoute.getRouteID() );
 		macRoute.setDeviceID( new Integer(0) );
 		macRoute.setDefaultRoute(new String("N"));
-	
-	
+
+
 		if( !macRoute.getRouteName().toUpperCase().startsWith("@NONE") )
 		{
 			ArrayList trxList = (ArrayList)rtcToRtMacroMap.get( macName );			
@@ -1779,6 +1799,8 @@ public boolean processUnxPrograms()
 	//example KEY<PROGRAM_NAME> VALUES< ArrayList(GROUP_NAME) >
 	HashMap progNmToGrpNmMap = new HashMap(64);
 
+	//example KEY<CMID> VALUES< LMProgramDirectGear >
+	HashMap cmidToGearMap = new HashMap(64);
 
 
 
@@ -1845,6 +1867,53 @@ public boolean processUnxPrograms()
 
 	programMap.clear();
 
+	/* Start reading through our Program to Group mapping file */		
+	String gearFile = getFullFileName(unxGearFileName);
+	lines = readFile( gearFile );
+	for( int i = 0; i < lines.size(); i++ )
+	{
+		String[] line = lines.get(i).toString().split(",");
+
+		//ignore title line
+		if( i <= 1 || line.length <= 5 )
+			continue;
+
+		/* Create a default gear */
+		LMProgramDirectGear gear = 
+			LMProgramDirectGear.createGearFactory(
+				(line[5].trim().equalsIgnoreCase("cycl")
+				 ? LMProgramDirectGear.CONTROL_SMART_CYCLE
+				 : LMProgramDirectGear.CONTROL_TIME_REFRESH) );
+
+		if( gear instanceof TimeRefreshGear )
+		{
+			gear.setGearName("Refresh");
+			((TimeRefreshGear)gear).setShedTime( new Integer(900) ); //15 minutes
+			((TimeRefreshGear)gear).setRefreshRate( new Integer(600) ); //10 minutes
+			((TimeRefreshGear)gear).setGroupSelectionMethod(
+				(line[6].trim().equalsIgnoreCase("least")
+				 ? LMProgramDirectGear.SELECTION_LEAST_CONTROL_TIME
+				 : LMProgramDirectGear.SELECTION_ALWAYS_FIRST_GROUP) );
+		}
+		else if( gear instanceof SmartCycleGear )
+		{
+			gear.setGearName("Cycle");
+			((SmartCycleGear)gear).setControlPercent( new Integer(50) ); //50% cycle
+			((SmartCycleGear)gear).setCyclePeriodLength( new Integer(30 * 60) ); //30 minutes
+			((SmartCycleGear)gear).setStartingPeriodCnt( new Integer(8) ); //8 count
+			((SmartCycleGear)gear).setResendRate( new Integer(60 * 60) ); //1 hour
+		}
+		
+		//gear.setDeviceID( lmProgram.getPAObjectID() );
+		gear.setMethodStopType( LMProgramDirectGear.STOP_TIME_IN );
+		gear.setRampInPercent( new Integer(100) );
+		gear.setRampOutPercent( new Integer(100) );
+		gear.setRampInInterval( new Integer(300) );
+		gear.setRampOutInterval( new Integer(300) );
+
+		cmidToGearMap.put( line[0].trim(), gear );
+	}
+
 
 	/* Start reading through our Constraint to Program mapping file */		
 	String progFile = getFullFileName(unxLGrpFileName);
@@ -1861,28 +1930,26 @@ public boolean processUnxPrograms()
 			(LMProgramDirect)LMFactory.createLoadManagement( DeviceTypes.LM_DIRECT_PROGRAM );
 
 		String progName = line[0].trim();
-		lmProgram.setName( progName + " " +  line[1].trim() );
+		String gearName = line[1].trim();
+		lmProgram.setName( progName + " " +  gearName );
 		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_AUTOMATIC );
 
 		//set our unique own deviceID
 		lmProgram.setPAObjectID( new Integer(START_PROGRAM_ID++) );
 		
 
-		/* Create a default gear */
-		TimeRefreshGear gear = (TimeRefreshGear)LMProgramDirectGear.createGearFactory(
-									LMProgramDirectGear.CONTROL_TIME_REFRESH );
-		gear.setGearName("Time Refresh");
-		gear.setDeviceID( lmProgram.getPAObjectID() );
-		gear.setShedTime( new Integer(900) ); //15 minutes
-		gear.setRefreshRate( new Integer(600) ); //10 minutes
-		gear.setMethodStopType( LMProgramDirectGear.STOP_TIME_IN );
-		gear.setGroupSelectionMethod( LMProgramDirectGear.SELECTION_LAST_CONTROLLED );
-		gear.setRampInPercent( new Integer(100) );
-		gear.setRampOutPercent( new Integer(100) );
-		gear.setRampInInterval( new Integer(300) );
-		gear.setRampOutInterval( new Integer(300) );
-
-		lmProgram.getLmProgramDirectGearVector().add( gear );
+		LMProgramDirectGear gear = (LMProgramDirectGear)cmidToGearMap.get( gearName );
+		try
+		{
+			//must make a new instance/deep clone of original Gear since we are changing attributes
+			// for each program that uses this gear
+			LMProgramDirectGear realGear = 
+				(LMProgramDirectGear)CtiUtilities.copyObject( gear );
+	
+			realGear.setDeviceID( lmProgram.getPAObjectID() );
+			lmProgram.getLmProgramDirectGearVector().add( realGear );
+		}
+		catch( Exception ex ) {}		
 
 
 
