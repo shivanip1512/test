@@ -505,8 +505,17 @@ public Object getValue(Object o) {
 			if( golay == null )
 				golay = (LMGroupGolay) o;
 			
-			StringBuffer opAddress = new StringBuffer(getOpAddressJTextField1().getText());
+			
+			//some annoying checks to verify that the user hasn't messed up the six digit address
+			StringBuffer opAddress = new StringBuffer();
+			if(getOpAddressJTextField1().getText().length() < 2)
+				opAddress.append("0");
+			opAddress.append(getOpAddressJTextField1().getText());
+			if(getOpAddressJTextField2().getText().length() < 2)
+				opAddress.append("0");
 			opAddress.append(getOpAddressJTextField2().getText());
+			if(getOpAddressJTextField3().getText().length() < 2)
+				opAddress.append("0");
 			opAddress.append(getOpAddressJTextField3().getText());
 			golay.getLMGroupSASimple().setOperationalAddress(opAddress.toString());
 			
@@ -673,5 +682,11 @@ public void setValue(Object o) {
 		
 	}
 
+}
+
+public boolean isInputValid() 
+{
+
+		return true;
 }
 }
