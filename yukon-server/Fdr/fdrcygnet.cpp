@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:31 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/05/24 18:01:32 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrcygnet.cpp,v $
+      Revision 1.4  2002/05/24 18:01:32  alauinger
+      ben change
+
       Revision 1.3  2002/04/16 15:58:31  softwarebuild
       20020416_1031_2_16
 
@@ -1063,8 +1066,9 @@ bool CtiFDRCygnet::retreiveStatusPoints()
                 if (!returnValue && CygnetResponse.header.count == 1 && !CygnetResponse.header.err )
                 {
                     // time stamp from CygNet
-                    myNewTime = RWTime((long)(((long)CygnetResponse.recs[0].time) + rwEpoch) );
 
+                    //myNewTime = RWTime((long)(((long)CygnetResponse.recs[0].time) + rwEpoch) );
+                    
                     // do not check time stamp on status points - always send to Dispatch
 
                     /*  fill in the value..
