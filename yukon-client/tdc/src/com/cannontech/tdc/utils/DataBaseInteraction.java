@@ -43,12 +43,18 @@ public static java.sql.DatabaseMetaData getDataBaseMetaData() {
 public static java.lang.String getDbAlias() {
 	return dbAlias;
 }
+
+public static Object[][] queryResults( String query, Object[] parameters )
+{
+   return queryResults( query, parameters, false );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 12:37:10 PM)
  */
 // NEVER ALLOW THIS METHOD TO RETURN NULL!!!
-public static Object[][] queryResults( String query, Object[] parameters )
+public static Object[][] queryResults( String query, Object[] parameters, boolean useMaxRowCount )
 {	
 	if( parameters != null )
 	{
@@ -72,6 +78,10 @@ public static Object[][] queryResults( String query, Object[] parameters )
 			connection = PoolManager.getInstance().getConnection( getDbAlias() );
 			dataBaseMetaData = connection.getMetaData();
 			prepStmt = connection.prepareStatement( query );
+         
+         if( useMaxRowCount )
+            prepStmt.setMaxRows( TDCDefines.MAX_ROWS );
+
 
 			if( parameters != null )
 			{

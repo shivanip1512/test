@@ -1724,13 +1724,14 @@ private void getReadOnlyDisplayData( java.util.Date date )
 			//remove all the page number JRadioButtons
 			for( int i = (getJPopupMenuPage().getComponentCount()-1); i >= 0; i-- )
 			{
-				if( getJPopupMenuPage().getComponentAtIndex(i) instanceof javax.swing.JRadioButtonMenuItem )
+            java.awt.Component c = getJPopupMenuPage().getComponent(i);
+				if( c instanceof javax.swing.JRadioButtonMenuItem )
 				{
-					if( !( ((javax.swing.JRadioButtonMenuItem)getJPopupMenuPage().getComponentAtIndex(i)).getActionCommand().equalsIgnoreCase("1")) )
+					if( !( ((javax.swing.JRadioButtonMenuItem)c).getActionCommand().equalsIgnoreCase("1")) )
 					{
-						getButtonGroupPage().remove( (javax.swing.JRadioButtonMenuItem)getJPopupMenuPage().getComponentAtIndex(i) );
-						((javax.swing.JRadioButtonMenuItem)getJPopupMenuPage().getComponentAtIndex(i)).removeActionListener( this );
-						getJPopupMenuPage().remove( getJPopupMenuPage().getComponentAtIndex(i) );
+						getButtonGroupPage().remove( (javax.swing.JRadioButtonMenuItem)c );
+						((javax.swing.JRadioButtonMenuItem)c).removeActionListener( this );
+						getJPopupMenuPage().remove( c );
 					}
 				}
 			}
@@ -2887,6 +2888,7 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 	catch( Exception e)
 	{
 		com.cannontech.clientutils.CTILogger.info("*** Exception caught in : jRadioButtonPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
+      com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
