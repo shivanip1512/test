@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2003/08/19 22:05:11 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2003/09/03 18:13:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -344,7 +344,7 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_TCU5500;
     }
-    else if(rwsTemp == "markvmeter")
+    else if(rwsTemp == "transdata mark-v")
     {
         nRet = TYPE_TDMARKV;
     }
@@ -1521,6 +1521,7 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_ION7330:
     case TYPE_ION7700:
     case TYPE_ION8300:
+    case TYPE_TDMARKV:
         {
             slaveAddress = -1;
             break;

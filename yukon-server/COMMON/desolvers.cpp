@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/07/21 21:33:38 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/09/03 18:13:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -245,7 +245,7 @@ RWCString desolveDeviceType( INT aType )
    }
    else if(aType == TYPE_TDMARKV)
    {
-      Ret = "markvmeter";
+      Ret = "transdata mark-v";
    }
    else if(aType == TYPE_DAVIS)
    {
