@@ -55,6 +55,10 @@ public Class getJavaClass()
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 
 	super.restoreGuts( obj, vstr, polystr );
+
+	LMControlAreaMsg lmControlAreaMsg = (LMControlAreaMsg) obj;
+
+	lmControlAreaMsg.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
 	java.util.Vector controlAreaVector = (java.util.Vector)vstr.restoreObject( polystr );
 
 	((LMControlAreaMsg)obj).setLMControlAreaVector(controlAreaVector);
@@ -65,7 +69,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.saveGuts( obj, vstr, polystr );
-	java.util.Vector areaVector = ((LMControlAreaMsg)obj).getLMControlAreaVector();
+
+	LMControlAreaMsg lmControlAreaMsg = (LMControlAreaMsg) obj;
+
+	vstr.insertUnsignedInt( lmControlAreaMsg.getMsgInfoBitMask().intValue() );
+	java.util.Vector areaVector = lmControlAreaMsg.getLMControlAreaVector();
 	vstr.saveObject( areaVector, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
 }
 }

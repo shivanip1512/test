@@ -245,24 +245,27 @@ class CtiLMControlAreaMsg : public CtiLMMessage
 RWDECLARE_COLLECTABLE( CtiLMControlAreaMsg )
 
 public:
-    static LONG numberOfReferences;
-
-    CtiLMControlAreaMsg(RWOrdered& contAreas);
+    CtiLMControlAreaMsg(RWOrdered& contAreas, ULONG bitMask = 0);
     CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
 
     virtual ~CtiLMControlAreaMsg();
 
+    ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
     RWOrdered* getControlAreas() const { return _controlAreas; };
-    //CtiLMControlAreaMsg& setControlAreas(RWOrdered* contAreas);
     virtual CtiMessage* replicateMessage() const;
 
     void restoreGuts( RWvistream& );
     void saveGuts( RWvostream&) const;
 
     CtiLMControlAreaMsg& operator=(const CtiLMControlAreaMsg& right);
+
+    // Possible bit mask settings
+    static ULONG AllControlAreasSent;
+
 private:
-    CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"), _controlAreas(NULL){/*numberOfReferences++;*/};
+    CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"), _controlAreas(NULL), _msgInfoBitMask(0) {};
     
+    ULONG _msgInfoBitMask;
     RWOrdered* _controlAreas;
 };
 

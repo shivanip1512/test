@@ -1511,7 +1511,7 @@ void CtiLMControlAreaStore::reset()
             dumpAllDynamicData();
         }
         CtiLMExecutorFactory f;
-        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*_controlAreas));
+        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*_controlAreas,CtiLMControlAreaMsg::AllControlAreasSent));
         executor->Execute();
         delete executor;
     }

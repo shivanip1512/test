@@ -7,6 +7,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class LMControlAreaMsg extends LMMessage
 {
+	private java.lang.Integer msgInfoBitMask;
 	private java.util.Vector lmControlAreaVector;
 /**
  * ScheduleCommand constructor comment.
@@ -41,4 +42,18 @@ void setLMControlAreaVector(java.util.Vector lmContAreas)
 {
 	lmControlAreaVector = lmContAreas;
 }
+	/**
+	 * @return
+	 */
+	public java.lang.Integer getMsgInfoBitMask() {
+		return msgInfoBitMask;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setMsgInfoBitMask(java.lang.Integer integer) {
+		msgInfoBitMask = integer;
+	}
+
 }
