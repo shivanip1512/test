@@ -1,11 +1,11 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.Properties;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.RoleTypes;
@@ -17,26 +17,37 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.stars.appliance.*;
+import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
+import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
+import com.cannontech.database.db.stars.appliance.ApplianceGenerator;
+import com.cannontech.database.db.stars.appliance.ApplianceGrainDryer;
+import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
+import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
+import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
+import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
 import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
+import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
+import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
+import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
+import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
@@ -824,7 +835,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		LiteContact lContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact( contactID );
+		LiteContact lContact = ContactFuncs.getContact( contactID );
 		if (lContact != null) {
 			LiteCustomerContact liteContact = new LiteCustomerContact();
 			liteContact.setContactID( lContact.getContactID() );
