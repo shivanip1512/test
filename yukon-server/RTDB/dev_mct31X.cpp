@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/11/20 20:20:14 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/11/20 22:28:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -697,7 +697,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -896,7 +896,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -942,25 +942,25 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        for( int i = 0; i < 12; i++ )
+        switch( InMessage->Sequence )
         {
-            //  break if any bytes are unequal or all zero (therefore, any
-            //    zero is a break condition in addition to inequality)
-            if( (DSt->Message[i] != DSt->Message[i+1]) ||
-                (DSt->Message[i] == 0) )
-                break;
-        }
-        if( i == 12 )
-        {
-            //  we never broke out of the loop - all bytes are equal, the buffer is busted
-            ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
-            status = ALPHABUFFERERROR;
-        }
-        else
-        {
-            switch( InMessage->Sequence )
+            case CtiProtocolEmetcon::GetConfig_IEDTime:
             {
-                case CtiProtocolEmetcon::GetConfig_IEDTime:
+                for( int i = 0; i < 12; i++ )
+                {
+                    //  break if any bytes are unequal or all zero (therefore, any
+                    //    zero is a break condition in addition to inequality)
+                    if( (DSt->Message[i] != DSt->Message[i+1]) ||
+                        (DSt->Message[i] == 0) )
+                        break;
+                }
+                if( i == 12 )
+                {
+                    //  we never broke out of the loop - all bytes are equal, the buffer is busted
+                    ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
+                    status = ALPHABUFFERERROR;
+                }
+                else
                 {
                     for( int i = 0; i < 7; i++ )  //  excluding byte 7 - it's a bitfield, not BCD
                     {
@@ -1008,56 +1008,56 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
                     }
 
                     ReturnMsg->setResultString( resultString );
-
-                    break;
                 }
 
-                case CtiProtocolEmetcon::GetConfig_IEDScan:
+                break;
+            }
+
+            case CtiProtocolEmetcon::GetConfig_IEDScan:
+            {
+                switch( getIEDPort().getIEDType() )
                 {
-                    switch( getIEDPort().getIEDType() )
+                    case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
                     {
-                        case (CtiTableDeviceMCTIEDPort::AlphaPowerPlus):
-                        {
-                            resultString += getName() + " / Alpha Power Plus scan info:\n";
+                        resultString += getName() + " / Alpha Power Plus scan info:\n";
 
-                            if( DSt->Message[5] == 11 )
-                                resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
-                            else if( DSt->Message[5] == 12 )
-                                resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
-                            else
-                                resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
+                        if( DSt->Message[5] == 11 )
+                            resultString += "  Buffer Contains: Alpha Class 11 Billing (Current)\n";
+                        else if( DSt->Message[5] == 12 )
+                            resultString += "  Buffer Contains: Alpha Class 12 Billing (Previous)\n";
+                        else
+                            resultString += "  Buffer Contains: Alpha Class " + CtiNumStr((int)DSt->Message[5]) + "\n";
 
-                            break;
-                        }
-                        case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
-                        {
-                            resultString += getName() + " / Landis and Gyr S4 scan info:\n";
-
-                            if( DSt->Message[5] == 0 )
-                                resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
-                            else
-                                resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
-                            break;
-                        }
+                        break;
                     }
+                    case (CtiTableDeviceMCTIEDPort::LandisGyrS4):
+                    {
+                        resultString += getName() + " / Landis and Gyr S4 scan info:\n";
 
-                    resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
-                    resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
-
-                    if( DSt->Message[2] == 0 )
-                        DSt->Message[2] = 128;
-
-                    resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
-                    resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
-
-                    ReturnMsg->setResultString( resultString );
-                    break;
+                        if( DSt->Message[5] == 0 )
+                            resultString += "  Buffer Contains: CTI Billing Data Table #" + CtiNumStr((int)DSt->Message[4] + 1) + "\n";
+                        else
+                            resultString += "  Buffer Contains: S4 Meter Read Cmd: " + CtiNumStr((int)DSt->Message[4]) + "\n";
+                        break;
+                    }
                 }
+
+                resultString += "  Scan Rate:            " + CtiNumStr(((int)DSt->Message[0] * 15) + 30).spad(4) + " seconds\n";
+                resultString += "  Buffer refresh delay: " + CtiNumStr((int)DSt->Message[1] * 15).spad(4) + " seconds\n";
+
+                if( DSt->Message[2] == 0 )
+                    DSt->Message[2] = 128;
+
+                resultString += "  Scan Length:     " + CtiNumStr((int)DSt->Message[2]).spad(3) + " bytes\n";
+                resultString += "  Scan Offset:     " + CtiNumStr( ((int)DSt->Message[3] * 256) + (int)DSt->Message[4] ).spad(3);
+
+                ReturnMsg->setResultString( resultString );
+                break;
             }
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -1115,6 +1115,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         {
             //  we never broke out of the loop - all bytes are equal, the buffer is busted
             ReturnMsg->setResultString( "Device: " + getName() + "\nData buffer is bad, retry command" );
+            status = ALPHABUFFERERROR;
         }
         else
         {
@@ -1531,7 +1532,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -1619,7 +1620,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -1738,7 +1739,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     {
         if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
         {
-            retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.append( ReturnMsg );
         }
         else
@@ -1891,7 +1892,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     }
 
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
