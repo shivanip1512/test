@@ -163,9 +163,7 @@ public final static int getDeviceType(String typeString)
    else if (isStringDevice(compareString, STRING_MCT_310IDL))
 	  return MCT310IDL;
    else if (isStringDevice(compareString, STRING_MCT_310))
-	  return MCT310;
-   else if (isStringDevice(compareString, STRING_MCT_410_KWH_ONLY))
-   	  return MCT410_KWH_ONLY;   
+	  return MCT310; 
    else if (isStringDevice(compareString, STRING_MCT_410IL))
 	  return MCT410IL;
    else if (isStringDevice(compareString, STRING_MCT_318))
@@ -394,8 +392,6 @@ public final static String getPAOTypeString(int type)
 	  case MCT210:
 		  return STRING_MCT_210[0];
 		  
-	  case MCT410_KWH_ONLY:
-	  		return STRING_MCT_410_KWH_ONLY[0];
 	  case MCT410IL:
 			return STRING_MCT_410IL[0];
 		  

@@ -77,7 +77,7 @@ public interface DeviceTypes extends TypeBase
    public final static int MCT310IDL                    = DEVICE_OFFSET + 63;
 	public final static int LM_GROUP_MCT					  = DEVICE_OFFSET + 64;
 	
-	public final static int MCT410_KWH_ONLY 			= DEVICE_OFFSET + 65;
+	public final static int MCT410IL	 			= DEVICE_OFFSET + 65;
 	public final static int TRANSDATA_MARKV   		= DEVICE_OFFSET + 66;
 	
 	public final static int LM_GROUP_SA305			= DEVICE_OFFSET + 67;
@@ -96,8 +96,6 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int RTM						= DEVICE_OFFSET + 76;
 	
-	public final static int MCT410IL				= DEVICE_OFFSET + 77;
-
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -127,8 +125,7 @@ public interface DeviceTypes extends TypeBase
    public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
    public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
-	public static final String[] STRING_MCT_410_KWH_ONLY = {"MCT-410iLE", "MCT-410 kWh Only"};
-	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL"};  
+	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};  
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};

@@ -36,7 +36,6 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 	private static final String DEVICE_TYPES[][] = 
    { { //MCTs
 			PAOGroups.STRING_MCT_410IL[0],
-		PAOGroups.STRING_MCT_410_KWH_ONLY[0],
 			PAOGroups.STRING_MCT_370[0],
 			PAOGroups.STRING_MCT_360[0],
 			PAOGroups.STRING_MCT_318L[0],

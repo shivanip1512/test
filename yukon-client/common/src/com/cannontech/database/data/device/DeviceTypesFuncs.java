@@ -174,7 +174,6 @@ public final static boolean isCarrier(int deviceType)
 		case MCT248:
 		case MCT250:
 		case MCT310:
-		case MCT410_KWH_ONLY:
 		case MCT310ID:
 		case MCT310IDL:
 		case MCT310IL:
@@ -386,7 +385,6 @@ public final static boolean isLoadProfile4Channel(int deviceType)
 	{	
 		case MCT318L:
 		case DCT_501:
-		case MCT410_KWH_ONLY:
 		case MCT410IL:
 			return true;
 	
@@ -424,8 +422,6 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 {
 	switch(deviceType)
 	{  
-		case MCT410_KWH_ONLY:
-			return true;
 		case MCT410IL:
 			return true;
 		default:
@@ -445,7 +441,6 @@ public final static boolean isMCTOnly(int deviceType)
 	{
 		case MCT213:
 		case MCT310:
-		case MCT410_KWH_ONLY:
 		case MCT318:
 		case MCT360:
 		case MCT370:
@@ -479,7 +474,6 @@ public final static boolean isMCT(int deviceType)
 	{
 		case MCT213:
 		case MCT310:
-		case MCT410_KWH_ONLY:
 		case MCT318:
 		case MCT360:
 		case MCT370:
@@ -557,23 +551,10 @@ public static boolean isMCTiORMCT2XX( int type )
 
 }
 
-public static boolean isMCT410KWHONLY( int type )
-{
-	switch (type)
-	{
-		case MCT410_KWH_ONLY:  
-			return true;
-		default :
-			return false;
-	}
-
-}
-
 public static boolean isMCT4XX( int type )
 {
 	switch (type)
 	{
-		case MCT410_KWH_ONLY:
 		case MCT410IL:  
 			return true;
 		default :
@@ -767,7 +748,6 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 	{
 		case MCT213:
 		case MCT310:
-		case MCT410_KWH_ONLY:
 		case MCT318:
 		case MCT360:
 		case MCT370:
