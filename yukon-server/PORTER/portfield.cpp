@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.96 $
-* DATE         :  $Date: 2004/02/17 15:09:13 $
+* REVISION     :  $Revision: 1.97 $
+* DATE         :  $Date: 2004/03/18 19:52:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,11 +118,6 @@ using namespace std;
 
 extern RWCString GetDeviceName( ULONG id );
 
-/*
- *  gQueSlot is used by dialup ports to pluck the next item from within the queue's guts.
- */
-static ULONG   gQueSlot = 0;
-
 extern void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
@@ -145,7 +140,6 @@ INT NonWrapDecode(INMESS *InMessage, CtiDevice *Device);
 INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDevice *Device);
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
-INT UpdatePerformanceData(INT CommResult, CtiPortSPtr Port, CtiDevice *Device);
 INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
 INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
@@ -154,34 +148,34 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessa
 INT verifyConnectedDevice(CtiPortSPtr Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID);
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDevice *Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device );
-INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device);
-BOOL areAnyQueueEntriesOkToSend(void *data, void* d);
+INT ClearExclusions(CtiDevice *Device);
+BOOL findExclusionFreeOutMessage(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device );
 static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
+INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device);
+INT ProcessPortPooling(CtiPortSPtr Port);
+INT ResetChannel(CtiPortSPtr Port, CtiDevice *Device);
+INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *&Device);
+INT ChooseExclusionDevice(CtiDevice *&Device);
+INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
 {
     INT            status;
-    INT            initFails = 0;
 
-    ULONG          i, j, ReadLength;
+    ULONG          i, j;
     ULONG          BytesWritten;
     INMESS         InMessage;
     OUTMESS        *OutMessage;
-    REQUESTDATA    ReadResult;
-    BYTE           ReadPriority;
     ULONG          MSecs, QueEntries;
 
-    RWTime         lastQueueReportTime;
 
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
     CtiDeviceBase  *Device = NULL;
 
     CtiPortSPtr    Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
-
-    lastQueueReportTime = lastQueueReportTime.seconds() - (lastQueueReportTime.seconds() % 300L);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -203,108 +197,41 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        if( NORMAL != (status = ResetCommsChannel(Port, Device)) )
+        if( CONTINUE_LOOP == (status = ResetChannel(Port, Device)) )
         {
-            if(initFails++ > PorterPortInitQueuePurgeDelay)  // Every 5 minutes (default, can be CPARM'd), we will purge the queue entries.
-            {
-                initFails = 0;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << Port->getName() << " will not init. Queue entries are being purged." << endl;
-                }
-
-                PortManager.apply( applyPortQueuePurge, (void*)Port->getPortID() );
-
-                //  !!!  MUST RESET LGRPQ STUFF FOR CCU'S PINFO  !!!
-            }
-            else
-            {
-                PortManager.apply( applyPortInitFail, (void*)Port->getPortID() );
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
-            }
-
-            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 15000L) )
-            {
-                PorterQuit = TRUE;
-            }
-
+            Sleep(50);
+            status = 0;
             continue;
         }
 
-        try
+        if( Port->shouldProcessQueuedDevices() )
         {
-            rwServiceCancellation( );
-        }
-        catch(const RWCancellation& cMsg)
-        {
+            // The OutMessage popped from here must come from a selection amongst devices that have queues...
+            ChooseExclusionDevice(Device);
+
+            if(Device)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                Device->getOutMessage(OutMessage);
             }
-
-            return;  // We've been nixed!
-        }
-
-        Port->postEvent();
-
-        if( Port->getParentPort() )
-        {
-            // Make sure the parent port can assign new work onto this port.
-            if(Port->queueCount() == 0 && Port->getPoolAssignedGUID() != 0)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Child port " << Port->getName() << " relinquishing GUID assignment";
-
-                    if(Port->getConnectedDevice())
-                    {
-                        dout << ". Connected To: " << GetDeviceName(Port->getConnectedDevice()) << endl;
-                    }
-                    else
-                    {
-                        dout << endl;
-                    }
-                }
-
-
-                Port->setPoolAssignedGUID(0);
-            }
-        }
-
-        // We need to see if the next Q entry is for this Device... If it is, we should not release our exclusion
-
-        if(Port->queueCount() == 0)
-        {
-            ClearExclusions(Port,Device);
-        }
 
         /*
-         *  This is a Read from the CTI queueing structures which will originate from
-         *  some other requestor.  This is where this thread blocks and waits if there are
-         *  no entries on the queue.  One may think of the "above" call as "cleanup" for the
-         *  previous ReadQueue's operation. Note that the ReadQueue call mallocs space for the
-         *  OutMessage pointer, and fills it from it's queue entries!
+             *  This block is trying to make us go back to normal processing through readQueue.
          */
-        if((status = Port->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
-        {
-            if(status == ERROR_QUE_EMPTY)
+            if(!OutMessage)
             {
-                if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
-                {
-                    PorterQuit = TRUE;
-                }
-            }
-            else if( status != ERROR_QUE_UNABLE_TO_ACCESS)
-            {
+                Port->setDevicesQueued(false);
+
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error Reading Port Queue " << Port->getName() << endl;
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                continue;
             }
+        }
+        else if((status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
+        {
+            Sleep(50);
             continue;
         }
         else if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
@@ -330,25 +257,18 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        Port->setLastOMRead();
-
-        if(QueEntries > 5000 && RWTime() > lastQueueReportTime)  // Ok, we may have an issue here....
+        if(Port->getConnectedDevice() != OutMessage->DeviceID)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << Port->getName() << " has " << QueEntries << " pending OUTMESS requests " << endl;
-            }
-            lastQueueReportTime = RWTime() + 300;
+            ClearExclusions(Device);
         }
 
-
         /*
-         * This seems like a bad way to decide if we have this device and port reserved already.. I think I am
-         * checking if the last device managed by this port was the same device as the new OM.
+         *  This is the call which establishes the OutMessage's DeviceID as the Device we are operating upon.
+         *  Upon successful return, the Device pointer is set to nonNull.
          */
-        if(Device && Device->getID() != OutMessage->DeviceID)
+        if( CONTINUE_LOOP == IdentifyDeviceFromOutMessage(Port, OutMessage, Device) )
         {
-            ClearExclusions(Port, Device);
+            continue;
         }
 
         statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
@@ -358,72 +278,6 @@ VOID PortThread(void *pid)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
         }
-
-        if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
-        {
-            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " looking for new deviceID..." << endl;
-            }
-
-            Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
-
-            if( Device != NULL )
-            {
-                OutMessage->DeviceID = Device->getID();
-
-                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " assigned new deviceID = " << Device->getID() << endl;
-                }
-            }
-            else
-            {
-                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " did not assign new deviceID" << endl;
-                }
-
-                SendError(OutMessage, UnknownError);
-                continue;
-            }
-        }
-        else
-        {
-            /* get the device record for this id */
-            Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
-
-            if(Device == NULL)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << Port->getName() << " just received a message for device id " << OutMessage->DeviceID << endl << \
-                    " Porter does not seem to know about him and is throwing away the message!" << endl;
-                }
-
-                try
-                {
-                    // 060403 CGP.... No No no SendError(OutMessage, status);
-                    if(OutMessage)
-                    {
-                        delete OutMessage;
-                        OutMessage = 0;
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                continue;
-            }
-        }
-
-        gQueSlot = 0;   // Set this back to zero every time regardless of port type.
 
         // Copy a good portion of the OutMessage to the to-be-formed InMessage
         OutEchoToIN(OutMessage, &InMessage);
@@ -605,11 +459,14 @@ bool RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
  * As a throughput enhancement, it was modified to peek at the queues before
  * doing so to verify that no entries exist for this device.  It will peek
  * 4 times per second for the post comm wait number of seconds.
+ *
+ * It returns the next queue slot which matches the connected device's UID
+ * or zero if no such queue entry exists.
  *----------------------------------------------------------------------------*/
 INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
 {
     INT    i = 0;
-    INT    status = NORMAL;
+    INT    slot = 0;
     ULONG  QueueCount = 0;
 
     bool    bDisconnect = false;
@@ -628,7 +485,8 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
         RWTime minTimeout(current + stayConnectedMin);
         RWTime maxTimeout(current + stayConnectedMax);
 
-        if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
+        // We always look once.
+        if((slot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
         {
             if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device)
             {
@@ -646,7 +504,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
                 for(i = 0; i < (ULONG)(4 * stayConnectedMin - 1); i++, current <= minTimeout)
                 {
                     /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
-                    if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
+                    if((slot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID)) != 0 )
                     {
                         break;
                     }
@@ -661,14 +519,14 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
 
             /* do not reinit i since times are non cumulative! */
             current = current.now();
-            for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++, current <= maxTimeout)
+            for( ; slot == 0 && i < (ULONG)(4 * stayConnectedMax); i++, current <= maxTimeout)
             {
                 /* Check the queue 4 times per second for a CTIDBG_new entry for this port ... */
                 if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
                 {
-                    gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID);
+                    slot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), searchFuncForOutMessageUniqueID);
 
-                    if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
+                    if( slot == 0 ) // No entry, or the entry is not first on the list
                     {
                         bDisconnect = true;
                         break;
@@ -686,19 +544,23 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device)
             Port->setMinMaxIdle(false);
         }
 
-        if(gQueSlot == 0 || bDisconnect)
+        if(slot == 0 || bDisconnect)
         {
             /* Hang Up */
             Port->disconnect(Device, TraceFlag);
         }
     }
 
-    return status;
+    return slot;
 }
 
 /*----------------------------------------------------------------------------*
  * This function prepares or resets the communications port for (re)use.
  * it checks it for proper state and setup condition.
+ *
+ * One important job of this function is the determination of the port's QueueSlot.  This
+ * variable is used by the portqueue to decide which queue entry to pop from its
+ * internal queue
  *----------------------------------------------------------------------------*/
 INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device)
 {
@@ -763,7 +625,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device)
             {
                 if(Port->isDialup())
                 {
-                    PostCommQueuePeek(Port, Device);
+                    Port->setQueueSlot( PostCommQueuePeek(Port, Device) );
                 }
             }
         }
@@ -897,9 +759,6 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     struct timeb   TimeB;
     ULONG          QueueCount;
 
-    bool portMayExecute;
-    bool deviceMayExecute;
-
     if( Device->getType() == TYPE_TAPTERM )
     {
         CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device;
@@ -947,120 +806,25 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
         }
     }
 
-    // 030503 CGP Adding Exclusion logic in this location.
     /*
-     * Exclusion logic will consist of:
-     *  - Is there a time exclusion on either the port or the device in that order?
-     *  - Is this port blocked by any other currently executing port.
-     *  - Is the device blocked by any other currently executing device.
-     *
-     *  A paobject will be considered blocked if a paobjectid in the exclusion list of the paobject in question
-     *  reports itself as currently executing...
+     *  Only certain devices will be able to queue OMs into them.  They will use the OMs to determine the exclusion selection!
      */
-
-    try
+    if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage)) )
     {
-        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC ||
-           !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )
+        Port->setDevicesQueued(true);
+
         {
-            CtiTablePaoExclusion exclusion;
-
-            {
-                CtiPortManager::LockGuard  port_guard(PortManager.getMux());
-                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-
-                portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
-
-                if(portMayExecute)
-                {
-                    deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
-                }
-            }
-
-            if( !portMayExecute || !deviceMayExecute )
-            {
-                // There is an exclusion conflict for this device or port!
-                ClearExclusions(Port,Device);       // Make sure we didn't dirty up the books.
-
-                // Decide how to requeue this port/device combo.
-                switch(exclusion.getFunctionRequeue())
-                {
-                case (CtiTablePaoExclusion::RequeueNextExecutableOM):
-                    {
-                        if( ShuffleQueue( Port, OutMessage, Device ) )
-                        {
-                            // Queue has been shuffled and we have a different OM now than when we entered!
-                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                            {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
-                            }
-                        }
-                        else
-                        {
-                            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
-                            }
-
-                            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
-                                }
-
-                                delete OutMessage;
-                            }
-
-                            OutMessage = 0;
-                            Sleep(100L);
-                        }
-
-                        return RETRY_SUBMITTED;
-                    }
-                case (CtiTablePaoExclusion::RequeueThisCommandNext):
-                    {
-                        // Keep this ONE HIGH HIGH PRIORITY.
-                        OutMessage->Priority = MAXPRIORITY - 1;
-
-                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
-                        }
-                        // FALL THROUGH!
-                    }
-                case (CtiTablePaoExclusion::RequeueQueuePriority):
-                default:
-                    {
-                        if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
-                            }
-
-                            delete OutMessage;
-                        }
-
-                        OutMessage = 0;
-                        Sleep(100L);
-
-                        return RETRY_SUBMITTED;
-                    }
-                }
-            }
+            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    // 030503 CGP END Exclusion logic.
 
+
+    if( status == NORMAL )
+        status = ProcessExclusionLogic(Port, OutMessage, Device);
+
+    if(status == NORMAL)
+    {
     if( Port->isDialup() )
     {
         if(((CtiDeviceRemote *)Device)->isDialup())     // Make sure the dialup pointer is NOT null!
@@ -1077,8 +841,6 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
         }
     }
 
-    if(status == NORMAL)
-    {
         switch(Device->getType())
         {
         case TYPE_CCU711:
@@ -2887,26 +2649,6 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
     return status;
 }
 
-INT UpdatePerformanceData(INT CommResult, CtiPortSPtr Port, CtiDevice *Device)
-{
-    INT            status = NORMAL;
-    REMOTEPERF     RemotePerf;
-    ERRSTRUCT      ErrStruct;
-
-    if(Device->getAddress() != 0xffff)
-    {
-        RemotePerf.Port   = Device->getPortID();
-        RemotePerf.Remote = Device->getAddress();
-        RemotePerf.Error  = (USHORT)CommResult;
-        RemotePerfUpdate (&RemotePerf, &ErrStruct);
-
-        /* Log the error */
-        ReportRemoteError (Device,&ErrStruct);
-    }
-
-    return status;
-}
-
 /*---------------------------------------------------------------------------*
  * This guy allows the same code to be called whether the OutMessage was
  * requeued, or wehter it sould be cleaned up by a SendError call.
@@ -2923,6 +2665,14 @@ INT RequeueReportError(INT status, OUTMESS *OutMessage)
     case RETRY_SUBMITTED:
         {
             break;  // Don't call this an error.
+        }
+    case QUEUED_TO_DEVICE:
+        {
+            break;
+        }
+    case CONTINUE_LOOP:
+        {
+            break;
         }
     default:
         {
@@ -3426,17 +3176,22 @@ INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDevice *Device )
     return protocol;
 }
 
-INT ClearExclusions(CtiPortSPtr Port, CtiDevice *Device)
+INT ClearExclusions(CtiDevice *Device)
 {
+    // extern CtiExclusionManager   ExclusionManager;
+
     INT status = NORMAL;
 
     try
     {
-        CtiPortManager::LockGuard  port_guard(PortManager.getMux());
-        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+        // CtiLockGuard  guard(ExclusionManager.getMux());
+        //DeviceManager.removeDeviceExclusionBlocks(Device);
+        //ExclusionManager.xyz();
 
-        PortManager.removePortExclusionBlocks(Port);
-        DeviceManager.removeDeviceExclusionBlocks(Device);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     catch(...)
     {
@@ -3463,14 +3218,15 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
         if(QueueCount)      // There are queue entries.
         {
             // We cannot be executed, we should look for another CONTROL queue entry.. We are still protected by mux...
-            INT qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, areAnyQueueEntriesOkToSend );
+            INT qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, findExclusionFreeOutMessage );
 
             if(qEnt > 0)
             {
                 REQUESTDATA    ReadResult;
                 BYTE           ReadPriority;
 
-                if(ReadQueue( *QueueHandle(OutMessage->Port), &ReadResult, &ReadLength, (PPVOID)&pOutMessage, qEnt, DCWW_NOWAIT, &ReadPriority))
+                Port->setQueueSlot(qEnt);
+                if(Port->readQueue( &ReadResult, &ReadLength, (PPVOID)&pOutMessage, DCWW_NOWAIT, &ReadPriority, &QueueCount))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3526,7 +3282,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDevice *device )
 /*
  *  Used by SearchQueue.  Must be protected appropriately.
  */
-BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
+BOOL findExclusionFreeOutMessage(void *data, void* d)
 {
     BOOL     bStatus = FALSE;
     OUTMESS  *OutMessage = (OUTMESS *)d;
@@ -3537,39 +3293,31 @@ BOOL areAnyQueueEntriesOkToSend(void *data, void* d)
     {
         if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC)     // Indicates an excludable message!
         {
-            {
-                bool portMayExecute;
                 bool deviceMayExecute;
 
-                CtiPortManager::LockGuard  port_guard(PortManager.getMux());
                 RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-
-                CtiPortSPtr Port = PortManager.PortGetEqual( OutMessage->Port );
                 CtiDevice* Device = DeviceManager.getEqual( OutMessage->DeviceID );
 
-                if(Port && Device)
-                {
+            if(Device)
+            {
                     CtiTablePaoExclusion exclusion;
-
-                    portMayExecute = PortManager.mayPortExecuteExclusionFree(Port, exclusion);
-
-                    if(portMayExecute)
-                    {
                         deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
-                    }
 
-                    if( portMayExecute && deviceMayExecute )
-                    {
+                if( deviceMayExecute )
+                {
                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
                         }
-                        bStatus = TRUE;     // This device/port combo is locked in as executable!!!
-                    }
+                    bStatus = TRUE;     // This device is locked in as executable!!!
                 }
             }
-
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
         else
         {
@@ -3616,4 +3364,444 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
     }
 
     return nRet;
+}
+
+INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device)
+{
+    INT status = NORMAL;
+    bool deviceMayExecute;
+
+
+    // 030503 CGP Adding Exclusion logic in this location.
+    /*
+     * Exclusion logic will consist of:
+     *  - Is there a time exclusion on either the port or the device in that order?
+     *  - Is this port blocked by any other currently executing port.
+     *  - Is the device blocked by any other currently executing device.
+     *
+     *  A paobject will be considered blocked if a paobjectid in the exclusion list of the paobject in question
+     *  reports itself as currently executing...
+     */
+
+    try
+    {
+        if(OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC ||
+           !gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST").compareTo("true", RWCString::ignoreCase) )
+        {
+            CtiTablePaoExclusion exclusion;
+
+            {
+                RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+                deviceMayExecute = DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion);
+            }
+
+            if( !deviceMayExecute )
+            {
+                // There is an exclusion conflict for this device or port!
+                ClearExclusions(Device);       // Make sure we didn't dirty up the books.
+
+                // Decide how to requeue this port/device combo.
+                switch(exclusion.getFunctionRequeue())
+                {
+                case (CtiTablePaoExclusion::RequeueNextExecutableOM):
+                    {
+                        if( ShuffleQueue( Port, OutMessage, Device ) )
+                        {
+                            // Queue has been shuffled!  OutMessage is no longer ours to touch..
+                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " OutMessage shuffled excluded for non-excluded outmessage. " << endl;
+                            }
+                        }
+                        else
+                        {
+                            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
+                            }
+
+                            if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                                }
+
+                                delete OutMessage;
+                            }
+
+                            OutMessage = 0;
+                            Sleep(100L);
+                        }
+
+                        status = RETRY_SUBMITTED;
+                    }
+                case (CtiTablePaoExclusion::RequeueThisCommandNext):
+                    {
+                        // Keep this ONE HIGH HIGH PRIORITY.
+                        OutMessage->Priority = MAXPRIORITY - 1;
+
+                        if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Re-queuing original (excluded) message at high priority to examine next" << endl;
+                        }
+                        // FALL THROUGH!
+                    }
+                case (CtiTablePaoExclusion::RequeueQueuePriority):
+                default:
+                    {
+                        if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                            }
+
+                            delete OutMessage;
+                        }
+
+                        OutMessage = 0;
+                        Sleep(100L);
+
+                        status = RETRY_SUBMITTED;
+                    }
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    // 030503 CGP END Exclusion logic.
+
+    return status;
+}
+
+
+INT ProcessPortPooling(CtiPortSPtr Port)
+{
+    INT status = NORMAL;
+
+    Port->postEvent();
+
+    if( Port->getParentPort() )
+    {
+        // Make sure the parent port can assign new work onto this port.
+        if(Port->queueCount() == 0 && Port->getPoolAssignedGUID() != 0)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Child port " << Port->getName() << " relinquishing GUID assignment";
+
+                if(Port->getConnectedDevice())
+                {
+                    dout << ". Connected To: " << GetDeviceName(Port->getConnectedDevice()) << endl;
+                }
+                else
+                {
+                    dout << endl;
+                }
+            }
+
+
+            Port->setPoolAssignedGUID(0);
+        }
+    }
+
+    return status;
+}
+
+/*
+ *  This function sets up and or resets the portthread's comm port or ip port.
+ *  It is responsible for opening, or reopening the comm channel or IP channel.
+ *  It is responsible for resetting, or verifying any established connection from the last loop.
+ */
+INT ResetChannel(CtiPortSPtr Port, CtiDevice *Device)
+{
+    INT status = NORMAL;
+    INT initFails = 0;
+
+    if( NORMAL != (status = ResetCommsChannel(Port, Device)) )
+    {
+        if(initFails++ > PorterPortInitQueuePurgeDelay)  // Every 5 minutes (default, can be CPARM'd), we will purge the queue entries.
+        {
+            initFails = 0;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << Port->getName() << " will not init. Queue entries are being purged." << endl;
+            }
+
+            PortManager.apply( applyPortQueuePurge, (void*)Port->getPortID() );
+
+            //  !!!  MUST RESET LGRPQ STUFF FOR CCU'S PINFO  !!!
+        }
+        else
+        {
+            PortManager.apply( applyPortInitFail, (void*)Port->getPortID() );
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port " << Port->getName() << " will not init. Waiting 15 seconds " << endl;
+        }
+
+        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 15000L) )
+        {
+            PorterQuit = TRUE;
+        }
+
+        status = CONTINUE_LOOP;     // make callee continue.
+    }
+    else
+    {
+        ProcessPortPooling(Port);
+
+        // We need to see if the next Q entry is for this Device... If it is, we should not release our exclusion
+        if(Device && Port->queueCount() == 0)
+        {
+            ClearExclusions( Device );
+        }
+    }
+
+    return status;
+}
+
+/*
+ *  This function uses the outmessage and the devicemanager to identify the device on which to operate
+ *  Successful return is NORMAL if a device is found. In this case, the Device pointer will be a valid device.
+ *  Unsuccessful return is CONTINUE_LOOP.  In this case, the Device pointer is set to 0;
+ */
+INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *&Device)
+{
+    INT status = NORMAL;
+
+    Device = 0;
+
+    if(OutMessage != 0)
+    {
+        if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
+        {
+            if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " looking for new deviceID..." << endl;
+            }
+
+            Device = DeviceManager.RemoteGetPortRemoteEqual(OutMessage->Port, OutMessage->Remote);
+
+            if( Device != NULL )
+            {
+                OutMessage->DeviceID = Device->getID();
+
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " assigned new deviceID = " << Device->getID() << endl;
+                }
+            }
+            else
+            {
+                if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " did not assign new deviceID" << endl;
+                }
+
+                SendError(OutMessage, UnknownError);
+                status = CONTINUE_LOOP;
+            }
+        }
+        else
+        {
+            /* get the device record for this id */
+            Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
+
+            if(Device == NULL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << Port->getName() << " just received a message for device id " << OutMessage->DeviceID << endl << \
+                    " Porter does not seem to know about him and is throwing away the message!" << endl;
+                }
+
+                try
+                {
+                    // 060403 CGP.... No No no SendError(OutMessage, status);
+                    if(OutMessage)
+                    {
+                        delete OutMessage;
+                        OutMessage = 0;
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                status = CONTINUE_LOOP;
+            }
+        }
+    }
+    else
+    {
+        status = CONTINUE_LOOP;
+    }
+
+    return status;
+}
+
+
+INT ChooseExclusionDevice(CtiDevice *&Device)
+{
+    INT status = NORMAL;
+
+    /*
+     *  This function's sole purpose in life is to find devices on this port which are queued with work and to select the very
+     *  very best one from their number to allow execution.  The parameters assigned into the device define when it needs to complete
+     *  and subject itself to a re-evaluation.
+     */
+
+    /*
+     *  The function below walks _all_ devices _on this port_ which have queued work and are time excluded.  During the walk any non-time excluded
+     *  device in their lists are marked with the time at which the TX device needs to be evaluated again.  This time should be in the future
+     *  and should is called
+     */
+    // Find the Best Time Excluded Device
+
+
+    RWTime now;
+    CtiDevice *devS = 0;           // This is the selected "S" device. -> The Winner!
+    CtiDevice *devA = 0;           //
+    CtiDevice *devB = 0;           //
+
+    for( ;false; ) // (each Device = devA which has exclusions) Use the Exclusion Manager so that we need not walk the entire device list for excluded device.
+    {
+        if( devA->getEvaluateNextAt() <= now && devA->hasTimeExclusion() )
+        {
+            if(devA->isTimeSlotOpen())
+            {
+                if(devA->hasQueuedWork())
+                {
+                    if( !devS || (devS && devS->getLastExclusionGrant() > devA->getLastExclusionGrant()) )
+                    {
+                        // Select the transmitter with the oldest LastExclusionGrant.
+                        devS = devA;
+                    }
+                }
+                else
+                {
+                    devA->setEvaluateNextAt(now + 20);
+
+                    for(;false;) // (each devB excluded by this devA)
+                    {
+                        devB->setMustCompleteBy( now+20 );                      // prevent any devB  which may be seleced below from taking our entire slot.
+                    }
+                }
+            }
+            else
+            {
+                devA->setEvaluateNextAt( devA->getNextTimeSlotOpen() );  // offset may be the next window open, or the partial allocation given up in the case of no codes.
+                for(;false;) // (each devB excluded by this devA)
+                {
+                    devB->setMustCompleteBy( devA->getNextTimeSlotOpen() );     // prevent any devB which may be seleced below from interfereing with devA's next evaluation
+                }
+            }
+        }
+    }
+
+    if(devS)
+    {
+        devS = devA;                                            // We will choose the first one in here!
+        devS->setExecutingUntil( devS->getExecutionGrantExpires() );           // Make sure we know who is executing.
+
+        for(;false;) // each devB excluded by this devA)
+        {
+            devB->setEvaluateNextAt(devS->getExecutionGrantExpires());    // mark out all proximity conflicts to when devA will be done.
+        }
+    }
+    else if(devS == 0)       // We did not find any time excluded transmitters willing to take the ball.
+    {
+        // Find Best Proximity Excluded Device
+        for(;false;) // (each devA which has exclusions)
+        {
+            /*
+             *  In this case, we should be filtering off all time excluded device which setEvaluateNextAt() into the future up above.
+             *  We will also not evaluate any proximity excluded devices which may have been bumped into the future above.
+             */
+            if( devA->getEvaluateNextAt() <= now )
+            {
+                if(devA->hasQueuedWork())
+                {
+                    if(!devS || devS->getLastExclusionGrant() > devA->getLastExclusionGrant())
+                    {
+                        devS = devA;    // Select the transmitter with the oldest lastTx.
+                    }
+                }
+            }
+        }
+
+        if(devS)
+        {
+            devS = devA;                                            // We will choose the first one in here!
+            devS->setExecutingUntil( devS->getExecutionGrantExpires() );           // Make sure we know who is executing.
+
+            for(;false;)   // (each devB excluded by this devA)
+            {
+                devB->setEvaluateNextAt(devS->getExecutionGrantExpires());    // mark out all proximity conflicts to when devA will be done.
+            }
+        }
+    }
+
+
+    return status;
+}
+
+
+INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
+{
+    INT status;
+    ULONG ReadLength;
+    REQUESTDATA ReadResult;
+    BYTE ReadPriority;
+
+    /*
+     *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
+     *  this call is relatively inexpensive.
+     */
+    Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage ) );
+
+    /*
+     *  This is a Read from the CTI queueing structures which will originate from
+     *  some other requestor.  This is where this thread blocks and waits if there are
+     *  no entries on the queue.  Note that the readQueue call mallocs space for the
+     *  OutMessage pointer, and fills it from it's queue entries!
+     */
+
+    if((status = Port->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
+    {
+        if(status == ERROR_QUE_EMPTY)
+        {
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
+            {
+                PorterQuit = TRUE;
+            }
+        }
+        else if( status != ERROR_QUE_UNABLE_TO_ACCESS)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Error Reading Port Queue " << Port->getName() << endl;
+            }
+        }
+
+        status = CONTINUE_LOOP;
+    }
+
+    return status;
 }
