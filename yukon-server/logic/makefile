@@ -3,6 +3,8 @@
 
 
 ALL:
+            @if not exist obj md obj            
+            @if not exist bin md bin            
             @$(MAKE) -nologo -f makedll.mak
 
 clean:
