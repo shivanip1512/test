@@ -25,10 +25,6 @@ function validate(form) {
 		alert("Username cannot be empty!");
 		return false;
 	}
-	if (form.Password.value == "") {
-		alert("Password cannot be empty!");
-		return false;
-	}
 	if (form.Password.value != form.Password2.value) {
 		alert("The passwords you entered don't match, please enter them again");
 		return false;

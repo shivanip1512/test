@@ -890,6 +890,10 @@ public class StarsAdminUtil {
 	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
+		if (username.length() == 0)
+			throw new WebClientException( "Username cannot be empty" );
+		if (password.length() == 0)
+			throw new WebClientException( "Password cannot be empty" );
 		if (YukonUserFuncs.getLiteYukonUser( username ) != null)
 			throw new WebClientException( "Username already exists" );
 		
