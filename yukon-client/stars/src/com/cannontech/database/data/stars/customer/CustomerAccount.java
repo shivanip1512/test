@@ -2,6 +2,7 @@ package com.cannontech.database.data.stars.customer;
 
 import java.util.Vector;
 
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -95,14 +96,16 @@ public class CustomerAccount extends DBPersistent {
     public void add() throws java.sql.SQLException {
     	if (energyCompanyID == null)
     		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
-    		
-    	getBillingAddress().setAddressID( com.cannontech.database.db.customer.Address.getNextAddressID(getDbConnection()) );
+    	
         getBillingAddress().add();
         
         getCustomerAccount().setBillingAddressID( getBillingAddress().getAddressID() );
         int addrID = getBillingAddress().getAddressID().intValue();
         
     	if (getCustomerAccount().getCustomerID().intValue() == 0) {
+    		if (getCustomer() instanceof com.cannontech.database.data.customer.CICustomerBase)
+    			((com.cannontech.database.data.customer.CICustomerBase)getCustomer()).getAddress().setAddressID( new Integer(++addrID) );
+    		
     		getCustomer().add();
     		getCustomerAccount().setCustomerID( getCustomer().getCustomer().getCustomerID() );
     	}
@@ -147,10 +150,24 @@ public class CustomerAccount extends DBPersistent {
         getAccountSite().retrieve();
 
         if (getCustomer() == null) {
-            customer = new com.cannontech.database.data.customer.Customer();
-            customer.setCustomerID( getCustomerAccount().getCustomerID() );
-            customer.setDbConnection( getDbConnection() );
-            customer.retrieve();
+			com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
+            customerDB.setCustomerID( getCustomerAccount().getCustomerID() );
+            customerDB.setDbConnection( getDbConnection() );
+            customerDB.retrieve();
+            
+            if (customerDB.getCustomerTypeID().intValue() == CustomerTypes.CUSTOMER_CI) {
+            	customer = new com.cannontech.database.data.customer.CICustomerBase();
+            	customer.setCustomer( customerDB );
+            	customer.setCustomerID( customerDB.getCustomerID() );
+            	customer.setDbConnection( getDbConnection() );
+            	customer.retrieve();
+            }
+            else {
+            	customer = new com.cannontech.database.data.customer.Customer();
+            	customer.setCustomer( customerDB );
+            	customer.setDbConnection( getDbConnection() );
+            	customer.retrieve();
+            }
         }
 		
 		setApplianceVector( com.cannontech.database.db.stars.appliance.ApplianceBase.getApplianceIDs(

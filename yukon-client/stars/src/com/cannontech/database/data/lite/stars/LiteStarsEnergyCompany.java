@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.TimeZone;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -20,7 +21,9 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -1655,9 +1658,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
 		LiteStarsCustAccountInformation liteAcctInfo = new LiteStarsCustAccountInformation( account.getCustomerAccount().getAccountID().intValue() );
 		liteAcctInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(account.getCustomerAccount()) );
-		liteAcctInfo.setCustomer( (LiteCustomer) StarsLiteFactory.createLite(account.getCustomer()) );
 		liteAcctInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(site.getAccountSite()) );
 		liteAcctInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(site.getSiteInformation().getSiteInformation()) );
+		
+		if (account.getCustomer() instanceof com.cannontech.database.data.customer.CICustomerBase) {
+			LiteCICustomer liteCI = new LiteCICustomer();
+			StarsLiteFactory.setLiteCICustomer( liteCI, (com.cannontech.database.data.customer.CICustomerBase)account.getCustomer() );
+			liteAcctInfo.setCustomer( liteCI );
+		}
+		else {
+			LiteCustomer liteCustomer = new LiteCustomer();
+			StarsLiteFactory.setLiteCustomer( liteCustomer, account.getCustomer() );
+			liteAcctInfo.setCustomer( liteCustomer );
+		}
         
 		ArrayList appliances = new ArrayList();
 		for (int i = 0; i < account.getApplianceVector().size(); i++) {
@@ -1827,9 +1840,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     	
 		// Remote all contacts from customerContacts
 		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-		ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+		Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 		for (int i = 0; i < contacts.size(); i++)
-			deleteContact( ((Integer) contacts.get(i)).intValue() );
+			deleteContact( ((LiteContact)contacts.get(i)).getContactID() );
 		
 		// Remove all addresses from addresses
 		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );

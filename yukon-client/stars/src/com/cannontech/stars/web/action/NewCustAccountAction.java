@@ -12,10 +12,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
@@ -235,19 +232,35 @@ public class NewCustAccountAction implements ActionBase {
             }
             
 			/* CustomerAccount: Begin */
-			MultiDBPersistent multiDB = new MultiDBPersistent();
-			
             com.cannontech.database.data.stars.customer.CustomerAccount account =
                     new com.cannontech.database.data.stars.customer.CustomerAccount();
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             
             /* CustomerAccount->Customer: Begin */
-            com.cannontech.database.data.customer.Customer customer =
-            		new com.cannontech.database.data.customer.Customer();
-            com.cannontech.database.db.customer.Customer customerDB = customer.getCustomer();
+            com.cannontech.database.data.customer.Customer customer = null;
+            if (starsAccount.getIsCommercial())
+            	customer = new com.cannontech.database.data.customer.CICustomerBase();
+            else
+            	customer = new com.cannontech.database.data.customer.Customer();
             
+            com.cannontech.database.db.customer.Customer customerDB = customer.getCustomer();
             customerDB.setPrimaryContactID( primContact.getContact().getContactID() );
-            customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL) );
+            
+            if (starsAccount.getIsCommercial()) {
+				customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_CI) );
+				
+				((com.cannontech.database.data.customer.CICustomerBase)customer).getCiCustomerBase().setCompanyName( starsAccount.getCompany() );
+				
+				com.cannontech.database.db.customer.Address custAddr = ((com.cannontech.database.data.customer.CICustomerBase)customer).getAddress();
+				StarsFactory.setCustomerAddress( custAddr, starsAccount.getStreetAddress() );
+				
+				com.cannontech.database.db.company.EnergyCompany engCompany = new com.cannontech.database.db.company.EnergyCompany();
+				engCompany.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				((com.cannontech.database.data.customer.CICustomerBase)customer).setEnergyCompany( engCompany );
+            }
+            else {
+				customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL) );
+            }
             
             String timeZone = starsAccount.getTimeZone();
             if (timeZone == null)
@@ -296,8 +309,8 @@ public class NewCustAccountAction implements ActionBase {
             account.setCustomer( customer );
             account.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
             
-            multiDB.getDBPersistentVector().add( account );
-    		Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+            account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+		    		Transaction.createTransaction( Transaction.INSERT, account ).execute();
             
             /* Create lite objects */
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
@@ -310,7 +323,7 @@ public class NewCustAccountAction implements ActionBase {
 				energyCompany.addContact( liteContact, liteAcctInfo );
 			}
             
-            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
+            //ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
             
             if (SOAPServer.isClientLocal()) {
             	StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );

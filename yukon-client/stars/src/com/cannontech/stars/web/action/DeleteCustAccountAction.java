@@ -9,8 +9,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -162,9 +160,9 @@ public class DeleteCustAccountAction implements ActionBase {
 			contact.setDbConnection( conn );
 			contact.delete();
     		
-			java.util.ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
-			for (int i = 0; i < contactIDs.size(); i++) {
-				liteContact = energyCompany.getContact( ((Integer) contactIDs.get(i)).intValue(), liteAcctInfo );
+			java.util.Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+			for (int i = 0; i < contacts.size(); i++) {
+				liteContact = (LiteContact) contacts.get(i);
 				contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 				contact.setDbConnection( conn );
 				contact.delete();
@@ -178,7 +176,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			// Delete lite and stars objects
 			energyCompany.deleteCustAccountInformation( liteAcctInfo );
 			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-			ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
+			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
 		}
 		finally {
 			try {

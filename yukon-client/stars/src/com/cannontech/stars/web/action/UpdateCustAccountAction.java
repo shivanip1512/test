@@ -4,11 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteAccountSite;
 import com.cannontech.database.data.lite.stars.LiteAddress;
-import com.cannontech.database.data.lite.stars.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -58,7 +60,10 @@ public class UpdateCustAccountAction implements ActionBase {
 
             updateAccount.setAccountNumber( req.getParameter("AcctNo") );
             updateAccount.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
-            updateAccount.setCompany( req.getParameter("Company") );
+            if (updateAccount.getIsCommercial())
+	        	updateAccount.setCompany( req.getParameter("Company") );
+	        else
+	        	updateAccount.setCompany( "" );
             updateAccount.setAccountNotes( req.getParameter("AcctNotes") );
 
             updateAccount.setPropertyNumber( req.getParameter("PropNo") );
@@ -150,8 +155,7 @@ public class UpdateCustAccountAction implements ActionBase {
             
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
             
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
             
             /* Update customer account */
             StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
@@ -193,8 +197,8 @@ public class UpdateCustAccountAction implements ActionBase {
     		
     		/* Update customer */
             LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
-            com.cannontech.database.db.customer.Customer customer =
-            		(com.cannontech.database.db.customer.Customer) StarsLiteFactory.createDBPersistent( liteCustomer );
+            com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
+            StarsLiteFactory.setCustomer( customerDB, liteCustomer );
             
             LiteContact litePrimContact = energyCompany.getContact( liteCustomer.getPrimaryContactID(), liteAcctInfo );
             PrimaryContact starsPrimContact = updateAccount.getPrimaryContact();
@@ -211,18 +215,71 @@ public class UpdateCustAccountAction implements ActionBase {
 				ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             }
 	        
-            if (!StarsLiteFactory.isIdenticalCustomer(liteCustomer, updateAccount)) {
-	            int custTypeID = updateAccount.getIsCommercial() ? CustomerTypes.CUSTOMER_CI : CustomerTypes.CUSTOMER_RESIDENTIAL;
-	            customer.setCustomerTypeID( new Integer(custTypeID) );
-	            if (updateAccount.getTimeZone() != null)
-	            	liteCustomer.setTimeZone( updateAccount.getTimeZone() );
-	            
-	            customer.setDbConnection( conn );
-	            customer.update();
-	            
-	            liteCustomer.setCustomerTypeID( custTypeID );
-	            liteCustomer.setTimeZone( customer.getTimeZone() );
-            }
+			if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI && !updateAccount.getIsCommercial()) {
+	        	// Customer type changed from commercial to residential
+	        	// To make things simple, only change the customer type "temporarily",
+	        	// which means the customer ID won't be deleted from the CICustomerBase table
+	        	customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL) );
+	        	customerDB.setDbConnection( conn );
+	        	customerDB.update();
+	        	
+	        	LiteCustomer liteCust = new LiteCustomer();
+	        	liteCust.setCustomerID( liteCustomer.getCustomerID() );
+	        	liteCust.retrieve( CtiUtilities.getDatabaseAlias() );
+	        	liteAcctInfo.setCustomer( liteCust );
+	        }
+			else if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_RESIDENTIAL && updateAccount.getIsCommercial()) {
+				// Customer type changed from residential to commercial
+				// Populating the CICustomerBase table only if the customer ID doesn't exist there
+				customerDB.setCustomerTypeID( new Integer(CustomerTypes.CUSTOMER_CI) );
+				customerDB.setDbConnection( conn );
+				customerDB.update();
+				
+				java.sql.Statement stmt = conn.createStatement();
+				java.sql.ResultSet rset = stmt.executeQuery( "SELECT CustomerID FROM CICustomerBase WHERE CustomerID=" + liteCustomer.getCustomerID() );
+				
+				boolean idExists = rset.next();
+				
+				rset.close();
+				stmt.close();
+				
+				com.cannontech.database.data.customer.CICustomerBase ci = new com.cannontech.database.data.customer.CICustomerBase();
+				ci.setCustomer( customerDB );
+				ci.setCustomerID( customerDB.getCustomerID() );
+				
+				if (idExists) {
+					ci.setDbConnection( conn );
+					ci.retrieve();
+					
+					com.cannontech.database.db.customer.CICustomerBase ciDB = ci.getCiCustomerBase();
+					ciDB.setCompanyName( updateAccount.getCompany() );
+					ciDB.setDbConnection( conn );
+					ciDB.update();
+				}
+				else {
+					ci.setDbConnection( conn );
+					ci.addCICustomer();
+				}
+				
+				LiteCICustomer liteCI = new LiteCICustomer();
+				StarsLiteFactory.setLiteCICustomer( liteCI, ci );
+				liteAcctInfo.setCustomer( liteCI );
+	        }
+	        else if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI && updateAccount.getIsCommercial()) {
+	        	if (!((LiteCICustomer)liteCustomer).getCompanyName().equals( updateAccount.getCompany() )) {
+	        		// Company name of a CI customer is changed
+	        		com.cannontech.database.db.customer.CICustomerBase ciDB = new com.cannontech.database.db.customer.CICustomerBase();
+	        		ciDB.setCustomerID( customerDB.getCustomerID() );
+	        		ciDB.setDbConnection( conn );
+	        		ciDB.retrieve();
+	        		
+	        		ciDB.setCompanyName( updateAccount.getCompany() );
+	        		ciDB.setDbConnection( conn );
+	        		ciDB.update();
+	        		
+					((LiteCICustomer)liteCustomer).setCompanyName( ciDB.getCompanyName() );
+	        	}
+	        }
             
             /* Update account site */
             LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
@@ -264,7 +321,7 @@ public class UpdateCustAccountAction implements ActionBase {
             	StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
             }
             
-            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
+            //ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Customer account updated successfully" );
