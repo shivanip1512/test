@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/04/25 15:13:45 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.5  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2003/04/25 15:13:45  dsutton
       Update of the base protocol pieces taking into account the manufacturer
       tables, etc.  New starting point
@@ -116,7 +119,8 @@ class IM_EX_PROT CtiANSIApplication
        loggedOff,
        terminated,
        disconnected,
-       passThrough
+       passThrough,
+       waitState
       } ANSI_STATES;
 
 
@@ -124,7 +128,7 @@ class IM_EX_PROT CtiANSIApplication
       void destroyMe( void );
       void reinitialize( void );
       bool generate( CtiXfer &xfer );
-      void initializeTableRequest( int aID, int aOffset, int aBytesExpected, int aType, int aOperation );
+      void initializeTableRequest( int aID, int aOffset, unsigned short aBytesExpected, BYTE aType, BYTE aOperation );
       BYTE* getCurrentTable( void );
 
 
@@ -146,6 +150,12 @@ class IM_EX_PROT CtiANSIApplication
 
     CtiANSIApplication &setRetries( int trysLeft );
     int getRetries( void );
+    void setLPDataMode( bool value, int sizeOfLpTable );
+
+    void populateParmPtr(BYTE *value, int size);
+    void setProcBfld( TBL_IDB_BFLD value);
+    void setWriteSeqNbr( BYTE seqNbr );
+    void setProcDataSize( USHORT dataSize );
 
    protected:
 
@@ -159,14 +169,26 @@ class IM_EX_PROT CtiANSIApplication
        BYTE              *_currentTable;
        int               _totalBytesInTable;
 
+       /* JULIE TEMP */
+       bool _lpMode;
+       BYTE *_lpTempBigTable;
+       int _sizeOfLpTable;
+
+       /* END JULIE TEMP */
+
        bool             _tableComplete;
 
 
        int                  _currentTableID;
        int                  _currentTableOffset;
-       int                  _currentBytesExpected;
-       int                  _currentType;
-       int                  _currentOperation;
+       unsigned short        _currentBytesExpected;
+       BYTE                  _currentType;
+       BYTE                  _currentOperation;
+
+       TBL_IDB_BFLD         _currentProcBfld;
+       BYTE                 *_parmPtr;
+       BYTE                _wrSeqNbr;
+       USHORT              _wrDataSize;
 
        // if authentication is supported
        bool        _authenticate;
@@ -177,6 +199,8 @@ class IM_EX_PROT CtiANSIApplication
        bool        _readComplete;
        bool        _readFailed;
        int         _retries;
+
+       int _julieTest;
 };
 
 

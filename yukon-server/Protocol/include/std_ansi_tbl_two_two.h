@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_two.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/04/22 21:12:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:21 $
 *    History: 
       $Log: std_ansi_tbl_two_two.h,v $
+      Revision 1.5  2004/09/30 21:37:21  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2004/04/22 21:12:54  dsutton
       Last known revision DLS
 
@@ -54,6 +57,9 @@ private:
 
    int   _demandSelectSize;
    int   _totalTableSize;
+   int   _numSums;
+   int   _numDemands;
+   int   _numCoins;
 
 public:
 
@@ -63,9 +69,15 @@ public:
    unsigned char* getDemandSelect( void );
    unsigned char* getSummationSelect( void );
 
+   CtiAnsiTableTwoTwo(int num_sums, int num_demands, int num_coins );
    CtiAnsiTableTwoTwo( BYTE *dataBlob, int num_sums, int num_demands, int num_coins );
    virtual ~CtiAnsiTableTwoTwo();
    CtiAnsiTableTwoTwo& operator=(const CtiAnsiTableTwoTwo& aRef);
+   
+   void generateResultPiece( BYTE **dataBlob );
+   void printResult();
+   void decodeResultPiece( BYTE **dataBlob );
+
 
 };
 

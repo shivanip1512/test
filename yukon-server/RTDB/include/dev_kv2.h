@@ -13,11 +13,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/04/25 15:14:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/30 21:37:22 $
 *
 *    History: 
       $Log: dev_kv2.h,v $
+      Revision 1.6  2004/09/30 21:37:22  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.5  2003/04/25 15:14:07  dsutton
       Changed general scan and decode result
 
@@ -63,6 +66,7 @@ public:
                            RWTPtrSlist< OUTMESS >     &outList);
 
    CtiProtocolANSI & getProtocol( void );
+   void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
 
    struct WANTS_HEADER

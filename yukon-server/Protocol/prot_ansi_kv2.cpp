@@ -10,10 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/25 15:13:05 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/30 21:37:17 $
 *    History: 
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.2  2004/09/30 21:37:17  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.1  2003/04/25 15:13:05  dsutton
       Manufacturer additions to the base ansi protocol for the kv2
 
@@ -64,7 +67,7 @@ void CtiProtocolANSI_kv2::destroyManufacturerTables( void )
    }
 }
 
-void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, int numBytes, int aTableID )
+void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )
 {
 
     switch( aTableID - 0x0800)
@@ -76,6 +79,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, int numBytes, 
                    dout << RWTime() << " Creating KV2 table 0" << endl;
                 }
                 _tableZero = new CtiAnsiKV2ManufacturerTableZero( data );
+                _tableZero->printResult();
                 break;
             }
         case 70:
@@ -86,6 +90,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, int numBytes, 
                 }
 
                 _tableSeventy = new CtiAnsiKV2ManufacturerTableSeventy( data );
+                _tableSeventy->printResult();
                 break;
             }
         case 110:
@@ -102,4 +107,27 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, int numBytes, 
             break;
 
     }
+}
+
+
+void CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
+{
+
+    setPreviewTable64InProgress(true);
+
+    setCurrentAnsiWantsTableValues(64,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
+    getApplicationLayer().initializeTableRequest (64, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
+
+    return;
+}
+
+int CtiProtocolANSI_kv2::calculateLPDataBlockSize(int numChans)
+{
+    return numChans;
+}
+
+
+int CtiProtocolANSI_kv2::calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock)
+{
+    return 4+ (8*numChans) + (numIntvlsLastDataBlock * ((2 * numChans) +2));
 }

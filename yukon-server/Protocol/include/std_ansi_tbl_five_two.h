@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_two.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *    History: 
       $Log: std_ansi_tbl_five_two.h,v $
+      Revision 1.4  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -36,7 +39,7 @@
 
 #pragma pack( push, 1)
 
-   struct TIME_DATE_QUAL_BFLD
+   /*struct TIME_DATE_QUAL_BFLD
    {
       unsigned char     day_of_week:         3;
       bool              dst_flag:            1;
@@ -58,7 +61,7 @@
             BCD      hour;
             BCD      minute;
             BCD      second;
-         };
+         }c1;
 
          struct CASE2
          {
@@ -68,25 +71,25 @@
             unsigned char  hour;
             unsigned char  minute;
             unsigned char  second;
-         };
+         }c2;
 
          struct CASE3
          {
             long           u_time;
             unsigned char  second;
-         };
+         }c3;
 
          struct CASE4
          {
             long           u_time_sec;
-         };
+         }c4;
 
       }cases;
    };
-
+   */
    struct CLOCK_STATE_RCD
    {
-      LTIME_DATE              clock_calendar;
+      ULONG              clock_calendar;
       TIME_DATE_QUAL_BFLD     time_date_qual;
    };
 
@@ -96,17 +99,31 @@ class IM_EX_PROT CtiAnsiTableFiveTwo : public CtiAnsiTableBase
 {
 protected:
 
-   CLOCK_STATE_RCD      *clock_table;
+   CLOCK_STATE_RCD      clock_table;
 
 private:
 
+    int _timefmt;
 public:
 
-   CtiAnsiTableFiveTwo( BYTE *dataBlob );
-
+   CtiAnsiTableFiveTwo(int timefmat  );
+   CtiAnsiTableFiveTwo( BYTE *dataBlob, int timefmat );
+   
    virtual ~CtiAnsiTableFiveTwo();
 
    CtiAnsiTableFiveTwo& operator=(const CtiAnsiTableFiveTwo& aRef);
+   void generateResultPiece( BYTE **dataBlob );
+   void printResult();
+   void decodeResultPiece( BYTE **dataBlob );
+
+   int getClkCldrYear();
+   int getClkCldrMon();
+   int getClkCldrDay();
+   int getClkCldrHour();
+   int getClkCldrMin();
+   int getClkCldrSec();
+   
+
 
 };
 #endif // #ifndef __STD_ANSI_TBL_FIVE_TWO_H__

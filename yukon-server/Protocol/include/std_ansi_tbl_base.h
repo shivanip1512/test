@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/25 14:52:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: std_ansi_tbl_base.h,v $
+      Revision 1.2  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.1  2003/04/25 14:52:43  dsutton
       Standard and manufacturer table base class. Contains utility functions
       needed for all tables
@@ -44,6 +47,9 @@ typedef union
    UCHAR    ch[8];
    UINT64   u64;
 } BYTEUINT64;
+
+
+#define BCD                unsigned char
 
 // non integer formats
 #define ANSI_NI_FORMAT_FLOAT64          0
@@ -98,6 +104,54 @@ struct STIME_DATE
    };
 };
 
+struct LTIME_DATE
+{
+   union// CASES
+   {
+      struct CASE1
+      {
+         BCD      year;
+         BCD      month;
+         BCD      day;
+         BCD      hour;
+         BCD      minute;
+         BCD      second;
+      }c1;
+
+      struct CASE2
+      {
+         unsigned char  year;
+         unsigned char  month;
+         unsigned char  day;
+         unsigned char  hour;
+         unsigned char  minute;
+         unsigned char  second;
+      }c2;
+
+      struct CASE3
+      {
+         long           u_time;
+         unsigned char  second;
+      }c3;
+
+      struct CASE4
+      {
+         long           u_time_sec;
+      }c4;
+
+   }cases;
+};
+
+struct TIME_DATE_QUAL_BFLD
+{
+   unsigned char        day_of_week          :3;
+   unsigned char        dst_flag             :1;
+   unsigned char        gmt_flag             :1;
+   unsigned char        tm_zn_applied_flag   :1;
+   unsigned char        dst_applied_flag     :1;
+   unsigned char        filler               :1;
+};
+
 class IM_EX_PROT CtiAnsiTableBase
 {
 protected:
@@ -107,8 +161,10 @@ private:
 public:
 
    int toDoubleParser( BYTE *source, double &result, int format );
+   int fromDoubleParser ( double &result, BYTE *source, int format );
    int toUint32STime( BYTE *source, ULONG &result, int format );
    ULONG BCDtoBase10( UCHAR* buffer, ULONG len );
+   int toUint32LTime( BYTE *source, ULONG &result, int format );
 
 
    CtiAnsiTableBase();

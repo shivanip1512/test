@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_six.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/04/22 21:12:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:18 $
 *    History: 
       $Log: std_ansi_tbl_one_six.cpp,v $
+      Revision 1.5  2004/09/30 21:37:18  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2004/04/22 21:12:53  dsutton
       Last known revision DLS
 
@@ -25,23 +28,29 @@
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "logger.h"
 #include "std_ansi_tbl_one_six.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
+CtiAnsiTableOneSix::CtiAnsiTableOneSix( int nbr_constants )
+{
+   _numberOfConstants = nbr_constants;
+}
+
 CtiAnsiTableOneSix::CtiAnsiTableOneSix( BYTE *dataBlob, int nbr_constants )
 {
    int   index;
+   _numberOfConstants = nbr_constants;
 
-   _source_link = new SOURCE_LINK_BFLD[nbr_constants];
+   _source_link = new SOURCE_LINK_BFLD[_numberOfConstants];
 
-   for( index = 0; index < nbr_constants; index++ )
+   for( index = 0; index < _numberOfConstants; index++ )
    {
       memcpy(( void *)&_source_link[index], dataBlob, sizeof( SOURCE_LINK_BFLD ));
       dataBlob += sizeof( SOURCE_LINK_BFLD );
    }
-   _numberOfConstants = nbr_constants;
 }
 
 //=========================================================================================================================================
@@ -85,4 +94,90 @@ SOURCE_LINK_BFLD CtiAnsiTableOneSix::getSourceLink(int aOffset)
     return (ret);
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+void CtiAnsiTableOneSix::generateResultPiece( BYTE **dataBlob )
+{
+    for( int index = 0; index < _numberOfConstants; index++ )
+    {
+        memcpy( *dataBlob, ( void *)&_source_link[index], sizeof( SOURCE_LINK_BFLD ));
+        *dataBlob += sizeof( SOURCE_LINK_BFLD );
+    }
+
+
+}
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+void CtiAnsiTableOneSix::decodeResultPiece( BYTE **dataBlob )
+{
+    _source_link = new SOURCE_LINK_BFLD[_numberOfConstants];
+
+    for( int index = 0; index < _numberOfConstants; index++ )
+    {
+        memcpy(( void *)&_source_link[index], *dataBlob, sizeof( SOURCE_LINK_BFLD ));
+        *dataBlob += sizeof( SOURCE_LINK_BFLD );
+    }
+}
+
+bool CtiAnsiTableOneSix::getUOMEntryFlag( int index )
+{
+   return (bool)_source_link[index].uom_entry_flag;
+}
+bool CtiAnsiTableOneSix::getDemandCtrlFlag( int index )
+{
+   return (bool)_source_link[index].demand_ctrl_flag;
+}
+bool CtiAnsiTableOneSix::getDataCtrlFlag( int index )
+{
+   return (bool)_source_link[index].data_ctrl_flag;
+}
+bool CtiAnsiTableOneSix::getConstantsFlag( int index )
+{
+   return (bool)_source_link[index].constants_flag;
+}
+bool CtiAnsiTableOneSix::getPulseEngrFlag( int index )
+{
+   return (bool)_source_link[index].pulse_engr_flag;
+} 
+bool CtiAnsiTableOneSix::getConstToBeAppliedFlag( int index )
+{
+   return (bool)_source_link[index].constant_to_be_applied;
+}
+
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+void CtiAnsiTableOneSix::printResult(  )
+{
+    int integer;
+    /**************************************************************
+    * its been discovered that if a method goes wrong while having the logger locked
+    * unpleasant consquences may happen (application lockup for instance)  Because
+    * of this, we make ugly printout calls so we aren't locking the logger at the time
+    * of the method call
+    ***************************************************************
+    */
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << endl << "=======================  Std Table 16 ========================" << endl;
+    }
+    {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << " **SourceLink** "<<endl;
+            dout << "idx uomEntryFlg dmndCtrlFlg dataCtrlFlg constantsFlg pulseEngrFlg constToBeApp"<<endl;
+    }
+    for( int index = 0; index < _numberOfConstants; index++ )
+    {
+        {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout <<index<<"           "<<getUOMEntryFlag( index )<<"           ";
+            dout <<getDemandCtrlFlag( index )<<"          "<<getDataCtrlFlag( index );
+            dout <<"           "<<getConstantsFlag( index )<<"           ";
+            dout <<getPulseEngrFlag( index )<<"           "<<getConstToBeAppliedFlag( index )<<endl;
+        }
+         
+    }
+
+}
 

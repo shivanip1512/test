@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.cpp,v $
+      Revision 1.4  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -44,7 +47,7 @@ CtiAnsiTableZeroZero::CtiAnsiTableZeroZero( BYTE *dataBlob )
 {
    int   byteCount;
 
-   byteCount = sizeof( FORMAT_CONTROL_1 ) + sizeof( FORMAT_CONTROL_2 ) + sizeof( FORMAT_CONTROL_3 ) + sizeof( unsigned char )*15;
+   byteCount = sizeof( FORMAT_CONTROL_1 ) + sizeof( FORMAT_CONTROL_2 ) + sizeof( FORMAT_CONTROL_3 ) + sizeof( unsigned char )*16;
 
    memcpy(( void *)&_control_1, dataBlob, byteCount );
    dataBlob += byteCount;
@@ -133,6 +136,27 @@ void CtiAnsiTableZeroZero::generateResultPiece( BYTE **dataBlob )
     *dataBlob += sizeof (FORMAT_CONTROL_2);
     memcpy (*dataBlob, ( void *)&_control_3, sizeof (FORMAT_CONTROL_3));
     *dataBlob += sizeof (FORMAT_CONTROL_3);
+    memcpy( *dataBlob, ( void *)&_device_class[0], sizeof (unsigned char) * 16 );
+    *dataBlob += sizeof (unsigned char) * 16;
+
+
+    memcpy(*dataBlob,  _std_tbls_used, _dim_std_tbls_used );
+    *dataBlob += _dim_std_tbls_used;
+
+    memcpy(*dataBlob,  _mfg_tbls_used, _dim_mfg_tbls_used );
+    *dataBlob += _dim_mfg_tbls_used;
+
+    memcpy(*dataBlob,  _std_proc_used, _dim_std_proc_used );
+    *dataBlob += _dim_std_proc_used;
+
+    memcpy(*dataBlob,  _mfg_proc_used, _dim_mfg_proc_used );
+    *dataBlob += _dim_mfg_proc_used;
+
+    memcpy(*dataBlob,  _std_tbls_write, _dim_std_tbls_used );
+    *dataBlob += _dim_std_tbls_used;
+
+    memcpy(*dataBlob,  _mfg_tbls_write, _dim_mfg_status_used );
+    *dataBlob += _dim_mfg_status_used;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -144,6 +168,34 @@ void CtiAnsiTableZeroZero::decodeResultPiece( BYTE **dataBlob )
     *dataBlob += sizeof (FORMAT_CONTROL_2);
     memcpy (( void *)&_control_3, *dataBlob, sizeof (FORMAT_CONTROL_3));
     *dataBlob += sizeof (FORMAT_CONTROL_3);
+
+    memcpy(( void *)&_device_class[0], *dataBlob, sizeof (unsigned char) * 16 );
+    *dataBlob += sizeof (unsigned char) * 16;
+   
+    _std_tbls_used = new unsigned char[_dim_std_tbls_used];
+    memcpy( _std_tbls_used, *dataBlob, _dim_std_tbls_used );
+    *dataBlob += _dim_std_tbls_used;
+
+    _mfg_tbls_used = new unsigned char[_dim_mfg_tbls_used];
+    memcpy( _mfg_tbls_used, *dataBlob, _dim_mfg_tbls_used );
+    *dataBlob += _dim_mfg_tbls_used;
+
+    _std_proc_used = new unsigned char[_dim_std_proc_used];
+    memcpy( _std_proc_used, *dataBlob, _dim_std_proc_used );
+    *dataBlob += _dim_std_proc_used;
+
+    _mfg_proc_used = new unsigned char[_dim_mfg_proc_used];
+    memcpy( _mfg_proc_used, *dataBlob, _dim_mfg_proc_used );
+    *dataBlob += _dim_mfg_proc_used;
+
+    _std_tbls_write = new unsigned char[_dim_std_tbls_used];
+    memcpy( _std_tbls_write, *dataBlob, _dim_std_tbls_used );
+    *dataBlob += _dim_std_tbls_used;
+
+    _mfg_tbls_write = new unsigned char[_dim_mfg_status_used];
+    memcpy( _mfg_tbls_write, *dataBlob, _dim_mfg_status_used );
+    *dataBlob += _dim_mfg_status_used;
+
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -216,14 +268,61 @@ void CtiAnsiTableZeroZero::printResult(  )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   Non integer format 2: " << string << " (" << integer <<")" << endl;
+    } 
+
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Device Class:  (" <<(int) _device_class[0] <<" "<<(int)_device_class[1]<<" "<< (int)_device_class[2]<<" "<<(int)_device_class[3]<<")" << endl;
+    }
+
+    integer = getRawNameplateType() ;
+    string = getResolvedNameplateType();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Nameplate Type: " << string << " (" << integer <<")" << endl;
+    }
+
+    integer = getRawDefaultSetUsed() ;
+    string = getResolvedDefaultSetUsed();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Default Set Used: " << string << " (" << integer <<")" << endl;
+    }
+
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Max Procedure Parameter Length:  (" <<(int)_max_proc_parm_len <<")" << endl;
+        dout << "   Max Response Data Length:  (" <<(int)_max_resp_data_len <<")" << endl;
+        dout << "   Std Version No.:  (" <<(int)_std_version_no <<")" << endl;
+        dout << "   Std Revision No.:  (" <<(int)_std_revision_no <<")" << endl;
+        dout << "   Dim Std Tables Used:  (" <<(int)_dim_std_tbls_used <<")" << endl;
+        dout << "   Dim Mfg Tables Used:  (" <<(int)_dim_mfg_tbls_used <<")" << endl;
+        dout << "   Number Pending:  (" <<(int)_nbr_pending <<")" << endl;
+    }
+    {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << "   STD TBLS USED: ";
+    }
+    for (int xx = 0; xx < _dim_std_tbls_used; xx++ )
+    {
+        {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << "  "<<  (int)_std_tbls_used[xx];
+        }
+    }
+    {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << endl;
     }
 }
+
 //=========================================================================================================================================
 //=========================================================================================================================================
 bool CtiAnsiTableZeroZero::getRawMfgSerialNumberFlag( void )
 {
    return (bool)_control_1.mfg_sn_flag;
 }
+
 //=========================================================================================================================================
 //=========================================================================================================================================
 RWCString CtiAnsiTableZeroZero::getResolvedMfgSerialNumberFlag( void )
@@ -402,6 +501,12 @@ RWCString CtiAnsiTableZeroZero::getResolvedCharFormat( void )
    return ret;
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+/*int CtiAnsiTableZeroZero::getRawStdTablesUsed( void )
+{
+   return (int)_control_1.char_format;
+} */
 
 RWCString CtiAnsiTableZeroZero::getNonIntegerFormat( int aFormat )
 {
@@ -453,5 +558,112 @@ RWCString CtiAnsiTableZeroZero::getNonIntegerFormat( int aFormat )
            break;
    }
    return( retVal );
+}
+
+/********************
+unsigned char     _device_class[4];
+   unsigned char     _default_set_used;
+   unsigned char     _max_proc_parm_len;
+   unsigned char     _max_resp_data_len;
+   unsigned char     _std_version_no;
+   unsigned char     _std_revision_no;
+   unsigned char     _dim_std_tbls_used;
+   unsigned char     _dim_mfg_tbls_used;
+   unsigned char     _dim_std_proc_used;
+   unsigned char     _dim_mfg_proc_used;
+   unsigned char     _dim_mfg_status_used;
+   unsigned char     _nbr_pending;
+**************/
+int CtiAnsiTableZeroZero::getRawDeviceClass( void )
+{
+    return (int) _device_class[4];
+}
+/*RWCString CtiAnsiTableZeroZero::getResolvedDeviceClass( void )
+{
+
+} */
+int CtiAnsiTableZeroZero::getRawNameplateType( void )
+{
+    return (int) _nameplate_type;
+}
+RWCString CtiAnsiTableZeroZero::getResolvedNameplateType( void )
+{
+    RWCString ret;
+    if ((int)_nameplate_type == 0)
+        ret= RWCString ("Gas");
+    else if ((int)_nameplate_type == 1)
+        ret= RWCString ("Water");
+    else if ((int)_nameplate_type == 2)
+        ret= RWCString ("Electric");
+    else
+        ret= RWCString ("Unassigned");
+
+   return ret;
+}
+int CtiAnsiTableZeroZero::getRawDefaultSetUsed( void )
+{
+    return (int) _default_set_used;
+}
+RWCString CtiAnsiTableZeroZero::getResolvedDefaultSetUsed( void )
+{
+    RWCString ret;
+    if ((int)_default_set_used == 0)
+        ret= RWCString ("No default values in use");
+    else if ((int)_default_set_used == 1)
+        ret= RWCString ("Default Set #1, Simple Meter Register");
+    else if ((int)_default_set_used == 2)
+        ret= RWCString ("Default Set #2, Simple Demand Meter");
+    else if ((int)_default_set_used == 3)
+        ret= RWCString ("Default Set #3, Simple TOU Meter");
+    else if ((int)_default_set_used == 4)
+        ret= RWCString ("Default Set #4, Simple Profile Recorder");
+    else
+        ret= RWCString ("Unassigned");
+
+   return ret;
+}
+int CtiAnsiTableZeroZero::getRawMaxProcParmLength( void )
+{
+    return (int) _max_proc_parm_len;
+}
+/*RWCString CtiAnsiTableZeroZero::getResolvedMaxProcParmLength( void ) 
+{
+} int CtiAnsiTableZeroZero::getRawMaxRespDataLen( void )
+{
+    return (int)  _max_resp_data_len;
+
+}
+RWCString CtiAnsiTableZeroZero::getResolvedMaxRespDataLen( void )
+{
+}
+int CtiAnsiTableZeroZero::getRawStdVersionNo( void )
+{
+    return (int) _std_version_no;
+}
+RWCString CtiAnsiTableZeroZero::getResolvedStdVersionNo( void )
+{
+}
+int CtiAnsiTableZeroZero::getRawStdRevisionNo( void )
+{
+    return (int) _std_revision_no;
+}
+RWCString CtiAnsiTableZeroZero::getResolvedStdRevisionNo( void )
+{
+}
+*/
+
+int CtiAnsiTableZeroZero::getRawStdRevisionNo( void )
+{
+    return (int) _std_revision_no;
+}
+
+unsigned char * CtiAnsiTableZeroZero::getStdTblsUsed(void)
+{
+    return _std_tbls_used;
+}
+
+unsigned char CtiAnsiTableZeroZero::getDimStdTblsUsed(void)
+{
+    return _dim_std_tbls_used;
 }
 

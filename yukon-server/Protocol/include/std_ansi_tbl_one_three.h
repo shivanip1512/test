@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_three.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *    History: 
       $Log: std_ansi_tbl_one_three.h,v $
+      Revision 1.4  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -40,7 +43,7 @@ union INT_CONTROL_RCD
       unsigned char  sub_int;
       unsigned char  int_mulitplier;
    }cntl_rec;
-   UINT  int_length;
+   USHORT  int_length;
 };
 
 struct DEMAND_CONTROL_RCD
@@ -66,13 +69,34 @@ class IM_EX_PROT CtiAnsiTableOneThree : public CtiAnsiTableBase
 
 public:
 
+   CtiAnsiTableOneThree( int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
    CtiAnsiTableOneThree( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
    virtual ~CtiAnsiTableOneThree();
    CtiAnsiTableOneThree& operator=(const CtiAnsiTableOneThree& aRef);
+   void printResult(  );
+   
+   void decodeResultPiece( BYTE **dataBlob );
+   void generateResultPiece( BYTE **dataBlob );
+
+
+   bool getPFExcludeFlag();
+   bool getSlidingDemandFlag();
+   bool getResetExcludeFlag();
+   /*int getResetExclusion();
+   int getPFailRecogntnTm();
+   int getPFailExclusion();
+   int getColdLoadPickup();
+   int getCtrlRecordSubInt();
+   int getCtrlRecordIntMultiplier();
+   int getCtrlRecordIntLength();
+    */
 
 private:
 
     int                  _numberDemandCtrlEntries;
+    bool                 _pfExcludeFlag;
+    bool                 _slidingDemandFlag; 
+    bool                 _resetExcludeFlag;
 
     DEMAND_CONTROL_RCD   *_demand_control_record;
 

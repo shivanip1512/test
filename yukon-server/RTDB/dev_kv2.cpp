@@ -10,8 +10,8 @@
 * Author: Eric Schmit
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_kv2.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2003/04/25 15:14:07 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/09/30 21:37:21 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *
 *    History: 
       $Log: dev_kv2.cpp,v $
+      Revision 1.6  2004/09/30 21:37:21  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.5  2003/04/25 15:14:07  dsutton
       Changed general scan and decode result
 
@@ -135,22 +138,33 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
         { 11,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 12,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 13,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 14,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+     //   { 14,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 15,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 16,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // { 51,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  0,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
-        { 70,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
+        { 61,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 62,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 63,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        //{ 64,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // {  0,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
+        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // { 70,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
+        
 //        {110,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
     };
 
 
     // currently defaulted at billing data only
     header.lastLoadProfileTime = getLastLPTime().seconds();
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "lastLPTime "<<getLastLPTime()<<" called from "<<__FILE__<< endl;
+    }
 
     // lazyness so I don't have to continually remember to update this
     header.numTablesRequested = 0;
@@ -187,6 +201,183 @@ CtiProtocolANSI & CtiDeviceKV2::getProtocol( void )
    return _ansiProtocol;
 }
 
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
+{
+
+    CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg; 
+    CtiPointDataMsg                  *pData = NULL;
+    CtiPointBase                     *pPoint = NULL;
+    double value = 0;
+    int    qual = 0;
+    bool                             foundSomething = false;
+    bool gotValue = false;
+    bool gotLPValues = false;
+    int x, y, z;
+
+    {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
+    }
+    x =  OFFSET_TOTAL_KWH;
+    while (x <= OFFSET_HIGHEST_CURRENT_OFFSET) 
+    {
+        pPoint = getDevicePointOffsetTypeEqual( x, AnalogPointType );
+        if (pPoint != NULL) 
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "----- (_8(|) WHOOHOO!!! ----" << endl;
+            }
+            foundSomething = true;
+            pData = CTIDBG_new CtiPointDataMsg();
+            value = 0;
+            qual = 0;
+            pData->setId( pPoint->getID() );
+
+            switch (x) 
+            {
+                case OFFSET_TOTAL_KWH:
+                case OFFSET_RATE_A_KWH:
+                case OFFSET_RATE_B_KWH:
+                case OFFSET_RATE_C_KWH:
+                case OFFSET_RATE_D_KWH:
+                case OFFSET_RATE_E_KWH:
+
+                case OFFSET_TOTAL_KVARH:
+                case OFFSET_RATE_A_KVARH:
+                case OFFSET_RATE_B_KVARH:
+                case OFFSET_RATE_C_KVARH:
+                case OFFSET_RATE_D_KVARH:
+                case OFFSET_RATE_E_KVARH:
+
+                case OFFSET_TOTAL_KVAH:
+                case OFFSET_RATE_A_KVAH:
+                case OFFSET_RATE_B_KVAH:
+                case OFFSET_RATE_C_KVAH:
+                case OFFSET_RATE_D_KVAH:
+                case OFFSET_RATE_E_KVAH:
+                {
+                    gotValue = getProtocol().retreiveSummation( x, &value );
+                    break;
+                }
+                case OFFSET_PEAK_KW_OR_RATE_A_KW:
+                case OFFSET_RATE_B_KW:
+                case OFFSET_RATE_C_KW:
+                case OFFSET_RATE_D_KW:
+                case OFFSET_RATE_E_KW:
+                case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
+
+                case OFFSET_PEAK_KVAR_OR_RATE_A_KVAR:
+                case OFFSET_RATE_B_KVAR:
+                case OFFSET_RATE_C_KVAR:
+                case OFFSET_RATE_D_KVAR:
+                case OFFSET_RATE_E_KVAR:
+                case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
+
+                case OFFSET_PEAK_KVA_OR_RATE_A_KVA:
+                case OFFSET_RATE_B_KVA:
+                case OFFSET_RATE_C_KVA:
+                case OFFSET_RATE_D_KVA:
+                case OFFSET_RATE_E_KVA:
+                case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
+                {
+                    gotValue = getProtocol().retreiveDemand( x, &value );
+                    break;
+                }
+                case OFFSET_LOADPROFILE_KW:  
+                case OFFSET_LOADPROFILE_KVAR:
+                case OFFSET_LOADPROFILE_QUADRANT1_KVAR:
+                case OFFSET_LOADPROFILE_QUADRANT2_KVAR:
+                case OFFSET_LOADPROFILE_QUADRANT3_KVAR:
+                case OFFSET_LOADPROFILE_QUADRANT4_KVAR:
+                case OFFSET_LOADPROFILE_KVA:
+                case OFFSET_LOADPROFILE_QUADRANT1_KVA:
+                case OFFSET_LOADPROFILE_QUADRANT2_KVA:
+                case OFFSET_LOADPROFILE_QUADRANT3_KVA:
+                case OFFSET_LOADPROFILE_QUADRANT4_KVA:
+                {
+
+                    gotLPValues = getProtocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
+                    /*unsigned short nbrBlkInts = getProtocol().getTotalWantedLPBlockInts();
+                    lpValues = new double[nbrBlkInts];
+                    lpTimes = new ULONG[nbrBlkInts];
+                    for (y = 0; y < nbrBlkInts; y++) 
+                    {
+                        lpValues[y] = getProtocol().getLPValue(y);
+                        lpTimes[y] = getProtocol().getLPTime(y);
+                    } */
+                    break;  
+                }
+                default:
+                {  
+                    gotValue = false;
+                    gotLPValues = false;
+                }
+                break;
+            }
+             
+            if (gotValue) 
+            {
+                pData = CTIDBG_new CtiPointDataMsg();
+                pData->setId( pPoint->getID() );
+
+                pData->setValue( value );
+                pData->setQuality( qual );
+                pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+                pData->setTime( RWTime() );
+                pData->setType( pPoint->getType() );
+
+                msgMulti->getData().insert( pData );
+
+                pData = NULL;
+            }
+            else if (gotLPValues) 
+            {
+                for (y = 0; y < getProtocol().getTotalWantedLPBlockInts(); y++) 
+                {
+
+                    pData = new CtiPointDataMsg(pPoint->getID(), getProtocol().getLPValue(y), qual, pPoint->getType());
+                    pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+                    pData->setTime( RWTime(getProtocol().getLPTime(y)) );
+
+                    msgMulti->getData().insert( pData );
+
+                    pData = NULL;
+
+                } 
+                setUseScanFlags(TRUE);
+                setLastLPTime(RWTime(getProtocol().getLPTime(getProtocol().getTotalWantedLPBlockInts() - 1)));
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "getProtocol().getTotalWantedLPBlockInts()-1 time  "<<RWTime(getProtocol().getLPTime(getProtocol().getTotalWantedLPBlockInts() - 1))<< endl;
+                    dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
+                }
+                setUseScanFlags(FALSE);
+            }  
+              
+            if (pData != NULL) 
+            {
+                delete []pData;
+                pData = NULL;
+            } 
+            pPoint = NULL;
+            gotValue = false;
+            gotLPValues = false;
+        }
+        x++;
+    }
+    msgPtr->insert( msgMulti );
+    //setLastLPTime (lastIntervalTS.seconds());
+    if( msgMulti != NULL )
+   {
+      delete msgMulti;
+      msgMulti = NULL;
+   }  
+    
+}
 
 
 

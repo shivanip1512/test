@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_one_five.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *    History: 
       $Log: std_ansi_tbl_one_five.h,v $
+      Revision 1.4  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -140,16 +143,31 @@ protected:
    CONSTANTS_SELECT        *_constants_table;
 
 private:
+    int _RawConstantsSelector;
+    int _NumberConstantsEntries;
+    bool _NoOffsetFlag;
+    bool _SetOnePresentFlag;
+    bool _SetTwoPresentFlag;
+    int _NIFormat1;
+    int _NIFormat2;
 
 public:
 
+   CtiAnsiTableOneFive( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2 );
    CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2 );
    virtual ~CtiAnsiTableOneFive();
    CtiAnsiTableOneFive& operator=(const CtiAnsiTableOneFive& aRef);
 
+   void generateResultPiece( BYTE **dataBlob );
+   void printResult();
+   void decodeResultPiece( BYTE **dataBlob );
+   bool getSet1AppliedFlag(int index );
+   bool getSet2AppliedFlag(int index );
+
+
    //these retrieve the electrical constants
-   double getElecMultiplier( void );
-   double getElecOffset( void );
+   double getElecMultiplier( int index );
+   double getElecOffset( int index );
    SET_APPLIED getElecSetOneConstants( void );
    SET_APPLIED getElecSetTwoConstants( void );
    bool getUseControl( void );

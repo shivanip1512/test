@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi_kv2.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/25 15:13:05 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: prot_ansi_kv2.h,v $
+      Revision 1.2  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.1  2003/04/25 15:13:05  dsutton
       Manufacturer additions to the base ansi protocol for the kv2
 
@@ -43,8 +46,11 @@ class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
         virtual ~CtiProtocolANSI_kv2();
 
         virtual void destroyManufacturerTables( void );
-        virtual void convertToManufacturerTable( BYTE *data, int numBytes, int aTableID );
+        virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID );
 
+        virtual void calculateLPDataBlockStartIndex(ULONG lastLPTime);
+        virtual int calculateLPDataBlockSize(int numChans);
+        virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
    private:
 
       CtiAnsiKV2ManufacturerTableZero                   *_tableZero;

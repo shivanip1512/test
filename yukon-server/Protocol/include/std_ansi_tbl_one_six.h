@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_six.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/04/22 21:12:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *    History: 
       $Log: std_ansi_tbl_one_six.h,v $
+      Revision 1.5  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2004/04/22 21:12:54  dsutton
       Last known revision DLS
 
@@ -63,12 +66,23 @@ class IM_EX_PROT CtiAnsiTableOneSix : public CtiAnsiTableBase
 {
 public:
 
+   CtiAnsiTableOneSix( int num_sources );
    CtiAnsiTableOneSix( BYTE *dataBlob, int num_sources );
    virtual ~CtiAnsiTableOneSix();
    CtiAnsiTableOneSix& operator=(const CtiAnsiTableOneSix& aRef);
 
 
    SOURCE_LINK_BFLD getSourceLink ( int aOffset );
+   void generateResultPiece( BYTE **dataBlob );
+   void printResult();
+   void decodeResultPiece( BYTE **dataBlob );
+   bool getUOMEntryFlag( int index );
+   bool getDemandCtrlFlag( int index );
+   bool getDataCtrlFlag( int index );
+   bool getConstantsFlag( int index );
+   bool getPulseEngrFlag( int index );
+   bool getConstToBeAppliedFlag( int index );
+
 
 
 private:

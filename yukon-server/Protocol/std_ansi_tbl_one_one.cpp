@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_one.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:18 $
 *    History: 
       $Log: std_ansi_tbl_one_one.cpp,v $
+      Revision 1.4  2004/09/30 21:37:18  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:53  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -27,7 +30,7 @@
 
 const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_GAS_AGA3 = "GAS_CONSTANTS_AGA3";
 const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_GAS_AGA7 = "GAS_CONSTANTS_AGA7";
-const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_ELECTRIC = "GAS_CONSTANTS_ELECTRIC";
+const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_ELECTRIC = "ELECTRIC_CONSTANTS";
 const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_RESERVED = "CONSTANT_RESERVED_FOR_FUTURE_USE";
 
 //=========================================================================================================================================
@@ -106,7 +109,7 @@ void CtiAnsiTableOneOne::printResult(  )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl << "=======================  Std Table 11 ========================" << endl;
-        dout << "   Power Factor Exclude Flag: " << string1 << " (" << flag <<")" << endl;
+        dout << "   Power Fail Exclude Flag: " << string1 << " (" << flag <<")" << endl;
     }
 
     flag = getRawResetExcludeFlag();
@@ -151,6 +154,13 @@ void CtiAnsiTableOneOne::printResult(  )
         dout << "   Set2 Present Flag: " << string1 << " (" << flag <<")" << endl;
     }
 
+    flag = getRawNoOffsetFlag();
+    string1 = getResolvedNoOffsetFlag();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   No Offset Flag: " << string1 << " (" << flag <<")" << endl;
+    }
+
     integer = getNumberUOMEntries();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -186,7 +196,7 @@ void CtiAnsiTableOneOne::printResult(  )
         dout << "   Constants Selectors: " << string1 << " (" << integer <<")" << endl;
     }
 
-    integer = getNumberConstantsEntries();
+    integer = getNumberSources();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   Number of Sources: " << integer << endl;

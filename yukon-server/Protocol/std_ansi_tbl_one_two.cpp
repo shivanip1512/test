@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_two.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/04/22 21:12:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:18 $
 *    History: 
       $Log: std_ansi_tbl_one_two.cpp,v $
+      Revision 1.5  2004/09/30 21:37:18  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2004/04/22 21:12:53  dsutton
       Last known revision DLS
 
@@ -102,7 +105,9 @@ CtiAnsiTableOneTwo& CtiAnsiTableOneTwo::operator=(const CtiAnsiTableOneTwo& aRef
 void CtiAnsiTableOneTwo::generateResultPiece( BYTE **dataBlob )
 {
     memcpy(*dataBlob, (void*)_uom_entries, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
+    //memcpy(*dataBlob, _uom_entries, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
     *dataBlob += (sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
+
 }
 
 //=========================================================================================================================================
@@ -323,7 +328,7 @@ void CtiAnsiTableOneTwo::printResult(  )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl << "=======================  Std Table 12 ========================" << endl;
-        dout << "UOM Offset     Id Code         Time Base               Multiplier" << endl;
+        dout << "UOM Offset  Id Code     Time Base           Multiplier  Q's netFlow Seg Harm  nfs" << endl;
     }
 
     for (int x=0;x < _numUomEntries; x++)
@@ -332,7 +337,7 @@ void CtiAnsiTableOneTwo::printResult(  )
         string1 = getResolvedIDCode(x);
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "   " << x << "       " << string1 << " (" << integer <<")      ";
+            dout << " " << x << "   " << string1 << " (" << integer <<")  ";
         }
 
         integer = getRawTimeBase(x);
@@ -346,10 +351,71 @@ void CtiAnsiTableOneTwo::printResult(  )
         double1 = getResolvedMultiplier(x);
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << double1 << " (" << integer <<")" << endl;;
+            dout << double1 << " (" << integer <<")" ;
         }
-        Sleep(100);
+        for (int q = 1; q <= 4; q++) 
+        {
+            if (getQuadrantAccountabilityFlag(q, x)) 
+            {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout <<" Q" <<q;
+            }
+        }
+        {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout <<"  " << (bool)_uom_entries[x].net_flow_accountablility;
+            dout <<"  " << (int)_uom_entries[x].segmentation;
+            dout <<"  " << (bool)_uom_entries[x].harmonic;
+            dout <<" (" << (int)_uom_entries[x].nfs <<")" << endl;
+        }
+        Sleep(50);
     }
 }
+
+bool  CtiAnsiTableOneTwo::getQuadrantAccountabilityFlag(int quadrant, int index)
+{
+    bool retVal = false;
+    switch (quadrant) 
+    {
+        case 1:
+        {
+            retVal = (bool) _uom_entries[index].q1_accountablility;
+            break;
+        }
+        case 2:
+        {   
+            retVal = (bool) _uom_entries[index].q2_accountablility;
+            break;
+        }
+        case 3:
+        {
+            retVal = (bool) _uom_entries[index].q3_accountablility;
+            break;
+        }
+        case 4:
+        {
+            retVal = (bool) _uom_entries[index].q4_accountablility;
+            break;
+        }
+        default:
+            break;
+    }
+    return retVal;
+}
+
+bool CtiAnsiTableOneTwo::getNetFlowAccountabilityFlag(int index)
+{
+    return (bool) _uom_entries[index].net_flow_accountablility;
+}
+
+int CtiAnsiTableOneTwo::getSegmentation(int index)
+{
+    return (int) _uom_entries[index].segmentation;
+}
+bool CtiAnsiTableOneTwo::getHarmonicFlag(int index)
+{
+    return (bool) _uom_entries[index].harmonic;
+}
+
 
 

@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/04/25 15:13:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/30 21:37:16 $
 *    History: 
       $Log: ansi_application.cpp,v $
+      Revision 1.6  2004/09/30 21:37:16  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.5  2003/04/25 15:13:45  dsutton
       Update of the base protocol pieces taking into account the manufacturer
       tables, etc.  New starting point
@@ -35,6 +38,8 @@
 CtiANSIApplication::CtiANSIApplication()
 {
     _currentTable = NULL;
+    _lpTempBigTable = NULL;
+    _parmPtr = NULL;
 }
 
 //=========================================================================================================================================
@@ -45,6 +50,10 @@ void CtiANSIApplication::init( void )
     _requestedState = identified;
     _readComplete = false;
     _readFailed = false;
+    _lpMode = false;
+
+    _julieTest = 0;
+    _wrDataSize = 0;
 
     _currentTable = CTIDBG_new BYTE[1024];
     getDatalinkLayer().init();
@@ -65,6 +74,7 @@ void CtiANSIApplication::terminateSession( void )
     setRetries (MAXRETRIES);
     setTableComplete (false);
     memset( _currentTable, NULL, sizeof( *_currentTable ) );
+    //memset( _lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
     _totalBytesInTable = 0;
 }
 //=========================================================================================================================================
@@ -76,6 +86,16 @@ void CtiANSIApplication::destroyMe( void )
     {
         delete _currentTable;
         _currentTable = NULL;
+    }
+    if( _lpTempBigTable != NULL )
+    {
+        delete _lpTempBigTable;
+        _lpTempBigTable = NULL;
+    }
+    if (_parmPtr != NULL) 
+    {
+        delete _parmPtr;
+        _parmPtr = NULL;
     }
 }
 
@@ -189,19 +209,62 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 
      case request:
         {
-            // make this generic
-           getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset );
-           {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout << endl;
-              dout << RWTime::now() << " **Request**" << endl;
-              dout << endl;
-           }
-           _requestedState = _currentState;
-           getDatalinkLayer().initializeForNewPacket();
-
+            if (_currentTableID == 64) 
+            {
+                // make this generic
+                //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
+                getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
+                {
+                   CtiLockGuard< CtiLogger > doubt_guard( dout );
+                   dout << endl;
+                   dout << RWTime::now() << " **Request Read LP Table**" << endl;
+                   dout << endl;
+                }
+                _requestedState = _currentState;
+                getDatalinkLayer().initializeForNewPacket();
+            }
+            else if (_currentTableID != 7) 
+            {
+                // make this generic
+                //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
+                getDatalinkLayer().buildTableRequest( xfer, _currentTableID, full_read, _currentTableOffset, _currentType );
+                {
+                   CtiLockGuard< CtiLogger > doubt_guard( dout );
+                   dout << endl;
+                   dout << RWTime::now() << " **Request Read**" << endl;
+                   dout << endl;
+                }
+                _requestedState = _currentState;
+                getDatalinkLayer().initializeForNewPacket();
+            }
+            else
+            {
+                getDatalinkLayer().buildWriteRequest( xfer, _wrDataSize, _currentTableID, full_write, _currentProcBfld, _parmPtr, _wrSeqNbr );
+                {
+                   CtiLockGuard< CtiLogger > doubt_guard( dout );
+                   dout << endl;
+                   dout << RWTime::now() << " **Request Write**" << endl;
+                   dout << endl;
+                }
+                _requestedState = _currentState;
+                getDatalinkLayer().initializeForNewPacket();
+            }
         }
         break;
+
+     case waitState:
+         {
+             getDatalinkLayer().buildWaitRequest( xfer);
+             {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout << endl;
+                dout << RWTime::now() << " **Request Wait**" << endl;
+                dout << endl;
+             }
+             _requestedState = _currentState;
+             getDatalinkLayer().initializeForNewPacket();
+         }
+         break;
 
      case loggedOff:
         {
@@ -261,7 +324,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-void CtiANSIApplication::initializeTableRequest( int aID, int aOffset, int aBytesExpected, int aType, int aOperation )
+void CtiANSIApplication::initializeTableRequest( int aID, int aOffset, unsigned short aBytesExpected, BYTE aType, BYTE aOperation )
 {
 
     _currentTableID = aID;
@@ -274,6 +337,10 @@ void CtiANSIApplication::initializeTableRequest( int aID, int aOffset, int aByte
     setRetries (MAXRETRIES);
     setTableComplete (false);
     memset( _currentTable, NULL, sizeof( *_currentTable ) );
+    if (_lpMode == true) 
+    {
+        memset(_lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
+    } 
     _totalBytesInTable = 0;
 }
 
@@ -297,6 +364,15 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
             // was CRC ok
             if (getDatalinkLayer().isCRCvalid())
             {
+                if (_currentTableID == 7)
+                {
+                    {
+                  CtiLockGuard< CtiLogger > doubt_guard( dout );
+                  dout << endl;
+                  dout << RWTime::now() << " ** JULIE ** " <<_currentTableID<< endl;
+                  dout << endl;
+               }
+                }
                 // analyse the packet move on if successful
                 if (analyzePacket())
                 {
@@ -321,6 +397,14 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
             {
                 // reset the state and ask again
                 _currentState = _requestedState;
+               /* {
+                  CtiLockGuard< CtiLogger > doubt_guard( dout );
+                  dout << endl;
+                  dout << RWTime::now() << " ** CRC Not Valid **" << endl;
+                  dout << RWTime::now() << " ** _currentState/_requestedState " <<_currentState<< endl;
+                  dout << endl;
+               }   */
+
             }
         }
         else
@@ -348,8 +432,17 @@ bool CtiANSIApplication::analyzePacket()
 {
     // check length and checksum here
     bool retFlag = true;
+    if (_currentTableID == 7)
+        {
+                  CtiLockGuard< CtiLogger > doubt_guard( dout );
+                  dout << endl;
+                  dout << RWTime::now() << " ** JULIE ** " <<_currentTableID<< endl;
+                  dout << endl;
+               }
 
-    if( checkResponse( getDatalinkLayer().getCurrentPacket()[6] ) == true )
+
+    if( checkResponse( getDatalinkLayer().getCurrentPacket()[6] ) == true ||
+        (getDatalinkLayer().getPacketPart() && !getDatalinkLayer().getPacketFirst()))
     {
         switch( _requestedState )
             {
@@ -361,31 +454,117 @@ bool CtiANSIApplication::analyzePacket()
              }
              case request:
              {
-                 // move the data into storage
-                 memcpy (_currentTable+_totalBytesInTable, 
+                 if (_lpMode) 
+                 {
+                     memcpy (_lpTempBigTable+_totalBytesInTable, 
                          getDatalinkLayer().getCurrentPacket()+9, 
                          getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
-                 _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
-                 _currentState = _requestedState;
 
+                     _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
+                    {
+                      CtiLockGuard< CtiLogger > doubt_guard( dout );
+                      dout << RWTime::now() << " &&&&&**JULIE****&&&&  _lpMode " << endl;
+                    }
+                    if (getDatalinkLayer().getPacketPart() && getDatalinkLayer().getPacketFirst())
+                    {
+                        if (getDatalinkLayer().getSequence() %2 !=0) 
+                              getDatalinkLayer().toggleToggle();
+                    }
+
+                 }
+                 else if (getDatalinkLayer().getPacketPart()) 
+                 { 
+                     if (getDatalinkLayer().getPacketFirst()) 
+                     {
+                         // move the data into storage
+                         memcpy (_currentTable+_totalBytesInTable, 
+                            getDatalinkLayer().getCurrentPacket()+9, 
+                            getDatalinkLayer().getPacketBytesReceived()-11); //header(6),crc(2),length(2),response(1)
+                 
+                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-11;
+
+                         if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit 
+                         {
+                              getDatalinkLayer().toggleToggle();
+                              {
+                              CtiLockGuard< CtiLogger > doubt_guard( dout );
+                              dout << RWTime::now() << " &&&&&**JULIE****&&&&  toggleToggle " << endl;
+                              } 
+                         }
+
+                     }
+                     else if (getDatalinkLayer().getSequence() == 0) 
+                     {
+                          // move the data into storage
+                         memcpy (_currentTable+_totalBytesInTable, 
+                            getDatalinkLayer().getCurrentPacket()+6, 
+                            getDatalinkLayer().getPacketBytesReceived()-9); //header(6),crc(2),cksm(1)
+                 
+                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-9;
+                             
+                     }
+                     else
+                     {
+                          // move the data into storage
+                         memcpy (_currentTable+_totalBytesInTable, 
+                            getDatalinkLayer().getCurrentPacket()+6, 
+                            getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
+                 
+                         _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
+                     }
+                 }
+                 else if (_currentTableID == 7) 
+                 {
+                     setTableComplete (true);
+                     _currentState = _requestedState;
+                    break;
+                 }
+                 else
+                 {
+                     // move the data into storage
+                     memcpy (_currentTable+_totalBytesInTable, 
+                         getDatalinkLayer().getCurrentPacket()+9, 
+                         getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
+
+                     _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
+                 }
+                 //_totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
+
+                 //commented out for sentinel...
+                 //_currentState = _requestedState;
+                 {
+              CtiLockGuard< CtiLogger > doubt_guard( dout );
+              dout << RWTime::now() << " **JULIE****  _totalBytesInTable " << _totalBytesInTable<< endl;
+              dout << RWTime::now() << " **JULIE****  _currentBytesExpected " << (int)_currentBytesExpected<< endl;
+              dout << RWTime::now() << " **JULIE****  areThereMorePackets() " << areThereMorePackets()<< endl;
+                }
                  // are there more pieces to this table
                  if( areThereMorePackets() )
                  {
                      // we need more data for this individual table
                      _currentTableOffset = _totalBytesInTable;
                      setTableComplete(false);
+                     _currentState = passThrough;
                  }
                  else
                  {
                      setTableComplete (true);
+                     if (getDatalinkLayer().getPacketPart() && getDatalinkLayer().getSequence() == 0)
+                     {
+                         _currentState = waitState;
+                     }
+                     else
+                     {
+                         _currentState = _requestedState;
+                     }
                  }
                  break;
              }
-
-             case negotiated:
-             case timingSet:
-             case loggedOff:
-             case terminated:
+            case waitState:
+            case negotiated:
+            case timingSet:
+            case loggedOff:
+            case terminated:
             case disconnected:
             case loggedOn:
             case secured:
@@ -411,14 +590,34 @@ bool CtiANSIApplication::analyzePacket()
 bool CtiANSIApplication::areThereMorePackets()
 {
     bool retVal;
-
-    if (_totalBytesInTable < _currentBytesExpected)
+    if (getDatalinkLayer().getPacketPart() )
     {
-        retVal = true;
+        if(getDatalinkLayer().getSequence() == 0 )  
+        {
+            if (_totalBytesInTable < _currentBytesExpected)
+            {
+                retVal = true;
+            }
+            else
+            {
+                retVal = false;
+            }
+        }
+        else
+        {
+            retVal = true;
+        }
     }
     else
-    {
-        retVal = false;
+    { 
+        if (_totalBytesInTable < _currentBytesExpected)
+        {
+            retVal = true;
+        }
+        else
+        {
+            retVal = false;
+        }
     }
     return retVal;
 }
@@ -571,7 +770,14 @@ void CtiANSIApplication::identificationData( BYTE *aPacket)
 
 BYTE* CtiANSIApplication::getCurrentTable( )
 {
-    return (_currentTable);
+    if (_lpMode) 
+    {
+        return (_lpTempBigTable);
+    }
+    else
+    {
+        return (_currentTable);
+    }
 }
 
 CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES current )
@@ -626,7 +832,19 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
       break;
 
    case request:
-      next = loggedOff;
+      //next = loggedOff;
+       next = terminated;
+      break;
+   case waitState:
+      //next = loggedOff;
+       if (_currentTableID == -1) 
+       {
+           next = terminated;
+       }
+       else
+       {
+           next = request;
+       }
       break;
 
    case loggedOff:
@@ -700,6 +918,84 @@ int CtiANSIApplication::getRetries( void )
 {
    return _retries;
 }
+
+
+void CtiANSIApplication::setLPDataMode( bool value, int sizeOfLpTable )
+{
+    _lpMode = value;
+    _sizeOfLpTable = sizeOfLpTable;
+    if (_lpMode) 
+    {
+        _lpTempBigTable = CTIDBG_new BYTE[_sizeOfLpTable];
+    }
+    else 
+    {
+        if (_lpTempBigTable != NULL) 
+        {
+            delete []_lpTempBigTable;
+            _lpTempBigTable = NULL;
+        }
+    }
+}
+
+void CtiANSIApplication::populateParmPtr(BYTE *value, int size)
+{
+    if (_parmPtr != NULL) 
+    {
+        delete _parmPtr;
+        _parmPtr = NULL;
+    } 
+    _parmPtr = new BYTE[size];
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+        dout <<"  *******JULIE  *value "<<(int)*value<<" "<<(int)*(value +1)<<"  " <<(int)*(value +2) <<"  " <<(int)*(value +3) <<endl;
+
+    } 
+    for (int x = 0; x < size; x++) 
+    {
+        _parmPtr[x] = value[x];
+    }
+
+    /*{
+        CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+        dout <<"  *******JULIE  *_parmPtr "<<(int)*_parmPtr<<"  " <<(int)*(_parmPtr +1)<<"  " <<(int)*(_parmPtr +2) <<endl;
+        dout <<"  *******JULIE  *value "<<(int)*value<<"  " <<(int)*(value +1)<<"  " <<(int)*(value +2) <<endl;
+    }  */
+
+    return;
+}
+void CtiANSIApplication::setProcBfld( TBL_IDB_BFLD value)
+{
+    _currentProcBfld.selector = value.selector;
+    _currentProcBfld.std_vs_mfg_flag = value.std_vs_mfg_flag;
+    _currentProcBfld.tbl_proc_nbr = value.tbl_proc_nbr;
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+        dout <<"  *******JULIE  _currentProcBfld "<<(int)_currentProcBfld.selector<<"  " <<(bool)_currentProcBfld.std_vs_mfg_flag<<"  " <<(int)_currentProcBfld.tbl_proc_nbr <<endl;
+    }
+    USHORT *temp;
+    temp = (USHORT *)&_currentProcBfld;
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+        dout <<"  *******JULIE  temp = (USHORT *)&_currentProcBfld "<<(int)*temp<<endl;
+    }
+    return;
+}
+
+void CtiANSIApplication::setWriteSeqNbr( BYTE seqNbr )
+{
+    _wrSeqNbr = seqNbr;
+    return;
+}
+
+void CtiANSIApplication::setProcDataSize( USHORT dataSize )
+{
+    _wrDataSize = dataSize;
+    return;
+}
+
+
+
 
 
 

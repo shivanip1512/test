@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2004/07/30 21:34:13 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2004/09/30 21:37:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -395,6 +395,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "kv2")
     {
         nRet = TYPE_KV2;
+    }
+    else if(rwsTemp == "sentinel")
+    {
+        nRet = TYPE_SENTINEL;
     }
     else if(rwsTemp == "dct-501")
     {
@@ -1041,6 +1045,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LGS4:
     case TYPE_DR87:
     case TYPE_KV2:
+    case TYPE_SENTINEL:
     case TYPE_SIXNET:
     case TYPEDCT501:
     case TYPEMCT210:
@@ -1594,6 +1599,7 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_TAPTERM:
     case TYPE_WCTP:
     case TYPE_KV2:
+    case TYPE_SENTINEL:
     case TYPE_SERIESVRTU:
     case TYPE_SERIESVLMIRTU:
     case TYPE_ION7330:

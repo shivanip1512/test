@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_datalink.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/04/25 15:13:45 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: ansi_datalink.h,v $
+      Revision 1.5  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2003/04/25 15:13:45  dsutton
       Update of the base protocol pieces taking into account the manufacturer
       tables, etc.  New starting point
@@ -39,6 +42,14 @@
 #define ANSI_MSG           1
 #define HEADER_LEN         6
 
+
+
+struct TBL_IDB_BFLD
+{
+   unsigned short   tbl_proc_nbr:11;
+   unsigned short   std_vs_mfg_flag:1;
+   unsigned short   selector:4;
+};
 
 class IM_EX_PROT CtiANSIDatalink
 {
@@ -65,7 +76,9 @@ class IM_EX_PROT CtiANSIDatalink
       void buildLogOn( BYTE aServiceCode, CtiXfer &xfer );
       void buildSecure( BYTE aServiceCode, CtiXfer &xfer );
       void buildAuthenticate( BYTE aServiceCode, CtiXfer &xfer );
-      void buildTableRequest( CtiXfer &xfer, int aTableID, int aOperation, int aOffset );
+      void buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType );
+      void buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr );
+      void buildWaitRequest(CtiXfer &xfer );
       void buildLogOff( BYTE aServiceCode, CtiXfer &xfer );
       void buildTerminate( BYTE aServiceCode, CtiXfer &xfer );
       void buildDisconnect( BYTE aServiceCode, CtiXfer &xfer );
@@ -85,8 +98,9 @@ class IM_EX_PROT CtiANSIDatalink
 
     BYTE *getCurrentPacket( void );
     int getPacketBytesReceived( void );
+    bool getToggle(void);
 
-
+    void toggleToggle(void);
 
 
       void init( void );
@@ -131,6 +145,7 @@ class IM_EX_PROT CtiANSIDatalink
       bool        _multiPacketPart;
       bool        _multiPacketFirst;
       bool        _toggle;
-};
+
+ };
 
 #endif // #ifndef __ANSI_DATALINK_H__

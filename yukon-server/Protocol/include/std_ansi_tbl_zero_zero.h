@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_zero_zero.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:21 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.h,v $
+      Revision 1.4  2004/09/30 21:37:21  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -64,6 +67,7 @@ protected:
    FORMAT_CONTROL_2  _control_2;
    FORMAT_CONTROL_3  _control_3;
    unsigned char     _device_class[4];
+   unsigned char     _nameplate_type;
    unsigned char     _default_set_used;
    unsigned char     _max_proc_parm_len;
    unsigned char     _max_resp_data_len;
@@ -104,6 +108,23 @@ public:
     RWCString getResolvedNIFormat1( void );
     int getRawNIFormat2( void );
     RWCString getResolvedNIFormat2( void );
+    int getRawDeviceClass( void );
+    RWCString getResolvedDeviceClass( void );
+    int getRawNameplateType( void );
+    RWCString getResolvedNameplateType( void );
+    int getRawDefaultSetUsed( void );
+    RWCString getResolvedDefaultSetUsed( void );
+    int getRawMaxProcParmLength( void );
+    RWCString getResolvedMaxProcParmLength( void );
+    int getRawMaxRespDataLen( void );
+    RWCString getResolvedMaxRespDataLen( void );
+    int getRawStdVersionNo( void );
+    RWCString getResolvedStdVersionNo( void );
+    int getRawStdRevisionNo( void );
+    RWCString getResolvedStdRevisionNo( void );
+
+    unsigned char * getStdTblsUsed(void);
+    unsigned char getDimStdTblsUsed(void);
 
     RWCString getNonIntegerFormat( int aFormat );
 

@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_kv2_mtable_zero.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/25 14:54:54 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: ansi_kv2_mtable_zero.h,v $
+      Revision 1.2  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.1  2003/04/25 14:54:54  dsutton
       Ansi protocol tables specific to the implementation of the KV2
 
@@ -65,6 +68,8 @@ public:
     MeterType_e getMeterType (void);
     MeterMode_e getMeterMode (void);
     RegisterFunction_e getRegisterFunction (void);
+
+    void printResult(  );
 
     struct UPDGRADES
     {

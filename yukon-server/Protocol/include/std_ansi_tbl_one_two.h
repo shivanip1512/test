@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_two.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/04/22 21:12:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *    History: 
       $Log: std_ansi_tbl_one_two.h,v $
+      Revision 1.5  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.4  2004/04/22 21:12:54  dsutton
       Last known revision DLS
 
@@ -131,6 +134,11 @@ public:
     RWCString getResolvedTimeBase( int aOffset );
     int getRawMultiplier( int aOffset );
     DOUBLE getResolvedMultiplier( int aOffset );
+
+    bool getQuadrantAccountabilityFlag(int quadrant, int index);
+    bool getNetFlowAccountabilityFlag(int index);
+    int getSegmentation(int index);
+    bool getHarmonicFlag(int index);
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );

@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/04/22 21:12:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/09/30 21:37:19 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.6  2004/09/30 21:37:19  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.5  2004/04/22 21:12:54  dsutton
       Last known revision DLS
 
@@ -36,6 +39,7 @@
 #include "std_ansi_tbl_base.h"
 #include "std_ansi_tbl_zero_zero.h"
 #include "std_ansi_tbl_zero_one.h"
+#include "std_ansi_tbl_zero_eight.h"
 #include "std_ansi_tbl_one_zero.h"
 #include "std_ansi_tbl_one_one.h"
 #include "std_ansi_tbl_one_two.h"
@@ -46,7 +50,13 @@
 #include "std_ansi_tbl_two_one.h"
 #include "std_ansi_tbl_two_two.h"
 #include "std_ansi_tbl_two_three.h"
+#include "std_ansi_tbl_five_one.h"
 #include "std_ansi_tbl_five_two.h"
+#include "std_ansi_tbl_six_one.h"
+#include "std_ansi_tbl_six_two.h"
+#include "std_ansi_tbl_six_three.h"
+#include "std_ansi_tbl_six_four.h"
+//#include "std_ansi_tbl_five_five.h"
 
 #define UINT64             __int64 //FIXME - figure out how to get a uint64
 #define BCD                unsigned char
@@ -102,11 +112,106 @@ struct ANSI_TABLE_WANTS
 {
    int   tableID;
    int   tableOffset;
-   int   bytesExpected;
-   int  type;
-   int  operation;
+   unsigned short   bytesExpected;
+   BYTE  type;
+   BYTE  operation;
 };
 
+/*struct TBL_IDB_BFLD
+{
+   unsigned char   tbl_proc_nbr:11;
+   unsigned char   std_vs_mfg_flag:1;
+   unsigned char   selector:4;
+};*/
+
+struct REQ_DATA_RCD
+{
+    TBL_IDB_BFLD proc;
+    UINT8          seq_nbr;
+    union PARMS
+    {
+      struct PARM0
+      {  
+          //no parms
+      }p0;
+      struct PARM1
+      {
+          //no parms
+      }p1;
+      struct PARM2
+      {
+          //no parms
+      }p2;
+      struct PARM3
+      {
+          //no parms
+      }p3;
+      struct PARM4
+      {
+          UINT8 tbl_list;
+      }p4;
+      struct PARM5
+      {
+          UINT8 tbl_list;
+          UINT16 entries_read;
+      }p5;
+      struct PARM6
+      {
+         // ED_MODE_BFLD ed_mode;
+      }p6;
+      struct PARM7
+      {
+        //  ED_STD_STATUS1_BFLD ed_std_status_1;
+         // ED_STD_STATUS2_BFLD ed_std_status_2;
+      }p7;
+      struct PARM8
+      {
+          //ED_MFG_STATUS_RCD ed_mfg_status;
+      }p8;
+      struct PARM9
+      {
+         // ACTION_FLAG_BFLD action_flag;
+          UINT8 action_flag;
+      }p9;
+      struct PARM10
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p10;
+      struct PARM11
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p11;
+      struct PARM12
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p12;
+      struct PARM13
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p13;
+      struct PARM14
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p14;
+      struct PARM15
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p15;
+      struct PARM16
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p16;
+      struct PARM17
+      {
+         // ACTION_FLAG_BFLD action_flag;
+      }p17;
+      struct PARM_M22
+      {
+         UINT32 time;
+      }pm22;
+    }u;
+
+};
 //=========================================================================================================================================
 //tables defined by the ansi standard
 //=========================================================================================================================================
@@ -187,9 +292,55 @@ class IM_EX_PROT CtiProtocolANSI
 
       // pure virtual functions
     virtual void destroyManufacturerTables( void )=0;
-    virtual void convertToManufacturerTable( BYTE *data, int numBytes, int aTableID )=0;
+    virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )=0;
+    virtual void calculateLPDataBlockStartIndex(ULONG lastLPTime) = 0;
+    virtual int calculateLPDataBlockSize(int numChans) = 0;
+    virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock) = 0;
 
-    //bool isReturnMsgMaxSize(void);
+    /**** JULIE *****/
+    void retreiveKWHValue( int *value );
+    void retreiveKVARHValue( int *value );
+    bool retreiveSummation( int offset, double *value );
+    bool retreiveDemand( int offset, double *value );
+
+    bool retreiveLPDemand( int offset, int dataSet );
+    double getLPValue( int index );
+    ULONG getLPTime( int index );
+
+    int getUnitsOffsetMapping(int offset);
+    int getRateOffsetMapping(int offset);
+
+
+    int getSizeOfLPDataBlock(int dataSetNbr);
+    int getSizeOfLPReadingsRcd();
+    int getSizeOfLPIntSetRcd(int dataSetNbr);
+    int getSizeOfLPIntFmtRcd(int dataSetNbr);
+
+    unsigned short getTotalWantedLPBlockInts();
+    unsigned short getTotalWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
+    int getLastNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
+
+    int getFirstNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
+    int getTotalWantedLPDataBlocks(int dataSetNbr, ULONG timeSinceLastLP);
+    int getEndLPDataBlockSet(int dataSetNbr, ULONG timeSinceLastLP);
+    int getStartLPDataBlockSet(int dataSetNbr, ULONG timeSinceLastLP);
+
+    int getLPDataBlkOffset(int dataSetNbr);
+
+
+    int UpdateLastLPReadBlksProcedure(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
+
+    int proc05UpdateLastLPBlkRead(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
+    int proc16StartLPRecording( void );
+    int proc17StopLPRecording( void ) ;
+    int proc09RemoteReset(UINT8 actionFlag);
+    int proc22LoadProfileStartBlock( void );
+
+    void setWriteProcedureInProgress(bool writeFlag);
+    void setPreviewTable64InProgress(bool previewFlag);
+    void setCurrentAnsiWantsTableValues(int tableID,int tableOffset, unsigned short bytesExpected,BYTE  type, BYTE operation);
+    int getWriteSequenceNbr( void );
+//bool isReturnMsgMaxSize(void);
    //void fillReturnMessage(BYTE *aBuffer);
 
 
@@ -213,6 +364,7 @@ class IM_EX_PROT CtiProtocolANSI
 
       CtiAnsiTableZeroZero             *_tableZeroZero;
       CtiAnsiTableZeroOne              *_tableZeroOne;
+      CtiAnsiTableZeroEight            *_tableZeroEight;
       CtiAnsiTableOneZero              *_tableOneZero;
       CtiAnsiTableOneOne               *_tableOneOne;
       CtiAnsiTableOneTwo               *_tableOneTwo;
@@ -223,7 +375,39 @@ class IM_EX_PROT CtiProtocolANSI
       CtiAnsiTableTwoOne               *_tableTwoOne;
       CtiAnsiTableTwoTwo               *_tableTwoTwo;
       CtiAnsiTableTwoThree             *_tableTwoThree;
+      CtiAnsiTableFiveOne              *_tableFiveOne;
       CtiAnsiTableFiveTwo              *_tableFiveTwo;
+      CtiAnsiTableSixOne               *_tableSixOne;
+      CtiAnsiTableSixTwo               *_tableSixTwo;
+      CtiAnsiTableSixThree             *_tableSixThree;
+      CtiAnsiTableSixFour              *_tableSixFour;
+    //  CtiAnsiTableFiveFive             *_tableFiveFive;
+
+      bool _validFlag;
+      bool _previewTable64;
+      bool _entireTableFlag;  
+      int _nbrLPDataBlksWanted;
+      unsigned short _nbrLPDataBlkIntvlsWanted;
+      int _nbrFirstLPDataBlkIntvlsWanted;
+      int _nbrLastLPDataBlkIntvlsWanted;
+      ULONG _timeSinceLastLPTime;
+
+      int _seqNbr;
+
+       double *_lpValues;
+       ULONG *_lpTimes;
+
+     int _lpNbrLoadProfileChannels;
+     int _lpNbrIntvlsLastBlock;
+     int _lpLastBlockIndex;
+     int _lpStartBlockIndex;
+     int _lpBlockSize;
+     int _lpOffset;
+     int _lpNbrFullBlocks;
+     int _lpLastBlockSize;
+
+     bool _writeProcedureInProgressFlag;
+     bool _previewTable64InProgressFlag;
 };
 
 

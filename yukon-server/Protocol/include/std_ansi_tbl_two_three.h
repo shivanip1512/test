@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_three.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:21 $
 *    History: 
       $Log: std_ansi_tbl_two_three.h,v $
+      Revision 1.4  2004/09/30 21:37:21  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -44,8 +47,8 @@ struct DEMANDS_RCD
 {
 //   STIME_DATE           *event_time;
    ULONG                *event_time;
-   double               *cum_demand;
-   double               *cont_cum_demand;
+   double               cum_demand;
+   double               cont_cum_demand;
    double               *demand;
 };
 
@@ -62,7 +65,7 @@ class IM_EX_PROT CtiAnsiTableTwoThree : public CtiAnsiTableBase
 {
 protected:
 
-   unsigned char        *_nbr_demand_resets;
+   unsigned char        _nbr_demand_resets;
    DATA_BLK_RCD         _tot_data_block;
    DATA_BLK_RCD         *_tier_data_block;
 
@@ -80,6 +83,7 @@ private:
    bool                 _time;
    bool                 _cumd;
    bool                 _cumcont;
+   int                  _timefmt;
 
 
 public:
@@ -98,11 +102,29 @@ public:
    bool getTime( void );
    bool getCumd( void );
    bool getCumcont( void );
-
+   CtiAnsiTableTwoThree( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+                         int f1, int f2, int timeformat );
    CtiAnsiTableTwoThree( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat );
    virtual ~CtiAnsiTableTwoThree();
    CtiAnsiTableTwoThree& operator=(const CtiAnsiTableTwoThree& aRef);
+   void printResult(  );
+   void printSummations( DATA_BLK_RCD data_block );
+   void printDemands( DATA_BLK_RCD data_block );
+   void printCoincidents( DATA_BLK_RCD data_block );
+   
+   void decodeResultPiece( BYTE **dataBlob );
+   void generateResultPiece( BYTE **dataBlob );
+   void populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset );
+   void populateDemandsRecord(BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset);
+   void populateCoincidentsRecord(BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset);
+   void retrieveSummations( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset );
+   void retrieveDemandsRecord(BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset);
+   void retrieveCoincidentsRecord(BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset);
+
+
+double getDemandValue ( int index );
+double getSummationsValue ( int index );
 
 };
 

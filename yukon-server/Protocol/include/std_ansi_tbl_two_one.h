@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_one.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *    History: 
       $Log: std_ansi_tbl_two_one.h,v $
+      Revision 1.4  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -88,9 +91,15 @@ public:
    bool getCumDemandFlag( void );
    bool getContCumDemandFlag( void );
 
+   CtiAnsiTableTwoOne( );
    CtiAnsiTableTwoOne( BYTE *dataBlob );
    virtual ~CtiAnsiTableTwoOne();
    CtiAnsiTableTwoOne& operator=(const CtiAnsiTableTwoOne& aRef);
+
+   void generateResultPiece( BYTE **dataBlob );
+   void printResult();
+   void decodeResultPiece( BYTE **dataBlob );
+
 
 };
 

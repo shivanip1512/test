@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.118 $
-* DATE         :  $Date: 2004/09/20 16:15:01 $
+* REVISION     :  $Revision: 1.119 $
+* DATE         :  $Date: 2004/09/30 21:37:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,6 +102,7 @@ using namespace std;
 #include "dev_schlum.h"
 #include "dev_remote.h"
 #include "dev_kv2.h"
+#include "dev_sentinel.h"
 #include "dev_mark_v.h"
 #include "msg_trace.h"
 #include "msg_cmd.h"
@@ -1192,13 +1193,94 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " KV2 loop exited  **********************************************" << endl;
                             }
+
+                            Sleep(1000);
+                            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
+
+                            //send dispatch lp data directly
+                            kv2dev->processDispatchReturnMessage( retMsg );
+                            if( !retMsg->getData().isEmpty() )
+                            {
+                                VanGoghConnection.WriteConnQue( retMsg );
+                            }
+                            else
+                            {
+                                delete retMsg;
+                            }
+
                         }
                         // return value to tell us if we are successful or not
-                        status = ansi.sendCommResult( InMessage );
+                        //status = ansi.sendCommResult( InMessage );
 
                         ansi.reinitialize();
                         break;
                     }
+                case TYPE_SENTINEL:
+                    {
+                        BYTE  inBuffer[512];
+                        BYTE  outBuffer[300];
+                        ULONG bytesReceived = 0;
+
+                        CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)Device.get();
+                        CtiProtocolANSI &ansi   = sentinelDev->getProtocol();
+
+                        //allocate some space
+                        trx.setInBuffer( inBuffer );
+                        trx.setOutBuffer( outBuffer );
+                        trx.setInCountActual( &bytesReceived );
+
+                        //unwind the message we made in scanner
+                        if( ansi.recvOutbound( OutMessage ) != 0 )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Sentinel loop entered **********************************************" << endl;
+                            }
+
+                            while( !ansi.isTransactionComplete() )
+                            {
+                                //jump in, check for login, build packets, send messages, etc...
+                                ansi.generate( trx );
+                                status = Port->outInMess( trx, Device, traceList );
+                                if( status != NORMAL )
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Sentinel loop is A-B-N-O-R-M-A-L " << endl;
+                                }
+                                ansi.decode( trx, status );
+
+                                // Prepare for tracing
+                                if( trx.doTrace( status ))
+                                {
+                                    Port->traceXfer( trx, traceList, Device, status );
+                                }
+                                DisplayTraceList( Port, traceList, true );
+                            }
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Sentinel loop exited  **********************************************" << endl;
+                            }
+
+                            Sleep(1000);
+                            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
+
+                            //send dispatch lp data directly
+                            sentinelDev->processDispatchReturnMessage( retMsg );
+                            if( !retMsg->getData().isEmpty() )
+                            {
+                                VanGoghConnection.WriteConnQue( retMsg );
+                            }
+                            else
+                            {
+                                delete retMsg;
+                            }
+
+                        }
+                        ansi.reinitialize();
+                        break;
+                    }
+
 
                 case TYPE_TDMARKV:
                     {
@@ -2827,6 +2909,7 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceS
       Device->getType() != TYPE_LGS4 &&
       Device->getType() != TYPE_DR87 &&
       Device->getType() != TYPE_KV2 &&
+      Device->getType() != TYPE_SENTINEL &&
       Device->getType() != TYPE_ALPHA_A1 &&
       Device->getType() != TYPE_TDMARKV
       )

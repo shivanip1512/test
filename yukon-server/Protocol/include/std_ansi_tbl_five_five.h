@@ -14,11 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_five.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/09/30 21:37:20 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_five.h,v $
+      Revision 1.4  2004/09/30 21:37:20  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -42,23 +45,23 @@ struct STATUS_BFLD
    {
       struct first
       {
-         unsigned charcurr_summ_tier      :3;
-         unsigned charcurr_demand_tier    :3;
-      };
+         unsigned char curr_summ_tier      :3;
+         unsigned char curr_demand_tier    :3;
+      }s1;
 
-      struct sec
+      struct second
       {
-         unsigned charcurr_tier           :3;
-         unsigned charfiller              :3;
-      };
-   };
+         unsigned char curr_tier           :3;
+         unsigned char filler              :3;
+      }s2;
+   }u;
 
    unsigned char  tier_drive              :2;
    unsigned char  special_schd_active     :4;
    unsigned char  season                  :4;
 };
 
-struct LTIME_DATE
+/*struct LTIME_DATE
 {
    union// CASES
    {
@@ -70,7 +73,7 @@ struct LTIME_DATE
          BCD      hour;
          BCD      minute;
          BCD      second;
-      };
+      }c1;
 
       struct CASE2
       {
@@ -80,18 +83,18 @@ struct LTIME_DATE
          unsigned char  hour;
          unsigned char  minute;
          unsigned char  second;
-      };
+      }c2;
 
       struct CASE3
       {
          long           u_time;
          unsigned char  second;
-      };
+      }c3;
 
       struct CASE4
       {
          long           u_time_sec;
-      };
+      }c4;
 
    }cases;
 };
@@ -105,8 +108,8 @@ struct TIME_DATE_QUAL_BFLD
    unsigned char        dst_applied_flag     :1;
    unsigned char        filler               :1;
 };
-
-struct TABLE_55_CLOCK_STATE
+*/
+struct CLOCK_55_STATE_RCD
 {
    LTIME_DATE           clock_calendar;
    TIME_DATE_QUAL_BFLD  time_date;
@@ -119,7 +122,7 @@ class IM_EX_PROT CtiAnsiTableFiveFive : public CtiAnsiTableBase
 {
 protected:
 
-   TABLE_55_CLOCK_STATE    *_tableFiveFive;
+   CLOCK_55_STATE_RCD    _clockStateTbl;
 
 private:
 
@@ -130,6 +133,9 @@ public:
    virtual ~CtiAnsiTableFiveFive();
 
    CtiAnsiTableFiveFive& operator=(const CtiAnsiTableFiveFive& aRef);
+   void generateResultPiece( BYTE **dataBlob );
+   void printResult();
+   void decodeResultPiece( BYTE **dataBlob );
 
 };
 

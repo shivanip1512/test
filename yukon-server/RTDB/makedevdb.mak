@@ -108,6 +108,7 @@ dev_quantum.obj \
 dev_schlum.obj \
 dev_vectron.obj \
 dev_kv2.obj \
+dev_sentinel.obj \
 dev_mark_v.obj \
 
 
@@ -770,6 +771,30 @@ dev_kv2.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
 		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
 		std_ansi_tbl_five_two.h ansi_kv2_mtable_zero.h \
 		ansi_kv2_mtable_seventy.h mgr_point.h rtdb.h hashkey.h \
+		pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h device.h
+dev_sentinel.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h porter.h dsm2err.h \
+		devicetypes.h queues.h logger.h thread.h dev_kv2.h \
+		dev_meter.h tbl_metergrp.h vcomdefs.h dbmemobject.h \
+		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
+		dev_ied.h ctitypes.h dev_remote.h dev_single.h dev_base.h \
+		cmdparse.h parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
+		rte_base.h ctibase.h ctinexus.h message.h collectable.h \
+		tbl_pao.h tbl_rtcomm.h desolvers.h tbl_base.h tbl_2way.h \
+		tbl_stats.h tbl_scanrate.h utility.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h \
+		xfer.h dialup.h verification_objects.h boost_time.h \
+		tbl_dialup.h tbl_direct.h tbl_dv_ied.h prot_ansi_sentinel.h \
+		prot_ansi.h ansi_application.h ansi_datalink.h \
+		ansi_billing_table.h std_ansi_tbl_base.h \
+		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
+		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
+		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
+		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
+		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
+		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
+		std_ansi_tbl_five_two.h mgr_point.h rtdb.h hashkey.h \
 		pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h device.h
 dev_lcu.obj:	cparms.h dlldefs.h connection.h exchange.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \

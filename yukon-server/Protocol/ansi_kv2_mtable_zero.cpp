@@ -10,10 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/25 14:54:54 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/09/30 21:37:17 $
 *    History: 
       $Log: ansi_kv2_mtable_zero.cpp,v $
+      Revision 1.2  2004/09/30 21:37:17  jrichter
+      Ansi protocol checkpoint.  Good point to check in as a base point.
+
       Revision 1.1  2003/04/25 14:54:54  dsutton
       Ansi protocol tables specific to the implementation of the KV2
 
@@ -21,6 +24,7 @@
 *----------------------------------------------------------------------------------*/
 
 #include "ansi_kv2_mtable_zero.h"
+#include "logger.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -169,6 +173,34 @@ CtiAnsiKV2ManufacturerTableZero::RegisterFunction_e CtiAnsiKV2ManufacturerTableZ
             break;
     }
     return ret;
+}
+void CtiAnsiKV2ManufacturerTableZero::printResult(  )
+{
+ 
+    /**************************************************************
+    * its been discovered that if a method goes wrong while having the logger locked
+    * unpleasant consquences may happen (application lockup for instance)  Because
+    * of this, we make ugly printout calls so we aren't locking the logger at the time
+    * of the method call
+    ***************************************************************
+    */
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << endl << "=======================  kV2 MFG Table 0  ========================" << endl;
+    }
+
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   MFG Version Number: " << (int) _mfgVersionNumber<< endl;
+        dout << "   MFG Revision Number: " << (int) _mfgRevionsNumber << endl;
+        //dout << "   MFG Version Number: " << endl;
+
+
+        dout << "   Meter Type: " << (int) _meterType << endl;
+        dout << "   Meter Mode: " << (int) _meterMode << endl;
+        dout << "   Register Function: " << (int) _registerFunction << endl;
+    }
+
 }
 
 
