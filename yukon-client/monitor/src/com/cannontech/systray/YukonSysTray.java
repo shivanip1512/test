@@ -231,6 +231,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		{
 			try
 			{
+				CTILogger.info( "Starting TDC with: " + ISystrayDefines.EXEC_TDC );
 				Process p = Runtime.getRuntime().exec(
 					ISystrayDefines.EXEC_TDC );
 
@@ -246,6 +247,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		{
 			try
 			{
+				CTILogger.info( "Starting DBEditor with: " + ISystrayDefines.EXEC_DBEDITOR );
 				Process p = Runtime.getRuntime().exec(
 					ISystrayDefines.EXEC_DBEDITOR );
 
@@ -261,6 +263,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		{
 			try
 			{
+				CTILogger.info( "Starting Commander with: " + ISystrayDefines.EXEC_COMMANDER );
 				Process p = Runtime.getRuntime().exec(
 					ISystrayDefines.EXEC_COMMANDER );
 
@@ -276,6 +279,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		{
 			try
 			{
+				CTILogger.info( "Starting Trending with: " + ISystrayDefines.EXEC_TRENDING );
 				Process p = Runtime.getRuntime().exec(
 					ISystrayDefines.EXEC_TRENDING );
 
