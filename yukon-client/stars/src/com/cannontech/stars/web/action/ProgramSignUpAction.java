@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -134,8 +135,9 @@ public class ProgramSignUpAction implements ActionBase {
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             LiteStarsCustAccountInformation liteAcctInfo = null;
-            if (progSignUp.getAccountNumber() != null)
-            	liteAcctInfo = energyCompany.searchByAccountNumber( progSignUp.getAccountNumber() );
+            if (progSignUp.getAccountNumber() != null) {
+				liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
+            }
             else
             	liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
@@ -246,18 +248,7 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			for (int i = 0; i < liteProgs.size(); i++) {
 				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-				LiteStarsAppliance liteApp = null;
-				
-				ArrayList liteApps = liteAcctInfo.getAppliances();
-				for (int k = 0; k < liteApps.size(); k++) {
-					LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
-					if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
-						liteApp = lApp;
-						break;
-					}
-				}
-				
-				starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, liteApp, energyCompany) );
+				starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, energyCompany) );
 				starsProgs.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo.getProgramHistory()) );
 			}
 			
@@ -364,6 +355,8 @@ public class ProgramSignUpAction implements ActionBase {
 		Integer invID, LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
 		try {
+			ArrayList appCats = energyCompany.getAllApplianceCategories();
+			
 			// Get action & event type IDs
 			Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
 			Integer signUpEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).getEntryID() );
@@ -392,6 +385,22 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
 			for (int i = 0; i < programs.getSULMProgramCount(); i++) {
 				SULMProgram program = programs.getSULMProgram(i);
+				
+				if (!program.hasApplianceCategoryID()) {
+					// If ApplianceCategoryID is not provided, set it here
+					synchronized (appCats) {
+						for (int j = 0; j < appCats.size(); j++) {
+							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+							for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
+								if (liteAppCat.getPublishedPrograms()[k].getProgramID() == program.getProgramID()) {
+									program.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
+									break;
+								}
+							}
+							if (program.hasApplianceCategoryID()) break;
+						}
+					}
+				}
         		
 				LiteStarsAppliance liteApp = null;
 				for (int j = 0; j < appList.size(); j++) {
@@ -434,13 +443,15 @@ public class ProgramSignUpAction implements ActionBase {
 							liteApp.setInventoryID( invID.intValue() );
 						if (liteApp.getInventoryID() > 0) {
 							int groupID = program.getAddressingGroupID();
-							if (groupID == 0 && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
-								groupID =  liteProg.getGroupIDs()[0];
+							if (!program.hasAddressingGroupID() && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
+								groupID = liteProg.getGroupIDs()[0];
 							liteApp.setAddressingGroupID( groupID );
 							liteStarsProg.setGroupID( groupID );
 	                		
-							Integer hwID = new Integer( liteApp.getInventoryID() );
-							if (!hwIDsToConfig.contains( hwID )) hwIDsToConfig.add( hwID );
+	                		if (groupID > 0) {
+								Integer hwID = new Integer( liteApp.getInventoryID() );
+								if (!hwIDsToConfig.contains( hwID )) hwIDsToConfig.add( hwID );
+	                		}
 						}
     					
 						liteApp.setLmProgramID( program.getProgramID() );
@@ -491,11 +502,11 @@ public class ProgramSignUpAction implements ActionBase {
 							liteApp.setInventoryID( invID.intValue() );
 						if (liteApp.getInventoryID() > 0) {
 							int groupID = program.getAddressingGroupID();
-							if (groupID == 0 && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
+							if (program.hasAddressingGroupID() && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
 								groupID = liteProg.getGroupIDs()[0];
 							liteApp.setAddressingGroupID( groupID );
 							liteStarsProg.setGroupID( groupID );
-		                
+		                	
 							Integer hwID = new Integer( liteApp.getInventoryID() );
 							if (!hwIDsToConfig.contains( hwID )) hwIDsToConfig.add( hwID );
 						}
@@ -518,7 +529,7 @@ public class ProgramSignUpAction implements ActionBase {
 							liteApp.setInventoryID( invID.intValue() );
 						if (liteApp.getInventoryID() > 0) {
 							int groupID = program.getAddressingGroupID();
-							if (groupID != 0 && liteStarsProg.getGroupID() != groupID) {
+							if (program.hasAddressingGroupID() && liteStarsProg.getGroupID() != groupID) {
 								liteApp.setAddressingGroupID( groupID );
 								liteStarsProg.setGroupID( groupID );
 			                	
@@ -566,17 +577,19 @@ public class ProgramSignUpAction implements ActionBase {
 					appDB.setManufacturerID( dftManufacturerID );
 	        		
 					if (invID != null) {
-						if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0) {
-							int groupID = liteProg.getGroupIDs()[0];
-							liteStarsProg.setGroupID( groupID );
-		        			
+						int groupID = program.getAddressingGroupID();
+						if (!program.hasAddressingGroupID() && liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
+							groupID = liteProg.getGroupIDs()[0];
+						liteStarsProg.setGroupID( groupID );
+	        			
+	        			if (groupID > 0) {
 							LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
 							hwConfig.setInventoryID( invID );
 							hwConfig.setAddressingGroupID( new Integer(groupID) );
 							app.setLMHardwareConfig( hwConfig );
 		        			
 							if (!hwIDsToConfig.contains( invID )) hwIDsToConfig.add( invID );
-						}
+	        			}
 					}
 	        		
 					app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
