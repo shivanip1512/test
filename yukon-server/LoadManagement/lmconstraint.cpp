@@ -368,11 +368,11 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
     if(start_ctrl_window != 0 && stop_ctrl_window == 0)
     {
 	string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-	result += RWDBDateTime(RWTime(proposed_stop_from_1901)).asString();
+	result += RWTime(proposed_stop_from_1901).asString();
 	result += " is outside the control window that runs from ";
-	result += RWDBDateTime(RWTime(start_ctrl_window->getAvailableStartTime())).asString();
+	result += RWTime(start_ctrl_window->getAvailableStartTime() + today.seconds()).asString();
 	result += " to ";
-	result += RWDBDateTime(RWTime(start_ctrl_window->getAvailableStopTime())).asString();
+	result += RWTime(start_ctrl_window->getAvailableStopTime() + today.seconds()).asString();
 	results->push_back(result);
 	return false;
     }
@@ -380,11 +380,11 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
     if(start_ctrl_window == 0 && stop_ctrl_window != 0)
     {
 	string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
-	result += RWDBDateTime(RWTime(proposed_start_from_1901)).asString();
+	result += RWTime(proposed_start_from_1901).asString();
 	result += " is outside the control window that runs from ";
-	result += RWDBDateTime(RWTime(stop_ctrl_window->getAvailableStartTime())).asString();
+	result += RWTime(stop_ctrl_window->getAvailableStartTime() + today.seconds()).asString();
 	result += " to ";
-	result += RWDBDateTime(RWTime(stop_ctrl_window->getAvailableStopTime())).asString();
+	result += RWTime(stop_ctrl_window->getAvailableStopTime() + today.seconds()).asString();
 	results->push_back(result);
 	return false;
     }
