@@ -6,7 +6,7 @@ package com.cannontech.database.data.device;
  * 
  * A undefined generated comment
  */
-public class RTUDNP extends TwoWayDevice
+public class RTUDNP extends RemoteBase
 {
    com.cannontech.database.db.device.DeviceDNP deviceDNP = null;
 

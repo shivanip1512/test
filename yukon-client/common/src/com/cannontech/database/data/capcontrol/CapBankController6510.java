@@ -6,7 +6,7 @@ package com.cannontech.database.data.capcontrol;
  * 
  * A undefined generated comment
  */
-public class CapBankController6510 extends com.cannontech.database.data.device.TwoWayDevice
+public class CapBankController6510 extends com.cannontech.database.data.device.RemoteBase
 {
    private com.cannontech.database.db.device.DeviceDNP deviceDNP = null;
 

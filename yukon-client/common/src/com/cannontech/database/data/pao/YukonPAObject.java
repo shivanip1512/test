@@ -40,7 +40,9 @@ public void delete() throws java.sql.SQLException
 	//ADD TABLES THAT HAVE A REFERENCE TO THE YukonPAObject TABLE AND THAT
 	// NEED TO BE DELETED WHEN A YukonPAObject ROW IS DELETED (CASCADE DELETE)
 	delete( "DynamicPAOStatistics", "PAObjectID", getPAObjectID() );
-
+   delete( "CommErrorHistory", "CommErrorID", getPAObjectID() );
+   delete( "LMControlHistory", "LMCtrlHistID", getPAObjectID() );
+   delete( "PAOOwner", "ChildID", getPAObjectID() );
 
 	getYukonPAObject().delete();
 }

@@ -1850,17 +1850,18 @@ public void setDeviceType(int type)
 
 
 		setHealthObjectsVisible( 
-				!(type == PAOGroups.LMT_2 || type == PAOGroups.DCT_501) );
+				!(type == PAOGroups.LMT_2 
+              || type == PAOGroups.DCT_501) );
 		
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
-					|| type == PAOGroups.LCU_T3026
-               || type == PAOGroups.DNP_CBC_6510
-               || type == PAOGroups.RTU_DNP) );
+					|| type == PAOGroups.LCU_T3026) );
 		
 		setIntegrityObjectsVisible(
 			!(type == PAOGroups.LMT_2
-			 || type == PAOGroups.RTUILEX) );
+			 || type == PAOGroups.RTUILEX
+          || type == PAOGroups.RTU_DNP
+          || type == PAOGroups.DNP_CBC_6510) );
 		
 		getAccumulatorRateCheckBox().setSelected(false);
 		getAccumulatorRateComboBox().setEnabled(false);

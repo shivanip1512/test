@@ -81,9 +81,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
       getJLabelPostCommWait().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
       getJTextFieldSlaveAddress().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
       getJLabelSlaveAddress().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
-      getCommunicationRouteComboBox().setVisible( cbcType != DeviceTypes.DNP_CBC_6510 );
-      getCommunicationRouteLabel().setVisible( cbcType != DeviceTypes.DNP_CBC_6510 );
-
+      
       getSerialNumberTextField().setName(
          (cbcType == DeviceTypes.DNP_CBC_6510)
          ? "Master Address"
@@ -94,6 +92,24 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
          ? "Master Address:"
          : "Serial Number:" );            
 
+      getCommunicationRouteLabel().setText(
+         (cbcType == DeviceTypes.DNP_CBC_6510)
+         ? "Communication Channel:"
+         : "Communication Route:" );
+
+
+      getCommunicationRouteComboBox().removeAllItems();
+      com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      synchronized(cache)
+      {         
+         java.util.List list = 
+            (cbcType == DeviceTypes.DNP_CBC_6510)
+            ? cache.getAllPorts()
+            : cache.getAllRoutes();
+         
+         for( int i = 0; i < list.size(); i++ )
+            getCommunicationRouteComboBox().addItem( list.get(i) );
+      }
 
       //set our type field
       getTypeTextField().setText( com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(cbcType) );
@@ -333,18 +349,7 @@ private javax.swing.JComboBox getCommunicationRouteComboBox() {
 			ivjCommunicationRouteComboBox.setName("CommunicationRouteComboBox");
 			ivjCommunicationRouteComboBox.setPreferredSize(new java.awt.Dimension(150, 25));
 			ivjCommunicationRouteComboBox.setMinimumSize(new java.awt.Dimension(100, 25));
-			// user code begin {1}
-         
-         com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-         synchronized(cache)
-         {
-            java.util.List routes = cache.getAllRoutes();
-            for(int i=0;i<routes.size();i++)
-            {
-               getCommunicationRouteComboBox().addItem(routes.get(i));
-            }
-         }
-         
+			// user code begin {1}         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -990,6 +995,10 @@ public Object getValue(Object val)
                || getJTextFieldPostCommWait().getText().length() <= 0)
             ? new Integer(0)
             : new Integer(getJTextFieldPostCommWait().getText());
+
+      Integer portID = new Integer(0);
+      if( getCommunicationRouteComboBox().getSelectedItem() != null )
+         portID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getCommunicationRouteComboBox().getSelectedItem()).getYukonID());
       
       com.cannontech.database.data.capcontrol.CapBankController6510 tempController 
             = (com.cannontech.database.data.capcontrol.CapBankController6510)capBankController;
@@ -997,6 +1006,7 @@ public Object getValue(Object val)
       tempController.getDeviceDNP().setMasterAddress( serialNumber );
       tempController.getDeviceDNP().setSlaveAddress( slave );
       tempController.getDeviceDNP().setPostCommWait( postWait );
+      tempController.getDeviceDirectCommSettings().setPortID( portID );
    }   
    else
       throw new IllegalStateException("CBC class of: " + capBankController.getClass().getName() + " not found");
@@ -1146,15 +1156,15 @@ public static void main(java.lang.String[] args) {
 	}
 }
 
-
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
 public void setValue(Object val) 
-{   
-//	com.cannontech.database.data.capcontrol.CapBankController capBankController = (com.cannontech.database.data.capcontrol.CapBankController)val;
+{
    com.cannontech.database.data.device.DeviceBase capBankController = (com.cannontech.database.data.device.DeviceBase)val;
+   setCbcType( com.cannontech.database.data.pao.PAOGroups.getDeviceType(capBankController.getPAOType()) );   
+   int comboID;
    
    if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController )
    {
@@ -1162,16 +1172,7 @@ public void setValue(Object val)
             = (com.cannontech.database.data.capcontrol.CapBankController)capBankController;
 
       Integer serialNumber = tempController.getDeviceCBC().getSerialNumber();
-      Integer routeID = tempController.getDeviceCBC().getRouteID();
-      
-      for( int i = 0; i < getCommunicationRouteComboBox().getItemCount(); i++ )
-         if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getCommunicationRouteComboBox().getItemAt(i)).getYukonID() 
-              == routeID.intValue() )
-         {
-            getCommunicationRouteComboBox().setSelectedIndex(i);
-            break;
-         }
-
+      comboID = tempController.getDeviceCBC().getRouteID().intValue();
    
       getSerialNumberTextField().setText( serialNumber.toString() );         
    }
@@ -1184,6 +1185,7 @@ public void setValue(Object val)
       getJTextFieldSlaveAddress().setText( tempController.getDeviceDNP().getSlaveAddress().toString() );
       getJTextFieldPostCommWait().setText( tempController.getDeviceDNP().getPostCommWait().toString() );
       
+      comboID = tempController.getDeviceDirectCommSettings().getPortID().intValue();
    }
    else
       throw new IllegalStateException("CBC class of: " + capBankController.getClass().getName() + " not found");
@@ -1195,8 +1197,16 @@ public void setValue(Object val)
    String deviceName = capBankController.getPAOName();
    
 	getNameTextField().setText( deviceName );
-   setCbcType( com.cannontech.database.data.pao.PAOGroups.getDeviceType(capBankController.getPAOType()) );
 
+   //set our selected comb index   
+   for( int i = 0; i < getCommunicationRouteComboBox().getItemCount(); i++ )
+      if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getCommunicationRouteComboBox().getItemAt(i)).getYukonID() 
+           == comboID )
+      {
+         getCommunicationRouteComboBox().setSelectedIndex(i);
+         break;
+      }
+   
 	if( Character.toUpperCase(capBankController.getPAODisableFlag().charValue() )
 		                       == com.cannontech.common.util.CtiUtilities.getTrueCharacter().charValue() )
 	{

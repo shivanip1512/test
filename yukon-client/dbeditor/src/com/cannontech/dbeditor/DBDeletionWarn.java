@@ -56,6 +56,7 @@ private static byte createDeleteStringForCommPort(int portID) throws java.sql.SQ
 private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQLException
 {
 	Integer theID = new Integer( deviceID );
+   String str = null;   
 
 	if( com.cannontech.database.data.device.DeviceBase.hasRoute( theID ) )
 	{
@@ -63,6 +64,13 @@ private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQ
 		theWarning.append("\nbecause it is utilized by a route.");
 		return STATUS_DISALLOW;
 	}
+
+   if( (str = com.cannontech.database.db.capcontrol.DeviceCBC.usedCapBankController(theID)) != null )
+   {
+      theWarning.delete(0, theWarning.length());
+      theWarning.append("\nbecause it is utilized by the Device named '" + str + "'");
+      return STATUS_DISALLOW;
+   }
 
 	//this point is deleteable
 	return STATUS_ALLOW;

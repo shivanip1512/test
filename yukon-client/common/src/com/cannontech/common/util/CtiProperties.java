@@ -47,7 +47,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 	public static final String KEY_BILLING_INPUT = "billing_input_file";
 
    public static final String KEY_CLIENT_LOG_FILE = "client_log_file";
-
+   public static final String KEY_CBC_CREATION_NAME = "cbc_creation_name";
+   
 	public static final String[] ALL_CONFIG_KEYS =
 	{
 		//Do not put KEY_YUKON_VERSION in here since it is not in the config.properties file
@@ -74,8 +75,10 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 		KEY_TDC_RIGHTS,
 
 		KEY_ACTIVATE_BILLING,
-		KEY_BILLING_INPUT
+		KEY_BILLING_INPUT,
+      KEY_CBC_CREATION_NAME
 	};
+
 
 /**
  * CTIProperties constructor comment.
@@ -152,6 +155,82 @@ private void initialize()
 	}
 	
 }
+
+
+
+   /**
+    * Insert the method's description here.
+    * Creation date: (3/5/2001 11:32:59 AM)
+    * @return String
+    * 
+    * This method returns the String that represents the key_ as a method.
+    * We search for a method of the vlaue_ object that returns a String
+    * and has a the name:
+    *   get(key_);
+    * If anything goes wrong, we print out all possible getters that return
+    * a String and use the default_ as our value.
+    * At most we accept 1 getter method. The percent(%) sign is used as a
+    * token seperator.  key_ may look like this:
+    *   CBC %PAOName%
+    * A call to getPAOName() will replace the %PAOName%.
+    */
+   public static String getReflectiveProperty( 
+         final Object value_, String key_, final String default_ )
+   {
+      if( value_ == null )
+         return default_;
+
+
+      java.lang.reflect.Method[] methods = value_.getClass().getMethods();
+      
+      try
+      {
+         StringBuffer buf = new StringBuffer(key_);
+         String methodName = methodName = buf.substring( key_.indexOf("%")+1, key_.lastIndexOf("%") );
+         
+         for( int i = 0; i < methods.length; i++ )
+         {
+            if( methods[i].getName().toLowerCase().startsWith("get") 
+                  && methods[i].getReturnType().equals(String.class)
+                  && methods[i].getName().toLowerCase().endsWith(methodName.toLowerCase()) )
+            {
+               String s = (String)methods[i].invoke( value_, null );
+               
+               buf.replace( key_.indexOf("%")+1, key_.lastIndexOf("%"), s );
+               
+               //remove all % signs
+               while( buf.toString().indexOf("%") != -1 )
+                  buf.deleteCharAt( buf.toString().indexOf("%") );
+                  
+               return (buf.toString() == null ? default_ : buf.toString());
+            }         
+         }
+      }
+      catch( Exception e )
+      {} //no biggy, print some info and use the default_ value
+
+
+      /******************  ERROR HANDLING BELOW *****************/
+      //oops we failed, list the properties for this reflective class
+      com.cannontech.clientutils.CTILogger.info("*** PROPERTY TRANSLATION ERROR: " + key_ + " key/value not stored.");
+      com.cannontech.clientutils.CTILogger.info("Available REFLECTIVE properties for: " + value_.getClass().getName());
+
+      for( int i = 0; i < methods.length; i++ )
+      {
+         if( methods[i].getName().toLowerCase().startsWith("get") 
+               && methods[i].getReturnType().equals(String.class) )
+         {
+            com.cannontech.clientutils.CTILogger.info( "   " +
+                  methods[i].getName().substring(3) );
+         }         
+      }
+    
+      return default_;
+   }
+   
+
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
@@ -161,6 +240,7 @@ public static boolean isCreateable( final int readOnlyInteger )
 {
 	return ( (readOnlyInteger & CREATABLE) == CREATABLE);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
@@ -218,4 +298,6 @@ public static boolean isStartable( final int readOnlyInteger )
 {
 	return ( (readOnlyInteger & STARTABLE) == STARTABLE);
 }
+
+
 }

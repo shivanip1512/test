@@ -12,7 +12,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DevicePhoneNumberPanel devicePhoneNumberPanel;
 	private DeviceRoutePanel deviceRoutePanel;
 	private DeviceTypePanel deviceTypePanel;
-	private DeviceVirtualPortPanel deviceVirtualPortPanel;
+	private DeviceCommChannelPanel deviceCommChannelPanel;
 	private DeviceTapTerminalPanel deviceTapTerminalPanel;
 	private DeviceIEDNamePanel deviceIEDNamePanel;
 	private DeviceVirtualNamePanel deviceVirtualNamePanel;
@@ -173,11 +173,11 @@ protected DeviceVirtualNamePanel getDeviceVirtualNamePanel()
  * This method was created in VisualAge.
  * @return com.cannontech.dbeditor.wizard.device.DeviceVirtualPortPanel
  */
-protected DeviceVirtualPortPanel getDeviceVirtualPortPanel() {
-	if( deviceVirtualPortPanel == null )
-		deviceVirtualPortPanel = new DeviceVirtualPortPanel();
+protected DeviceCommChannelPanel getDeviceCommChannelPanel() {
+	if( deviceCommChannelPanel == null )
+		deviceCommChannelPanel = new DeviceCommChannelPanel();
 		
-	return deviceVirtualPortPanel;
+	return deviceCommChannelPanel;
 }
 
 
@@ -290,21 +290,21 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		}
 		else
 		{
-			getDeviceVirtualPortPanel().setValue(null);
-			return getDeviceVirtualPortPanel();
+			getDeviceCommChannelPanel().setValue(null);
+			return getDeviceCommChannelPanel();
 		}
 	}
 	else if (currentInputPanel == getDeviceSixnetWizardPanel())
 	{
-		getDeviceVirtualPortPanel().setValue(null);
-		return getDeviceVirtualPortPanel();
+		getDeviceCommChannelPanel().setValue(null);
+		return getDeviceCommChannelPanel();
 	}
 	else if (currentInputPanel == getDeviceTapTerminalPanel())
 	{
-		getDeviceVirtualPortPanel().setValue(null);
-		return getDeviceVirtualPortPanel();
+		getDeviceCommChannelPanel().setValue(null);
+		return getDeviceCommChannelPanel();
 	}
-	else if (currentInputPanel == getDeviceVirtualPortPanel())
+	else if (currentInputPanel == getDeviceCommChannelPanel())
 	{
 		//To get to this point the device must be a dialup device
 		//If it isn't better go find out why we got here!
@@ -327,10 +327,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	return  ( currentPanel == getDevicePhoneNumberPanel() 
-            || (currentPanel == getDeviceVirtualPortPanel() && !getDeviceVirtualPortPanel().isDialupPort())
+            || (currentPanel == getDeviceCommChannelPanel() && !getDeviceCommChannelPanel().isDialupPort())
             || currentPanel == getDeviceRoutePanel() 
             || currentPanel == getDeviceVirtualNamePanel()
-            || (currentPanel == getDeviceScanRatePanel() && getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.RTU_DNP) );
+            || (currentPanel == getDeviceCommChannelPanel() && getDeviceTypePanel().getDeviceType() == com.cannontech.database.data.pao.PAOGroups.RTU_DNP) );
 }
 
 

@@ -13,14 +13,14 @@ import java.awt.event.*;
 
 import com.cannontech.common.gui.util.DataInputPanel;
  
-public class DeviceVirtualPortPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
+public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
 	private javax.swing.JComboBox ivjPortComboBox = null;
 	private javax.swing.JLabel ivjPortLabel = null;
 /**
  * Constructor
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public DeviceVirtualPortPanel() {
+public DeviceCommChannelPanel() {
 	super();
 	initialize();
 }
@@ -81,6 +81,15 @@ private javax.swing.JComboBox getPortComboBox() {
 			ivjPortComboBox.setPreferredSize(new java.awt.Dimension(190, 27));
 			ivjPortComboBox.setMinimumSize(new java.awt.Dimension(170, 27));
 			// user code begin {1}
+         
+         com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+         synchronized(cache)
+         {
+            java.util.List ports = cache.getAllPorts();
+            for( int i = 0 ; i < ports.size(); i++ )
+               getPortComboBox().addItem( ports.get(i) );
+         }
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -300,8 +309,8 @@ public boolean isDialupPort()
 public static void main(java.lang.String[] args) {
 	try {
 		javax.swing.JFrame frame = new javax.swing.JFrame();
-		DeviceVirtualPortPanel aDeviceVirtualPortPanel;
-		aDeviceVirtualPortPanel = new DeviceVirtualPortPanel();
+		DeviceCommChannelPanel aDeviceVirtualPortPanel;
+		aDeviceVirtualPortPanel = new DeviceCommChannelPanel();
 		frame.getContentPane().add("Center", aDeviceVirtualPortPanel);
 		frame.setSize(aDeviceVirtualPortPanel.getSize());
 		frame.setVisible(true);
@@ -348,18 +357,8 @@ public void mouseReleased(MouseEvent newEvent) {
  * @param val java.lang.Object
  */
 public void setValue(Object val) {
-
-	if( getPortComboBox().getModel().getSize() > 0 )
-		getPortComboBox().removeAllItems();
-
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized(cache)
-	{
-		java.util.List ports = cache.getAllPorts();
-		for( int i = 0 ; i < ports.size(); i++ )
-			getPortComboBox().addItem( ports.get(i) );
-	}
 }
+
 /**
  * This method was created in VisualAge.
  * @param newEvent javax.swing.event.ListSelectionEvent

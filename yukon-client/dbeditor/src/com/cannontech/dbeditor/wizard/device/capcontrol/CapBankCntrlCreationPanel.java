@@ -6,7 +6,7 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
 import java.awt.Dimension;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceFactory;
-
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.gui.util.DataInputPanel;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -233,7 +233,8 @@ public void controlDeviceComboBox_ActionPerformed(java.awt.event.ActionEvent act
  *  This method will create a new CBC and add it to the Multi
  */
 private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObjects( 
-		com.cannontech.database.data.multi.SmartMultiDBPersistent ogMulti, String bankName )
+		com.cannontech.database.data.multi.SmartMultiDBPersistent ogMulti, 
+      CapBank capBank )
 {
 	//com.cannontech.database.data.capcontrol.CapBankController newCBC = null;
 	com.cannontech.database.data.device.DeviceBase newCBC = null;
@@ -248,7 +249,12 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 
    //store the SerialNumber
    Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
-
+   
+   //routeID or PortID, depends on the CBC type
+   Integer comboID = 
+      (getJComboBoxCBCRoute().getSelectedItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
+      ? new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject) getJComboBoxCBCRoute().getSelectedItem()).getYukonID() )
+      : new Integer(0) );
 
    if( newCBC instanceof com.cannontech.database.data.capcontrol.CapBankController )
    {
@@ -257,9 +263,7 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 
    	cntrler.getDeviceCBC().setSerialNumber(serialNumber);
    
-   	if( getJComboBoxCBCRoute().getSelectedItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
-   		cntrler.getDeviceCBC().setRouteID(
-   			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getJComboBoxCBCRoute().getSelectedItem()).getYukonID()));
+  		cntrler.getDeviceCBC().setRouteID( comboID );
    }
    else if( newCBC instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
    {
@@ -267,15 +271,26 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
             (com.cannontech.database.data.capcontrol.CapBankController6510)newCBC;
 
       cntrler.getDeviceDNP().setMasterAddress( serialNumber );   
+      
+      cntrler.getDeviceDirectCommSettings().setPortID( comboID );
    }
    else
       throw new IllegalStateException("CBC class of: " + newCBC.getClass().getName() + " not found");
 
 
 	newCBC.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
-   
+
+   //get the pattern used for auto created CBC's
+   String name = CtiProperties.getReflectiveProperty(
+                     capBank, 
+                     (CtiProperties.getInstance().getProperty(CtiProperties.KEY_CBC_CREATION_NAME, "CBC %PAOName%")),
+                     "CBC " + capBank.getPAOName() );
+      
    //just in case bankName is too long for our table, use a substring of it
-   newCBC.setPAOName("CBC " + (bankName.length() > 50 ? bankName.substring(0, 50) : bankName) );
+   newCBC.setPAOName(
+            (name.length() > 50 
+            ? name.substring(0, 50) 
+            : name) );
 
 	
 	//a status point is automatically added to all capbank controllers
@@ -749,18 +764,12 @@ public Object getValue(Object val)
 	CapBank capBank = null;
 	com.cannontech.database.data.multi.SmartMultiDBPersistent multiDB = (com.cannontech.database.data.multi.SmartMultiDBPersistent)val;
 	
-	//get the first instance of Capbank and get out!
-	for( int i = 0; i < multiDB.size(); i++ )
-		if( multiDB.getDBPersistent(i) instanceof CapBank )
-		{
-			capBank = (CapBank)multiDB.getDBPersistent(i);
-			break;
-		}
-
+	//get the first instance of Capbank and get out!   
+   capBank = (CapBank)multiDB.getFirstObjectOfType( CapBank.class, multiDB );
 		
 	if( getJCheckBoxCreateCBC().isSelected() )
 	{
-		multiDB = createExtraObjects( multiDB, capBank.getPAOName() );
+		multiDB = createExtraObjects( multiDB, capBank );
 
 		//Assign the CapBanks control IDs to that of the CBC status points pointID
 		for( int i = 0; i < multiDB.size(); i++ )
@@ -863,10 +872,31 @@ private void jComboBoxCBCType_ActionPerformed( java.awt.event.ActionEvent e)
    boolean isDNP = getJComboBoxCBCType().getSelectedItem().toString().equals(
          com.cannontech.database.data.pao.DeviceTypes.STRING_DNP_CBC_6510[0] );
    
-   getJComboBoxCBCRoute().setVisible( !isDNP );
-   getJLabelCBCRoute().setVisible( !isDNP );
+   getJLabelCBCRoute().setText(
+         isDNP 
+         ? "Port:"
+         : "Route:"  );
+   
    getJLabelCBCSerial().setText( 
-         isDNP ? "Address:" : "Serial #:"  );
+         isDNP 
+         ? "Address:" 
+         : "Serial #:"  );
+
+
+   getJComboBoxCBCRoute().removeAllItems();
+   
+   com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+   synchronized( cache )
+   {
+      java.util.List list = 
+         (isDNP 
+         ? cache.getAllPorts()
+         : cache.getAllRoutes());
+      
+      for( int i = 0; i < list.size(); i++ )
+         getJComboBoxCBCRoute().addItem( list.get(i) );
+   }
+
 }
 
 /**

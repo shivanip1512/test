@@ -27,6 +27,33 @@ public DeviceCBC(Integer deviceID) {
 /**
  * add method comment.
  */
+
+
+   public final static String usedCapBankController(Integer controllerID) throws java.sql.SQLException
+   {
+      com.cannontech.database.SqlStatement stmt =
+         new com.cannontech.database.SqlStatement(
+                  "SELECT PAOName FROM " + 
+                  com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
+                  com.cannontech.database.db.capcontrol.CapBank.TABLE_NAME + " c" +
+                  " WHERE y.PAObjectID = c.DeviceID" +
+                  " and c.ControlDeviceID =" + controllerID,
+                  com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+   
+      try
+      {
+         stmt.execute();
+         if( stmt.getRowCount() > 0 )
+            return stmt.getRow(0)[0].toString();
+         else
+            return null;
+      }
+      catch( Exception e )
+      {
+         return null;
+      }
+   }
+
 public void add() throws java.sql.SQLException {
 	Object[] addValues = { getDeviceID(), getSerialNumber(), getRouteID() };
 
