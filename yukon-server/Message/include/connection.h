@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/18 15:25:29 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/08 23:16:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ public:
    virtual RWBoolean operator==(const CtiConnection& aRef) const;
    static unsigned hash(const CtiConnection& aRef);
    CtiMessage*    ReadConnQue(UINT Timeout = UINT_MAX);
-   int            WriteConnQue(CtiMessage*);
+   int            WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true);
 
    void        Shutdown();
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/08/06 18:53:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/08/08 23:16:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,7 +69,7 @@ void CtiConnection::cleanConnection()
     }
 }
 
-int CtiConnection::WriteConnQue(CtiMessage *QEnt)
+int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleaniftimedout)
 {
     int status = NORMAL;
 
@@ -107,7 +107,7 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt)
             }
             outQueue.tailPurge();
         }
-        else if(getDebugLevel() & 0x00001000)
+        else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << "OutThread  : " << who() << " queue is full.  Will BLOCK " << endl;
@@ -117,14 +117,34 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt)
     if( (verify = verifyConnection()) != NORMAL )
     {
         status = verify;     // don't want to reset it unless there is a real problem.
-
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Connection errors, message was NOT able to be queued to " << getName() << "." << endl;
+        }
         delete QEnt;
     }
     else
     {
-        outQueue.putQueue(QEnt);
-    }
+        if(timeout > 0)
+        {
+            if( !outQueue.putQueue(QEnt, timeout) )
+            {
+                // WAS NOT QUEUED!!!
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  Message was NOT able to be queued to " << getName() << " within " << timeout << " millis" << endl;
+                }
 
+                if(cleaniftimedout) delete QEnt;
+                status = QUEUE_WRITE;
+            }
+        }
+        else
+        {
+            outQueue.putQueue(QEnt);
+        }
+    }
 
     return status;
 }
@@ -902,7 +922,7 @@ INT CtiConnection::waitForConnect()
         if( _dontReconnect )
         {
             forceTermination();
-            status = !NORMAL;
+            status = NOTNORMAL;
             break;
         }
     }
@@ -930,7 +950,7 @@ INT CtiConnection::checkCancellation(INT mssleep)
             dout << RWTime() << " Connection Thread : " << who() << " canceled " << endl;
         }
 
-        status = !NORMAL;
+        status = NOTNORMAL;
         forceTermination();
         // throw;  // 062800 CGP Unknown whether I care to re-throw these.
     }
