@@ -315,12 +315,20 @@ public void removeWizardPanelListener(WizardPanelListener listener) {
 protected void setBackEnabled(boolean val) {
 	getWizardButtonPanel().getBackButton().setEnabled(val);
 }
+
+protected void setBackVisible(boolean val) {
+	getWizardButtonPanel().getBackButton().setVisible(val);
+}
 /**
  * This method was created in VisualAge.
  * @param val boolean
  */
 protected void setCancelEnabled(boolean val) {
 	getWizardButtonPanel().getCancelButton().setEnabled(val);
+}
+
+protected void setCancelVisible(boolean val) {
+	getWizardButtonPanel().getCancelButton().setVisible(val);
 }
 /**
  * This method was created in VisualAge.
@@ -359,6 +367,13 @@ protected void setFinishedVisible(boolean val) {
 		getWizardButtonPanel().showFinishButton();
 	else
 		getWizardButtonPanel().showNextButton();
+}
+
+protected void setNextAndFinishedVisible(boolean val) {
+	
+	
+	getWizardButtonPanel().getFinishButton().setVisible(val);
+	getWizardButtonPanel().getNextButton().setVisible(val);
 }
 /**
  * This method was created in VisualAge.
