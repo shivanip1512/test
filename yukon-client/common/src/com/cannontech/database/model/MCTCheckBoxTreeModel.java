@@ -1,6 +1,8 @@
 package com.cannontech.database.model;
 
 import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.PAOGroups;
 
 /*
  * Created on Dec 2, 2003
@@ -18,30 +20,23 @@ import com.cannontech.common.gui.tree.CheckNode;
  */
 public class MCTCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 {
-
-	public MCTCheckBoxTreeModel() {
+	public MCTCheckBoxTreeModel()
+	{
 		super( new CheckNode("MCTs") );
-}
-public MCTCheckBoxTreeModel( boolean showPointNodes ) 
-{
-	super( showPointNodes, new CheckNode("MCT") );
-}
+	}
 
-public boolean isDeviceValid( int category_, int class_, int type_ )
-{
+	public MCTCheckBoxTreeModel( boolean showPointNodes ) 
+	{
+		super( showPointNodes, new CheckNode("MCT") );
+	}
+	public boolean isDeviceValid( int category_, int class_, int type_ )
+	{
+		return ( DeviceTypesFuncs.isMCT(type_) && category_ == PAOGroups.CAT_DEVICE );
+	}
 
-	return ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(type_)
-			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE );
-			 
-}
-
-
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "MCT";
-}
+	public String toString()
+	{
+		return "MCT";
+	}
 }
 

@@ -6,6 +6,9 @@
  */
 package com.cannontech.database.model;
 import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 /**
  * @author bjonasson
  *
@@ -14,23 +17,25 @@ import com.cannontech.common.gui.tree.CheckNode;
  */
 public class TransmitterCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 {
+	public static String TITLE_STRING = "Transmitter";
+	public TransmitterCheckBoxTreeModel()
+	{
+		super( new CheckNode(TITLE_STRING) );
+	}
 
-	public TransmitterCheckBoxTreeModel() {
-		super( new CheckNode("Transmitters") );
-}
-
-public TransmitterCheckBoxTreeModel( boolean showPointNodes ) 
-{
-	super( showPointNodes, new CheckNode("Transmitter") );
-}
-
-public boolean isDeviceValid( int category_, int class_, int type_ )
-{
-	return( com.cannontech.database.data.device.DeviceTypesFuncs.isTransmitter(type_)
-			  && com.cannontech.database.data.pao.DeviceClasses.isMeterClass(class_)
-			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE );
-}
-public String toString() {
-	return "Transmitter";
-}
+	public TransmitterCheckBoxTreeModel( boolean showPointNodes ) 
+	{
+		super( showPointNodes, new CheckNode(TITLE_STRING) );
+	}
+	
+	public boolean isDeviceValid( int category_, int class_, int type_ )
+	{
+		return( DeviceTypesFuncs.isTransmitter(type_)
+				  && DeviceClasses.isMeterClass(class_)
+				  && category_ == PAOGroups.CAT_DEVICE );
+	}
+	public String toString()
+	{
+		return TITLE_STRING;
+	}
 }

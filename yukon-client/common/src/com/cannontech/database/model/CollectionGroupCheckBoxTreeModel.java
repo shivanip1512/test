@@ -6,7 +6,9 @@
  */
 package com.cannontech.database.model;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 
 /**
@@ -17,46 +19,46 @@ import com.cannontech.common.gui.tree.CheckNode;
  */
 public class CollectionGroupCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 {
-	public CollectionGroupCheckBoxTreeModel() {
-			super( new CheckNode("Collection Group") );
-}
-
-public boolean isLiteTypeSupported( int liteType )
-{
-	return false;
-}
-
-public String toString() {
-	return "Collection Group";
-}
-
-public void update()
-{
-	String availableCollectionGroupsArray[] = null;
-	try
+	public static String TITLE_STRING = "Collection Group";
+	
+	public CollectionGroupCheckBoxTreeModel()
 	{
-		availableCollectionGroupsArray = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceCollectionGroups();
-	}
-	catch(java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		super( new CheckNode(TITLE_STRING) );
 	}
 
-	CheckNode rootNode = (CheckNode) getRoot();
-	rootNode.removeAllChildren();
-
-	for (int i = 0; i <  availableCollectionGroupsArray.length; i++)
+	public boolean isLiteTypeSupported( int liteType )
 	{
-		CheckNode cycleGroupNode = new CheckNode( availableCollectionGroupsArray[i] );
-		rootNode.add(cycleGroupNode);
+		return false;
+	}
+	
+	public String toString()
+	{
+		return TITLE_STRING;
 	}
 
-	reload();
-}
-
-
-
-
+	public void update()
+	{
+		String availableCollectionGroupsArray[] = null;
+		try
+		{
+			availableCollectionGroupsArray = DeviceMeterGroup.getDeviceCollectionGroups();
+		}
+		catch(java.sql.SQLException e)
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+	
+		CheckNode rootNode = (CheckNode) getRoot();
+		rootNode.removeAllChildren();
+	
+		for (int i = 0; i <  availableCollectionGroupsArray.length; i++)
+		{
+			CheckNode cycleGroupNode = new CheckNode( availableCollectionGroupsArray[i] );
+			rootNode.add(cycleGroupNode);
+		}
+	
+		reload();
+	}
 }
 
 

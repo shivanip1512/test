@@ -5,8 +5,8 @@
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package com.cannontech.database.model;
-//import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -17,24 +17,30 @@ import com.cannontech.database.data.pao.PAOGroups;
  */
 public class CommChannelCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 {
+	public static String TITLE_STRING = "Comm Channels";
+	
+	public CommChannelCheckBoxTreeModel()
+	{
+		super( new CheckNode(TITLE_STRING) );
+	}
 
-	public CommChannelCheckBoxTreeModel() {
-		super( new CheckNode("Comm Channels") );
-}
-
-public boolean isDeviceValid( int category_, int class_, int type_ )
-{
-	return ( class_ == PAOGroups.CLASS_PORT
-			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_PORT );
-}
-
-public synchronized java.util.List getCacheList(
-		com.cannontech.database.cache.DefaultDatabaseCache cache ) 
-{
-	return cache.getAllPorts();
-}
-
-public String toString() {
-	return "Comm Channels";
-}
+	public CommChannelCheckBoxTreeModel( boolean showPointNodes ) 
+	{
+		super( showPointNodes, new CheckNode(TITLE_STRING) );
+	}
+	
+	public boolean isDeviceValid( int category_, int class_, int type_ )
+	{
+		return ( class_ == PAOGroups.CLASS_PORT && category_ == PAOGroups.CAT_PORT );
+	}
+	
+	public synchronized java.util.List getCacheList( DefaultDatabaseCache cache ) 
+	{
+		return cache.getAllPorts();
+	}
+	
+	public String toString()
+	{
+		return TITLE_STRING;
+	}
 }
