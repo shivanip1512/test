@@ -33,6 +33,8 @@ public class CommandCategory
 	public static final String STRING_CMD_RTU_BASE = "All RTUs";
 	public static final String STRING_CMD_REPEATER_BASE = "All Repeaters";
 	public static final String STRING_CMD_TCU_BASE = "All TCUs";
+	public static final String STRING_CMD_STATUSINPUT_BASE = "All Status Input";
+	public static final String STRING_CMD_PING_BASE = "All Ping-able";
 
 	//Strings that commander uses to decide what "category" it is displaying, these are for specific items
 	// that don't necessarily have a deviceType, or where deviceType doesn't help find the commands.	
@@ -62,6 +64,8 @@ public class CommandCategory
 		STRING_CMD_RTU_BASE,
 		STRING_CMD_REPEATER_BASE,
 		STRING_CMD_TCU_BASE,
+		STRING_CMD_STATUSINPUT_BASE,
+		STRING_CMD_PING_BASE,
 		STRING_CMD_VERSACOM_SERIAL,
 		STRING_CMD_EXPRESSCOM_SERIAL,
 		STRING_CMD_SERIALNUMBER
@@ -83,10 +87,12 @@ public class CommandCategory
 	private static ArrayList CAT_RTU_BASE_DEVTYPES = null;
 	private static ArrayList CAT_REPEATER_BASE_DEVTYPES = null;
 	private static ArrayList CAT_TCU_BASE_DEVTYPES = null;
+	private static ArrayList CAT_STATUSINPUT_BASE_DEVTYPES = null;
+	private static ArrayList CAT_PING_BASE_DEVTYPES = null;
 	private static ArrayList CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
 	private static ArrayList CAT_SERIALNUMBER_BASE_DEVTYPES = null;
 	private static ArrayList CAT_VERSACOMSERIAL_BASE_DEVTYPES = null;
-	
+		
 	/**
 	 * Returns String [] of all Categories  
 	 * @return
@@ -171,6 +177,14 @@ public class CommandCategory
 		{
 			return getAllTCUDevTypes();
 		}
+		else if( category.equalsIgnoreCase(STRING_CMD_STATUSINPUT_BASE))
+		{
+			return getAllStatusInputDevTypes();
+		}
+		else if( category.equalsIgnoreCase(STRING_CMD_PING_BASE))
+		{
+			return getAllPingableDevTypes();
+		}
 		else if( category.equalsIgnoreCase(STRING_CMD_VERSACOM_SERIAL))
 		{
 			return getAllVersacomSerialDevTypes();
@@ -190,12 +204,44 @@ public class CommandCategory
 	/**
 	 * @return
 	 */
+	private static ArrayList getAllStatusInputDevTypes()
+	{
+		if( CAT_STATUSINPUT_BASE_DEVTYPES == null)
+		{
+			CAT_STATUSINPUT_BASE_DEVTYPES = new ArrayList();
+			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			{
+				if( DeviceTypesFuncs.hasStatusInput(i) )
+					CAT_STATUSINPUT_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
+			}
+		}
+		return CAT_STATUSINPUT_BASE_DEVTYPES;
+	}
+	/**
+	 * @return
+	 */
+	private static ArrayList getAllPingableDevTypes()
+	{
+		if( CAT_PING_BASE_DEVTYPES == null)
+		{
+			CAT_PING_BASE_DEVTYPES = new ArrayList();
+			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			{
+				if( DeviceTypesFuncs.isLoopable(i) )
+					CAT_PING_BASE_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
+			}
+		}
+		return CAT_PING_BASE_DEVTYPES;
+	}
+	/**
+	 * @return
+	 */
 	private static ArrayList getAllSerialNumberDevTypes()
 	{
 		if( CAT_SERIALNUMBER_BASE_DEVTYPES == null)
 		{
 			CAT_SERIALNUMBER_BASE_DEVTYPES = new ArrayList();
-			CAT_RTU_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
+			CAT_SERIALNUMBER_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
 		}
 		return CAT_SERIALNUMBER_BASE_DEVTYPES;
 	}
@@ -208,7 +254,7 @@ public class CommandCategory
 		if( CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES == null)
 		{
 			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = new ArrayList();
-			CAT_RTU_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
 		}
 		return CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES;
 	}
@@ -221,7 +267,7 @@ public class CommandCategory
 		if( CAT_VERSACOMSERIAL_BASE_DEVTYPES == null)
 		{
 			CAT_VERSACOMSERIAL_BASE_DEVTYPES = new ArrayList();
-			CAT_RTU_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+			CAT_VERSACOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
 		}
 		return CAT_VERSACOMSERIAL_BASE_DEVTYPES;
 	}
