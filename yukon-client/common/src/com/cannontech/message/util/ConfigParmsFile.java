@@ -67,14 +67,19 @@ public java.lang.String[][] getKeysAndValues() {
 				//get rid of everything after the command character
 				line = line.substring(0, commentPos);
 			}
-			
-			java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character(separator)).toString(), false );
+//			java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character(separator)).toString(), false );
 
-			if( t.countTokens() != 2 )
-				continue;	//bad line should we be more wrathfull?
+//			if( t.countTokens() != 2 )
+//				continue;	//bad line should we be more wrathfull?
 
-			keys.addElement( t.nextToken().trim() );
-			values.addElement( t.nextToken().trim() );				
+//			keys.addElement( t.nextToken().trim() );
+//			values.addElement( t.nextToken().trim() );				
+			int separatorIndex = line.indexOf(separator);
+			String key = line.substring(0, separatorIndex);
+			String value = line.substring(separatorIndex + 1);
+
+			keys.addElement( key.trim());
+			values.addElement( value.trim() );				
 		}
 	}
 	catch( java.io.FileNotFoundException fnfe)
