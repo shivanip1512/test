@@ -1807,7 +1807,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 		getYCCommandMenu().installAddressing.setEnabled(false);
-	
+
 		if ( selectedItem instanceof LiteBase)
 		{
 			com.cannontech.database.db.DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
@@ -1972,7 +1972,13 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			YC.OutputMessage outMessage = (YC.OutputMessage)arg;
 			if( outMessage.getType() == YC.OutputMessage.DEBUG_MESSAGE)
+			{
 				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDebugOutputTextPane(), outMessage) );
+				/*TODO: HACK TO ELIMINATE TOO MUCH MUMBLE JUMBLE IN DISPLAY (TOP) PANEL 
+				 * Parsing for " sent " helps eliminate the communication responses somewhat*/
+				if( outMessage.getStatus() == 0 && outMessage.getText().indexOf(" sent ")< 0)	//send message to display also?
+					javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage) );
+			}
 			else if( outMessage.getType() == YC.OutputMessage.DISPLAY_MESSAGE)
 				javax.swing.SwingUtilities.invokeLater( new WriteOutput(getDisplayOutputTextPane(), outMessage) );
 		}

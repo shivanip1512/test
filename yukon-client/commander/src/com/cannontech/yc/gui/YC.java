@@ -90,7 +90,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	private int loopType = NOLOOP;
 	
 	/** A singleton instance for a connection to Pil */
-	private static ClientConnection connToPorter = null;
+	public static ClientConnection connToPorter = null;
 	
 	/** KeysAndValues for readable command/actual command string*/
 	private KeysAndValuesFile keysAndValuesFile = null;
@@ -160,7 +160,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		super();
 		ycDefaults = new YCDefaults(loadDefaultsFromFile_);
 		getConnToPorter();
-		getConnToPorter().addMessageListener(this);
+		connToPorter.addMessageListener(this);
 	}
 	
 	/**
@@ -316,15 +316,10 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 * Returns the singleton instance of this Porter connection
 	 * @return
 	 */
-	public static synchronized ClientConnection getConnToPorter() {
+	public synchronized ClientConnection getConnToPorter() {
 		if(connToPorter == null)
 		{
-			connToPorter = new ClientConnection();
 			connect();
-		}
-		else
-		{
-			CTILogger.info("Connection to Porter instance already exists.");
 		}
 		return connToPorter;
 	}	
@@ -334,16 +329,14 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 * Messages from porter are set to not queue, so we don't overload memory with web calls.
 	 * @return com.cannontech.message.porter.ClientConnection
 	 */
-	public static void connect()
+	private synchronized void connect()
 	{
 		String host = "127.0.0.1";
-		int port = 1510;
+		int port = 1540;
 		try
 		{
 			host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-
-			port = Integer.parseInt( 
-				RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
+			port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
 		}
 		catch( Exception e)
 		{
@@ -355,7 +348,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		connToPorter.setHost(host);
 		connToPorter.setPort(port);
 		connToPorter.setAutoReconnect(true);
-		
+					
 		try 
 		{
 			connToPorter.connectWithoutWait();
@@ -453,11 +446,8 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 
 		if( getDeviceID() < 0 )	//no device selected
 		{
-			if ( getSerialNumber() == null)	// NO serial Number Selected
-			{
-				logCommand(" *** Warning: Please select a Device or Serial Number ***");
-				return;
-			}
+			logCommand(" *** Warning: Please select a Device (or Serial Number) ***");
+			return;
 		}
 	
 		setLoopType( parseLoopCommand() );
@@ -504,8 +494,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 */
 	public void handleSerialNumber()
 	{
-		int deviceID = -1;						//defaulted to the system device
-			 
 		int index = getCommand().indexOf("serial");
 		
 		if( index < 0 )	// serial not in command string = -1
@@ -516,9 +504,15 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 				setSerialNumber( st.nextToken() );
 		}
 		
+		if ( getSerialNumber() == null)	// NO serial Number Selected
+		{
+			logCommand(" *** Warning: Please select a Serial Number (or Device)***");
+			return;
+		}
+	
 		setLoopType( parseLoopCommand() );
 		
-		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
+		porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, getCommand(), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 	
 		// Get routeID / set it in the request
@@ -530,16 +524,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		{
 			CTILogger.info("Route cannot be determined. " + getRouteID());
 		}
-	
-		if( deviceID < 0 )	//no device selected
-		{
-			if ( getSerialNumber() == null)	// NO serial Number Selected
-			{
-				logCommand(" *** Warning: Please select a Device or Serial Number ***");
-				return;
-			}
-		}
-	
 		writeNewRequestToPorter( porterRequest );
 	}
 	
@@ -698,6 +682,9 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	public void setConnToPorter(ClientConnection connection_)
 	{
 		connToPorter = connection_;
+		//Must setup these options for this reference also.
+		connToPorter.setQueueMessages(false);	//don't keep messages, toss once read.
+		connToPorter.addMessageListener(this);
 	}
 	
 	/**
@@ -828,11 +815,11 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 
 		logCommand("[" + format.format(new java.util.Date(timer)) 
 			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + getCommand() + "\'");
-		if( connToPorter != null )
+		if( getConnToPorter() != null )
 		{
-			if( connToPorter.isValid())
+			if( getConnToPorter().isValid())
 			{
-				connToPorter.write( request_ );
+				getConnToPorter().write( request_ );
 				requestMessageIDs.add(new Long(currentUserMessageID));
 				generateMessageID();
 			}
@@ -925,7 +912,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 					//Remove the messageID from the set of this ids.
 					requestMessageIDs.remove( new Long(returnMsg.getUserMessageID()));
 				}*/
-			
 				java.awt.Color textColor = getYCDefaults().getDisplayTextColor();
 				String debugOutput = "";
 				String displayOutput = "";
@@ -945,16 +931,16 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 					prevUserID = returnMsg.getUserMessageID();
 
 					/**TODO - better implement getting the header on the display screen*/				
-					if( firstTime && getLoopType() != YC.NOLOOP)
+					/*if( firstTime && getLoopType() != YC.NOLOOP)
 					{
-						displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
+						displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR\n";
 						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, true);
 						setChanged();
 						this.notifyObservers(message);
 						setResultText( getResultText() + message.getText());
 						displayOutput = "";
 						firstTime = false;
-					}
+					}*/
 				}
 				
 				/** Add all PointData.getStr() objects to the output */
@@ -985,28 +971,29 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 					if( routeName == null)
 						routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(returnMsg.getDeviceID());
 
-					displayOutput = "\n" + routeName;
+					displayOutput = "Route:   " + routeName;
 					int tabCount = (60 - displayOutput.length())/ 24;
 					for (int i = 0; i <= tabCount; i++)
 					{
 						displayOutput += "\t";
 					}
 
-					if( returnMsg.getStatus() != 0)
-					{
-						textColor = getYCDefaults().getInvalidTextColor();
-						if( returnMsg.getExpectMore() == 0)
-							displayOutput += "N\t\t" + returnMsg.getStatus();
-					}
-					else	//status == 0 == successfull
-					{
-						textColor = getYCDefaults().getValidTextColor();
-						if( returnMsg.getExpectMore() == 0)
-							displayOutput += "Y\t\t---";
-					}
 
 					if( getLoopType() != YC.NOLOOP)
 					{
+						if( returnMsg.getStatus() != 0)
+						{
+							textColor = getYCDefaults().getInvalidTextColor();
+							if( returnMsg.getExpectMore() == 0)
+								displayOutput += "Error  " + returnMsg.getStatus() + "\t( " + returnMsg.getResultString()+ " )";
+						}
+						else	//status == 0 == successfull
+						{
+							textColor = getYCDefaults().getValidTextColor();
+							if( returnMsg.getExpectMore() == 0)
+								displayOutput += "Valid";
+						}
+						displayOutput += "\n";
 						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, returnMsg.getStatus());
 						setChanged();
 						this.notifyObservers(message);
