@@ -9,18 +9,19 @@
 <input type="hidden" name="action" value="SearchCustAccount">
   <table width="100%" border="0" cellpadding = "5" height="69">
     <tr> 
-      <td width="33%" valign = "top" align = "left"><span class="Main"><b>Acct 
-        #<%= account.getAccountNumber() %></b></span><br>
-        <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-        <!--<%= account.getCompany() %><br> -->
-        <%= primContact.getHomePhone() %><br>
-        <%= primContact.getWorkPhone() %></span></td>
+      <td width="33%" valign = "top" align = "left">&nbsp;</td>
       <td valign = "bottom" align = "center" width="33%" rowspan = "3" class = "Main"><b><%=header%></b></td>
       <td align = "right" width="33%"><span class="Main"><b> 
         <select name="SearchBy">
-          <option value="AccountNumber" selected><span class="Main"><b>Acct #</b></span></option>
-          <option value="PhoneNumber"><span class="Main"><b>Phone #</b></span></option>
-          <option value="Name"><span class="Main"><b>Name</b></span></option>
+<%
+	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
+	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+%>
+		  <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
         </select>
         <input type="text" name="SearchValue" size = "15">
         <input type="submit" name="Submit2" value="Search">

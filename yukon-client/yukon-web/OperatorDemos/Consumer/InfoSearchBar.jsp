@@ -9,14 +9,14 @@
 <input type="hidden" name="action" value="SearchCustAccount">
   <table width="100%" border="0" cellpadding = "5">
     <tr> 
-      <td width="31%" valign = "top" align = "left"><span class="Main"><b>Acct 
+      <td width="33%" valign = "top" align = "left"><span class="Main"><b>Acct 
         #<%= account.getAccountNumber() %></b></span><br>
         <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
         <!--<%= account.getCompany() %><br> -->
         <%= primContact.getHomePhone() %><br>
         <%= primContact.getWorkPhone() %></span></td>
-      <td valign = "bottom" align = "center" width="37%" rowspan = "3" class = "Main"><b><%=header%></b></td>
-      <td align = "right" width="31%"><span class="Main"><b> 
+      <td valign = "bottom" align = "center" width="33%" rowspan = "3" class = "Main"><b><%=header%></b></td>
+      <td align = "right" width="33%"><span class="Main"><b> 
         <select name="SearchBy">
 <%
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
@@ -28,7 +28,7 @@
 	}
 %>
         </select>
-        <input type="text" name="SearchValue" size = "12">
+        <input type="text" name="SearchValue" size = "15">
         <input type="submit" name="Submit2" value="Search">
         </b></span></td>
     </tr>
