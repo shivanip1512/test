@@ -8,8 +8,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
-import com.cannontech.clientutils.CTILogger;
-
 public class SortTableModelWrapper extends AbstractTableModel implements TableModelListener
 {
 	private  SortableTableModel realModel;
@@ -139,7 +137,6 @@ private int compareRowsByColumn( int row1, int row2 )
 	//if we have equal values, lets try to sort by the Auxilary sorting column
 	if( res == 0 )
 	{
-		CTILogger.info("  --EQ, using AUX");
 		res = findAuxSortColumn( row1, row2 );
 	}
 
