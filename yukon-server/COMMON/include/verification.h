@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/12 17:14:35 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/14 18:12:05 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -27,9 +27,15 @@ class CtiVerification
 {
 public:
 
+   enum
+   {
+      Report   = 0,
+      Work
+   } type;
+
    CtiVerification();
    CtiVerification( const CtiVerification& aRef );
-   ~CtiVerification();
+   virtual ~CtiVerification();
 
    int getType( void );
    void setType( int aType );

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/12 19:26:16 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/04/14 18:12:05 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@
 
 #include "verification.h"
 
-class CtiVerficationWork : public CtiVerification
+class IM_EX_CTIBASE CtiVerficationWork : public CtiVerification
 {
 
 public:
