@@ -502,6 +502,30 @@ update templatecolumns set title='State' where title='Tags';
 
 
 update YukonRoleProperty set keyname='cap_control_interface' where rolepropertyid=-10105;
+go
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+update YukonGroupRole set grouproleid=grouproleid * -1;
+go
+
+update YukonUserRole set userroleid=userroleid * -1;
+go
 
 
 /******************************************************************************/

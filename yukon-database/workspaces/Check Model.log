@@ -20,10 +20,10 @@ Checking table ...
 -	Number of auto-incremented columns
 -	Existence of reference
 	Warning	The following table do not have any reference:
-		-> GenericMacro
-		-> LOGIC
 		-> GatewayEndDevice
 		-> CTIDatabase
+		-> LOGIC
+		-> GenericMacro
 		-> BillingFileFormats
 		-> FDRTelegyrGroup
 		-> YukonWebConfiguration

@@ -449,6 +449,26 @@ update templatecolumns set title='State' where title='Tags';
 update YukonRoleProperty set keyname='cap_control_interface' where rolepropertyid=-10105;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+update YukonGroupRole set grouproleid=grouproleid * -1;
+
+update YukonUserRole set userroleid=userroleid * -1;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
