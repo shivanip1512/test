@@ -63,7 +63,7 @@ class EditorActions {
 	public static final String MOVE_SELECTED_LEFT_1 = "MOVE SELECTED L1";	
 	public static final String EDIT_ELEMENT = "EDIT ELEMENT";
 
-	
+	public static final String ABOUT_ESUB_EDITOR = "ABOUT ESUB EDITOR";	
 
 	public static final String SET_DYNAMIC_TEXT_COLOR =
 		"SET DYNAMIC TEXT COLOR";
@@ -526,6 +526,18 @@ class EditorActions {
 		}
 	};
 			
+	private final LxAbstractAction aboutEsubEditor = 
+		new LxAbstractAction(
+			ABOUT_ESUB_EDITOR,
+			"About",
+			"About",
+			null,
+			true ) {
+				public void processAction(ActionEvent e) {
+					editor.showAboutDialog();		
+				}
+			};
+			
 	private Editor editor;
 	private HashMap actionMap;
 
@@ -568,6 +580,8 @@ class EditorActions {
 		actionMap.put(STATIC_TEXT, staticTextAction);
 		actionMap.put(SET_DYNAMIC_TEXT_COLOR, setDynamicTextColor);
 		actionMap.put(DYNAMIC_GRAPH, dynamicGraphAction);
+		
+		actionMap.put(ABOUT_ESUB_EDITOR, aboutEsubEditor);
 		
 		LxView v = e.getDrawing().getLxView();
 

@@ -501,5 +501,17 @@ public class Editor extends JPanel {
 		}
 
 	}
-
+	
+	/**
+	 * Displays the about dialog
+	 */
+	public void showAboutDialog() {
+		
+		AboutEditor aboutDialog = new AboutEditor(CtiUtilities.getParentFrame(getDrawing().getLxView()));
+		aboutDialog.setModal(true);
+		aboutDialog.setValue(null);
+		aboutDialog.setLocationRelativeTo(getDrawing().getLxView());
+		aboutDialog.setVisible(true);
+		aboutDialog.dispose();
+	}
 }

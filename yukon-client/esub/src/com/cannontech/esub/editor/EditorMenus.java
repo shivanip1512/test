@@ -150,8 +150,15 @@ private void initialize(EditorActions actions) {
 	JMenuItem gridItem = createMenuItem(action.getLabel(), action);	
 	viewMenu.add(gridItem);
 	
+	JMenu helpMenu = new JMenu("Help");
+	
+	action = actions.getAction(EditorActions.ABOUT_ESUB_EDITOR);
+	JMenuItem aboutEditorItem = createMenuItem(action.getLabel(), action);
+	helpMenu.add(aboutEditorItem);
+	
 	menuBar.add(fileMenu);
 	menuBar.add(editMenu);
 	menuBar.add(viewMenu);
+	menuBar.add(helpMenu);
 }
 }
