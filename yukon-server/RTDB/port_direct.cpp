@@ -299,11 +299,13 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
         if(_tblPortSettings.getCDWait() != 0)
         {
             status = NODCD;
+
             /* Check if we have DCD */
-            while(!(dcdTest()) && DCDCount++ < _tblPortSettings.getCDWait())
+            while(!dcdTest() && DCDCount < _tblPortSettings.getCDWait())
             {
                 /* We do not have DCD... Wait 1/20 second and try again */
                 CTISleep (50L);
+                DCDCount += 50;
             }
 
             if(DCDCount < _tblPortSettings.getCDWait())
@@ -435,7 +437,6 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
     INT      i = 0;
 
     ULONG    Written;
-    ULONG    MSecs;
     ULONG    ByteCount;
     ULONG    StartWrite;
     ULONG    ReturnWrite;
@@ -463,15 +464,18 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
             Xfer.setOutCount( Xfer.getOutCount() + 2 );
         }
 
+        #if 0  // 20020708 CGP.  This code seems custom.
         /* Wait for DCD to dissapear */
         if(_tblPortSettings.getCDWait() != 0)
         {
             i = 0;
-            while(i++ < _tblPortSettings.getCDWait() && dcdTest() )
+            while(dcdTest() && (i < _tblPortSettings.getCDWait()) )
             {
                 CTISleep (50L);
+                i+= 50;
             }
         }
+        #endif
 
         /* Check if we need to key ... Pre Key Delay */
         if(getDelay(PRE_RTS_DELAY))
@@ -485,8 +489,6 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
 
         /* Key the radio */
         raiseRTS();
-        /* get the present time */
-        MilliTime (&MSecs);
 
         ULONG rtstoout = getDelay(RTS_TO_DATA_OUT_DELAY);
         if(rtstoout)

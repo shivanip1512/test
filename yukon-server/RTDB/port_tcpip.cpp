@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/06 19:55:11 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/08 18:44:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -295,10 +295,11 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
       {
          status = NODCD;
          /* Check if we have DCD */
-         while(!(dcdTest()) && DCDCount++ < _tblPortSettings.getCDWait())
+         while(!(dcdTest()) && DCDCount < _tblPortSettings.getCDWait())
          {
             /* We do not have DCD... Wait 1/20 second and try again */
             CTISleep (50L);
+            DCDCount += 50;
          }
 
          if(DCDCount < _tblPortSettings.getCDWait())
@@ -440,6 +441,7 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
          Xfer.setOutCount( Xfer.getOutCount() + 2 );
       }
 
+      #if 0 // 20020708 CGP.  This code seems custom.
       /* Wait for DCD to dissapear */
       if(_tblPortSettings.getCDWait() != 0)
       {
@@ -449,6 +451,7 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiM
             CTISleep (50L);
          }
       }
+      #endif
 
       /* Check if we need to key ... Pre Key Delay */
       if(getDelay(PRE_RTS_DELAY))
