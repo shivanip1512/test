@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2004/10/14 20:39:30 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2004/11/05 17:25:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -766,6 +766,28 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     break;
                 }
             case TYPE_RTC:
+                {
+                    NewOutMessage->EventCode = RESULT | ENCODED;
+
+                    prot305.buildPage(CtiProtocolSA305::ModeOctal, (char*)(NewOutMessage->Buffer.SASt._buffer));
+                    NewOutMessage->Buffer.SASt._bufferLen = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+                    NewOutMessage->OutLength = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+
+                    strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr() ,COMMAND_STR_SIZE);
+
+                    for(i = 0; i < NewOutMessage->OutLength; i++)
+                    {
+                        byteString += (char)NewOutMessage->Buffer.SASt._buffer[i];
+                    }
+                    byteString += "\n";
+
+                    outList.insert( NewOutMessage );
+                    NewOutMessage = 0;
+
+                    resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+
+                    break;
+                }
             case TYPE_SERIESVLMIRTU:
                 {
                     {
@@ -777,7 +799,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "  Cannot send versacom to TYPE:" << _transmitterDevice->getType() << endl;
+                        dout << RWTime() << "  Cannot send SA305 to TYPE:" << _transmitterDevice->getType() << endl;
                     }
 
                     break;

@@ -9,10 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/18 19:46:44 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/11/05 17:25:59 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.2  2004/11/05 17:25:59  cplender
+*
+* Getting 305s to work
+*
 * Revision 1.1  2004/03/18 19:46:44  cplender
 * Added code to support the SA305 protocol and load group
 *
@@ -126,7 +130,7 @@ public:
     {
         ModeUnspecified = 0,
         ModeOctal = 1,              // Every three bits are converted into an octal value.
-        ModeHexNibbles = 2,         // Every four bits are converted into a hex value.
+        ModeHex = 2,                // Every eight bits are converted into a hex value.
         ModeSerial = 3              // Data is churned out the port in a serial fashion.
     };
 

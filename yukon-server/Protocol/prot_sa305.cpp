@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/11/05 17:25:58 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.3  2004/11/05 17:25:58  cplender
+*
+* Getting 305s to work
+*
 * Revision 1.2  2004/04/29 19:58:49  cplender
 * Initial sa protocol/load group support
 *
@@ -1049,7 +1053,12 @@ int CtiProtocolSA305::getPageLength(int mode) const      // Returns the length i
                 length = cnt/3 + ((cnt%3)?1:0);
                 break;
             }
-        case ModeHexNibbles:    // = 2,         // Every four bits are converted into a hex value.
+        case ModeHex:           // = 2,         // Every four bits are converted into a hex value.
+            {
+                int cnt = _messageBits.size();
+                length = cnt/4 + ((cnt%4)?1:0);
+                break;
+            }
         case ModeSerial:        // = 3              // Data is churned out the port in a serial fashion.
         default:
             {
@@ -1113,7 +1122,42 @@ int CtiProtocolSA305::buildPage(int mode, CHAR *buffer) const      // Returns th
 
                 break;
             }
-        case ModeHexNibbles:    // = 2,         // Every four bits are converted into a hex value.
+        case ModeHex:    // = 2,         // Every four bits are converted into a hex value.
+            {
+                unsigned bufpos = 0;
+                unsigned pos = 0;
+                int ich = 0;
+                CHAR ch;
+
+                vector< BYTE >::const_iterator itr;
+
+                for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )
+                {
+                    ich<<=1;
+                    ich|=(*itr?1:0);
+                    if(++pos >= 4)  // ch is ready!
+                    {
+                        pos = 0;
+                        buffer[bufpos++] = '0' + ich;
+                        ich = 0;
+                    }
+                }
+
+                // Pad out any remaining bits!
+                while(pos != 0)
+                {
+                    ich<<=1;
+                    if(++pos >= 4)  // ch is ready!
+                    {
+                        pos = 0;
+                        buffer[bufpos++] = '0' + ich;
+                        ich = 0;
+                        break;
+                    }
+                }
+
+                break;
+            }
         case ModeSerial:        // = 3              // Data is churned out the port in a serial fashion.
         default:
             {

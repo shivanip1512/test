@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/10/29 20:00:00 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/11/05 17:25:58 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.14  2004/11/05 17:25:58  cplender
+*
+* Getting 305s to work
+*
 * Revision 1.13  2004/10/29 20:00:00  mfisher
 * copied comments for Slick's parameter completion info
 *
@@ -334,7 +338,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
         INT period     = parse.getiValue("cycle_period", 30);
-        INT repeat     = parse.getiValue("cycle_count", 8);
+        INT repeat     = parse.getiValue("cycle_count", 8) - 1;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
@@ -584,7 +588,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         int shed_seconds = parse.getiValue("shed", 0);
         int cycle_percent = parse.getiValue("cycle",0);
         int cycle_period = parse.getiValue("cycle_period", 30);
-        int cycle_count = parse.getiValue("cycle_count", 8);
+        int cycle_count = parse.getiValue("cycle_count", 8) - 1;
 
         bool dlc_control = parse.getCommandStr().contains(" dlc");      // if set, we want DLC (not DI) control!
 

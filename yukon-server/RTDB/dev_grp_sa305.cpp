@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/28 16:40:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/11/05 17:25:59 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.7  2004/11/05 17:25:59  cplender
+*
+* Getting 305s to work
+*
 * Revision 1.6  2004/06/28 16:40:40  cplender
 * Added toUpper on the string responses to FORCE case insensitivity.
 *
@@ -38,6 +42,7 @@
 
 #pragma warning( disable : 4786)
 
+#include "cparms.h"
 #include "cmdparse.h"
 #include "dev_grp_sa305.h"
 #include "expresscom.h"
@@ -202,7 +207,8 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     {
         OutMessage->TargetID = getID();
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
-        OutMessage->Retry = 0;
+        // OutMessage->Retry = 0;
+        OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
 
         int serial = (int)(getLoadGroup().getIndividual());
 
