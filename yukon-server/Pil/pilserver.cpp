@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2004/05/24 17:04:12 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2004/06/03 21:46:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -189,56 +189,76 @@ void CtiPILServer::mainThread()
             // Blocks for 1000 ms or until a queue entry exists
             MsgPtr = MainQueue_.getQueue(500);
 
-            if(MsgPtr != NULL)
+            try
             {
-                starttime = starttime.now();
-
-                if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
+                if(MsgPtr != NULL)
                 {
-                    ReportMessagePriority(MsgPtr, DeviceManager);
-                }
+                    starttime = starttime.now();
 
-                /* Use the same time base for the full scan check */
-                TimeNow = TimeNow.now();   // update the time...
-
-                if(MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
-                {
+                    if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << TimeNow << " PIL processing an inbound message which is over 15 minutes old.  Message will be discarded." << endl;
-                        dout << " >>---------- Message Content ----------<< " << endl;
-                        MsgPtr->dump();
-                        dout << " <<---------- Message Content ---------->> " << endl;
+                        ReportMessagePriority(MsgPtr, DeviceManager);
                     }
 
-                    delete MsgPtr;    // No one attached it to them, so we need to kill it!
-                    MsgPtr = 0;
-                }
-                else if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
-                {
-                    status = pExec->ServerExecute(this);
+                    /* Use the same time base for the full scan check */
+                    TimeNow = TimeNow.now();   // update the time...
 
-                    delete pExec;
-                }
-                else
-                {
-                    delete MsgPtr;    // No one attached it to them, so we need to kill it!
-                }
-
-                if(status)
-                {
-                    bQuit = TRUE;
-                    Inherited::shutdown();
-                }
-
-                finishtime = finishtime.now();
-
-                if(finishtime.seconds() - starttime.seconds() > 5)
-                {
+                    if(MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " PIL mainthread took " << (finishtime.seconds() - starttime.seconds()) << " seconds to process the last message." << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow << " PIL processing an inbound message which is over 15 minutes old.  Message will be discarded." << endl;
+                            dout << " >>---------- Message Content ----------<< " << endl;
+                            MsgPtr->dump();
+                            dout << " <<---------- Message Content ---------->> " << endl;
+                        }
+
+                        delete MsgPtr;    // No one attached it to them, so we need to kill it!
+                        MsgPtr = 0;
                     }
+                    else if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
+                    {
+                        try
+                        {
+                            status = pExec->ServerExecute(this);
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        delete pExec;
+                    }
+                    else
+                    {
+                        delete MsgPtr;    // No one attached it to them, so we need to kill it!
+                    }
+
+                    if(status)
+                    {
+                        bQuit = TRUE;
+                        Inherited::shutdown();
+                    }
+
+                    finishtime = finishtime.now();
+
+                    if(finishtime.seconds() - starttime.seconds() > 5)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " PIL mainthread took " << (finishtime.seconds() - starttime.seconds()) << " seconds to process the last message." << endl;
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -324,11 +344,13 @@ void CtiPILServer::mainThread()
         }
         catch(...)
         {
-            Sleep(5000);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ****  EXCEPTION: PIL mainThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  - Will attmept to recover" << endl;
+            }
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ****  EXCEPTION: PIL mainThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  - Will attmept to recover" << endl;
+            Sleep(5000);
         }
     }
 
@@ -936,102 +958,123 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     CtiReturnMsg   *pcRet = NULL;
     CtiMessage     *pMsg  = NULL;
     CtiMessage     *pVg  = NULL;
-    CtiDevice      *Dev;
 
     CtiCommandParser parse(pReq->CommandString());
 
-    // Note that any and all arguments into this method may be altered on exit!
-    analyzeWhiteRabbits(*pReq, parse, execList, retList);
-
-    for(i = 0; i < execList.entries(); i++)
+    try
     {
-        CtiRequestMsg *&pExecReq = execList[i];
-        CtiDeviceSPtr Dev = DeviceManager->getEqual(pExecReq->DeviceId());
-
-
-        if(Dev)
+        // Note that any and all arguments into this method may be altered on exit!
+        analyzeWhiteRabbits(*pReq, parse, execList, retList);
+    }
+    catch(...)
+    {
         {
-            if( parse.getCommandStr().compareTo(pExecReq->CommandString(), RWCString::ignoreCase) )
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    try
+    {
+        CtiDeviceSPtr Dev;
+        for(i = 0; i < execList.entries(); i++)
+        {
+            Dev.reset();
+
+            CtiRequestMsg *&pExecReq = execList[i];
+            Dev = DeviceManager->getEqual(pExecReq->DeviceId());
+
+            if(Dev)
             {
-                // They did not match!  We MUST re-parse!
-                parse = CtiCommandParser(pExecReq->CommandString());
-            }
+                if( parse.getCommandStr().compareTo(pExecReq->CommandString(), RWCString::ignoreCase) )
+                {
+                    // They did not match!  We MUST re-parse!
+                    parse = CtiCommandParser(pExecReq->CommandString());
+                }
 
-            pExecReq->setMacroOffset( Dev->selectInitialMacroRouteOffset(pReq->RouteId() != 0 ? pReq->RouteId() : Dev->getRouteID()) );
+                pExecReq->setMacroOffset( Dev->selectInitialMacroRouteOffset(pReq->RouteId() != 0 ? pReq->RouteId() : Dev->getRouteID()) );
 
-            /*
-             *  We will execute based upon the data in the request....
-             */
+                /*
+                 *  We will execute based upon the data in the request....
+                 */
 
-            if(!pExecReq->getSOE())     // We should attach one if one is not already set...
-            {
-                pExecReq->setSOE( SystemLogIdGen() );  // Get us a CTIDBG_new number to deal with
-            }
+                if(!pExecReq->getSOE())     // We should attach one if one is not already set...
+                {
+                    pExecReq->setSOE( SystemLogIdGen() );  // Get us a CTIDBG_new number to deal with
+                }
 
-            tempOutList.clearAndDestroy();              // Just make sure!
+                tempOutList.clearAndDestroy();              // Just make sure!
 
-            try
-            {
-                status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
-            }
-            catch(...)
-            {
+                try
+                {
+                    status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
+                }
+                catch(...)
+                {
+                    {
+                        RWTime NowTime;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
+                        dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
+                    }
+                }
+
+                for(int j = tempOutList.entries(); j > 0; j--)
+                {
+                    // _porterOMQueue.putQueue(tempOutList.get());
+                    outList.insert( tempOutList.get() );
+                }
+
+                if(status != NORMAL)
                 {
                     RWTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
+                    dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << NowTime << "   Device:  " << Dev->getName() << endl;
                     dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
+                    dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
                 }
+
+                status = NORMAL;
             }
-
-            for(int j = tempOutList.entries(); j > 0; j--)
+            else
             {
-                // _porterOMQueue.putQueue(tempOutList.get());
-                outList.insert( tempOutList.get() );
-            }
-
-            if(status != NORMAL)
-            {
-                RWTime NowTime;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << NowTime << "   Device:  " << Dev->getName() << endl;
-                dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
-                dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
-            }
-
-            status = NORMAL;
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << RWTime() << " Command " << pExecReq->CommandString() << endl;
-                dout << RWTime() << " Device: " << pExecReq->DeviceId() << endl;
-            }
-
-            CtiPILConnectionManager *CM = (CtiPILConnectionManager *)pExecReq->getConnectionHandle();
-
-            if(CM)
-            {
-                CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
-                                                              pExecReq->CommandString(),
-                                                              "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
-                                                              IDNF,
-                                                              pExecReq->RouteId(),
-                                                              pExecReq->MacroOffset(),
-                                                              pExecReq->AttemptNum(),
-                                                              pExecReq->TransmissionId(),
-                                                              pExecReq->UserMessageId(),
-                                                              pExecReq->getSOE());
-
-                if(pcRet != NULL)
                 {
-                    CM->WriteConnQue(pcRet);
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " Command " << pExecReq->CommandString() << endl;
+                    dout << RWTime() << " Device: " << pExecReq->DeviceId() << endl;
+                }
+
+                CtiPILConnectionManager *CM = (CtiPILConnectionManager *)pExecReq->getConnectionHandle();
+
+                if(CM)
+                {
+                    CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
+                                                                  pExecReq->CommandString(),
+                                                                  "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
+                                                                  IDNF,
+                                                                  pExecReq->RouteId(),
+                                                                  pExecReq->MacroOffset(),
+                                                                  pExecReq->AttemptNum(),
+                                                                  pExecReq->TransmissionId(),
+                                                                  pExecReq->UserMessageId(),
+                                                                  pExecReq->getSOE());
+
+                    if(pcRet != NULL)
+                    {
+                        CM->WriteConnQue(pcRet);
+                    }
                 }
             }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
