@@ -20,11 +20,11 @@ public class MCTConfig extends com.cannontech.database.db.DBPersistent
 	private Integer configType;
 	private String configMode;
 	private Integer mctWire1;
-	private Integer ke1;
+	private Float ke1;
 	private Integer mctWire2 = new Integer(-1);
-	private Integer ke2 = new Integer(-1);
+	private Float ke2 = new Float(-1);
 	private Integer mctWire3 = new Integer(-1);
-	private Integer ke3 = new Integer(-1);
+	private Float ke3 = new Float(-1);
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -48,7 +48,7 @@ public MCTConfig() {
 /**
  * Baseline constructor comment.
  */
-public MCTConfig(Integer conID, String name, Integer type, String mode, Integer wire1, Integer KE1, Integer wire2, Integer KE2, Integer wire3, Integer KE3) {
+public MCTConfig(Integer conID, String name, Integer type, String mode, Integer wire1, Float KE1, Integer wire2, Float KE2, Integer wire3, Float KE3) {
 	super();
 	configID = conID;
 	configName = name;
@@ -143,7 +143,7 @@ public java.lang.Integer getMCTWire1() {
 	return mctWire1;
 }
 
-public java.lang.Integer getKe1() {
+public java.lang.Float getKe1() {
 	return ke1;
 }
 
@@ -151,7 +151,7 @@ public java.lang.Integer getMCTWire2() {
 	return mctWire2;
 }
 
-public java.lang.Integer getKe2() {
+public java.lang.Float getKe2() {
 	return ke2;
 }
 
@@ -159,7 +159,7 @@ public java.lang.Integer getMCTWire3() {
 	return mctWire3;
 }
 
-public java.lang.Integer getKe3() {
+public java.lang.Float getKe3() {
 	return ke3;
 }
 
@@ -177,11 +177,11 @@ public void retrieve()
 			setConfigType( (Integer) results[2] );
 			setConfigMode( (String) results[3] );
 			setMCTWire1( (Integer) results[4] );
-			setKe1( (Integer) results[5] );
+			setKe1( (Float) results[5] );
 			setMCTWire2( (Integer) results[6] );
-			setKe2( (Integer) results[7] );
+			setKe2( (Float) results[7] );
 			setMCTWire3( (Integer) results[8] );
-			setKe3( (Integer) results[9] );
+			setKe3( (Float) results[9] );
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -212,7 +212,7 @@ public void setMCTWire1(java.lang.Integer wire1) {
 	mctWire1 = wire1;
 }
 
-public void setKe1(java.lang.Integer newKE1Val) {
+public void setKe1(java.lang.Float newKE1Val) {
 	ke1 = newKE1Val;
 }
 
@@ -220,7 +220,7 @@ public void setMCTWire2(java.lang.Integer wire2) {
 	mctWire2 = wire2;
 }
 
-public void setKe2(java.lang.Integer newKE2Val) {
+public void setKe2(java.lang.Float newKE2Val) {
 	ke2 = newKE2Val;
 }
 
@@ -228,7 +228,7 @@ public void setMCTWire3(java.lang.Integer wire3) {
 	mctWire3 = wire3;
 }
 
-public void setKe3(java.lang.Integer newKE3Val) {
+public void setKe3(java.lang.Float newKE3Val) {
 	ke3 = newKE3Val;
 }
 

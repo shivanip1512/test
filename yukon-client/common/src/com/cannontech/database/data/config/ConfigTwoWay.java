@@ -26,6 +26,8 @@ public class ConfigTwoWay extends com.cannontech.database.db.DBPersistent implem
 	public final static String MODE_MINMAX = "minmax";
 	
 	public final static Integer NONVALUE = new Integer(-1);
+	public final static Float NOVALUE = new Float(-1);
+	
 	
 	public final static Integer THREEWIRE = new Integer(3);
 	public final static Integer TWOWIRE = new Integer(2);
@@ -56,7 +58,7 @@ public ConfigTwoWay(Integer id, String name)
 	setConfigName(name);
 }
 
-public ConfigTwoWay(Integer conID, String name, Integer type, String mode, Integer wire1, Integer KE1, Integer wire2, Integer KE2, Integer wire3, Integer KE3 )
+public ConfigTwoWay(Integer conID, String name, Integer type, String mode, Integer wire1, Float KE1, Integer wire2, Float KE2, Integer wire3, Float KE3 )
 {
 	super();
 
@@ -141,7 +143,7 @@ public Integer getMCTWire1()
 	return getConfig().getMCTWire1();
 }
 
-public Integer getKe1()
+public Float getKe1()
 {
 	return getConfig().getKe1();
 }
@@ -153,10 +155,10 @@ public Integer getMCTWire2()
 	return getConfig().getMCTWire1();
 }
 
-public Integer getKe2()
+public Float getKe2()
 {
 	if(getConfig().getConfigType().compareTo(SERIES_200_TYPE) == 0)
-		return NONVALUE;
+		return NOVALUE;
 	return getConfig().getKe2();
 }
 
@@ -167,10 +169,10 @@ public Integer getMCTWire3()
 	return getConfig().getMCTWire3();
 }
 
-public Integer getKe3()
+public Float getKe3()
 {
 	if(getConfig().getConfigType().compareTo(SERIES_200_TYPE) == 0)
-		return NONVALUE;
+		return NOVALUE;
 	return getConfig().getKe3();
 }
 
@@ -216,7 +218,7 @@ public void setMCTWire1(Integer wire1)
 	getConfig().setMCTWire1(wire1);
 }
 
-public void setKe1(Integer ke1)
+public void setKe1(Float ke1)
 {
 	getConfig().setKe1(ke1);
 }
@@ -226,7 +228,7 @@ public void setMCTWire2(Integer wire2)
 	getConfig().setMCTWire2(wire2);
 }
 
-public void setKe2(Integer ke2)
+public void setKe2(Float ke2)
 {
 	getConfig().setKe2(ke2);
 }
@@ -236,7 +238,7 @@ public void setMCTWire3(Integer wire3)
 	getConfig().setMCTWire3(wire3);
 }
 
-public void setKe3(Integer ke3)
+public void setKe3(Float ke3)
 {
 	getConfig().setKe3(ke3);
 }
