@@ -7,8 +7,12 @@ package com.cannontech.tdc.roweditor;
  */
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.tags.TagManager;
 import com.cannontech.tdc.TDCClient;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -17,6 +21,9 @@ public class SendData
 {
 	private static ClientConnection connection = null;
 	private static SendData sendData = null;
+	
+	private static TagManager tagManager = null;
+
 /**
  * SendData constructor comment.
  */
@@ -33,15 +40,24 @@ protected SendData()
 private void buildRegistration() 
 {
 	//First do a registration
-	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+	Multi multi = new Multi();
+	Registration reg = new Registration();
 	reg.setAppName("Tabular Data Console SENDER");
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );  // 5 minutes
 	reg.setPriority( 15 );
 
-	connection.setRegistrationMsg( reg );	
+	PointRegistration pReg = new PointRegistration();
+	pReg.setRegFlags( PointRegistration.REG_ALL_PTS_MASK |
+							PointRegistration.REG_ALARMS );
+								
+	multi.getVector().addElement(reg);
+	multi.getVector().addElement(pReg);
+	
+	connection.setRegistrationMsg( multi );	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -92,6 +108,16 @@ public static synchronized SendData getInstance()
 		
 	return sendData;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:19:19 PM)
+ */
+public synchronized TagManager getTagMgr()
+{
+	return tagManager;
+}
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -116,7 +142,8 @@ private void initialize()
 		connection = new ClientConnection();
 		connection.setHost( TDCClient.HOST );
 		connection.setPort( TDCClient.PORT );
-		connection.setAutoReconnect( true );		
+		connection.setAutoReconnect( true );
+				
 		buildRegistration();
 		
 		try
@@ -128,9 +155,12 @@ private void initialize()
 			handleException( e );
 			return;
 		}
+		
+		tagManager = new TagManager( connection );
 	}
 	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/21/00 10:13:50 AM)

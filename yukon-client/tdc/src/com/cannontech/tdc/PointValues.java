@@ -61,7 +61,7 @@ public PointValues( int pointid, int ptType )
  * Used to make temporary pointValues ONLY, note: all the color fields and PointData
  * fields are still NULL after creation
  ***/
-public PointValues( int pointid, String ptType, String devName, 
+public PointValues( int pointid, int ptType, String devName, 
 			String ptState, String devType ) 
 {
 	super();
@@ -73,7 +73,7 @@ public PointValues( int pointid, String ptType, String devName,
 	setPointData( new PointData() );	
 	getPointData().setTime( new java.util.Date() );
 	getPointData().setId( pointid );
-	getPointData().setType( PointTypes.getType(ptType.toString()) );
+	getPointData().setType( ptType );
 }
 
 

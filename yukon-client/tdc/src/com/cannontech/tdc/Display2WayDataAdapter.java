@@ -54,6 +54,13 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final int DEFAULT_DISABLEDCOLOR = Colors.GRAY_ID;  // gray as of 8-31-2000
 	public static final int DEFAULT_ALARMCOLOR = Colors.RED_ID;  // red as of 1-12-2001
 	
+	public static final PointValues DUMMY_POINT_VALUES =
+						new PointValues(
+								TDCDefines.ROW_BREAK_ID,
+								PointTypes.INVALID_POINT,
+								"", "", "" );	
+
+	
 	private Vector columnNames = null;	
 	private Vector columnTypeName = null;
 
@@ -126,11 +133,7 @@ public void addBlankRow( int location )
 	else
 		getRows().insertElementAt( newRow, location );
 
-	createDummyPointValue( TDCDefines.ROW_BREAK_ID,
-					new Date().getTime(),
-					"",
-					0,		
-					location );
+	createDummyPointValue( location );
 }
 
 protected Vector getColumnNames()
@@ -243,7 +246,7 @@ private boolean buildRowQuery()
 			{
 				PointValues pv = new PointValues(
 								 ptID,
-							    pointData[i][1].toString(),
+								 PointTypes.getType(pointData[i][1].toString()),
 							    pointData[i][2].toString(),
 							    pointData[i][3].toString(),
 							    pointData[i][4].toString() );
@@ -366,6 +369,18 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
  * Version: <version>
  * @param id long
  */
+protected void createDummyPointValue( int location ) 
+{
+	if( location >= getRowCount() )
+		return;  // cant add it off the chart
+
+	if( location >= getRowCount() ) //Add the new value
+		pointValues.addElement( DUMMY_POINT_VALUES );
+	else
+		pointValues.insertElementAt( DUMMY_POINT_VALUES, location );
+}
+
+/* TRY TO GET AWAY FROM
 protected void createDummyPointValue( long id, long timeStamp, String deviceName, int soe_tag, int location ) 
 {
 	if( location >= getRowCount() )
@@ -373,10 +388,10 @@ protected void createDummyPointValue( long id, long timeStamp, String deviceName
 
 	// create our storage
 	PointValues pointValue = new PointValues( 
-				(int)id,
-				PointTypes.INVALID_POINT );
+		(int)id,
+		PointTypes.INVALID_POINT );
 
-	
+
 	if( location >= getRowCount() ) //Add the new value
 		pointValues.addElement( pointValue );
 	else  // insert the new value
@@ -386,8 +401,8 @@ protected void createDummyPointValue( long id, long timeStamp, String deviceName
 	pointValue.setTime( new Date(timeStamp) );
 	pointValue.setDeviceName( deviceName );
 	pointValue.setSOETag( soe_tag );
-	
 }
+*/
 
 /**
  * Insert the method's description here.
@@ -1561,8 +1576,9 @@ private boolean checkFilter( Signal signal )
  */
 public synchronized void processSignalReceived( Signal signal )
 {
-	// make sure we have a point and we are not looking at historical data
-	if( !checkFilter(signal) && !signalInTable(signal)  )
+	// make sure we have a point and we are not a LOG display
+	if( (!checkFilter(signal) && !signalInTable(signal))
+		  || Display.isLogDisplay(getCurrentDisplay().getDisplayNumber())  )
 	{
 		return;
 	}
@@ -1599,8 +1615,9 @@ public synchronized void processSignalReceived( Signal signal )
 		int rNum = getRowNumber(signal.getPointID());
 		PointValues ptVal = getPointValue(rNum);
 
+
 		//change the PointDatas tags preserving the alarms bits for the PointData
-		if( ptVal != null )
+		if( ptVal != null && ptVal != DUMMY_POINT_VALUES )
 		{
 			ptVal.setTags( 
 				(ptVal.getTags() & Signal.MASK_ANY_ALARM)

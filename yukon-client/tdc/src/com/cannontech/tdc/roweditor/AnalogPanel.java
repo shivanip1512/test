@@ -13,7 +13,6 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
-import com.cannontech.tdc.commandevents.ControlCommand;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class AnalogPanel extends ManualEntryJPanel implements RowEditorDialogListener 
@@ -86,15 +85,7 @@ private AlarmPanel getAlarmPanel() {
 	}
 	return ivjAlarmPanel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/15/2001 11:40:23 AM)
- * @return com.cannontech.tdc.roweditor.EditorDialogData
- */
-public EditorDialogData getEditorData() 
-{
-	return super.getEditorData();
-}
+
 /**
  * Return the JLabelPointDeviceName property value.
  * @return javax.swing.JLabel
@@ -305,30 +296,7 @@ public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent)
 {	
 	destroyObservers();
 }
-/**
- * Comment
- */
-public void jButtonControl_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
-{
-	// ask for verification from the user first
-	int retValue = optionBox.showConfirmDialog(this, "Execute the Control?",
-									  "Verification", javax.swing.JOptionPane.YES_NO_OPTION);
 
-	if( retValue == javax.swing.JOptionPane.YES_OPTION )
-	{
-		javax.swing.JButton buttonPressed = (javax.swing.JButton)actionEvent.getSource();
-
-		long devID = getEditorData().getDeviceID();
-		long ptID = getEditorData().getPointID();
-		
-		if( buttonPressed.getName().equalsIgnoreCase("JButtonRawState1") )
-			 ControlCommand.send( devID, ptID, ControlCommand.CONTROL_OPENED );
-		else // must be the button named JButtonRawState2
-			 ControlCommand.send( devID, ptID, ControlCommand.CONTROL_CLOSED );
-	}
-
-	return;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/10/00 3:25:00 PM)

@@ -12,6 +12,7 @@ import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
+import com.cannontech.tdc.roweditor.SendData;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 
@@ -2698,6 +2699,10 @@ public TDCClient getTdcClient()
 
 		//start trying to connect immediately
 		tdcClient.startConnection();
+		
+		
+		//force our out bound TDC connection to connect immediately
+		SendData.getInstance();
 	}
 
 	return tdcClient;

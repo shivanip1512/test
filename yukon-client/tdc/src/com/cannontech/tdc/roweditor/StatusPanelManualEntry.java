@@ -83,15 +83,7 @@ private AlarmPanel getAlarmPanel() {
 	}
 	return ivjAlarmPanel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/9/2001 3:37:40 PM)
- * @return com.cannontech.tdc.roweditor.EditorDialogData
- */
-public EditorDialogData getEditorData() 
-{
-	return super.getEditorData();
-}
+
 /**
  * Return the JComboBoxValues property value.
  * @return javax.swing.JComboBox

@@ -6,14 +6,19 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -29,13 +34,17 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.TagFuncs;
+import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.tags.Tag;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.ColumnData;
 import com.cannontech.tdc.data.Display;
@@ -49,6 +58,8 @@ import com.cannontech.tdc.roweditor.RowEditorDialog;
 import com.cannontech.tdc.roweditor.SendData;
 import com.cannontech.tdc.roweditor.StatusPanelControlEntry;
 import com.cannontech.tdc.roweditor.StatusPanelManualEntry;
+import com.cannontech.tdc.roweditor.TagWizardPanel;
+import com.cannontech.tdc.roweditor.TagsEditorPanel;
 import com.cannontech.tdc.toolbar.AlarmToolBar;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
@@ -97,7 +108,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemDisablePt = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemEnableDev = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemEnbablePt = null;
-	private javax.swing.JMenu ivjJMenuTags = null;
+	private javax.swing.JMenu jMenuAbleDis = null;
 	private javax.swing.JMenuItem ivjJMenuItemPageBack = null;
 	private javax.swing.JMenuItem ivjJMenuItemPageForward = null;
 	private javax.swing.JPopupMenu ivjJPopupMenuPage = null;
@@ -106,13 +117,15 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.ButtonGroup buttonGroupPage = null;
 	private javax.swing.JMenuItem ivjJMenuItemPopUpManualControl = null;
 	private javax.swing.JMenu ivjJMenuControl = null;
-	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemAllowDev = null;
-	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemAllowPt = null;
-	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitDev = null;
-	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemInhibitPt = null;
 	private TDCDBChangeHandler dbChangeHandler = null;
 	
+	
+	private javax.swing.JMenuItem jMenuItemInhibitPoint = null;	
+	private javax.swing.JMenuItem jMenuItemInhibitDevice = null;
+
 	private javax.swing.JMenuItem jMenuItemGraph = null;
+	private javax.swing.JMenuItem jMenuItemCreateTag = null;
+
 
 
 /**
@@ -140,19 +153,22 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC8(e);
 	if (e.getSource() == getJMenuItemPopUpManualControl()) 
 		connEtoC11(e);
-	if (e.getSource() == getJRadioButtonMenuItemInhibitDev()) 
-		connEtoC16(e);
-	if (e.getSource() == getJRadioButtonMenuItemAllowPt()) 
-		connEtoC17(e);
-	if (e.getSource() == getJRadioButtonMenuItemInhibitPt()) 
-		connEtoC18(e);
-	if (e.getSource() == getJRadioButtonMenuItemAllowDev()) 
-		connEtoC19(e);
+//	if (e.getSource() == getJRadioButtonMenuItemInhibitDev()) 
+//		jRadioButtonMenuItemInhibitDev_ActionPerformed(arg1)(e);
+//	if (e.getSource() == getJRadioButtonMenuItemAllowPt()) 
+//		jRadioButtonMenuItemAllowPt_ActionPerformed(e);
+//	if (e.getSource() == getJRadioButtonMenuItemInhibitPt()) 
+//		jRadioButtonMenuItemInhibitPt_ActionPerformed(e);
+//	if (e.getSource() == getJRadioButtonMenuItemAllowDev()) 
+//		jRadioButtonMenuItemAllowDev_ActionPerformed(e);
 	// user code begin {2}
 
 	if( e.getSource() == getJMenuItemGraph() ) 
 		jMenuItemGraph_ActionPerformed( e );
 
+
+	if( e.getSource() == getJMenuItemCreateTag() ) 
+		jMenuItemCreateTag_ActionPerformed( e );
 
 	if( e.getSource() instanceof javax.swing.JRadioButtonMenuItem ) 
 		jRadioButtonPage_ActionPerformed(e);
@@ -317,78 +333,6 @@ private void connEtoC15(java.awt.event.ItemEvent arg1) {
 		// user code begin {1}
 		// user code end
 		this.jRadioButtonMenuItemEnbablePt_ItemStateChanged(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC16:  (JRadioButtonMenuItemInhibitDev.action.actionPerformed(java.awt.event.ActionEvent) --> TDCMainPanel.jRadioButtonMenuItemInhibitDev_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC16(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jRadioButtonMenuItemInhibitDev_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC17:  (JRadioButtonMenuItemAllowPt.action.actionPerformed(java.awt.event.ActionEvent) --> TDCMainPanel.jRadioButtonMenuItemAllowPt_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC17(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jRadioButtonMenuItemAllowPt_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC18:  (JRadioButtonMenuItemInhibitPt.action.actionPerformed(java.awt.event.ActionEvent) --> TDCMainPanel.jRadioButtonMenuItemInhibitPt_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC18(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jRadioButtonMenuItemInhibitPt_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-/**
- * connEtoC19:  (JRadioButtonMenuItemAllowDev.action.actionPerformed(java.awt.event.ActionEvent) --> TDCMainPanel.jRadioButtonMenuItemAllowDev_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC19(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.jRadioButtonMenuItemAllowDev_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -823,19 +767,10 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 {
 	//only save the column data IF we have not done so already. Will happen when coming from
 	// fireBookMarkSelected()
-	CTILogger.info(" 		S1=" +
-	getCurrentDisplay().getDisplayData().getDisplayNumber()+" : " + 
-	getCurrentDisplay().getDisplayData().getProp0() );
-	
 	if( needColDataUpdate )
 	{
-		CTILogger.info(" 		   INIT");
 		updateDisplayColumnData();
 	}
-
-	CTILogger.info(" 		S2=" + 
-	getCurrentDisplay().getDisplayData().getDisplayNumber()+" : " + 
-	getCurrentDisplay().getDisplayData().getProp0() );
 
 	// only let events go through that are not special client related
 	if( getCurrentSpecailChild() != null )
@@ -858,11 +793,6 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 				// set the current display to the one selected
 				if( getDisplayIndexByName(selectedDisplayName) >= 0 )
 					setCurrentDisplay( getAllDisplays()[ getDisplayIndexByName(selectedDisplayName) ] );
-
-CTILogger.info(" 		Sa=" + 
-getCurrentDisplay().getDisplayData().getDisplayNumber()+" : " + 
-getCurrentDisplay().getDisplayData().getProp0() );
-
 				
 				// set our last display to the last one we were looking at
 				if( getCurrentDisplay() != null )
@@ -1232,19 +1162,39 @@ public javax.swing.JLabel getJLabelTime() {
  * Return the JMenuControl property value.
  * @return javax.swing.JMenu
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JMenu getJMenuControl() {
-	if (ivjJMenuControl == null) {
-		try {
+private javax.swing.JMenu getJMenuTags() 
+{
+	if( ivjJMenuControl == null )
+	{
+		try 
+		{
 			ivjJMenuControl = new javax.swing.JMenu();
 			ivjJMenuControl.setName("JMenuControl");
 			ivjJMenuControl.setMnemonic('r');
 			ivjJMenuControl.setText("Control");
-			ivjJMenuControl.add(getJRadioButtonMenuItemInhibitDev());
-			ivjJMenuControl.add(getJRadioButtonMenuItemAllowDev());
-			ivjJMenuControl.add(getJRadioButtonMenuItemInhibitPt());
-			ivjJMenuControl.add(getJRadioButtonMenuItemAllowPt());
 			// user code begin {1}
+
+			ivjJMenuControl.add( getJMenuItemInhibitPoint() );
+			ivjJMenuControl.add( getJMenuItemInhibitDevice() );
+			
+//			separatorViews = new javax.swing.JSeparator();
+//			separatorViews.setName("JSeparatorViews");
+//			separatorViews.setOpaque(false);
+//			separatorViews.setVisible(true);
+//			separatorViews.setEnabled(true);
+//			separatorViews.setMinimumSize(new java.awt.Dimension(0, 2));
+
+			ivjJMenuControl.add( new javax.swing.JSeparator() );
+			ivjJMenuControl.add( getJMenuItemCreateTag() );
+			//remove all item
+						
+			//must be our last item in the list!!
+			getJMenuTags().add( new javax.swing.JSeparator() );
+
+			
+			ivjJMenuControl.setMnemonic('t');
+			ivjJMenuControl.setText("Tags");
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1331,6 +1281,32 @@ private javax.swing.JMenuItem getJMenuItemPopUpManualControl() {
 	}
 	return ivjJMenuItemPopUpManualControl;
 }
+
+/**
+ * Return the JMenuItemCreateTag property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemCreateTag() 
+{
+	if( jMenuItemCreateTag == null )
+	{
+		try 
+		{
+			jMenuItemCreateTag = new javax.swing.JMenuItem();
+			jMenuItemCreateTag.setName("jMenuItemCreateTag");
+			jMenuItemCreateTag.setMnemonic('n');
+			jMenuItemCreateTag.setText("New Tag...");
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return jMenuItemCreateTag;
+}
+
+
 /**
  * Return the JMenuItemPopUpChangeValue property value.
  * @return javax.swing.JMenuItem
@@ -1381,27 +1357,24 @@ private javax.swing.JMenuItem getJMenuItemGraph()
  * Return the JMenuAblement property value.
  * @return javax.swing.JMenu
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JMenu getJMenuTags() {
-	if (ivjJMenuTags == null) {
+private javax.swing.JMenu getJMenuAbleDis() 
+{
+	if (jMenuAbleDis == null) {
 		try {
-			ivjJMenuTags = new javax.swing.JMenu();
-			ivjJMenuTags.setName("JMenuTags");
-			ivjJMenuTags.setMnemonic('t');
-			ivjJMenuTags.setText("Tags");
-			ivjJMenuTags.add(getJRadioButtonMenuItemDisableDev());
-			ivjJMenuTags.add(getJRadioButtonMenuItemEnableDev());
-			ivjJMenuTags.add(getJRadioButtonMenuItemDisablePt());
-			ivjJMenuTags.add(getJRadioButtonMenuItemEnbablePt());
-			// user code begin {1}
-			// user code end
+			jMenuAbleDis = new javax.swing.JMenu();
+			jMenuAbleDis.setName("jMenuAbleDis");
+			jMenuAbleDis.setMnemonic('b');
+			jMenuAbleDis.setText("Enable/Disable");
+			jMenuAbleDis.add(getJRadioButtonMenuItemDisableDev());
+			jMenuAbleDis.add(getJRadioButtonMenuItemEnableDev());
+			jMenuAbleDis.add(getJRadioButtonMenuItemDisablePt());
+			jMenuAbleDis.add(getJRadioButtonMenuItemEnbablePt());
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
-	return ivjJMenuTags;
+
+	return jMenuAbleDis;
 }
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPopupMenu getJPopupMenuManual() {
@@ -1413,7 +1386,7 @@ private javax.swing.JPopupMenu getJPopupMenuManual() {
 			ivjJPopupMenuManual.add(getJMenuItemPopUpManualEntry());
 			ivjJPopupMenuManual.add(getJMenuItemPopUpManualControl());
 			ivjJPopupMenuManual.add(getJMenuTags());
-			ivjJPopupMenuManual.add(getJMenuControl());
+			ivjJPopupMenuManual.add(getJMenuAbleDis());
 			// user code begin {1}
 
 			ivjJPopupMenuManual.add( getJMenuItemGraph() );
@@ -1450,50 +1423,7 @@ private javax.swing.JPopupMenu getJPopupMenuPage() {
 	}
 	return ivjJPopupMenuPage;
 }
-/**
- * Return the JRadioButtonMenuItemAllowDev property value.
- * @return javax.swing.JRadioButtonMenuItem
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButtonMenuItem getJRadioButtonMenuItemAllowDev() {
-	if (ivjJRadioButtonMenuItemAllowDev == null) {
-		try {
-			ivjJRadioButtonMenuItemAllowDev = new javax.swing.JRadioButtonMenuItem();
-			ivjJRadioButtonMenuItemAllowDev.setName("JRadioButtonMenuItemAllowDev");
-			ivjJRadioButtonMenuItemAllowDev.setMnemonic('w');
-			ivjJRadioButtonMenuItemAllowDev.setText("Allow Control on Entire Device");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJRadioButtonMenuItemAllowDev;
-}
-/**
- * Return the JRadioButtonMenuItemAllowPt property value.
- * @return javax.swing.JRadioButtonMenuItem
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButtonMenuItem getJRadioButtonMenuItemAllowPt() {
-	if (ivjJRadioButtonMenuItemAllowPt == null) {
-		try {
-			ivjJRadioButtonMenuItemAllowPt = new javax.swing.JRadioButtonMenuItem();
-			ivjJRadioButtonMenuItemAllowPt.setName("JRadioButtonMenuItemAllowPt");
-			ivjJRadioButtonMenuItemAllowPt.setMnemonic('l');
-			ivjJRadioButtonMenuItemAllowPt.setText("Allow Control on Point");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJRadioButtonMenuItemAllowPt;
-}
+
 /**
  * Return the JRadioButtonMenuItemDisableDev property value.
  * @return javax.swing.JRadioButtonMenuItem
@@ -1584,48 +1514,48 @@ private javax.swing.JRadioButtonMenuItem getJRadioButtonMenuItemEnbablePt() {
 }
 /**
  * Return the JRadioButtonMenuItemInhibitDev property value.
- * @return javax.swing.JRadioButtonMenuItem
+ * @return javax.swing.JMenuItem
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButtonMenuItem getJRadioButtonMenuItemInhibitDev() {
-	if (ivjJRadioButtonMenuItemInhibitDev == null) {
-		try {
-			ivjJRadioButtonMenuItemInhibitDev = new javax.swing.JRadioButtonMenuItem();
-			ivjJRadioButtonMenuItemInhibitDev.setName("JRadioButtonMenuItemInhibitDev");
-			ivjJRadioButtonMenuItemInhibitDev.setMnemonic('i');
-			ivjJRadioButtonMenuItemInhibitDev.setText("Inhibit Control on Entire Device");
-			// user code begin {1}
-			// user code end
+private javax.swing.JMenuItem getJMenuItemInhibitPoint() 
+{
+	if( jMenuItemInhibitPoint == null )
+	{
+		try 
+		{
+			jMenuItemInhibitPoint = new javax.swing.JMenuItem();
+			jMenuItemInhibitPoint.setName("jMenuItemInhibitPoint");
+			jMenuItemInhibitPoint.setMnemonic('i');
+			jMenuItemInhibitPoint.setText("Control on Point: NO");
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
-	return ivjJRadioButtonMenuItemInhibitDev;
+
+	return jMenuItemInhibitPoint;
 }
+
 /**
- * Return the JRadioButtonMenuItemInhibitPt property value.
- * @return javax.swing.JRadioButtonMenuItem
+ * Return the jMenuItemInhibitDevice property value.
+ * @return javax.swing.JMenuItem
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButtonMenuItem getJRadioButtonMenuItemInhibitPt() {
-	if (ivjJRadioButtonMenuItemInhibitPt == null) {
-		try {
-			ivjJRadioButtonMenuItemInhibitPt = new javax.swing.JRadioButtonMenuItem();
-			ivjJRadioButtonMenuItemInhibitPt.setName("JRadioButtonMenuItemInhibitPt");
-			ivjJRadioButtonMenuItemInhibitPt.setMnemonic('b');
-			ivjJRadioButtonMenuItemInhibitPt.setText("Inhibit Control on Point");
-			// user code begin {1}
-			// user code end
+private javax.swing.JMenuItem getJMenuItemInhibitDevice() 
+{
+	if( jMenuItemInhibitDevice == null) 
+	{
+		try 
+		{
+			jMenuItemInhibitDevice= new javax.swing.JMenuItem();
+			jMenuItemInhibitDevice.setName("jMenuItemInhibitDevice");
+			jMenuItemInhibitDevice.setMnemonic('l');
+			jMenuItemInhibitDevice.setText("Control on Device: NO");
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
-	return ivjJRadioButtonMenuItemInhibitPt;
+	return jMenuItemInhibitDevice;
 }
+
+
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JRadioButtonMenuItem getJRadioButtonPage1() {
 	if (ivjJRadioButtonPage1 == null) {
@@ -2030,6 +1960,7 @@ private void initConnections() throws java.lang.Exception {
 	setTableHeaderListener();
 	
 	getJMenuItemGraph().addActionListener( this );
+	getJMenuItemCreateTag().addActionListener(this);
 
 	// user code end
 	getDisplayTable().addMouseListener(this);
@@ -2044,11 +1975,8 @@ private void initConnections() throws java.lang.Exception {
 	getJMenuItemPageForward().addActionListener(this);
 	getJMenuItemPageBack().addActionListener(this);
 	getJMenuItemPopUpManualControl().addActionListener(this);
-	getJRadioButtonMenuItemInhibitDev().addActionListener(this);
-	getJRadioButtonMenuItemAllowPt().addActionListener(this);
-	getJRadioButtonMenuItemInhibitPt().addActionListener(this);
-	getJRadioButtonMenuItemAllowDev().addActionListener(this);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (5/31/00 2:29:27 PM)
@@ -2720,6 +2648,8 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 				
 
 		setAblementPopUpItems( selectedRow );
+		
+		addTagMenuItems( selectedRow );
 
 
 		// we cant enter a manual entry from a system display
@@ -2734,10 +2664,10 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 				TagUtils.isControlEnabled(
 					getTableDataModel().getPointValue(selectedRow).getTags())) );
 
-		getJMenuControl().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
+		getJMenuTags().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
 		getJMenuItemPopUpManualEntry().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
 		getJMenuItemGraph().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
-		getJMenuTags().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
+		getJMenuAbleDis().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
 	}
 	else
 	{
@@ -2748,6 +2678,96 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 	
 	return;
 }
+
+private void jMenutItemTag_Modify( ActionEvent e )
+{
+	RowEditorDialog d = new RowEditorDialog( 
+		CtiUtilities.getParentFrame(this) ); 
+
+	int selectedRow = getDisplayTable().getSelectedRow();
+	PointValues pt = getTableDataModel().getPointValue( selectedRow );
+
+	TagsEditorPanel panel =
+		new TagsEditorPanel( 
+			new EditorDialogData( pt, pt.getAllText() ),
+			getTableDataModel().getPointDynamicValue(selectedRow) );
+
+	d.setSize(680, 330);
+	panel.setPreferredSize( new Dimension(
+			(int)(d.getWidth()  * .95),
+			(int)(d.getHeight() * .9) ) );
+
+	// should be put in its own method
+	java.awt.GridBagConstraints cPanel = new java.awt.GridBagConstraints();
+	cPanel.gridx = 0; cPanel.gridy = 0;
+	cPanel.fill = java.awt.GridBagConstraints.BOTH;
+	cPanel.anchor = java.awt.GridBagConstraints.CENTER;
+	cPanel.ipadx = 0; cPanel.ipady = 0;
+	cPanel.insets = new java.awt.Insets(0, 0, 0, 0);
+	d.getContentPane().add(panel, cPanel);
+	
+
+	d.pack();
+	d.setResizable( false );
+	d.setTitle( panel.getPanelTitle() );
+	d.setUpdateButtonVisible( false );
+	d.setCancelButtonText("Close");
+	
+	d.addRowEditorDialogListener( panel );
+	
+	d.setLocationRelativeTo( this );		
+	d.setModal( true );		
+	d.show();
+}
+
+
+private void addTagMenuItems( int selRow )
+{
+	//remove everything up to the first seperator
+	Component[] comps = getJMenuTags().getMenuComponents();
+	for( int i = (comps.length-1); i >=0; i-- )
+		if( comps[i] instanceof javax.swing.JSeparator )
+			break;
+		else
+			getJMenuTags().remove( comps[i] );
+	
+	
+	Set tags = SendData.getInstance().getTagMgr().getTags(
+			(int)getTableDataModel().getPointID(selRow) );
+	
+	Iterator it = tags.iterator();
+	while( it.hasNext() )
+	{
+		Tag aTag = (Tag)it.next();
+		LiteTag liteTag = TagFuncs.getLiteTag( aTag.getTagID() );
+
+		JMenuItem mi = new JMenuItem(
+				liteTag.getTagName() + " (Level: " + liteTag.getTagLevel() + ")" );
+		
+		//mi.setForeground( Colors.getColor(liteTag.getColorID()) );
+		if( liteTag.getImageID() > CtiUtilities.NONE_ID )
+			mi.setIcon( 
+				new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
+					YukonImageFuncs.getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );
+
+		//be sure any click on a specific tag takes the user to the
+		// tag editor
+		mi.addActionListener( new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				jMenutItemTag_Modify( e );
+			}
+			
+			
+		});		
+		
+		getJMenuTags().add( mi );
+	}
+
+}
+
+
 /**
  * Comment
  */
@@ -2915,6 +2935,8 @@ public void jRadioButtonMenuItemEnbablePt_ItemStateChanged(java.awt.event.ItemEv
 }
 /**
  * Comment
+ * 
+ * Not Used
  */
 public void jRadioButtonMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
@@ -2939,6 +2961,68 @@ public void jRadioButtonMenuItemInhibitDev_ActionPerformed(java.awt.event.Action
 	
 	return;
 }
+
+/**
+ * Comment
+ */
+public void jMenuItemCreateTag_ActionPerformed(java.awt.event.ActionEvent source) 
+{
+	RowEditorDialog d = new RowEditorDialog( 
+		CtiUtilities.getParentFrame(this) ); 
+
+	int selectedRow = getDisplayTable().getSelectedRow();
+	PointValues pt = getTableDataModel().getPointValue( selectedRow );
+
+	TagWizardPanel panel =
+		new TagWizardPanel(
+			new EditorDialogData(pt, pt.getAllText()),
+			false );
+
+
+	// should be put in its own method
+	java.awt.GridBagConstraints constraintsPanel = new java.awt.GridBagConstraints();
+	constraintsPanel.gridx = 0; constraintsPanel.gridy = 0;
+	constraintsPanel.fill = java.awt.GridBagConstraints.BOTH;
+	constraintsPanel.anchor = java.awt.GridBagConstraints.NORTH;
+	constraintsPanel.ipadx = 0; constraintsPanel.ipady = 0;
+	constraintsPanel.insets = new java.awt.Insets(0, 0, 0, 0);
+	d.getContentPane().add(panel, constraintsPanel);
+	d.pack();
+	d.setResizable( false );
+	d.setTitle( panel.getPanelTitle() );
+	d.setUpdateButtonText( "Create" );
+	
+	d.addRowEditorDialogListener( panel );
+	
+	d.setLocationRelativeTo( this );		
+	d.setModal( true );		
+	d.show();
+
+
+//	
+//	
+//	int selectedRow = getDisplayTable().getSelectedRow();
+//	int deviceID = getTableDataModel().getPointValue(selectedRow).getDeviceID();
+//
+//	// build up our opArgList for our command	message
+//	Vector data = new Vector(4);
+//	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken
+//	data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
+//	data.addElement( new Integer(deviceID) );
+//	data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
+//
+//	// create our command message
+//	Command cmd = new Command();
+//	cmd.setOperation( Command.CONTROL_ABLEMENT );
+//	cmd.setOpArgList( data );
+//	cmd.setTimeStamp( new Date() );
+//
+//	// write the command message to the server
+//	SendData.getInstance().sendCommandMsg( cmd );
+	
+	return;
+}
+
 /**
  * Comment
  */
@@ -3383,12 +3467,6 @@ private void setAblementPopUpItems( int selectedRow )
 	getJRadioButtonMenuItemDisablePt().removeItemListener(this);
 	getJRadioButtonMenuItemEnbablePt().removeItemListener(this);
 
-	getJRadioButtonMenuItemAllowDev().removeItemListener(this);
-	getJRadioButtonMenuItemAllowPt().removeItemListener(this);
-	getJRadioButtonMenuItemInhibitDev().removeItemListener(this);
-	getJRadioButtonMenuItemInhibitPt().removeItemListener(this);
-
-
 	
 	long tags = getTableDataModel().getPointValue( selectedRow ).getTags();
 	
@@ -3400,19 +3478,24 @@ private void setAblementPopUpItems( int selectedRow )
 	getJRadioButtonMenuItemDisableDev().setSelected( isDeviceOutOfService );
 	getJRadioButtonMenuItemEnableDev().setSelected( !isDeviceOutOfService );
 
+
 	boolean isDeviceControlInhibited = TagUtils.isDeviceControlInhibited(tags);
-	getJRadioButtonMenuItemInhibitDev().setSelected( isDeviceControlInhibited );
-	getJRadioButtonMenuItemAllowDev().setSelected( !isDeviceControlInhibited );
+	getJMenuItemInhibitDevice().setText( 
+		(isDeviceControlInhibited ? "Control on Device: NO" : "Control on Device: YES") );
 	
 	boolean isPointControlInhibited = TagUtils.isPointControlInhibited(tags);
-	getJRadioButtonMenuItemInhibitPt().setSelected( isPointControlInhibited );
-	getJRadioButtonMenuItemAllowPt().setSelected( !isPointControlInhibited );
+	getJMenuItemInhibitPoint().setText(
+		(isPointControlInhibited ? "Control on Point: NO" : "Control on Point: YES") );
+
+
 
 	//if the point is not controllable, then disable the control options for that point
 	boolean isControllablePoint = TagUtils.isControllablePoint(tags);
-	getJRadioButtonMenuItemInhibitPt().setEnabled( isControllablePoint );
-	getJRadioButtonMenuItemAllowPt().setEnabled( isControllablePoint );
+	if( !isControllablePoint )
+		getJMenuItemInhibitPoint().setText("Point not controllable");
 
+//	getJRadioButtonMenuItemInhibitPt().setEnabled( isControllablePoint );
+//	getJRadioButtonMenuItemAllowPt().setEnabled( isControllablePoint );
 
 	
 	// add the item listeners back
@@ -3420,12 +3503,8 @@ private void setAblementPopUpItems( int selectedRow )
 	getJRadioButtonMenuItemEnableDev().addItemListener(this);
 	getJRadioButtonMenuItemDisablePt().addItemListener(this);
 	getJRadioButtonMenuItemEnbablePt().addItemListener(this);
-
-	getJRadioButtonMenuItemAllowDev().addItemListener(this);
-	getJRadioButtonMenuItemAllowPt().addItemListener(this);
-	getJRadioButtonMenuItemInhibitDev().addItemListener(this);
-	getJRadioButtonMenuItemInhibitPt().addItemListener(this);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/21/00 11:46:00 AM)
@@ -3792,7 +3871,8 @@ private void showRowEditor( Object source )
 		}
 		
 		d.setLocationRelativeTo( this );		
-		d.setModal( true );		
+		d.setModal( true );
+		d.setResizable( false );
 		d.show();
 	}
 	
