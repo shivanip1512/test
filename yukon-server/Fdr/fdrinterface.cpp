@@ -17,10 +17,14 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:33 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2002/05/08 15:34:14 $
 *    History: 
       $Log: fdrinterface.cpp,v $
+      Revision 1.4  2002/05/08 15:34:14  dsutton
+      removed the debug levels around the db reload code so it was easier to keep
+      track of what caused the reload
+
       Revision 1.3  2002/04/16 15:58:33  softwarebuild
       20020416_1031_2_16
 
@@ -1038,7 +1042,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                 if ((getDbReloadReason() != NotReloaded))
                 {
                     // reload point list
-                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+//                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " - Db change reloading points for Interface - " << getInterfaceName() << endl;
@@ -1048,7 +1052,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                 {
                     // reload point list
                     setDbReloadReason(Periodic);
-                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+//                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " - Periodic timer expired -  reloading " << getInterfaceName() << endl;
