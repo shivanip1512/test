@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/03/02 18:47:30 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/03/10 20:27:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,9 @@ using namespace std;
 #include "numstr.h"
 #include "tbl_ptdispatch.h"
 #include "utility.h"
+
+using namespace Cti;  //  in preparation for moving devices to their own namespace
+
 
 RWTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
 {
@@ -634,7 +637,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
 }
 
 
-inline CtiProtocolBase *CtiDeviceSingle::getProtocol() const
+inline Protocol::Interface *CtiDeviceSingle::getProtocol()
 {
     return 0;
 }
@@ -684,6 +687,12 @@ bool CtiDeviceSingle::isTransactionComplete(void)
     if( getProtocol() )     retval = getProtocol()->isTransactionComplete();
 
     return retval;
+}
+
+
+void CtiDeviceSingle::sendDispatchResults(CtiConnection &vg_connection)
+{
+    //if( getProtocol() )     retval = getProtocol()->isTransactionComplete();
 }
 
 
