@@ -1,13 +1,13 @@
 <html>
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>
+<%@ include file="../user_header.jsp" %>
+<%@ include file="../../trending_functions.jsp" %>
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <!-- Java script needed for the Calender Function--->
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <!-- Java script needed for the Calender Function--->
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../Calendar1-82.js"></SCRIPT>
 <SCRIPT Language="Javascript">
 function fsub() {
 	document.MForm.submit();
@@ -28,38 +28,11 @@ function Today() {
 </SCRIPT>
 <!-- JavaScript needed for jump menu--->
 <SCRIPT LANGUAGE = "JavaScript">
-
-function MakeArray()
-        {
-        this.length = MakeArray.arguments.length
-        for (var i = 0; i < this.length; i++)
-        this[i+1] = MakeArray.arguments[i]
-        }
-
-var siteopt = new MakeArray("",
-                            "CSV");
-//                            "PDF");
-							//"XLS");
-
-var userFriendlyName = new MakeArray("Select Format",
-                            "Comma Separated(.csv)");
-//                            "Adobe Acrobat(.pdf)");
-							//"Microsoft Excel(.xls)");
-
-//var url = new MakeArray("",
-//						"/servlet/Download?",
-//						"/servlet/Download?",
-//                        "/servlet/Download?");
-
 function jumpPage(form)
 {
-        i = form.ext.selectedIndex;
-        if (i == 0) return;   
-        form.action="/servlet/Download?";
-        form.method="post";
-        form.submit();
-        form.ext.selectedIndex=siteopt[0];
-        //window.location.href = url[i+1];
+	form.action="/servlet/Download?";
+    form.method="post";
+    form.submit();
 }
 </SCRIPT>
 <script language="JavaScript">
@@ -118,8 +91,6 @@ MM_reloadPage(true);
             <%@ include file="nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
-          
-            
           <td width="657" valign="top" bgcolor="#FFFFFF" > 
             <table width="98%" border="0" cellspacing="0" cellpadding="0" height="18">
               <tr> 
@@ -139,7 +110,7 @@ MM_reloadPage(true);
                         <tr> 
                           <td width="45%"><font face="Arial, Helvetica, sans-serif" size="1">Start 
                             Date:</font> 
-                            <input type="text" name="start" value="<%= datePart.format(graphBean.getStart()) %>" size="9">
+                            <input type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="9">
                             <a href="javascript:show_calendar('MForm.start')"
 							onMouseOver="window.status='Pop Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
@@ -207,67 +178,72 @@ MM_reloadPage(true);
                     </center>
                   </td>
                 </tr>
-              </table><form name = "otherOptions"><hr>
-              <table width="420" border="0" cellspacing="0" cellpadding="2" align = "center" height="29">
-                <tr> 
-                  <td align = "center"> 
-                    <div style = "border:solid 1px #666999; width:420px;" align = "center"> 
-                      <table width="100%" border="0" cellspacing="0" cellpadding="3" align = "center" height="11">
-                        <tr> 
-                          <td class = "TableCell" width="30%" height="27"  valign = "top"> 
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell">
-                              <tr> 
-                                <td width="7%" > 
-                                  <input type="checkbox" name="legend" value="checkbox" onClick = "changeLegend()">
-                                </td>
-                                <td  width="93%">Legend </td>
-                              </tr>
-                            </table>
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class = "tableCell">
-                              <tr> 
-                                <td width="23%" align = "right"> 
-                                  <input type="checkbox" name="legend_min_max" value="checkbox" onClick = "showMinMax()" >
-                                </td>
-                                <td width="77%">Show Min/Max</td>
-                              </tr>
-                              <tr> 
-                                <td width="23%" align = "right"> 
-                                  <input type="checkbox" name="legend_load_factor" value="checkbox" onClick = "showLoadFactor()">
-                                </td>
-                                <td width="77%">Show Load Factor</td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td class = "TableCell" height="27"  width="25%" valign = "top"> 
-                            <table width="99%" border="0" cellspacing="0" cellpadding="0" class = "TableCell">
-                              <tr> 
-                                <td width="13%" > 
-                                  <input id = "min_max" type="checkbox" name="min_max" value="checkbox" onClick = "changeMinMax()">
-                                </td>
-                                <td width="87%">Plot Min/Max</td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td class = "TableCell" height="27"  width="25%" valign = "top"> 
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
-                              <tr> 
-                                <td width="12%" > 
-                                  <input type="checkbox" name="mult" value="checkbox" onClick = "changeMult()">
-                                </td>
-                                <td width="88%">Graph Multiplier</td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td class = "TableCell" height="27"  width="20%" align = "center"> 
-                            <input type="button" name="Submit" value="Update" onClick = "submitMForm()">
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                    <a name = "marker" class = "TableCell" href="#top" style="text-decoration:underlined">Back 
-                    to Top</a> </td>
-                </tr>
-              </table></form>
+              </table>
+			<HR WIDTH="575">
+			<table width="575" border="0" align="center" cellpadding="0" cellspacing="0">
+			<tr>
+				<td align="center">			
+				<form name = "otherOptions">
+				<div align = "center">
+					<table width="575" border="0" cellspacing="0" cellpadding="3">
+					<tr>
+						<td>
+							<table width="100%" border="0" cellspacing="0" cellpadding="0" align = "center">
+							<tr> 
+								<td class = "TableCell" width="18%" valign = "top"> 
+									<table width="99%" border="0" cellspacing="0" cellpadding="0" class = "TableCell">
+									<tr> 
+										<td width="13%" >
+											<input id = "min_max" type="checkbox" name="min_max" value="checkbox" onClick = "changeMinMax()">
+										</td>
+										<td width="87%"><strong>Plot Min/Max</strong></td>
+									</tr>
+									</table>
+								</td>
+								<td class = "TableCell" width="22%" valign = "top"> 
+									<table width="98%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
+									<tr> 
+										<td width="12%" >
+											<input type="checkbox" name="mult" value="checkbox" onClick = "changeMult()">
+										</td>
+										<td width="88%"><strong>Use Graph Scaling</strong></td>
+									</tr>
+									</table>
+								</td>
+								<td class = "TableCell"  width="29%" valign = "top">
+									<table width="95%" border="0" cellspacing="0" cellpadding="0" class = "tableCell">
+										<tr> 
+											<td width="21%" align = "right" valign="top"> 
+												<input type="checkbox" name="legend_min_max" value="checkbox" onclick = "showMinMax()" > 
+											</td>
+											<td width="79%"><strong>Show Legend Min/Max</strong></td>
+										</tr>
+									</table>
+								</td>
+								<td class = "TableCell"  width="31%" valign = "top">
+									<table width="100%" border="0" cellspacing="0" cellpadding="0" class = "tableCell">
+                       	            <tr> 
+										<td width="13%" align = "right" valign="top"> 
+   	                                    	<input type="checkbox" name="legend_load_factor" value="checkbox" onclick = "showLoadFactor()"> 
+										</td>
+										<td width="87%"><strong>Show Legend Load Factor</strong></td>
+									</tr>
+									</table>
+								</td>
+							</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div align="center">
+								<input type="button" name="Submit" value="Update" onClick = "submitMForm()">
+							</div>
+						</td>
+					</tr>
+				</table>
+				</div>
+				</form>
 			  <br>
             <div id="viewMenu" class = "bgmenu" style = "width:120px" align = "left"> 
               <div id = "LINEID" name = "view"  style = "width:120px" onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView(<%=TrendModelType.LINE_VIEW%>);">&nbsp;&nbsp;&nbsp;<%=TrendModelType.LINE_VIEW_STRING%></div>
@@ -283,7 +259,7 @@ MM_reloadPage(true);
             </div>
             <div id="trendMenu" class = "bgmenu" style = "width:75px"> 
 			<div id = "LINEID" name = "view"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "jumpPage(document.exportForm)">&nbsp;&nbsp;&nbsp;Export</div>
-			<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='/operator/oper_print_trend.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+			<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='../../trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
 			</div>
 			<script language = "JavaScript">
 				document.writeln('<FORM NAME = "exportForm">');
@@ -293,7 +269,6 @@ MM_reloadPage(true);
 				document.writeln('</FORM>');
 				</script>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
