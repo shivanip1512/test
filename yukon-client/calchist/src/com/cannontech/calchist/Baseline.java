@@ -296,7 +296,7 @@ public Vector main()
 	{
 		CalcHistorical.setPointID(((Integer)CalcHistorical.calcBasePoints.get(i)).intValue());
 
-		CalcComponent calcComponent = new CalcComponent();
+		CalcComponent calcComponent = null;
 		for (int j = 0; j < CalcHistorical.allHistoricalCalcComponentsList.size(); j++)
 		{
 			if( CalcHistorical.getPointID() == ((CalcComponent) CalcHistorical.allHistoricalCalcComponentsList.get(j)).getPointID().intValue() )
@@ -305,6 +305,8 @@ public Vector main()
 				j = CalcHistorical.allHistoricalCalcComponentsList.size();	//exit for loop
 			}
 		}
+		if( calcComponent == null)
+			break;
 
 		// Calendar used to track/locate which days will be valid ones to search.	
 		int daysUsedToCalcBaseline = 0;
@@ -483,12 +485,10 @@ public int retrieveDailyBaselineData(CalcComponent calcComponent, Vector validTi
 			
 			Integer [] ts = new Integer[timestamps.size()];
 			timestamps.toArray(ts);
-			
 			if (rowCount > 0)
 			{
 				setValuesAndTimestamps(vals, ts);
 			}
-
 			java.util.Set keySet = baselineTreeMap.keySet();
 			dailyHoursArray = new Integer [keySet.size()];
 			keySet.toArray(dailyHoursArray);
@@ -506,7 +506,7 @@ public int retrieveDailyBaselineData(CalcComponent calcComponent, Vector validTi
 				double totalVal = v[1].doubleValue();
 				dailyValuesArray[i] = new Double(totalVal/counter);
 			}				
-	
+
 		}
 	}
 	catch (java.sql.SQLException e)

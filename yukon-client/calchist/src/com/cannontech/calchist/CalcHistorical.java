@@ -179,7 +179,7 @@ System.out.println("ENTERING figurePointDataMsgValue");
 		{
 			//For this to ever work the query in getCalcComponentPoints(...)
 			// must be changed at the spot of != 'Function'
-			System.out.println("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
+//			System.out.println("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
 		}
 		else
 		{
@@ -450,7 +450,7 @@ public java.util.List getHistoricalCalcComponents(String databaseAlias)
 							"AND CC.POINTID = CB.POINTID "+
 							"AND P.PAOBJECTID = PAO.PAOBJECTID "+
 							"AND PAO.DISABLEFLAG = 'N' "+
-							"AND CC.COMPONENTTYPE != 'Function' "+
+//							"AND CC.COMPONENTTYPE != 'Function' "+
 							"AND CB.UPDATETYPE = 'Historical' "+
 							"ORDER BY CC.POINTID, CC.COMPONENTORDER");
 
