@@ -23,8 +23,9 @@ public class GraphBean implements GraphDefines
 
 	private String period = ServletUtil.historicalPeriods[0];
 	private int gdefid = -1;
-	private Date start = null;
-	private Date stop = null;
+	private String start = "";
+	private Date startDate = null;
+	private Date stopDate = null;
 	private int viewType = TrendModelType.LINE_VIEW;
 	private int options = 0x0000;
 	private String format = "png";
@@ -233,22 +234,22 @@ public class GraphBean implements GraphDefines
 	 * Method getStop.
 	 * @return Date
 	 */
-	private Date getStop()
+	private Date getStopDate()
 	{
-		stop = com.cannontech.util.ServletUtil.getEndingDateOfInterval( getStart(), getPeriod());
-		return stop;
+		stopDate = com.cannontech.util.ServletUtil.getEndingDateOfInterval( getStartDate(), getPeriod());
+		return stopDate;
 	}
 	/**
 	 * Method getStart.
 	 * @return Date
 	 */
-	public java.util.Date getStart()
+	public java.util.Date getStartDate()
 	{
-		if( start == null)
+		if( startDate == null)
 		{
-			start = ServletUtil.getToday();
+			startDate = ServletUtil.getToday();
 		}
-		return start;
+		return startDate;
 	}
 	/**
 	 * Method setStart.
@@ -256,19 +257,20 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setStart(String newStart)
 	{
-		setStart(ServletUtil.parseDateStringLiberally(newStart));
+		start = newStart;
+		setStartDate(ServletUtil.parseDateStringLiberally(start));
 	}
 	
 	/**
 	 * Method setStart.
 	 * @param newStart java.util.Date
 	 */
-	private void setStart(Date newStart)
+	private void setStartDate(Date newStartDate)
 	{
-		if(start == null || start.compareTo((Object)newStart) != 0 )	//date changed
+		if(startDate == null || startDate.compareTo((Object)newStartDate) != 0 )	//date changed
 		{
 			com.cannontech.clientutils.CTILogger.info("Changing Date!");
-			start = newStart;
+			startDate = newStartDate;
 			getGraph().setUpdateTrend(true);
 		}
 	}
@@ -318,7 +320,7 @@ public class GraphBean implements GraphDefines
 	{
 		if (newStart == null )
 		{
-			newStart = getStart();
+			newStart = getStartDate();
 		}
 	
 		if (newStop == null)
@@ -362,7 +364,7 @@ public class GraphBean implements GraphDefines
 	 */
 	public int getNumDays()
 	{
-		int numDays = com.cannontech.common.util.TimeUtil.differenceInDays(getStart(), getStop());
+		int numDays = com.cannontech.common.util.TimeUtil.differenceInDays(getStartDate(), getStopDate());
 		return numDays;
 	}
 	/**
