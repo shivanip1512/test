@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/25 20:53:19 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/11 21:26:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,6 +194,12 @@ void CtiDNPObjectBlock::addObject( CtiDNPObject *object )
 
 void CtiDNPObjectBlock::addObjectIndex( CtiDNPObject *object, int index )
 {
+    if( index > 0 )
+    {
+        //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
+        index--;
+    }
+
     switch( _qualifier )
     {
         case ByteIndex_ByteQty:
@@ -563,10 +569,7 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
 
                 _objectList.push_back(tmpObj);
 
-                if( idx >= 0 )
-                {
-                    _objectIndices.push_back(idx);
-                }
+                _objectIndices.push_back(idx);
             }
             else
             {
@@ -654,9 +657,11 @@ void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 
                 if( pMsg != NULL )
                 {
-                    if( _objectIndices.size() < i )
+                    if( _objectIndices[i] >= 0 )
                     {
-                        pMsg->setId(_objectIndices[i]);
+                        //  MAGIC NUMBER WARNING:  turning 0-based offset into 1-based offset
+                        //                           for all consumers
+                        pMsg->setId(_objectIndices[i] + 1);
                     }
 
                     pointList.append(pMsg);
