@@ -24,10 +24,10 @@ public class PowerFailPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( int type_ )
+	public boolean isDeviceValid( com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_ )
 	{
 		// All MCT's are valid (with the exception of LMT2 and DCT501 //
-		return com.cannontech.database.data.device.DeviceTypesFuncs.isMCTOnly(type_);
+		return com.cannontech.database.data.device.DeviceTypesFuncs.isMCTOnly(litePaobject_.getType());
 	}
 
 	/**
@@ -37,9 +37,9 @@ public class PowerFailPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isPointCreated( int pointOffset_, int pointType_)
+	public boolean isPointCreated( LitePoint lp )
 	{
-		return ((pointOffset_ == 20) && (pointType_ == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT));
+		return ((lp.getPointOffset() == 20) && (lp.getPointType() == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT));
 	}
 	/**
 	 * Parses through the powerFailPointsDeviceList and creates a mutiDBPersistent
@@ -55,7 +55,7 @@ public class PowerFailPointCreate extends PointCreate
 		getDeviceVector(powerFailDevices);
 	
 		//create an object to hold all of our DBPersistant objects
-		com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+		com.cannontech.database.data.multi.SmartMultiDBPersistent multi = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 		
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
@@ -107,7 +107,7 @@ public class PowerFailPointCreate extends PointCreate
 			accumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
 			accumPoint.getPointAccumulator().setDataOffset(new Double(0.0));
 				
-			multi.getDBPersistentVector().add( accumPoint );
+			multi.addDBPersistent( accumPoint );
 			
 			++addCount;
 			pointID++;

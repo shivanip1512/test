@@ -26,30 +26,6 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 	}
 	
 	/**
-	 * Returns true if the Device is a valid container of Power Fail points.
-	 * A valid type_ is of type MCT (Not including LMT2 or DCT501
-	 * Creation date: (4/22/2002 4:11:23 PM)
-	 * @param _type int
-	 * @return boolean
-	 */
-	public boolean isDeviceValid( int type_ )
-	{
-		// All MCT's are valid (with the exception of LMT2 and DCT501 //
-		return com.cannontech.database.data.device.DeviceTypesFuncs.isMCTOnly(type_);
-	}
-
-	/**
-	 * Returns true if the Device is a valid container of Power Fail points.
-	 * A valid type_ is of type MCT (Not including LMT2 or DCT501
-	 * Creation date: (4/22/2002 4:11:23 PM)
-	 * @param _type int
-	 * @return boolean
-	 */
-	public boolean isPointCreated( int pointOffset_, int pointType_)
-	{
-		return ((pointOffset_ == 20) && (pointType_ == com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT));
-	}
-	/**
 	 * Parses through the powerFailPointsDeviceList and creates a mutiDBPersistent
 	 *  of PulseAccumulator points to be inserted as Power Fail points.
 	 * Creation date: (5/29/2001 9:13:14 AM)
@@ -62,7 +38,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 		com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO(deviceID);
 	
 		//create an object to hold all of our DBPersistant objects
-		com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+		com.cannontech.database.data.multi.SmartMultiDBPersistent multi = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 		
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
@@ -109,7 +85,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			analogPoint.getPointAnalog().setMultiplier(new Double(1.0));
 			analogPoint.getPointAnalog().setDataOffset(new Double(0.0));
 	
-			multi.getDBPersistentVector().add( analogPoint );
+			multi.addDBPersistent( analogPoint );
 			
 			++addCount;
 			pointID++;

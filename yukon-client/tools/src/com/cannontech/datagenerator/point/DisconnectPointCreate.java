@@ -24,12 +24,13 @@ public class DisconnectPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( int type_ )
+	public boolean isDeviceValid(com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_ )
 	{
-		// Valid points go here
-		return ( type_ == DeviceTypesFuncs.MCT213 ||
-					 type_ == DeviceTypesFuncs.MCT310ID ||
-					 type_ == DeviceTypesFuncs.MCT310IDL );
+		// Valid MCT213 or MCT310ID
+		int type = litePaobject_.getType();
+		return ( type == DeviceTypesFuncs.MCT213 ||
+					type == DeviceTypesFuncs.MCT310ID ||
+					type == DeviceTypesFuncs.MCT310IDL);
 	}
 
 	/**
@@ -39,9 +40,9 @@ public class DisconnectPointCreate extends PointCreate
 	 * @param type int
 	 * @return boolean
 	 */
-	public boolean isPointCreated( int pointOffset_, int pointType_)
+	public boolean isPointCreated(LitePoint lp)
 	{
-		return (( pointOffset_ == 1) && (pointType_ == com.cannontech.database.data.point.PointTypes.STATUS_POINT));
+		return (( lp.getPointOffset() == 1) && (lp.getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT));
 	}
 	/**
 	 * Parses through the DisconnectPointsDeviceList and creates a mutiDBPersistent
@@ -57,7 +58,8 @@ public class DisconnectPointCreate extends PointCreate
 		getDeviceVector(disconnectDevices);
 	
 		//create an object to hold all of our DBPersistant objects
-		com.cannontech.database.data.multi.MultiDBPersistent multi = new com.cannontech.database.data.multi.MultiDBPersistent();
+		com.cannontech.database.data.multi.SmartMultiDBPersistent multi = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
+		
 		
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
@@ -112,7 +114,7 @@ public class DisconnectPointCreate extends PointCreate
 			statusPoint.getPointStatus().setStateOneControl("control close");
 			statusPoint.getPointStatus().setCommandTimeOut(new Integer(com.cannontech.database.db.point.PointStatus.DEFAULT_CMD_TIMEOUT));
 			
-			multi.getDBPersistentVector().add( statusPoint );
+			multi.addDBPersistent( statusPoint );
 			
 			++addCount;
 			pointID++;
