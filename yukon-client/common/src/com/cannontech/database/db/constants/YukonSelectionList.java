@@ -81,6 +81,19 @@ public class YukonSelectionList extends DBPersistent {
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
 	}
+
+	/**
+	 * @see com.cannontech.database.db.DBPersistent#update()
+	 */
+	public void update() throws SQLException {
+		Object[] constraintValues = { getListID() };
+		Object[] setValues = {
+			getOrdering(), getSelectionLabel(), getWhereIsList(),
+			getListName(), getUserUpdateAvailable()
+		};
+		
+		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
+	}
 	
 	public synchronized static Integer getNextListID(java.sql.Connection conn) {
 		if( conn == null )
@@ -111,12 +124,6 @@ public class YukonSelectionList extends DBPersistent {
 		
 		//strange, should not get here
 		return new Integer(CtiUtilities.NONE_ID);
-	}
-
-	/**
-	 * @see com.cannontech.database.db.DBPersistent#update()
-	 */
-	public void update() throws SQLException {
 	}
 
 	/**
