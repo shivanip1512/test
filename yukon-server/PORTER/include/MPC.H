@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/MPC.H-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/20 21:02:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,8 +164,8 @@ VOID APIENTRY MPCCleanUp (ULONG);
 /* Function prototypes from RIPPLE.C */
 int SendBitPatternToLogger (const CHAR *, const BYTE *, int len = 7);
 int SendDOToLogger (const CHAR *, const BYTE *);
-int SendTelegraphStatusToMPC (ULONG, const BYTE *);
-
+//int SendTelegraphStatusToMPC (ULONG, const BYTE *);
+int SendTelegraphStatusToMPC (ULONG, const BYTE *, CtiDeviceBase *dev );
 /* Definitions related to Telegraph Interface */
 #define MPC_WAITING                 00
 #define MPC_READY                   01
