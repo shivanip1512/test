@@ -31,5 +31,6 @@ public interface SystemRole
     public static final int VOICE_HOST = YukonRoleDefs.YUKON_PROPERTYID_BASE - 15;
     public static final int NOTIFICATION_HOST = YukonRoleDefs.YUKON_PROPERTYID_BASE - 16;
     public static final int NOTIFICATION_PORT = YukonRoleDefs.YUKON_PROPERTYID_BASE - 17;
+	public static final int EXPORT_FILE_DIR = YukonRoleDefs.YUKON_PROPERTYID_BASE - 18;
 	
 }

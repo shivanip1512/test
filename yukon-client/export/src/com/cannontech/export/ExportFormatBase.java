@@ -1,6 +1,9 @@
 package com.cannontech.export;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.export.record.RecordBase;
+import com.cannontech.roles.yukon.SystemRole;
 /**
  * Base class for export file format types.
  * Creation date: (4/8/2002 11:11:48 AM)
@@ -109,18 +112,11 @@ public abstract class ExportFormatBase
 	{
 		if( exportDirectory == null)
 		{
-			try
-			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				exportDirectory = bundle.getString("export_file_directory");
-				logEvent("Export File Directory (config.prop): " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
-			}
-			catch( Exception e)
-			{
-				exportDirectory = com.cannontech.common.util.CtiUtilities.getExportDirPath();
-				logEvent("Config.properties export_file_directory key NOT found.", com.cannontech.common.util.LogWriter.ERROR);
-				logEvent("Export File Directory  default value: " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
-			}
+			String expDir = ClientSession.getInstance().getRolePropertyValue(
+				SystemRole.EXPORT_FILE_DIR, CtiUtilities.getExportDirPath() );
+
+			logEvent("Export File Directory : " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
+
 			java.io.File file = new java.io.File( exportDirectory);
 			file.mkdirs();
 		}
