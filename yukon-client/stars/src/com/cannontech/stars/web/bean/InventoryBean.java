@@ -253,11 +253,13 @@ public class InventoryBean {
 		ArrayList hwList = getHardwareList();
 		if (hwList == null || hwList.size() == 0) {
 			htmlBuf.append("<p class='MainText'>No hardware found.</p>").append("\r\n");
-			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append("\r\n");
-			htmlBuf.append("  <tr>").append("\r\n");
-			htmlBuf.append("    <td align='center'><input type='button' name='Back' value='Back' onclick='history.back()'></td>").append("\r\n");
-			htmlBuf.append("  </tr>").append("\r\n");
-			htmlBuf.append("</table>").append("\r\n");
+			if (getHtmlStyle() != HTML_STYLE_LIST_INVENTORY) {
+				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append("\r\n");
+				htmlBuf.append("  <tr>").append("\r\n");
+				htmlBuf.append("    <td align='center'><input type='button' name='Back' value='Back' onclick='history.back()'></td>").append("\r\n");
+				htmlBuf.append("  </tr>").append("\r\n");
+				htmlBuf.append("</table>").append("\r\n");
+			}
 			return htmlBuf.toString();
 		}
 		
