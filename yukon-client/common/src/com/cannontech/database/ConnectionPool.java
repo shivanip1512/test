@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
 
 
@@ -52,18 +53,23 @@ public class ConnectionPool
 	  debug( getStats() );
    }
 
-   public synchronized void freeConnection(Connection conn)
+   public void freeConnection(Connection conn)
    {
-     if( conn == null || checkedOut <= 0 )
-     	return;
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized (cache) {
+		synchronized (this) {
+			if( conn == null || checkedOut <= 0 )
+			   return;
      
-	  // Put the connection at the end of the Vector
-	  freeConnections.addElement(conn);
-	  checkedOut--;
-	  notifyAll();
+			 // Put the connection at the end of the Vector
+			 freeConnections.addElement(conn);
+			 checkedOut--;
+			 notifyAll();
 	  
-	  debug("Returned/Added connection to pool");
-	  debug( getStats() );
+			 debug("Returned/Added connection to pool");
+			 debug( getStats() );
+		}
+	}
    }
 
    public Connection getConnection() throws SQLException 
@@ -90,65 +96,69 @@ public class ConnectionPool
 		 throw e;
 	  }
    }                        
-   private synchronized Connection getConnection(long timeout) 
+   private Connection getConnection(long timeout) 
 					  throws SQLException
    {
-
-	  // Get a pooled Connection from the cache or a new one.
-	  // Wait if all are checked out and the max limit has
-	  // been reached.
-	  long startTime = System.currentTimeMillis();
-	  long remaining = timeout;
-	  Connection conn = null;
-
-	  while( (conn = getPooledConnection()) == null )
-	  {
-		 try
-		 {
-			debug("Waiting for connection. Timeout=" + remaining + " millis");
-
-			wait(remaining);
-		 }
-		 catch (InterruptedException e)
-		 { }
-
-		 remaining = timeout - (System.currentTimeMillis() - startTime);
-		 if (remaining <= 0)
-		 {
-			// Timeout has expired
-			debug("Time-out while waiting for connection" );
-
-			throw new SQLException("getConnection() timed-out");
-		 }
-	  }
-
-	  // Check if the Connection is still OK
-	  if (!isConnectionOK(conn))
-	  {
-		 closeConnection( conn );
-
-		 //try to create a new one	  	
-		 freeConnections.addElement( newConnection() );
-	  	
-		 // It was bad. Try again with the remaining timeout
-		 debug("Removed bad connection from pool" );
-
-		 return getConnection(remaining);
-	  }
-	  else
-	  {
-		  checkedOut++;
-		  debug( "Delivered connection from pool" );
-		  debug( getStats() );
-		  
-		
-		  // Great we have a good conn, Be sure we have our fair share of DB conns
-		  int totalConns = freeConnections.size() + checkedOut;
-		    for( int i = totalConns; i < initConns; i++ )
-			   freeConnections.add( newConnection() );
-		  
-		  return conn;
-	  }
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized (cache) {
+		synchronized (this) {
+			// Get a pooled Connection from the cache or a new one.
+			// Wait if all are checked out and the max limit has
+			// been reached.
+			long startTime = System.currentTimeMillis();
+			long remaining = timeout;
+			Connection conn = null;
+	
+			while( (conn = getPooledConnection()) == null )
+			{
+			   try
+			   {
+				  debug("Waiting for connection. Timeout=" + remaining + " millis");
+	
+				  wait(remaining);
+			   }
+			   catch (InterruptedException e)
+			   { }
+	
+			   remaining = timeout - (System.currentTimeMillis() - startTime);
+			   if (remaining <= 0)
+			   {
+				  // Timeout has expired
+				  debug("Time-out while waiting for connection" );
+	
+				  throw new SQLException("getConnection() timed-out");
+			   }
+			}
+	
+			// Check if the Connection is still OK
+			if (!isConnectionOK(conn))
+			{
+			   closeConnection( conn );
+	
+			   //try to create a new one	  	
+			   freeConnections.addElement( newConnection() );
+		  	
+			   // It was bad. Try again with the remaining timeout
+			   debug("Removed bad connection from pool" );
+	
+			   return getConnection(remaining);
+			}
+			else
+			{
+				checkedOut++;
+				debug( "Delivered connection from pool" );
+				debug( getStats() );
+			  
+			
+				// Great we have a good conn, Be sure we have our fair share of DB conns
+				int totalConns = freeConnections.size() + checkedOut;
+				  for( int i = totalConns; i < initConns; i++ )
+					 freeConnections.add( newConnection() );
+			  
+				return conn;
+			}
+		}
+	}
 
    }   
 
@@ -274,23 +284,28 @@ public class ConnectionPool
 	  return conn;
    }
    
-   public synchronized void release()
+   public void release()
    {
-	  Enumeration allConnections = freeConnections.elements();
-	  while (allConnections.hasMoreElements())
-	  {
-		 Connection con = (Connection) allConnections.nextElement();
-		 try
-		 {
-			con.close();
-			debug( "Closed connection" );
-		 }
-		 catch (SQLException e)
-		 {
-			error( "Couldn't close connection", e );
-		 }
-	  }
-	  freeConnections.removeAllElements();
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized (cache) {
+		synchronized (this) {
+			Enumeration allConnections = freeConnections.elements();
+			while (allConnections.hasMoreElements())
+			{
+			   Connection con = (Connection) allConnections.nextElement();
+			   try
+			   {
+				  con.close();
+				  debug( "Closed connection" );
+			   }
+			   catch (SQLException e)
+			   {
+				  error( "Couldn't close connection", e );
+			   }
+			}
+			freeConnections.removeAllElements();
+		}
+	}
    }
 
 
@@ -332,7 +347,7 @@ public class ConnectionPool
 		return user + " @ " + URL;
 	}
    
-   protected synchronized void wrapperClosed(Connection conn)
+   protected void wrapperClosed(Connection conn)
 	{
 	  freeConnection( conn );
    }
