@@ -44,6 +44,9 @@ public final class CtiUtilities
 	public static final String ENABLED_STRING = "enabled";
 	public static final String DISABLED_STRING = "disabled";
 	
+	public static final String EXCLUSION_TIME_INFO = "TimeInfo";
+	public static final Integer EXCLUSION_TIMING_FUNC_ID = new Integer(2);
+	
 	private static java.util.GregorianCalendar gc1990 = null;
 	
 	//a universal formatter for numbers

@@ -75,6 +75,18 @@ public class PAOExclusion extends com.cannontech.database.db.DBPersistent
 		setFuncRequeue( funcRequeue_ );
 	}
 	
+	public PAOExclusion( Integer paoID_, Integer functionID_, String funcName_, String funcParams_)
+	{
+		this();
+		
+		setPaoID( paoID_ );
+		setExcludedPaoID( new Integer(CtiUtilities.NONE_ID) );
+		setPointID( new Integer(CtiUtilities.NONE_ID) );
+		setFunctionID( functionID_ );
+		setFuncName( funcName_ );
+		setFuncParams( funcParams_);
+	}
+	
 	/**
 	 * add method comment.
 	 */

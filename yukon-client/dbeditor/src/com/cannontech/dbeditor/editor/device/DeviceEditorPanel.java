@@ -101,8 +101,11 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC
 			
 		},
-		{	//11 - LMIExclusionEditorPanel
-			PAOGroups.SERIES_5_LMI
+		{	//11 - ExclusionTimingEditorPanel
+			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
+			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
+			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
+			PAOGroups.SERIES_5_LMI, PAOGroups.RTC
 		}
 
 };
@@ -205,7 +208,7 @@ public Object[] createNewPanel(int panelIndex)
 	
 			if( "TRUE".equalsIgnoreCase(showItToo) )
 			{
-				objs[0] = new com.cannontech.dbeditor.editor.device.LMIExclusionEditorPanel();
+				objs[0] = new com.cannontech.dbeditor.editor.device.ExclusionTimingEditorPanel();
 				objs[1] = "Exclusion Timing";
 			}
 			else
