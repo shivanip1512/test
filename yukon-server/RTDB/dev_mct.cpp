@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/05/14 15:36:55 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/05/15 20:34:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -576,7 +576,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             pOut->RouteID         = routeID;
             pOut->Request.RouteID = routeID;
 
-            EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
+            EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
 
             if( (Route = CtiDeviceBase::getRoute( pOut->RouteID )) != NULL )
             {
