@@ -157,6 +157,7 @@ public class OptOutEventQueue {
 				tempDir.mkdirs();
 			
 			instance = new OptOutEventQueue( new File(tempDir, ServerUtils.OPTOUT_EVENT_FILE) );
+			instance.syncFromFile();
 		}
 		
 		return instance;

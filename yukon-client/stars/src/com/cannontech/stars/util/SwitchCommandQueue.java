@@ -124,6 +124,7 @@ public class SwitchCommandQueue {
 				tempDir.mkdirs();
 			
 			instance = new SwitchCommandQueue( new File(tempDir, ServerUtils.SWITCH_COMMAND_FILE) );
+			instance.syncFromFile();
 		}
 		
 		return instance;

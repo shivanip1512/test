@@ -383,7 +383,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (optOutEventQueue == null) {
 			try {
 				optOutEventQueue = OptOutEventQueue.getInstance();
-				optOutEventQueue.syncFromFile();
 			}
 			catch (IOException e) {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -401,7 +400,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (switchCommandQueue == null) {
 			try {
 				switchCommandQueue = SwitchCommandQueue.getInstance();
-				switchCommandQueue.syncFromFile();
 			}
 			catch (IOException e) {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
