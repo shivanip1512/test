@@ -11,8 +11,9 @@ import java.text.DecimalFormat;
 public interface GraphDefines 
 {
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath() + "Yukon Trending Help.chm";
-	public static final String VERSION = "2.1.15";
-
+	
+	//NO LONGER NEEDED!  PLEASE USE TRENDMODELTYPE INSTEAD
+/*
 	public static final int GRAPH_MASK = 0x01;
 	public static final int PEAK_MASK = 0x02;
 	public static final int USAGE_MASK = 0x04;
@@ -24,7 +25,7 @@ public interface GraphDefines
 	public static final String GRAPH_PANE_STRING = "graph";
 	public static final String TABULAR_PANE_STRING = "tab";
 	public static final String SUMMARY_PANE_STRING = "summary";
-
+*/
 
 	//old GraphDataFormats interface removed and fields moved into here.
 	public static SimpleDateFormat timestampQueryFormat = new SimpleDateFormat("dd-MMM-yyyy");
