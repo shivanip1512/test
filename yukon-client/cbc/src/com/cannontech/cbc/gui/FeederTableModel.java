@@ -285,7 +285,7 @@ public Object getValueAt(int row, int col)
 				{
                if( getCurrentSubBus().isPowerFactorControlled() )
                {
-                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue()) + " Pk";
+                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " Pk";
                }
                else
    					return
@@ -298,7 +298,7 @@ public Object getValueAt(int row, int col)
 				{
                if( getCurrentSubBus().isPowerFactorControlled() )
                {
-                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue()) + " OffPk";
+                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " OffPk";
                }
                else
    					return
@@ -312,9 +312,9 @@ public Object getValueAt(int row, int col)
 
          case POWER_FACTOR_COLUMN:
          {
-            return getPowerFactorText( feeder.getPowerFactorValue().doubleValue() )
+            return getPowerFactorText( feeder.getPowerFactorValue().doubleValue(), true )
                     + " / " +
-                    getPowerFactorText( feeder.getEstimatedPFValue().doubleValue() );
+                    getPowerFactorText( feeder.getEstimatedPFValue().doubleValue(), true );
          }
          
          
@@ -371,7 +371,7 @@ public Object getValueAt(int row, int col)
 	
 }
 
-private String getPowerFactorText( double value )
+private String getPowerFactorText( double value, boolean compute )
 {
    int decPlaces = 1;
    try
@@ -389,7 +389,7 @@ private String getPowerFactorText( double value )
       return "  NA";
    else   
       return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            value * 100, decPlaces ) + "%"; //get percent   
+            value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   
 }
 
 /**
