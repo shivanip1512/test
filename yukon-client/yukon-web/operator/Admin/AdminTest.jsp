@@ -8,7 +8,7 @@
 %>
 <%
 	com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
-	com.cannontech.database.data.lite.LiteYukonGroup liteCustGroup = liteEnergyCompany.getResidentialCustomerGroup();
+	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
 %>
 <html>
 <head>
@@ -286,7 +286,7 @@ function confirmDeleteAllOperatorLogins() {
 	}
 	
 	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
-		!CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(liteCustGroup, ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
+		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
 	{
 %>
                     <tr> 
@@ -333,7 +333,7 @@ function confirmDeleteAllOperatorLogins() {
 	}
 	
 	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) ||
-		!CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(liteCustGroup, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
+		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
 	{
 %>
                     <tr> 
@@ -370,7 +370,7 @@ function confirmDeleteAllOperatorLogins() {
 	}
 	
 	if (AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT) ||
-		!CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(liteCustGroup, ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
+		custGroups.length > 0 && !CtiUtilities.isFalse(AuthFuncs.getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
 	{
 %>
                     <tr>
@@ -423,7 +423,7 @@ function confirmDeleteAllOperatorLogins() {
                           <tr> 
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
-<%
+                                <%
 	ArrayList userLists = liteEnergyCompany.getAllSelectionLists(user);
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
@@ -434,8 +434,11 @@ function confirmDeleteAllOperatorLogins() {
 %>
                                 <tr> 
                                   <td class="TableCell" width="5%">&nbsp;</td>
-                                  <td class="TableCell" width="70%"><%= list.getListName() %></td>
-                                  <td class="TableCell"> 
+                                  <td class="TableCell" width="30%"><%= list.getListName() %></td>
+                                  <td class="TableCell" width="40%">
+                                    <hr width="90%" align="left">
+                                  </td>
+                                  <td class="TableCell" width="25%"> 
                                     <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
                                   </td>
                                 </tr>
