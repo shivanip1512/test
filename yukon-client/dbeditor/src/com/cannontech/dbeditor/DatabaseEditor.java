@@ -78,6 +78,7 @@ public class DatabaseEditor
 			new Integer(ModelFactory.DEVICE),
 			new Integer(ModelFactory.IED),
 			new Integer(ModelFactory.MCT),
+         new Integer(ModelFactory.MCTBROADCAST),         
 			new Integer(ModelFactory.METER),			
 			new Integer(ModelFactory.ROUTE),
 			new Integer(ModelFactory.RTU),
