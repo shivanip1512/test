@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/18 19:50:34 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/03/19 15:56:16 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.2  2004/03/19 15:56:16  cplender
+* Adding the RTC and non-305 SA protocols.
+*
 * Revision 1.1  2004/03/18 19:50:34  cplender
 * Initial Checkin
 * Builds, but not too complete.
@@ -108,6 +111,13 @@ INT CtiDeviceRTC::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT nRet = NoMethod;
+
+    OutMessage->Port     = getPortID();
+    OutMessage->DeviceID = getID();
+    OutMessage->TargetID = getID();
+
+    OutMessage->Remote   = _rtcTable.getRTCAddress();
+    OutMessage->Retry    = 2;
 
     switch( parse.getCommand() )
     {
@@ -309,12 +319,13 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         }
     }
 
-    OutMessage->Port     = getPortID();
-    OutMessage->DeviceID = getID();
-    OutMessage->TargetID = getID();
-
     if( nRet == NoError )
     {
+        if( OutMessage != NULL )
+        {
+            outList.insert(OutMessage);
+            OutMessage = NULL;
+        }
     }
     else
     {

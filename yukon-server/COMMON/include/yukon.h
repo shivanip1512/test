@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/03/18 19:45:14 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/03/19 15:56:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -418,6 +418,8 @@ typedef enum
 {
     ProtocolVersacomType,
     ProtocolFisherPierceType,
+    ProtocolGolayType,
+    ProtocolSADigitalType,
     ProtocolSA105Type,
     ProtocolSA205Type,
     ProtocolSA305Type,

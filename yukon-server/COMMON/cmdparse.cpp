@@ -4002,13 +4002,6 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
             if(!(valStr = temp.match("[0-9]+")).isNull())
             {
                 iValue = atoi(valStr.data());
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << iValue << endl;
-                }
-
                 _cmd["sa_reps"] = CtiParseValue( iValue - 1 );
             }
         }

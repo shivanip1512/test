@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/03/18 19:46:17 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/03/19 15:56:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,15 +112,35 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
 
-            if(parse.isKeyValid("type") && parse.getiValue("type") == ProtocolExpresscomType)
+            if(parse.getiValue("type") == ProtocolExpresscomType)
             {
                 enablePrefix(true);
                 status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
             }
-            else if(parse.isKeyValid("type") && parse.getiValue("type") == ProtocolSA305Type)
+            else if(parse.getiValue("type") == ProtocolSA305Type)
             {
                 enablePrefix(false);
                 status = assembleSA305Request(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(parse.getiValue("type") == ProtocolSA205Type)
+            {
+                enablePrefix(false);
+                status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(parse.getiValue("type") == ProtocolSA105Type)
+            {
+                enablePrefix(false);
+                status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(parse.getiValue("type") == ProtocolSADigitalType)
+            {
+                enablePrefix(false);
+                status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(parse.getiValue("type") == ProtocolGolayType)
+            {
+                enablePrefix(false);
+                status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
             }
             else if(OutMessage->EventCode & VERSACOM)
             {
@@ -736,17 +756,257 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 
                     break;
                 }
-            case TYPE_TCU5500:
-            case TYPE_TCU5000:
-            case TYPE_LCU415:
-            case TYPE_LCU415ER:
-            case TYPE_LCU415LG:
-            case TYPE_LCUT3026:
+            case TYPE_RTC:
+            case TYPE_SERIESVLMIRTU:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
             default:
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
+                        dout << RWTime() << "  Cannot send versacom to TYPE:" << Device->getType() << endl;
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    if(prot305.messageReady())
+    {
+        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+    }
+    else
+    {
+        xmore = false;
+        resultString = "Route " + getName() + " did not transmit commands";
+
+        RWCString desc, actn;
+
+        desc = "Route: " + getName();
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
+
+        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+    }
+
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+    if(retReturn)
+    {
+        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        retList.insert(retReturn);
+    }
+    else
+    {
+        delete retReturn;
+    }
+
+    return status;
+}
+
+INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
+                                         CtiCommandParser &parse,
+                                         OUTMESS *&OutMessage,
+                                         RWTPtrSlist< CtiMessage >   &vgList,
+                                         RWTPtrSlist< CtiMessage >   &retList,
+                                         RWTPtrSlist< OUTMESS >      &outList)
+{
+    INT            status = NORMAL;
+    bool           xmore = true;
+    RWCString      resultString;
+    RWCString      byteString;
+    ULONG          i, j;
+    USHORT         Length;
+    VSTRUCT        VSt;
+
+    /*
+     * Addressing variables SHALL have been assigned at an earlier level!
+     */
+
+    OutMessage->DeviceID = Device->getID();
+    OutMessage->Port     = Device->getPortID();
+    OutMessage->Remote   = Device->getAddress();
+    OutMessage->TimeOut  = 2;
+    OutMessage->InLength = -1;
+
+    if(!OutMessage->Retry)  OutMessage->Retry = 2;
+
+    CtiProtocolSA305 prot305;
+
+    prot305.parseCommand(parse, *OutMessage);
+
+    if(prot305.messageReady())
+    {
+        OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
+
+        if(NewOutMessage != NULL)
+        {
+            switch(Device->getType())
+            {
+            case TYPE_WCTP:
+            case TYPE_TAPTERM:
+                {
+                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+
+                    /* Calculate the length */
+                    Length                              = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+
+                    NewOutMessage->TimeOut              = 2;
+                    NewOutMessage->InLength             = -1;
+                    NewOutMessage->OutLength            = Length;
+                    NewOutMessage->Buffer.TAPSt.Length  = Length;
+
+                    /* Build the message */
+                    prot305.buildPage(CtiProtocolSA305::ModeOctal, NewOutMessage->Buffer.TAPSt.Message);
+
+                    for(i = 0; i < NewOutMessage->OutLength; i++)
+                    {
+                        byteString += (char)NewOutMessage->Buffer.TAPSt.Message[i];
+                    }
+                    byteString += "\n";
+
+                    /* Now add it to the collection of outbound messages */
+                    outList.insert( NewOutMessage );
+
+                    break;
+                }
+            case TYPE_RTC:
+            case TYPE_SERIESVLMIRTU:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << "  Cannot send versacom to TYPE:" << Device->getType() << endl;
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    if(prot305.messageReady())
+    {
+        resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+    }
+    else
+    {
+        xmore = false;
+        resultString = "Route " + getName() + " did not transmit commands";
+
+        RWCString desc, actn;
+
+        desc = "Route: " + getName();
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
+
+        vgList.insert(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+    }
+
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+    if(retReturn)
+    {
+        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        retList.insert(retReturn);
+    }
+    else
+    {
+        delete retReturn;
+    }
+
+    return status;
+}
+
+INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
+                                         CtiCommandParser &parse,
+                                         OUTMESS *&OutMessage,
+                                         RWTPtrSlist< CtiMessage >   &vgList,
+                                         RWTPtrSlist< CtiMessage >   &retList,
+                                         RWTPtrSlist< OUTMESS >      &outList)
+{
+    INT            status = NORMAL;
+    bool           xmore = true;
+    RWCString      resultString;
+    RWCString      byteString;
+    ULONG          i, j;
+    USHORT         Length;
+    VSTRUCT        VSt;
+
+    /*
+     * Addressing variables SHALL have been assigned at an earlier level!
+     */
+
+    OutMessage->DeviceID = Device->getID();
+    OutMessage->Port     = Device->getPortID();
+    OutMessage->Remote   = Device->getAddress();
+    OutMessage->TimeOut  = 2;
+    OutMessage->InLength = -1;
+
+    if(!OutMessage->Retry)  OutMessage->Retry = 2;
+
+    CtiProtocolSA305 prot305;
+
+    prot305.parseCommand(parse, *OutMessage);
+
+    if(prot305.messageReady())
+    {
+        OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
+
+        if(NewOutMessage != NULL)
+        {
+            switch(Device->getType())
+            {
+            case TYPE_WCTP:
+            case TYPE_TAPTERM:
+                {
+                    CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+
+                    /* Calculate the length */
+                    Length                              = prot305.getPageLength(CtiProtocolSA305::ModeOctal);
+
+                    NewOutMessage->TimeOut              = 2;
+                    NewOutMessage->InLength             = -1;
+                    NewOutMessage->OutLength            = Length;
+                    NewOutMessage->Buffer.TAPSt.Length  = Length;
+
+                    /* Build the message */
+                    prot305.buildPage(CtiProtocolSA305::ModeOctal, NewOutMessage->Buffer.TAPSt.Message);
+
+                    for(i = 0; i < NewOutMessage->OutLength; i++)
+                    {
+                        byteString += (char)NewOutMessage->Buffer.TAPSt.Message[i];
+                    }
+                    byteString += "\n";
+
+                    /* Now add it to the collection of outbound messages */
+                    outList.insert( NewOutMessage );
+
+                    break;
+                }
+            case TYPE_RTC:
+            case TYPE_SERIESVLMIRTU:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << "  Cannot send versacom to TYPE:" << Device->getType() << endl;
                     }
 
                     break;
