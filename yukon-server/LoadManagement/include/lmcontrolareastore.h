@@ -24,12 +24,39 @@
 #include <rw/thr/onlyptr.h>
 #include <rw/thr/thread.h>
 #include <rw/collect.h>
+#include <rw/tvordvec.h>
 
 #include "observe.h"
 #include "lmcontrolarea.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogrambase.h"
 #include "lmid.h"
+
+class CtiLMSavedProjectionQueue
+{//equivalent to an inner class, only used for saving projection queues
+
+public:
+    CtiLMSavedProjectionQueue(LONG pointId, const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList);
+    CtiLMSavedProjectionQueue(const CtiLMSavedProjectionQueue& savedProjectionQueue);
+
+    virtual ~CtiLMSavedProjectionQueue();
+
+    LONG getPointId() const;
+    const RWTValDlist<CtiLMProjectionPointEntry>& getProjectionEntryList() const;
+
+    CtiLMSavedProjectionQueue& setPointId(LONG pointId);
+    CtiLMSavedProjectionQueue& setProjectionEntryList(const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList);
+
+    CtiLMSavedProjectionQueue& operator=(const CtiLMSavedProjectionQueue& right);
+
+    //int operator==(const CtiLMProjectionPointEntry& right) const;
+    //int operator!=(const CtiLMProjectionPointEntry& right) const;
+
+private:
+    LONG _pointId;
+    RWTValDlist<CtiLMProjectionPointEntry> _projectionEntryList;
+};
+
 
 class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
@@ -48,7 +75,11 @@ public:
 
     bool UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea);
     bool UpdateProgramDisableFlagInDB(CtiLMProgramBase* program);
+    bool UpdateGroupDisableFlagInDB(CtiLMGroupBase* group);
     bool UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger);
+
+    void saveAnyProjectionData();
+    void attachProjectionData(CtiLMControlAreaTrigger* trigger);
 
     static const RWCString LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
 
@@ -74,6 +105,7 @@ private:
     bool _isvalid;
     bool _reregisterforpoints;
     RWDBDateTime _lastdbreloadtime;
+    RWTValOrderedVector<CtiLMSavedProjectionQueue> _projectionQueues;
 
     //The singleton instance of CtiLMControlAreaStore
     static CtiLMControlAreaStore* _instance;
