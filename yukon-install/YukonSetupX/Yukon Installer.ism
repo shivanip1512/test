@@ -564,7 +564,6 @@
 		<row><td>handlerightmiddle.gif</td><td>Tomcat</td><td>handlerightmiddle.gif</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\images\handlerightmiddle.gif</td><td>1</td><td>NewSubFolder20</td></row>
 		<row><td>header.jsp</td><td>Tomcat</td><td>header.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\header.jsp</td><td>1</td><td>NewSubFolder15</td></row>
 		<row><td>header.jsp1</td><td>Tomcat</td><td>header.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\users\header.jsp</td><td>1</td><td>NewSubFolder26</td></row>
-		<row><td>hhupd.exe</td><td>Help</td><td>hhupd.exe</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help\hhupd.exe</td><td>1</td><td>NewSubFolder88</td></row>
 		<row><td>host.gif</td><td>Tomcat</td><td>Host.gif</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\images\Host.gif</td><td>1</td><td>NewSubFolder20</td></row>
 		<row><td>host.jsp</td><td>Tomcat</td><td>host.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\host\host.jsp</td><td>1</td><td>NewSubFolder19</td></row>
 		<row><td>hostform.class</td><td>Tomcat</td><td>HostForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\host\HostForm.class</td><td>1</td><td>NewSubFolder39</td></row>
@@ -810,7 +809,6 @@
 		<row><td>systray4j.dll</td><td>Common Bin</td><td>systray4j.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\systray4j.dll</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>tabletag.class</td><td>Tomcat</td><td>TableTag.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\TableTag.class</td><td>1</td><td>NewSubFolder34</td></row>
 		<row><td>tabletest.exe</td><td>Test Applications</td><td>tabletest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\tabletest.exe</td><td>1</td><td>NewSubFolder83</td></row>
-		<row><td>tabular_data_console_help.ch</td><td>Help</td><td>Tabular Data Console Help.chm</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help\Tabular Data Console Help.chm</td><td>1</td><td>NewSubFolder88</td></row>
 		<row><td>tail.exe</td><td>Common Dlls</td><td>tail.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\tail.exe</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>tcl81d.dll</td><td>MACS Server</td><td>tcl81d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\tcl81d.dll</td><td>1</td><td>NewSubFolder75</td></row>
 		<row><td>tcpsup.dll</td><td>Common Dlls</td><td>tcpsup.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\tcpsup.dll</td><td>1</td><td>NewSubFolder72</td></row>
@@ -877,9 +875,6 @@
 		<row><td>xerces_c_1_7_0d.dll</td><td>Common Dlls</td><td>xerces-c_1_7_0D.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\xerces-c_1_7_0D.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>yc.jar</td><td>Yukon Commander</td><td>yc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yc.jar</td><td>1</td><td>NewSubFolder89</td></row>
 		<row><td>yukon.bat</td><td>Common Dlls</td><td>yukon.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\yukon.bat</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>yukon_commander_help.chm</td><td>Help</td><td>Yukon Commander Help.chm</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help\Yukon Commander Help.chm</td><td>1</td><td>NewSubFolder88</td></row>
-		<row><td>yukon_database_editor_help.c</td><td>Help</td><td>Yukon Database Editor Help.chm</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help\Yukon Database Editor Help.chm</td><td>1</td><td>NewSubFolder88</td></row>
-		<row><td>yukon_trending_help.chm</td><td>Help</td><td>Yukon Trending Help.chm</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help\Yukon Trending Help.chm</td><td>1</td><td>NewSubFolder88</td></row>
 		<row><td>yukon_web.war</td><td>Tomcat</td><td>yukon-web.war</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\yukon-web.war</td><td>1</td><td>NewSubFolder65</td></row>
 		<row><td>yukonappserver.jar</td><td>Common Bin</td><td>yukonappserver.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\yukonappserver.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>yukonnoalarm.ico</td><td>Alarm Monitor</td><td>YukonNoAlarm.ico</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\YukonNoAlarm.ico</td><td>1</td><td>NewSubFolder73</td></row>
@@ -1034,7 +1029,6 @@
 		<row><td>NewSubFolder85</td><td>Common Bin</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder86</td><td>Common Bin</td><td/><td>Log</td></row>
 		<row><td>NewSubFolder87</td><td>Common Bin</td><td/><td>Export</td></row>
-		<row><td>NewSubFolder88</td><td>Help</td><td/><td>Help</td></row>
 		<row><td>NewSubFolder89</td><td>Yukon Commander</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder9</td><td>Tomcat</td><td/><td>conf</td></row>
 		<row><td>NewSubFolder90</td><td>Tabular Data Console</td><td/><td>Bin</td></row>
@@ -1059,6 +1053,7 @@
 		<col def="S255">IncludeFiles</col>
 		<col def="S255">ExcludeFiles</col>
 		<col def="I4">ISAttributes</col>
+		<row><td>Help</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\help</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 	</table>
 
 	<table name="ISFeatureExtended">
