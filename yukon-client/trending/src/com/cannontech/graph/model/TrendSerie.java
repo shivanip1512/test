@@ -18,8 +18,7 @@ public class TrendSerie
 	private String deviceName = null;
 	private Double multiplier = null;	//This is different then the point multiplier, this is a GDS
 	private Character axis = null;
-	private String type = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;		
-	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_MASK;
+	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_TYPE;
 	
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
@@ -189,11 +188,11 @@ public class TrendSerie
 	{
 		return pointId;
 	}
-	
+/*	
 	public String getType()
 	{
 		return type;
-	}
+	}*/
 	public int getTypeMask()
 	{
 		return typeMask;
@@ -261,10 +260,11 @@ public class TrendSerie
 	{
 		pointId = newPointId;
 	}
+	/*
 	protected void setType(String newType)
 	{
 		type = newType;
-	}
+	}*/
 	protected void setTypeMask(int newTypeMask)
 	{
 		typeMask = newTypeMask;

@@ -185,7 +185,7 @@ public com.cannontech.database.db.graph.GraphDataSeries createGDS(com.cannontech
 
 	gds.setMultiplier(new Double(1.0));
 	
-	if( type.equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+	if( GraphDataSeries.isGraphType( gds.getTypeInt() ))
 	{	//add to the peaks combo box if of type graph
 		String label = gds.getLabel().toString() + " :: " + gds.getDeviceName().toString();
 		getPeakPointComboBox().addItem(label);
@@ -546,7 +546,7 @@ private javax.swing.JTable getGraphGDSTable() {
 			javax.swing.DefaultCellEditor axisEditor = new javax.swing.DefaultCellEditor(axisComboBox);
 			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setCellEditor(axisEditor);
 			
-			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox( new String[] { "graph", "yesterday", "peakvalue", "usage" } );
+			javax.swing.JComboBox typeComboBox = new javax.swing.JComboBox( new String[] { "graph", "yesterday", "peakinterval", "usage" } );
 			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(typeComboBox);
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setCellEditor(typeEditor);
 
@@ -846,12 +846,12 @@ private javax.swing.JPanel getPointOptionsPanel() {
 public String getPointTypeString(com.cannontech.database.data.lite.LitePoint pt)
 {
 	if( pt.getTags() == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH)
-		return com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
+		return com.cannontech.database.db.graph.GraphDataSeries.GRAPH_TYPE_STRING;
 
 	else if (pt.getTags() == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE)
-		return com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES;
+		return com.cannontech.database.db.graph.GraphDataSeries.USAGE_TYPE_STRING;
 	else
-		return com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;	//default
+		return com.cannontech.database.db.graph.GraphDataSeries.GRAPH_TYPE_STRING;	//default
 }
 /**
  * Return the JButton2 property value.
@@ -1051,7 +1051,7 @@ public Object getValue(Object object)
 	{
 		//setup and add the peak point to the graphdataseries
 		com.cannontech.database.db.graph.GraphDataSeries gds = new com.cannontech.database.db.graph.GraphDataSeries();
-		gds.setType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);
+		gds.setType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_TYPE_STRING);
 		gds.setDeviceName(model.getRow(point - 1).getDeviceName());
 		gds.setPointID(model.getRow(point - 1).getPointID());
 		gds.setGraphDefinitionID(model.getRow(point - 1).getGraphDefinitionID());
@@ -1287,7 +1287,7 @@ public void setValue(Object val)
 	while( iter.hasNext() )
 	{
 		com.cannontech.database.db.graph.GraphDataSeries elem = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
-		if(( elem.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.PEAK_MASK) == GraphDataSeries.PEAK_MASK)
+		if(GraphDataSeries.isPeakType( elem.getTypeInt()))
 		{	
 			//SAVE THE PEAK GDS (Need it to locate peak point in combo box)
 			peakDataSeries = elem;

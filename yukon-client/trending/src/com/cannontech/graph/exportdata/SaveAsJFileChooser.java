@@ -60,7 +60,7 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 			
 		if( eDataFile.getExportPane() == GRAPH_PANE)
 		{
-			eDataFile.setCSVExportMask( com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK);
+//			eDataFile.setCSVExportMask( com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK);
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("jpeg", "JPEG Image Format"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("png", "Portable Network Graphics"));			
@@ -70,7 +70,7 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 		}
 		else if ( eDataFile.getExportPane() == TABULAR_PANE)
 		{
-			eDataFile.setCSVExportMask( com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK);
+//			eDataFile.setCSVExportMask( com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK);
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("html", "Web Page HTML"));
 			addChoosableFileFilter(new com.cannontech.common.util.FileFilter("csv", "Comma Separated"));			
 		}

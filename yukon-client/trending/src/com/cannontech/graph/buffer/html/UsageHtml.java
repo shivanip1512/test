@@ -45,7 +45,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		for( int i = 0; i < model.getTrendSeries().length; i++ )
 		{
 			TrendSerie serie = model.getTrendSeries()[i];
-			if( serie.getType().equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) )
+			if( com.cannontech.database.db.graph.GraphDataSeries.isUsageType(serie.getTypeMask()))
 			{
 				// initialize start,end to min_value which indicates no values found			
 				Double startValue = null;

@@ -63,7 +63,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	for (int i = 0; i < model.getTrendSeries().length; i++)
 	{
 		TrendSerie serie = model.getTrendSeries()[i];
-		if( (serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK) == serie.getTypeMask())
+		if( com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType(serie.getTypeMask()))
 		{
 			buf.append("<TD BGCOLOR=\"#999966\" class=\"HeaderCell\" WIDTH=\"130\">\n");
 			buf.append("<P ALIGN=CENTER><B><FONT SIZE=\"-1\" FACE=\"Arial\">\n");
@@ -89,7 +89,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	for( int i = 0; i < model.getTrendSeries().length; i++ )
 	{
 		TrendSerie serie = model.getTrendSeries()[i];
-		if(( serie.getTypeMask() & com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK)== serie.getTypeMask())
+		if(com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
 		{
 	 		long[] timeStamp = serie.getPeriodsArray();
 			double[] values = serie.getValuesArray();

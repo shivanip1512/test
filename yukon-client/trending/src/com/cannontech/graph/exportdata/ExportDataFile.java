@@ -20,7 +20,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 	
 	private Object exportObject = null;
 //	private String csvExportType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
-	private int csvExportMask = com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK;
+//	private int csvExportMask = com.cannontech.database.db.graph.GraphDataSeries.VALID_INTERVAL_MASK;
 	//Object items that are only valid if csv exportting is selected.
 	private com.cannontech.graph.model.TrendModel trendModel = null;	
 	private int csvColumnLength = 0;
@@ -64,7 +64,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 		for( int k = 0; k < trendModel.getTrendSeries().length; k++ )
 		{
 			com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[k];
-			if(( serie.getTypeMask() & csvExportMask) == serie.getTypeMask())			
+			if(com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType( serie.getTypeMask()))
 			{
 //				if( serie.getDataPairArray() != null)// With this check, null data is not represented with correct point
 				{
@@ -291,10 +291,12 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 	{
 		return getFileName() + "." + getExtension();
 	}
+	/*
 	public void setCSVExportMask(int newExportMask)
 	{
 		csvExportMask = newExportMask;
 	}
+	*/
 	/*
 	public void setCSVExportType(String newExportType)
 	{
@@ -320,7 +322,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 			csvColumnLength = 0;
 			for( int i = 0; i < trendModel.getTrendSeries().length; i++)
 			{
-				if(( trendModel.getTrendSeries()[i].getTypeMask() & csvExportMask) == trendModel.getTrendSeries()[i].getTypeMask())
+				if(com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType( trendModel.getTrendSeries()[i].getTypeMask() ))
 				{
 					csvColumnLength++;
 				}
@@ -363,7 +365,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 			for( int z = 0; z < trendModel.getTrendSeries().length; z++ )
 			{
 				com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[z];
-				if( (serie.getTypeMask() & csvExportMask) == serie.getTypeMask())
+				if( com.cannontech.database.db.graph.GraphDataSeries.isValidIntervalType(serie.getTypeMask()))
 				{
 					valueFormat.setMaximumFractionDigits(3);//serie.getDecimalPlaces());
 					valueFormat.setMinimumFractionDigits(3);//serie.getDecimalPlaces());
