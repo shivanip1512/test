@@ -40,7 +40,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
-<link rel="stylesheet" href="demostyle.css" type="text/css">
+<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
@@ -173,7 +173,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
@@ -234,7 +234,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         <td width="43"> <%=capBankMdl.getColumnName(CapBankTableModel.STATUS_COLUMN) %></td>

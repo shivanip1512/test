@@ -8,7 +8,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
-<link rel="stylesheet" href="CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
@@ -93,8 +93,9 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-<table width="657" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+
+			<table width="657" border="0" cellspacing="0" cellpadding="0">
+			  <tr>
                 <td width="650" valign="top" class="Main"> 
                   
                   <p>&nbsp;</p>
