@@ -1585,6 +1585,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 _cmd["interval"] = CtiParseValue(cmdtok());
             }
         }
+        if(!(CmdStr.match("armc")).isNull())
+        {
+            _cmd["armc"] = CtiParseValue("TRUE");
+        }
         if(!(CmdStr.match("raw")).isNull())
         {
             if(!(token = CmdStr.match(rawcmd)).isNull())
