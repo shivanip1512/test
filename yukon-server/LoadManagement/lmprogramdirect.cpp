@@ -2309,7 +2309,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
         }
         else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) )
         {
-            if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
+
+	    if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
             {
                 LONG sendRate = currentGearObject->getMethodRate();
@@ -2346,7 +2347,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             }
             else if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::SmartCycleMethod,RWCString::ignoreCase) ||
                      !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TrueCycleMethod,RWCString::ignoreCase) )
-            {
+            {   // Stop the groups from cycling, before we start doing rotation on them
                 for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
                 {
                     CtiLMGroupPtr currentLMGroup  = *i;                
@@ -2364,7 +2365,17 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority));
                     currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                 }
-
+	    }
+	    
+	    // On a gear upshift from rotation to rotation we want to control some load immediately, however,
+	    // On a downshift, we want to do nothing but continue rotation, but with the new rotation settings.
+	    // Added for northern plains 11/05/04
+	    if( (!previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) &&
+		 getCurrentGearNumber() > previousGearNumber ) ||
+		!previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::SmartCycleMethod,RWCString::ignoreCase) ||
+                !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TrueCycleMethod,RWCString::ignoreCase) )
+	    {
+	        // Get standard rotation going
                 LONG sendRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
                 LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
@@ -2411,8 +2422,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
-            }
-        }
+	    }
+        } // End switching to rotation gear
         else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::LatchingMethod,RWCString::ignoreCase) )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
