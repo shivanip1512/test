@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/01/06 20:28:29 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/02/10 22:08:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -633,7 +633,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
         CtiPointDataMsg *pData     = NULL;
 
         double Value;
-        RWCString rwtemp;
+        RWCString rwtemp, disc;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -648,7 +648,6 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
         if( getType() == TYPEMCT250 )
         {
             int status[4], i;
-            RWCString disc;
 
             status[0] = InMessage->Buffer.DSt.Message[0] & 0x40;
             status[1] = InMessage->Buffer.DSt.Message[0] & 0x80;
@@ -716,19 +715,19 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
                 case 0x42:
                 {
                     Value  = CLOSED;
-                    rwtemp = " SERVICE CONNECT ENABLED";
+                    disc   = " SERVICE CONNECT ENABLED";
                     break;
                 }
                 case 0x41:
                 {
                     Value  = OPENED;
-                    rwtemp = " SERVICE DISCONNECTED";
+                    disc   = " SERVICE DISCONNECTED";
                     break;
                 }
                 default:
                 {
                     Value  = INVALID;
-                    rwtemp = " UNKNOWN / No Disconnect Status";
+                    disc   = " UNKNOWN / No Disconnect Status";
                     break;
                 }
             }
@@ -737,7 +736,16 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
             //  Send this value to requestor via retList.
             if(pPoint != NULL)
             {
-                rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
+                rwtemp = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+                if( rwtemp != "" )
+                {
+                    rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
+                }
+                else
+                {
+                    rwtemp = getName() + " / " + pPoint->getName() + ":" + disc;
+                }
 
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
 
@@ -749,7 +757,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
             }
             else
             {
-                rwtemp = getName() + " / Disconnect:" + rwtemp + "  --  point undefined in DB";
+                rwtemp = getName() + " / Disconnect:" + disc + "  --  point undefined in DB";
                 ReturnMsg->setResultString( rwtemp );
             }
         }
