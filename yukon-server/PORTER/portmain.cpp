@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/12/14 22:34:26 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/01/27 17:52:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,14 +53,18 @@ int main(int argc, char* argv[] )
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
 
-   slog.start();     // fire up the logger thread
-   slog.setOutputPath(gLogDirectory.data());
+   RWCString dbglogdir(gLogDirectory + "\\Debug");
+   // Create a subdirectory called Comm beneath Log.
+   CreateDirectoryEx( gLogDirectory.data(), dbglogdir.data(), NULL);
+
+   slog.start();     // fire up the simulator thread
+   slog.setOutputPath(dbglogdir.data());
    slog.setOutputFile("simulate");
    slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
-   slog.setWriteInterval(1000);
+   slog.setWriteInterval(15000);
 
-   blog.start();     // fire up the logger thread
-   blog.setOutputPath(gLogDirectory.data());
+   blog.start();
+   blog.setOutputPath(dbglogdir.data());
    blog.setOutputFile("comstats");
    blog.setToStdOut( false );
    blog.setWriteInterval(15000);
