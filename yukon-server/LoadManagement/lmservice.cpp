@@ -10,6 +10,8 @@
 
 //Boolean if debug messages are printed
 BOOL _LM_DEBUG;
+//Boolean if point enevts messages are created and sent to Dispatch
+BOOL _LM_POINT_EVENT_LOGGING;
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
@@ -116,6 +118,23 @@ void CtiLMService::Init()
     else
     {
         dout.setOutputFile(logFile.data());
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    strcpy(var, "LOAD_MANAGEMENT_POINT_EVENT_LOGGING");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        str.toLower();
+        _LM_POINT_EVENT_LOGGING = (str=="true"?TRUE:FALSE);
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
