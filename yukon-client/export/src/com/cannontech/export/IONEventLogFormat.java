@@ -12,6 +12,49 @@ public class IONEventLogFormat extends ExportFormatBase
 	public static final String DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 	private long runTimeIntervalInMillis = 1800000;	//30mins
 
+	//VALID EFFECT HANDLES MUST BE MAPPED TOGETHER WITH INT AND STRING VALUES.
+	private int[] validEffectHandle = new int[]
+	{
+		26817,
+		26818,
+		26819,
+		26821,
+		24577,
+		24578,
+		24615,
+		24616		
+	};
+	private String[] validEffectHandleString = new String[]
+	{
+		"Start Activate",
+		"Start Test",
+		"Deactivate",
+		"Start Shop Test",
+		"Notify Status",
+		"Control Status",
+		"Notify Relay",
+		"Control Relay",
+	};
+	
+	//VALID CAUSE HANDLES MUST BE MAPPED TOGETHER WITH INT AND STRING VALUES.
+	private int[] validCauseHandle = new int[]
+	{
+		0,
+		25017,
+		25018,
+		3072,
+		3073
+	};
+	private String[] validCauseHandleString = new String[]
+	{
+		"",
+		"Notify Output",
+		"Control Output",
+		"Comm 1",
+		"Front Panel"
+	};
+
+	
 	//Innerclass for Yukon.SystemLog.Description Column
 	private class IONDescription
 	{
@@ -170,7 +213,7 @@ public class IONEventLogFormat extends ExportFormatBase
 					IONAction ionAction = getIONAction(action);
 					Integer record = ionAction.record;
 					String causeIon = ionAction.ion_cause_handle;
-					String effectIon = ionAction.ion_effect_handle;					
+					String effectIon = ionAction.ion_effect_handle;
 					
 					String desc = rset.getString(5);
 					IONDescription ionDesc = getIONDescription(desc);
@@ -312,8 +355,8 @@ public class IONEventLogFormat extends ExportFormatBase
 			if (desc.ion_pri != null && desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) == 0)
 				return true;
 			else if (desc.ion_effect != null &&
-					(action.ion_effect_handle.toLowerCase().indexOf("control") >= 0 ||
-						action.ion_effect_handle.toLowerCase().indexOf("notify") >= 0))
+					(action.ion_effect_handle.toLowerCase().indexOf("control status") >= 0 ||
+						action.ion_effect_handle.toLowerCase().indexOf("notify status") >= 0))
 				return true;
 		}
 		return false;
@@ -382,15 +425,18 @@ public class IONEventLogFormat extends ExportFormatBase
 			
 			String key = keyAndValue.substring(0, separatorIndex);
 			String value = keyAndValue.substring(separatorIndex + 1, keyAndValue.length());
-				
-			if( key.equalsIgnoreCase("pri"))
-				ion_desc.ion_pri = Integer.valueOf(value.trim());
-			else if( key.equalsIgnoreCase("cause"))
-				ion_desc.ion_cause = value.toString();
-			else if( key.equalsIgnoreCase("effect"))
-				ion_desc.ion_effect = value.toString();
-			else if( key.equalsIgnoreCase("nlog"))
-				ion_desc.ion_nlog = value.toString();
+			
+			if( value.length() > 0)
+			{	
+				if( key.equalsIgnoreCase("pri"))
+					ion_desc.ion_pri = Integer.valueOf(value.trim());
+				else if( key.equalsIgnoreCase("cause"))
+					ion_desc.ion_cause = value.toString();
+				else if( key.equalsIgnoreCase("effect"))
+					ion_desc.ion_effect = value.toString();
+				else if( key.equalsIgnoreCase("nlog"))
+					ion_desc.ion_nlog = value.toString();
+			}
 		}
 
 		return ion_desc;
@@ -417,14 +463,50 @@ public class IONEventLogFormat extends ExportFormatBase
 			String key = keyAndValue.substring(0, separatorIndex);
 			String value = keyAndValue.substring(separatorIndex + 1, keyAndValue.length());
 				
-			if( key.equalsIgnoreCase("rec"))
-				ion_action.record = Integer.valueOf(value.trim());
-			else if( key.equalsIgnoreCase("c_h"))
-				ion_action.ion_cause_handle = value.toString();
-			else if( key.equalsIgnoreCase("e_h"))
-				ion_action.ion_effect_handle = value.toString();
+			if (value.length() > 0)
+			{
+				if( key.equalsIgnoreCase("rec"))
+					ion_action.record = Integer.valueOf(value.trim());
+				else if( key.equalsIgnoreCase("c_h"))
+					ion_action.ion_cause_handle = getValidCauseHandle(Integer.valueOf(value.trim()).intValue());
+				else if( key.equalsIgnoreCase("e_h"))
+					ion_action.ion_effect_handle = getValidEffectHandle(Integer.valueOf(value.trim()).intValue());
+			}
 		}
 
 		return ion_action;
 	}
+	
+	/**
+	 * Return the String value of the int value effectHandle.
+	 * The database only stores the int value but the record needs the string value.
+	 * @param effectHandle
+	 * @return String
+	 */
+	private String getValidEffectHandle(int effectHandle)
+	{
+		for(int i = 0; i < validEffectHandle.length; i++)
+		{
+			if( effectHandle == validEffectHandle[i])
+				return validEffectHandleString[i];
+		}
+		return String.valueOf(effectHandle);
+	}
+	
+	/**
+	 * Return the String value of the int value causeHandle.
+	 * The database only stores the int value but the record needs the string value.
+	 * @param causeHandle
+	 * @return String
+	 */
+	private String getValidCauseHandle(int causeHandle)
+	{
+		for(int i = 0; i < validCauseHandle.length; i++)
+		{
+			if( causeHandle == validCauseHandle[i])
+				return validCauseHandleString[i];
+		}
+		return String.valueOf(causeHandle);	//default value back...I guess.
+	}
+	
 }
