@@ -9,7 +9,6 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -170,7 +169,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			{
 				String commandString = ycClass.substituteCommand(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString() );
 				getCommandPanel().getExecuteCommandComboBoxTextField().setText( commandString );
-				getCommandPanel().getExecuteCommandComboBoxTextField().requestFocusInWindow();
+				getCommandPanel().getExecuteButton().requestFocusInWindow();
 			}
 			
 		}
@@ -189,21 +188,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			
 			CustomCommandEditPanel commandEditPanel = new CustomCommandEditPanel();
 			KeysAndValuesFile keysAndValuesFile = new KeysAndValuesFile(ycClass.getCustomCommandFileDirectory(), ycClass.getCommandFileName());
-			
-			//if not there, lets create the file
-			if( !keysAndValuesFile.exists() )
-			{
-				try
-				{
-					keysAndValuesFile.createNewFile();
-				}
-				catch( IOException ioe ) 
-				{
-					handleException( ioe );
-				}
-			}
-
-
 			keysAndValuesFile.retrieve();
 			commandEditPanel.setDialogTitle("File: " + keysAndValuesFile.getPath().toString());
 			commandEditPanel.setValue(keysAndValuesFile.getKeysAndValues());
@@ -682,6 +666,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				ivjCommandPanel.getExecuteCommandComboBoxTextField().addKeyListener(this);
 				ivjCommandPanel.getExecuteCommandComboBoxTextField().addActionListener(this);
 				ivjCommandPanel.getAvailableCommandsComboBox().addActionListener(this);
+				ivjCommandPanel.getExecuteButton().addKeyListener(this);
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
@@ -1351,7 +1336,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	public void keyPressed(KeyEvent event) {
 		
-		if( event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteCommandComboBoxTextField())
+		if( event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteCommandComboBoxTextField() ||
+				event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteButton())
 		{
 			String commandString = KeysAndValuesFile.loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if (commandString != null)	//null is a cancel from prompt
