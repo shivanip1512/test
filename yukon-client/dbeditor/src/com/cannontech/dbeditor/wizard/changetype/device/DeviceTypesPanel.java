@@ -38,6 +38,7 @@ public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPa
 			PAOGroups.STRING_MCT_250[0],
 			PAOGroups.STRING_MCT_248[0],
 			PAOGroups.STRING_MCT_240[0],
+			PAOGroups.STRING_MCT_213[0],
 			PAOGroups.STRING_MCT_210[0],
 			PAOGroups.STRING_LMT_2[0],
 			PAOGroups.STRING_DCT_501[0] 
