@@ -24,7 +24,7 @@ public class YukonWebConfiguration extends DBPersistent {
     	"LogoLocation", "Description", "AlternateDisplayName", "URL"
     };
 
-    public static final String TABLE_NAME = "CustomerWebConfiguration";
+    public static final String TABLE_NAME = "YukonWebConfiguration";
 
     public static final String GET_NEXT_CONFIG_ID_SQL =
         "SELECT MAX(ConfigurationID) FROM " + TABLE_NAME;
