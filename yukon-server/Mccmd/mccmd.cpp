@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2003/04/07 15:58:29 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2003/04/08 05:26:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1412,7 +1412,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         }
     } while(true);
 
-    delete msg;
+    //I left the next line because i'm not sure everything is getting cleanedup
+    //uncommenting it will cause a bomb however since all the messages are now stored
+    //and deleted below
+    //delete msg;
 
     // set up good and bad tcl lists
     Tcl_Obj* good_list = Tcl_NewListObj(0,NULL);
