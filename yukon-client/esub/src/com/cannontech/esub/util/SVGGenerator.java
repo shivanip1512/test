@@ -77,6 +77,7 @@ public class SVGGenerator {
 	public void generate(Writer writer, Drawing d) throws IOException {	
 		if(!genOptions.isStaticSVG()) {
 			DrawingUpdater updater = new DrawingUpdater(d);
+			updater.setUpdateGraphs(false);
 		 	updater.updateDrawing();
 		}    
 					
