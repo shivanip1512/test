@@ -66,7 +66,7 @@
 	if (inOther) {
 		LiteStarsEnergyCompany company = ((ObjectInOtherEnergyCompanyException)obj).getEnergyCompany();
 %>
-                <p class="ErrorMsg">The hardware or device is found in the inventory 
+                <p class="ErrorMsg">The hardware or device was found in the inventory 
                   list of <i><%= company.getName() %></i>.</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
@@ -80,7 +80,7 @@
 	else if (liteInv == null) {
 		if (starsInv.getLMHardware() != null) {
 %>
-                <p class="MainText">The serial number is not found in inventory. 
+                <p class="MainText">The serial number was not found in the inventory. 
                   Would you like to add it now?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
@@ -96,7 +96,7 @@
 		}
 		else {
 %>
-                <p class="MainText">The device name is not found in Yukon. Would 
+                <p class="MainText">The device name was not found in Yukon. Would 
                   you like to create a new device?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
@@ -113,8 +113,9 @@
 	}
 	else if (liteInv.getInventoryID() < 0) {
 %>
-                <p class="MainText">The device name is found but it's not in inventory 
-                  yet. Would you like to add it?</p>
+                <p class="MainText">The device name was found in Yukon, but it 
+                  has not been added to the inventory yet. Would you like to add 
+                  it now?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="100" align="right"> 
@@ -145,7 +146,7 @@
 	}
 	else if (account != null && liteInv.getAccountID() == account.getAccountID()) {
 %>
-                <p class="ErrorMsg">The hardware or device is already assigned 
+                <p class="ErrorMsg">The hardware or device has already been assigned 
                   to this account.</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
@@ -170,7 +171,7 @@
 		if (address.length() == 0) address = "(none)";
 %>
 			    <p class="MainText">The hardware or device is currently assigned 
-                  to the following account:</p>
+                  to another account as shown below:</p>
                 <table width="450" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td width="100" class="HeaderCell">Account #</td>
@@ -183,8 +184,7 @@
                     <td width="230" class="TableCell"><%= address %></td>
                   </tr>
                 </table>
-                <p class="MainText">Would you like to move it to the new account? 
-                </p>
+                <p class="MainText">Would you like to move it to this account?</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="100" align="right"> 
