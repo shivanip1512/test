@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/12/02 22:58:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/12/06 22:15:50 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.10  2004/12/06 22:15:50  cplender
+* Missing state in control InProgress.
+*
 * Revision 1.9  2004/12/02 22:58:43  cplender
 * Try to reduce the number of pointdata messages sent to loadmanagement due to controlling groups.
 *
@@ -393,7 +396,8 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                             }
                         }
                     }
-                    else if(ppo.getControlState() == CtiPendingPointOperations::controlPending)
+                    else if(ppo.getControlState() == CtiPendingPointOperations::controlPending ||
+                            ppo.getControlState() == CtiPendingPointOperations::controlSentToPorter)
                     {
                         if(now.seconds() > ppo.getTime().seconds() + (ULONG)ppo.getControlTimeout())
                         {
