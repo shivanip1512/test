@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -28,9 +29,11 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
-import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateContacts;
@@ -56,42 +59,73 @@ public class UpdateContactsAction implements ActionBase {
 			
 			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
 					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			StarsCustomerAccount account = starsAcctInfo.getStarsCustomerAccount();
 			
 			StarsUpdateContacts updateContacts = new StarsUpdateContacts();
-
-			String lastName = req.getParameter("LastName");
-			String firstName = req.getParameter("FirstName");
-
-			if (lastName != null && lastName.trim().length() > 0
-				&& firstName != null && firstName.trim().length() > 0) {
-				PrimaryContact primContact = new PrimaryContact();
-				primContact.setLastName( lastName );
-				primContact.setFirstName( firstName );
-				primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
-				primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
-				primContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
-						starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getEmail().getEnabled(),
-						req.getParameter("Email"), Email.class) );
-				updateContacts.setPrimaryContact( primContact );
+			updateContacts.setPrimaryContact( (PrimaryContact)
+					StarsFactory.newStarsCustomerContact(account.getPrimaryContact(), PrimaryContact.class) );
+			for (int i = 0; i < account.getAdditionalContactCount(); i++) {
+				updateContacts.addAdditionalContact( (AdditionalContact)
+						StarsFactory.newStarsCustomerContact(account.getAdditionalContact(i), AdditionalContact.class) );
 			}
-
-			updateContacts.removeAllAdditionalContact();
-
-			for (int i = 2; i <= 4; i++) {
-				lastName = req.getParameter("LastName" + i);
-				firstName = req.getParameter("FirstName" + i);
-
-				if (lastName != null && lastName.trim().length() > 0
-					&& firstName != null && firstName.trim().length() > 0) {
-					AdditionalContact contact = new AdditionalContact();
-					contact.setContactID( Integer.parseInt(req.getParameter("ContactID" + i)) );
-					contact.setLastName( lastName );
-					contact.setFirstName( firstName );
-					contact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone" + i)) );
-					contact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone" + i)) );
-					contact.setEmail( (Email) StarsFactory.newStarsContactNotification(
-							false, req.getParameter("Email" + i), Email.class) );
-					updateContacts.addAdditionalContact( contact );
+			
+			int contactID = Integer.parseInt( req.getParameter("ContactID") );
+			String command = req.getParameter( "Command" );
+			
+			if (command.equalsIgnoreCase("Update") || command.equalsIgnoreCase("New")) {
+				StarsCustomerContact contact = null;
+				if (command.equalsIgnoreCase("Update")) {
+					if (updateContacts.getPrimaryContact().getContactID() == contactID) {
+						contact = updateContacts.getPrimaryContact();
+					}
+					else {
+						for (int i = 0; i < updateContacts.getAdditionalContactCount(); i++) {
+							if (updateContacts.getAdditionalContact(i).getContactID() == contactID) {
+								contact = updateContacts.getAdditionalContact(i);
+								break;
+							}
+						}
+					}
+				}
+				else {
+					contact = new AdditionalContact();
+					contact.setContactID( -1 );
+					updateContacts.addAdditionalContact( (AdditionalContact)contact );
+				}
+				
+				contact.setLastName( req.getParameter("LastName") );
+				contact.setFirstName( req.getParameter("FirstName") );
+				
+				contact.removeAllContactNotification();
+				
+				String[] notifCatIDs = req.getParameterValues("NotifCat");
+				String[] notifications = req.getParameterValues("Notification");
+				
+				for (int i = 0; i < notifCatIDs.length; i++) {
+					int notifCatID = Integer.parseInt( notifCatIDs[i] );
+					if (notifCatID > 0 && notifications[i].trim().length() > 0) {
+						if (notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
+							notifications[i] = ServletUtils.formatPhoneNumber( notifications[i] );
+						
+						ContactNotification contNotif = ServletUtils.createContactNotification( notifications[i], notifCatID );
+						if (contactID == account.getPrimaryContact().getContactID() && notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
+							ContactNotification email = ServletUtils.getContactNotification( account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+							if (email != null)
+								contNotif.setDisabled( email.getDisabled() );
+							else
+								contNotif.setDisabled( true );
+						}
+						
+						contact.addContactNotification( contNotif );
+					}
+				}
+			}
+			else {	// command = "Delete"
+				for (int i = 0; i < updateContacts.getAdditionalContactCount(); i++) {
+					if (updateContacts.getAdditionalContact(i).getContactID() == contactID) {
+						updateContacts.removeAdditionalContact(i);
+						break;
+					}
 				}
 			}
 			

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: ContactNotificationDescriptor.java,v 1.1 2004/10/26 21:15:39 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/10/26 21:15:39 $
 **/
-public class EmailDescriptor extends StarsContactNotificationDescriptor {
+public class ContactNotificationDescriptor extends StarsContactNotificationDescriptor {
 
 
       //--------------------------/
@@ -47,10 +47,10 @@ public class EmailDescriptor extends StarsContactNotificationDescriptor {
      //- Constructors -/
     //----------------/
 
-    public EmailDescriptor() {
+    public ContactNotificationDescriptor() {
         super();
         setExtendsWithoutFlatten(new StarsContactNotificationDescriptor());
-        xmlName = "Email";
+        xmlName = "ContactNotification";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,7 +58,7 @@ public class EmailDescriptor extends StarsContactNotificationDescriptor {
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.EmailDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.ContactNotificationDescriptor()
 
 
       //-----------/
@@ -92,7 +92,7 @@ public class EmailDescriptor extends StarsContactNotificationDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.Email.class;
+        return com.cannontech.stars.xml.serialize.ContactNotification.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

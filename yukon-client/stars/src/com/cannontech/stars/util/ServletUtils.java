@@ -19,6 +19,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -26,6 +27,7 @@ import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
+import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -663,6 +665,26 @@ public class ServletUtils {
 		}
 		
 		session.setAttribute( ATT_LAST_SUBMITTED_REQUEST, savedReq );
+	}
+	
+	public static ContactNotification getContactNotification(StarsCustomerContact contact, int notifCatID) {
+		for (int i = 0; i < contact.getContactNotificationCount(); i++) {
+			if (contact.getContactNotification(i).getNotifCatID() == notifCatID)
+				return contact.getContactNotification(i);
+		}
+		
+		return null;
+	}
+	
+	public static ContactNotification createContactNotification(String value, int notifCatID) {
+		if (value != null && value.trim().length() > 0) {
+			ContactNotification contNotif = new ContactNotification();
+			contNotif.setNotifCatID( notifCatID );
+			contNotif.setNotification( value );
+			return contNotif;
+		}
+		
+		return null;
 	}
 
 }

@@ -58,28 +58,28 @@ public class StarsContactNotificationDescriptor extends org.exolab.castor.xml.ut
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _enabled
-        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_enabled", "Enabled", NodeType.Element);
+        //-- _notifCatID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_notifCatID", "notifCatID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsContactNotification target = (StarsContactNotification) object;
-                if(!target.hasEnabled())
+                if(!target.hasNotifCatID())
                     return null;
-                return new Boolean(target.getEnabled());
+                return new Integer(target.getNotifCatID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsContactNotification target = (StarsContactNotification) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setEnabled( ((Boolean)value).booleanValue());
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteNotifCatID();
+                        return;
+                    }
+                    target.setNotifCatID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -90,18 +90,59 @@ public class StarsContactNotificationDescriptor extends org.exolab.castor.xml.ut
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _enabled
+        //-- validation code for: _notifCatID
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _disabled
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_disabled", "disabled", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsContactNotification target = (StarsContactNotification) object;
+                if(!target.hasDisabled())
+                    return null;
+                return new Boolean(target.getDisabled());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsContactNotification target = (StarsContactNotification) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDisabled();
+                        return;
+                    }
+                    target.setDisabled( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _disabled
+        fieldValidator = new FieldValidator();
         { //-- local scope
             BooleanValidator bv = new BooleanValidator();
             fieldValidator.setValidator(bv);
         }
         desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
         
         //-- _notification
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_notification", "Notification", NodeType.Element);

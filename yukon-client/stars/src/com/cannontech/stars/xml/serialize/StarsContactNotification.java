@@ -32,12 +32,19 @@ public abstract class StarsContactNotification implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private boolean _enabled;
+    private int _notifCatID;
 
     /**
-     * keeps track of state for field: _enabled
+     * keeps track of state for field: _notifCatID
     **/
-    private boolean _has_enabled;
+    private boolean _has_notifCatID;
+
+    private boolean _disabled;
+
+    /**
+     * keeps track of state for field: _disabled
+    **/
+    private boolean _has_disabled;
 
     private java.lang.String _notification;
 
@@ -56,14 +63,38 @@ public abstract class StarsContactNotification implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'enabled'.
-     * 
-     * @return the value of field 'enabled'.
     **/
-    public boolean getEnabled()
+    public void deleteDisabled()
     {
-        return this._enabled;
-    } //-- boolean getEnabled() 
+        this._has_disabled= false;
+    } //-- void deleteDisabled() 
+
+    /**
+    **/
+    public void deleteNotifCatID()
+    {
+        this._has_notifCatID= false;
+    } //-- void deleteNotifCatID() 
+
+    /**
+     * Returns the value of field 'disabled'.
+     * 
+     * @return the value of field 'disabled'.
+    **/
+    public boolean getDisabled()
+    {
+        return this._disabled;
+    } //-- boolean getDisabled() 
+
+    /**
+     * Returns the value of field 'notifCatID'.
+     * 
+     * @return the value of field 'notifCatID'.
+    **/
+    public int getNotifCatID()
+    {
+        return this._notifCatID;
+    } //-- int getNotifCatID() 
 
     /**
      * Returns the value of field 'notification'.
@@ -77,10 +108,17 @@ public abstract class StarsContactNotification implements java.io.Serializable {
 
     /**
     **/
-    public boolean hasEnabled()
+    public boolean hasDisabled()
     {
-        return this._has_enabled;
-    } //-- boolean hasEnabled() 
+        return this._has_disabled;
+    } //-- boolean hasDisabled() 
+
+    /**
+    **/
+    public boolean hasNotifCatID()
+    {
+        return this._has_notifCatID;
+    } //-- boolean hasNotifCatID() 
 
     /**
     **/
@@ -112,15 +150,26 @@ public abstract class StarsContactNotification implements java.io.Serializable {
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
-     * Sets the value of field 'enabled'.
+     * Sets the value of field 'disabled'.
      * 
-     * @param enabled the value of field 'enabled'.
+     * @param disabled the value of field 'disabled'.
     **/
-    public void setEnabled(boolean enabled)
+    public void setDisabled(boolean disabled)
     {
-        this._enabled = enabled;
-        this._has_enabled = true;
-    } //-- void setEnabled(boolean) 
+        this._disabled = disabled;
+        this._has_disabled = true;
+    } //-- void setDisabled(boolean) 
+
+    /**
+     * Sets the value of field 'notifCatID'.
+     * 
+     * @param notifCatID the value of field 'notifCatID'.
+    **/
+    public void setNotifCatID(int notifCatID)
+    {
+        this._notifCatID = notifCatID;
+        this._has_notifCatID = true;
+    } //-- void setNotifCatID(int) 
 
     /**
      * Sets the value of field 'notification'.

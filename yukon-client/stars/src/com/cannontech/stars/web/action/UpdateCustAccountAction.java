@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -25,7 +26,7 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.BillingAddress;
-import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
@@ -111,11 +112,21 @@ public class UpdateCustAccountAction implements ActionBase {
 			PrimaryContact primContact = new PrimaryContact();
 			primContact.setLastName( req.getParameter("LastName") );
 			primContact.setFirstName( req.getParameter("FirstName") );
-			primContact.setHomePhone( ServletUtils.formatPhoneNumber(req.getParameter("HomePhone")) );
-			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
-			primContact.setEmail( (Email) StarsFactory.newStarsContactNotification(
-					Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue(),
-					req.getParameter("Email").trim(), Email.class) );
+			
+			ContactNotification homePhone = ServletUtils.createContactNotification(
+					req.getParameter("HomePhone"), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+			if (homePhone != null) primContact.addContactNotification( homePhone );
+			
+			ContactNotification workPhone = ServletUtils.createContactNotification(
+					req.getParameter("WorkPhone"), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+			if (workPhone != null) primContact.addContactNotification( workPhone );
+			
+			ContactNotification email = ServletUtils.createContactNotification(
+					req.getParameter("Email"), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			if (email != null) {
+				email.setDisabled( req.getParameter("NotifyControl") == null );
+				primContact.addContactNotification( email );
+			} 
             
 			updateAccount.setPrimaryContact( primContact );
 			updateAccount.setAdditionalContact( starsAcctInfo.getStarsCustomerAccount().getAdditionalContact() );

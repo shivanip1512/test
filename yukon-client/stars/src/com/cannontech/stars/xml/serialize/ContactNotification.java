@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: ContactNotification.java,v 1.1 2004/10/26 21:15:50 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,9 +23,9 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/10/26 21:15:50 $
 **/
-public class Email extends StarsContactNotification 
+public class ContactNotification extends StarsContactNotification 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public Email() {
+    public ContactNotification() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.Email()
+    } //-- com.cannontech.stars.xml.serialize.ContactNotification()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.Email unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.ContactNotification unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.Email) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.Email.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.Email unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.ContactNotification) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ContactNotification.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.ContactNotification unmarshal(java.io.Reader) 
 
     /**
     **/

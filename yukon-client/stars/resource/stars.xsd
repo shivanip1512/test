@@ -70,17 +70,16 @@
 	</xs:simpleType>
 	<xs:complexType name="stars-ContactNotification">
 		<xs:sequence>
-			<xs:element name="Enabled" type="xs:boolean"/>
 			<xs:element name="Notification" type="xs:string"/>
 		</xs:sequence>
+		<xs:attribute name="notifCatID" type="xs:int"/>
+		<xs:attribute name="disabled" type="xs:boolean"/>
 	</xs:complexType>
 	<xs:complexType name="stars-CustomerContact">
 		<xs:sequence>
 			<xs:element name="LastName" type="xs:string"/>
 			<xs:element name="FirstName" type="xs:string"/>
-			<xs:element name="HomePhone" type="xs:string"/>
-			<xs:element name="WorkPhone" type="xs:string"/>
-			<xs:element name="Email" type="stars-ContactNotification" minOccurs="0"/>
+			<xs:element name="ContactNotification" type="stars-ContactNotification" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="contactID" type="xs:int"/>
 	</xs:complexType>
@@ -1215,7 +1214,7 @@
 	<xs:element name="stars-UpdateControlNotification">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Email" type="stars-ContactNotification" minOccurs="0"/>
+				<xs:element name="ContactNotification" type="stars-ContactNotification" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

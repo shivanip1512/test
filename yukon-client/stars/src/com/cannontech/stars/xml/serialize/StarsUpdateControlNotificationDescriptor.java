@@ -60,35 +60,35 @@ public class StarsUpdateControlNotificationDescriptor extends org.exolab.castor.
         
         //-- initialize element descriptors
         
-        //-- _email
-        desc = new XMLFieldDescriptorImpl(Email.class, "_email", "Email", NodeType.Element);
+        //-- _contactNotification
+        desc = new XMLFieldDescriptorImpl(ContactNotification.class, "_contactNotification", "ContactNotification", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsUpdateControlNotification target = (StarsUpdateControlNotification) object;
-                return target.getEmail();
+                return target.getContactNotification();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsUpdateControlNotification target = (StarsUpdateControlNotification) object;
-                    target.setEmail( (Email) value);
+                    target.setContactNotification( (ContactNotification) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new Email();
+                return new ContactNotification();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _email
+        //-- validation code for: _contactNotification
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

@@ -32,7 +32,7 @@ public class StarsUpdateControlNotification implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private Email _email;
+    private ContactNotification _contactNotification;
 
 
       //----------------/
@@ -49,14 +49,14 @@ public class StarsUpdateControlNotification implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'email'.
+     * Returns the value of field 'contactNotification'.
      * 
-     * @return the value of field 'email'.
+     * @return the value of field 'contactNotification'.
     **/
-    public Email getEmail()
+    public ContactNotification getContactNotification()
     {
-        return this._email;
-    } //-- Email getEmail() 
+        return this._contactNotification;
+    } //-- ContactNotification getContactNotification() 
 
     /**
     **/
@@ -96,14 +96,15 @@ public class StarsUpdateControlNotification implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'email'.
+     * Sets the value of field 'contactNotification'.
      * 
-     * @param email the value of field 'email'.
+     * @param contactNotification the value of field
+     * 'contactNotification'.
     **/
-    public void setEmail(Email email)
+    public void setContactNotification(ContactNotification contactNotification)
     {
-        this._email = email;
-    } //-- void setEmail(Email) 
+        this._contactNotification = contactNotification;
+    } //-- void setContactNotification(ContactNotification) 
 
     /**
      * 

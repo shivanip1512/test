@@ -71,13 +71,13 @@ import com.cannontech.stars.xml.serialize.BlowerEnergySource;
 import com.cannontech.stars.xml.serialize.BlowerHeatSource;
 import com.cannontech.stars.xml.serialize.BlowerHorsePower;
 import com.cannontech.stars.xml.serialize.ConstructionMaterial;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.DecadeBuilt;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.DryerType;
 import com.cannontech.stars.xml.serialize.DualFuel;
-import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.EnergySource;
 import com.cannontech.stars.xml.serialize.GeneralCondition;
 import com.cannontech.stars.xml.serialize.Generator;
@@ -830,25 +830,30 @@ public class ImportManager extends HttpServlet {
 	    PrimaryContact primContact = new PrimaryContact();
 	    primContact.setLastName( fields[IDX_LAST_NAME] );
 	    primContact.setFirstName( fields[IDX_FIRST_NAME] );
+	    
 	    try {
-			primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
+	    	ContactNotification homePhone = ServletUtils.createContactNotification(
+					ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+			if (homePhone != null) primContact.addContactNotification( homePhone );
 	    }
 	    catch (WebClientException e) {
-			primContact.setHomePhone( "" );
-			if (problem != null) problem.appendProblem( e.getMessage() );
-	    }
-	    try {
-			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
-	    }
-	    catch (WebClientException e) {
-			primContact.setWorkPhone( "" );
 			if (problem != null) problem.appendProblem( e.getMessage() );
 	    }
 	    
-	    Email email = new Email();
-	    email.setNotification( fields[IDX_EMAIL] );
-	    email.setEnabled( false );
-	    primContact.setEmail( email );
+	    try {
+			ContactNotification workPhone = ServletUtils.createContactNotification(
+					ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+			if (workPhone != null) primContact.addContactNotification( workPhone );
+	    }
+	    catch (WebClientException e) {
+			if (problem != null) problem.appendProblem( e.getMessage() );
+	    }
+	    
+	    ContactNotification email = ServletUtils.createContactNotification(
+				fields[IDX_EMAIL], YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+	    email.setDisabled( true );
+	    primContact.addContactNotification( email );
+	    
 	    account.setPrimaryContact( primContact );
 	}
 	

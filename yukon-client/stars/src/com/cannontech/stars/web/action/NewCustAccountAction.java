@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -26,7 +27,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.BillingAddress;
-import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
@@ -110,13 +111,22 @@ public class NewCustAccountAction implements ActionBase {
 			PrimaryContact primContact = new PrimaryContact();
 			primContact.setLastName( req.getParameter("LastName") );
 			primContact.setFirstName( req.getParameter("FirstName") );
-			primContact.setHomePhone( req.getParameter("HomePhone") );
-			primContact.setWorkPhone( req.getParameter("WorkPhone") );
-            
-			Email email = new Email();
-			email.setNotification( req.getParameter("Email") );
-			email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
-			primContact.setEmail( email );
+			
+			ContactNotification homePhone = ServletUtils.createContactNotification(
+					req.getParameter("HomePhone"), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+			if (homePhone != null) primContact.addContactNotification( homePhone );
+			
+			ContactNotification workPhone = ServletUtils.createContactNotification(
+					req.getParameter("WorkPhone"), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+			if (workPhone != null) primContact.addContactNotification( workPhone );
+			
+			ContactNotification email = ServletUtils.createContactNotification(
+					req.getParameter("Email"), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			if (email != null) {
+				if (req.getParameter("NotifyControl") == null) email.setDisabled( true );
+				primContact.addContactNotification( email );
+			}
+			 
 			account.setPrimaryContact( primContact );
             
 			for (int i = 2; i <= 4; i++) {
@@ -128,8 +138,15 @@ public class NewCustAccountAction implements ActionBase {
 					AdditionalContact contact = new AdditionalContact();
 					contact.setLastName( lastName );
 					contact.setFirstName( firstName );
-					contact.setHomePhone( req.getParameter("HomePhone" + i) );
-					contact.setWorkPhone( req.getParameter("WorkPhone" + i) );
+					
+					ContactNotification homePhone2 = ServletUtils.createContactNotification(
+							req.getParameter("HomePhone" + i), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+					if (homePhone2 != null) contact.addContactNotification( homePhone2 );
+					
+					ContactNotification workPhone2 = ServletUtils.createContactNotification(
+							req.getParameter("WorkPhone" + i), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+					if (workPhone2 != null) contact.addContactNotification( workPhone2 );
+					
 					account.addAdditionalContact( contact );
 				}
 			}
@@ -149,14 +166,21 @@ public class NewCustAccountAction implements ActionBase {
 			session.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
 			
 			// Format the phone number after the information has been saved
-			primContact.setHomePhone( ServletUtils.formatPhoneNumber(primContact.getHomePhone()) );
-			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(primContact.getWorkPhone()) );
+			if (homePhone != null)
+				homePhone.setNotification( ServletUtils.formatPhoneNumber(homePhone.getNotification()) );
+			if (workPhone != null)
+				workPhone.setNotification( ServletUtils.formatPhoneNumber(workPhone.getNotification()) );
 			
 			for (int i = 0; i < account.getAdditionalContactCount(); i++) {
-				account.getAdditionalContact(i).setHomePhone(
-						ServletUtils.formatPhoneNumber(account.getAdditionalContact(i).getHomePhone()) );
-				account.getAdditionalContact(i).setWorkPhone(
-						ServletUtils.formatPhoneNumber(account.getAdditionalContact(i).getWorkPhone()) );
+				ContactNotification homePhone2 = ServletUtils.getContactNotification(
+						account.getAdditionalContact(i), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+				ContactNotification workPhone2 = ServletUtils.getContactNotification(
+						account.getAdditionalContact(i), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+				
+				if (homePhone2 != null)
+					homePhone2.setNotification( ServletUtils.formatPhoneNumber(homePhone2.getNotification()) );
+				if (workPhone2 != null)
+					workPhone2.setNotification( ServletUtils.formatPhoneNumber(workPhone2.getNotification()) );
 			}
 			
 			StarsOperation operation = new StarsOperation();

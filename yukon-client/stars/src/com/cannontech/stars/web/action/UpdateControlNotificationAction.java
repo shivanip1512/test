@@ -19,8 +19,9 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.Email;
+import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -43,15 +44,15 @@ public class UpdateControlNotificationAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-        	Email email = new Email();
+        	ContactNotification email = new ContactNotification();
 			email.setNotification( req.getParameter("Email").trim() );
 			if (email.getNotification().length() > 0)
-	        	email.setEnabled( Boolean.valueOf(req.getParameter("NotifyControl")).booleanValue() );
+	        	email.setDisabled( req.getParameter("NotifyControl") == null );
 	        else
-	        	email.setEnabled( false );
+	        	email.setDisabled( true );
         	
         	StarsUpdateControlNotification updateNotif = new StarsUpdateControlNotification();
-        	updateNotif.setEmail( email );
+        	updateNotif.setContactNotification( email );
         	
         	StarsOperation operation = new StarsOperation();
         	operation.setStarsUpdateControlNotification( updateNotif );
@@ -86,50 +87,49 @@ public class UpdateControlNotificationAction implements ActionBase {
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	LiteContact litePrimContact = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+			LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( litePrimContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
             
-            StarsUpdateControlNotification updateNotif = reqOper.getStarsUpdateControlNotification();
-            if (updateNotif.getEmail() != null) {
-            	LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( litePrimContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-            	
-            	if (!StarsLiteFactory.isIdenticalContactNotification( liteNotifEmail, updateNotif.getEmail() )) {
-					com.cannontech.database.data.customer.Contact primContact =
-							(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
-					
-					com.cannontech.database.db.contact.ContactNotification notifEmail = null;
-					for (int i = 0; i < primContact.getContactNotifVect().size(); i++) {
-						com.cannontech.database.db.contact.ContactNotification notif =
-								(com.cannontech.database.db.contact.ContactNotification) primContact.getContactNotifVect().get(i);
-						if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
-							notifEmail = notif;
-							break;
-						}
+            ContactNotification email = reqOper.getStarsUpdateControlNotification().getContactNotification();
+            
+            if (liteNotifEmail == null && email.getNotification().length() > 0
+            	|| liteNotifEmail != null && (!liteNotifEmail.getNotification().equals(email.getNotification()) || liteNotifEmail.isDisabled() != email.getDisabled()))
+        	{
+				com.cannontech.database.data.customer.Contact primContact =
+						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
+				
+				com.cannontech.database.db.contact.ContactNotification notifEmail = null;
+				for (int i = 0; i < primContact.getContactNotifVect().size(); i++) {
+					com.cannontech.database.db.contact.ContactNotification notif =
+							(com.cannontech.database.db.contact.ContactNotification) primContact.getContactNotifVect().get(i);
+					if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
+						notifEmail = notif;
+						break;
 					}
-					
-					if (notifEmail != null) {
-						if (updateNotif.getEmail().getNotification().length() > 0) {
-							notifEmail.setDisableFlag( updateNotif.getEmail().getEnabled()? "N" : "Y" );
-							notifEmail.setNotification( updateNotif.getEmail().getNotification() );
-						}
-						else {
-							notifEmail.setOpCode( Transaction.DELETE );
-						}
+				}
+				
+				if (notifEmail != null) {
+					if (email.getNotification().length() > 0) {
+						notifEmail.setDisableFlag( email.getDisabled()? "Y" : "N" );
+						notifEmail.setNotification( email.getNotification() );
 					}
 					else {
-						notifEmail = new com.cannontech.database.db.contact.ContactNotification();
-						notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
-						notifEmail.setDisableFlag( updateNotif.getEmail().getEnabled()? "N" : "Y" );
-						notifEmail.setNotification( updateNotif.getEmail().getNotification() );
-						notifEmail.setOpCode( Transaction.INSERT );
-						
-						primContact.getContactNotifVect().add( notifEmail );
+						notifEmail.setOpCode( Transaction.DELETE );
 					}
-					
-					primContact = (com.cannontech.database.data.customer.Contact)
-			            	Transaction.createTransaction(Transaction.UPDATE, primContact).execute();
-			        StarsLiteFactory.setLiteContact( litePrimContact, primContact );
-	            	
-		            ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-            	}
+				}
+				else {
+					notifEmail = new com.cannontech.database.db.contact.ContactNotification();
+					notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+					notifEmail.setDisableFlag( email.getDisabled()? "Y" : "N" );
+					notifEmail.setNotification( email.getNotification() );
+					notifEmail.setOpCode( Transaction.INSERT );
+					primContact.getContactNotifVect().add( notifEmail );
+				}
+				
+				primContact = (com.cannontech.database.data.customer.Contact)
+		            	Transaction.createTransaction(Transaction.UPDATE, primContact).execute();
+		        
+		        StarsLiteFactory.setLiteContact( litePrimContact, primContact );
+	            ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             }
             
             StarsSuccess success = new StarsSuccess();
@@ -170,11 +170,25 @@ public class UpdateControlNotificationAction implements ActionBase {
 			if (operation.getStarsSuccess() == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsUpdateControlNotification updateNotif = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateControlNotification();
-			if (updateNotif.getEmail() != null) {
-				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-				accountInfo.getStarsCustomerAccount().getPrimaryContact().setEmail( updateNotif.getEmail() );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			StarsCustomerContact primContact = accountInfo.getStarsCustomerAccount().getPrimaryContact();
+			ContactNotification emailNotif = ServletUtils.getContactNotification( primContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			
+			ContactNotification email = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateControlNotification().getContactNotification();
+			if (emailNotif == null) {
+				if (email.getNotification().length() > 0)
+					primContact.addContactNotification( email );
+			}
+			else {
+				for (int i = 0; i < primContact.getContactNotificationCount(); i++) {
+					if (primContact.getContactNotification(i) == emailNotif) {
+						if (email.getNotification().length() > 0)
+							primContact.setContactNotification(i, email);
+						else
+							primContact.removeContactNotification(i);
+					}
+				}
 			}
 			
             return 0;

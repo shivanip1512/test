@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContactDescriptor.java,v 1.87 2004/10/06 20:59:19 zyao Exp $
+ * $Id: StarsCustomerContactDescriptor.java,v 1.88 2004/10/26 21:15:46 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.87 $ $Date: 2004/10/06 20:59:19 $
+ * @version $Revision: 1.88 $ $Date: 2004/10/26 21:15:46 $
 **/
 public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -182,116 +182,37 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
         }
         desc.setValidator(fieldValidator);
         
-        //-- _homePhone
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_homePhone", "HomePhone", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _contactNotificationList
+        desc = new XMLFieldDescriptorImpl(ContactNotification.class, "_contactNotificationList", "ContactNotification", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsCustomerContact target = (StarsCustomerContact) object;
-                return target.getHomePhone();
+                return target.getContactNotification();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsCustomerContact target = (StarsCustomerContact) object;
-                    target.setHomePhone( (java.lang.String) value);
+                    target.addContactNotification( (ContactNotification) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new ContactNotification();
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
+        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _homePhone
+        //-- validation code for: _contactNotificationList
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _workPhone
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_workPhone", "WorkPhone", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsCustomerContact target = (StarsCustomerContact) object;
-                return target.getWorkPhone();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsCustomerContact target = (StarsCustomerContact) object;
-                    target.setWorkPhone( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _workPhone
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _email
-        desc = new XMLFieldDescriptorImpl(Email.class, "_email", "Email", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsCustomerContact target = (StarsCustomerContact) object;
-                return target.getEmail();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsCustomerContact target = (StarsCustomerContact) object;
-                    target.setEmail( (Email) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new Email();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _email
-        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsCustomerContactDescriptor()
