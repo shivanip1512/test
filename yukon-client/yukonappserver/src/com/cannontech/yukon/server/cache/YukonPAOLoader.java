@@ -3,6 +3,14 @@ package com.cannontech.yukon.server.cache;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceRoutes;
+import com.cannontech.database.db.pao.YukonPAObject;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -43,9 +51,11 @@ public class YukonPAOLoader implements Runnable
 		//temp code
 		String sqlString = 
 				"SELECT y.PAObjectID, y.Category, y.PAOName, " +
-				"y.Type, y.PAOClass, y.Description, d.PORTID " +
-				"FROM YukonPAObject y left outer join DEVICEDIRECTCOMMSETTINGS d " +
+				"y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS, dr.ROUTEID " +
+				"FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
 				"on y.paobjectid = d.deviceid " +
+				"left outer join " + DeviceRoutes.TABLE_NAME + " DR ON Y.PAOBJECTID = DR.DEVICEID " +				
+				"left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID " +				
 				"WHERE y.PAObjectID > 0 " +
 				"ORDER BY y.Category, y.PAOClass, y.PAOName";
 	
@@ -74,19 +84,30 @@ public class YukonPAOLoader implements Runnable
 				
 				//this column may be null!!
 				BigDecimal portID = (BigDecimal)rset.getObject(7);
+				//this column may be null!!
+				BigDecimal address = (BigDecimal)rset.getObject(8);
+				//this column may be null!!
+				BigDecimal routeID = (BigDecimal)rset.getObject(9);
 				
-				com.cannontech.database.data.lite.LiteYukonPAObject pao =
-					new com.cannontech.database.data.lite.LiteYukonPAObject(
+
+				LiteYukonPAObject pao = new LiteYukonPAObject(
 							paoID, 
 							paoName, 
-							com.cannontech.database.data.pao.PAOGroups.getCategory(paoCategory),
-							com.cannontech.database.data.pao.PAOGroups.getPAOType(paoCategory, paoType),
-							com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
+							PAOGroups.getCategory(paoCategory),
+							PAOGroups.getPAOType(paoCategory, paoType),
+							PAOGroups.getPAOClass(paoCategory, paoClass),
 							paoDescription );
 	
 				if( portID != null )
 					pao.setPortID( portID.intValue() );
 	
+				if( address != null )
+					pao.setAddress( address.intValue() );
+
+				if( routeID != null )
+					pao.setRouteID( routeID.intValue() );
+
+
 				allPAObjects.add( pao );
 				allPAOsMap.put( new Integer(paoID), pao );
 			}
@@ -94,7 +115,7 @@ public class YukonPAOLoader implements Runnable
 		}
 		catch( java.sql.SQLException e )
 		{
-	      com.cannontech.clientutils.CTILogger.error(" DB : YukonPAOLoader query did not work, trying Query with a non SQL-92 query");
+	      CTILogger.error(" DB : YukonPAOLoader query did not work, trying Query with a non SQL-92 query");
 	      //try using a nonw SQL-92 method, will be slower
 	      //  Oracle 8.1.X and less will use this
 	 		executeNonSQL92Query();
@@ -112,26 +133,24 @@ public class YukonPAOLoader implements Runnable
 			}
 			catch( java.sql.SQLException e )
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 	//temp code
 	timerStop = new java.util.Date();
 	
-	com.cannontech.clientutils.CTILogger.info( 
-	    (timerStop.getTime() - timerStart.getTime())*.001 + 
+	CTILogger.info((timerStop.getTime() - timerStart.getTime())*.001 + 
 	      " Secs for YukonPAObjectLoader (" + allPAObjects.size() + " loaded)" );
 	
 	//temp code
 		}
 	}
 	
-	
 	private void executeNonSQL92Query()
 	{
 		String sqlString = 
 				"SELECT PAObjectID, Category, PAOName, " +
 				"Type, PAOClass, Description " +
-				"FROM YukonPAObject WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
+				"FROM " + YukonPAObject.TABLE_NAME+" WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
 	
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -151,23 +170,23 @@ public class YukonPAOLoader implements Runnable
 				String paoClass = rset.getString(5).trim();
 				String paoDescription = rset.getString(6).trim();
 	
-				com.cannontech.database.data.lite.LiteYukonPAObject pao =
-					new com.cannontech.database.data.lite.LiteYukonPAObject(
+				LiteYukonPAObject pao = new LiteYukonPAObject(
 							paoID, 
 							paoName, 
-							com.cannontech.database.data.pao.PAOGroups.getCategory(paoCategory),
-							com.cannontech.database.data.pao.PAOGroups.getPAOType(paoCategory, paoType),
-							com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
+							PAOGroups.getCategory(paoCategory),
+							PAOGroups.getPAOType(paoCategory, paoType),
+							PAOGroups.getPAOClass(paoCategory, paoClass),
 							paoDescription );
 	
 				allPAObjects.add( pao );
 				allPAOsMap.put( new Integer(paoID), pao );
 			}
 	
+			/** Load the PortID*/
 			if( rset != null )
 				rset.close();
 	
-			sqlString = "SELECT DEVICEID,PORTID FROM DEVICEDIRECTCOMMSETTINGS WHERE DEVICEID > 0 ORDER BY DEVICEID";
+			sqlString = "SELECT DEVICEID,PORTID FROM " + DeviceDirectCommSettings.TABLE_NAME+" WHERE DEVICEID > 0 ORDER BY DEVICEID";
 			rset = stmt.executeQuery(sqlString);
 	
 			while (rset.next())
@@ -177,9 +196,51 @@ public class YukonPAOLoader implements Runnable
 	
 				for(int i = 0; i < allPAObjects.size(); i++)
 				{
-					if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
+					if ( ((LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
 					{
-						((com.cannontech.database.data.lite.LiteYukonPAObject)allPAObjects.get(i)).setPortID(portID);
+						((LiteYukonPAObject)allPAObjects.get(i)).setPortID(portID);
+						break;
+					}
+				}
+			}
+			/** Load the address */
+			if( rset != null )
+				rset.close();
+	
+			sqlString = "SELECT DEVICEID,ADDRESS FROM " + DeviceCarrierSettings.TABLE_NAME+" WHERE DEVICEID > 0 ORDER BY DEVICEID";
+			rset = stmt.executeQuery(sqlString);
+	
+			while (rset.next())
+			{
+				int deviceID = rset.getInt(1);
+				int address = rset.getInt(2);
+	
+				for(int i = 0; i < allPAObjects.size(); i++)
+				{
+					if ( ((LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
+					{
+						((LiteYukonPAObject)allPAObjects.get(i)).setAddress(address);
+						break;
+					}
+				}
+			}
+			/** Load the routeID*/
+			if( rset != null )
+				rset.close();
+	
+			sqlString = "SELECT DEVICEID,ROUTEID FROM " + DeviceRoutes.TABLE_NAME+" WHERE DEVICEID > 0 ORDER BY DEVICEID";
+			rset = stmt.executeQuery(sqlString);
+	
+			while (rset.next())
+			{
+				int deviceID = rset.getInt(1);
+				int routeID = rset.getInt(2);
+	
+				for(int i = 0; i < allPAObjects.size(); i++)
+				{
+					if ( ((LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
+					{
+						((LiteYukonPAObject)allPAObjects.get(i)).setRouteID(routeID);
 						break;
 					}
 				}
@@ -188,7 +249,7 @@ public class YukonPAOLoader implements Runnable
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -201,10 +262,8 @@ public class YukonPAOLoader implements Runnable
 			}
 			catch( java.sql.SQLException e )
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
-	
 	}
-
 }

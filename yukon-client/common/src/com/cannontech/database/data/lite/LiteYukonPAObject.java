@@ -1,31 +1,47 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceRoutes;
+
 /*
  */
 public class LiteYukonPAObject extends LiteBase
 {
 	// a place holder for a LiteYukonPAObject, mostly used in option lists
 	// that allow the user not to choose a LitYukonPAObject
-	public static final com.cannontech.database.data.lite.LiteYukonPAObject LITEPAOBJECT_NONE = new com.cannontech.database.data.lite.LiteYukonPAObject
+	public static final LiteYukonPAObject LITEPAOBJECT_NONE = new LiteYukonPAObject
 	(
 		0,
 		"System Device",
-		com.cannontech.database.data.pao.PAOGroups.INVALID,
-		com.cannontech.database.data.pao.PAOGroups.INVALID,
-		com.cannontech.database.data.pao.PAOGroups.INVALID,
-		com.cannontech.common.util.CtiUtilities.STRING_NONE
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
+		CtiUtilities.STRING_NONE
 	);
 
 	//private int yukonID = com.cannontech.database.data.pao.PAOGroups.INVALID;
-	private int category = com.cannontech.database.data.pao.PAOGroups.INVALID;
+	private int category = PAOGroups.INVALID;
 	private String paoName = null;
-	private int type = com.cannontech.database.data.pao.PAOGroups.INVALID;
-	private int paoClass = com.cannontech.database.data.pao.PAOGroups.INVALID;
+	private int type = PAOGroups.INVALID;
+	private int paoClass = PAOGroups.INVALID;
 	private String paoDescription = null;
 	
 	//portID is only for devices that belong to a port
-	private int portID = com.cannontech.database.data.pao.PAOGroups.INVALID;
+	private int portID = PAOGroups.INVALID;
 
+	//routeIDID is only for devices that have a route, (deviceRoutes)
+	private int routeID = PAOGroups.INVALID;
+	//address is only for devices that have a physical address (deviceCarrierStatistics)
+	private int address = PAOGroups.INVALID;
+
+	
 	//childIDlist is a list of all the PAObjects owned by this PAObject
 	private int[] childIDList = new int[0];
 /**
@@ -143,55 +159,73 @@ public void retrieve(String dbalias)
 
 	try
 	{
-      com.cannontech.database.SqlStatement stat = 
-            new com.cannontech.database.SqlStatement(
-             "select Category, PAOName, Type, PAOClass, Description " +
-             "from YukonPAObject where PAObjectID = " + getLiteID(),
-             dbalias );
+		SqlStatement stat = new SqlStatement(
+				"select Category, PAOName, Type, PAOClass, Description "
+					+ "from YukonPAObject where PAObjectID = "
+					+ getLiteID(), dbalias);
 
 		stat.execute();
 
-      if( stat.getRowCount() <= 0 )
-         throw new IllegalStateException("Unable to find the PAObject with PAOid = " + getLiteID() );
+		if (stat.getRowCount() <= 0)
+			throw new IllegalStateException(
+				"Unable to find the PAObject with PAOid = " + getLiteID());
 
-      Object[] objs = stat.getRow(0);
-      String category = objs[0].toString();
-      
-		setCategory( com.cannontech.database.data.pao.PAOGroups.getCategory(category) );
-		setPaoName( objs[1].toString() );
-
-		setType( 
-         com.cannontech.database.data.pao.PAOGroups.getPAOType(
-         category, objs[2].toString()) );
-
-		setPaoClass( 
-         com.cannontech.database.data.pao.PAOGroups.getPAOClass(
-               category, objs[3].toString()) );
-
-		setPaoDescription( objs[4].toString() );
+		Object[] objs = stat.getRow(0);
+		String category = objs[0].toString();
+		setCategory(PAOGroups.getCategory(category));
+		setPaoName(objs[1].toString());
+		setType(PAOGroups.getPAOType(category, objs[2].toString()));
+		setPaoClass(PAOGroups.getPAOClass(category, objs[3].toString()));
+		setPaoDescription(objs[4].toString());
 	}
-	catch( Exception e )
+	catch (Exception e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error(e.getMessage(), e);
 	}
 
-	
 	try
 	{
-		com.cannontech.database.db.device.DeviceDirectCommSettings d = new com.cannontech.database.db.device.DeviceDirectCommSettings( new Integer(getLiteID()) );
-		com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(
-							com.cannontech.database.Transaction.RETRIEVE, d);
+		DeviceDirectCommSettings d = new DeviceDirectCommSettings( new Integer(getLiteID()) );
+		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
-		d = (com.cannontech.database.db.device.DeviceDirectCommSettings)t.execute();
+		d = (DeviceDirectCommSettings)t.execute();
 
 		if( d.getPortID() != null )
 			setPortID( d.getPortID().intValue() );
 	}
-	catch( com.cannontech.database.TransactionException e )
+	catch( TransactionException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
+	try
+	{
+		DeviceCarrierSettings d = new DeviceCarrierSettings( new Integer(getLiteID()) );
+		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
 
+		d = (DeviceCarrierSettings)t.execute();
+
+		if( d.getAddress() != null )
+			setAddress( d.getAddress().intValue() );
+	}
+	catch( TransactionException e )
+	{
+		CTILogger.error( e.getMessage(), e );
+	}
+	try
+	{
+		DeviceRoutes d = new DeviceRoutes();
+		d.setDeviceID(new Integer(getLiteID()) );
+		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, d);
+
+		d = (DeviceRoutes)t.execute();
+
+		if( d.getRouteID() != null )
+			setAddress( d.getRouteID().intValue() );
+	}
+	catch( TransactionException e )
+	{
+		CTILogger.error( e.getMessage(), e );
+	}
 }	
 /**
  * Insert the method's description here.
@@ -276,6 +310,38 @@ public String toString()
 	 */
 	public void setPaoDescription(String paoDescription) {
 		this.paoDescription = paoDescription;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getAddress()
+	{
+		return address;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getRouteID()
+	{
+		return routeID;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setAddress(int i)
+	{
+		address = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setRouteID(int i)
+	{
+		routeID = i;
 	}
 
 }
