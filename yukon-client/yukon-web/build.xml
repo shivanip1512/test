@@ -16,12 +16,13 @@
 		<jspc srcdir="${yukon-web}"
 			destdir="jspbuild"
 			compiler="jasper41"
-			uriroot="${yukon-web}"
+			uriroot="${yukon-web}/WebContent"
 			verbose="9">
             <exclude name="build/**" />
             <exclude name="jspbuild/**" />
+
 			<include name="**/*.jsp" />
-				
+
 		    <classpath>
 				<pathelement path="${java.class.path}"/>
 		         <fileset dir="${yukon.lib}">
@@ -71,13 +72,11 @@
 		**********************************************************-->
         <mkdir dir="build"/>
         <copy todir="build">
-            <fileset dir="${yukon-web}">
+            <fileset dir="${yukon-web}/WebContent">
                 <exclude name="build/**" />
                 <exclude name="jspbuild/**" />
-                <exclude name="work/**" />
                 <exclude name="**/CVS" />
-                <exclude name="WEB-INF/web.xml" />                
-
+                <exclude name="WEB-INF/web.xml" />
 
                 <exclude name="**/.*" />
                 <exclude name="**/build.xml" />
@@ -93,8 +92,8 @@
            </fileset>
         </copy>
 
-	    <war destfile="${yukon.lib}/yukon-web.war" basedir="build"
-	        webxml="WEB-INF/web.xml" duplicate="preserve">
+	    <war destfile="${yukon.lib}/yukon.war" basedir="build"
+	        webxml="WebContent/WEB-INF/web.xml" duplicate="preserve">
 	    </war>
 
 <!--
@@ -119,7 +118,7 @@
 
    	
 	<target name="clean">
-		<delete file="${yukon.lib}/yukon-web.war" />
+		<delete file="${yukon.lib}/yukon.war" />
         <delete dir="build"/>
 	</target>
 	
