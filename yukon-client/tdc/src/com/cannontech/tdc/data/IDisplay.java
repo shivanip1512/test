@@ -24,6 +24,11 @@ public interface IDisplay
 	public static final int LAST_ALARM_DISPLAY = 14;
 	public static final int VIEWABLE_ALARM_COUNT = 11;  // ALL_ALARM display plus alarmStateIds 2 - 11 displays
 
+
+	public static final int SOE_LOG_DISPLAY_NUMBER = 50;
+	public static final int TAG_LOG_DISPLAY_NUMBER = 51;
+
+
 	//these xxx_TYPE_INDEX variables are a mapping into the DISPLAY_TYPES[]
 	public static final int ALARMS_AND_EVENTS_TYPE_INDEX = 0;
 	public static final int CUSTOM_DISPLAYS_TYPE_INDEX = 1;	
