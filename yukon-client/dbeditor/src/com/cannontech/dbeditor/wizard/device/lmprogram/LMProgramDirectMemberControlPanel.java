@@ -4,6 +4,7 @@ import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import java.util.Vector;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * This type was created in VisualAge.
@@ -217,6 +218,10 @@ public Object getValue(Object o)
 			subordinateProg.setExcludedPaoID( new Integer(
 					((LiteYukonPAObject)getAddRemovePanel().rightListGetModel().getElementAt(i)).getLiteID() ) );
 		
+			//this is very important: server needs funcID set to this or it won't recognize the subordinate
+			subordinateProg.setFuncName(CtiUtilities.LM_SUBORDINATION_INFO);
+			subordinateProg.setFunctionID(CtiUtilities.LM_SUBORDINATION_FUNC_ID);
+						
 			program.getPAOExclusionVector().addElement( subordinateProg );
 		}
 	}
