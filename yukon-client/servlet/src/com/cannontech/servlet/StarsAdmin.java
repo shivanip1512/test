@@ -1414,6 +1414,7 @@ public class StarsAdmin extends HttpServlet {
 					catch (Exception e) {
 						Transaction.createTransaction( Transaction.DELETE, list ).execute();
 						energyCompany.deleteYukonSelectionList( cList );
+						throw e;
 					}
 				}
 			}
