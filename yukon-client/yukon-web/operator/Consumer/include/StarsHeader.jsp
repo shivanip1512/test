@@ -17,6 +17,7 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.util.ServerUtils" %>
 <%@ page import="com.cannontech.stars.web.action.*" %>
+<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 
@@ -74,6 +75,11 @@
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
 	StarsUser userLogin = null;
+	
+	//METERING PARAMETERS
+	int energyCompanyID = 0;
+	LiteYukonUser primContactYukonUser = null;
+	Object[][] gData = null;
 
 	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, ConsumerInfoRole.ROLEID) != null)
 	{
@@ -101,6 +107,9 @@
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
+			
+			// METERING PARAMTERS
+			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
 		
 		selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
@@ -126,6 +135,10 @@
 				userLogin.setUsername( "" );
 				userLogin.setPassword( "" );
 			}
+			
+			// METERING PARAMTERS
+			int contactID = account.getPrimaryContact().getContactID();
+			primContactYukonUser = com.cannontech.database.cache.functions.ContactFuncs.getYukonUser(contactID);
 		}
 	}
 	
@@ -137,25 +150,6 @@
 	datePart.setTimeZone(tz);
 	dateFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
-	
-//METERING PARAMETERS
-	LiteYukonUser liteYukonUser = null;
-	int liteYukonUserID = -1;
-	try
-	{
-		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
-		liteYukonUserID = liteYukonUser.getLiteID();		
-	}
-	catch (IllegalStateException ise)
-	{
-	}
-	int energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
-	if (liteYukonUser == null)
-	{
-		response.sendRedirect(request.getContextPath() + "/login.jsp"); return;
-	}
-
-	Object[][] gData = null;
 %>
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>
