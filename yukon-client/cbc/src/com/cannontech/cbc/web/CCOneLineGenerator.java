@@ -236,6 +236,7 @@ class CCOneLineGenerator
 		nameString.setPaint(Color.WHITE);
 		nameString.setText("Sub Bus: "+subBus.getCcName());
 
+/*
 		StaticImage allSubsLinkBackButton = new StaticImage();
 		allSubsLinkBackButton.setYukonImage("SubListButton.gif");
 		allSubsLinkBackButton.setCenter(1000-subInfoHorzPosition,subLineLevel-(subInfoVertOffset*1.5));
@@ -247,7 +248,7 @@ class CCOneLineGenerator
         feedersLinkBackButton.setCenter(1130-subInfoHorzPosition,subLineLevel-(subInfoVertOffset*1.5));
         feedersLinkBackButton.setLinkTo(DEF_FEEDERS_HOME + "?paoID=" + subBus.getCcId() );
         graph.add(feedersLinkBackButton);
-
+*/
 
 		DrawingUpdater updater = new DrawingUpdater(d);
 		updater.updateDrawing();
