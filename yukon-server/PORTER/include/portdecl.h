@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/11 16:48:18 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/07/03 20:20:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ INT SchlPostScan  ( OUTMESS *OutMessage, INMESS  *InMessage, CtiDeviceBase  *Dev
 
 /* Prototypes from PORTQUE.C */
 VOID QueueThread (PVOID);
-INT CCUResponseDecode (INMESS *, CtiDeviceBase*);
+INT CCUResponseDecode (INMESS *, CtiDeviceBase*, int Retry);
 VOID KickerThread (PVOID);
 INT DeQueue(INMESS *);
 INT CCUQueueFlush    (CtiDeviceBase *Dev);

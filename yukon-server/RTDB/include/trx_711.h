@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_711.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 14:59:45 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/03 20:20:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,8 +56,8 @@ public:
    {
        for(int i = 0; i < MAXQUEENTRIES; i++)
        {
-          QueTable[i].InUse = 0;
-          QueTable[i].TimeSent = 0L;
+          QueTable[i].InUse = 0;                // Not in use.
+          QueTable[i].TimeSent = -1L;           // Yes, this is odd, but sets it always to MAX_ULONG.  Whatever that is bitwise.
        }
    }
 

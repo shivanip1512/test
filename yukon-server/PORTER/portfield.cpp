@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2002/07/01 17:54:57 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2002/07/03 20:20:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2243,13 +2243,13 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
 
             if(OutMessage->EventCode & RCONT)
             {
-                CCUResponseDecode (InMessage, Device);
+                CCUResponseDecode (InMessage, Device, OutMessage->Retry);
             }
             else
             {
                 j = InMessage->InLength;
                 InMessage->InLength = 0;
-                CCUResponseDecode (InMessage, Device);
+                CCUResponseDecode (InMessage, Device, OutMessage->Retry);
                 InMessage->InLength = j;
             }
 

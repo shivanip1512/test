@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/01 17:51:27 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/03 20:20:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,7 +158,7 @@ VOID QueueThread (VOID *Arg)
 
 
 /* Routine to process results from CCU's */
-CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
+CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, int Retry)
 {
    ULONG i;
    INMESS ResultMessage;
@@ -174,31 +174,46 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
 
    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
+   UINT ErrorReturnCode = (InMessage->EventCode & ~DECODED);
 
-   if((InMessage->EventCode & ~DECODED) && InMessage->Sequence & 0x8000)
+   if(ErrorReturnCode                       &&
+      InMessage->Sequence & 0x8000          &&
+      (ErrorReturnCode != REQACK || Retry == 0)
+      )
    {
-      DeQueue(InMessage);
+      DeQueue(InMessage);       // Removes all queue entries placed upon in the queue via this message.
       return(NORMAL);
    }
    else if(InMessage->Sequence & 0x8000)
    {
+      bool detected = false;
       /* loop through queue entry slots and mark those that are now in the ccu */
       for(i = 0; i < MAXQUEENTRIES; i++)
       {
          if(pInfo->QueTable[i].InUse)
          {
-            if(pInfo->QueTable[i].MySequence == InMessage->Sequence)
+            if(pInfo->QueTable[i].QueueEntrySequence == InMessage->Sequence)
             {
                pInfo->QueTable[i].InUse |= INCCU;
                pInfo->QueTable[i].TimeSent = LongTime();
+               detected = true;
             }
          }
       }
+
+      if(!detected)
+      {
+          {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " Orphaned CCU queue entry response.  It will be ignored.  InMessage->Sequence 0x" << hex << (int)InMessage->Sequence << dec << endl;
+              dout << "  Not found in any queue slot" << endl;
+          }
+      }
    }
 
-   if((InMessage->EventCode & ~DECODED) && (InMessage->EventCode & ~DECODED) != REQACK)
+   if(ErrorReturnCode && ErrorReturnCode != REQACK)     // Handle non-Sequence & 0x8000 (queued entries)
    {
-      return(NORMAL);
+      return(!NORMAL);
    }
 
 
@@ -222,7 +237,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
       {
          pInfo->SetStatus (POWERFAILED);
 
-         sprintf(tempstr,"Power Fail Detected on Port: %2hd Remote: %3hd... Resetting\n", InMessage->Port, InMessage->Remote);
+         _snprintf(tempstr, 99,"Power Fail Detected on Port: %2hd Remote: %3hd... Resetting\n", InMessage->Port, InMessage->Remote);
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -230,7 +245,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
          IDLCFunction (Dev, 0, DEST_BASE, CLPWR);
 
          /* Now send a message to logger */
-         sprintf(Message, "%0.20sPower Fail Detected", Dev->getName());
+         _snprintf(Message, 50, "%0.20sPower Fail Detected", Dev->getName());
          SendTextToLogger ("Inf", Message);
       }
    }
@@ -246,7 +261,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
       if(!(pInfo->GetStatus(TIMESYNCED)))
       {
          pInfo->SetStatus(TIMESYNCED);
-         sprintf(tempstr,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage->Port, InMessage->Remote);
+         _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage->Port, InMessage->Remote);
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -272,7 +287,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             {
                if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage,OutMessage->Priority))
                {
-                  sprintf(tempstr,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
+                  _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
                   {
                      CtiLockGuard<CtiLogger> doubt_guard(dout);
                      dout << RWTime() << " " << tempstr << endl;
@@ -288,7 +303,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
          }
 
          /* Now send a message to logger */
-         sprintf (Message, "%0.20sTime Sync Loss", Dev->getName());
+         _snprintf(Message, 50,  "%0.20sTime Sync Loss", Dev->getName());
          SendTextToLogger ("Inf", Message);
       }
    }
@@ -304,14 +319,14 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
       if(!(pInfo->GetStatus(LOWBATTRY)))
       {
          pInfo->SetStatus(LOWBATTRY);
-         sprintf(tempstr,"Low Battery Detected on Port: %2hd Remote: %3hd... Replace Logic Card\n", InMessage->Port, InMessage->Remote);
+         _snprintf(tempstr, 99,"Low Battery Detected on Port: %2hd Remote: %3hd... Replace Logic Card\n", InMessage->Port, InMessage->Remote);
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
          }
 
          /* Now send a message to logger */
-         sprintf (Message, "%0.20sLow Battery Detected", Dev->getName());
+         _snprintf(Message, 50,  "%0.20sLow Battery Detected", Dev->getName());
          SendTextToLogger ("Inf", Message);
       }
    }
@@ -327,7 +342,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
       if(!(InMessage->IDLCStat[6] & STAT_COLDST) && !(pInfo->FreeSlots < MAXQUEENTRIES && !pInfo->PortQueueEnts))
       {
          /* Issue a cold start */
-         sprintf(tempstr,"Reset Needed on Port: %2hd Remote: %3hd... Cold Starting\n", InMessage->Port, InMessage->Remote);
+         _snprintf(tempstr, 99,"Reset Needed on Port: %2hd Remote: %3hd... Cold Starting\n", InMessage->Port, InMessage->Remote);
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -338,7 +353,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
          /* Now send a message to logger */
          if(NULL != Dev)
          {
-            sprintf (Message, "%0.20sCold Start Sent", Dev->getName());
+            _snprintf(Message, 50,  "%0.20sCold Start Sent", Dev->getName());
             SendTextToLogger ("Inf", Message);
          }
       }
@@ -355,14 +370,14 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             /* Now send a message to logger */
             if(NULL != Dev)
             {
-               sprintf (Message, "%0.20sFAULTC Detected", Dev->getName());
+               _snprintf(Message, 50,  "%0.20sFAULTC Detected", Dev->getName());
                SendTextToLogger ("Inf", Message);
             }
          }
 
          if(InMessage->IDLCStat[6] & STAT_COLDST)
          {
-            sprintf(tempstr,"Cold Start Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Cold Start Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
                dout << RWTime() << " " << tempstr << endl;
@@ -378,14 +393,14 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             /* Now send a message to logger */
             if(NULL != Dev)
             {
-               sprintf (Message, "%0.20sCold Start Detected", Dev->getName());
+               _snprintf(Message, 50,  "%0.20sCold Start Detected", Dev->getName());
                SendTextToLogger ("Inf", Message);
             }
          }
 
          if(InMessage->IDLCStat[6] & STAT_DEADMN)
          {
-            sprintf(tempstr,"Dead Man Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Dead Man Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage->Port, InMessage->Remote);
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
                dout << RWTime() << " " << tempstr << endl;
@@ -399,7 +414,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             /* Now send a message to logger */
             if(NULL != Dev)
             {
-               sprintf (Message, "%0.20s Deadman Detected", Dev->getName());
+               _snprintf(Message, 50,  "%0.20s Deadman Detected", Dev->getName());
                SendTextToLogger ("Inf", Message);
             }
          }
@@ -449,7 +464,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
 
          if(NULL != Dev)   /* Now send a message to logger */
          {
-            sprintf (Message, "%0.20sDLC Alg Restarted", Dev->getName());
+            _snprintf(Message, 50,  "%0.20sDLC Alg Restarted", Dev->getName());
             SendTextToLogger ("Inf", Message);
          }
       }
@@ -463,7 +478,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             /* Now send a message to logger */
             if(NULL != Dev)
             {
-               sprintf (Message, "%0.20sTS Alg ENABLED", Dev->getName());
+               _snprintf(Message, 50,  "%0.20sTS Alg ENABLED", Dev->getName());
                SendTextToLogger ("Inf", Message);
             }
          }
@@ -481,7 +496,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
          /* Now send a message to logger */
          if(NULL != Dev)
          {
-            sprintf (Message, "%0.20sLM Alg ENPRO", Dev->getName());
+            _snprintf(Message, 50,  "%0.20sLM Alg ENPRO", Dev->getName());
             SendTextToLogger ("Inf", Message);
          }
       }
@@ -496,7 +511,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
       if(!(pInfo->GetStatus(DLCFAULT)))
       {
          pInfo->SetStatus(DLCFAULT);
-         sprintf(tempstr,"Persistant DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
+         _snprintf(tempstr, 99,"Persistant DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -517,7 +532,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
 
    if(InMessage->IDLCStat[6] & STAT_REQACK)
    {
-      sprintf(tempstr,"Requack Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
+      _snprintf(tempstr,99,"REQACK Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " " << tempstr << endl;
@@ -535,7 +550,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
                /* Now send a message to logger */
                if(NULL != Dev)
                {
-                  sprintf (Message, "%0.20sBad Firmware Adjust ", Dev->getName());
+                  _snprintf(Message, 50,  "%0.20sBad Firmware Adjust ", Dev->getName());
                   SendTextToLogger ("Inf", Message);
                }
             }
@@ -544,7 +559,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
                pInfo->RColQMin = 61;
                if(NULL != Dev)
                {
-                  sprintf (Message, "%0.20sBad Firmware Adjust2", Dev->getName());
+                  _snprintf(Message, 50,  "%0.20sBad Firmware Adjust2", Dev->getName());
                   SendTextToLogger ("Inf", Message);
                }
             }
@@ -556,14 +571,35 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
                pInfo->RColQMin = 61;
                if(NULL != Dev)
                {
-                  sprintf (Message, "%0.20sBad Firmware Adjust2", Dev->getName()); SendTextToLogger ("Inf", Message);
+                  _snprintf(Message, 50,  "%0.20sBad Firmware Adjust2", Dev->getName()); SendTextToLogger ("Inf", Message);
                }
             }
          }
       }
+      else if( !pInfo->GetStatus(INRCOLQ) && pInfo->NCOcts)
+      {
+          // REQACK was possibly due to full CCU Queue.
+          // We must send an RCOLQ to empty it out!
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " REQACK with outstanding NCOcts.  Will RCOLQ." << endl;
+            }
+
+            if(pInfo->NCsets || pInfo->ReadyN)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " CCU " << Dev->getName() << endl;
+                    dout << RWTime() << "   CCU Command Sets Complete (NCSets)   " << pInfo->NCsets << endl;
+                    dout << RWTime() << "   CCU Command Slots Available (ReadyN) " << pInfo->ReadyN << endl;
+                }
+            }
+            // And do the RCOLQ.  CGP -> Should beHighest priority!
+            IDLCRColQ(Dev);
+      }
 
       /* Don't process this one */
-
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -572,7 +608,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
    }
 
    /* Check if this was a related reply */
-   if(InMessage->InLength && !(InMessage->EventCode & ~DECODED))
+   if(InMessage->InLength && !ErrorReturnCode)
    {
       /* This is a queue entry reply so loop through and get results */
 
@@ -597,9 +633,10 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
          }
 
          /* Find out which queue entry this is */
-         if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
+         // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
+         if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
          {
-            sprintf(tempstr,"Wrong Offset into CCU Queue Entry Table\n");
+            _snprintf(tempstr, 99,"Wrong Offset into CCU Queue Entry Table\n");
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
                dout << RWTime() << " " << tempstr << endl;
@@ -608,7 +645,11 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             continue;
          }
 
-         Offset += 2;
+         Offset += 1;
+
+         USHORT OriginalOutMessageSequence = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0);
+
+         Offset += 1;
 
          /* Make sure this entry is in use */
          if(!(pInfo->QueTable[QueTabEnt].InUse))                        // Make sure we think we are using this one!
@@ -622,7 +663,8 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
          }
 
          /* then kinda double check this guy */
-         if(pInfo->QueTable[QueTabEnt].Sequence != MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset]))
+         if(pInfo->QueTable[QueTabEnt].QueueEntrySequence != MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset]) ||
+            LOBYTE(pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence) != OriginalOutMessageSequence)
          {
             /* Things are screwed up beyond all recognition */
             {
@@ -645,7 +687,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
             ResultMessage.ReturnNexus     = pInfo->QueTable[QueTabEnt].ReturnNexus;
             ResultMessage.SaveNexus       = pInfo->QueTable[QueTabEnt].SaveNexus;
             ResultMessage.Priority        = pInfo->QueTable[QueTabEnt].Priority;
-            ResultMessage.Sequence        = pInfo->QueTable[QueTabEnt].Sequence;
+            ResultMessage.Sequence        = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
 
             ResultMessage.Return          = pInfo->QueTable[QueTabEnt].Request;
 
@@ -823,7 +865,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
 
          /* Free up the entry in the QueTable */
          pInfo->QueTable[QueTabEnt].InUse = 0;
-         pInfo->QueTable[QueTabEnt].TimeSent = 0L;
+         pInfo->QueTable[QueTabEnt].TimeSent = -1L;
          pInfo->FreeSlots++;
       }
 
@@ -840,6 +882,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev)
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                }
+
                if(!(pInfo->PortQueueEnts)) /* See if we have any outstanding messages */
                {
                   QueueFlush(Dev); /* Bummer */
@@ -1026,11 +1069,7 @@ VOID KickerThread (VOID *Arg)
 
 
 /* Routine to flush outstanding 711 queue's for a given CCU */
-#if 0
-CCUQueueFlush (LONG DevID, USHORT Port, USHORT Remote)
-#else
 CCUQueueFlush (CtiDeviceBase *Dev)
-#endif
 {
    USHORT QueTabEnt;
    INMESS InMessage;
@@ -1050,24 +1089,18 @@ CCUQueueFlush (CtiDeviceBase *Dev)
             {
                InMessage.Port = Dev->getPortID();
                InMessage.Remote = Dev->getAddress();
-               InMessage.Sequence = pInfo->QueTable[QueTabEnt].Sequence;
+               InMessage.Sequence = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
                InMessage.ReturnNexus = pInfo->QueTable[QueTabEnt].ReturnNexus;
                InMessage.SaveNexus = pInfo->QueTable[QueTabEnt].SaveNexus;
                InMessage.Priority = pInfo->QueTable[QueTabEnt].Priority;
                InMessage.Return = pInfo->QueTable[QueTabEnt].Request;
-               InMessage.Time = LongTime ();
+               InMessage.Time = LongTime();
                InMessage.MilliTime =  0;
                InMessage.EventCode = QUEUEFLUSHED | DECODED;
 
                if(pInfo->QueTable[QueTabEnt].EventCode & BWORD)
                {
-                  /* save the names */
-#if 0 // FIX FIX FIX 090199 CGP
-                  memcpy (InMessage.Buffer.DSt.DeviceName, pInfo->QueTable[QueTabEnt].DeviceName, STANDNAMLEN);
-                  memcpy (InMessage.Buffer.DSt.PointName, pInfo->QueTable[QueTabEnt].PointName, STANDNAMLEN);
-#endif
-                  InMessage.Buffer.DSt.Address =
-                  pInfo->QueTable[QueTabEnt].Address;
+                  InMessage.Buffer.DSt.Address = pInfo->QueTable[QueTabEnt].Address;
                }
 
                /* send message back to originating process */
@@ -1079,7 +1112,7 @@ CCUQueueFlush (CtiDeviceBase *Dev)
             }
 
             pInfo->QueTable[QueTabEnt].InUse = 0;
-            pInfo->QueTable[QueTabEnt].TimeSent = 0L;
+            pInfo->QueTable[QueTabEnt].TimeSent = -1L;
             pInfo->FreeSlots++;
          }
       }
@@ -1117,7 +1150,7 @@ QueueFlush (CtiDevice *Dev)
                InMessage.Port          = Dev->getPortID();
                InMessage.Remote        = Dev->getAddress();
                InMessage.TargetID      = pInfo->QueTable[QueTabEnt].TargetID;    // This is the DID of the target DLC device ( MCT_XYZ )
-               InMessage.Sequence      = pInfo->QueTable[QueTabEnt].Sequence;    // Client identifier?
+               InMessage.Sequence      = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;    // Client identifier?
                InMessage.ReturnNexus   = pInfo->QueTable[QueTabEnt].ReturnNexus; // This is who asked for it.
                InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
                InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
@@ -1140,7 +1173,7 @@ QueueFlush (CtiDevice *Dev)
             }
 
             pInfo->QueTable[QueTabEnt].InUse = 0;
-            pInfo->QueTable[QueTabEnt].TimeSent = 0L;
+            pInfo->QueTable[QueTabEnt].TimeSent = -1L;
          }
       }
       pInfo->FreeSlots = MAXQUEENTRIES;
@@ -1159,13 +1192,13 @@ BuildLGrpQ (CtiDevice *Dev)
    USHORT Offset;
    USHORT SETLPos, QueTabEnt;
    BYTE Priority;
-   USHORT MySequence;
+   USHORT QueueEntrySequence;
 
    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
    if(QueryQueue (pInfo->QueueHandle, &Count))
    {
-      sprintf(tempstr,"Error Querying Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
+      _snprintf(tempstr, 99,"Error Querying Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " " << tempstr << endl;
@@ -1183,7 +1216,7 @@ BuildLGrpQ (CtiDevice *Dev)
          {
             if(ReadQueue (pInfo->QueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
             {
-               sprintf(tempstr,"Error Reading Queue\n");
+               _snprintf(tempstr, 99,"Error Reading Queue\n");
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << RWTime() << " " << tempstr << endl;
@@ -1191,7 +1224,7 @@ BuildLGrpQ (CtiDevice *Dev)
                return(QUEUE_READ);
             }
             delete (MyOutMessage);
-            sprintf(tempstr,"Broadcast Entry Received on Queue Queue for Port:  %hd\n", Dev->getPortID());
+            _snprintf(tempstr, 99,"Broadcast Entry Received on Queue Queue for Port:  %hd\n", Dev->getPortID());
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
                dout << RWTime() << " " << tempstr << endl;
@@ -1214,22 +1247,18 @@ BuildLGrpQ (CtiDevice *Dev)
 
       /* Count now indicates the number of queue entries we will submit to the CCU for execution! */
 
+      /*
+       *  QueSequence is always >= 0x8000.  This "bit" is used to indicate items AND CtiOutMessages which
+       *  are queued on the CCU.  The original Sequence is stored in the CtiTransmitterInfo (pInfo).
+       */
       if(Count)
       {
-         /* get a sequence # if we need it */
-         /*------------------*
-          * the sequence described below is part (most significant USHORT) of a four byte number
-          * called QENID (queue entry id) of which the CCU only looks at the most significant BIT
-          * That bit indicates short form or long format queue entries (short == msb(1)) (032201 CP This appears to be contrary to the protocol doc though)
-          * That is why global QueSequence is kept in the range 0x8000 to 0xFFFF!
-          *------------------*/
-         MySequence = QueSequence++;
-
+         QueueEntrySequence = QueSequence++;
          if(!(QueSequence & 0x8000)) QueSequence = 0x8000;
       }
 
       /* Zero out the block counter */
-      Offset = 0;
+      Offset = PREIDL;                  // First entry starts here.
       for(i = 1; i <= Count; i++)
       {
          /* For now limit to one Lgrpq per ccu on queue at a time */
@@ -1249,23 +1278,23 @@ BuildLGrpQ (CtiDevice *Dev)
          }
 
          /* if this is first in the group get memory for it */
-         if(Offset == 0)
+         if(Offset == PREIDL)
          {
             if((OutMessage = new OUTMESS(*MyOutMessage)) == NULL)
             {
-               sprintf(tempstr,"Error Allocating Memory\n");
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " " << tempstr << endl;
+                  dout << RWTime() << " Error Allocating Memory" << endl;
                }
                return(MEMORY);
             }
 
             OutMessage->Priority       = Priority;
             OutMessage->DeviceID       = Dev->getID();
+            OutMessage->TargetID       = Dev->getID();
             OutMessage->Remote         = Dev->getAddress();
             OutMessage->Port           = Dev->getPortID();
-            OutMessage->Sequence       = MySequence;
+            OutMessage->Sequence       = QueueEntrySequence;              // Tells us on return that we are queued ( >= 0x8000 )
             OutMessage->EventCode      = NOWAIT | RESULT | RCONT;
             OutMessage->TimeOut        = TIMEOUT;
             OutMessage->Retry          = 2;
@@ -1275,7 +1304,6 @@ BuildLGrpQ (CtiDevice *Dev)
             OutMessage->Destination    = DEST_QUEUE;
             OutMessage->Command        = CMND_LGRPQ;
             OutMessage->ReturnNexus    = NULL;                    // This message IS NOT reportable to the requesting client!
-            Offset = PREIDL;
          }
 
          /* save where to put the length of this entry */
@@ -1288,28 +1316,47 @@ BuildLGrpQ (CtiDevice *Dev)
                break;
          }
 
+         /*
+          *  20020703 CGP
+          *  In a perfect world, the loop above will never have NOT found an open slot...  What if we didn't though?
+          *  It is never nice to stomp memory.  The block below will attempt something new and exciting.
+          *  This "could" happen if FreeSlots had gone south.
+          */
+         if(QueTabEnt == MAXQUEENTRIES)
+         {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " We've fallen off the back of " << Dev->getName() << "'s QueTable." << endl;
+                    dout << RWTime() << "   This should never have ever happened." << endl;
+                }
+         }
+
          /* tick off free slots available */
          pInfo->FreeSlots--;
          pInfo->QueTable[QueTabEnt].InUse |= INUSE;
-         pInfo->QueTable[i].TimeSent = LongTime();
+         pInfo->QueTable[QueTabEnt].TimeSent = LongTime();          // Erroneous, but not totally evil.  20020703 CGP.  pInfo->QueTable[i].TimeSent = LongTime();
 
          /* and load the entry */
          pInfo->QueTable[QueTabEnt].TargetID       = MyOutMessage->TargetID;
-
          pInfo->QueTable[QueTabEnt].ReturnNexus    = MyOutMessage->ReturnNexus;
          pInfo->QueTable[QueTabEnt].SaveNexus      = MyOutMessage->SaveNexus;
-         pInfo->QueTable[QueTabEnt].Sequence       = MyOutMessage->Sequence;
          pInfo->QueTable[QueTabEnt].EventCode      = MyOutMessage->EventCode;
          pInfo->QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
-         pInfo->QueTable[QueTabEnt].MySequence     = MySequence;
          pInfo->QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
          pInfo->QueTable[QueTabEnt].Request        = MyOutMessage->Request;
+         pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence  = MyOutMessage->Sequence;            // The orignial requestor's sequence.
+         pInfo->QueTable[QueTabEnt].QueueEntrySequence          = QueueEntrySequence;                // The tatoo which makes this entry (QueTabEnt) identifiable with this OUT/INMESS pair.
 
+         #ifdef FOLLOW_THE_DSM2_PATH
          OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (QueTabEnt) & 0x007f;
          OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt);
+         #endif
 
-         OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (MyOutMessage->Sequence);
+         OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt) & 0x007f;
          OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (MyOutMessage->Sequence);
+
+         OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (QueueEntrySequence);
+         OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueueEntrySequence);
 
          /* Load the Priority */
          OutMessage->Buffer.OutMessage[Offset++] = Priority;
@@ -1358,9 +1405,7 @@ BuildLGrpQ (CtiDevice *Dev)
             /* Save the number of bytes to be read */
             pInfo->QueTable[QueTabEnt].Length = MyOutMessage->Buffer.BSt.Length;
          }
-
-         /* this has to be a write or function so check if arm needed */
-         else
+         else  /* this has to be a write or function so check if arm needed */
          {
             if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
                OutMessage->Buffer.OutMessage[Offset++] = 2;
@@ -1435,7 +1480,7 @@ BuildLGrpQ (CtiDevice *Dev)
 
             if(PortManager.writeQueue (OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
             {
-               sprintf(tempstr,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+               _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                {
                   CtiLockGuard<CtiLogger> doubt_guard(dout);
                   dout << RWTime() << " " << tempstr << endl;
@@ -1475,7 +1520,7 @@ BuildActinShed (CtiDevice *Dev)
 
    if(QueryQueue (pInfo->ActinQueueHandle, &Count))
    {
-      sprintf(tempstr,"Error Querying Actin Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
+      _snprintf(tempstr, 99,"Error Querying Actin Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " " << tempstr << endl;
@@ -1488,7 +1533,7 @@ BuildActinShed (CtiDevice *Dev)
       /* get the entry from the queue */
       if(ReadQueue (pInfo->ActinQueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
       {
-         sprintf(tempstr,"Error Reading Actin Queue\n");
+         _snprintf(tempstr, 99,"Error Reading Actin Queue\n");
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -1498,7 +1543,7 @@ BuildActinShed (CtiDevice *Dev)
 
       if((OutMessage = new OUTMESS(*MyOutMessage)) == NULL)
       {
-         sprintf(tempstr,"Error Allocating Memory\n");
+         _snprintf(tempstr, 99,"Error Allocating Memory\n");
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -1556,7 +1601,7 @@ BuildActinShed (CtiDevice *Dev)
 
       if(PortManager.writeQueue (Dev->getPortID(), OutMessage->EventCode, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
       {
-         sprintf(tempstr,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
+         _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -1573,7 +1618,7 @@ BuildActinShed (CtiDevice *Dev)
       /* check for entries on the queue again */
       if(QueryQueue (pInfo->ActinQueueHandle, &Count))
       {
-         sprintf(tempstr,"Error Querying Actin Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
+         _snprintf(tempstr, 99,"Error Querying Actin Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
          {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " " << tempstr << endl;
@@ -1620,15 +1665,14 @@ DeQueue (INMESS *InMessage)
       {
          if(pInfo->QueTable[i].InUse)
          {
-            if(pInfo->QueTable[i].MySequence == InMessage->Sequence)
+            if(pInfo->QueTable[i].QueueEntrySequence == InMessage->Sequence)
             {
                if(pInfo->QueTable[i].EventCode & RESULT)
                {
                   ResultMessage.Port = InMessage->Port;
                   ResultMessage.Remote = InMessage->Remote;
                   ResultMessage.TargetID = pInfo->QueTable[i].TargetID;
-                  ResultMessage.Sequence = pInfo->QueTable[i].Sequence;
-                  ResultMessage.Sequence = pInfo->QueTable[i].Sequence;
+                  ResultMessage.Sequence = pInfo->QueTable[i].OriginalOutMessageSequence;
                   ResultMessage.Priority = pInfo->QueTable[i].Priority;
                   ResultMessage.ReturnNexus = pInfo->QueTable[i].ReturnNexus;
                   ResultMessage.SaveNexus = pInfo->QueTable[i].SaveNexus;
@@ -1638,10 +1682,6 @@ DeQueue (INMESS *InMessage)
                   ResultMessage.MilliTime = InMessage->MilliTime;
                   if(pInfo->QueTable[i].EventCode & BWORD)
                   {
-#ifdef FIX
-                     memcpy (ResultMessage.Buffer.DSt.DeviceName, pInfo->QueTable[i].DeviceName, STANDNAMLEN);
-                     memcpy (ResultMessage.Buffer.DSt.PointName, pInfo->QueTable[i].PointName, STANDNAMLEN);
-#endif
                      ResultMessage.Buffer.DSt.Address = pInfo->QueTable[i].Address;
                   }
 
@@ -1657,7 +1697,7 @@ DeQueue (INMESS *InMessage)
                }
                /* Now free up the table entry */
                pInfo->QueTable[i].InUse = 0;
-               pInfo->QueTable[i].TimeSent = 0L;
+               pInfo->QueTable[i].TimeSent = -1L;
                pInfo->FreeSlots++;
             }
          }

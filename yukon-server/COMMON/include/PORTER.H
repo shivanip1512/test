@@ -262,8 +262,8 @@ typedef struct _QUEENT {
     ULONG TimeSent;
     CTINEXUS *ReturnNexus;
     CTINEXUS *SaveNexus;
-    USHORT Sequence;
-    USHORT MySequence;
+    USHORT OriginalOutMessageSequence;
+    USHORT QueueEntrySequence;
     USHORT EventCode;
     USHORT Priority;
     USHORT Length;
