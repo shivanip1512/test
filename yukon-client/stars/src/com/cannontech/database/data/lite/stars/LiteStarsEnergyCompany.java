@@ -184,7 +184,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private LoadInventoryTask loadInvTask = null;
 	
 	private int dftRouteID = CtiUtilities.NONE_ID;
-	private TimeZone dftTimeZone = null;
 	private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
 	
 	private OptOutEventQueue optOutEventQueue = null;
@@ -365,13 +364,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public TimeZone getDefaultTimeZone() {
-		if (dftTimeZone == null) {
-			String tz = getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE);
-			if (tz != null)
-				dftTimeZone = TimeZone.getTimeZone( tz );
-			if (dftTimeZone == null)
-				dftTimeZone = TimeZone.getDefault();
-		}
+		TimeZone dftTimeZone = TimeZone.getDefault();
+		String tz = getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE);
+		if (tz != null)
+			dftTimeZone = TimeZone.getTimeZone( tz );
 		
 		return dftTimeZone;
 	}
@@ -474,7 +470,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		hierarchyLoaded = false;
 		
 		dftRouteID = CtiUtilities.NONE_ID;
-		dftTimeZone = null;
 		operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
 		
 		optOutEventQueue = null;

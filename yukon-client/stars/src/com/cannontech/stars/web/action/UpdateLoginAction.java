@@ -222,7 +222,8 @@ public class UpdateLoginAction implements ActionBase {
 		return liteUser;
 	}
 	
-	public static void deleteLogin(int userID, LiteContact liteContact) throws TransactionException {
+	public static void deleteLogin(int userID) throws TransactionException {
+		LiteContact liteContact = YukonUserFuncs.getLiteContact( userID );
 		if (liteContact != null) {
 			liteContact.setLoginID( com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID );
 			com.cannontech.database.data.customer.Contact contact =
@@ -268,7 +269,7 @@ public class UpdateLoginAction implements ActionBase {
 			if (password.length() > 0)
 				throw new WebClientException( "Username is empty. To remove the login, clear both username and password." );
 		    
-			deleteLogin( userID, liteContact );
+			deleteLogin( userID );
 		}
 		else {
 			// Update customer login

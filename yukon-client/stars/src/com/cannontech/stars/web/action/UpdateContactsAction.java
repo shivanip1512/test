@@ -178,8 +178,8 @@ public class UpdateContactsAction implements ActionBase {
 			PrimaryContact starsPrimContact = updateContacts.getPrimaryContact();
             
 			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
-				com.cannontech.database.data.customer.Contact primContact =
-						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
+				com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
+				StarsLiteFactory.setContact( primContact, litePrimContact, energyCompany );
 				StarsFactory.setCustomerContact( primContact, starsPrimContact );
             	
             	primContact= (com.cannontech.database.data.customer.Contact)
@@ -207,8 +207,8 @@ public class UpdateContactsAction implements ActionBase {
 		        		
 						if (!StarsLiteFactory.isIdenticalCustomerContact(liteContact, starsContact)) {
 							// Update the customer contact
-							com.cannontech.database.data.customer.Contact contact =
-									(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+							com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
+							StarsLiteFactory.setContact( contact, liteContact, energyCompany );
 							StarsFactory.setCustomerContact( contact, starsContact );
 			            	
 							contact= (com.cannontech.database.data.customer.Contact)
@@ -246,8 +246,8 @@ public class UpdateContactsAction implements ActionBase {
 			// Remove customer contacts that are not in the update list
 			for (int i = 0; i < contactList.size(); i++) {
 				LiteContact liteContact = (LiteContact) contactList.get(i);
-				com.cannontech.database.data.customer.Contact contact =
-						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+				com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
+				StarsLiteFactory.setContact( contact, liteContact );
             	
             	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
             	

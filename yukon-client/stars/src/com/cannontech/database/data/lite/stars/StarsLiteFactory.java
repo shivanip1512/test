@@ -744,7 +744,6 @@ public class StarsLiteFactory {
 		contact.getContact().setAddressID( new Integer(liteContact.getAddressID()) );
 		
 		contact.getContactNotifVect().removeAllElements();
-		
 		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
 			LiteContactNotification liteNotif = (LiteContactNotification)
 					liteContact.getLiteContactNotifications().get(i);
@@ -759,6 +758,12 @@ public class StarsLiteFactory {
 			
 			contact.getContactNotifVect().add( notif );
 		}
+	}
+	
+	public static void setContact(com.cannontech.database.data.customer.Contact contact, LiteContact liteContact, LiteStarsEnergyCompany energyCompany) {
+		setContact( contact, liteContact );
+		if (liteContact.getAddressID() > 0)
+			setAddress( contact.getAddress(), energyCompany.getAddress(liteContact.getAddressID()) );
 	}
 	
 	public static void setAddress(com.cannontech.database.db.customer.Address addr, LiteAddress liteAddr) {

@@ -34,7 +34,6 @@ import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -352,7 +351,7 @@ public class StarsAdmin extends HttpServlet {
 				starsAddr.setZip( req.getParameter("Zip") );
 				starsAddr.setCounty( req.getParameter("County") );
 				
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information created, you must submit this page to finally save it");
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Address information created, you must submit this page to save it");
 			}
 			
 		}
@@ -455,8 +454,17 @@ public class StarsAdmin extends HttpServlet {
 			com.cannontech.database.data.customer.Contact contact =
 					new com.cannontech.database.data.customer.Contact();
 			
-			LiteContact liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
-			StarsLiteFactory.setContact( contact, liteContact );
+			boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ID);
+			LiteContact liteContact = null;
+			
+			if (newContact) {
+				contact.getContact().setContLastName( CtiUtilities.STRING_NONE );
+				contact.getContact().setContFirstName( CtiUtilities.STRING_NONE );
+			}
+			else {
+				liteContact = ContactFuncs.getContact( energyCompany.getPrimaryContactID() );
+				StarsLiteFactory.setContact( contact, liteContact, energyCompany );
+			}
 			
 			com.cannontech.database.db.contact.ContactNotification notifPhone = null;
 			com.cannontech.database.db.contact.ContactNotification notifFax = null;
@@ -524,26 +532,36 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			contact = (com.cannontech.database.data.customer.Contact)
-					Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
-			StarsLiteFactory.setLiteContact( liteContact, contact );
-			
-			LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
-			ec.setMainPhoneNumber( ECUtils.getNotification(liteNotifPhone) );
-			
-			LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
-			ec.setMainFaxNumber( ECUtils.getNotification(liteNotifFax) );
-			
-			LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-			ec.setEmail( ECUtils.getNotification(liteNotifEmail) );
+			if (newContact) {
+				com.cannontech.database.db.customer.Address addr =
+						new com.cannontech.database.db.customer.Address();
+				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
+				if (ecTemp != null)
+					StarsFactory.setCustomerAddress( addr, ecTemp.getCompanyAddress() );
+				else
+					addr.setStateCode( "" );
+				contact.setAddress( addr );
+				
+				contact = (com.cannontech.database.data.customer.Contact)
+						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+				liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
+				StarsLiteFactory.setLiteContact( liteContact, contact );
+				
+				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+			}
+			else {
+				contact = (com.cannontech.database.data.customer.Contact)
+						Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+				StarsLiteFactory.setLiteContact( liteContact, contact );
+				
+				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			}
 			
 			String compName = req.getParameter("CompanyName");
 			if (!energyCompany.getName().equals( compName )) {
 				energyCompany.setName( compName );
 				energyCompany.setPrimaryContactID( contact.getContact().getContactID().intValue() );
 				Transaction.createTransaction( Transaction.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
-				
-				ec.setCompanyName( compName );
 			}
 			
 			// Update energy company role DEFAULT_TIME_ZONE if necessary
@@ -562,7 +580,6 @@ public class StarsAdmin extends HttpServlet {
 				stmt.execute();
 	        	
 	        	adminGroupUpdated = true;
-				ec.setTimeZone( timeZone );
 			}
         	
 			int routeID = Integer.parseInt(req.getParameter("Route"));
@@ -645,6 +662,8 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (adminGroupUpdated)
 				ServerUtils.handleDBChange( adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+			
+			StarsLiteFactory.setStarsEnergyCompany( ec, energyCompany );
         	
 			session.removeAttribute( ENERGY_COMPANY_TEMP );
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");

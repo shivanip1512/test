@@ -279,8 +279,8 @@ public class UpdateCustAccountAction implements ActionBase {
 			boolean ciCustChanged = false;
         	
 			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
-				com.cannontech.database.data.customer.Contact primContact =
-						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
+				com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
+				StarsLiteFactory.setContact( primContact, litePrimContact, energyCompany );
 				StarsFactory.setCustomerContact( primContact, starsPrimContact );
         		
 				primContact.setDbConnection( conn );

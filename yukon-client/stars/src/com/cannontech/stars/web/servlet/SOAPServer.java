@@ -3,7 +3,6 @@ package com.cannontech.stars.web.servlet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.xml.messaging.JAXMServlet;
@@ -32,7 +31,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -194,18 +192,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     public static void refreshCache(LiteStarsEnergyCompany company) {
     	company.clear();
     	webConfigList = null;
-    	
-    	// Send DB change messages to all yukon users, so existing logins will be invalidated
-		synchronized (starsYukonUsers) {
-			Iterator it = starsYukonUsers.values().iterator();
-			while (it.hasNext()) {
-				StarsYukonUser user = (StarsYukonUser) it.next();
-				if (user.getEnergyCompanyID() == company.getLiteID()) {
-					ServerUtils.handleDBChange( user.getYukonUser(), DBChangeMsg.CHANGE_TYPE_UPDATE );
-					it.remove();
-				}
-			}
-		}
 		
 		com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
     }

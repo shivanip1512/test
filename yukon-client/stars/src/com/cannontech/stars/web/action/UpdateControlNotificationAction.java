@@ -94,8 +94,8 @@ public class UpdateControlNotificationAction implements ActionBase {
             if (liteNotifEmail == null && email.getNotification().length() > 0
             	|| liteNotifEmail != null && (!liteNotifEmail.getNotification().equals(email.getNotification()) || liteNotifEmail.isDisabled() != email.getDisabled()))
         	{
-				com.cannontech.database.data.customer.Contact primContact =
-						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( litePrimContact );
+				com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
+				StarsLiteFactory.setContact( primContact, litePrimContact, energyCompany );
 				
 				com.cannontech.database.db.contact.ContactNotification notifEmail = null;
 				for (int i = 0; i < primContact.getContactNotifVect().size(); i++) {

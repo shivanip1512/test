@@ -16,6 +16,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -169,19 +171,21 @@ public class DeleteCustAccountAction implements ActionBase {
 		com.cannontech.database.data.customer.Contact contact =
 				(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( primContact );
 		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+		ServerUtils.handleDBChange( primContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		
 		java.util.Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 		for (int i = 0; i < contacts.size(); i++) {
 			LiteContact liteContact = (LiteContact) contacts.get(i);
 			contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 			Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		}
 		
 		// Delete login
 		int userID = primContact.getLoginID();
 		if (userID != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
 			userID != com.cannontech.user.UserUtils.USER_ADMIN_ID)
-			UpdateLoginAction.deleteLogin( userID, null );
+			UpdateLoginAction.deleteLogin( userID );
 		
 		// Delete lite and stars objects
 		energyCompany.deleteCustAccountInformation( liteAcctInfo );
