@@ -7,9 +7,27 @@
 	}
 	
 	ArrayList hardwares = new ArrayList();
-	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
-		if (inventories.getStarsInventory(i).getLMHardware() != null)
-			hardwares.add(inventories.getStarsInventory(i));
+	if (inventories != null) {
+		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+			if (inventories.getStarsInventory(i).getLMHardware() != null)
+				hardwares.add(inventories.getStarsInventory(i));
+		}
+	}
+	
+	if (inWizard) {
+		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
+		if (actions != null) {
+			SOAPMessage reqMsg = actions.getRequestMessage( CreateLMHardwareAction.class );
+			if (reqMsg != null) {
+				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
+				StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
+				if (createHw != null) {
+					StarsInventory inventory = (StarsInventory) StarsFactory.newStarsInv(createHw, StarsInventory.class);
+					hardwares = new ArrayList();
+					hardwares.add(inventory);
+				}
+			}
+		}
 	}
 	
 	StarsSULMPrograms suPrograms = null;
@@ -132,10 +150,12 @@ function prepareSubmit(form) {
 		StarsApplianceCategory category = null;
 		StarsEnrLMProgram enrProg = null;
 		
-		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-			if (programs.getStarsLMProgram(j).getProgramID() == suProg.getProgramID()) {
-				program = programs.getStarsLMProgram(j);
-				break;
+		if (!inWizard) {
+			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+				if (programs.getStarsLMProgram(j).getProgramID() == suProg.getProgramID()) {
+					program = programs.getStarsLMProgram(j);
+					break;
+				}
 			}
 		}
 		
@@ -184,14 +204,17 @@ function prepareSubmit(form) {
 			boolean checked = false;
 			int loadNo = 0;
 			if (hardwares.size() == 1) checked = true;
-			for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
-				StarsAppliance app = appliances.getStarsAppliance(k);
-				if (app.getInventoryID() == hardware.getInventoryID() &&
-					(app.getProgramID() == suProg.getProgramID() || app.getApplianceCategoryID() == suProg.getApplianceCategoryID()))
-				{
-					checked = true;
-					loadNo = app.getLoadNumber();
-					break;
+			
+			if (!inWizard) {
+				for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
+					StarsAppliance app = appliances.getStarsAppliance(k);
+					if (app.getInventoryID() == hardware.getInventoryID() &&
+						(app.getProgramID() == suProg.getProgramID() || app.getApplianceCategoryID() == suProg.getApplianceCategoryID()))
+					{
+						checked = true;
+						loadNo = app.getLoadNumber();
+						break;
+					}
 				}
 			}
 %>

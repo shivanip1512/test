@@ -36,14 +36,23 @@
 	if (programs == null) programs = new StarsLMPrograms();
 	
 	boolean autoConfig = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.AUTOMATIC_CONFIGURATION);
+	
+	String trackHwAddr = liteEC.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
+	boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+	
 	boolean needMoreInfo = false;
-	if (!inWizard) {
-		int hardwareCnt = 0;
-		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
-			if (inventories.getStarsInventory(i).getLMHardware() != null)
-				hardwareCnt++;
+	if (!useHardwareAddressing) {
+		if (inWizard) {
+			needMoreInfo = autoConfig;
 		}
-		needMoreInfo = hardwareCnt > 1 || autoConfig && hardwareCnt > 0;
+		else {
+			int hardwareCnt = 0;
+			for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+				if (inventories.getStarsInventory(i).getLMHardware() != null)
+					hardwareCnt++;
+			}
+			needMoreInfo = hardwareCnt > 1 || autoConfig && hardwareCnt > 0;
+		}
 	}
 %>
 <html>
