@@ -109,11 +109,18 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 				javax.servlet.ServletOutputStream out = null;
 				try
 				{	
+					
 					// Try to defeat caching
-					resp.setHeader("Cache-Control","no-store"); //HTTP 1.1
-					resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
+					 /* These are commented out because IE 5/6 has a bug where sometimes images won't appear when using SSL **
+					 I'm pretty sure it isn't a webserver issue since mozilla has no trouble with this
+					 Hopefully the Expires header will do what we want.
+					 -Aaron
+					 resp.setHeader("Cache-Control","no-store"); //HTTP 1.1 
+					 resp.setHeader("Pragma","no-cache"); 		//HTTP 1.0
+					*/
+					resp.setHeader("Content-Type", "image/" + localBean.getFormat()); 
 					resp.setDateHeader ("Expires", 0); 			//prevents caching at the proxy server
-	 	
+				
 					out = resp.getOutputStream();
 	    	
 					localBean.encode(out);
