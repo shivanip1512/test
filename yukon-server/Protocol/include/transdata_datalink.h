@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/06 15:19:01 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/30 15:02:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ class IM_EX_PROT CtiTransdataDatalink
       int getError( void );
       void setError( void );
 
-      void destroyMe( void );
+      void destroy( void );
       void reinitalize( void );
 
    protected:
@@ -53,7 +53,6 @@ class IM_EX_PROT CtiTransdataDatalink
 
       int      _failCount;
       int      _error;
-      int      _ioState;
 
       bool     _finished;
 

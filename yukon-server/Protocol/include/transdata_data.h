@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/10/06 15:19:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/10/30 15:02:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -44,14 +44,23 @@ public:
    void init( void );
    void fillData( BYTE *data );
 
+   int getID( void );
+   FLOAT getReading( void );
+   unsigned getYear( void );
+   unsigned getMonth( void );
+   unsigned getDay( void );
+   unsigned getHour( void );
+   unsigned getMinute( void );
+   unsigned getSecond( void );
+
 private:
 
-   unsigned char  _year;
-   unsigned char  _month;
-   unsigned char  _day;
-   unsigned char  _hour;
-   unsigned char  _minute;
-   unsigned char  _second;
+   unsigned       _year;
+   unsigned       _month;
+   unsigned       _day;
+   unsigned       _hour;
+   unsigned       _minute;
+   unsigned       _second;
 
    int            _dataID;
    FLOAT          _reading;

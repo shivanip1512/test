@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/10/06 15:19:00 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/30 15:02:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@ class IM_EX_PROT CtiProtocolTransdata
       bool isTransactionComplete( void );
       void injectData( RWCString str );
       void reinitalize( void );
-      void destroyMe( void );
+      void destroy( void );
 
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
@@ -51,16 +51,11 @@ class IM_EX_PROT CtiProtocolTransdata
    private:
 
       bool                          _finished;
-      bool                          _weHaveData;
 
       BYTE                          *_storage;
 
-      int                           _dataSize;
       int                           _numBytes;
+      
       CtiTransdataApplication       _application;
-
-
-      vector<CtiTransdataData *>    _transVector;
-      CtiTransdataData              *_converted;
 };
 #endif // #ifndef __PROT_TRANSDATA_H__

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/10/06 15:19:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/30 15:02:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -64,12 +64,12 @@ class IM_EX_PROT CtiTransdataTracker
       void setNextState( void );
       void reset( void );
 
-      void retreiveData( BYTE *data );
+      int retreiveData( BYTE *data );
       int getError( void );
       void setError( void );
       bool goodCRC( void );
       void reinitalize( void );
-      void destroyMe( void );
+      void destroy( void );
 
    protected:
 
@@ -120,21 +120,20 @@ class IM_EX_PROT CtiTransdataTracker
 
       RWCString            _password;
 
-//      bool                 _didSomeWork;
       bool                 _waiting;
       bool                 _moveAlong;
-      bool                 _ignore;
       bool                 _finished;
-      bool                 _weHaveData;
       bool                 _goodCRC;
       bool                 _ymodemsTurn;
 
       int                  _lastState;
       int                  _bytesReceived;
+      int                  _meterBytes;
       int                  _failCount;
       int                  _error;
 
       BYTE                 *_storage;
+      BYTE                 *_meterData;
       BYTE                 *_lastCommandSent;
 
       CtiTransdataDatalink _datalink;

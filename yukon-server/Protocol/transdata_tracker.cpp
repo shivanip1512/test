@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/06 15:19:00 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/30 15:02:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,20 +68,8 @@ CtiTransdataTracker::CtiTransdataTracker():
    _retry( "Retry\r\n" )
 
 {
-   _lastState        = 0;
+   reinitalize();
 
-   _finished         = true;
-   _moveAlong        = false;
-   _weHaveData       = false;
-   _goodCRC          = false;
-   _ymodemsTurn      = false;
-
-   _storage          = new BYTE[5000];    //supposedly, we'd only need 1k, but...
-   _lastCommandSent  = new BYTE[30];
-
-   _password         = "22222222\r\n";       //silly hard-codedness for now
-
-   //init everything
    reset();
 
 }
@@ -91,16 +79,34 @@ CtiTransdataTracker::CtiTransdataTracker():
 
 CtiTransdataTracker::~CtiTransdataTracker()
 {
-   destroyMe();
+   destroy();
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataTracker::destroyMe( void )
+void CtiTransdataTracker::destroy( void )
 {
-   delete [] _storage;
-   delete [] _lastCommandSent;
+   _ymodem.destroy();
+   _datalink.destroy();
+
+   if( _storage )
+   {
+      delete [] _storage;
+      _storage = NULL;
+   }
+
+   if( _meterData )
+   {
+      delete [] _meterData;
+      _meterData = NULL;
+   }
+
+   if( _lastCommandSent )
+   {
+      delete [] _lastCommandSent;
+      _lastCommandSent = NULL;
+   }
 }
 
 //=====================================================================================================================
@@ -108,10 +114,29 @@ void CtiTransdataTracker::destroyMe( void )
 
 void CtiTransdataTracker::reinitalize( void )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " track reinit" << endl;
+   }
+   
    _ymodem.reinitalize();
    _datalink.reinitalize();
 
-   destroyMe();
+
+   _lastState        = 0;
+   _meterBytes       = 0;
+
+   _finished         = true;
+   _moveAlong        = false;
+   _goodCRC          = false;
+   _ymodemsTurn      = false;
+
+   _storage          = new BYTE[4000];    //supposedly, we'd only need 1k, but...
+   _meterData        = new BYTE[4000];
+   _lastCommandSent  = new BYTE[30];
+
+   _password         = "22222222\r\n";       //silly hard-codedness for now
 }
 
 //=====================================================================================================================
@@ -119,8 +144,14 @@ void CtiTransdataTracker::reinitalize( void )
 
 bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 {
-   BYTE  temp[5000];
+   BYTE  temp[500];
    int   bytes = 0;
+
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " track decode" << endl;
+   }
 
    if( _ymodemsTurn )
    {
@@ -132,9 +163,10 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 
          if( _goodCRC )
          {
-            _ymodem.retreiveData( temp, &bytes );
+            _ymodem.retreiveData( _meterData, &_meterBytes );
             setNextState();
-            _ymodemsTurn = false;
+            _ymodemsTurn = false;//this gets reset!
+            _finished = true;///////////////////////////////
          }
       }
    }
@@ -155,7 +187,7 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
          }
          else
          {
-            setNextState();  //well well... this is some faulty logic... what if we never get data?!
+            setNextState();  
          }
       }
    }
@@ -184,8 +216,7 @@ bool CtiTransdataTracker::processData( BYTE *_storage )
    memcpy( temp, _storage + index, 5 );
 
    if(( strstr( temp, _good_return ) != NULL ) ||
-      ( strstr( temp, _prot_message ) != NULL )
-      )
+      ( strstr( temp, _prot_message ) != NULL ))
    {
       setNextState();
 
@@ -215,8 +246,19 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
 {
    _finished = false;
 
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " track logon" << endl;
+   }
+
    if( _waiting )
    {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " track logon wait" << endl;
+      }
       xfer.setOutCount( 0 );
       xfer.setInCountExpected( 1 );
       xfer.setMessageStart( false );
@@ -230,14 +272,12 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
       case doTest:
          {
             setXfer( xfer, _test, 0, false, 0 );
-            _ignore = true;
          }
          break;
 
       case doTest2:
          {
             setXfer( xfer, _test, 0, false, 0 );
-            _ignore = true;
          }
          break;
 
@@ -249,7 +289,7 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
 
       case doIdentify:
          {
-            setXfer( xfer, _identify, 10, true, 1 );
+            setXfer( xfer, _identify, 50, true, 1 );
             _moveAlong = true;
          }
          break;
@@ -269,8 +309,19 @@ bool CtiTransdataTracker::general( CtiXfer &xfer )
 {
    _finished = false;
 
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " track general" << endl;
+   }
+
    if( _waiting )
    {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " track general wait" << endl;
+      }
       xfer.setOutCount( 0 );
       xfer.setInCountExpected( 1 );
       xfer.setMessageStart( false );
@@ -306,14 +357,17 @@ bool CtiTransdataTracker::general( CtiXfer &xfer )
 
       case doStartProt:
          {
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << RWTime() << " track general doStartProt" << endl;
+            }
             _ymodem.generate( xfer );
             _ymodemsTurn = true;
             _moveAlong = true;
          }
       }
    }
-
-//   _datalink.buildMsg( xfer );
 
    return( true );
 }
@@ -326,13 +380,16 @@ bool CtiTransdataTracker::logOff( CtiXfer &xfer )
 {
    _finished = false;
 
-   if( _datalink.isTransactionComplete() )
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
-      setXfer( xfer, _hang_up, 0, true, 2 );
-      _datalink.buildMsg( xfer );
-
-      _finished = true;
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " track logoff" << endl;
    }
+
+   setXfer( xfer, _hang_up, 0, true, 2 );
+   
+   _datalink.buildMsg( xfer );
+   _finished = true;
 
    return( true );
 }
@@ -356,16 +413,30 @@ void CtiTransdataTracker::setNextState( void )
       _lastState = 0;
    else
       _lastState++;
+
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " track state " << _lastState << endl;
+   }
+
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataTracker::retreiveData( BYTE *data )
+int CtiTransdataTracker::retreiveData( BYTE *data )
 {
-   memcpy( ( void *)data, ( void *)(_storage + 3 ), 1024 );
+   int temp = _meterBytes;
 
-   _bytesReceived = 0;
+   memcpy( ( void *)data, ( void *)(_meterData + 3 ), _meterBytes /*1024*/ );
+
+   _meterBytes = 0;
+   
+   _goodCRC = false;
+   _finished = false;
+
+   return( temp );
 }
 
 //=====================================================================================================================
@@ -375,7 +446,6 @@ void CtiTransdataTracker::reset( void )
 {
    _failCount = 0;
    _waiting = false;
-   _ignore = false;
    _ymodemsTurn = false;
    _bytesReceived = 0;
 
@@ -425,7 +495,7 @@ void CtiTransdataTracker::setXfer( CtiXfer &xfer, RWCString dataOut, int bytesIn
 
    _bytesReceived = 0;
 
-   memset( _storage, '\0', 1500 );
+   memset( _storage, '\0', 4000 );
 
    xfer.setMessageStart( true );
    xfer.setOutCount( strlen( dataOut ) );     //there will be a problem with this using RWCStrings

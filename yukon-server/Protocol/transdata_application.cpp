@@ -11,11 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/06 15:18:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/30 15:02:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#include "logger.h"
 
 #include "transdata_application.h"
 
@@ -24,10 +26,7 @@
 
 CtiTransdataApplication::CtiTransdataApplication()
 {
-   _lastState     = 0;
-   _numBytes      = 0;
-   _finished      = true;
-   _storage       = NULL;
+   reinitalize();
 }
 
 //=====================================================================================================================
@@ -35,7 +34,7 @@ CtiTransdataApplication::CtiTransdataApplication()
 
 CtiTransdataApplication::~CtiTransdataApplication()
 {
-   destroyMe();
+   destroy();
 }
 
 //=====================================================================================================================
@@ -43,6 +42,12 @@ CtiTransdataApplication::~CtiTransdataApplication()
 
 bool CtiTransdataApplication::generate( CtiXfer &xfer )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " app gen" << endl;
+   }
+
    _finished = false;
 
    switch( _lastState )
@@ -76,14 +81,21 @@ bool CtiTransdataApplication::isTransactionComplete( void )
 
 bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " app decode" << endl;
+   }
    _tracker.decode( xfer, status );
 
    if( _tracker.isTransactionComplete() )
    {
-      processData( xfer.getInBuffer() + HEADER_WIDTH, xfer.getInCountActual() );
-
-//      setNextState();
-
+      if( _tracker.goodCRC() )
+      {
+         if( _storage )
+            _numBytes = _tracker.retreiveData( _storage );
+      }
+      
       if( _lastState == doLogOff )
          _finished = true;
 
@@ -114,66 +126,27 @@ void CtiTransdataApplication::setNextState( void )
    {
       _lastState++;
    }
-}
 
-//=====================================================================================================================
-//=====================================================================================================================
-
-bool CtiTransdataApplication::processData( BYTE *data, int numBytes )
-{
-//   BYTE     *ptr;
-//   BYTE     *chunk;
-
-   if( _tracker.goodCRC() )
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
-      while( *data != 0 )
-      {
-         _storage = new BYTE[numBytes + 1];
-         _numBytes = numBytes;
-
-         if( _storage )
-            memcpy( _storage, data, _numBytes );
-
-         /*
-         ptr = ( unsigned char*)strchr(( const char *)data, '\n' );
-
-         _converted = new CtiTransdataData( data );
-
-         _transVector.push_back( *_converted );
-
-         if( ptr != NULL )
-            data = ++ptr;
-*/
-      }
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " app state " << _lastState << endl;
    }
 
-   return( true );
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
-/*
-vector<CtiTransdataData> CtiTransdataApplication::getConverted( void )
-{
-   return( _transVector );
-}
-*/
-//=====================================================================================================================
-//=====================================================================================================================
 
-void CtiTransdataApplication::destroyMe( void )
+void CtiTransdataApplication::destroy( void )
 {
+   _tracker.destroy();
+
    if( _storage )
-      delete [] _storage;
-
-
-/*
-   while( !_transVector.empty() )
    {
-      delete _transVector.back();
-      _transVector.pop_back();
+      delete [] _storage;
+      _storage = NULL;
    }
-*/
 }
 
 //=====================================================================================================================
@@ -181,8 +154,18 @@ void CtiTransdataApplication::destroyMe( void )
 
 void CtiTransdataApplication::reinitalize( void )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " app reinit" << endl;
+   }
+   
    _tracker.reinitalize();
-   destroyMe();
+
+   _lastState     = 0;
+   _numBytes      = 0;
+   _finished      = true;
+   _storage       = new BYTE[4000];
 }
 
 //=====================================================================================================================
@@ -190,9 +173,11 @@ void CtiTransdataApplication::reinitalize( void )
 
 int CtiTransdataApplication::retreiveData( BYTE *data )
 {
+   int temp = _numBytes;
+
    memcpy( data, _storage, _numBytes );
 
-   return( _numBytes );
+   return( temp );
 }
 
 
@@ -223,6 +208,26 @@ int CtiTransdataApplication::retreiveData( BYTE *data )
 
 
 
+//=====================================================================================================================
+//=====================================================================================================================
+/*
+bool CtiTransdataApplication::processData( BYTE *data, int numBytes )
+{
+   if( _tracker.goodCRC() )
+   {
+      if( *data != 0 )
+      {
+         _storage = new BYTE[numBytes + 1];
+         _numBytes = numBytes;
+
+         if( _storage )
+            _tracker.retreiveData( _storage );
+      }
+   }
+   
+   return( true );
+}
+*/
 /*
 //=====================================================================================================================
 //
@@ -480,6 +485,14 @@ void CtiTransdataApplication::decipherConverted( transdata data )
    }
 }
 
+*/
+//=====================================================================================================================
+//=====================================================================================================================
+/*
+vector<CtiTransdataData> CtiTransdataApplication::getConverted( void )
+{
+   return( _transVector );
+}
 */
 
 /*

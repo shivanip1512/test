@@ -11,11 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/10/06 15:18:59 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/10/30 15:02:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#include <rw/rwtime.h>
+#include <rw/rwdate.h>
+
+#include "logger.h"
 
 #include "transdata_data.h"
 
@@ -41,6 +46,12 @@ CtiTransdataData::~CtiTransdataData()
 
 void CtiTransdataData::init( void )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " data init" << endl;
+   }
+
    _year       = 0;
    _month      = 0;
    _day        = 0;
@@ -134,8 +145,6 @@ bool CtiTransdataData::isDataNegative( BYTE *str, int len )
 
 void CtiTransdataData::formatData( void )
 {
-//   transdataTime  time;
-
    switch( _formatCode )
    {
    case 2:
@@ -170,7 +179,9 @@ void CtiTransdataData::formatData( void )
 
 void CtiTransdataData::formatTime( ULONG temp )
 {
-   int holder;
+   int      holder;
+   RWTime   time;
+   RWDate   date;
 
    switch( _formatCode )
    {
@@ -183,6 +194,10 @@ void CtiTransdataData::formatTime( ULONG temp )
          holder = temp % 10000 ;
          _minute = holder / 100;
          _second = holder % 100;
+      
+         _year = date.year();
+         _month = date.month();
+         _day = date.dayOfMonth();
       }
       break;
 
@@ -269,4 +284,69 @@ bool CtiTransdataData::dataIsTime( int id )
 
    return( result );
 }
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiTransdataData::getID( void )
+{
+   return( _dataID );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+FLOAT CtiTransdataData::getReading( void )
+{
+   return( _reading );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+   
+unsigned CtiTransdataData::getYear( void )
+{
+   return( _year );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+                     
+unsigned CtiTransdataData::getMonth( void )
+{
+   return( _month );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+   
+unsigned CtiTransdataData::getDay( void )
+{
+   return( _day );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+   
+unsigned CtiTransdataData::getHour( void )
+{
+   return( _hour );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+   
+unsigned CtiTransdataData::getMinute( void )
+{
+   return( _minute );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+   
+unsigned CtiTransdataData::getSecond( void )
+{
+   return( _second );
+}
+
 

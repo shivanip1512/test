@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/10/06 15:18:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/30 15:02:49 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,11 +28,7 @@
 
 CtiProtocolTransdata::CtiProtocolTransdata()
 {
-   _finished = false;
-   _weHaveData = false;
-
-   _dataSize = 0;
-   _storage = new BYTE[4000];
+   reinitalize();
 }
 
 //=====================================================================================================================
@@ -40,7 +36,7 @@ CtiProtocolTransdata::CtiProtocolTransdata()
 
 CtiProtocolTransdata::~CtiProtocolTransdata()
 {
-   destroyMe();
+   destroy();
 }
 
 //=====================================================================================================================
@@ -48,6 +44,12 @@ CtiProtocolTransdata::~CtiProtocolTransdata()
 
 bool CtiProtocolTransdata::generate( CtiXfer &xfer )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " prot gen" << endl;
+   }
+
    _application.generate( xfer );
 
    return( false );
@@ -58,6 +60,12 @@ bool CtiProtocolTransdata::generate( CtiXfer &xfer )
 
 bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " prot decode" << endl;
+   }
+
    _application.decode( xfer, status );
 
    if( _application.isTransactionComplete() )
@@ -67,16 +75,6 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
       //
       _numBytes = _application.retreiveData( _storage );
       _finished = true;
-
-
-/*
-      if( !_application.getConverted().empty() )
-      {
-         memcpy( _storage, &_application.getConverted()[0], _application.getConverted().size() );
-         _dataSize = _application.getConverted().size();
-         _finished = true;
-      }
-*/
    }
 
    return( _finished );
@@ -95,19 +93,10 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 
 int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
-   BYTE *ptr = InMessage->Buffer.InMessage;
-/*
-   if( !_application.getConverted().empty() )
-      memcpy( ptr, &_application.getConverted()[0], _application.getConverted().size() );
-*/
-
-   //
-   //put the data we got from below into the inmess
-   //
-   memcpy( ptr, _storage, _numBytes );
+   memcpy( InMessage->Buffer.InMessage, _storage, _numBytes );
    InMessage->InLength = _numBytes;
-
-//   _finished = true;
+   
+   _numBytes = 0;
 
    return( NORMAL );
 }
@@ -119,21 +108,28 @@ int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 
 vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage )
 {
-   BYTE  *ptr;
+   CtiTransdataData  *converted;
+   vector<CtiTransdataData *>   transVector;
+   BYTE              *ptr;
 
-   while( *InMessage->Buffer.InMessage )
+   ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
+
+   while( *ptr != NULL )
    {
-      ptr = ( unsigned char*)( strchr( (const char*)InMessage->Buffer.InMessage, '\n' ));
+      converted = new CtiTransdataData( ptr );
 
-      _converted = new CtiTransdataData( InMessage->Buffer.InMessage );
+      // Do we need to NULL the converted ptr??? 
 
-      _transVector.push_back( _converted );
+      transVector.push_back( converted );
 
       if( ptr != NULL )
+      {
+         ptr = ( unsigned char*)strchr(( const char*)ptr, '\n' );
          ++ptr;
+      }
    }
 
-   return( _transVector );
+   return( transVector );
 }
 
 //=====================================================================================================================
@@ -157,15 +153,29 @@ void CtiProtocolTransdata::injectData( RWCString str )
 
 void CtiProtocolTransdata::reinitalize( void )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " prot reinit" << endl;
+   }
+
    _application.reinitalize();
 
-   destroyMe();
+   _finished = false;
+   _storage = new BYTE[4000];
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiProtocolTransdata::destroyMe( void )
+void CtiProtocolTransdata::destroy( void )
 {
-   delete [] _storage;
+   _application.destroy();
+
+   if( _storage )
+   {
+      delete [] _storage;
+
+      _storage = NULL;
+   }
 }

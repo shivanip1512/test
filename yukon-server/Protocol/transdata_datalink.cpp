@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/06 15:19:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/10/30 15:02:50 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,15 +26,7 @@
 
 CtiTransdataDatalink::CtiTransdataDatalink()
 {
-   _failCount           = 0;
-   _error               = 0;
-   _ioState             = 0;
-   _bytesExpected       = 0;
-   _bytesReceived       = 0;
-
-   _finished            = true;
-
-   _storage = new BYTE[5000];
+   reinitalize();
 }
 
 //=====================================================================================================================
@@ -42,15 +34,19 @@ CtiTransdataDatalink::CtiTransdataDatalink()
 
 CtiTransdataDatalink::~CtiTransdataDatalink()
 {
-   destroyMe();
+   destroy();
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataDatalink::destroyMe( void )
+void CtiTransdataDatalink::destroy( void )
 {
-   delete [] _storage;
+   if( _storage )
+   {
+      delete [] _storage;
+      _storage = NULL;
+   }
 }
 
 //=====================================================================================================================
@@ -58,7 +54,21 @@ void CtiTransdataDatalink::destroyMe( void )
 
 void CtiTransdataDatalink::reinitalize( void )
 {
-   destroyMe();
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " link reinit" << endl;
+   }
+   
+
+   _failCount           = 0;
+   _error               = 0;
+   _bytesExpected       = 0;
+   _bytesReceived       = 0;
+
+   _finished            = true;
+
+   _storage             = new BYTE[4000];
 }
 
 //=====================================================================================================================
@@ -66,6 +76,12 @@ void CtiTransdataDatalink::reinitalize( void )
 
 void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " link build" << endl;
+   }
+
    _finished = false;
    _bytesExpected = xfer.getInCountExpected();
 }
@@ -75,18 +91,22 @@ void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
 
 bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 {
-   if( xfer.getInCountActual() >= _bytesExpected )
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " link read" << endl;
+   }
+
+   if(( xfer.getInCountActual() + _bytesReceived ) >= _bytesExpected )
    {
       _finished = true;
+      _bytesExpected = 333;
    }
    else
    {
       setError();
    }
 
-   //
-   // copy the data into our main container and record how many bytes we got
-   //
    if( xfer.getInCountActual() )
    {
       memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), xfer.getInCountActual() );
@@ -119,6 +139,9 @@ void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 
       _bytesExpected = 0;
       _bytesReceived = 0;
+
+      ////////////////
+      _finished = false;
    }
 }
 

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/10/06 15:18:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/30 15:02:49 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -32,10 +32,7 @@
 
 CtiProtocolYmodem::CtiProtocolYmodem()
 {
-   _lastState = doStart;
-   _bytesReceived = 0;
-   _finished = false;
-   _storage = new BYTE[3000];
+   reinitalize();
 }
 
 //=====================================================================================================================
@@ -43,15 +40,19 @@ CtiProtocolYmodem::CtiProtocolYmodem()
 
 CtiProtocolYmodem::~CtiProtocolYmodem()
 {
-   destroyMe();
+   destroy();
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiProtocolYmodem::destroyMe( void )
+void CtiProtocolYmodem::destroy( void )
 {
-   delete [] _storage;
+   if( _storage )
+   {
+      delete [] _storage;
+      _storage = NULL;
+   }
 }
 
 //=====================================================================================================================
@@ -59,7 +60,17 @@ void CtiProtocolYmodem::destroyMe( void )
 
 void CtiProtocolYmodem::reinitalize( void )
 {
-   destroyMe();
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem reinit" << endl;
+   }
+
+   _lastState     = doStart;
+   _bytesReceived = 0;
+   _finished      = false;
+   _gotData       = false;
+   _storage       = new BYTE[4000];
 }
 
 //=====================================================================================================================
@@ -67,16 +78,39 @@ void CtiProtocolYmodem::reinitalize( void )
 
 bool CtiProtocolYmodem::generate( CtiXfer &xfer )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem gen" << endl;
+   }
+
    if( _lastState == doAck )
    {
-      setXfer( xfer, Ack, 0, false, 0 );
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ymodem set ack" << endl;
+      }
+      
+      _bytesExpected = 0;
       _lastState = doStart;
-      _finished = true;
+      setXfer( xfer, Ack, _bytesExpected, false, 0 );
+      
+      if( _gotData )
+      {
+         _finished = true;
+      }
    }
    else
    {
-      setXfer( xfer, Crcnak, 1029, false, 5 );
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ymodem set crcnak" << endl;
+      }
+      _bytesExpected = 1029;
       _lastState = doAck;
+      setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
    }
 
    return( false );
@@ -87,11 +121,23 @@ bool CtiProtocolYmodem::generate( CtiXfer &xfer )
 
 bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 {
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ymodem decode" << endl;
+   }
+   
+   if( xfer.getInCountActual() >= _bytesExpected )
+   {
+      _bytesExpected = 333;
+   }
+
    if( xfer.getInCountActual() >= 1000 )
    {
       memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
 
       _bytesReceived = xfer.getInCountActual();
+      _gotData = true;
    }
 
    return( false );
@@ -118,6 +164,9 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
       memset( _storage, '\0', sizeof( _storage ));
 
       _bytesReceived = 0;
+
+      //////////////////
+      _finished = false;
    }
 }
 
@@ -150,7 +199,6 @@ unsigned short CtiProtocolYmodem::updateCRC( BYTE c, unsigned short crc )
 }
 
 //=====================================================================================================================
-// possible crap
 //=====================================================================================================================
 
 unsigned short CtiProtocolYmodem::calcCRC( BYTE *ptr, int count )
@@ -172,17 +220,17 @@ unsigned short CtiProtocolYmodem::calcCRC( BYTE *ptr, int count )
 bool CtiProtocolYmodem::isCrcValid( void )
 {
    BYTEUSHORT  crc;
-   BYTEUSHORT  crc2;
    bool        isOk = false;
    BYTE        temp[3000];
 
    if( _bytesReceived > 1020 )
    {
+      memset( temp, '\0', sizeof( temp ) );
       memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
 
       crc.ch[0] = _storage[_bytesReceived - 1];
       crc.ch[1] = _storage[_bytesReceived - 2];
-
+      
       if( crc.sh == calcCRC( temp + 3, _bytesReceived - 3 ))    //fixme.. should not use hardcoded stuff if pos.
       {
          isOk = true;
@@ -197,7 +245,6 @@ bool CtiProtocolYmodem::isCrcValid( void )
 
 void CtiProtocolYmodem::setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time )
 {
-//   memcpy( xfer.getOutBuffer(), dataOut, sizeof( dataOut ) );
    xfer.getOutBuffer()[0] = dataOut;
    xfer.setMessageStart( true );
    xfer.setOutCount( sizeof( dataOut ) );
