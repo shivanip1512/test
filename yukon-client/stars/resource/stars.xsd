@@ -267,7 +267,7 @@
 		<xs:sequence>
 			<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/>
 			<xs:element ref="stars-ThermostatManualEvent" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
+		<xs:element ref="stars-ThermostatDynamicData" minOccurs="0"/></xs:sequence>
 		<xs:attribute name="inventoryID" type="xs:int"/>
 	</xs:complexType>
 	<xs:complexType name="stars-Usr">
@@ -667,7 +667,7 @@
 	<xs:element name="stars-CreateCallReportResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-CallReport"/>
+				<xs:element ref="stars-CallReport" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -920,7 +920,7 @@
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-UpdateThermostatSchedule">
+	<xs:element name="stars-ThermostatDynamicData"><xs:complexType><xs:sequence><xs:element name="LastUpdateTime" type="xs:dateTime"/><xs:element name="DisplayedTemperature" type="xs:int"/><xs:element name="DisplayedTempUnit" type="xs:string" minOccurs="0"/><xs:element name="Fan" type="stars-ThermoFanSettings" minOccurs="0"/><xs:element name="Mode" type="stars-ThermoModeSettings" minOccurs="0"/><xs:element name="CoolSetpoint" type="xs:int" minOccurs="0"/><xs:element name="HeatSetpoint" type="xs:int" minOccurs="0"/><xs:element name="SetpointHold" type="xs:boolean" minOccurs="0"/><xs:element name="OutdoorTemperature" minOccurs="0" type="xs:int"/><xs:element name="LowerCoolSetpointLimit" minOccurs="0" type="xs:int"/><xs:element name="UpperHeatSetpointLimit" minOccurs="0" type="xs:int"/><xs:element name="InfoString" minOccurs="0" maxOccurs="unbounded" type="xs:string"/></xs:sequence></xs:complexType></xs:element><xs:element name="stars-UpdateThermostatSchedule">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/>
@@ -1029,7 +1029,7 @@
 				<xs:element name="Subject" type="xs:string"/>
 				<xs:element ref="stars-CustomerFAQ" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-		</xs:complexType>
+		<xs:attribute name="subjectID" type="xs:int"/></xs:complexType>
 	</xs:element>
 
 	<xs:element name="stars-CustomerFAQs">
