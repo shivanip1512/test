@@ -1017,6 +1017,8 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setStr("Calc Historical");
 	
 				returnVector.addElement(pointDataMsg);
+				updateDynamicCalcHistorical(pointDataMsg.getTimeStamp());
+				
 			}	
 			for (int i = 0; i < rawPointHistoryVectorOfVectors.size(); i++)
 			{
@@ -1027,8 +1029,6 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 		//( (RawPointHistory) tempRawPointHistoryVector.get(0) ).getTimeStamp()
 		tempRawPointHistoryVector = null;
 	}
-	if( pointDataMsg != null)
-		updateDynamicCalcHistorical(pointDataMsg.getTimeStamp());
 	//DONE HERE>>>>
 	//System.out.println("[" + new java.util.Date() + "] EXIT parseAndCalculateRawPointHistories");
 	return returnVector;
