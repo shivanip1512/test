@@ -735,6 +735,10 @@ public void makeTheProgramHash()
 					//while we are at it, throw it into the list of available programs
 					availablePrograms.addElement(((com.cannontech.database.data.lite.LiteYukonPAObject)progs.get(i)));
 				}
+				
+				//FIXME : TP For my ....
+				if( i == 25 )
+					break;
 			}
 		}
 		catch (java.sql.SQLException e2)
@@ -786,7 +790,7 @@ public void setValue(Object o)
 		//find the start gear
 		for(int x = 0; x < theGears.size(); x++)
 		{
-			if(((LMProgramDirectGear)theGears.elementAt(x)).getGearID().compareTo(lightProgram.getStartGear()) == 0)
+			if( ((LMProgramDirectGear)theGears.elementAt(x)).getGearNumber().equals(lightProgram.getStartGear()) )
 				startingGear = (LMProgramDirectGear)theGears.elementAt(x);
 		}
 		
