@@ -23,17 +23,17 @@
 						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")}
 						 };
 						   
-	String bulletImg = ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.WEB_NAV_BULLET );
-	if (bulletImg == null) bulletImg = "Bullet.gif";
-	String bulletImg2 = ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.WEB_NAV_BULLET2 );
-	if (bulletImg2 == null) bulletImg2 = "Bullet2.gif";
+	String bulletImg = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED);
+	if (bulletImg == null) bulletImg = "../../WebConfig/Bullet.gif";
+	String bulletImg2 = "../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET);
+	if (bulletImg2 == null) bulletImg2 = "../../WebConfig/Bullet2.gif";
 	
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"../" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
+			links.put(linkMap[i][0], "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkMap[i][1] + "</span>");
 		else
-			links.put(linkMap[i][0], "<img src=\"../" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+			links.put(linkMap[i][0], "<img src='" + bulletImg2 + "' width='12' height='12'><a href='" + linkMap[i][0] + "' class='Link2'><span class='NavText'>" + linkMap[i][1] + "</span></a>");
 	}
 		
 	String[] appLinks = new String[ appliances.getStarsApplianceCount() ];
@@ -50,13 +50,13 @@
 		}
 		else {
 			itemNo++;
-			linkText = linkText + " (" + String.valueOf(itemNo) + ")";
+			linkText = linkText + " (" + Integer.toString(itemNo) + ")";
 		}
 			
 		if (pageName.equalsIgnoreCase("Appliance.jsp?AppNo=" + i))
-			appLinks[i] = "<img src=\"../" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
+			appLinks[i] = "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkText + "</span>";
 		else
-			appLinks[i] = "<img src=\"../" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"Appliance.jsp?AppNo=" + i + "\" class=\"Link2\"><span class=\"NavText\">" + linkText + "</span></a>";
+			appLinks[i] = "<img src='" + bulletImg2 + "' width='12' height='12'><a href='Appliance.jsp?AppNo=" + i + "' class='Link2'><span class='NavText'>" + linkText + "</span></a>";
     }
 	
 	String[] invLinks = new String[ inventories.getStarsLMHardwareCount() ];
@@ -73,18 +73,18 @@
 		}
 		else {
 			itemNo++;
-			linkText = linkText + " (" + String.valueOf(itemNo) + ")";
+			linkText = linkText + " (" + Integer.toString(itemNo) + ")";
 		}
 		
 		if (pageName.equalsIgnoreCase("Inventory.jsp?InvNo=" + i))
-			invLinks[i] = "<img src=\"../" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
+			invLinks[i] = "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkText + "</span>";
 		else
-			invLinks[i] = "<img src=\"../" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"Inventory.jsp?InvNo=" + i + "\" class=\"Link2\"><span class=\"NavText\">" + linkText + "</span></a>";
+			invLinks[i] = "<img src='" + bulletImg2 + "' width='12' height='12'><a href='Inventory.jsp?InvNo=" + i + "' class='Link2'><span class='NavText'>" + linkText + "</span></a>";
 	}
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
-<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Account</span><br>
@@ -103,7 +103,7 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
-<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Metering</span><br>
@@ -117,7 +117,7 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
-<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Programs</span><br>
@@ -127,14 +127,14 @@
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT %>">
 		<%= links.get("Programs.jsp") %><br>
 </cti:checkProperty>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT %>">
         <%= links.get("OptOut.jsp") %><br>
 </cti:checkProperty>
       </div>
     </td>
   </tr>
 </cti:checkMultiProperty>
-<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Appliances</span><br>
@@ -154,7 +154,7 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
-<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_HARDWARES) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_HARDWARES) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Hardware</span><br>
@@ -199,7 +199,7 @@
     </td>
   </tr>
 </cti:checkProperty>
-<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Administration</span><br>

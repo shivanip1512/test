@@ -70,7 +70,7 @@
               <table width="550" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td><div align="center">
-                <p class="Main"><cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_OPT_OUT_DESC %>"/></p>
+                <p class="Main"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_DESC_OPT_OUT %>"/></p>
               </div>
               </td>
                 </tr>

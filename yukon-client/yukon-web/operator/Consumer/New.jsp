@@ -217,7 +217,7 @@ function clearPage() {
                           <input type="text" name="Email" maxlength="50" size="24" value="<%= account.getPrimaryContact().getEmail().getNotification() %>">
                         </td>
                       </tr>
-<cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLE_ID %>">
+<cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLEID %>">
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
                         <td width="210"> 
@@ -511,7 +511,7 @@ function clearPage() {
                   </td>
                 </tr>
               </table>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_LOGIN %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
               <table width="300" border="0" cellspacing="0" cellpadding="1">
                 <tr> 
                   <td width="100" class="TableCell"> 
@@ -539,7 +539,7 @@ function clearPage() {
                 </tr>
               </table>
               <br>
-</cti:checkRole>
+</cti:checkProperty>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
                   <td width="190"> 

@@ -67,7 +67,7 @@
             <input type="hidden" name="action" value="SearchCustAccount">
             <td width="97" class="Main">
               <div align = "center" style = "border:solid 1px #666999;">
-                <a href = "Consumer/New.jsp<cti:checkRole roleid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkRole>" class = "Link1" style = "text-decoration:none;">New 
+                <a href = "Consumer/New.jsp<cti:checkProperty propertyid="<%= ConsumerInfoRole.NEW_ACCOUNT_WIZARD %>">?Wizard=true</cti:checkProperty>" class = "Link1" style = "text-decoration:none;">New 
                 Account</a>
               </div>
             </td>

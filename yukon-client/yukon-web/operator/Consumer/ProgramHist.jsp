@@ -158,6 +158,7 @@
                   </td>
 <%
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
+		if (summary == null) summary = new ControlSummary();
 %>
                   <td width="332" valign="top"> 
                     <table width="150" border="0" cellspacing="0" bgcolor="white" cellpadding="2" align="center">

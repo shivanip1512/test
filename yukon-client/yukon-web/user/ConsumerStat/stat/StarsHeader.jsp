@@ -15,7 +15,7 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 
-<cti:checkLogin/>
+<cti:checklogin/>
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
@@ -55,7 +55,6 @@
 	StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
 			user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
-	StarsWebConfig ecWebSettings = ecSettings.getStarsWebConfig();
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 	StarsCustomerFAQs customerFAQs = ecSettings.getStarsCustomerFAQs();
 	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
@@ -103,6 +102,9 @@
 	histDateFormat.setTimeZone(tz);
 	
 	String logOffUrl = "";
-	if (ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.LOG_OFF_URL ) != null)
-		logOffUrl = "&REDIRECT=" + ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.LOG_OFF_URL );
+	{
+		String link = com.cannontech.stars.util.ServerUtils.forceNotNone(
+				AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_LOG_OFF) );
+		if (link.length() > 0) logOffUrl = "&REDIRECT=" + link;
+	}
 %>

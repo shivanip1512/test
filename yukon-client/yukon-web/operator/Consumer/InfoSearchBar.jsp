@@ -32,9 +32,9 @@
         </select>
         <input type="text" name="SearchValue" size = "15">
         <input type="submit" name="Search" value="Search">
-		<cti:checkRole roleid="<%= RoleTypes.WEB_OPERATOR_SUPER %>">
+		<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
 		  <input type="submit" name="Refresh" value="Refresh" onclick="javascript:this.form.action.value='ReloadCustAccount'">
-		</cti:checkRole>
+		</cti:checkProperty>
         </b></span></td>
     </tr>
   </table>

@@ -171,7 +171,7 @@ function deleteAccount(form) {
                           <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>">
                         </td>
                       </tr>
-<cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLE_ID %>">
+<cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLEID %>">
 					  <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right"></div>

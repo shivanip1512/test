@@ -17,7 +17,7 @@
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
@@ -54,7 +54,7 @@
               <br>
               
             <div align="center" class="Main">
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY, "QUESTIONS - UTILITY"); %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY, "QUESTIONS - UTILITY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -65,7 +65,7 @@
               </table>
               <br>
               <br>
-              <%= ecWebSettings.getAlternateDisplayName() %><br>
+              <%= energyCompany.getCompanyName() %><br>
 			  <%= ServletUtils.getFormattedAddress( energyCompany.getCompanyAddress() ) %><br>
               <br>
 <% if (energyCompany.getMainPhoneNumber().trim().length() > 0) { %>
@@ -92,6 +92,5 @@
     </td>
   </tr>
 </table>
-<p align="center" class="TableCell2">&nbsp;</p>
 </body>
 </html>

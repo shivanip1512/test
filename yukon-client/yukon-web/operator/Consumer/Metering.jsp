@@ -1,8 +1,8 @@
-<html>
 <%@ include file="StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%@ include file="metering_header.jsp" %>
 <%@ include file="../../trending_functions.jsp" %>
+<html>
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <title>Energy Services Operations Center</title>
