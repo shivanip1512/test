@@ -1936,7 +1936,10 @@ public void setDeviceType(int type)
 	  else if( type == PAOGroups.RTUWELCO )
 	  {
 			getIntegrityRateCheckBox().setText("Integrity Rate");
-			getIntegrityRateComboBox().setSelectedItem("3 minute");	
+			getIntegrityRateComboBox().setSelectedItem("3 minute");
+			getPeriodicHealthCheckBox().setText("General Scan");
+			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
+			getAccumulatorRateComboBox().setSelectedItem("15 minute");	
 	  }
       else if( type == PAOGroups.LCU415 )
       {
