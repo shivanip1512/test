@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/10/06 16:32:12 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/10/07 12:27:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -41,23 +41,25 @@ CtiThreadMonitor::~CtiThreadMonitor()
 void CtiThreadMonitor::run( void )
 {
    int cnt = 0;
+   long snooze = 1000;
 
    messageOut( "ts", "Monitor Startup" );
 
    while( !_quit )
    {
-      sleep( 1000 );
+      sleep( snooze );
 
-      messageOut( "ts", "Monitor Loop" );
+      messageOut( "ts", "Monitor Loop" );  //temp, remove in prod
 
-      checkForExpriration();
+      snooze = checkForExpriration();
+
+      messageOut( "ti", snooze );
 
       processQueue();
 
       processExtraCommands();
 
       processExpired();
-
 
       _queue.clearAndDestroy();
    }
@@ -70,24 +72,38 @@ void CtiThreadMonitor::run( void )
 // need to loop to look at each entry
 //===========================================================================================================
 
-void CtiThreadMonitor::checkForExpriration( void )
+long CtiThreadMonitor::checkForExpriration( void )
 {
-   ptime current( second_clock::local_time() );
-
+   ptime current_time( second_clock::local_time() );
+   time_duration td( 0, 0, 3, 0 );
+   
    if( _threadData.size() != 0 )
    {
       for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
       {
          CtiThreadRegData temp = i->second;
 
-         ptime check = temp.getTickledTime() + seconds( temp.getTickleFreq() );  //needs validation
+         ptime check_time = temp.getTickledTime() + seconds( temp.getTickleFreq() );  //needs validation
 
-         if( check < current )
+         if( current_time > check_time )
          {
             i->second.setReported( false );
          }
+         else
+         {
+            //
+            //we want to sleep as long as possible, so find the shortest
+            //time to the next possible report failure
+            //
+            td = check_time - current_time;
+         }
       } 
    }
+
+   if( td.seconds() > 0 )
+      return( td.seconds() * 1000 );
+   else
+      return( 1000 );   //1 second default sleep
 }
 
 //===========================================================================================================
@@ -108,6 +124,7 @@ void CtiThreadMonitor::processQueue( void )
 
       if( i != _threadData.end() )
       {
+         messageOut( "s", "Updating Thread Data" );
          //update the reg data
          i->second.setBehaviour( temp->getBehaviour() );
          i->second.setTickleFreq( temp->getTickleFreq() );
@@ -243,13 +260,16 @@ void CtiThreadMonitor::dump( void )
    {
       CtiThreadRegData temp = i->second;
 
-      messageOut( "" );
-      messageOut( "sv", "Thread name             : ", temp.getName() );
-      messageOut( "si", "Thread id               : ", temp.getId() );
-      messageOut( "si", "Thread behaviour type   : ", temp.getBehaviour() );
-      messageOut( "si", "Thread tickle frequency : ", temp.getTickleFreq() );
-      messageOut( "sv", "Thread tickle time      : ", timeString( temp.getTickledTime() ) );
-      messageOut( "" );
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         messageOut( "" );
+         messageOut( "sv", "Thread name             : ", temp.getName() );
+         messageOut( "si", "Thread id               : ", temp.getId() );
+         messageOut( "si", "Thread behaviour type   : ", temp.getBehaviour() );
+         messageOut( "si", "Thread tickle frequency : ", temp.getTickleFreq() );
+         messageOut( "sv", "Thread tickle time      : ", timeString( temp.getTickledTime() ) );
+         messageOut( "" );
+      }
    }  
 }
 
@@ -289,6 +309,8 @@ void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
          {
             messageOut( "ts", "Thread Id INVALID" );
          }
+
+         interrupt();   //this should wake us up if we're asleep
       }
    }
    catch( ... )

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/10/06 16:32:13 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/10/07 12:27:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ protected:
 
 private:
 
-   void checkForExpriration( void );
+   long checkForExpriration( void );
    void processQueue( void );
    void processExpired( void );
    void processExtraCommands( void );
