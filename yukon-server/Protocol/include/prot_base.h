@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/03/18 19:54:09 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/02 20:57:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,9 +45,6 @@ public:
     //  client-side (Scanner, PIL) functions
     virtual int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
-
-    virtual bool hasInboundPoints( void );
-    virtual void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
 
     //  porter-side (portfield, specificially) functions
     virtual int recvCommRequest( OUTMESS *OutMessage );

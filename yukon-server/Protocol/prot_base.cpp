@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:40 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/06/02 20:57:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,4 @@ int CtiProtocolBase::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMeth
 int CtiProtocolBase::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }
 
 bool CtiProtocolBase::isTransactionComplete( void ) {   return true;    }
-
-bool CtiProtocolBase::hasInboundPoints( void )      {   return false;   }
-void CtiProtocolBase::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList ) {   }
 
