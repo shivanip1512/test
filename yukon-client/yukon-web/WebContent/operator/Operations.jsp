@@ -356,7 +356,7 @@ function confirmDelete() {
         </tr>
         <tr> 
           <td align = "center" class = "MainText" width="25%"><cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
-            <div align = "center" style = "border:solid 1px #666999;"><a href = "../analysis/reporting.jsp" class = "Link1" style = "text-decoration:none;"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../analysis/Reports.jsp" class = "Link1" style = "text-decoration:none;"> 
               Reports</a></div>
             </cti:checkRole></td>
           <td align = "center" class = "MainText" width="25%"><cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
