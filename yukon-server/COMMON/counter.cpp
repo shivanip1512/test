@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2002/04/16 15:57:11 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2002/05/21 23:10:42 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -20,11 +20,11 @@
 void CtiCounter::inc( int index )
 {
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
-    
+
     if( _counterMap.find(index) != _counterMap.end() )
-        _counterMap[index] = 1;
-    else
         _counterMap[index] += 1;
+    else
+        _counterMap[index] = 1;
 }
 
 
@@ -32,11 +32,11 @@ void CtiCounter::inc( int index )
 void CtiCounter::dec( int index )
 {
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
-    
+
     if( _counterMap.find(index) != _counterMap.end() )
-        _counterMap[index] = -1;
-    else
         _counterMap[index] -= 1;
+    else
+        _counterMap[index] = -1;
 }
 
 
@@ -45,7 +45,7 @@ int CtiCounter::get( int index )
 {
     int retVal;
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
-    
+
     if( _counterMap.find(index) != _counterMap.end() )
         retVal = _counterMap[index];
     else
@@ -59,7 +59,7 @@ void CtiCounter::reset( int index )
 {
     int retVal;
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
-    
+
     _counterMap[index] = 0;
 }
 
@@ -68,13 +68,13 @@ void CtiCounter::reset( int index )
 int CtiTXCounter::getTries( void )       {  return get( Try );      };
 int CtiTXCounter::getSuccesses( void )   {  return get( Success );  };
 int CtiTXCounter::getFails( void )       {  return get( Fail );     };
-                                         
-void CtiTXCounter::incSuccess( void )    {  inc( Success );  
+
+void CtiTXCounter::incSuccess( void )    {  inc( Success );
                                             inc( Try );      };
-                                         
-void CtiTXCounter::incFail( void )       {  inc( Fail );     
+
+void CtiTXCounter::incFail( void )       {  inc( Fail );
                                             inc( Try );      };
-                                         
+
 void CtiTXCounter::resetTXCounts( void ) {  reset( Try );
                                             reset( Fail );
                                             reset( Success );  };
