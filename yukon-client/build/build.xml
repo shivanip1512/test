@@ -39,7 +39,6 @@
     <target name="callall">
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
-        <ant dir="${stars}" target="${dotarget}"/>
         <ant dir="${billing}" target="${dotarget}" />
         <ant dir="${export}" target="${dotarget}" />
         <ant dir="${tdc}" target="${dotarget}" />
@@ -56,6 +55,7 @@
         <ant dir="${palm}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
         <ant dir="${servlet}" target="${dotarget}"/>
+        <ant dir="${stars}" target="${dotarget}"/>
         <ant dir="${report}" target="${dotarget}"/>
       <!--  <ant dir="${esub-web}" target="${dotarget}"/>-->
         <ant dir="${esub-editor}" target="${dotarget}"/>
