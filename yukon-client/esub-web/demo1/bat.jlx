@@ -1,0 +1,27 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+2
+
+com.cannontech.esub.editor.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+1 1024 768 200 200 2147483647
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 80;60;175;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+41 !
+
+
+0
