@@ -3,10 +3,15 @@ package com.cannontech.servlet;
 /**
  * Creation date: (4/27/00 5:11:58 PM)
  
+ If groupid is specified then serialNumber and routeid will be ignored!
+ If groupid is not specified then the command will go out with the given
+ serialNumber and optionally a given routeid.
+ 
 PARAMETERS
 -------------------------------------------
  groupid			- id of the versacom serial group
  serialNumber 		- serial number of the meter
+ routeid			- route to send command on
  function			- what should be done
  restoreRelayNumber	- what relay
  stopRelayNumber
@@ -57,9 +62,10 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 		nextUrl = resp.encodeRedirectURL(nextUrl);
 		resp.sendRedirect(nextUrl);
 	}
-
+	
 	String groupID = req.getParameter("groupid");
 	String serialNumber = req.getParameter("serialNumber");
+	String routeID = req.getParameter("routeid");
 	String function = req.getParameter("function");
 
 	// could be invoked by either operator or user...
@@ -122,15 +128,20 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	}
 	
 	//Build target - either serial number or group id
-	if( !groupID.trim().equalsIgnoreCase("0") ) {
+	if( groupID != null && !groupID.trim().equalsIgnoreCase("0") ) {
 		//prefer going out by groupid
 		command.append(" select id ");
 		command.append(groupID);	
 	}
 	else
-	if( !serialNumber.trim().equalsIgnoreCase("0") ) {
+	if( serialNumber != null && !serialNumber.trim().equalsIgnoreCase("0") ) {
 		command.append(" serial ");
 		command.append(serialNumber);
+		
+		if( routeID != null && !routeID.trim().equalsIgnoreCase("0") ) {
+			command.append(" route id ");
+			command.append(routeID);
+		}
 	}
 	else {
 		failed = true;
