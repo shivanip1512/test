@@ -10,10 +10,17 @@ function updateField(f, checked) {
 	f.disabled = !checked;
 	if (checked) f.focus();
 }
+
+function init() {
+	var form = document.form1;
+	form.ReceiveDate.disabled = !form.UpdateRecvDate.checked;
+	form.Voltage.disabled = !form.UpdateVoltage.checked;
+	form.ServiceCompany.disabled = !form.UpdateSrvCompany.checked;
+}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -114,7 +121,7 @@ function updateField(f, checked) {
                             <div align="left">Receive Date:</div>
                           </td>
                           <td width="70%"> 
-                            <input type="text" name="ReceiveDate" size="24" disabled>
+                            <input type="text" name="ReceiveDate" size="24">
                           </td>
                         </tr>
                         <tr> 
@@ -125,7 +132,7 @@ function updateField(f, checked) {
                             <div align="left">Voltage:</div>
                           </td>
                           <td width="70%"> 
-                            <select name="Voltage" disabled>
+                            <select name="Voltage">
                               <%
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
@@ -146,7 +153,7 @@ function updateField(f, checked) {
                             <div align="left">Service Company:</div>
                           </td>
                           <td width="70%"> 
-                            <select name="ServiceCompany" disabled>
+                            <select name="ServiceCompany">
                               <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
