@@ -6,6 +6,7 @@ package com.cannontech.graph;
  * @author: 
  */
 
+import java.awt.event.WindowEvent;
 import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -24,7 +25,7 @@ import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.ServletUtil;
 
-public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, TrendModelType, java.awt.event.ActionListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener 
+public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, TrendModelType, java.awt.event.ActionListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener, java.awt.event.WindowListener 
 {
 private class TrendDataAutoUpdater extends Thread
 {
@@ -1909,18 +1910,6 @@ public static void main(String[] args)
             java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
         mainFrame.setTitle("Yukon Trending");
 
-        // Add the Window Closing Listener.
-        mainFrame.addWindowListener(new java.awt.event.WindowAdapter()
-        {
-            public void windowClosing(java.awt.event.WindowEvent e)
-            {
-                java.awt.Window win = e.getWindow();
-                win.setVisible(false);
-                win.dispose();
-                System.exit(0);
-            }
-        });
-
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         mainFrame.setSize((int) (d.width * .85), (int) (d.height * .85));
         mainFrame.setLocation((int) (d.width * .05), (int) (d.height * .05));
@@ -1930,6 +1919,8 @@ public static void main(String[] args)
         mainFrame.setJMenuBar(gc.getMenuBar());
         mainFrame.setVisible(true);
 
+        // Add the Window Closing Listener.
+        mainFrame.addWindowListener(gc);
         //gc.initialize();
         //gc.initializeSwingComponents();
 
@@ -2478,5 +2469,50 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 	{
 		this.setCursor( savedCursor);
 	}
+}
+
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowActivated(WindowEvent event) {
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowClosed(WindowEvent event) {
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowClosing(WindowEvent event) 
+{
+	exit();		
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowDeactivated(WindowEvent event) {
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowDeiconified(WindowEvent event) {
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowIconified(WindowEvent event) {
+}
+/**
+ * This method was created by Cannon Technologies Inc.
+ * @param event java.awt.event.WindowEvent
+ */
+public void windowOpened(WindowEvent event) {
 }
 }
