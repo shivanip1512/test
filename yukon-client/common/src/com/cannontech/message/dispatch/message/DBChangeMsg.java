@@ -46,7 +46,11 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_LMCONSTRAINT_DB = 18;
 	public static final int CHANGE_SEASON_SCHEDULE_DB = 20;
 	public static final int CHANGE_TDC_DB = 21;
-	public static final int CHANGE_TOU_SCHEDULE_DB = 22;
+	public static final int CHANGE_DEVICETYPE_COMMAND_DB = 22;
+	public static final int CHANGE_COMMAND_DB = 23;
+	public static final int CHANGE_TOU_SCHEDULE_DB = 24;
+	
+
 
 	
 	public static final String CAT_POINT = "Point";
@@ -68,6 +72,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_LMCONSTRAINT = "Load Constraint";
 	public static final String CAT_LMSCENARIO = "Load Scenario";
 	public static final String CAT_SEASON_SCHEDULE = "Season Schedule";
+	public static final String CAT_DEVICETYPE_COMMAND = "DeviceType Command";
+	public static final String CAT_COMMAND = "Command";
 	public static final String CAT_TOU_SCHEDULE = "TOU Schedule";
 	
 	// Categories used by stars
