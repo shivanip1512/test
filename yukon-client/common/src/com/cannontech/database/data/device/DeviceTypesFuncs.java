@@ -78,6 +78,27 @@ public final static boolean hasSlaveAddress(int intType)
 }
 
 /**
+ * All Meters that have a device scan rate.  The meters in this function are take from
+ * DeviceEditorPanel.java (//3 - DeviceScanRateEditorPanel)...probably should be updated once in a while.
+ * @return boolean
+ * @param type int
+ */
+public final static boolean hasDeviceScanRate(int intType) 
+{
+    if( isCCU(intType) ||
+         isTCU(intType) ||
+         isLCU(intType) ||
+         isMeter(intType) ||
+         isMCT(intType) ||
+         isRepeater(intType) ||
+         isRTU(intType) ||
+         intType == DNP_CBC_6510)
+        return true;
+    else
+        return false;
+}
+
+/**
  * This method was created in VisualAge.
  * @return int
  * @param typeString java.lang.String
