@@ -148,6 +148,8 @@ public void update() throws java.sql.SQLException {
 
 public boolean hasPhoneNumber()
 {
+	if(getDeviceDialupSettings().getPhoneNumber() == null)
+		return false;
 	return (!(getDeviceDialupSettings().getPhoneNumber().compareTo("0") == 0 ||getDeviceDialupSettings().getPhoneNumber() == null));
 
 }
