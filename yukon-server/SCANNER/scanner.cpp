@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/08/05 20:44:07 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/08/06 19:05:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,7 +307,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     {
         // Initialize the connection to VanGogh....
         VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
-        // And register as Scanner por favor....
+        VanGoghConnection.setName("Dispatch");
         VanGoghConnection.WriteConnQue(new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
 
         if(_beginthread (ResultThread, RESULT_THREAD_STK_SIZE, (VOID *)SCANNER_REGISTRATION_NAME) == -1)
