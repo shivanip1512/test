@@ -7,7 +7,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 
@@ -58,13 +57,6 @@ public class RefreshTimerTask extends StarsTimerTask {
 		for (int i = 0; i < companies.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
-			
-			// Update the control history
-			ArrayList ctrlHistList = company.getAllLMControlHistory();
-			for (int j = 0; j < ctrlHistList.size(); j++) {
-				LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) ctrlHistList.get(j);
-				company.updateLMControlHistory( liteCtrlHist );
-			}
 			
 			// Update the real-time data for EnergyPro thermostats
 			ArrayList activeAccounts = company.getActiveAccounts();

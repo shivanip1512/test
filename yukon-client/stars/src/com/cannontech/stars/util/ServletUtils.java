@@ -201,7 +201,11 @@ public class ServletUtils {
 		return dateCal.getTime();
 	}
 	
-	public static StarsLMControlHistory getAllControlHistory(StarsLMProgram program, StarsAppliances appliances, LiteStarsEnergyCompany energyCompany) {
+	public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
+		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany)
+	{
+		Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
+		
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
 			ArrayList groupIDs = new ArrayList();
@@ -213,7 +217,7 @@ public class ServletUtils {
 					
 					int[] grpIDs = null;
 					if (liteHw.getLMConfiguration() != null)
-						grpIDs = ECUtils.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );
+						grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );
 					else if (program.getGroupID() > 0)
 						grpIDs = new int[] { program.getGroupID() };
 					
@@ -230,7 +234,8 @@ public class ServletUtils {
 			lmCtrlHist.setControlSummary( new ControlSummary() );
 			
 			for (int i = 0; i < groupIDs.size(); i++) {
-				StarsLMControlHistory ctrlHist = energyCompany.getStarsLMControlHistory( ((Integer)groupIDs.get(i)).intValue() );
+				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
+						((Integer)groupIDs.get(i)).intValue(), startDate, energyCompany.getDefaultTimeZone() );
 				
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()
@@ -256,36 +261,10 @@ public class ServletUtils {
 			return lmCtrlHist;
 		}
 		else {
-			return energyCompany.getStarsLMControlHistory( program.getGroupID() );
+			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), startDate, energyCompany.getDefaultTimeZone() );
 		}
 	}
-    
-	public static StarsLMControlHistory getControlHistory(StarsLMControlHistory ctrlHist,
-		StarsCtrlHistPeriod period, Date dateEnrolled, TimeZone tz)
-	{
-		Date date = LMControlHistoryUtil.getPeriodStartTime( period, tz );
-		if (dateEnrolled != null && dateEnrolled.after( date ))
-			date = dateEnrolled;
-    	
-		StarsLMControlHistory ctrlHistInPrd = new StarsLMControlHistory();
-		ctrlHistInPrd.setBeingControlled( ctrlHist.getBeingControlled() );
-        
-		for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0; i--) {
-			ControlHistory hist = ctrlHist.getControlHistory(i);
-			if ( hist.getStartDateTime().before(date) ) {
-				int validDuration = (int)((hist.getStartDateTime().getTime() - date.getTime()) / 1000) + hist.getControlDuration();
-				if (validDuration <= 0) break;
-				
-				hist = new ControlHistory();
-				hist.setStartDateTime( date );
-				hist.setControlDuration( validDuration );
-			}
-			ctrlHistInPrd.addControlHistory( hist );
-		}
-        
-		return ctrlHistInPrd;
-	}
-	
+    /*
 	public static ControlSummary getControlSummary(StarsLMControlHistory starsCtrlHist, TimeZone tz) {
 		ControlSummary summary = new ControlSummary();
 		int dailyTime = 0;
@@ -322,7 +301,7 @@ public class ServletUtils {
 		
 		return summary;
 	}
-    
+    */
 	/**
 	 * Format phone number to format "[...-#-###-]###-#### x#..."
 	 * E.g. 763-595-7777 x5529 (5529 is the extension number)

@@ -39,7 +39,6 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
@@ -1491,91 +1490,6 @@ public class StarsLiteFactory {
 		}
 	}
 	
-	public static void setStarsLMControlHistory(StarsLMControlHistory starsCtrlHist, LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
-		starsCtrlHist.removeAllControlHistory();
-		starsCtrlHist.setBeingControlled( false );
-        
-		if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
-			int startIndex = 0;
-			if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
-				startIndex = liteCtrlHist.getCurrentDayStartIndex();
-			else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
-				startIndex = liteCtrlHist.getCurrentWeekStartIndex();
-			else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
-				startIndex = liteCtrlHist.getCurrentMonthStartIndex();
-			else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
-				startIndex = liteCtrlHist.getCurrentYearStartIndex();
-	        
-			ControlHistory hist = null;
-			long lastStartTime = 0;
-			long lastStopTime = 0;
-			for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
-				LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
-
-				/*
-				 * ActiveRestore is defined as below:
-				 * N - This is the first entry for any new control.
-				 * C - Previous command was repeated extending the current control interval.
-				 * T - Control terminated based on time set in load group.
-				 * M - Control terminated because of an active restore or terminate command being sent.
-				 * O - Control terminated because a new command of a different nature was sent to this group.
-				 * L - Time log
-				 */
-				if (lmCtrlHist.getActiveRestore().equals("N")) {
-					if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) > 1000) {
-						// This is a new control
-						lastStartTime = lmCtrlHist.getStartDateTime();
-						lastStopTime = lmCtrlHist.getStopDateTime();
-	                	
-						hist = new ControlHistory();
-						hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-						hist.setControlDuration( 0 );
-						starsCtrlHist.addControlHistory( hist );
-					}
-					else {	// This is the continuation of the last control
-						lastStopTime = lmCtrlHist.getStopDateTime();
-					}
-				}
-				else if (lmCtrlHist.getActiveRestore().equals("C")
-						|| lmCtrlHist.getActiveRestore().equals("L"))
-				{
-					if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-						if (hist != null)
-							hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
-					}
-				}
-				else if (lmCtrlHist.getActiveRestore().equals("M")
-						|| lmCtrlHist.getActiveRestore().equals("T")
-						|| lmCtrlHist.getActiveRestore().equals("O"))
-				{
-					if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-						lastStopTime = lmCtrlHist.getStopDateTime();
-						if (hist != null)
-							hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
-					}
-					hist = null;
-				}
-			}
-	        
-			starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
-		}
-        
-		if (getSummary) {
-			ControlSummary summary = new ControlSummary();
-            
-			int size = liteCtrlHist.getLmControlHistory().size();
-			if (size > 0) {
-				LiteLMControlHistory lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(size - 1);
-				summary.setDailyTime( (int) lastCtrlHist.getCurrentDailyTime() );
-				summary.setMonthlyTime( (int) lastCtrlHist.getCurrentMonthlyTime() );
-				summary.setSeasonalTime( (int) lastCtrlHist.getCurrentSeasonalTime() );
-				summary.setAnnualTime( (int) lastCtrlHist.getCurrentAnnualTime() );
-			}
-			
-			starsCtrlHist.setControlSummary( summary );
-		}
-	}
-	
 	public static void setStarsEnergyCompany(StarsEnergyCompany starsCompany, LiteStarsEnergyCompany liteCompany) {
 		starsCompany.setCompanyName( liteCompany.getName() );
 		starsCompany.setMainPhoneNumber( "" );
@@ -1845,12 +1759,6 @@ public class StarsLiteFactory {
 		starsOrder.setActionTaken( ServerUtils.forceNotNull(liteOrder.getActionTaken()) );
 		
 		return starsOrder;
-	}
-	
-	public static StarsLMControlHistory createStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
-		StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
-		setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, period, getSummary );
-		return starsCtrlHist;
 	}
 	
 	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsCustAccountInformation liteAcctInfo)

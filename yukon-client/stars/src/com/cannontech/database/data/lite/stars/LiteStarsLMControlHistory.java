@@ -21,7 +21,20 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	private int currentMonthStartIndex = 0;
 	private int currentWeekStartIndex = 0;
 	private int currentDayStartIndex = 0;
+	
 	private ArrayList lmControlHistory = null;
+	
+	// Last control history entry of the load group, used for getting control summary.
+	// Notice: the ID of the lite object is not the ID of the corresponding control history entry,
+	// rather it is the ID of the last searched entry in the database when getting control summary.
+	private LiteLMControlHistory lastControlHistory = null;
+	
+	// ID of the last searched entry in the database when getting control history
+	private int lastSearchedCtrlHistID = 0;
+	
+	// Start and stop time stamp of the last database search to get control history
+	private long lastSearchedStartTime = 0;
+	private long lastSearchedStopTime = 0;
 	
 	public LiteStarsLMControlHistory() {
 		super();
@@ -143,8 +156,6 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 * @return java.util.ArrayList
 	 */
 	public ArrayList getLmControlHistory() {
-		if (lmControlHistory == null)
-			lmControlHistory = new ArrayList();
 		return lmControlHistory;
 	}
 
@@ -154,38 +165,6 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 */
 	public long getTimeBase() {
 		return timeBase;
-	}
-
-	/**
-	 * Sets the currentDayStartIndex.
-	 * @param currentDayStartIndex The currentDayStartIndex to set
-	 */
-	public void setCurrentDayStartIndex(int currentDayStartIndex) {
-		this.currentDayStartIndex = currentDayStartIndex;
-	}
-
-	/**
-	 * Sets the currentMonthStartIndex.
-	 * @param currentMonthStartIndex The currentMonthStartIndex to set
-	 */
-	public void setCurrentMonthStartIndex(int currentMonthStartIndex) {
-		this.currentMonthStartIndex = currentMonthStartIndex;
-	}
-
-	/**
-	 * Sets the currentWeekStartIndex.
-	 * @param currentWeekStartIndex The currentWeekStartIndex to set
-	 */
-	public void setCurrentWeekStartIndex(int currentWeekStartIndex) {
-		this.currentWeekStartIndex = currentWeekStartIndex;
-	}
-
-	/**
-	 * Sets the currentYearStartIndex.
-	 * @param currentYearStartIndex The currentYearStartIndex to set
-	 */
-	public void setCurrentYearStartIndex(int currentYearStartIndex) {
-		this.currentYearStartIndex = currentYearStartIndex;
 	}
 
 	/**
@@ -202,6 +181,62 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 */
 	public void setTimeBase(long timeBase) {
 		this.timeBase = timeBase;
+	}
+
+	/**
+	 * @return
+	 */
+	public LiteLMControlHistory getLastControlHistory() {
+		return lastControlHistory;
+	}
+
+	/**
+	 * @param history
+	 */
+	public void setLastControlHistory(LiteLMControlHistory history) {
+		lastControlHistory = history;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getLastSearchedCtrlHistID() {
+		return lastSearchedCtrlHistID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setLastSearchedCtrlHistID(int i) {
+		lastSearchedCtrlHistID = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public long getLastSearchedStartTime() {
+		return lastSearchedStartTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public long getLastSearchedStopTime() {
+		return lastSearchedStopTime;
+	}
+
+	/**
+	 * @param l
+	 */
+	public void setLastSearchedStartTime(long l) {
+		lastSearchedStartTime = l;
+	}
+
+	/**
+	 * @param l
+	 */
+	public void setLastSearchedStopTime(long l) {
+		lastSearchedStopTime = l;
 	}
 
 }

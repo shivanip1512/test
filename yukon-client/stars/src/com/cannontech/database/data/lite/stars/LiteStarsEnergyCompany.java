@@ -59,7 +59,6 @@ import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
@@ -72,13 +71,10 @@ import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
-import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
-import com
-.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 /**
  * @author yao
@@ -161,7 +157,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private Hashtable custAccountInfos = null;	// Map of Integer(AccountID) to LiteStarsCustAccountInformation
 	private Hashtable addresses = null;			// Map of Integer(AddressID) to LiteAddress
 	private Hashtable inventory = null;			// Map of Integer(InventoryID) to LiteInventoryBase
-	private Hashtable lmCtrlHists = null;		// Map of Integer(GroupID) to LiteStarsLMControlHistory
 	private Hashtable workOrders = null;		// Map of Integer(OrderID) to LiteWorkOrderBase
 	
 	private ArrayList pubPrograms = null;		// List of LiteLMProgramWebPublishing
@@ -213,7 +208,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private Hashtable starsSelectionLists = null;	// Map String(list name) to StarsSelectionListEntry
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
-	private Hashtable starsLMCtrlHists = null;		// Map Integer(group ID) to StarsLMControlHistory
 	
 	// Energy company hierarchy
 	private LiteStarsEnergyCompany parent = null;
@@ -576,7 +570,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		addresses = null;
 		pubPrograms = null;
 		inventory = null;
-		lmCtrlHists = null;
 		appCategories = null;
 		workOrders = null;
 		serviceCompanies = null;
@@ -613,7 +606,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		starsSelectionLists = null;
 		starsCustAcctInfos = null;
-		starsLMCtrlHists = null;
 		
 		parent = null;
 		children = null;
@@ -1558,17 +1550,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getCustAccountInfoMap().values() );
 	}
 	
-	private synchronized Hashtable getLMCtrlHistMap() {
-		if (lmCtrlHists == null)
-			lmCtrlHists = new Hashtable();
-		
-		return lmCtrlHists;
-	}
-	
-	public ArrayList getAllLMControlHistory() {
-		return new ArrayList( getLMCtrlHistMap().values() );
-	}
-	
 	
 	public LiteInterviewQuestion[] getInterviewQuestions(int qType) {
 		ArrayList qList = new ArrayList();
@@ -2042,27 +2023,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return hwList;
 	}
 	
-	public LiteStarsLMControlHistory getLMControlHistory(int groupID) {
-		if (groupID == CtiUtilities.NONE_ID) return null;
-		
-		LiteStarsLMControlHistory lmCtrlHist =
-				(LiteStarsLMControlHistory) getLMCtrlHistMap().get( new Integer(groupID) );
-		if (lmCtrlHist != null) return lmCtrlHist;
-		
-		ArrayList ctrlHistList = new ArrayList();
-		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
-				new Integer(groupID), com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.ALL );
-		for (int i = 0; i < ctrlHist.length; i++)
-			ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
-		
-		lmCtrlHist = new LiteStarsLMControlHistory( groupID );
-		lmCtrlHist.setLmControlHistory( ctrlHistList );
-		//lmCtrlHist.updateStartIndices( tz );
-		
-		getLMCtrlHistMap().put( new Integer(groupID), lmCtrlHist );
-		return lmCtrlHist;
-	}
-	
 	public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {
 		try {
 			LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
@@ -2302,7 +2262,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				
 				prog.setGroupID( liteApp.getAddressingGroupID() );
 				prog.updateProgramStatus( progHist );
-				getLMControlHistory( liteApp.getAddressingGroupID() );
 				
 				programs.add( prog );
 			}
@@ -3113,61 +3072,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public void clearActiveAccounts() {
 		starsCustAcctInfos = null;
-		lmCtrlHists = null;
-		starsLMCtrlHists = null;
-	}
-	
-	private Hashtable getStarsLMCtrlHists() {
-		if (starsLMCtrlHists == null)
-			starsLMCtrlHists = new Hashtable();
-		return starsLMCtrlHists;
-	}
-	
-	public StarsLMControlHistory getStarsLMControlHistory(int groupID) {
-		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
-		synchronized (starsLMCtrlHists) {
-			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory) starsLMCtrlHists.get( new Integer(groupID) );
-			
-			if (starsCtrlHist == null) {
-				LiteStarsLMControlHistory liteCtrlHist = getLMControlHistory( groupID );
-				if (liteCtrlHist != null) {
-					starsCtrlHist = StarsLiteFactory.createStarsLMControlHistory(
-							liteCtrlHist, StarsCtrlHistPeriod.ALL, true );
-					starsLMCtrlHists.put( new Integer(groupID), starsCtrlHist );
-				}
-				else {
-					starsCtrlHist = new StarsLMControlHistory();
-					starsCtrlHist.setControlSummary( new ControlSummary() );
-				}
-			}
-			
-			return starsCtrlHist;
-		}
-	}
-	
-	public StarsLMControlHistory updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
-		ArrayList ctrlHist = liteCtrlHist.getLmControlHistory();
-		
-		int lastCtrlHistID = 0;
-		if (ctrlHist.size() > 0)
-			lastCtrlHistID = ((LiteLMControlHistory) ctrlHist.get(ctrlHist.size() - 1)).getLmCtrlHistID();
-		
-		com.cannontech.database.db.pao.LMControlHistory[] ctrlHists = com.cannontech.stars.util.LMControlHistoryUtil.getLMControlHistory(
-				new Integer(liteCtrlHist.getGroupID()), new Integer(lastCtrlHistID) );
-		if (ctrlHists != null) {
-			for (int i= 0; i < ctrlHists.length; i++)
-				ctrlHist.add( (LiteLMControlHistory) StarsLiteFactory.createLite(ctrlHists[i]) );
-		}
-		
-		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
-		synchronized (starsLMCtrlHists) {
-			StarsLMControlHistory starsCtrlHist = (StarsLMControlHistory)
-					starsLMCtrlHists.get( new Integer(liteCtrlHist.getGroupID()) );
-			if (starsCtrlHist != null)
-				StarsLiteFactory.setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, StarsCtrlHistPeriod.ALL, true );
-			
-			return starsCtrlHist;
-		}
 	}
 	
 	public void updateThermostatSettings(LiteStarsCustAccountInformation liteAcctInfo) {

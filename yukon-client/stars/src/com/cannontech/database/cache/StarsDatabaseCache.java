@@ -7,6 +7,7 @@
 package com.cannontech.database.cache;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -25,10 +26,12 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -37,6 +40,8 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.LMControlHistoryUtil;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -57,6 +62,8 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 public class StarsDatabaseCache implements com.cannontech.database.cache.DBChangeListener {
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
+	
+	private static final int CTRL_HIST_CACHE_INVALID_INTERVAL = 7;	// 7 days
     
 	// Instance of the SOAPServer object
 	private static StarsDatabaseCache instance = null;
@@ -69,6 +76,9 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 	
 	// Map from user ID (Integer) to stars users (StarsYukonUser)
 	private Hashtable starsYukonUsers = null;
+	
+	// Map from Integer(GroupID) to LiteStarsLMControlHistory
+	private Hashtable lmCtrlHists = null;
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
@@ -103,7 +113,14 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		initDispatchConnection();
 		
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
-	}	
+	}
+	
+	private void releaseAllCache() {
+		energyCompanies = null;
+		webConfigList = null;
+		starsYukonUsers = null;
+		lmCtrlHists = null;
+	}
 	
 	public synchronized static StarsDatabaseCache getInstance() {
 		if (instance == null) {
@@ -148,9 +165,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 			energyCompanies = null;
 		}
 		
-		webConfigList = null;
-		starsYukonUsers = null;
-		
+		releaseAllCache();
 		DefaultDatabaseCache.getInstance().releaseAllCache();
 		YukonListFuncs.releaseAllConstants();
 		
@@ -735,5 +750,97 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 				}
 				break;
 		}
+	}
+	
+	private synchronized Hashtable getLMCtrlHistMap() {
+		if (lmCtrlHists == null)
+			lmCtrlHists = new Hashtable();
+		
+		return lmCtrlHists;
+	}
+	
+	public ArrayList getAllLMControlHistory() {
+		return new ArrayList( getLMCtrlHistMap().values() );
+	}
+	
+	/**
+	 * Get control history from a given start date. To get only the control summary, set start date to null;
+	 * to get the complete control history, set start date to new java.util.Date(0).
+	 */
+	public LiteStarsLMControlHistory getLMControlHistory(int groupID, Date startDate) {
+		if (groupID == CtiUtilities.NONE_ID) return null;
+		
+		LiteStarsLMControlHistory lmCtrlHist =
+				(LiteStarsLMControlHistory) getLMCtrlHistMap().get( new Integer(groupID) );
+		if (lmCtrlHist == null) lmCtrlHist = new LiteStarsLMControlHistory( groupID );
+		
+		if (startDate != null &&
+			(startDate.getTime() < lmCtrlHist.getLastSearchedStartTime() ||
+			(startDate.getTime() - lmCtrlHist.getLastSearchedStopTime()) * 0.001 / 3600 / 24 > CTRL_HIST_CACHE_INVALID_INTERVAL))
+		{
+			// Clear the cached control history if the request date is earlier than the cache start date,
+			// or it is later than the cache stop date and the interval is too long.
+			lmCtrlHist.setLmControlHistory( null );
+		}
+		
+		int lastSearchedID = LMControlHistoryUtil.getLastLMCtrlHistID();
+		
+		if (startDate != null) {
+			if (lmCtrlHist.getLmControlHistory() == null) {
+				Date dateFrom = (startDate.getTime() > ServerUtils.VERY_EARLY_TIME)? startDate : null;
+				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
+						LMControlHistoryUtil.getLMControlHistory( groupID, dateFrom, null );
+				
+				ArrayList ctrlHistList = new ArrayList();
+				for (int i = 0; i < ctrlHist.length; i++)
+					ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
+				lmCtrlHist.setLmControlHistory( ctrlHistList );
+			}
+			else {
+				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
+						LMControlHistoryUtil.getLMControlHistory( groupID, lmCtrlHist.getLastSearchedCtrlHistID() );
+				for (int i = 0; i < ctrlHist.length; i++)
+					lmCtrlHist.getLmControlHistory().add( StarsLiteFactory.createLite(ctrlHist[i]) );
+			}
+			
+			lmCtrlHist.setLastSearchedCtrlHistID( lastSearchedID );
+			lmCtrlHist.setLastSearchedStartTime( startDate.getTime() );
+			lmCtrlHist.setLastSearchedStopTime( System.currentTimeMillis() );
+		}
+		
+		if (lmCtrlHist.getLmControlHistory().size() > 0) {
+			LiteLMControlHistory liteCtrlHist = (LiteLMControlHistory)
+					lmCtrlHist.getLmControlHistory().get(lmCtrlHist.getLmControlHistory().size() - 1);
+			
+			lastSearchedID = Math.max( liteCtrlHist.getLmCtrlHistID(), lastSearchedID );
+			lmCtrlHist.setLastSearchedCtrlHistID( lastSearchedID );
+			
+			LiteLMControlHistory lastCtrlHist = new LiteLMControlHistory( lastSearchedID );
+			lastCtrlHist.setStartDateTime( liteCtrlHist.getStartDateTime() );
+			lastCtrlHist.setStopDateTime( liteCtrlHist.getStopDateTime() );
+			lastCtrlHist.setCurrentDailyTime( liteCtrlHist.getCurrentDailyTime() );
+			lastCtrlHist.setCurrentMonthlyTime( liteCtrlHist.getCurrentMonthlyTime() );
+			lastCtrlHist.setCurrentSeasonalTime( liteCtrlHist.getCurrentSeasonalTime() );
+			lastCtrlHist.setCurrentAnnualTime( liteCtrlHist.getCurrentAnnualTime() );
+			lmCtrlHist.setLastControlHistory( lastCtrlHist );
+		}
+		else {
+			int startCtrlHistID = 0;
+			if (lmCtrlHist.getLastControlHistory() != null)
+				startCtrlHistID = lmCtrlHist.getLastControlHistory().getLmCtrlHistID();
+			
+			com.cannontech.database.db.pao.LMControlHistory lastCtrlHist =
+					LMControlHistoryUtil.getLastLMControlHistory( groupID, startCtrlHistID );
+			
+			if (lastCtrlHist != null) {
+				LiteLMControlHistory liteCtrlHist = (LiteLMControlHistory) StarsLiteFactory.createLite(lastCtrlHist);
+				if (liteCtrlHist.getLmCtrlHistID() < lastSearchedID)
+					liteCtrlHist.setLmCtrlHistID( lastSearchedID );
+				lmCtrlHist.setLastControlHistory( liteCtrlHist );
+			}
+		}
+		
+		getLMCtrlHistMap().put( new Integer(groupID), lmCtrlHist );
+		return lmCtrlHist;
 	}
 }

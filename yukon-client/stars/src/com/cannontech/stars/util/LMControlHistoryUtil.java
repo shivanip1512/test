@@ -1,5 +1,6 @@
 package com.cannontech.stars.util;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -7,7 +8,14 @@ import java.util.TimeZone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.stars.LiteLMConfiguration;
+import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
+import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.db.pao.LMControlHistory;
+import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 /**
@@ -20,22 +28,18 @@ import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
  */
 
 public class LMControlHistoryUtil {
-
-    public LMControlHistoryUtil() {
-    }
-
-    private static void clearTime(Calendar cal) {
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-    }
+	
+	private static int lastCtrlHistID = 0;
 
     public static Date getPeriodStartTime(StarsCtrlHistPeriod period, TimeZone tz) {
-    	Date date = new Date(0);
+    	Date date = null;
     	Calendar cal = Calendar.getInstance();
     	cal.setTime( com.cannontech.util.ServletUtil.getToday(tz) );
     	
-    	if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
+    	if (period.getType() == StarsCtrlHistPeriod.ALL_TYPE) {
+    		date = new Date(0);
+    	}
+    	else if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
     		date = cal.getTime();
     	}
     	else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE) {
@@ -54,33 +58,37 @@ public class LMControlHistoryUtil {
     	return date;
     }
 
-    public static com.cannontech.database.db.pao.LMControlHistory[] getLMControlHistory(Integer groupID, StarsCtrlHistPeriod period) {
+    public static com.cannontech.database.db.pao.LMControlHistory[] getLMControlHistory(int groupID, Date dateFrom, Date dateTo) {
         java.sql.Connection conn = null;
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
-        java.util.ArrayList ctrlHistList = new java.util.ArrayList();
+        
+        ArrayList ctrlHistList = new ArrayList();
 
         try {
             conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
-
-            Date dateFrom = getPeriodStartTime(period, TimeZone.getDefault());
-
+            
 			StringBuffer sql = new StringBuffer("SELECT LMCTRLHISTID");
 			for (int i = 0; i < LMControlHistory.SETTER_COLUMNS.length; i++)
 				sql.append(", ").append(LMControlHistory.SETTER_COLUMNS[i]);
             sql.append(" FROM ").append(LMControlHistory.TABLE_NAME)
                .append(" WHERE PAOBJECTID = ?");
             if (dateFrom != null)
-            	sql.append(" AND STARTDATETIME > ?");
+            	sql.append(" AND STOPDATETIME > ?");
+            if (dateTo != null)
+            	sql.append(" AND STARTDATETIME < ?");
             sql.append(" ORDER BY LMCTRLHISTID");
-
+            
             pstmt = conn.prepareStatement( sql.toString() );
-            pstmt.setInt( 1, groupID.intValue() );
+            pstmt.setInt( 1, groupID );
+            int paramIdx = 2;
             if (dateFrom != null)
-                pstmt.setTimestamp( 2, new java.sql.Timestamp(dateFrom.getTime()) );
+				pstmt.setTimestamp( paramIdx++, new java.sql.Timestamp(dateFrom.getTime()) );
+            if (dateTo != null)
+            	pstmt.setTimestamp( paramIdx, new java.sql.Timestamp(dateTo.getTime()) );
+            
             rset = pstmt.executeQuery();
-
             while (rset.next()) {
 	            com.cannontech.database.db.pao.LMControlHistory ctrlHist =
 	            		new com.cannontech.database.db.pao.LMControlHistory();
@@ -121,59 +129,63 @@ public class LMControlHistoryUtil {
 
         return ctrlHists;
     }
-
-    public static com.cannontech.database.db.pao.LMControlHistory[] getLMControlHistory(Integer groupID, Integer startLMCtrlHistID) {
+    
+	public static com.cannontech.database.db.pao.LMControlHistory[] getLMControlHistory(int groupID, int startCtrlHistID) {
 		StringBuffer sql = new StringBuffer("SELECT LMCTRLHISTID");
 		for (int i = 0; i < LMControlHistory.SETTER_COLUMNS.length; i++)
 			sql.append(", ").append(LMControlHistory.SETTER_COLUMNS[i]);
-        sql.append(" FROM ").append(LMControlHistory.TABLE_NAME)
-           .append(" WHERE PAOBJECTID = ").append(groupID)
-		   .append(" AND LMCtrlHistID > ").append(startLMCtrlHistID)
-		   .append(" ORDER BY LMCtrlHistID");
-
-		SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
+		sql.append(" FROM ").append(LMControlHistory.TABLE_NAME)
+		   .append(" WHERE PAOBJECTID = ").append(groupID);
+		if (startCtrlHistID > 0)
+			sql.append(" AND LMCTRLHISTID > ").append(startCtrlHistID);
 		
+		SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
+
 		try {
 			stmt.execute();
-			com.cannontech.database.db.pao.LMControlHistory[] ctrlHists =
-					new com.cannontech.database.db.pao.LMControlHistory[ stmt.getRowCount() ];
 			
-			for (int i = 0; i < ctrlHists.length; i++) {
+			com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
+					new com.cannontech.database.db.pao.LMControlHistory[ stmt.getRowCount() ];
+
+			for (int i = 0; i < stmt.getRowCount(); i++) {
 				Object[] row = stmt.getRow(i);
-				ctrlHists[i] = new com.cannontech.database.db.pao.LMControlHistory();
-				
-				ctrlHists[i].setLmCtrlHistID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				ctrlHists[i].setPaObjectID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-				ctrlHists[i].setStartDateTime( new Date(((java.sql.Timestamp) row[2]).getTime()) );
-				ctrlHists[i].setSoeTag( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-				ctrlHists[i].setControlDuration( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-				ctrlHists[i].setControlType( (String) row[5] );
-				ctrlHists[i].setCurrentDailyTime( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-				ctrlHists[i].setCurrentMonthlyTime( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
-				ctrlHists[i].setCurrentSeasonalTime( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
-				ctrlHists[i].setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
-				ctrlHists[i].setActiveRestore( (String) row[10] );
-				ctrlHists[i].setReductionValue( (Double) row[11] );
-				ctrlHists[i].setStopDateTime( new Date(((java.sql.Timestamp) row[12]).getTime()) );
+				ctrlHist[i] = new com.cannontech.database.db.pao.LMControlHistory();
+
+				ctrlHist[i].setLmCtrlHistID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+				ctrlHist[i].setPaObjectID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				ctrlHist[i].setStartDateTime( new Date(((java.sql.Timestamp) row[2]).getTime()) );
+				ctrlHist[i].setSoeTag( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+				ctrlHist[i].setControlDuration( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+				ctrlHist[i].setControlType( (String) row[5] );
+				ctrlHist[i].setCurrentDailyTime( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+				ctrlHist[i].setCurrentMonthlyTime( new Integer(((java.math.BigDecimal) row[7]).intValue()) );
+				ctrlHist[i].setCurrentSeasonalTime( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
+				ctrlHist[i].setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
+				ctrlHist[i].setActiveRestore( (String) row[10] );
+				ctrlHist[i].setReductionValue( (Double) row[11] );
+				ctrlHist[i].setStopDateTime( new Date(((java.sql.Timestamp) row[12]).getTime()) );
 			}
 			
-			return ctrlHists;
+			return ctrlHist;
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 		}
 		
-		return null;
-    }
+		return new com.cannontech.database.db.pao.LMControlHistory[0];
+	}
 
-    public static com.cannontech.database.db.pao.LMControlHistory getLastLMControlHistory(Integer groupID) {
+    public static com.cannontech.database.db.pao.LMControlHistory getLastLMControlHistory(int groupID, int startCtrlHistID) {
 		StringBuffer sql = new StringBuffer("SELECT LMCTRLHISTID");
 		for (int i = 0; i < LMControlHistory.SETTER_COLUMNS.length; i++)
 			sql.append(", ").append(LMControlHistory.SETTER_COLUMNS[i]);
 		sql.append(" FROM ").append(LMControlHistory.TABLE_NAME)
 		   .append(" WHERE LMCTRLHISTID = ")
 		   .append("(SELECT MAX(LMCTRLHISTID) FROM ").append(LMControlHistory.TABLE_NAME)
-		   .append(" WHERE PAOBJECTID = ").append(groupID).append(")");
+		   .append(" WHERE PAOBJECTID = ").append(groupID);
+		if (startCtrlHistID > 0)
+			sql.append(" AND LMCTRLHISTID > ").append(startCtrlHistID);
+		sql.append(")");
 		
 		SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
 
@@ -207,5 +219,275 @@ public class LMControlHistoryUtil {
 
         return null;
     }
+    
+    public static int getLastLMCtrlHistID() {
+    	String sql = "SELECT MAX(LMCTRLHISTID) FROM " + LMControlHistory.TABLE_NAME;
+    	SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() > 0)
+    			return ((java.math.BigDecimal)stmt.getRow(0)[0]).intValue();
+    	}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+
+		return 0;
+    }
+	
+	/**
+	 * Based on the hardware addressing and relay number, get all the load groups
+	 * that could control the corresponding load.
+	 */
+	public static int[] getControllableGroupIDs(LiteLMConfiguration liteCfg, int relayNo) {
+		if (relayNo <= 0) return new int[0];
+		
+		ArrayList groupIDs = new ArrayList();
+		
+		try {
+			if (liteCfg.getExpressCom() != null) {
+				String sql = "SELECT LMGroupID, addr1.Address, addr2.Address, addr3.Address, ZipCodeAddress, UDAddress, addr4.Address, SplinterAddress, AddressUsage, RelayUsage"
+						+ " FROM LMGroupExpresscom, LMGroupExpresscomAddress addr1, LMGroupExpresscomAddress addr2, LMGroupExpresscomAddress addr3, LMGroupExpresscomAddress addr4, LMGroupExpresscomAddress addr5"
+						+ " WHERE SerialNumber = 0 AND ServiceProviderID = addr5.AddressID AND addr5.Address = " + liteCfg.getExpressCom().getServiceProvider()
+						+ " AND GeoID = addr1.AddressID AND SubstationID = addr2.AddressID AND FeederID = addr3.AddressID AND ProgramID = addr4.AddressID";
+				
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					int groupID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					int geoAddress = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
+					int substationAddress = ((java.math.BigDecimal) stmt.getRow(i)[2]).intValue();
+					int feederAddress = ((java.math.BigDecimal) stmt.getRow(i)[3]).intValue();
+					int zipCodeAddress = ((java.math.BigDecimal) stmt.getRow(i)[4]).intValue();
+					int udAddress = ((java.math.BigDecimal) stmt.getRow(i)[5]).intValue();
+					int programAddress = ((java.math.BigDecimal) stmt.getRow(i)[6]).intValue();
+					int splinterAddress = ((java.math.BigDecimal) stmt.getRow(i)[7]).intValue();
+					String addressUsage = (String) stmt.getRow(i)[8];
+					String relayUsage = (String) stmt.getRow(i)[9];
+					
+					if (addressUsage.indexOf("G") >= 0 && liteCfg.getExpressCom().getGEO() != geoAddress) continue;
+					if (addressUsage.indexOf("B") >= 0 && liteCfg.getExpressCom().getSubstation() != substationAddress) continue;
+					if (addressUsage.indexOf("F") >= 0 && liteCfg.getExpressCom().getFeeder() != feederAddress) continue;
+					if (addressUsage.indexOf("Z") >= 0 && liteCfg.getExpressCom().getZip() != zipCodeAddress) continue;
+					if (addressUsage.indexOf("U") >= 0 && liteCfg.getExpressCom().getUserAddress() != udAddress) continue;
+					if (addressUsage.indexOf("L") >= 0) {
+						if (relayUsage.indexOf( Character.forDigit(relayNo, 10) ) < 0) continue;
+					}
+					else {
+						if (addressUsage.indexOf("P") >= 0) {
+							int program = 0;
+							String[] programs = liteCfg.getExpressCom().getProgram().split(",");
+							if (programs.length >= relayNo && programs[relayNo-1].length() > 0)
+								program = Integer.parseInt( programs[relayNo-1] );
+							if (program != programAddress) continue;
+						}
+						if (addressUsage.indexOf("R") >= 0) {
+							int splinter = 0;
+							String[] splinters = liteCfg.getExpressCom().getSplinter().split(",");
+							if (splinters.length >= relayNo && splinters[relayNo-1].length() > 0)
+								splinter = Integer.parseInt( splinters[relayNo-1] );
+							if (splinter != splinterAddress) continue;
+						}
+					}
+					
+					groupIDs.add( new Integer(groupID) );
+				}
+			}
+			else if (liteCfg.getVersaCom() != null) {
+				String sql = "SELECT DeviceID, SectionAddress, classAddress, divisionAddress, AddressUsage, RelayUsage"
+						+ " FROM LMGroupVersacom WHERE SerialAddress = 0"
+						+ " AND UtilityAddress = " + liteCfg.getVersaCom().getUtilityID();
+				
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					int groupID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					int sectionAddress = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
+					int classAddress = ((java.math.BigDecimal) stmt.getRow(i)[2]).intValue();
+					int divisionAddress = ((java.math.BigDecimal) stmt.getRow(i)[3]).intValue();
+					String addressUsage = (String) stmt.getRow(i)[4];
+					String relayUsage = (String) stmt.getRow(i)[5];
+					
+					if (addressUsage.indexOf("S") >= 0 && liteCfg.getVersaCom().getSection() != sectionAddress) continue;
+					if (addressUsage.indexOf("C") >= 0 && liteCfg.getVersaCom().getClassAddress() != classAddress) continue;
+					if (addressUsage.indexOf("D") >= 0 && liteCfg.getVersaCom().getDivisionAddress() != divisionAddress) continue;
+					if (relayUsage.indexOf( Character.forDigit(relayNo, 10) ) < 0) continue;
+					
+					groupIDs.add( new Integer(groupID) );
+				}
+			}
+			else if (liteCfg.getSA205() != null) {
+				String sql = "SELECT GroupID, OperationalAddress FROM LMGroupSA205105 WHERE ";
+				if (relayNo == 1)
+					sql += "LoadNumber='Load 1' OR LoadNumber='Load 1,2' OR LoadNumber='Load 1,2,3' OR LoadNumber='Load 1,2,3,4'";
+				else if (relayNo == 2)
+					sql += "LoadNumber='Load 2' OR LoadNumber='Load 1,2' OR LoadNumber='Load 1,2,3' OR LoadNumber='Load 1,2,3,4'";
+				else if (relayNo == 3)
+					sql += "LoadNumber='Load 3' OR LoadNumber='Load 1,2,3' OR LoadNumber='Load 1,2,3,4'";
+				else if (relayNo == 4)
+					sql += "LoadNumber='Load 4' OR LoadNumber='Load 1,2,3,4'";
+				else
+					return new int[0];
+				
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					int groupID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					int operationalAddress = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
+					
+					if (operationalAddress == liteCfg.getSA205().getSlot1()
+						|| operationalAddress == liteCfg.getSA205().getSlot2()
+						|| operationalAddress == liteCfg.getSA205().getSlot3()
+						|| operationalAddress == liteCfg.getSA205().getSlot4()
+						|| operationalAddress == liteCfg.getSA205().getSlot5()
+						|| operationalAddress == liteCfg.getSA205().getSlot6())
+						groupIDs.add( new Integer(groupID) );
+				}
+			}
+			else if (liteCfg.getSA305() != null) {
+				String sql = "SELECT GroupID, AddressUsage, GroupAddress, DivisionAddress, SubstationAddress, LoadNumber"
+						+ " FROM LMGroupSA305 WHERE AddressUsage <> 'U' AND LoadNumber <> ''"
+						+ " AND UtilityAddress = " + liteCfg.getSA305().getUtility()
+						+ " AND RateFamily = " + liteCfg.getSA305().getRateFamily()
+						+ " AND RateMember = " + liteCfg.getSA305().getRateMember()
+						+ " AND RateHierarchy = " + liteCfg.getSA305().getRateHierarchy();
+				
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					int groupID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					String addressUsage = (String) stmt.getRow(i)[1];
+					int groupAddress = ((java.math.BigDecimal) stmt.getRow(i)[2]).intValue();
+					int divisionAddress = ((java.math.BigDecimal) stmt.getRow(i)[3]).intValue();
+					int substationAddress = ((java.math.BigDecimal) stmt.getRow(i)[4]).intValue();
+					String loadNumber = (String) stmt.getRow(i)[5];
+					
+					if (addressUsage.indexOf("G") >= 0 && liteCfg.getSA305().getGroup() != groupAddress) continue;
+					if (addressUsage.indexOf("D") >= 0 && liteCfg.getSA305().getDivision() != divisionAddress) continue;
+					if (addressUsage.indexOf("S") >= 0 && liteCfg.getSA305().getSubstation() != substationAddress) continue;
+					if (loadNumber.indexOf( Character.forDigit(relayNo, 10) ) < 0) continue;
+					
+					groupIDs.add( new Integer(groupID) );
+				}
+			}
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			return null;
+		}
+		
+		int[] ids = new int[ groupIDs.size() ];
+		for (int i = 0; i < groupIDs.size(); i++)
+			ids[i] = ((Integer) groupIDs.get(i)).intValue();
+		return ids;
+	}
+	
+	public static StarsLMControlHistory getStarsLMControlHistory(int groupID, Date startDate, TimeZone tz) {
+		StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
+		if (startDate == null) return starsCtrlHist;
+		
+		LiteStarsLMControlHistory liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, startDate );
+		
+		ControlHistory hist = null;
+		Date lastStartTime = null;
+		Date lastStopTime = null;
+		Date histStartDate = null;
+		
+		for (int i = 0; i < liteCtrlHist.getLmControlHistory().size(); i++) {
+			LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+			if (new Date(lmCtrlHist.getStopDateTime()).before( startDate )) continue;
+			
+			Date date = new Date( lmCtrlHist.getStartDateTime() );
+			
+			/*
+			 * ActiveRestore is defined as below:
+			 * N - This is the first entry for any new control.
+			 * C - Previous command was repeated extending the current control interval.
+			 * T - Control terminated based on time set in load group.
+			 * M - Control terminated because of an active restore or terminate command being sent.
+			 * O - Control terminated because a new command of a different nature was sent to this group.
+			 * L - Time log
+			 */
+			if (lmCtrlHist.getActiveRestore().equals("N")) {
+				if (!date.equals( lastStartTime )) {
+					// This is a new control
+					lastStartTime = date;
+					lastStopTime = new Date( lmCtrlHist.getStopDateTime() );
+					histStartDate = lastStartTime;
+					if (histStartDate.before( startDate )) histStartDate = startDate;
+                	
+					hist = new ControlHistory();
+					hist.setStartDateTime( histStartDate );
+					hist.setControlDuration( 0 );
+					starsCtrlHist.addControlHistory( hist );
+				}
+				else {	// This is the continuation of the last control
+					lastStopTime = new Date( lmCtrlHist.getStopDateTime() );
+				}
+			}
+			else if (lmCtrlHist.getActiveRestore().equals("C")
+					|| lmCtrlHist.getActiveRestore().equals("L"))
+			{
+				if (hist == null && date.before( startDate )) {
+					// This is a new control
+					lastStartTime = date;
+					lastStopTime = new Date( lmCtrlHist.getStopDateTime() );
+					histStartDate = startDate;
+                	
+					hist = new ControlHistory();
+					hist.setStartDateTime( histStartDate );
+					hist.setControlDuration( 0 );
+					starsCtrlHist.addControlHistory( hist );
+				}
+				else if (date.equals( lastStartTime )) {
+					if (hist != null)
+						hist.setControlDuration( (int)((lmCtrlHist.getStopDateTime() - histStartDate.getTime()) * 0.001) );
+				}
+			}
+			else if (lmCtrlHist.getActiveRestore().equals("M")
+					|| lmCtrlHist.getActiveRestore().equals("T")
+					|| lmCtrlHist.getActiveRestore().equals("O"))
+			{
+				if (date.equals( lastStartTime )) {
+					lastStopTime = new Date(lmCtrlHist.getStopDateTime());
+					if (hist != null)
+						hist.setControlDuration( (int)((lmCtrlHist.getStopDateTime() - histStartDate.getTime()) * 0.001) );
+				}
+				hist = null;
+			}
+		}
+        
+		starsCtrlHist.setBeingControlled( lastStopTime.after(new Date()) );
+        
+		ControlSummary summary = new ControlSummary();
+		LiteLMControlHistory lastCtrlHist = liteCtrlHist.getLastControlHistory();
+		
+        if (lastCtrlHist != null) {
+        	summary.setSeasonalTime( (int)lastCtrlHist.getCurrentSeasonalTime() );
+        	
+			Date date = getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
+			if (lastCtrlHist.getStopDateTime() > date.getTime()) {
+				summary.setAnnualTime( (int)lastCtrlHist.getCurrentAnnualTime() );
+				
+				date = getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
+				if (lastCtrlHist.getStopDateTime() > date.getTime()) {
+					summary.setMonthlyTime( (int)lastCtrlHist.getCurrentMonthlyTime() );
+					
+					date = getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
+					if (lastCtrlHist.getStopDateTime() > date.getTime())
+						summary.setDailyTime( (int)lastCtrlHist.getCurrentDailyTime() );
+				}
+			}
+        }
+		
+		starsCtrlHist.setControlSummary( summary );
+		
+		return starsCtrlHist;
+	}
 
 }

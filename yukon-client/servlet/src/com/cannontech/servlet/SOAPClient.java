@@ -25,7 +25,6 @@ import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteThermostatScheduleAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
-import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
@@ -302,10 +301,6 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
 			clientAction = new UpdateLMHardwareConfigAction();
-		}
-		else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
-			clientAction = new GetLMCtrlHistAction();
-			session.setAttribute( ServletUtils.ATT_REFERRER, referer );
 		}
 		else if (action.equalsIgnoreCase("CreateCall")) {
 			clientAction = new CreateCallAction();
