@@ -117,6 +117,8 @@ public class InventoryManager extends HttpServlet {
 			addSNRange( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateSNRange"))
 			updateSNRange( user, req, session );
+		else if (action.equalsIgnoreCase("DeleteSNRange"))
+			deleteSNRange( user, req, session );
 		else if (action.equalsIgnoreCase("ConfigSNRange"))
 			configSNRange( user, req, session );
 		else if (action.equalsIgnoreCase("SendSwitchCommands")) {
@@ -450,6 +452,82 @@ public class InventoryManager extends HttpServlet {
 	}
 	
 	/**
+	 * Delete hardwares in the given serial # range 
+	 */
+	private void deleteSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		java.sql.Connection conn = null;
+		
+		int snFrom = 0, snTo = 0;
+		try {
+			snFrom = Integer.parseInt( req.getParameter("From") );
+			if (req.getParameter("To").length() > 0)
+				snTo = Integer.parseInt( req.getParameter("To") );
+			else
+				snTo = snFrom;
+		}
+		catch (NumberFormatException nfe) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+			return;
+		}
+		
+		if (snFrom > snTo) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
+			return;
+		}
+		
+		try {
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			int numSuccess = 0, numFailure = 0;
+			
+			Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+			java.util.Hashtable snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchForSNRange(
+					devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID(), conn );
+			
+			for (int sn = snFrom; sn <= snTo; sn++) {
+				String serialNo = String.valueOf(sn);
+				Integer invID = (Integer) snTable.get( serialNo );
+				if (invID == null) {
+					CTILogger.info("***Failed to delete hardware with serial # " + serialNo + ", serial # doesn't exist");
+					numFailure++;
+					continue;
+				}
+				
+				LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( invID.intValue(), true );
+				if (liteHw.getAccountID() > 0) {
+					CTILogger.info("***Failed to delete hardware with serial # " + serialNo + ", hardware belongs to a customer account");
+					numFailure++;
+					continue;
+				}
+				
+				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
+						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+				hardware.setInventoryID( invID );
+				hardware.setDbConnection( conn );
+				hardware.delete();
+				
+				energyCompany.deleteLMHardware( invID.intValue() );
+				numSuccess++;
+			}
+			
+			if (numSuccess > 0)
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardware(s) deleted successfully");
+			if (numFailure > 0)
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, numFailure + " hardware(s) failed to be deleted");
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to configure hardwares");
+		}
+		finally {
+			try {
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
+	}
+	
+	/**
 	 * Configure hardwares in the given serial # range 
 	 */
 	private void configSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -495,8 +573,10 @@ public class InventoryManager extends HttpServlet {
 					continue;
 				}
 				
-				if (configNow)
-					YukonSwitchCommandAction.sendConfigCommand(energyCompany, invID.intValue(), true, conn);
+				if (configNow) {
+					LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( invID.intValue(), true );
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, conn);
+				}
 				else {
 					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
 					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -546,12 +626,13 @@ public class InventoryManager extends HttpServlet {
 			SwitchCommandQueue.SwitchCommand[] commands =
 					energyCompany.getSwitchCommandQueue().getCommands( user.getEnergyCompanyID() );
 			for (int i = 0; i < commands.length; i++) {
+				LiteStarsLMHardware liteHw = energyCompany.getBriefLMHardware( commands[i].getInventoryID(), true );
 				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-					YukonSwitchCommandAction.sendConfigCommand(energyCompany, commands[i].getInventoryID(), true, conn);
+					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, conn);
 				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-					YukonSwitchCommandAction.sendEnableCommand(energyCompany, commands[i].getInventoryID(), conn);
+					YukonSwitchCommandAction.sendEnableCommand(energyCompany, liteHw, conn);
 				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-					YukonSwitchCommandAction.sendDisableCommand(energyCompany, commands[i].getInventoryID(), conn);
+					YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, conn);
 			}
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Scheduled switch commands sent out successfully");
