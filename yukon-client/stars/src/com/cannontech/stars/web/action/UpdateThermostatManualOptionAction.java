@@ -123,6 +123,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_MANUAL_OPTION).getEntryID()) );
 			event.getLMCustomerEventBase().setEventDateTime( new Date() );
 			
+			event.getLmThermostatManualEvent().setInventoryID( new Integer(liteHw.getInventoryID()) );
 			event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
 			event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
 			event.getLmThermostatManualEvent().setOperationStateID( ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID) );
