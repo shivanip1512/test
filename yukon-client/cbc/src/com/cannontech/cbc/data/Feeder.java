@@ -34,6 +34,7 @@ public class Feeder extends StreamableCapObject
    private Double powerFactorValue = null;
 
    private Double kVarSolution = null;
+   private Double estimatedPFValue = null;
    
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
@@ -441,6 +442,24 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setKVarSolution(Double kVarSolution)
 	{
 		this.kVarSolution = kVarSolution;
+	}
+
+	/**
+	 * Returns the estimatedPFValue.
+	 * @return Double
+	 */
+	public Double getEstimatedPFValue()
+	{
+		return estimatedPFValue;
+	}
+
+	/**
+	 * Sets the estimatedPFValue.
+	 * @param estimatedPFValue The estimatedPFValue to set
+	 */
+	public void setEstimatedPFValue(Double estimatedPFValue)
+	{
+		this.estimatedPFValue = estimatedPFValue;
 	}
 
 }

@@ -71,10 +71,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setLastCurrentVarPointUpdateTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	feeder.setEstimatedVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setEstimatedVarLoadPointValue( new Double( vstr.extractDouble() ) );
-/*   feeder.setStatusReceivedFlag( 
-      ((int)vstr.extractUnsignedInt() == 1)
-      ? new Boolean(true) : new Boolean(false) );
-*/
 	
 	feeder.setDailyOperationsAnalogPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -89,6 +85,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
    feeder.setPowerFactorValue( new Double( vstr.extractDouble() ) );
 
    feeder.setKVarSolution( new Double( vstr.extractDouble() ) );
+   feeder.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
+
+
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
@@ -128,10 +127,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( feeder.getLastCurrentVarPointUpdateTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( feeder.getEstimatedVarLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getEstimatedVarLoadPointValue().doubleValue() );
-/*	vstr.insertUnsignedInt( 
-		(feeder.getStatusReceivedFlag().booleanValue() == true)
-		? 1 : 0 );
-*/
 
 	vstr.insertUnsignedInt( feeder.getDailyOperationsAnalogPointID().intValue() );	
 	vstr.insertUnsignedInt( feeder.getCurrentDailyOperations().intValue() );
@@ -146,6 +141,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
    vstr.insertDouble( feeder.getPowerFactorValue().doubleValue() );
 
    vstr.insertDouble( feeder.getKVarSolution().doubleValue() );
+   vstr.insertDouble( feeder.getEstimatedPFValue().doubleValue() );
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */

@@ -91,10 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setLastCurrentVarPointUpdateTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	subBus.setEstimatedVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setEstimatedVarLoadPointValue( new Double( vstr.extractDouble() ) );
-/*	subBus.setStatusReceivedFlag( 
-		((int)vstr.extractUnsignedInt() == 1)
-		? new Boolean(true) : new Boolean(false) );
-*/
+
 
 	subBus.setDailyOperationsAnalogPointId( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -114,6 +111,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
    subBus.setPowerFactorValue( new Double( vstr.extractDouble() ) );
 
    subBus.setKVarSolution( new Double( vstr.extractDouble() ) );
+   subBus.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
+
+
 
 	subBus.setCcFeeders( (java.util.Vector)vstr.restoreObject(polystr) );
 }
@@ -165,10 +165,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( subBus.getLastCurrentVarPointUpdateTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( subBus.getEstimatedVarLoadPointID().intValue() );
 	vstr.insertDouble( subBus.getEstimatedVarLoadPointValue().doubleValue() );
-/*	vstr.insertUnsignedInt( 
-		(subBus.getStatusReceivedFlag().booleanValue() == true)
-		? 1 : 0 );
-*/
 
 	vstr.insertUnsignedInt( subBus.getDailyOperationsAnalogPointId().intValue() );	
 	vstr.insertUnsignedInt( subBus.getCurrentDailyOperations().intValue() );
@@ -188,6 +184,9 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
    vstr.insertDouble( subBus.getPowerFactorValue().doubleValue() );
 
    vstr.insertDouble( subBus.getKVarSolution().doubleValue() );
+   vstr.insertDouble( subBus.getEstimatedPFValue().doubleValue() );
+
+
    
 	vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
 }
