@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/09/26 03:33:15 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/09/29 22:21:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -275,7 +275,7 @@ VOID PortPoolDialoutThread(void *pid)
                 }
             }
 
-            if( ParentPort->waitForPost(hPorterEvents[P_QUIT_EVENT], 15000) )
+            if( ParentPort->waitForPost(hPorterEvents[P_QUIT_EVENT], 15000) && (sgPoolDebugLevel & PORTPOOL_DEBUGLEVL_POSTSTOPARENT))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

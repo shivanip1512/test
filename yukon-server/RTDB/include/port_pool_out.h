@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/09/06 01:00:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/29 22:21:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 
 #define PORTPOOL_DEBUGLEVL_POOLQUEUE                    0x00010000  // Used on the porter side...
 #define PORTPOOL_DEBUGLEVL_QUEUEDUMPS                   0x00020000
+#define PORTPOOL_DEBUGLEVL_POSTSTOPARENT                0x00040000  // Used on the porter side...
 
 class IM_EX_PRTDB CtiPortPoolDialout : public CtiPort
 {
