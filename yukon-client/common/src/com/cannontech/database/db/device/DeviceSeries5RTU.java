@@ -22,13 +22,14 @@ public class DeviceSeries5RTU extends DBPersistent
 	private Double powerValueOffset = new Double(0);
 	private Integer startCode = new Integer(0);
 	private Integer stopCode = new Integer(0);
+	private Integer retries = new Integer(0);
 	
 		
    	public static final String SETTER_COLUMNS[] = 
    	{ 
     	"TickTime", "TransmitOffset", "SaveHistory", "PowerValueHighLimit",
       	"PowerValueLowLimit", "PowerValueMultiplier",
-		"PowerValueOffset", "StartCode", "StopCode"
+		"PowerValueOffset", "StartCode", "StopCode", "Retries"
    	};
 
    	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -54,7 +55,7 @@ public class DeviceSeries5RTU extends DBPersistent
       		getDeviceID(), getTickTime(), getTransmitOffset(), getSaveHistory(), 
          	getPowerValueHighLimit(), getPowerValueLowLimit(),
          	getPowerValueMultiplier(), getPowerValueOffset(),
-         	getStartCode(), getStopCode()
+         	getStartCode(), getStopCode(), getRetries()
 		};
    
       	add( TABLE_NAME, addValues );
@@ -88,6 +89,7 @@ public class DeviceSeries5RTU extends DBPersistent
 			setPowerValueOffset( (Double) results[6] );
 			setStartCode( (Integer) results[7] );
 			setStopCode( (Integer) results[8] );
+			setRetries( (Integer) results[9] );
       	}
       	else
          	throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -104,7 +106,7 @@ public class DeviceSeries5RTU extends DBPersistent
 			getTickTime(), getTransmitOffset(), getSaveHistory(),
 			getPowerValueHighLimit(), getPowerValueLowLimit(),
 			getPowerValueMultiplier(), getPowerValueOffset(),
-			getStartCode(), getStopCode()
+			getStartCode(), getStopCode(), getRetries()
 		};
       
       	Object constraintValues[] = { getDeviceID() };
@@ -273,6 +275,22 @@ public class DeviceSeries5RTU extends DBPersistent
 	public void setSaveHistory(String string)
 	{
 		saveHistory = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getRetries()
+	{
+		return retries;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setRetries(Integer integer)
+	{
+		retries = integer;
 	}
 
 }
