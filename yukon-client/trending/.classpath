@@ -21,5 +21,6 @@
     <classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/jfreereport-java/org/jfree/report/function"/>
     <classpathentry kind="lib" path="/third-party/poi.jar"/>
     <classpathentry kind="lib" path="/third-party/itext.jar"/>
+    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
