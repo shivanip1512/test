@@ -108,9 +108,7 @@ public class DeviceCustomerList extends DBPersistent
 	{
 		deviceID = integer;
 	}
-
-
-//////////////////////////////////
+	
   /**
    * This method was created by Cannon Technologies Inc.
    * @return boolean
@@ -119,17 +117,27 @@ public class DeviceCustomerList extends DBPersistent
   public static boolean deleteDeviceCustomerList(Integer customerID )
   {
 	  return deleteDeviceCustomerList( customerID, "yukon");
+  }
+  /**
+   * This method was created by Cannon Technologies Inc.
+   * @return boolean
+   * @param deviceID java.lang.Integer
+   */
+  public static boolean deleteDeviceCustomerList(Integer customerID, String databaseAlias )
+  {
+  	  java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+	  return deleteDeviceCustomerList( customerID, conn);
   } 
   /**
    * This method was created by Cannon Technologies Inc.
    * @return boolean
    * @param deviceID java.lang.Integer
    */
-  public static boolean deleteDeviceCustomerList(Integer customerID, String databaseAlias)
+  public static boolean deleteDeviceCustomerList(Integer customerID, java.sql.Connection conn)
   {
 	  com.cannontech.database.SqlStatement stmt =
 		  new com.cannontech.database.SqlStatement("DELETE FROM " + TABLE_NAME + " WHERE CustomerID=" + customerID,
-												   databaseAlias );
+												   conn);
 	  try
 	  {
 		  stmt.execute();
@@ -151,15 +159,26 @@ public class DeviceCustomerList extends DBPersistent
   {
 	  return getAllDeviceCustomerList(customerID, "yukon");												
   }
+  
+  /**
+	 * This method was created in VisualAge.
+	 * @return DeviceCustomerList[]
+	 * @param stateGroup java.lang.Integer
+	 */
+  public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID, String databaseAlias) throws java.sql.SQLException 
+  {
+  	java.sql.Connection conn = null;
+  	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+  	return getAllDeviceCustomerList(customerID, conn);												
+  }  
   /**
    * This method was created in VisualAge.
    * @return DeviceCustomerList[]
    * @param stateGroup java.lang.Integer
    */
-  public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID, String databaseAlias) throws java.sql.SQLException
+  public static final DeviceCustomerList[] getAllDeviceCustomerList(Integer customerID, java.sql.Connection conn) throws java.sql.SQLException
   {
 	  java.util.ArrayList tmpList = new java.util.ArrayList(30);
-	  java.sql.Connection conn = null;
 	  java.sql.PreparedStatement pstmt = null;
 	  java.sql.ResultSet rset = null;
 
@@ -168,8 +187,6 @@ public class DeviceCustomerList extends DBPersistent
 
 	  try
 	  {		
-		  conn = com.cannontech.database.PoolManager.getInstance().getConnection(databaseAlias);
-
 		  if( conn == null )
 		  {
 			  throw new IllegalStateException("Error getting database connection.");
