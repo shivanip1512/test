@@ -1,5 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.user.UserUtils" %>
 <%
 	int userID = -1;
 	if (request.getParameter("UserID") != null)
@@ -9,7 +10,9 @@
 	if (userID != -1)
 		liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(userID);
 	else
-		liteUser = new LiteYukonUser(-1,"","","");
+		liteUser = new LiteYukonUser(-1, "", "", UserUtils.STATUS_ENABLED);
+	
+	String checked = liteUser.getStatus().equalsIgnoreCase(UserUtils.STATUS_ENABLED)? "checked" : "";
 %>
 <html>
 <head>
@@ -91,13 +94,13 @@ function validate(form) {
                 <tr> 
                   <td height="67"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
-<%	if (userID == -1) { %>
+                      <%	if (userID == -1) { %>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Operator 
                           Group: </td>
-                        <td width="75%" class="TableCell">
+                        <td width="75%" class="TableCell"> 
                           <select name="OperatorGroup">
-<%
+                            <%
 		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 		String[] operGroupNames = liteEnergyCompany.getEnergyCompanySetting(com.cannontech.roles.yukon.EnergyCompanyRole.OPERATOR_GROUP_NAME).split(",");
 		for (int i = 0; i < operGroupNames.length; i++) {
@@ -105,13 +108,19 @@ function validate(form) {
 			if (liteGroup == null) continue;
 %>
                             <option value="<%= liteGroup.getGroupID() %>"><%= liteGroup.getGroupName() %></option>
-<%
+                            <%
 		}
 %>
-						  </select>
+                          </select>
                         </td>
                       </tr>
 <%	} %>
+                      <tr>
+                        <td width="25%" align="right" class="TableCell">&nbsp;</td>
+                        <td width="75%" class="TableCell">
+                          <input type="checkbox" name="Status" value="true" <%= checked %>>
+                          Login Enabled</td>
+                      </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Username:</td>
                         <td width="75%" class="TableCell"> 

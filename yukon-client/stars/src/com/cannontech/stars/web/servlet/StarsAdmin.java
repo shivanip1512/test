@@ -85,6 +85,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
+import com.cannontech.user.UserUtils;
 
 /**
  * @author yao
@@ -1766,7 +1767,7 @@ public class StarsAdmin extends HttpServlet {
         }
 	}
 	
-	private LiteYukonUser createOperatorLogin(String username, String password, LiteYukonGroup[] operGroups,
+	private LiteYukonUser createOperatorLogin(String username, String password, boolean enabled, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		if (YukonUserFuncs.getLiteYukonUser( username ) != null)
@@ -1777,7 +1778,7 @@ public class StarsAdmin extends HttpServlet {
 		
 		userDB.setUsername( username );
 		userDB.setPassword( password );
-		userDB.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
+		userDB.setStatus( (enabled)? UserUtils.STATUS_ENABLED : UserUtils.STATUS_DISABLED );
 		
 		for (int i = 0; i < operGroups.length; i++) {
 			com.cannontech.database.db.user.YukonGroup group =
@@ -1822,11 +1823,12 @@ public class StarsAdmin extends HttpServlet {
 			int userID = Integer.parseInt( req.getParameter("UserID") );
 			String username = req.getParameter( "Username" );
 			String password = req.getParameter( "Password" );
+			boolean enabled = Boolean.valueOf( req.getParameter("Status") ).booleanValue();
 			
 			if (userID == -1) {
 				// Create new operator login
 				LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(req.getParameter("OperatorGroup")) );
-				LiteYukonUser liteUser = createOperatorLogin( username, password,
+				LiteYukonUser liteUser = createOperatorLogin( username, password, enabled,
 						new LiteYukonGroup[] { liteGroup }, energyCompany );
 				
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login created successfully" );
@@ -1841,7 +1843,7 @@ public class StarsAdmin extends HttpServlet {
 						StarsLiteFactory.createDBPersistent( liteUser );
 				dbUser.setUsername( username );
 				dbUser.setPassword( password );
-				dbUser.setStatus( liteUser.getStatus() );
+				dbUser.setStatus( (enabled)? UserUtils.STATUS_ENABLED : UserUtils.STATUS_DISABLED );
 				
 				dbUser = (com.cannontech.database.db.user.YukonUser)
 						Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
@@ -1998,7 +2000,7 @@ public class StarsAdmin extends HttpServlet {
 			LiteYukonGroup[] operGroups = (operGroup != null)?
 					new LiteYukonGroup[] { operGroup, liteDftGroup } : new LiteYukonGroup[] { liteDftGroup };
 			LiteYukonUser liteUser = createOperatorLogin(
-					req.getParameter("Username"), req.getParameter("Password"), operGroups, null );
+					req.getParameter("Username"), req.getParameter("Password"), true, operGroups, null );
 			
 			// Create the energy company
 			com.cannontech.database.db.company.EnergyCompany company =
@@ -2025,7 +2027,7 @@ public class StarsAdmin extends HttpServlet {
 				operGroups = (operGroup != null)?
 						new LiteYukonGroup[] { operGroup } : new LiteYukonGroup[0];
 				liteUser = createOperatorLogin(
-						req.getParameter("Username2"), req.getParameter("Password2"), operGroups, energyCompany );
+						req.getParameter("Username2"), req.getParameter("Password2"), true, operGroups, energyCompany );
 			}
 			
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
