@@ -31,7 +31,7 @@ public class InterviewQuestion extends DBPersistent {
 	
 	public static final String TABLE_NAME = "InterviewQuestion";
 	
-	public static final String GET_NEXT_QUESTION_ID_SQL =
+	private static final String GET_NEXT_QUESTION_ID_SQL =
 			"SELECT MAX(QuestionID) FROM " + TABLE_NAME;
 
 	public InterviewQuestion() {
@@ -129,7 +129,8 @@ public class InterviewQuestion extends DBPersistent {
 		if (items.length == 0) return new InterviewQuestion[0];
 		
 		StringBuffer sql = new StringBuffer();
-		sql.append( "SELECT * FROM " ).append( TABLE_NAME )
+		sql.append( "SELECT QuestionID, QuestionType, Question, Mandatory, DisplayOrder, AnswerType, ExpectedAnswer " )
+		   .append( "FROM " ).append( TABLE_NAME )
 		   .append( " WHERE QUESTIONID = " ).append( items[0].getItemID() );
 		for (int i = 1; i < items.length; i++)
 			sql.append( " OR QUESTIONID = " ).append( items[i].getItemID() );

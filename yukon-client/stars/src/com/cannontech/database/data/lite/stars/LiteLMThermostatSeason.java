@@ -107,6 +107,8 @@ public class LiteLMThermostatSeason extends LiteBase {
 	 * @return java.util.ArrayList
 	 */
 	public java.util.ArrayList getSeasonEntries() {
+		if (seasonEntries == null)
+			seasonEntries = new java.util.ArrayList();
 		return seasonEntries;
 	}
 

@@ -92,7 +92,7 @@ public class GetInterviewQuestionsAction implements ActionBase {
             StarsGetExitInterviewQuestionsResponse resp = new StarsGetExitInterviewQuestionsResponse();
             for (int i = 0; i < liteQuestions.length; i++) {
             	StarsExitInterviewQuestion starsQuestion = new StarsExitInterviewQuestion();
-            	StarsLiteFactory.setStarsInterviewQuestion( starsQuestion, liteQuestions[i] );
+            	StarsLiteFactory.setStarsQuestionAnswer( starsQuestion, liteQuestions[i] );
             	resp.addStarsExitInterviewQuestion( starsQuestion );
             }
             

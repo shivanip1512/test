@@ -30,8 +30,6 @@ import com.cannontech.stars.xml.util.*;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateThermostatOptionAction implements ActionBase {
-	
-	private static final String TIMEOUT_PERIOD_IN_MINUTE = "30";
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -47,8 +45,10 @@ public class UpdateThermostatOptionAction implements ActionBase {
             StarsThermostatManualOption option = new StarsThermostatManualOption();
             option.setTemperature( Integer.parseInt(req.getParameter("tempField")) );
             option.setHold( Boolean.valueOf(req.getParameter("hold")).booleanValue() );
-            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
-            option.setFan( StarsThermoFanSettings.valueOf(req.getParameter("fan")) );
+            if (req.getParameter("mode").length() > 0)
+	            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
+	        if (req.getParameter("fan").length() > 0)
+	            option.setFan( StarsThermoFanSettings.valueOf(req.getParameter("fan")) );
             
             StarsUpdateThermostatSettings updateSettings = new StarsUpdateThermostatSettings();
             updateSettings.setStarsThermostatManualOption( option );
@@ -100,11 +100,13 @@ public class UpdateThermostatOptionAction implements ActionBase {
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID()) + " load 1";
 			
 			StringBuffer cmd = new StringBuffer("control xcom setstate")
-					.append(" system ").append(starsOption.getMode().toString().toLowerCase())
-					.append(" fan ").append(starsOption.getFan().toString().toLowerCase())
 					.append(" temp ").append(starsOption.getTemperature());
-			if (!starsOption.getHold())
-				cmd.append(" timeout ").append(TIMEOUT_PERIOD_IN_MINUTE);
+			if (starsOption.getMode() != null)
+				cmd.append(" system ").append(starsOption.getMode().toString().toLowerCase());
+			if (starsOption.getFan() != null)
+				cmd.append(" fan ").append(starsOption.getFan().toString().toLowerCase());
+			if (starsOption.getHold())
+				cmd.append(" hold");
 			cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
 			ServerUtils.sendCommand( cmd.toString() );
 			

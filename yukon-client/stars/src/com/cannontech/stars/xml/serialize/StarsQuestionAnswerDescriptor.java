@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsQuestionAnswerDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
      //- Constructors -/
     //----------------/
 
-    public StarsInterviewQuestionDescriptor() {
+    public StarsQuestionAnswerDescriptor() {
         super();
-        xmlName = "stars-InterviewQuestion";
+        xmlName = "stars-QuestionAnswer";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -64,7 +64,7 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                 if(!target.hasQuestionID())
                     return null;
                 return new Integer(target.getQuestionID());
@@ -73,7 +73,7 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                    StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
                         target.deleteQuestionID();
@@ -108,14 +108,14 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                 return target.getQuestionType();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                    StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                     target.setQuestionType( (QuestionType) value);
                 }
                 catch (Exception ex) {
@@ -127,13 +127,11 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _questionType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _question
@@ -143,14 +141,14 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                 return target.getQuestion();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                    StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                     target.setQuestion( (java.lang.String) value);
                 }
                 catch (Exception ex) {
@@ -162,13 +160,11 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _question
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -182,14 +178,14 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                 return target.getAnswerType();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                    StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                     target.setAnswerType( (AnswerType) value);
                 }
                 catch (Exception ex) {
@@ -201,13 +197,11 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _answerType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _answer
@@ -217,14 +211,14 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                 return target.getAnswer();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsInterviewQuestion target = (StarsInterviewQuestion) object;
+                    StarsQuestionAnswer target = (StarsQuestionAnswer) object;
                     target.setAnswer( (java.lang.String) value);
                 }
                 catch (Exception ex) {
@@ -248,7 +242,7 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
         }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsInterviewQuestionDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsQuestionAnswerDescriptor()
 
 
       //-----------/
@@ -280,7 +274,7 @@ public class StarsInterviewQuestionDescriptor extends org.exolab.castor.xml.util
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsInterviewQuestion.class;
+        return com.cannontech.stars.xml.serialize.StarsQuestionAnswer.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

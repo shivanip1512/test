@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsGetLMControlHistory.java,v 1.24 2003/02/21 21:01:55 zyao Exp $
+ * $Id: StarsGetLMControlHistory.java,v 1.25 2003/03/06 00:07:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Get LM control history of a LM program
  * 
- * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:55 $
+ * @version $Revision: 1.25 $ $Date: 2003/03/06 00:07:20 $
 **/
 public class StarsGetLMControlHistory implements java.io.Serializable {
 

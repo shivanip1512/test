@@ -36,7 +36,7 @@ public class SOAPClient extends HttpServlet {
 
     private static String SOAP_SERVER_URL = null;
     private static SOAPMessenger soapMsgr = null;
-    private static boolean serverLocal = true;
+    private static boolean serverLocal = false;
 
     private static final String loginURL = "/login.jsp";
     private static final String homeURL = "/operator/Operations.jsp";
@@ -63,14 +63,23 @@ public class SOAPClient extends HttpServlet {
 			SOAP_SERVER_URL = bundle.getString( "soap_server" );
 			CTILogger.info( "SOAP Server is remotely at \"" + SOAP_SERVER_URL + "\"" );
 			
-			setServerLocal( true );
-			ServerUtils.setPILConnectionServlet( (com.cannontech.servlet.PILConnectionServlet)
-        			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
+			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 		}
 		catch (java.util.MissingResourceException mre) {
-			SOAP_SERVER_URL = "http://localhost/servlet/SOAPServer";
+			// "soap_server" is not defined in config.properties, which means SOAPServer resides on the same server
+			setServerLocal( true );
+			SOAPServer.setClientLocal( true );
+			
+			SOAP_SERVER_URL = "/servlet/SOAPServer";
+			CTILogger.info( "SOAP Server is locally at \"" + SOAP_SERVER_URL + "\"" );
 		}
-		soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
+		
+	}
+	
+	private SOAPMessenger getSOAPMessenger() {
+		if (soapMsgr == null)
+			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
+		return soapMsgr;
 	}
 
     private StarsOperation sendRecvOperation(StarsOperation operation) {
@@ -80,7 +89,7 @@ public class SOAPClient extends HttpServlet {
             String reqStr = XMLUtil.removeXMLDecl( sw.toString() );
 
             CTILogger.info( "*** Send Message ***  " + reqStr );
-            String respStr = soapMsgr.call( reqStr );
+            String respStr = getSOAPMessenger().call( reqStr );
             CTILogger.info( "*** Receive Message ***  " + respStr );
 
             StringReader sr = new StringReader( respStr );
@@ -99,15 +108,25 @@ public class SOAPClient extends HttpServlet {
         if (action == null) action = "";
 
         HttpSession session = req.getSession(false);
+        
+		if (action.equalsIgnoreCase("RefreshCache")) {
+			if (isServerLocal()) SOAPServer.refreshCache();
+        	if (session != null) session.invalidate();
+			resp.sendRedirect( loginURL ); return;
+		}
+		
         if (session == null && !action.endsWith("Login")) {
         	resp.sendRedirect( loginURL ); return;
         }
         
-		if (action.equalsIgnoreCase("RefreshCache")) {
-			if (isServerLocal()) SOAPServer.refreshCache();
-        	session.invalidate();
-			resp.sendRedirect( loginURL ); return;
-		}
+        if (isServerLocal() && SOAPServer.getInstance() == null) {
+        	// SOAPServer not initiated yet, let's wake it up!
+        	SOAP_SERVER_URL = req.getRequestURL().toString().replaceFirst( "SOAPClient", "SOAPServer" );
+        	
+        	StarsOperation respOper = sendRecvOperation( new StarsOperation() );
+        	if (respOper == null)	// This is not good!
+        		CTILogger.error( "Cannot initiate SOAPServer, following operations may not function properly!" );
+        }
     	
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
@@ -131,6 +150,7 @@ public class SOAPClient extends HttpServlet {
             MultiAction actions = new MultiAction();
         	actions.addAction( new LoginAction(), req, session );
     		actions.addAction( new GetEnrollmentProgramsAction(), req, session );
+        	actions.addAction( new GetCustomerFAQsAction(), req, session );
         	actions.addAction( new GetCustAccountAction(), req, session );
         	
         	clientAction = (ActionBase) actions;
@@ -205,6 +225,7 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("SendExitAnswers")) {
         	MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
+        	session.removeAttribute( ServletUtils.ATT_OVER_PAGE_ACTION );
         	actions.addAction( new SendInterviewAnswersAction(), req, session );
         	clientAction = actions;
         	
@@ -312,8 +333,12 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
         	clientAction = new UpdateThermostatScheduleAction();
-        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+        	
+        	referer = req.getParameter( ServletUtils.ATT_REFERRER );
+        	if (referer == null)	// Request is redirected from servlet UpdateThermostat
+        		referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER );
+        	destURL = referer;
+        	nextURL = errorURL = referer;
         }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
         	clientAction = new UpdateThermostatOptionAction();

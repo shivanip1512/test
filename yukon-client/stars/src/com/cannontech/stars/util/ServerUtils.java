@@ -12,13 +12,12 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * @author yao
@@ -32,25 +31,21 @@ public class ServerUtils {
 
     // Increment this for every message
     private static long userMessageIDCounter = 1;
-    private static PILConnectionServlet connContainer = null;
     
     private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
-
-	public static void setPILConnectionServlet(PILConnectionServlet servlet) {
-		connContainer = servlet;
-	}
 	
     public static void sendCommand(String command)
     {
-		if (connContainer == null) {
+    	com.cannontech.message.porter.ClientConnection conn = SOAPServer.getInstance().getPILConnection();
+    	if (conn == null) {
 			CTILogger.error( "Cannot get PIL client connection" );
 			return;
 		}
 		
         com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
             new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
-        connContainer.getConnection().write( req );
-
+        conn.write( req );
+        
         CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
     }
 	
@@ -203,6 +198,8 @@ public class ServerUtils {
 	public static StarsThermoModeSettings getThermModeSetting(int opStateID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( opStateID );
 		
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
+			return null;
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL)
 			return StarsThermoModeSettings.COOL;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT)
@@ -216,6 +213,8 @@ public class ServerUtils {
 	public static Integer getThermOptionOpStateID(StarsThermoModeSettings setting, int energyCompanyID) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
+		if (setting == null)
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT).getEntryID() );
 		if (setting.getType() == StarsThermoModeSettings.COOL_TYPE)
 			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL).getEntryID() );
 		else if (setting.getType() == StarsThermoModeSettings.HEAT_TYPE)
@@ -229,6 +228,8 @@ public class ServerUtils {
 	public static StarsThermoFanSettings getThermFanSetting(int fanOpID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( fanOpID );
 		
+		if (fanOpID == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
+			return null;
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO)
 			return StarsThermoFanSettings.AUTO;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON)
@@ -240,6 +241,8 @@ public class ServerUtils {
 	public static Integer getThermOptionFanOpID(StarsThermoFanSettings setting, int energyCompanyID) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany(energyCompanyID);
 		
+		if (setting == null)
+			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT).getEntryID() );
 		if (setting.getType() == StarsThermoFanSettings.AUTO_TYPE)
 			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO).getEntryID() );
 		else if (setting.getType() == StarsThermoFanSettings.ON_TYPE)
@@ -292,7 +295,13 @@ public class ServerUtils {
 		}
 		
 		DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
-    	SOAPServer.getInstance().getClientConnection().write( msg );
+		
+		com.cannontech.message.util.ClientConnection conn = SOAPServer.getInstance().getClientConnection();
+		if (conn == null) {
+			CTILogger.error( "Cannot get dispatch client connection" );
+			return;
+		}
+    	conn.write( msg );
 	}
 	
 	public static boolean callNumberExists(String callNo, int energyCompanyID) throws com.cannontech.common.util.CommandExecutionException {

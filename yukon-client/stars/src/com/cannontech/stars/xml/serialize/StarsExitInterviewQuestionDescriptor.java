@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsExitInterviewQuestionDescriptor extends StarsInterviewQuestionDescriptor {
+public class StarsExitInterviewQuestionDescriptor extends StarsQuestionAnswerDescriptor {
 
 
       //--------------------------/
@@ -49,7 +49,7 @@ public class StarsExitInterviewQuestionDescriptor extends StarsInterviewQuestion
 
     public StarsExitInterviewQuestionDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsInterviewQuestionDescriptor());
+        setExtendsWithoutFlatten(new StarsQuestionAnswerDescriptor());
         xmlName = "stars-ExitInterviewQuestion";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;

@@ -172,13 +172,11 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
         } );
         desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings.class, handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _mode
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _fan
@@ -207,13 +205,11 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
         } );
         desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings.class, handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _fan
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsThermostatManualOptionDescriptor()

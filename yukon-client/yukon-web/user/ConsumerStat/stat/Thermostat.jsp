@@ -3,6 +3,8 @@
 	StarsThermostatManualOption thermOption = thermoSettings.getStarsThermostatManualOption();
 	if (thermOption == null)
 		thermOption = dftThermoSettings.getStarsThermostatManualOption();
+	String modeStr = (thermOption.getMode() == null) ? "" : thermOption.getMode().toString();
+	String fanStr = (thermOption.getFan() == null) ? "" : thermOption.getFan().toString();
 %>
 <html>
 <head>
@@ -60,25 +62,29 @@ function resetTemp() {
 
 function modeChange(mode) {
 	if (document.getElementById(mode).style.visibility == "hidden") {
-		document.getElementById(document.MForm.mode.value).style.visibility = "hidden";
+		if (document.MForm.mode.value != "")
+			document.getElementById(document.MForm.mode.value).style.visibility = "hidden";
 		document.getElementById(mode).style.visibility = 'visible';
 		document.MForm.mode.value = mode;
 		
-		if(mode == '<%= StarsThermoModeSettings.HEAT.toString() %>') {
-		document.MForm.tempField.style.color = "#FF0000";
-		}
-		else if (mode == '<%= StarsThermoModeSettings.COOL.toString() %>'){
-		document.MForm.tempField.style.color = "#003366";
-		}
-		else{ 
-		document.MForm.tempField.style.color = "#CCCCCC";
-		}
+		if(mode == '<%= StarsThermoModeSettings.HEAT.toString() %>')
+			document.MForm.tempField.style.color = "#FF0000";
+		else if (mode == '<%= StarsThermoModeSettings.COOL.toString() %>')
+			document.MForm.tempField.style.color = "#003399";
+		else if (mode == '<%= StarsThermoModeSettings.OFF.toString() %>')
+			document.MForm.tempField.style.color = "#CCCCCC";
+	}
+	else {
+		document.getElementById(mode).style.visibility = "hidden";
+		document.MForm.mode.value = "";
+		document.MForm.tempField.style.color = "#000000";
 	}
 }
 
 function fanChange(fan) {
 	if (document.getElementById(fan).style.visibility == "hidden") {
-		document.getElementById(document.MForm.fan.value).style.visibility = "hidden";
+		if (document.MForm.fan.value != "")
+			document.getElementById(document.MForm.fan.value).style.visibility = "hidden";
 		document.getElementById(fan).style.visibility = 'visible';
 		document.MForm.fan.value = fan;
 	}
@@ -210,8 +216,8 @@ if (text.length == 2) {
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
 			  <input type="hidden" name="holdSetting" value = "off">
 			  <input type="hidden" name="resetSetting" value = "off">
-			  <input type="hidden" name="mode" value="<%= thermOption.getMode() %>">
-			  <input type="hidden" name="fan" value="<%= thermOption.getFan() %>">
+			  <input type="hidden" name="mode" value="">
+			  <input type="hidden" name="fan" value="">
               <div align = "left">
                   <table width="93%" border="0" background="ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
                     <tr> 
@@ -223,7 +229,7 @@ if (text.length == 2) {
                               <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                                 <tr> 
                                   <td width="52%" height="53"> 
-                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= thermOption.getTemperature() %>" onkeypress="validateTemp(event)">
+                                    <input type="text" name="tempField" maxlength="2" class="tempText1" style.color="#CCCCCC" value="<%= thermOption.getTemperature() %>" onkeypress="validateTemp(event)">
                                   </td>
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
@@ -240,7 +246,7 @@ if (text.length == 2) {
                               <table width="79%" border="0" cellpadding = "0" cellspacing = "0">
                                 <tr> 
                                   <td>
-                                    <input type="checkbox" name="hold" value="true" <% if (thermOption.getHold()) out.print("checked"); %>>
+                                    <input type="checkbox" name="hold" value="true">
                                     <img src="ThermImages/Hold.gif" width="34" height="9"></td>
                                 </tr>
                               </table>
@@ -252,8 +258,8 @@ if (text.length == 2) {
                                     setting:<br>
                                     Temperature: <%= thermOption.getTemperature() %>&deg; 
 									<% if (thermOption.getHold()) out.print("(HOLD)"); %><br>
-                                    Mode: <%= thermOption.getMode() %><br>
-                                    Fan: <%= thermOption.getFan() %></td>
+                                    Mode: <%= modeStr %><br>
+                                    Fan: <%= fanStr %></td>
                                 </tr>
                               </table>
                               
@@ -267,29 +273,29 @@ if (text.length == 2) {
                                 <tr> 
                                   <td width="53%"  height="59" valign = "bottom"> 
                                     <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
-                                      <tr> 
+                                      <tr onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')"> 
                                         <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Cool.gif" onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')" ></td>
+                                        <td><img src="ThermImages/Cool.gif"></td>
                                       </tr>
-                                      <tr> 
+                                      <tr onClick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"> 
                                         <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Heat.gif" onClick = "modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"></td>
+                                        <td><img src="ThermImages/Heat.gif"></td>
                                       </tr>
-                                      <tr> 
+                                      <tr onClick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"> 
                                         <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Off.gif" onClick = "modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"></td>
+                                        <td><img src="ThermImages/Off.gif"></td>
                                       </tr>
                                     </table>
                                   </td>
                                   <td width="47%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
-                                      <tr> 
+                                      <tr onClick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"> 
                                         <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Auto.gif" onClick = "fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"></td>
+                                        <td><img src="ThermImages/Auto.gif"></td>
                                       </tr>
-                                      <tr> 
+                                      <tr onClick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"> 
                                         <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/On.gif" onClick = "fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"></td>
+                                        <td><img src="ThermImages/On.gif"></td>
                                       </tr>
                                       <tr> 
                                         <td height="14"></td>
@@ -326,10 +332,6 @@ if (text.length == 2) {
                   </table>
                 </div>
               </form>
-<script language="JavaScript">
-	modeChange('<%= thermOption.getMode() %>');
-	fanChange('<%= thermOption.getFan() %>');
-</script>
                 
               <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 

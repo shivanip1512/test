@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.24 2003/02/21 21:01:55 zyao Exp $
+ * $Id: StarsOperation.java,v 1.25 2003/03/06 00:07:20 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.24 $ $Date: 2003/02/21 21:01:55 $
+ * @version $Revision: 1.25 $ $Date: 2003/03/06 00:07:20 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -167,6 +167,10 @@ public class StarsOperation implements java.io.Serializable {
     private StarsGetExitInterviewQuestionsResponse _starsGetExitInterviewQuestionsResponse;
 
     private StarsSendExitInterviewAnswers _starsSendExitInterviewAnswers;
+
+    private StarsGetCustomerFAQs _starsGetCustomerFAQs;
+
+    private StarsGetCustomerFAQsResponse _starsGetCustomerFAQsResponse;
 
 
       //----------------/
@@ -378,6 +382,26 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsGetCustomerAccountResponse;
     } //-- StarsGetCustomerAccountResponse getStarsGetCustomerAccountResponse() 
+
+    /**
+     * Returns the value of field 'starsGetCustomerFAQs'.
+     * 
+     * @return the value of field 'starsGetCustomerFAQs'.
+    **/
+    public StarsGetCustomerFAQs getStarsGetCustomerFAQs()
+    {
+        return this._starsGetCustomerFAQs;
+    } //-- StarsGetCustomerFAQs getStarsGetCustomerFAQs() 
+
+    /**
+     * Returns the value of field 'starsGetCustomerFAQsResponse'.
+     * 
+     * @return the value of field 'starsGetCustomerFAQsResponse'.
+    **/
+    public StarsGetCustomerFAQsResponse getStarsGetCustomerFAQsResponse()
+    {
+        return this._starsGetCustomerFAQsResponse;
+    } //-- StarsGetCustomerFAQsResponse getStarsGetCustomerFAQsResponse() 
 
     /**
      * Returns the value of field
@@ -1083,6 +1107,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsGetCustomerAccountResponse = starsGetCustomerAccountResponse;
     } //-- void setStarsGetCustomerAccountResponse(StarsGetCustomerAccountResponse) 
+
+    /**
+     * Sets the value of field 'starsGetCustomerFAQs'.
+     * 
+     * @param starsGetCustomerFAQs the value of field
+     * 'starsGetCustomerFAQs'.
+    **/
+    public void setStarsGetCustomerFAQs(StarsGetCustomerFAQs starsGetCustomerFAQs)
+    {
+        this._starsGetCustomerFAQs = starsGetCustomerFAQs;
+    } //-- void setStarsGetCustomerFAQs(StarsGetCustomerFAQs) 
+
+    /**
+     * Sets the value of field 'starsGetCustomerFAQsResponse'.
+     * 
+     * @param starsGetCustomerFAQsResponse the value of field
+     * 'starsGetCustomerFAQsResponse'.
+    **/
+    public void setStarsGetCustomerFAQsResponse(StarsGetCustomerFAQsResponse starsGetCustomerFAQsResponse)
+    {
+        this._starsGetCustomerFAQsResponse = starsGetCustomerFAQsResponse;
+    } //-- void setStarsGetCustomerFAQsResponse(StarsGetCustomerFAQsResponse) 
 
     /**
      * Sets the value of field 'starsGetDefaultThermostatSettings'.

@@ -57,8 +57,10 @@ public class ServletUtils {
 	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
 	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
 	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
+	public static final String ATT_APPLY_TO_WEEKEND = "APPLY_TO_WEEKEND";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
+	public static final String ATT_CUSTOMER_FAQS = "CUSTOMER_FAQS";
 	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
 	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
 	

@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public abstract class StarsInterviewQuestion implements java.io.Serializable {
+public abstract class StarsQuestionAnswer implements java.io.Serializable {
 
 
       //--------------------------/
@@ -52,9 +52,9 @@ public abstract class StarsInterviewQuestion implements java.io.Serializable {
      //- Constructors -/
     //----------------/
 
-    public StarsInterviewQuestion() {
+    public StarsQuestionAnswer() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsInterviewQuestion()
+    } //-- com.cannontech.stars.xml.serialize.StarsQuestionAnswer()
 
 
       //-----------/

@@ -26,6 +26,8 @@ import com.cannontech.stars.xml.serialize.types.*;
  */
 public class LiteStarsEnergyCompany extends LiteBase {
 	
+	public static final int FAKE_LIST_ID = -9999;	// Magic number for YukonSelectionList ID, used for substation and service company list
+	
 	private String name = null;
 	private int routeID = 0;
 	
@@ -40,6 +42,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private ArrayList serviceCompanies = null;	// List of LiteServiceCompany
 	private ArrayList selectionLists = null;		// List of YukonSelectionList
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
+	private ArrayList customerFAQs = null;		// List of LiteCustomerFAQ
 	private LiteStarsThermostatSettings dftThermSettings = null;
 	
 	private Object[][] thermModeSettings = null;	// Map between webConfigurationID(Integer) and StarsThermoModeSettings
@@ -47,6 +50,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private int nextOrderNo = 0;
 	
 	
+	// Cached XML messages
+	private StarsGetCustSelectionListsResponse starsSelLists = null;
+	private StarsGetEnrollmentProgramsResponse starsEnrProgs = null;
+	private StarsGetCustomerFAQsResponse starsFAQs = null;
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
 	
 	
@@ -112,6 +119,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		getAllSelectionLists();
 		loadDefaultThermostatSettings();
 		getAllInterviewQuestions();
+		getAllCustomerFAQs();
 	}
 	
 	public void clear() {
@@ -126,11 +134,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		serviceCompanies = null;
 		selectionLists = null;
 		interviewQuestions = null;
+		customerFAQs = null;
 		dftThermSettings = null;
 		thermModeSettings = null;
 		nextCallNo = 0;
 		nextOrderNo = 0;
 		
+		starsSelLists = null;
+		starsEnrProgs = null;
+		starsFAQs = null;
 		starsCustAcctInfos = null;
 	}
     
@@ -225,44 +237,44 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        }
 	            
 	        // Get substation list
-	        YukonSelectionList subList = new YukonSelectionList();
-	        subList.setListID( -1 );
-	        subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-	        
 	        com.cannontech.database.db.stars.Substation[] subs =
 	        		com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
-	        ArrayList entries = new ArrayList();
-	        
-	        for (int i = 0; i < subs.length; i++) {
-	        	StarsSelectionListEntry entry = new StarsSelectionListEntry();
-	        	entry.setEntryID( subs[i].getSubstationID().intValue() );
-	        	entry.setContent( subs[i].getSubstationName() );
-	        	
-	        	entries.add( entry );
+	        if (subs != null && subs.length > 0) {
+		        YukonSelectionList subList = new YukonSelectionList();
+		        subList.setListID( FAKE_LIST_ID );
+		        subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+		        
+		        ArrayList entries = subList.getYukonListEntries();
+		        for (int i = 0; i < subs.length; i++) {
+		        	StarsSelectionListEntry entry = new StarsSelectionListEntry();
+		        	entry.setEntryID( subs[i].getSubstationID().intValue() );
+		        	entry.setContent( subs[i].getSubstationName() );
+		        	
+		        	entries.add( entry );
+		        }
+		        
+		        selectionLists.add( subList );
 	        }
-	        
-	        subList.setYukonListEntries( entries );
-	        selectionLists.add( subList );
 	        
 	        // Get service company list
-	        YukonSelectionList companyList = new YukonSelectionList();
-	        companyList.setListID( -1 );
-	        companyList.setListName( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	        
 	        com.cannontech.database.db.stars.report.ServiceCompany[] companies =
 	        		com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( getEnergyCompanyID() );
-	        entries = new ArrayList();
-	        
-	        for (int i = 0; i < companies.length; i++) {
-	        	StarsSelectionListEntry entry = new StarsSelectionListEntry();
-	        	entry.setEntryID( companies[i].getCompanyID().intValue() );
-	        	entry.setContent( companies[i].getCompanyName() );
-	        	
-	        	entries.add( entry );
+	        if (companies != null && companies.length > 0) {
+		        YukonSelectionList companyList = new YukonSelectionList();
+		        companyList.setListID( FAKE_LIST_ID );
+		        companyList.setListName( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
+		        
+		        ArrayList entries = companyList.getYukonListEntries();
+		        for (int i = 0; i < companies.length; i++) {
+		        	StarsSelectionListEntry entry = new StarsSelectionListEntry();
+		        	entry.setEntryID( companies[i].getCompanyID().intValue() );
+		        	entry.setContent( companies[i].getCompanyName() );
+		        	
+		        	entries.add( entry );
+		        }
+		        
+		        selectionLists.add( companyList );
 	        }
-	        
-	        companyList.setYukonListEntries( entries );
-	        selectionLists.add( companyList );
 			
 			CTILogger.info( "All customer selection lists loaded for energy company #" + getEnergyCompanyID() );
 		}
@@ -274,7 +286,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ArrayList selectionLists = getAllSelectionLists();
 		for (int i = 0; i < selectionLists.size(); i++) {
 			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
-			if (list.getListID() < 0) continue;
+			if (list.getListID() == FAKE_LIST_ID) continue;
 			
 			ArrayList entries = list.getYukonListEntries();
 			for (int j = 0; j < entries.size(); j++) {
@@ -291,7 +303,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		ArrayList selectionLists = getAllSelectionLists();
 		for (int i = 0; i < selectionLists.size(); i++) {
 			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
-			if (list.getListID() == -1 && list.getListName().equalsIgnoreCase(listName)) {
+			if (list.getListID() == FAKE_LIST_ID && list.getListName().equalsIgnoreCase(listName)) {
 				ArrayList entries = list.getYukonListEntries();
 				
 				for (int j = 0; j < entries.size(); j++) {
@@ -439,6 +451,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return interviewQuestions;
+	}
+	
+	public synchronized ArrayList getAllCustomerFAQs() {
+		if (customerFAQs == null) {
+			customerFAQs = new ArrayList();
+			
+			com.cannontech.database.db.stars.CustomerFAQ[] faqs =
+					com.cannontech.database.db.stars.CustomerFAQ.getAllCustomerFAQs( getEnergyCompanyID() );
+			for (int i = 0; i < faqs.length; i++) {
+				LiteCustomerFAQ liteFAQ = new LiteCustomerFAQ();
+				liteFAQ.setQuestionID( faqs[i].getQuestionID().intValue() );
+				liteFAQ.setSubjectID( faqs[i].getSubjectID().intValue() );
+				liteFAQ.setQuestion( faqs[i].getQuestion() );
+				liteFAQ.setAnswer( faqs[i].getAnswer() );
+				
+				customerFAQs.add( liteFAQ );
+			}
+			
+			CTILogger.info( "All customer FAQs loaded for energy company #" + getEnergyCompanyID() );
+		}
+		
+		return customerFAQs;
 	}
 	
 	public synchronized String getNextCallNumber() {
@@ -1112,6 +1146,73 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	
 	/* The following methods are only used when SOAPClient exists locally */
+	
+	public StarsGetCustSelectionListsResponse getStarsGetCustSelectionListsResponse() {
+		if (starsSelLists == null) {
+            ArrayList selectionLists = getAllSelectionLists();
+            for (int i = 0; i < selectionLists.size(); i++) {
+            	YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
+            	starsSelLists.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
+            }
+		}
+		
+		return starsSelLists;
+	}
+	
+	public StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse(String category) {
+		if (starsEnrProgs == null) {
+			starsEnrProgs = new StarsGetEnrollmentProgramsResponse();
+            ArrayList liteAppCats = getAllApplianceCategories();
+            
+            // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"
+            String wholeCatName = "LMPrograms";
+            if (category != null && category.length() > 0)
+            	wholeCatName += "-" + category;
+            	
+            for (int i = 0; i < liteAppCats.size(); i++) {
+            	LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
+            	
+            	// Find only LM programs in the specified category
+            	LiteLMProgram[] liteProgs = liteAppCat.getPublishedPrograms();
+            	ArrayList progsInCat = new ArrayList();
+            	for (int j = 0; j < liteProgs.length; j++) {
+            		if (liteProgs[j].getProgramCategory().startsWith( wholeCatName ))
+            			progsInCat.add( liteProgs[j] );
+            	}
+            	
+            	if (progsInCat.size() > 0)
+            		starsEnrProgs.addStarsApplianceCategory( StarsLiteFactory.createStarsApplianceCategory(liteAppCat, progsInCat) );
+            }
+		}
+		
+		return starsEnrProgs;
+	}
+	
+	public StarsGetCustomerFAQsResponse getStarsGetCustomerFAQsResponse() {
+		if (starsFAQs == null) {
+			starsFAQs = new StarsGetCustomerFAQsResponse();
+			
+            ArrayList liteFAQs = getAllCustomerFAQs();
+            int lastSubjectID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+            StarsCustomerFAQGroup lastGroup = null;
+            
+            // Group the FAQs by their subjects
+            for (int i = 0; i < liteFAQs.size(); i++) {
+            	LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(i);
+            	
+            	if (liteFAQ.getSubjectID() != lastSubjectID) {
+            		lastSubjectID = liteFAQ.getSubjectID();
+            		lastGroup = new StarsCustomerFAQGroup();
+            		lastGroup.setSubject( YukonListFuncs.getYukonListEntry(lastSubjectID).getEntryText() );
+            		starsFAQs.addStarsCustomerFAQGroup( lastGroup );
+            	}
+            	lastGroup.addStarsCustomerFAQ( StarsLiteFactory.createStarsCustomerFAQ(liteFAQ) );
+            }
+		}
+		
+		return starsFAQs;
+	}
+
 	private Hashtable getStarsCustAcctInfos() {
 		if (starsCustAcctInfos == null)
 			starsCustAcctInfos = new Hashtable();
@@ -1146,5 +1247,5 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
 		synchronized (starsCustAcctInfos) { starsCustAcctInfos.remove( new Integer(accountID) ); }
 	}
-
+	
 }

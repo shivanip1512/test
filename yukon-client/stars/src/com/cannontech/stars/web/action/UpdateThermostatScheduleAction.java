@@ -42,13 +42,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             if (accountInfo == null) return null;
             
-            ArrayList changedSchedules = (ArrayList) user.getAttribute( ServletUtils.ATT_CHANGED_THERMOSTAT_SETTINGS );
+            ArrayList changedSchedules = (ArrayList) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CHANGED_THERMOSTAT_SETTINGS );
             if (changedSchedules == null) return null;
             
             StarsThermostatSettings thermSettings = accountInfo.getStarsThermostatSettings();
             StarsUpdateThermostatSettings updateSettings = new StarsUpdateThermostatSettings();
             updateSettings.setInventoryID( thermSettings.getInventoryID() );
             
+            // Send only those schedules that have been changed
             for (int i = 0; i < thermSettings.getStarsThermostatSeasonCount(); i++) {
             	StarsThermostatSeason season = thermSettings.getStarsThermostatSeason(i);
             	StarsThermostatSeason season2 = new StarsThermostatSeason();
@@ -117,13 +118,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				for (int j = 0; j < liteSettings.getThermostatSeasons().size(); j++) {
 					LiteLMThermostatSeason lSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(j);
 					if (lSeason.getWebConfigurationID() == webConfigID.intValue()) {
-						if (starsSeason.getStartDate().toDate().getTime() != lSeason.getStartDate()) {
+/*						if (starsSeason.getStartDate().toDate().getTime() != lSeason.getStartDate()) {
 							// Update season start date
 							lSeason.setStartDate( starsSeason.getStartDate().toDate().getTime() );
 							season = (LMThermostatSeason) StarsLiteFactory.createDBPersistent( lSeason );
 							season = (LMThermostatSeason) Transaction.createTransaction(Transaction.UPDATE, season).execute();
 						}
-						
+						*/
 						liteSeason = lSeason;
 						break;
 					}
@@ -138,8 +139,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					season = (LMThermostatSeason) Transaction.createTransaction(Transaction.INSERT, season).execute();
 					
 					liteSeason = (LiteLMThermostatSeason) StarsLiteFactory.createLite( season );
-					if (liteSettings.getThermostatSeasons() == null)
-						liteSettings.setThermostatSeasons( new ArrayList() );
 					liteSettings.getThermostatSeasons().add( liteSeason );
 				}
 				
@@ -168,7 +167,12 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					
 					if (liteEntries.size() > 0 && liteEntries.size() != 4) {
 						// Currently this should not happen, so remove these entries
-						liteEntries.clear();
+						for (int k = liteEntries.size() - 1; k >= 0; k--) {
+							LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.remove(k);
+							LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) StarsLiteFactory.createDBPersistent( liteEntry );
+							Transaction.createTransaction(Transaction.DELETE, entry).execute();
+							liteSeason.getSeasonEntries().remove( liteEntry );
+						}
 					}
 					
 					if (liteEntries.size() == 4) {
@@ -193,8 +197,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							entry = (LMThermostatSeasonEntry) Transaction.createTransaction(Transaction.INSERT, entry).execute();
 							
 							LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) StarsLiteFactory.createLite( entry );
-							if (liteSeason.getSeasonEntries() == null)
-								liteSeason.setSeasonEntries( new ArrayList() );
 							liteSeason.getSeasonEntries().add( liteEntry );
 						}
 					}
@@ -251,7 +253,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						sameTimeSettings = true;
 					
 					String temp1H, temp2H, temp3H, temp4H;
-					if (setting[0] != null && setting[0].equals(sched) || sameTimeSettings) {
+					if (i == 0 || sameTimeSettings) {
 						temp1H = String.valueOf( setting[0].getTemperature1() );
 						temp2H = String.valueOf( setting[0].getTemperature2() );
 						temp3H = String.valueOf( setting[0].getTemperature3() );
@@ -262,7 +264,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					}
 					
 					String temp1C, temp2C, temp3C, temp4C;
-					if (setting[1] != null && setting[1].equals(sched) || sameTimeSettings) {
+					if (i == 1 || sameTimeSettings) {
 						temp1C = String.valueOf( setting[1].getTemperature1() );
 						temp2C = String.valueOf( setting[1].getTemperature2() );
 						temp3C = String.valueOf( setting[1].getTemperature3() );

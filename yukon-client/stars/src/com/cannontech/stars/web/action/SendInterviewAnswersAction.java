@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -48,15 +49,11 @@ public class SendInterviewAnswersAction implements ActionBase {
             	String[] answers = req.getParameterValues( "Answer" );
             	
             	for (int i = 0; i < qIDStrs.length; i++) {
+            		StarsExitInterviewQuestion answer = new StarsExitInterviewQuestion();
+            		answer.setQuestionID( Integer.parseInt(qIDStrs[i]) );
+            		answer.setAnswer( answers[i] );
+            		sendAnswers.addStarsExitInterviewQuestion( answer );
             		int qID = Integer.parseInt( qIDStrs[i] );
-            		for (int j = 0; j < questions.getStarsExitInterviewQuestionCount(); j++) {
-            			StarsExitInterviewQuestion question = questions.getStarsExitInterviewQuestion(j);
-            			if (question.getQuestionID() == qID) {
-            				question.setAnswer( answers[i] );
-            				sendAnswers.addStarsExitInterviewQuestion( question );
-            				break;
-            			}
-            		}
             	}
             }
             
@@ -140,11 +137,25 @@ public class SendInterviewAnswersAction implements ActionBase {
             }
             text.append("======================================================\r\n\r\n\r\n");
             
+            int exitQType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
+            LiteInterviewQuestion[] liteQuestions = energyCompany.getInterviewQuestions( exitQType );
+            
             StarsSendExitInterviewAnswers sendAnswers = reqOper.getStarsSendExitInterviewAnswers();
             for (int i = 0; i < sendAnswers.getStarsExitInterviewQuestionCount(); i++) {
             	StarsExitInterviewQuestion answer = sendAnswers.getStarsExitInterviewQuestion(i);
-            	text.append("Q: ").append(answer.getQuestion()).append("\r\n");
-            	text.append("A: ").append(answer.getAnswer()).append("\r\n\r\n");
+            	LiteInterviewQuestion liteQuestion = null;
+            	for (int j = 0; j < liteQuestions.length; j++)
+            		if (liteQuestions[j].getQuestionID() == answer.getQuestionID()) {
+            			liteQuestion = liteQuestions[j];
+	            		break;
+            		}
+            		
+            	if (liteQuestion != null) {
+	            	text.append("Q: ").append(liteQuestion.getQuestion()).append("\r\n");
+	            	text.append("A: ").append(answer.getAnswer()).append("\r\n\r\n");
+            	}
+            	else
+            		throw new Exception("Cannot find exit interview question with id = " + answer.getQuestionID());
             }
         	
 			ResourceBundle bundle = ResourceBundle.getBundle( "config" );

@@ -72,12 +72,7 @@ function updateLayout(hour1, min1, temp1, hour2, min2, temp2, hour3, min3, temp3
 	moveTempArrow('arrow4', 'div4', temp4);
 }
 
-var dateChanged = false;
 var scheChanged = false;
-
-function setDateChanged() {
-	dateChanged = true;
-}
 
 function setScheduleChanged() {
 	scheChanged = true;
@@ -91,25 +86,19 @@ function switchSettings(day, mode) {
 	form.tempval3.value = document.getElementById('div3').innerHTML.substr(0,2);
 	form.tempval4.value = document.getElementById('div4').innerHTML.substr(0,2);
 	
-	if (!dateChanged && !scheChanged) {
-		if (day == "<%= dayStr %>" && mode == "<%= modeStr %>") return;	// Submit button is clicked
+	if (!scheChanged) {
+		if (day == "<%= dayStr %>" && mode == "<%= modeStr %>") return;	// Submit button is clicked without changes
 		location = form.REDIRECT.value;
 		return;
 	}
 	
 	form.attributes('action').value = "/servlet/UpdateThermostat";
-	form.elements('action').value = "";
-	if (dateChanged)
-		form.elements('action').value += "SaveDateChanges:";
-	if (scheChanged)
-		form.elements('action').value += "SaveScheduleChanges";
+	form.elements('action').value = (scheChanged)? "SaveScheduleChanges" : "";
 	form.submit();
 }
 
 function setToDefault() {
 	var form = document.form1;
-	form.SummerStartDate.value = "<%= datePart.format(dftSummer.getStartDate().toDate()) %>";
-	form.WinterStartDate.value = "<%= datePart.format(dftWinter.getStartDate().toDate()) %>";
 	form.time1.value = "<%= timePart.format(dftSchedule.getTime1().toDate()) %>";
 	form.time2.value = "<%= timePart.format(dftSchedule.getTime2().toDate()) %>";
 	form.time3.value = "<%= timePart.format(dftSchedule.getTime3().toDate()) %>";
@@ -120,6 +109,7 @@ function setToDefault() {
 		<%= dftSchedule.getTime3().getHour() %>,<%= dftSchedule.getTime3().getMinute() %>,<%= dftSchedule.getTemperature3() %>,
 		<%= dftSchedule.getTime4().getHour() %>,<%= dftSchedule.getTime4().getMinute() %>,<%= dftSchedule.getTemperature4() %>
 	);
+	setScheduleChanged();
 }
 </script>
 
@@ -138,6 +128,7 @@ MM_reloadPage(true);
 <script language="JavaScript" src ="thermostat.js">
 </script>
 </head>
+
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -178,8 +169,8 @@ MM_reloadPage(true);
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "ThermSchedule.jsp"; %>
-        <%@ include file="Nav.jsp" %>
-      </td>
+          <%@ include file="Nav.jsp" %>
+		  </td>
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -207,8 +198,8 @@ MM_reloadPage(true);
                   </td>
                 </tr>
               </table>
-              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <br>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <br>
 			  
 			<form name="form1" method="POST" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
@@ -223,39 +214,36 @@ MM_reloadPage(true);
               <table width="80%" border="1" height="411" cellspacing = "0" cellpadding = "2">
                 <tr> 
                   <td align = "center"  valign = "bottom" height="84"> 
-                      <table width="100%" border="0" class = "TableCell">
-                        <tr> 
-                          <td width="48%" valign = "top" height="22"><b> <%= seasonStr.toUpperCase() %> 
-                            <%= dayStr.toUpperCase() %> SCHEDULE - <%= modeStr.toUpperCase() %>ING 
-                            </b></td>
-                          <td width="52%" valign = "top" align = "right"> 
-                            <table width="82%" border="0" height="8" valign = "bottom" >
+                    <table width="100%" border="0" class = "TableCell" height="89">
+                      <tr> 
+                        <td width="48%" valign = "top" height="22"><b>
+						  <%= seasonStr.toUpperCase() %> <%= dayStr.toUpperCase() %> SCHEDULE - <%= modeStr.toUpperCase() %>ING
+						</b></td>
+                        <td width="52%" valign = "top" align = "right" height="22"> 
+                          <table width="82%" border="0" height="8" valign = "bottom" >
                             <tr> 
-                                <td class = "TableCell" align = "right"> 
-                                  <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
-                                  <span class="SchedText"> Weekday</span> 
-                                  <% } else { %>
-                                  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>','<%= modeStr %>')">Weekday</span> 
-                                  <% } %>
-                                  &nbsp;&nbsp; 
-                                  <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
-                                  <span class="SchedText">Saturday</span> 
-                                  <% } else { %>
-                                  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>','<%= modeStr %>')">Saturday</span> 
-                                  <% } %>
-                                  &nbsp;&nbsp; 
-                                  <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
-                                  <span class="SchedText">Sunday</span> 
-                                  <% } else { %>
-                                  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>','<%= modeStr %>')">Sunday</span> 
-                                  <% } %>
-                                </td>
+                              <td class = "TableCell" align = "right">
+<% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
+							  <span class="SchedText">Weekday</span>
+<% } else { %>
+							  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>','<%= modeStr %>')">Weekday</span>
+<% } %>&nbsp;&nbsp;
+<% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
+							  <span class="SchedText">Saturday</span>
+<% } else { %>
+							  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>','<%= modeStr %>')">Saturday</span>
+<% } %>&nbsp;&nbsp;
+<% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
+							  <span class="SchedText">Sunday</span>
+<% } else { %>
+							  <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>','<%= modeStr %>')">Sunday</span>
+<% } %>
                             </tr>
                           </table>
                         </td>
                       </tr>
-                        <tr> 
-                          <td width="48%"> 
+                      <tr> 
+                        <td width="48%">
                             <table width="140" border="0">
                               <tr> 
                                 <td align = "center" width="42"> 
@@ -278,16 +266,25 @@ MM_reloadPage(true);
                                   icon to view <%= seasonStrR %> schedule </td>
                               </tr>
                             </table>
-                          </td>  
-                          <td width="52%" align = "right" valign = "top"> 
-                            <input type="checkbox" name="checkbox" value="checkbox">
-                            Apply settings to Saturday<br>and Sunday</td>
+                          </td>
+                          <td width="52%" align = "right" valign = "top">&nbsp;
+<%
+	if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) {
+		String checkStr = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
+		if (checkStr == null) checkStr = "";
+%>
+                            <input type="checkbox" name="ApplyToWeekend" value="true" onclick="setScheduleChanged()" <%= checkStr %>>
+                            Apply settings to Saturday<br>
+                            and Sunday </td>
+<%
+	}
+%>
                       </tr>
                     </table>
                   </td>
                 </tr>
                 <tr> 
-                  <td align = "center"> 
+                    <td align = "center"> 
                       <table width="500" border="0">
                         <tr> 
                           <td class = "TableCell" width="84%" height="4" align = "right" > 
@@ -298,13 +295,14 @@ MM_reloadPage(true);
                               changes, click the <b>Manual</b> button to the right.</div>
                           </td>
                           <td class = "TableCell" width="16%" height="4" align = "right" valign="top" > 
-                            <input type="submit" name="Manual" value=Manual onclick="Thermostat.jsp">
+                            <input type="button" name="Manual" value="Manual" onClick="location='Thermostat.jsp'">
                           </td>
                         </tr>
                       </table>
                       <br>
-                      <img src="TempBG.gif" style ="position:relative;">
-<div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 380px">
+                    
+                    <img src="TempBG.gif" style ="position:relative;">
+                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -316,7 +314,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 380px">
+                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:2; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -328,19 +326,19 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 380px">
+                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:3; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
                           <td> 
-                            <div id="div3" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
+                              <div id="div3" class="TableCell3" onchange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
                             <img src="Thermometer.gif" style = "position:relative; left:-5px" width="16" height="131"  onMouseDown = "setScheduleChanged();beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3,parseInt(document.getElementById('MovingLayer2').style.left)+3,'showTimeReturn()','horizontal', 'MovingLayer3')"> 
                             <img id="arrow3" src="Arrow.gif" style = "position:relative; left:-9px; top:-100px"  onMouseDown = "setScheduleChanged();beginDrag(event,-135,-35,0,0,'showTemp3()','vertical')"> 
                           </td>
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 380px">
+                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:4; top: 380px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -415,7 +413,7 @@ updateLayout(
                       <input type="submit" name="Submit" value="Submit" onclick="switchSettings('<%= dayStr %>','<%= modeStr %>')">
                   </td>
                     <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" name="default" value="Recommended Settings" title="These are the Acme Utility recommended settings." onclick="setScheduleChanged();setToDefault()">
+                      <input type="button" name="default" value="Recommended Settings" title="These are the Acme Utility recommended settings." onclick="setToDefault()">
                   </td>
                 </tr>
               </table>

@@ -45,19 +45,20 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
 	
-	private static boolean clientLocal = true;
+	private static boolean clientLocal = false;
     
     // Instance of the SOAPServer object
     private static SOAPServer instance = null;
     
     // Timer object for periodical tasks
-    private static Timer timer = new Timer();
+    private Timer timer = new Timer();
     
-    private static StarsTimerTask[] timerTasks = {
+    private StarsTimerTask[] timerTasks = {
     	new DailyTimerTask(),
     	new LMControlHistoryTimerTask()
     };
 	
+    private PILConnectionServlet connToPIL = null;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
 	// Array of all the energy companies
@@ -96,81 +97,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	return instance;
     }
     
-    /*
-     * Start implementation of DBChangeListener
-     */
     public com.cannontech.message.util.ClientConnection getClientConnection() {
 		return connToDispatch;
 	}
-
-	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
-	{
-		if (msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
-			return;
-		if (msg.getDatabase() != DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB)
-			return;
-		
-		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
-		
-		LiteStarsCustAccountInformation liteAcctInfo = null;
-		LiteStarsEnergyCompany energyCompany = null;
-		
-		LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
-		for (int i = 0; i < companies.length; i++) {
-			liteAcctInfo = companies[i].getCustAccountInformation( msg.getId(), false );
-			if (liteAcctInfo != null) {
-				energyCompany = companies[i];
-				break;
-			}
-		}
-		
-		// If the customer account information is not loaded yet, we don't need to care about it
-		if (liteAcctInfo == null) return;
-		
-		if( msg.getCategory().equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) )
-		{
-			handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
-		}
-	}
 	
-	private void handleCustomerAccountChange( DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo )
-	{
-		LiteBase lBase = null;
-	
-		switch( msg.getTypeOfChange() )
-		{
-			case DBChangeMsg.CHANGE_TYPE_ADD:
-				// Don't need to do anything, since customer account information is load-on-demand
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				energyCompany.getAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() ).retrieve();
-				liteAcctInfo.getCustomerAccount().retrieve();
-				
-				ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-				for (int i = 0; i < contacts.size(); i++)
-					energyCompany.deleteCustomerContact( ((Integer) contacts.get(i)).intValue() );
-				liteAcctInfo.getCustomer().retrieve();
-				contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-				for (int i = 0; i < contacts.size(); i++) {
-					LiteCustomerContact liteContact = new LiteCustomerContact( ((Integer) contacts.get(i)).intValue() );
-					liteContact.retrieve();
-					energyCompany.addCustomerContact( liteContact );
-				}
-				
-				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
-				liteAcctInfo.getAccountSite().retrieve();
-				
-				liteAcctInfo.getSiteInformation().retrieve();
-				
-				energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_DELETE:
-				energyCompany.deleteCustAccountInformation( liteAcctInfo );
-				energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-				break;
-		}
+	public com.cannontech.message.porter.ClientConnection getPILConnection() {
+		if (connToPIL == null) return null;
+		return connToPIL.getConnection();
 	}
 
     /*
@@ -191,8 +124,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	initDispatchConnection();    	
     	startTimers();
     	
-		ServerUtils.setPILConnectionServlet( (com.cannontech.servlet.PILConnectionServlet)
-    			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
     	instance = this;
     }
 
@@ -437,4 +368,74 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		}
 	}
 
+
+	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
+	{
+		if (msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
+			return;
+		if (msg.getDatabase() != DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB)
+			return;
+		
+		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
+		
+		LiteStarsCustAccountInformation liteAcctInfo = null;
+		LiteStarsEnergyCompany energyCompany = null;
+		
+		LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
+		for (int i = 0; i < companies.length; i++) {
+			liteAcctInfo = companies[i].getCustAccountInformation( msg.getId(), false );
+			if (liteAcctInfo != null) {
+				energyCompany = companies[i];
+				break;
+			}
+		}
+		
+		// If the customer account information is not loaded yet, we don't need to care about it
+		if (liteAcctInfo == null) return;
+		
+		if( msg.getCategory().equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) )
+		{
+			handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
+		}
+	}
+	
+	private void handleCustomerAccountChange( DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo )
+	{
+		LiteBase lBase = null;
+	
+		switch( msg.getTypeOfChange() )
+		{
+			case DBChangeMsg.CHANGE_TYPE_ADD:
+				// Don't need to do anything, since customer account information is load-on-demand
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				energyCompany.getAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() ).retrieve();
+				liteAcctInfo.getCustomerAccount().retrieve();
+				
+				ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+				for (int i = 0; i < contacts.size(); i++)
+					energyCompany.deleteCustomerContact( ((Integer) contacts.get(i)).intValue() );
+				liteAcctInfo.getCustomer().retrieve();
+				contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+				for (int i = 0; i < contacts.size(); i++) {
+					LiteCustomerContact liteContact = new LiteCustomerContact( ((Integer) contacts.get(i)).intValue() );
+					liteContact.retrieve();
+					energyCompany.addCustomerContact( liteContact );
+				}
+				
+				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
+				liteAcctInfo.getAccountSite().retrieve();
+				
+				liteAcctInfo.getSiteInformation().retrieve();
+				
+				energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
+				break;
+				
+			case DBChangeMsg.CHANGE_TYPE_DELETE:
+				energyCompany.deleteCustAccountInformation( liteAcctInfo );
+				energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+				break;
+		}
+	}
 }

@@ -643,7 +643,7 @@ public class StarsLiteFactory {
 			starsSettings.setStarsThermostatManualOption( createStarsThermostatManualOption(liteSettings.getThermostatOption()) );
 	}
 	
-	public static void setStarsInterviewQuestion(StarsInterviewQuestion starsQuestion, LiteInterviewQuestion liteQuestion) {
+	public static void setStarsQuestionAnswer(StarsQuestionAnswer starsQuestion, LiteInterviewQuestion liteQuestion) {
 		starsQuestion.setQuestionID( liteQuestion.getQuestionID() );
 		starsQuestion.setQuestion( liteQuestion.getQuestion() );
 		
@@ -1215,7 +1215,7 @@ public class StarsLiteFactory {
 		
 		ArrayList entries = yukonList.getYukonListEntries();
 		for (int i = 0; i < entries.size(); i++) {
-			if (yukonList.getListID() == -1)	// substation list or service company list
+			if (yukonList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID)	// substation list or service company list
 				starsList.addStarsSelectionListEntry( (StarsSelectionListEntry) entries.get(i) );
 			else {
 				StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
@@ -1227,6 +1227,15 @@ public class StarsLiteFactory {
 		}
 		
 		return starsList;
+	}
+	
+	public static StarsCustomerFAQ createStarsCustomerFAQ(LiteCustomerFAQ liteFAQ) {
+		StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
+		starsFAQ.setQuestionID( liteFAQ.getQuestionID() );
+		starsFAQ.setQuestion( liteFAQ.getQuestion() );
+		starsFAQ.setAnswer( liteFAQ.getAnswer() );
+		
+		return starsFAQ;
 	}
 	
 	

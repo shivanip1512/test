@@ -80,15 +80,8 @@ public class GetCustSelListsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            ArrayList selectionLists = energyCompany.getAllSelectionLists();
             
-            StarsGetCustSelectionListsResponse response = new StarsGetCustSelectionListsResponse();
-            for (int i = 0; i < selectionLists.size(); i++) {
-            	YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
-            	response.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
-            }
-            
-            respOper.setStarsGetCustSelectionListsResponse( response );
+            respOper.setStarsGetCustSelectionListsResponse( energyCompany.getStarsGetCustSelectionListsResponse() );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {

@@ -37,6 +37,8 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 * @return java.util.ArrayList
 	 */
 	public java.util.ArrayList getThermostatSeasons() {
+		if (thermostatSeasons == null)
+			thermostatSeasons = new java.util.ArrayList();
 		return thermostatSeasons;
 	}
 

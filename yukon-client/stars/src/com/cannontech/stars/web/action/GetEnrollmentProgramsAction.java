@@ -90,30 +90,9 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            ArrayList liteAppCats = energyCompany.getAllApplianceCategories();
-            StarsGetEnrollmentProgramsResponse resp = new StarsGetEnrollmentProgramsResponse();
             
-            // Generate the category name, example values: "LMPrograms", "LMPrograms-Switch", "LMPrograms-Thermostat"
-            String wholeCatName = "LMPrograms";
-            if (getEnrProgs.getCategory() != null && getEnrProgs.getCategory().length() > 0)
-            	wholeCatName += "-" + getEnrProgs.getCategory();
-            	
-            for (int i = 0; i < liteAppCats.size(); i++) {
-            	LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-            	
-            	// Find only LM programs in the specified category
-            	LiteLMProgram[] liteProgs = liteAppCat.getPublishedPrograms();
-            	ArrayList progsInCat = new ArrayList();
-            	for (int j = 0; j < liteProgs.length; j++) {
-            		if (liteProgs[j].getProgramCategory().startsWith( wholeCatName ))
-            			progsInCat.add( liteProgs[j] );
-            	}
-            	
-            	if (progsInCat.size() > 0)
-            		resp.addStarsApplianceCategory( StarsLiteFactory.createStarsApplianceCategory(liteAppCat, progsInCat) );
-            }
-            
-            respOper.setStarsGetEnrollmentProgramsResponse( resp );
+            respOper.setStarsGetEnrollmentProgramsResponse(
+            		energyCompany.getStarsGetEnrollmentProgramsResponse(getEnrProgs.getCategory()) );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {

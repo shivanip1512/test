@@ -29,6 +29,7 @@
 		
 		MultiAction actions = new MultiAction();
 		actions.addAction( new GetEnrollmentProgramsAction(), request, session );
+		actions.addAction( new GetCustomerFAQsAction(), request, session );
 		actions.addAction( new GetCustAccountAction(), request, session );
 		
 		SOAPMessage reqMsg = actions.build(request, session);
@@ -78,6 +79,7 @@
 	}
 	
 	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+	StarsGetCustomerFAQsResponse customerFAQs = (StarsGetCustomerFAQsResponse) user.getAttribute( ServletUtils.ATT_CUSTOMER_FAQS );
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);

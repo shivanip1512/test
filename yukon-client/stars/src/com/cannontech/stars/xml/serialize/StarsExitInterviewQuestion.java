@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsExitInterviewQuestion extends StarsInterviewQuestion 
+public class StarsExitInterviewQuestion extends StarsQuestionAnswer 
 implements java.io.Serializable
 {
 
