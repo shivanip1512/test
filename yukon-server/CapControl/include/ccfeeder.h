@@ -97,6 +97,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getBusOptimizedVarOffset() const;
     DOUBLE getPowerFactorValue() const;
     DOUBLE getKVARSolution() const;
+    DOUBLE getEstimatedPowerFactorValue() const;
     
     RWSortedVector& getCCCapBanks();
 
@@ -132,7 +133,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     //CtiCCFeeder& setBusOptimizedVarOffset(DOUBLE varoffset);
     CtiCCFeeder& setPowerFactorValue(DOUBLE pfval);
     CtiCCFeeder& setKVARSolution(DOUBLE solution);
-
+    CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, ULONG decimalPlaces);
@@ -199,6 +200,7 @@ private:
     DOUBLE _busoptimizedvaroffset;
     DOUBLE _powerfactorvalue;
     DOUBLE _kvarsolution;
+    DOUBLE _estimatedpowerfactorvalue;
 
     RWSortedVector _cccapbanks;
 

@@ -86,7 +86,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getLastFeederControlledPosition() const;
     DOUBLE getPowerFactorValue() const;
     DOUBLE getKVARSolution() const;
-    
+    DOUBLE getEstimatedPowerFactorValue() const;
+
     RWOrdered& getCCFeeders();
 
     CtiCCSubstationBus& setPAOId(ULONG id);
@@ -133,6 +134,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);
     CtiCCSubstationBus& setPowerFactorValue(DOUBLE pfval);
     CtiCCSubstationBus& setKVARSolution(DOUBLE solution);
+    CtiCCSubstationBus& setEstimatedPowerFactorValue(DOUBLE epfval);
 
     BOOL isPastResponseTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
@@ -222,6 +224,7 @@ private:
     LONG _lastfeedercontrolledposition;
     DOUBLE _powerfactorvalue;
     DOUBLE _kvarsolution;
+    DOUBLE _estimatedpowerfactorvalue;
 
     RWOrdered _ccfeeders;
 

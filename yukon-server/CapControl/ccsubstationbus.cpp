@@ -486,6 +486,16 @@ DOUBLE CtiCCSubstationBus::getPowerFactorValue() const
 }
 
 /*---------------------------------------------------------------------------
+    getEstimatedPowerFactorValue
+
+    Returns the EstimatedPowerFactorValue of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getEstimatedPowerFactorValue() const
+{
+    return _estimatedpowerfactorvalue;
+}
+
+/*---------------------------------------------------------------------------
     getKVARSolution
 
     Returns the KVARSolution of the substation
@@ -1112,6 +1122,25 @@ CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(DOUBLE solution)
         _dirty = TRUE;
     }
     _kvarsolution = solution;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setEstimatedPowerFactorValue
+
+    Sets the EstimatedPowerFactorValue in the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(DOUBLE epfval)
+{
+    if( _estimatedpowerfactorvalue != epfval )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _estimatedpowerfactorvalue = epfval;
     return *this;
 }
 
@@ -2436,7 +2465,8 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             updater << dynamicCCSubstationBusTable["lastfeederposition"].assign( _lastfeedercontrolledposition )
             << dynamicCCSubstationBusTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
             << dynamicCCSubstationBusTable["powerfactorvalue"].assign( _powerfactorvalue )
-            << dynamicCCSubstationBusTable["kvarsolution"].assign( _kvarsolution );
+            << dynamicCCSubstationBusTable["kvarsolution"].assign( _kvarsolution )
+            << dynamicCCSubstationBusTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue );
 
             updater.execute( conn );
 
@@ -2484,7 +2514,8 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << _lastfeedercontrolledposition
             << currentDateTime
             << _powerfactorvalue
-            << _kvarsolution;
+            << _kvarsolution
+            << _estimatedpowerfactorvalue;
 
             /*if( _CC_DEBUG )
             {
@@ -2622,6 +2653,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _lastfeedercontrolledposition
     >> _powerfactorvalue
     >> _kvarsolution
+    >> _estimatedpowerfactorvalue
     >> _ccfeeders;
 
     _nextchecktime = RWDBDateTime(tempTime1);
@@ -2682,6 +2714,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _lastfeedercontrolledposition
     << _powerfactorvalue
     << _kvarsolution
+    << _estimatedpowerfactorvalue
     << _ccfeeders;
 }
 
@@ -2736,6 +2769,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _lastfeedercontrolledposition = right._lastfeedercontrolledposition;
         _powerfactorvalue = right._powerfactorvalue;
         _kvarsolution = right._kvarsolution;
+        _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
 
         _ccfeeders.clearAndDestroy();
         for(UINT i=0;i<right._ccfeeders.entries();i++)
@@ -2854,6 +2888,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         rdr["ctitimestamp"] >> dynamicTimeStamp;
         rdr["powerfactorvalue"] >> _powerfactorvalue;
         rdr["kvarsolution"] >> _kvarsolution;
+        rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -2876,6 +2911,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         setLastFeederControlledPosition(-1);
         setPowerFactorValue(-1000000.0);
         setKVARSolution(0.0);
+        setEstimatedPowerFactorValue(-1000000.0);
 
         _insertDynamicDataFlag = TRUE;
     }

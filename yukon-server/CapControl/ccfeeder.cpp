@@ -364,6 +364,16 @@ DOUBLE CtiCCFeeder::getKVARSolution() const
 }
 
 /*---------------------------------------------------------------------------
+    getEstimatedPowerFactorValue
+
+    Returns the estimated power factor value of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getEstimatedPowerFactorValue() const
+{
+    return _estimatedpowerfactorvalue;
+}
+
+/*---------------------------------------------------------------------------
     getCCCapBanks
 
     Returns the list of cap banks in the feeder
@@ -787,6 +797,25 @@ CtiCCFeeder& CtiCCFeeder::setKVARSolution(DOUBLE solution)
         _dirty = TRUE;
     }
     _kvarsolution = solution;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setEstimatedPowerFactorValue
+
+    Sets the EstimatedPowerFactorValue in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(DOUBLE epfval)
+{
+    if( _estimatedpowerfactorvalue != epfval )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _estimatedpowerfactorvalue = epfval;
     return *this;
 }
 
@@ -1543,7 +1572,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
 
             updater << dynamicCCFeederTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
             << dynamicCCFeederTable["powerfactorvalue"].assign( _powerfactorvalue )
-            << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution );
+            << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution )
+            << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue );
 
             updater.execute( conn );
 
@@ -1591,7 +1621,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << _busoptimizedvaroffset
             << currentDateTime
             << _powerfactorvalue
-            << _kvarsolution;
+            << _kvarsolution
+            << _estimatedpowerfactorvalue;
 
             /*if( _CC_DEBUG )
             {
@@ -1665,7 +1696,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _varvaluebeforecontrol
     >> _lastcapbankcontrolleddeviceid
     >> _powerfactorvalue
-    >> _kvarsolution;
+    >> _kvarsolution
+    >> _estimatedpowerfactorvalue;
     istrm >> numberOfCapBanks;
     for(UINT i=0;i<numberOfCapBanks;i++)
     {
@@ -1714,7 +1746,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _varvaluebeforecontrol
     << _lastcapbankcontrolleddeviceid
     << _powerfactorvalue
-    << _kvarsolution;
+    << _kvarsolution
+    << _estimatedpowerfactorvalue;
     ostrm << _cccapbanks.entries();
     for(UINT i=0;i<_cccapbanks.entries();i++)
     {
@@ -1758,6 +1791,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _lastcapbankcontrolleddeviceid = right._lastcapbankcontrolleddeviceid;
         _powerfactorvalue = right._powerfactorvalue;
         _kvarsolution = right._kvarsolution;
+        _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
 
         _cccapbanks.clearAndDestroy();
         for(UINT i=0;i<right._cccapbanks.entries();i++)
@@ -1849,6 +1883,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["ctitimestamp"] >> dynamicTimeStamp;
         rdr["powerfactorvalue"] >> _powerfactorvalue;
         rdr["kvarsolution"] >> _kvarsolution;
+        rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -1869,6 +1904,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         _busoptimizedvaroffset = 0.0;
         _powerfactorvalue = -1000000.0;
         _kvarsolution = 0.0;
+        _estimatedpowerfactorvalue = -1000000.0;
 
         _insertDynamicDataFlag = TRUE;
     }
