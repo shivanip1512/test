@@ -7,12 +7,9 @@ package com.cannontech.tdc;
  */
 import java.awt.Cursor;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.swing.JPanel;
-
-import sun.util.calendar.Gregorian;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -2747,25 +2744,34 @@ public void jRadioButtonMenuItemAllowPt_ActionPerformed(java.awt.event.ActionEve
  */
 public void jRadioButtonMenuItemDisableDev_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
-	int selectedRow = getDisplayTable().getSelectedRow();
-	int deviceID = getTableDataModel().getPointValue(selectedRow).getDeviceID();
-
-	// build up our opArgList for our command	message
-	Vector data = new Vector(4);
-	data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
-	data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
-	data.addElement( new Integer(deviceID) );
-	data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
-
-	// create our command message
-	Command cmd = new Command();
-	cmd.setOperation( Command.ABLEMENT_TOGGLE );
-	cmd.setOpArgList( data );
-	cmd.setTimeStamp( new java.util.Date() );
-
-	// write the command message to the server
-	SendData.getInstance().sendCommandMsg( cmd );
+	PointValues ptVal = getTableDataModel().getPointValue(
+										getDisplayTable().getSelectedRow() );
 	
+	if( ptVal != null )
+	{
+		// build up our opArgList for our command	message
+		Vector data = new Vector(4);
+		data.addElement( new Integer(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN) );  // this is the ClientRegistrationToken	
+		data.addElement( new Integer(Command.ABLEMENT_DEVICE_IDTYPE) );
+		data.addElement( new Integer(ptVal.getDeviceID()) );
+		data.addElement( new Integer(Command.ABLEMENT_DISABLE) );
+	
+		// create our command message
+		Command cmd = new Command();
+		cmd.setOperation( Command.ABLEMENT_TOGGLE );
+		cmd.setOpArgList( data );
+		cmd.setTimeStamp( new java.util.Date() );
+	
+		// write the command message to the server
+		SendData.getInstance().sendCommandMsg( cmd );
+	}
+	else
+	{
+		//opps, for some reason the selectedRow does not have a PointValues for it??
+		CTILogger.error( "The selected row number (" + getDisplayTable().getSelectedRow() +
+			") does not have a valid point row value for it, please try operation again");
+	}
+		
 	return;
 }
 /**
