@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/25 16:51:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/06 19:20:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -696,6 +696,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 3;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -756,6 +757,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Integrity;     // Helps us figure it out later!;
             OutMessage->Retry     = 3;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -809,6 +811,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Accum;
             OutMessage->Retry     = 3;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -864,6 +867,7 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_LoadProfile;
             OutMessage->Retry     = 3;
+            OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset();
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
