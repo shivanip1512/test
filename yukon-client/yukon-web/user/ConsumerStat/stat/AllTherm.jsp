@@ -24,55 +24,43 @@ function selectSingle(form) {
 	form.All.checked = allChecked;
 }
 
-function goToSchedule() {
+function checkThermostatType() {
 	var checkboxes = document.getElementsByName("InvID");
-	var elements = document.getElementsByName("IsTwoWay");
+	var types = document.getElementsByName("type");
+	var thermType = null;
 	
-	var anyChecked = false;
-	for (i = 0; i < checkboxes.length; i++)
+	for (i = 0; i < checkboxes.length; i++) {
 		if (checkboxes[i].checked) {
-			anyChecked = true;
-			break;
+			if (thermType != null && thermType != types[i].value) {
+				alert("You've selected more than one type of thermostats. You can only change settings for the same type of thermostats at a time.");
+				return null;
+			}
+			thermType = types[i].value;
 		}
-	if (!anyChecked) return;
+	}
 	
-	var hasTwoWay = false;
-	for (i = 0; i < checkboxes.length; i++)
-		if (checkboxes[i].checked && elements[i].value == "true") {
-			hasTwoWay = true;
-			break;
-		}
+	return thermType;
+}
+
+function goToSchedule() {
+	var thermType = checkThermostatType();
+	if (thermType == null) return;
 	
-	if (hasTwoWay)
-		document.form1.attributes["action"].value = "ThermSchedule2.jsp?Item=-1";
-	else
+	if (thermType == "<%= StarsThermostatTypes.BASIC.toString() %>")
 		document.form1.attributes["action"].value = "ThermSchedule.jsp?Item=-1";
+	else if (thermType == "<%= StarsThermostatTypes.ENERGYPRO.toString() %>")
+		document.form1.attributes["action"].value = "ThermSchedule2.jsp?Item=-1";
 	document.form1.submit();
 }
 
 function goToManual() {
-	var checkboxes = document.getElementsByName("InvID");
-	var elements = document.getElementsByName("IsTwoWay");
+	var thermType = checkThermostatType();
+	if (thermType == null) return;
 	
-	var anyChecked = false;
-	for (i = 0; i < checkboxes.length; i++)
-		if (checkboxes[i].checked) {
-			anyChecked = true;
-			break;
-		}
-	if (!anyChecked) return;
-	
-	var hasTwoWay = false;
-	for (i = 0; i < checkboxes.length; i++)
-		if (checkboxes[i].checked && elements[i].value == "true") {
-			hasTwoWay = true;
-			break;
-		}
-	
-	if (hasTwoWay)
-		document.form1.attributes["action"].value = "Thermostat2.jsp?Item=-1";
-	else
+	if (thermType == "<%= StarsThermostatTypes.BASIC.toString() %>")
 		document.form1.attributes["action"].value = "Thermostat.jsp?Item=-1";
+	else if (thermType == "<%= StarsThermostatTypes.ENERGYPRO.toString() %>")
+		document.form1.attributes["action"].value = "Thermostat2.jsp?Item=-1";
 	document.form1.submit();
 }
 </script>
@@ -150,15 +138,18 @@ function goToManual() {
 	for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
 		StarsInventory thermostat = thermostats.getStarsInventory(i);
 		String checked = (invIDs != null && Arrays.binarySearch(invIDs, thermostat.getInventoryID()) >= 0)? "checked" : "";
+		String label = thermostat.getDeviceLabel();
+		if (label.equals(""))
+			label= thermostat.getLMHardware().getManufacturerSerialNumber();
 %>
                   <tr> 
                     <td width="32"> 
                       <div align="right"> 
                         <input type="checkbox" name="InvID" value="<%= thermostat.getInventoryID() %>" onclick="selectSingle(this.form)" <%= checked %>>
-                        <input type="hidden" name="IsTwoWay" value="<%= thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData() != null %>">
+                        <input type="hidden" name="type" value="<%= thermostat.getLMHardware().getStarsThermostatSettings().getThermostatType().toString() %>">
                       </div>
                     </td>
-                    <td width="256" class="TableCell"><%= thermostat.getDeviceLabel() %></td>
+                    <td width="256" class="TableCell"><%= label %></td>
                   </tr>
 <%
 	}
