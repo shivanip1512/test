@@ -173,8 +173,12 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 		else if (event.getSource() == getSerialRoutePanel().getRouteComboBox())
 		{
-			setRoute(getSerialRoutePanel().getRouteComboBox().getSelectedItem());
-			CTILogger.info(getRoute());
+			Object selected = getSerialRoutePanel().getRouteComboBox().getSelectedItem();
+			if( selected instanceof LiteYukonPAObject)
+			{
+				setRouteID(((LiteYukonPAObject)selected).getYukonID());
+			}
+			CTILogger.info(selected);
 		}
 	
 		else if( event.getSource() == getCommandPanel().getExecuteButton() ||
@@ -281,7 +285,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			getLocateRouteDialog().getDeviceNameTextField().setText(getTreeViewPanel().getSelectedItem().toString());		
 			getLocateRouteDialog().showLocateDialog();
-			setRoute(getLocateRouteDialog().getRouteComboBox().getSelectedItem());
+
+			Object selected = getLocateRouteDialog().getRouteComboBox().getSelectedItem();
+			if( selected instanceof LiteYukonPAObject)
+				setRouteID(((LiteYukonPAObject)selected).getYukonID());
 		}
 		else if ( event.getSource() == getLocateRouteDialog().getLocateButton())
 		{
@@ -294,7 +301,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		}
 		else if (event.getSource() == getLocateRouteDialog().getRouteComboBox())
 		{
-			setRoute(getLocateRouteDialog().getRouteComboBox().getSelectedItem());
+			Object selected = getLocateRouteDialog().getRouteComboBox().getSelectedItem();
+			if( selected instanceof LiteYukonPAObject)
+				setRouteID(((LiteYukonPAObject)selected).getYukonID());
 		}
 
 		else if( event.getSource() == getYCFileMenu().printMenuItem || 
@@ -979,15 +988,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	}
 	
 	/**
-	 * Returns the ycClass.getRoute()
-	 * @return java.lang.Object
-	 */
-	private Object getRoute()
-	{
-		return ycClass.getRoute();
-	}
-	
-	/**
 	 * Returns the ycClass.getSerialNumber().
 	 * @return String
 	 */
@@ -1656,9 +1656,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 * Sets the ycClass.route.
 	 * @param newRoute java.lang.Object
 	 */
-	private void setRoute(Object newRoute)
+	private void setRouteID(int routeID)
 	{
-		ycClass.setRoute(newRoute);
+		ycClass.setRouteID(routeID);
 	}
 
 	/**

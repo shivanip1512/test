@@ -39,7 +39,7 @@ public class YC extends Observable implements Runnable
 	private String command;	//holds the current Command to execute
 	private String serialNumber;	// currently selected serial number (from tree or box)
 	private Object treeItem = null;
-	private Object route = null;			//when serial number used, the current routeID
+	private int routeID = -1;		//when serial number used, the current routeID
 	private int    modelType = 0;
 	
 	private boolean DIRECTLY_SEND_COMMAND = false;	//allows a shortcut send method, changes with CGPCheckBox.
@@ -303,11 +303,11 @@ public class YC extends Observable implements Runnable
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/26/2002 1:53:53 PM)
-	 * @return java.lang.Object
+	 * @return int
 	 */
-	public Object getRoute()
+	public int getRouteID()
 	{
-		return route;
+		return routeID;
 	}
 	/**
 	 * Insert the method's description here.
@@ -385,10 +385,7 @@ public class YC extends Observable implements Runnable
 	 	}
 		else if( getLoopType() == LOOPLOCATE_ROUTE )
 		{
-			if( getRoute() instanceof LiteYukonPAObject)
-			{
-				porterRequest.setRouteID( ((LiteYukonPAObject)getRoute()).getYukonID());
-			}
+			porterRequest.setRouteID(getRouteID());
 		}
 		writeNewRequestToPorter(porterRequest);
 	}
@@ -416,15 +413,14 @@ public class YC extends Observable implements Runnable
 		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 	
-		// Get routeID from comboBox / set it in the request
-		if( getRoute() != null && getRoute() instanceof LiteYukonPAObject)
+		// Get routeID / set it in the request
+		if( getRouteID() >= 0)
 		{
-			LiteYukonPAObject r = (LiteYukonPAObject) getRoute();
-			porterRequest.setRouteID(r.getYukonID());
+			porterRequest.setRouteID(getRouteID());
 		}
 		else
 		{
-			CTILogger.info("Route cannot be determined. " + getRoute());
+			CTILogger.info("Route cannot be determined. " + getRouteID());
 		}
 	
 		if( deviceID < 0 )	//no device selected
@@ -622,19 +618,19 @@ public class YC extends Observable implements Runnable
 	 * Creation date: (2/26/2002 1:48:11 PM)
 	 * @param newRoute java.lang.Object
 	 */
-	public void setRoute(Object newRoute) 
+	public void setRouteID(Object newRoute) 
 	{
-		route = newRoute;
+		if( newRoute instanceof LiteYukonPAObject)
+			setRouteID(((LiteYukonPAObject)newRoute).getYukonID());
 	}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/26/2002 1:48:11 PM)
-	 * @param newRoute java.lang.Object
+	 * @param routeID_ int
 	 */
-	public void setRoute(int routeID_) 
+	public void setRouteID(int routeID_) 
 	{
-		LiteYukonPAObject litePaobject = com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO(routeID_);
-		setRoute(litePaobject);
+		routeID = routeID_;
 	}
 	/**
 	 * Insert the method's description here.
