@@ -898,7 +898,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					}		
 	        	}
 	        	
-		        accountInfo.setYukonUser( user );
+		        accountInfo.setYukonUser( user.getYukonUser() );
 	        }
 
             custAcctInfoList.add( accountInfo );

@@ -27,7 +27,7 @@ public class UpdateThermostat extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session == null) resp.sendRedirect(loginURL);
 
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {
 			resp.sendRedirect(loginURL); return;
 		}

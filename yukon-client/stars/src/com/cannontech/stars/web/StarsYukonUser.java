@@ -1,8 +1,9 @@
 package com.cannontech.stars.web;
 
 import java.util.*;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao
@@ -12,18 +13,24 @@ import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class StarsYukonUser extends LiteYukonUser {
+public class StarsYukonUser {
 
+	private LiteYukonUser yukonUser = null;
+	private int energyCompanyID = 0;
 	private int[] accountIDs = null;
 	private Hashtable attributes = new Hashtable();
 	
 	public StarsYukonUser(LiteYukonUser user) {
-		super(user.getUserID(), user.getUsername(), user.getPassword());
+		yukonUser = user;
 		init();
 	}
 	
+	public LiteYukonUser getYukonUser() {
+		return yukonUser;
+	}
+	
 	public int getEnergyCompanyID() {
-		return EnergyCompanyFuncs.getEnergyCompany(this).getLiteID();
+		return energyCompanyID;
 	}
 	
 	public int[] getCustomerAccountIDs() {
@@ -56,20 +63,30 @@ public class StarsYukonUser extends LiteYukonUser {
 	}
 	
 	private void init() {
-		String sql = "SELECT acct.AccountID "
-				   + "FROM CustomerAccount acct, CustomerBase cust, CustomerContact cont "
-				   + "WHERE cont.LogInID = " + getUserID() + " AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID";
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-				
-		try {
-			stmt.execute();
-			accountIDs = new int[ stmt.getRowCount() ];
-			for (int i = 0; i < stmt.getRowCount(); i++)
-				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+		if (ServerUtils.isOperator(this)) {
+			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(yukonUser).getLiteID();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		else if (ServerUtils.isCICustomer(this)) {
+			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(yukonUser).getLiteID();
+		}
+		else if (ServerUtils.isResidentialCustomer(this)) {
+			String sql = "SELECT map.EnergyCompanyID, acct.AccountID "
+					   + "FROM CustomerAccount acct, CustomerBase cust, CustomerContact cont, ECToAccountMapping map "
+					   + "WHERE cont.LogInID = " + yukonUser.getUserID() + " AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+					
+			try {
+				stmt.execute();
+				accountIDs = new int[ stmt.getRowCount() ];
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					energyCompanyID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

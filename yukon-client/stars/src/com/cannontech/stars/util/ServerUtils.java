@@ -9,10 +9,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.CustomerSelectionList;
 import com.cannontech.database.db.stars.CustomerListEntry;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.*;
@@ -244,12 +244,16 @@ public class ServerUtils {
 			return null;
 	}
 	
-	public static boolean isOperator(LiteYukonUser user) {
-		return (AuthFuncs.getRoleValue(user, "WEB_OPERATOR") != null);
+	public static boolean isOperator(StarsYukonUser user) {
+		return (AuthFuncs.getRoleValue(user.getYukonUser(), "WEB_OPERATOR") != null);
 	}
 	
-	public static boolean isResidentialCustomer(LiteYukonUser user) {
-		return (AuthFuncs.getRoleValue(user, "WEB_RESIDENTIAL_CUSTOMER") != null);
+	public static boolean isResidentialCustomer(StarsYukonUser user) {
+		return (AuthFuncs.getRoleValue(user.getYukonUser(), "WEB_RESIDENTIAL_CUSTOMER") != null);
+	}
+	
+	public static boolean isCICustomer(StarsYukonUser user) {
+		return (AuthFuncs.getRoleValue(user.getYukonUser(), "WEB_CICUSTOMER") != null);
 	}
 	
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {

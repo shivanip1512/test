@@ -157,7 +157,7 @@ public class SOAPClient extends HttpServlet {
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
             nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         	
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             StarsGetExitInterviewQuestionsResponse questions = null;
            	if (user != null)
             	questions = (StarsGetExitInterviewQuestionsResponse) user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
@@ -208,7 +208,7 @@ public class SOAPClient extends HttpServlet {
             nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	if (user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
 	        	clientAction = new CreateCallAction();
 	        else {
@@ -225,7 +225,7 @@ public class SOAPClient extends HttpServlet {
         	destURL = "/operator/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	if (user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
 	        	clientAction = new CreateServiceRequestAction();
 	        else {

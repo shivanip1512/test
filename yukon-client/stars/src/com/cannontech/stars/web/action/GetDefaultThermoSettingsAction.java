@@ -29,7 +29,7 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
         	StarsGetDefaultThermostatSettings getSettings = new StarsGetDefaultThermostatSettings();
@@ -61,7 +61,7 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
             int energyCompanyID = getSettings.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             	if (user == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
@@ -121,7 +121,7 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
             StarsGetDefaultThermostatSettingsResponse settings = operation.getStarsGetDefaultThermostatSettingsResponse();
             if (settings == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	user.setAttribute(ServletUtils.ATT_DEFAULT_THERMOSTAT_SETTINGS, settings);
         	
             return 0;

@@ -49,6 +49,7 @@ public class ServletUtils {
 	public static final String ATT_OVER_PAGE_ACTION = "OVER_PAGE_ACTION";
 	
 	public static final String ATT_YUKON_USER = "YUKON_USER";
+	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
 	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
 	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
 	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";

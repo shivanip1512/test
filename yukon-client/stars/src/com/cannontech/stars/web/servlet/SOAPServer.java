@@ -415,7 +415,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		ArrayList userList = getAllStarsYukonUsers();
 		for (int i = 0; i < userList.size(); i++) {
 			StarsYukonUser user = (StarsYukonUser) userList.get(i);
-			if (user.getUserID() == userID)
+			if (user.getYukonUser().getUserID() == userID)
 				return user;
 		}
 		

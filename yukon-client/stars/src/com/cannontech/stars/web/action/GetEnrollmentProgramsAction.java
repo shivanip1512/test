@@ -77,7 +77,7 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             int energyCompanyID = getEnrProgs.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-            	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             	if (user != null)
             		energyCompanyID = user.getEnergyCompanyID();
 	            else {
@@ -151,7 +151,7 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             if (category != null && category.length() > 0)
             	attName.append("_").append( category.toUpperCase() );
 
-        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
     		user.setAttribute(attName.toString(), programs);
             
             return 0;

@@ -12,7 +12,7 @@
 	
 	StarsYukonUser user = null;
 	try {
-		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	}
 	catch (IllegalStateException ise) {}
 	if (user == null) {

@@ -39,7 +39,7 @@ public class LoginAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			session.removeAttribute( ServletUtils.ATT_YUKON_USER );
+			session.removeAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			
 	        StarsLogin login = new StarsLogin();
 	        login.setUsername( req.getParameter("USERNAME") );
@@ -79,22 +79,22 @@ public class LoginAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            // check whether the login type matches the role
-            boolean typeMatch = false;
-            if (login.getLoginType().getType() == StarsLoginType.OPERATORLOGIN_TYPE)
-        		typeMatch = ServerUtils.isOperator( user );
-            else
-        		typeMatch = ServerUtils.isResidentialCustomer( user );
-            if (!typeMatch) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            
             StarsYukonUser starsUser = SOAPServer.getStarsYukonUser( user.getUserID() );
             if (starsUser == null) {
             	starsUser = new StarsYukonUser( user );
             	SOAPServer.addStarsYukonUser( starsUser );
+            }
+            
+            // check whether the login type matches the role
+            boolean typeMatch = false;
+            if (login.getLoginType().getType() == StarsLoginType.OPERATORLOGIN_TYPE)
+        		typeMatch = ServerUtils.isOperator( starsUser );
+            else
+        		typeMatch = ServerUtils.isResidentialCustomer( starsUser );
+            if (!typeMatch) {
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
+                return SOAPUtil.buildSOAPMessage( respOper );
             }
             
             initSession( starsUser, session );
@@ -148,7 +148,7 @@ public class LoginAction implements ActionBase {
 	private void initSession(StarsYukonUser user, HttpSession session) throws TransactionException  {
 	
 		com.cannontech.database.data.user.YukonUser dbUser = 
-			(com.cannontech.database.data.user.YukonUser) LiteFactory.createDBPersistent(user);
+			(com.cannontech.database.data.user.YukonUser) LiteFactory.createDBPersistent( user.getYukonUser() );
 		
 		Transaction trans = Transaction.createTransaction(Transaction.RETRIEVE,dbUser);
 		trans.execute();
@@ -159,6 +159,7 @@ public class LoginAction implements ActionBase {
 			
 		trans = Transaction.createTransaction(Transaction.UPDATE,dbUser);
 		
-		session.setAttribute(ServletUtils.ATT_YUKON_USER, user);
+		session.setAttribute(ServletUtils.ATT_YUKON_USER, user.getYukonUser());
+		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 	}
 }

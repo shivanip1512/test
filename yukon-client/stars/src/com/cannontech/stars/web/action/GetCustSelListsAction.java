@@ -67,7 +67,7 @@ public class GetCustSelListsAction implements ActionBase {
             int energyCompanyID = getSelLists.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 	            if (user == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
@@ -127,7 +127,7 @@ public class GetCustSelListsAction implements ActionBase {
             	selectionListTable.put( list.getListName(), list );
             }
 
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
             
             return 0;

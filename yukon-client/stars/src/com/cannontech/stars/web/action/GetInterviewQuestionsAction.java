@@ -73,7 +73,7 @@ public class GetInterviewQuestionsAction implements ActionBase {
             int energyCompanyID = getQuestions.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 	            if (user != null)
 	            	energyCompanyID = user.getEnergyCompanyID();
 	            else {
@@ -139,7 +139,7 @@ public class GetInterviewQuestionsAction implements ActionBase {
             	session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
             }
 
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	user.setAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS, questions);
             
             return 0;
