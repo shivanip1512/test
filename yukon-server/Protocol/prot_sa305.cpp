@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/03/14 01:17:00 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/03/16 20:11:51 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.14  2005/03/16 20:11:51  cplender
+* Altered restore and terminate behavior for SA305.
+*
 * Revision 1.13  2005/03/14 01:17:00  cplender
 * Grab resore and terminate in the protocol.
 *
@@ -127,7 +130,7 @@ RWCString CtiProtocolSA305::_strategyStr[64] =
     RWCString("Strategy 58: Undefined"),
     RWCString("Strategy 59: Undefined"),
     RWCString("Strategy 60: Undefined"),
-    RWCString("Strategy 61: Undefined"),
+    RWCString("Strategy 61: Restore"),
     RWCString("Strategy 62: Undefined"),
     RWCString("Strategy 63: Undefined")
 };
@@ -228,7 +231,7 @@ CtiProtocolSA305& CtiProtocolSA305::operator=(const CtiProtocolSA305& aRef)
  */
 int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
 {
-    int strategy = -1;
+    int strategy = 61;          // Restore by default!
 
     // We only try to predict it if it has not already been fully identified for us.
     if(_strategy == 0)
@@ -238,7 +241,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
            parse.getCommandStr().contains(" terminate", RWCString::ignoreCase) )
         {
             strategy = 61;
-            _repetitions = parse.getiValue("sa_reps", 0);
+            _period = 0.0;
         }
         else
         {
@@ -323,7 +326,11 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
 
         if(_repetitions > 13) _repetitions = 13;
 
-        if(_period <= 7.5)
+        if(_period == 0.0)
+        {
+            strategy = 61;      // RESTORE/TERMINATE!
+        }
+        else if(_period <= 7.5)
         {
             // There is only one option here!
             strategy = 1;  // 000001b
@@ -534,6 +541,10 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             }
         }
     }
+    else
+    {
+        strategy = _strategy;
+    }
 
     if(gConfigParms.getValueAsInt("SA305_DEBUGLEVEL",0) & DEBUGLEVEL_LUDICROUS)
     {
@@ -703,6 +714,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     INT  status = NORMAL;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
+    _repetitions = parse.getiValue("sa_reps", 0);
     _strategy = solveStrategy(parse);
 
     if(CtlReq == CMD_FLAG_CTL_SHED)
@@ -731,11 +743,13 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
+        _strategy = 61;
         restoreLoadControl();
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+        _strategy = 61;
         cycleLoadControl();
     }
     else
@@ -920,6 +934,15 @@ INT CtiProtocolSA305::timedLoadControl( )
 INT CtiProtocolSA305::restoreLoadControl( )
 {
     INT status = NoError;
+
+    _strategy = 61;
+
+    // Ok, the flags and addressing are all stuffed on the message, we also believe that the stratey, function etc are ready for us to use!
+    addBits(_strategy,6);
+    addBits(_functions,4);
+    addBits(_repetitions,4);
+    addBits(_priority,2);
+
     return status;
 }
 
@@ -1572,7 +1595,21 @@ RWCString  CtiProtocolSA305::asString() const
             rstr += " F4";
         }
 
-        rstr += ", Repetitions " + CtiNumStr(reps);
+        if(strategy == 61 )
+        {
+            if(f0)
+                rstr += " DI";
+            else
+                rstr += " DLC";
+
+            if(reps)
+                rstr += " Graceful";
+            else
+                rstr += " Abrupt";
+        }
+        else
+            rstr += ", Repetitions " + CtiNumStr(reps);
+
         rstr += ", Priority " + CtiNumStr(priority);
     }
     else

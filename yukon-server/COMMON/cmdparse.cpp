@@ -4301,34 +4301,41 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
         }
     }
 
-    if(CmdStr.contains(" dlc"))
+    // DEFAULT CHOICES BASED UPON COMMANDS
+    if(CmdStr.contains(" restore") || CmdStr.contains(" shed"))
     {
-        _cmd["sa_dlc_mode"] = CtiParseValue(1);    // DI mode is implied by the abscence of dlc.
+        _cmd["sa_dlc_mode"] = CtiParseValue(1);
         _cmd["sa_f0bit"] = 0;
     }
+    else if(CmdStr.contains(" cycle") || CmdStr.contains(" terminate"))
+    {
+        _cmd["sa_dlc_mode"] = CtiParseValue(0);
+        _cmd["sa_f0bit"] = 1;
+    }
 
-    if(CmdStr.contains(" restore"))    // This parse must be done following the check for dlc.
+    // DEFAULT CHOICES MAY BE MODIFIED BY OPTIONAL MODIFIERS.
+    if(CmdStr.contains(" dlc"))
+    {
+        _cmd["sa_dlc_mode"] = CtiParseValue(1);
+        _cmd["sa_f0bit"] = 0;
+    }
+    else if(CmdStr.contains(" di"))
+    {
+        _cmd["sa_dlc_mode"] = CtiParseValue(0);
+        _cmd["sa_f0bit"] = 1;
+    }
+
+    if(CmdStr.contains(" restore") || CmdStr.contains(" terminate") )    // This parse must be done following the check for dlc.
     {
         bool abrupt = false;
 
-        if(CmdStr.contains(" abrupt"))
+        if(CmdStr.contains(" abrupt"))      // GRACEFUL RESTORE IS THE DEFAULT FOR ALL CASES.
         {
             abrupt = true;
         }
 
-        if(getiValue("sa_dlc_mode",0))  // If dlc was set by the parse above
-        {
-            _cmd["sa_reps"] = abrupt ? 0 : 1;
-            _cmd["sa_f0bit"] = 0;
-            _cmd["sa_restore"] = TRUE;
-        }
-        else
-        {
-            _cmd["sa_reps"] = abrupt ? 0 : 1;
-            _cmd["sa_f0bit"] = 1;
-            _cmd["sa_restore"] = TRUE;
-        }
-
+        _cmd["sa_restore"] = TRUE;
+        _cmd["sa_reps"] = abrupt ? 0 : 1;
         _cmd["sa_strategy"] = CtiParseValue(61);        // This is the defined strategy.
     }
     else if(!(temp = CmdStr.match(" strategy +[01][01][01][01][01][01]")).isNull())
