@@ -64,6 +64,11 @@ public final class ModelFactory
 	public static final int EDITABLE_SA205_SERIAL = 46;
 	
 	public static final int SEASON = 47;
+	
+	public static final int LMGROUPSA305 = 48;
+	public static final int LMGROUPSA205 = 49;
+	public static final int LMGROUPSADIGITAL = 50;
+	public static final int GOLAY = 51;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -116,7 +121,11 @@ public final class ModelFactory
 		EditableExpresscomModel.class,
 		EditableSA305Model.class,
 		EditableSA205Model.class,
-/* 47*/	SeasonModel.class
+/* 47*/	SeasonModel.class,
+		LMGroupSA305Model.class,
+		LMGroupSA205Model.class,
+		LMGroupSADigitalModel.class,
+		LMGroupGolayModel.class
 	};
 
 /**
