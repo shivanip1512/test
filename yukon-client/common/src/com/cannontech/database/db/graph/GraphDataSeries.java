@@ -16,13 +16,14 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	private static final String BASIC_TYPE_STRING = "Basic";
 	private static final String PEAK_TYPE_STRING = "Peak";
 	private static final String YESTERDAY_TYPE_STRING = "Yesterday Only";
-
+	
+	public static final String THRESHOLD_TYPE_STRING = "Threshold";
 	public static final String USAGE_TYPE_STRING = "Usage";
 	public static final String BASIC_GRAPH_TYPE_STRING = "Graph";
 	public static final String USAGE_GRAPH_TYPE_STRING = "Usage Graph";
 	public static final String PEAK_GRAPH_TYPE_STRING = "Peak Graph";
 	public static final String YESTERDAY_GRAPH_TYPE_STRING = "Yesterday";
-
+	
 	
 	public static final int GRAPH_TYPE= 0x0001;	//will be 'graphed' in trending (INTERVAL).  Use BASIC_GRAPH_TYPE as default.
 	public static final int PRIMARY_TYPE = 0x0002;	//the coincidental point (summary info) (only one gds can be this)
@@ -30,13 +31,14 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	public static final int BASIC_TYPE = 0x0008;	//interval/normal point readings
 	public static final int PEAK_TYPE = 0x0010;	//actual peak day data used
 	public static final int YESTERDAY_TYPE = 0x0020;	//yesterday data used
+	public static final int THRESHOLD_TYPE = 0x0040;	//YESTERDAY + GRAPH
 	
 	//COMBINATION DATA SERIES TYPES
 	public static final int BASIC_GRAPH_TYPE = 0x0009; //BASIC + GRAPH
 	public static final int USAGE_GRAPH_TYPE = 0x0005;	//USAGE + GRAPH
 	public static final int PEAK_GRAPH_TYPE = 0x0011;	//PEAK + GRAPH
 	public static final int YESTERDAY_GRAPH_TYPE = 0x0021;	//YESTERDAY + GRAPH
-	
+		
 	//VALID TYPES FOR GDS TABLE	
 	public static String[] validTypeStrings = 
 	{
@@ -48,7 +50,8 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 		BASIC_GRAPH_TYPE_STRING,
 		USAGE_GRAPH_TYPE_STRING,
 		PEAK_GRAPH_TYPE_STRING,
-		YESTERDAY_GRAPH_TYPE_STRING
+		YESTERDAY_GRAPH_TYPE_STRING, 
+		THRESHOLD_TYPE_STRING
 	};	
 	public static int[] validTypeInts =
 	{
@@ -60,7 +63,8 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 		BASIC_GRAPH_TYPE,
 		USAGE_GRAPH_TYPE,
 		PEAK_GRAPH_TYPE,
-		YESTERDAY_GRAPH_TYPE
+		YESTERDAY_GRAPH_TYPE,
+		THRESHOLD_TYPE
 	}; 	
 	
 	private java.lang.Integer graphDataSeriesID = null;
@@ -146,6 +150,14 @@ public static boolean isPrimaryType(int type)	//OLD PEAK
 
 	return false;
 }
+public static boolean isThresholdType(int type)
+{
+	if((type & THRESHOLD_TYPE) == THRESHOLD_TYPE)
+		return true;
+
+	return false;
+}
+
 /*
 public static boolean isBasicQueryType(int type)
 {
