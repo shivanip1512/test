@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/06/12 21:27:20 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/06/19 16:13:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,8 +126,9 @@ CtiProtocolION::IONCommand CtiProtocolION::getCommand( void )
 void CtiProtocolION::setCommand( IONCommand command )
 {
     _currentCommand.command = command;
-    _protocolErrors = 0;
-    _abortStatus    = NoError;
+    _protocolErrors   = 0;
+    _abortStatus      = NoError;
+    _returnInfoString = "";
 
     _ionState   = State_Init;
     _retryState = _ionState;
@@ -138,8 +139,9 @@ void CtiProtocolION::setCommand( IONCommand command, unsigned int unsigned_int_p
 {
     _currentCommand.command                 = command;
     _currentCommand.unsigned_int_parameter  = unsigned_int_parameter;
-    _protocolErrors = 0;
-    _abortStatus    = NoError;
+    _protocolErrors   = 0;
+    _abortStatus      = NoError;
+    _returnInfoString = "";
 
     _ionState   = State_Init;
     _retryState = _ionState;
@@ -1021,14 +1023,17 @@ void CtiProtocolION::decodeExceptionScan( void )
                 }
                 else
                 {
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Invalid digital inputs return, aborting" << endl;
+                        dout << "Invalid digital inputs return" << endl;
                     }
 
-                    _ionState   = State_Abort;
+                    _ionState   = State_RequestDigitalOutputData;
                     _retryState = _ionState;
+
+                    _returnInfoString += "\nNo digital inputs to return";
                 }
             }
             else
@@ -1084,14 +1089,16 @@ void CtiProtocolION::decodeExceptionScan( void )
                 }
                 else
                 {
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Invalid digital outputs return, aborting" << endl;
+                        dout << "Invalid digital outputs return" << endl;
                     }
 
-                    _ionState   = State_Abort;
+                    _ionState   = State_Complete;
                     _retryState = _ionState;
+                    _returnInfoString += "\nNo digital outputs to return";
                 }
             }
             else
@@ -2210,6 +2217,7 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
     ion_result_descriptor_struct  header;
     ion_pointdata_struct         *points;
     CtiIONDataStream              tmpDS;
+    char *tmpStr;
 
     //  clear out the data vectors
     _pointData.clear();
@@ -2232,6 +2240,13 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
         {
             memcpy(&header, buf + offset, sizeof(header));
             offset += sizeof(header);
+
+            tmpStr = CTIDBG_new char[header.resultDescriptorStringLength];
+            memcpy(tmpStr, buf + offset, header.resultDescriptorStringLength);
+            tmpStr[header.resultDescriptorStringLength-1] = 0;
+            _returnInfoString = tmpStr;
+            delete [] tmpStr;
+            offset += header.resultDescriptorStringLength;
 
             points = (ion_pointdata_struct *)(buf + offset);
 
@@ -2275,11 +2290,11 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 
 bool CtiProtocolION::hasInboundData( void ) const
 {
-    return !_pointData.empty() || !_eventLogs.empty();
+    return !_pointData.empty() || !_eventLogs.empty() || !_returnInfoString.isNull();
 }
 
 
-void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList )
+void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnInfo )
 {
     vector< ion_pointdata_struct >::const_iterator p_itr;
     vector< CtiIONLogArray * >::const_iterator       e_itr;
@@ -2288,6 +2303,8 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
     CtiPointDataMsg *pointdata;
     CtiSignalMsg    *signal;
+
+    returnInfo = _returnInfoString;
 
     for( p_itr = _pointData.begin(); p_itr != _pointData.end(); p_itr++ )
     {
@@ -2487,12 +2504,16 @@ int CtiProtocolION::sendCommResult( INMESS *InMessage )
 unsigned long CtiProtocolION::resultSize( void )
 {
     unsigned long size;
+    vector< CtiIONLogArray * >::const_iterator itr;
 
     size  = 0;
-    size += sizeof(ion_result_descriptor_struct);
-    size += sizeof(ion_pointdata_struct) * _pointData.size();
 
-    vector< CtiIONLogArray * >::const_iterator itr;
+    size += sizeof(ion_result_descriptor_struct);
+
+    //  ACH:  limit this size?
+    size += _returnInfoString.length() + 1;
+
+    size += sizeof(ion_pointdata_struct) * _pointData.size();
 
     for( itr = _eventLogs.begin(); itr != _eventLogs.end(); itr++ )
     {
@@ -2517,6 +2538,9 @@ void CtiProtocolION::putResult( unsigned char *buf )
 
     header.numPoints = _pointData.size();
 
+    //  ACH:  limit this size?
+    header.resultDescriptorStringLength = _returnInfoString.length() + 1;
+
     eventlog_length = 0;
     for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
     {
@@ -2538,6 +2562,9 @@ void CtiProtocolION::putResult( unsigned char *buf )
 
     memcpy(buf + offset, &header, sizeof(header));
     offset += sizeof(header);
+
+    memcpy(buf + offset, _returnInfoString.data(), _returnInfoString.length() + 1);
+    offset += _returnInfoString.length() + 1;
 
     for( p_itr = _pointData.begin(); p_itr != _pointData.end(); p_itr++ )
     {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/06/12 21:27:06 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/06/19 16:13:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,8 +109,11 @@ private:
     vector< ion_pointdata_struct > _pointData;
     vector< CtiIONLogArray * >     _eventLogs;
 
+    RWCString _returnInfoString;
+
     struct ion_result_descriptor_struct
     {
+        unsigned long resultDescriptorStringLength;
         unsigned long numPoints;
         unsigned long eventLogLength;
         bool          eventLogsComplete;
@@ -375,7 +378,7 @@ public:
     int sendCommResult ( INMESS  *InMessage  );
 
     bool hasInboundData( void ) const;
-    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList );
+    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWTPtrSlist< CtiSignalMsg > &signalList, RWCString &returnInfo );
     void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;
