@@ -158,6 +158,7 @@ public class SOAPClient extends HttpServlet {
         if (isServerLocal() && SOAPServer.getInstance() == null) {
         	// SOAPServer not initiated yet, let's wake it up!
         	SOAP_SERVER_URL = req.getRequestURL().toString().replaceFirst( "SOAPClient", "SOAPServer" );
+        	//SOAP_SERVER_URL = javax.servlet.http.HttpUtils.getRequestURL( req ).toString().replaceFirst( "SOAPClient", "SOAPServer" );
         	
         	StarsOperation respOper = sendRecvOperation( new StarsOperation() );
         	if (respOper == null)	// This is not good!

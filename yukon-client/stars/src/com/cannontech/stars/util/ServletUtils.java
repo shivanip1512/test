@@ -371,7 +371,7 @@ public class ServletUtils {
     	
     	StringBuffer sBuf = new StringBuffer( starsAddr.getStreetAddr1() );
     	sBuf.append( "<br>" );
-    	if (starsAddr.getStreetAddr2().length() > 0)
+    	if (starsAddr.getStreetAddr2().trim().length() > 0)
     		sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
     	sBuf.append( starsAddr.getCity() ).append( ", " )
     		.append( starsAddr.getState() ).append( " " )
