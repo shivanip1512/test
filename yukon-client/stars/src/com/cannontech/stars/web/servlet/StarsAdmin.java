@@ -59,6 +59,7 @@ import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
+import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -442,6 +443,29 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
+	public static boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyID, String newVal) throws Exception {
+		String oldVal = AuthFuncs.getRolePropValueGroup( group, rolePropertyID, null );
+		if (oldVal != null && oldVal.equals(newVal)) return false;
+		
+		if (oldVal != null) {
+			String sql = "UPDATE YukonGroupRole SET Value = '" + newVal + "'" +
+					" WHERE GroupID = " + group.getGroupID() +
+					" AND RoleID = " + roleID +
+					" AND RolePropertyID = " + rolePropertyID;
+			new SqlStatement( sql, CtiUtilities.getDatabaseAlias() ).execute();
+		}
+		else {
+			YukonGroupRole groupRole = new YukonGroupRole();
+			groupRole.setGroupID( new Integer(group.getGroupID()) );
+			groupRole.setRoleID( new Integer(roleID) );
+			groupRole.setRolePropertyID( new Integer(rolePropertyID) );
+			groupRole.setValue( newVal );
+			Transaction.createTransaction( Transaction.INSERT, groupRole ).execute();
+		}
+		
+		return true;
+	}
+	
 	private void updateEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
@@ -563,27 +587,16 @@ public class StarsAdmin extends HttpServlet {
 				energyCompany.setPrimaryContactID( contact.getContact().getContactID().intValue() );
 				Transaction.createTransaction( Transaction.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
 			}
-			
-			// Update energy company role DEFAULT_TIME_ZONE if necessary
-			LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
-			String value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.DEFAULT_TIME_ZONE, CtiUtilities.STRING_NONE);
-			boolean adminGroupUpdated = false;
-	        
-			String timeZone = req.getParameter("TimeZone");
-			if (!value.equalsIgnoreCase( timeZone )) {
-				String sql = "UPDATE YukonGroupRole SET Value = '" + timeZone + "'" +
-						" WHERE GroupID = " + adminGroup.getGroupID() +
-						" AND RoleID = " + EnergyCompanyRole.ROLEID +
-						" AND RolePropertyID = " + EnergyCompanyRole.DEFAULT_TIME_ZONE;
-				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-						sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-	        	
-	        	adminGroupUpdated = true;
-			}
         	
 			int routeID = Integer.parseInt(req.getParameter("Route"));
 			updateDefaultRoute( energyCompany, routeID );
+			
+			// Update energy company role DEFAULT_TIME_ZONE if necessary
+			LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
+			boolean adminGroupUpdated = false;
+	        
+	        adminGroupUpdated |= updateGroupRoleProperty(
+	        		adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.DEFAULT_TIME_ZONE, req.getParameter("TimeZone") );
 			
 			String[] operGroupNames = req.getParameter("OperatorGroup").split(",");
 			String operGroupIDs = "";
@@ -601,6 +614,12 @@ public class StarsAdmin extends HttpServlet {
 					operGroupIDs += "," + String.valueOf( group.getGroupID() );
 			}
 			
+			if (operGroupIDs.equals(""))
+				throw new WebClientException( "You must select at least one operator group" );
+			
+			adminGroupUpdated |= updateGroupRoleProperty(
+					adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPERATOR_GROUP_IDS, operGroupIDs );
+			
 			String[] custGroupNames = req.getParameter("CustomerGroup").split(",");
 			String custGroupIDs = "";
 			for (int i = 0; i < custGroupNames.length; i++) {
@@ -617,61 +636,14 @@ public class StarsAdmin extends HttpServlet {
 					custGroupIDs += "," + String.valueOf( group.getGroupID() );
 			}
 			
-			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.OPERATOR_GROUP_IDS, CtiUtilities.STRING_NONE);
-			if (!value.equalsIgnoreCase( operGroupIDs )) {
-				String sql = "UPDATE YukonGroupRole SET Value = '" + operGroupIDs + "'" +
-						" WHERE GroupID = " + adminGroup.getGroupID() +
-						" AND RoleID = " + EnergyCompanyRole.ROLEID +
-						" AND RolePropertyID = " + EnergyCompanyRole.OPERATOR_GROUP_IDS;
-				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-						sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-	        	
-				adminGroupUpdated = true;
-			}
+			adminGroupUpdated |= updateGroupRoleProperty(
+					adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.CUSTOMER_GROUP_IDS, custGroupIDs );
 			
-			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.CUSTOMER_GROUP_IDS, CtiUtilities.STRING_NONE);
-			if (!value.equalsIgnoreCase( custGroupIDs )) {
-				String sql = "UPDATE YukonGroupRole SET Value = '" + custGroupIDs + "'" +
-						" WHERE GroupID = " + adminGroup.getGroupID() +
-						" AND RoleID = " + EnergyCompanyRole.ROLEID +
-						" AND RolePropertyID = " + EnergyCompanyRole.CUSTOMER_GROUP_IDS;
-				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-						sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-	        	
-				adminGroupUpdated = true;
-			}
+			adminGroupUpdated |= updateGroupRoleProperty(
+					adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, req.getParameter("AdminEmail") );
 			
-			String adminEmail = req.getParameter( "AdminEmail" ).trim();
-			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, CtiUtilities.STRING_NONE);
-			
-			if (!value.equalsIgnoreCase( adminEmail )) {
-				String sql = "UPDATE YukonGroupRole SET Value = '" + adminEmail + "'" +
-						" WHERE GroupID = " + adminGroup.getGroupID() +
-						" AND RoleID = " + EnergyCompanyRole.ROLEID +
-						" AND RolePropertyID = " + EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS;
-				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-						sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-	        	
-				adminGroupUpdated = true;
-			}
-			
-			String optOutNotif = req.getParameter( "OptOutNotif" ).trim();
-			value = AuthFuncs.getRolePropValueGroup(adminGroup, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, CtiUtilities.STRING_NONE);
-			
-			if (!value.equalsIgnoreCase( optOutNotif )) {
-				String sql = "UPDATE YukonGroupRole SET Value = '" + optOutNotif + "'" +
-						" WHERE GroupID = " + adminGroup.getGroupID() +
-						" AND RoleID = " + EnergyCompanyRole.ROLEID +
-						" AND RolePropertyID = " + EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS;
-				com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-						sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-	        	
-				adminGroupUpdated = true;
-			}
+			adminGroupUpdated |= updateGroupRoleProperty(
+					adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, req.getParameter("OptOutNotif") );
 			
 			if (adminGroupUpdated)
 				ServerUtils.handleDBChange( adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
