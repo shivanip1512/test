@@ -104,14 +104,14 @@ public class IONEventLogFormat extends ExportFormatBase
 	 */
 	public void parseDatFile()
 	{
-		com.cannontech.message.util.ConfigParmsFile cpf = new com.cannontech.message.util.ConfigParmsFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
+		com.cannontech.common.util.KeysAndValuesFile kavFile = new com.cannontech.common.util.KeysAndValuesFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
 		
-		String[][] keysAndValues = cpf.getKeysAndValues();
+		com.cannontech.common.util.KeysAndValues keysAndValues = kavFile.getKeysAndValues();
 		
 		if( keysAndValues != null )
 		{
-			String keys[] = keysAndValues[0];
-			String values[] = keysAndValues[1];
+			String keys[] = keysAndValues.getKeys();
+			String values[] = keysAndValues.getValues();
 			for (int i = 0; i < keys.length; i++)
 			{
 				if(keys[i].equalsIgnoreCase("DIR"))
