@@ -1082,6 +1082,34 @@ TimeArrival
 );
 go
 
+insert into LMGroupExpressComAddress select distinct SplinterAddress + 1000, 'SPLINTER', SplinterAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set SplinterAddress = SplinterAddress + 1000;
+insert into LMGroupExpressComAddress select distinct UdAddress + 2000, 'USER', UdAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set UdAddress = UdAddress + 2000;
+insert into LMGroupExpressComAddress select distinct ZipCodeAddress + 3000, 'ZIP', ZipCodeAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set ZipCodeAddress = ZipCodeAddress + 3000;
+
+sp_rename 'LMGroupExpressCom.SplinterAddress', 'SplinterID'
+go
+sp_rename 'LMGroupExpressCom.UdAddress', 'UserID'
+go
+sp_rename 'LMGroupExpressCom.ZipCodeAddress', 'ZipID'
+go
+
+alter table LMGroupExpressCom
+   add constraint FK_ExCS_LMExCm foreign key (SplinterID)
+      references LMGroupExpressComAddress (AddressID);
+go
+alter table LMGroupExpressCom
+   add constraint FK_ExCU_LMExCm foreign key (UserID)
+      references LMGroupExpressComAddress (AddressID);
+go
+alter table LMGroupExpressCom
+   add constraint FK_ExCZ_LMExCm foreign key (ZipID)
+      references LMGroupExpressComAddress (AddressID);
+go
+
+
+
+
+
 
 
 

@@ -957,6 +957,26 @@ create index Indx_DYNV_TIME on DynamicVerification (
    TimeArrival ASC
 );
 
+insert into LMGroupExpressComAddress select distinct SplinterAddress + 1000, 'SPLINTER', SplinterAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set SplinterAddress = SplinterAddress + 1000;
+insert into LMGroupExpressComAddress select distinct UdAddress + 2000, 'USER', UdAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set UdAddress = UdAddress + 2000;
+insert into LMGroupExpressComAddress select distinct ZipCodeAddress + 3000, 'ZIP', ZipCodeAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set ZipCodeAddress = ZipCodeAddress + 3000;
+
+alter table LMGroupExpressCom rename column SplinterAddress to SplinterID;
+alter table LMGroupExpressCom rename column UdAddress to UserID;
+alter table LMGroupExpressCom rename column ZipCodeAddress to ZipID;
+
+alter table LMGroupExpressCom
+   add constraint FK_ExCS_LMExCm foreign key (SplinterID)
+      references LMGroupExpressComAddress (AddressID);
+alter table LMGroupExpressCom
+   add constraint FK_ExCU_LMExCm foreign key (UserID)
+      references LMGroupExpressComAddress (AddressID);
+alter table LMGroupExpressCom
+   add constraint FK_ExCZ_LMExCm foreign key (ZipID)
+      references LMGroupExpressComAddress (AddressID);
+
+
+
 
 
 
