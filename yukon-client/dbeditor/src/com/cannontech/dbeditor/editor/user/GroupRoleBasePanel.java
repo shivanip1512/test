@@ -588,6 +588,7 @@ public void setValue(Object o)
 	synchronized( cache )
 	{
 		List grpMembers = (List)cache.getYukonGroupUserMap().get( LiteFactory.createLite(group.getYukonGroup()) ) ;
+		java.util.Collections.sort(grpMembers, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 		
 		if( grpMembers != null )
 			getJListMembers().setListData( grpMembers.toArray() );
