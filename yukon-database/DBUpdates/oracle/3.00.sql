@@ -1358,6 +1358,13 @@ update CTIDatabase set Build = 0;
 alter table CTIDatabase modify Build not null;
 
 
+insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
+insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
+insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
+
+update fdrinterfaceoption set OptionValues='PSEUDO,REAL,CALCULATED' where interfaceid=2 and optionlabel='Category';
+
+
 
 
 /******************************************************************************/
