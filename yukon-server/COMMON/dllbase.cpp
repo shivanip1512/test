@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:24 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/04/16 19:06:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ IM_EX_CTIBASE INT           ModemConnectionTimeout = 60;     // Modem Connection
 IM_EX_CTIBASE int           gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
 IM_EX_CTIBASE bool          gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
 IM_EX_CTIBASE bool          gDNPVerbose = false;
-
+IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 /*
  *  These are global to the ctibase, but
  */
@@ -291,6 +291,21 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             gDoPrefix = true;
         }
     }
+
+    if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_COMM_FAIL_COUNT")).isNull() )
+    {
+        gDefaultCommFailCount = atoi(str.data());
+    }
+    else
+    {
+        gDefaultCommFailCount = 10;
+    }
+    if(DebugLevel & 0x0001)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Default Yukon comm fail count is " << gDefaultCommFailCount << endl;
+    }
+
 }
 
 DLLEXPORT INT getDebugLevel(void)
