@@ -1,7 +1,7 @@
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('2.41', 'Ryan', '20-APR-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany');
+insert into CTIDatabase values('2.41', 'Ryan', '29-APR-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany');
 
 
 /**** CHANGE THE POINT LIMITS PK ****/
@@ -300,7 +300,7 @@ insert into YukonRoleProperty values(-20401,-204,'Individual Switch','true','Con
 insert into YukonRoleProperty values(-20500,-205,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
 
 /* Operator Energy Exchange Role Properties */
-insert into YukonRoleProperty values(-20501,-205,'Energy Buyback Label','The operator specific name for Energy Buyback');
+insert into YukonRoleProperty values(-20501,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
 
 /* Operator Hardware Inventory Role Properties */
 
@@ -313,8 +313,8 @@ insert into YukonRoleProperty values(-30100,-301,'Direct Curtailment Label','Not
 insert into YukonRoleProperty values(-30101,-301,'Direct Curtailment Provider','<curtailment provider>','This customers direct curtailment provider');
 
 /* CICustomer Energy Buyback Role Properties */
-insert into YukonRoleProperty values(-30200,-302,'Energy Buyback Label','The customer specific name for Energy Buyback');
-insert into YukonRoleProperty values(-30201,-302,'Energy Buyback Phone Number','The phone number to call if the customer has questions');
+insert into YukonRoleProperty values(-30200,-302,'Energy Buyback Label','Energy Buyback','The customer specific name for Energy Buyback');
+insert into YukonRoleProperty values(-30201,-302,'Energy Buyback Phone Number','1-800-555-5555','The phone number to call if the customer has questions');
 
 /* CICustomer Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-30300,-303,'View Drawings','true','Controls viewing of Esubstations drawings');
