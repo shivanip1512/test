@@ -77,6 +77,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private StarsEnrollmentPrograms starsEnrPrograms = null;
 	private StarsCustomerFAQs starsCustFAQs = null;
 	private StarsServiceCompanies starsServCompanies = null;
+	private StarsExitInterviewQuestions starsExitQuestions = null;
+	private StarsDefaultThermostatSettings starsThermSettings = null;
 	private Hashtable starsCustSelLists = null;	// Map String(list name) to StarsSelectionListEntry
 	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
@@ -203,10 +205,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		nextOrderNo = 0;
 		
 		starsEnergyCompany = null;
-		starsCustSelLists = null;
 		starsEnrPrograms = null;
 		starsCustFAQs = null;
 		starsServCompanies = null;
+		starsExitQuestions = null;
+		starsThermSettings = null;
+		starsCustSelLists = null;
 		starsWebConfigs = null;
 		starsCustAcctInfos = null;
 	}
@@ -424,6 +428,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized void loadDefaultThermostatSettings() {
 		if (dftThermSettings != null && thermModeSettings != null) return;
+		boolean useDefault = false;
 		
 		String sql = "SELECT inv.InventoryID FROM ECToInventoryMapping map, "
 				   + com.cannontech.database.db.stars.hardware.InventoryBase.TABLE_NAME + " inv "
@@ -460,8 +465,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			        		thermModeSettings[j][1] = StarsThermoModeSettings.HEAT;
 			        }
 		        }
+		        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+		        	useDefault = true;
 		        else
-					CTILogger.info( "No default thermostat schedules found for energy company #" + getEnergyCompanyID() );
+					CTILogger.info( "No default thermostat schedules found!!!" );
 		        
 		        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
 		        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(dftInventoryID) );
@@ -470,23 +477,54 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		        		dftThermSettings.getThermostatManualEvents().add(
 		        			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
 		        }
+		        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+		        	useDefault = true;
 		        else
-					CTILogger.info( "No default thermostat option found for energy company #" + getEnergyCompanyID() );
-				
-				CTILogger.info( "Default thermostat settings loaded for energy company #" + getEnergyCompanyID() );
+					CTILogger.info( "No default thermostat option found!!!" );
 			}
+	        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+	        	useDefault = true;
+	        else
+				CTILogger.info( "No default thermostat settings found!!!" );
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		if (useDefault) {
+			LiteStarsThermostatSettings settings = SOAPServer.getDefaultEnergyCompany().getDefaultThermostatSettings();
+			if (dftThermSettings == null) {
+				dftThermSettings = new LiteStarsThermostatSettings();
+				dftThermSettings.setInventoryID( settings.getInventoryID() );
+			}
+			
+			if (dftThermSettings.getThermostatSeasons().size() == 0) {
+				dftThermSettings.setThermostatSeasons( settings.getThermostatSeasons() );
+				
+				thermModeSettings = new Object[ dftThermSettings.getThermostatSeasons().size() ][];
+				for (int i = 0; i < dftThermSettings.getThermostatSeasons().size(); i++) {
+					LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftThermSettings.getThermostatSeasons().get(i);
+					
+					thermModeSettings[i] = new Object[2];
+					thermModeSettings[i][0] = new Integer(liteSeason.getWebConfigurationID());
+		        	LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
+		        	if (liteConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
+		        		thermModeSettings[i][1] = StarsThermoModeSettings.COOL;
+		        	else
+		        		thermModeSettings[i][1] = StarsThermoModeSettings.HEAT;
+				}
+			}
+			
+			if (dftThermSettings.getThermostatManualEvents().size() == 0)
+				dftThermSettings.setThermostatManualEvents( settings.getThermostatManualEvents() );
+		}
+		
+		CTILogger.info( "Default thermostat settings loaded for energy company #" + getEnergyCompanyID() );
 	}
 	
 	public synchronized LiteStarsThermostatSettings getDefaultThermostatSettings() {
-		if (dftThermSettings == null) {
+		if (dftThermSettings == null)
 			loadDefaultThermostatSettings();
-			if (dftThermSettings == null && getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
-				dftThermSettings = SOAPServer.getDefaultEnergyCompany().getDefaultThermostatSettings();
-		}
 		return dftThermSettings;
 	}
 	
@@ -966,7 +1004,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(inventoryID) );
         if (events != null) {
         	for (int i = 0; i < events.length; i++)
-        		dftThermSettings.getThermostatManualEvents().add(
+        		settings.getThermostatManualEvents().add(
         			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
         }
         
@@ -1484,6 +1522,31 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return starsServCompanies;
+	}
+	
+	public StarsExitInterviewQuestions getStarsExitInterviewQuestions() {
+		if (starsExitQuestions == null) {
+			starsExitQuestions = new StarsExitInterviewQuestions();
+            
+            int exitQType = getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
+            LiteInterviewQuestion[] liteQuestions = getInterviewQuestions( exitQType );
+            for (int i = 0; i < liteQuestions.length; i++) {
+            	StarsExitInterviewQuestion starsQuestion = new StarsExitInterviewQuestion();
+            	StarsLiteFactory.setStarsQuestionAnswer( starsQuestion, liteQuestions[i] );
+            	starsExitQuestions.addStarsExitInterviewQuestion( starsQuestion );
+            }
+		}
+		
+		return starsExitQuestions;
+	}
+	
+	public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() {
+		if (starsThermSettings == null) {
+			starsThermSettings = new StarsDefaultThermostatSettings();
+			StarsLiteFactory.setStarsThermostatSettings( starsThermSettings, getDefaultThermostatSettings(), getLiteID() );
+		}
+		
+		return starsThermSettings;
 	}
 	
 	private Hashtable getStarsWebConfigs() {
