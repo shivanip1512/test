@@ -2159,7 +2159,7 @@ create table DynamicImportStatus  (
    Entry                VARCHAR2(64)                    not null,
    LastImportTime       VARCHAR2(64)                    not null,
    NextImportTime       VARCHAR2(64)                    not null,
-   TotalSuccess         VARCHAR2(32)                    not null,
+   TotalSuccesses       VARCHAR2(32)                    not null,
    TotalAttempts        VARCHAR2(32)                    not null,
    ForceImport          CHAR(1)                         not null
 );

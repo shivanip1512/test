@@ -3811,7 +3811,7 @@ create table DynamicImportStatus (
    Entry                varchar(64)          not null,
    LastImportTime       varchar(64)          not null,
    NextImportTime       varchar(64)          not null,
-   TotalSuccess         varchar(32)          not null,
+   TotalSuccesses       varchar(32)          not null,
    TotalAttempts        varchar(32)          not null,
    ForceImport          char(1)              not null
 )
