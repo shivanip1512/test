@@ -88,6 +88,14 @@
     com.cannontech.servlet.YukonSwitchCommand</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>CommanderServlet</servlet-name>
+    <display-name>CommanderServlet</display-name>
+    <description>Send operation commmands to deviceID.</description>
+    <servlet-class>
+    com.cannontech.servlet.CommanderServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
     <servlet-name>CurtailmentServlet</servlet-name>
     <display-name>CurtailmentServlet</display-name>
     <description>Handles acknowledging of mandatory
