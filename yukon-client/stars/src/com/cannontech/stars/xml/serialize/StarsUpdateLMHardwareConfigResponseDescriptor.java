@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsGetLMControlHistoryDescriptor.java,v 1.71 2004/05/04 16:10:38 zyao Exp $
+ * $Id: StarsUpdateLMHardwareConfigResponseDescriptor.java,v 1.2 2004/05/04 16:10:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.71 $ $Date: 2004/05/04 16:10:38 $
+ * @version $Revision: 1.2 $ $Date: 2004/05/04 16:10:35 $
 **/
-public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsUpdateLMHardwareConfigResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
      //- Constructors -/
     //----------------/
 
-    public StarsGetLMControlHistoryDescriptor() {
+    public StarsUpdateLMHardwareConfigResponseDescriptor() {
         super();
-        xmlName = "stars-GetLMControlHistory";
+        xmlName = "stars-UpdateLMHardwareConfigResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,126 +60,103 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
         
         //-- initialize element descriptors
         
-        //-- _groupID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "GroupID", NodeType.Element);
+        //-- _starsLMPrograms
+        desc = new XMLFieldDescriptorImpl(StarsLMPrograms.class, "_starsLMPrograms", "stars-LMPrograms", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
-                if(!target.hasGroupID())
-                    return null;
-                return new Integer(target.getGroupID());
+                StarsUpdateLMHardwareConfigResponse target = (StarsUpdateLMHardwareConfigResponse) object;
+                return target.getStarsLMPrograms();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
-                    // ignore null values for non optional primitives
-                    if (value == null) return;
-                    
-                    target.setGroupID( ((Integer)value).intValue());
+                    StarsUpdateLMHardwareConfigResponse target = (StarsUpdateLMHardwareConfigResponse) object;
+                    target.setStarsLMPrograms( (StarsLMPrograms) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _groupID
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _period
-        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class, "_period", "Period", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
-                return target.getPeriod();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
-                    target.setPeriod( (com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class, handler));
-        desc.setImmutable(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _period
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _getSummary
-        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_getSummary", "GetSummary", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
-                if(!target.hasGetSummary())
-                    return null;
-                return new Boolean(target.getGetSummary());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsGetLMControlHistory target = (StarsGetLMControlHistory) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteGetSummary();
-                        return;
-                    }
-                    target.setGetSummary( ((Boolean)value).booleanValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsLMPrograms();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _getSummary
+        //-- validation code for: _starsLMPrograms
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            BooleanValidator bv = new BooleanValidator();
-            fieldValidator.setValidator(bv);
-        }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetLMControlHistoryDescriptor()
+        //-- _starsAppliances
+        desc = new XMLFieldDescriptorImpl(StarsAppliances.class, "_starsAppliances", "stars-Appliances", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUpdateLMHardwareConfigResponse target = (StarsUpdateLMHardwareConfigResponse) object;
+                return target.getStarsAppliances();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUpdateLMHardwareConfigResponse target = (StarsUpdateLMHardwareConfigResponse) object;
+                    target.setStarsAppliances( (StarsAppliances) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsAppliances();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsAppliances
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsInventories
+        desc = new XMLFieldDescriptorImpl(StarsInventories.class, "_starsInventories", "stars-Inventories", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUpdateLMHardwareConfigResponse target = (StarsUpdateLMHardwareConfigResponse) object;
+                return target.getStarsInventories();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUpdateLMHardwareConfigResponse target = (StarsUpdateLMHardwareConfigResponse) object;
+                    target.setStarsInventories( (StarsInventories) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsInventories();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsInventories
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponseDescriptor()
 
 
       //-----------/
@@ -211,7 +188,7 @@ public class StarsGetLMControlHistoryDescriptor extends org.exolab.castor.xml.ut
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetLMControlHistory.class;
+        return com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponse.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

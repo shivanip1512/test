@@ -12,7 +12,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
@@ -24,7 +23,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -81,15 +79,15 @@ public class CreateLMHardwareAction implements ActionBase {
 				session.removeAttribute( InventoryManager.STARS_INVENTORY_OPERATION );
 			}
 			
-            return SOAPUtil.buildSOAPMessage( operation );
-        }
-        catch (WebClientException we) {
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (WebClientException we) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, we.getMessage() );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
 		return null;
 	}
@@ -98,68 +96,61 @@ public class CreateLMHardwareAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-        	if (liteAcctInfo == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-        	}
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			if (liteAcctInfo == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
         	
-        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         	
-            StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
-            LiteInventoryBase liteInv = null;
+			StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
+			LiteInventoryBase liteInv = null;
             
-            try {
+			try {
 				liteInv = addInventory( createHw, liteAcctInfo, energyCompany );
-				
-				// Send config command
-				if (liteInv instanceof LiteStarsLMHardware &&
-					AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION ))
-				{
-					YukonSwitchCommandAction.sendConfigCommand(energyCompany, (LiteStarsLMHardware)liteInv, false);
-				}
-            }
-            catch (WebClientException e) {
+			}
+			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			}
             
 			// Response will be handled here, instead of in parse()
-            StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-            if (starsAcctInfo != null) {
+			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+			if (starsAcctInfo != null) {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
 				parseResponse( createHw, starsInv, starsAcctInfo, session );
-            }
+			}
             
-            respOper.setStarsSuccess( new StarsSuccess() );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			respOper.setStarsSuccess( new StarsSuccess() );
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to create the hardware") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to create the hardware") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
         
 		return null;
 	}
@@ -168,8 +159,8 @@ public class CreateLMHardwareAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -177,29 +168,18 @@ public class CreateLMHardwareAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	public static StarsOperation getRequestOperation(HttpServletRequest req, TimeZone tz) throws WebClientException {
 		StarsCreateLMHardware createHw = new StarsCreateLMHardware();
 		InventoryManager.setStarsInv( createHw, req, tz );
-		
-		String[] appIDs = req.getParameterValues( "AppID" );
-		String[] grpIDs = req.getParameterValues( "GroupID" );
-		if (appIDs != null && createHw.getLMHardware() != null) {
-			for (int i = 0; i < appIDs.length; i++) {
-				StarsLMHardwareConfig config = new StarsLMHardwareConfig();
-				config.setApplianceID( Integer.parseInt(appIDs[i]) );
-				config.setGroupID( Integer.parseInt(grpIDs[i]) );
-				createHw.getLMHardware().addStarsLMHardwareConfig( config );
-			}
-		}
 		
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsCreateLMHardware( createHw );

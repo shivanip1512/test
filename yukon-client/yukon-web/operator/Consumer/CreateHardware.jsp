@@ -297,69 +297,6 @@ function confirmCancel() {
                           </td>
                         </tr>
                       </table>
-<%
-	if (inventory.getLMHardware() != null && appliances != null) {
-%>
-                      <br>
-                      <span class="Subtext">Select all programs controlled by this 
-                      hardware, and assign groups to them:</span><br>
-                      <table width="300" border="1" cellspacing="0" cellpadding="3">
-                        <tr> 
-                          <td width="10%" class="HeaderCell">&nbsp; </td>
-                          <td width="40%" class="HeaderCell">Program</td>
-                          <td width="50%" class="HeaderCell">Assigned Group</td>
-                        </tr>
-<%
-	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-		StarsAppliance appliance = appliances.getStarsAppliance(i);
-		if (appliance.getInventoryID() == 0 && appliance.getLmProgramID() > 0) {
-			StarsEnrLMProgram program = null;
-			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-				if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
-					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-						StarsEnrLMProgram prog = category.getStarsEnrLMProgram(k);
-						if (prog.getProgramID() == appliance.getLmProgramID()) {
-							program = prog;
-							break;
-						}
-					}
-					break;
-				}
-			}
-			boolean disabled = (program == null || program.getAddressingGroupCount() == 0);
-%>
-                        <tr> 
-                          <td width="27" height="2"> 
-                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)"
-							 <%= (disabled)? "disabled" : "" %>>
-                          </td>
-                          <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                          <td width="89" height="2"> 
-                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled>
-<%
-			if (disabled) {
-%>
-                              <option value="0">(none)</option>
-<%
-			} else {
-				for (int j = 0; j < program.getAddressingGroupCount(); j++) {
-					AddressingGroup group = program.getAddressingGroup(j);
-%>
-                              <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
-<%
-				}
-			}
-%>
-                            </select>
-                          </td>
-                        </tr>
-<%
-		}
-	}
-%>
-                      </table>
-<%	} %>
                     </td>
                   </tr>
                 </table>

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
@@ -20,6 +21,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -40,16 +42,22 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
+import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
+import com.cannontech.stars.xml.serialize.SULMProgram;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
+import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
+import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponse;
 import com.cannontech.stars.xml.serialize.Voltage;
 
 /**
@@ -839,25 +847,8 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			SwitchCommandQueue.SwitchCommand[] commands =
-					energyCompany.getSwitchCommandQueue().getCommands( user.getEnergyCompanyID() );
-			if (commands.length == 0) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There is no scheduled switch command");
-				return;
-			}
-			
-			for (int i = 0; i < commands.length; i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(commands[i].getInventoryID(), true);
-				
-				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
-				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-					YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
-				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
-			}
-			
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, commands.length + " scheduled switch commands sent out successfully");
+			sendSwitchCommands( energyCompany, user.getUserID() );
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Batched switch commands sent out successfully");
 		}
 		catch (WebClientException e) {
 			e.printStackTrace();
@@ -1031,6 +1022,67 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		return devList;
+	}
+	
+	public static void sendSwitchCommands(LiteStarsEnergyCompany energyCompany, int userID) throws WebClientException {
+		SwitchCommandQueue queue = energyCompany.getSwitchCommandQueue();
+		if (queue == null)
+			throw new WebClientException( "Failed to retrieve the batched switch commands" );
+		
+		SwitchCommandQueue.SwitchCommand[] commands = queue.getCommands( energyCompany.getLiteID() );
+		if (commands.length == 0)
+			throw new WebClientException( "There is no batched switch command" );
+		
+		for (int i = 0; i < commands.length; i++) {
+			try {
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(commands[i].getInventoryID(), true);
+				
+				StarsCustAccountInformation starsAcctInfo = null;
+				if (liteHw.getAccountID() > 0)
+					starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+				
+				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ) &&	commands[i].getInfoString() != null) {
+					// The config command is submitted from the hardware configuration page
+					// The info string is in the form of "program_id1,group_id1,program_id2,group_id2,..."
+					String[] tokens = commands[i].getInfoString().split(",");
+					StarsProgramSignUp progSignUp = new StarsProgramSignUp();
+					progSignUp.setStarsSULMPrograms( new StarsSULMPrograms() );
+					
+					for (int j = 0; j < tokens.length / 2; j++) {
+						SULMProgram suProg = new SULMProgram();
+						suProg.setProgramID( Integer.parseInt(tokens[j*2]) );
+						suProg.setAddressingGroupID( Integer.parseInt(tokens[j*2+1]) );
+						progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
+					}
+					
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( commands[i].getAccountID(), true );
+					
+					StarsUpdateLMHardwareConfigResponse resp = UpdateLMHardwareConfigAction.updateLMHardwareConfig(
+							progSignUp, liteHw, liteAcctInfo, userID, energyCompany );
+					
+					if (starsAcctInfo != null)
+						UpdateLMHardwareConfigAction.parseResponse( starsAcctInfo, resp );
+				}
+				else {
+					if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
+						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+					else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
+						YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
+					else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
+						YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
+					
+					if (starsAcctInfo != null) {
+						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+						YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
+					}
+				}
+			}
+			catch (WebClientException e) {
+				String errorMsg = "Error in command '" + commands[i].toString() + "'" +
+						System.getProperty( "line.separator" ) + e.getMessage();
+				CTILogger.error( errorMsg, e );
+			}
+		}
 	}
 
 }

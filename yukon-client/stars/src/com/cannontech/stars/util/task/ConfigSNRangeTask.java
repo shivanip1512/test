@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -22,6 +23,8 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.web.servlet.InventoryManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 
 /**
  * @author yao
@@ -77,10 +80,18 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeConfigured > 0) {
-			if (status == STATUS_FINISHED)
-				return numToBeConfigured + " hardwares configured successfully";
-			else
-				return numSuccess + " of " + numToBeConfigured + " hardwares configured";
+			if (configNow) {
+				if (status == STATUS_FINISHED)
+					return numToBeConfigured + " hardwares configured successfully";
+				else
+					return numSuccess + " of " + numToBeConfigured + " hardwares configured";
+			}
+			else {
+				if (status == STATUS_FINISHED)
+					return numToBeConfigured + " hardware configuration saved to batch successfully";
+				else
+					return numSuccess + " of " + numToBeConfigured + " hardware configuration saved to batch";
+			}
 		}
 		else {
 			if (status == STATUS_FINISHED)
@@ -137,12 +148,20 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			try {
 				if (configNow) {
 					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true);
+					
+					if (liteHw.getAccountID() > 0) {
+						StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+						if (starsAcctInfo != null) {
+							StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+							YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
+						}
+					}
 				}
 				else {
 					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
 					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
+					cmd.setAccountID( liteHw.getAccountID() );
 					cmd.setInventoryID( invID.intValue() );
-					cmd.setSerialNumber( liteHw.getManufacturerSerialNumber() );
 					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
 					cmdQueue.addCommand( cmd, false );
 				}

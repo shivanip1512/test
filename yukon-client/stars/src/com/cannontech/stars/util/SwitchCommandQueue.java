@@ -26,9 +26,10 @@ public class SwitchCommandQueue {
 	
 	public static class SwitchCommand {
 		private int energyCompanyID = 0;
+		private int accountID = 0;
 		private int inventoryID = 0;
-		private String serialNumber = null;
 		private String commandType = null;
+		private String infoString = null;
 		
 		public String getCommandType() {
 			return commandType;
@@ -40,10 +41,6 @@ public class SwitchCommandQueue {
 
 		public int getInventoryID() {
 			return inventoryID;
-		}
-
-		public String getSerialNumber() {
-			return serialNumber;
 		}
 
 		public void setCommandType(String string) {
@@ -58,9 +55,52 @@ public class SwitchCommandQueue {
 			inventoryID = i;
 		}
 
-		public void setSerialNumber(String string) {
-			serialNumber = string;
+		/**
+		 * @return
+		 */
+		public int getAccountID() {
+			return accountID;
 		}
+
+		/**
+		 * @param i
+		 */
+		public void setAccountID(int i) {
+			accountID = i;
+		}
+
+		/**
+		 * @return
+		 */
+		public String getInfoString() {
+			return infoString;
+		}
+
+		/**
+		 * @param string
+		 */
+		public void setInfoString(String string) {
+			infoString = string;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		public String toString() {
+			StringBuffer line = new StringBuffer();
+			line.append( getEnergyCompanyID() )
+				.append( " " )
+				.append( getAccountID() )
+				.append( " " )
+				.append( getInventoryID() )
+				.append( " " )
+				.append( getCommandType() );
+			if (getInfoString() != null)
+				line.append( " " ).append( getInfoString() );
+			
+			return line.toString();
+		}
+
 	}
 	
 	public static final String SWITCH_COMMAND_ENABLE = "Enable";
@@ -95,9 +135,11 @@ public class SwitchCommandQueue {
 				StringTokenizer st = new StringTokenizer( line );
 				SwitchCommand cmd = new SwitchCommand();
 				cmd.setEnergyCompanyID( Integer.parseInt(st.nextToken()) );
+				cmd.setAccountID( Integer.parseInt(st.nextToken()) );
 				cmd.setInventoryID( Integer.parseInt(st.nextToken()) );
-				cmd.setSerialNumber( st.nextToken() );
 				cmd.setCommandType( st.nextToken() );
+				if (st.hasMoreTokens())
+					cmd.setInfoString( st.nextToken() );
 				switchCommands.add( cmd );
 			}
 		}
@@ -116,39 +158,22 @@ public class SwitchCommandQueue {
 	
 	private void syncToFile() {
 		PrintWriter fw = null;
+		ArrayList cmdsToWrite = null;
 		
 		try {
 			if (reCreateFile) {
 				fw = new PrintWriter( new FileWriter(diskFile, false) );
-				for (int i = 0; i < switchCommands.size(); i++) {
-					SwitchCommand cmd = (SwitchCommand) switchCommands.get(i);
-					StringBuffer line = new StringBuffer();
-					line.append( cmd.getEnergyCompanyID() )
-						.append( " " )
-						.append( cmd.getInventoryID() )
-						.append( " " )
-						.append( cmd.getSerialNumber() )
-						.append( " " )
-						.append( cmd.getCommandType() );
-					fw.println( line.toString() );
-				}
+				cmdsToWrite = switchCommands;
 			}
 			else {
 				if (newCommands.size() == 0) return;
-				
 				fw = new PrintWriter( new FileWriter(diskFile, true) );
-				for (int i = 0; i < newCommands.size(); i++) {
-					SwitchCommand cmd = (SwitchCommand) newCommands.get(i);
-					StringBuffer line = new StringBuffer();
-					line.append( cmd.getEnergyCompanyID() )
-						.append( " " )
-						.append( cmd.getInventoryID() )
-						.append( " " )
-						.append( cmd.getSerialNumber() )
-						.append( " " )
-						.append( cmd.getCommandType() );
-					fw.println( line.toString() );
-				}
+				cmdsToWrite = newCommands;
+			}
+			
+			for (int i = 0; i < cmdsToWrite.size(); i++) {
+				SwitchCommand cmd = (SwitchCommand) cmdsToWrite.get(i);
+				fw.println( cmd.toString() );
 			}
 		}
 		catch (Exception e) {

@@ -46,6 +46,13 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     **/
     private boolean _has_groupID;
 
+    private int _programID;
+
+    /**
+     * keeps track of state for field: _programID
+    **/
+    private boolean _has_programID;
+
 
       //----------------/
      //- Constructors -/
@@ -75,6 +82,13 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     } //-- void deleteGroupID() 
 
     /**
+    **/
+    public void deleteProgramID()
+    {
+        this._has_programID= false;
+    } //-- void deleteProgramID() 
+
+    /**
      * Returns the value of field 'applianceID'.
      * 
      * @return the value of field 'applianceID'.
@@ -95,6 +109,16 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     } //-- int getGroupID() 
 
     /**
+     * Returns the value of field 'programID'.
+     * 
+     * @return the value of field 'programID'.
+    **/
+    public int getProgramID()
+    {
+        return this._programID;
+    } //-- int getProgramID() 
+
+    /**
     **/
     public boolean hasApplianceID()
     {
@@ -107,6 +131,13 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
     {
         return this._has_groupID;
     } //-- boolean hasGroupID() 
+
+    /**
+    **/
+    public boolean hasProgramID()
+    {
+        return this._has_programID;
+    } //-- boolean hasProgramID() 
 
     /**
     **/
@@ -166,6 +197,17 @@ public class StarsLMHardwareConfig implements java.io.Serializable {
         this._groupID = groupID;
         this._has_groupID = true;
     } //-- void setGroupID(int) 
+
+    /**
+     * Sets the value of field 'programID'.
+     * 
+     * @param programID the value of field 'programID'.
+    **/
+    public void setProgramID(int programID)
+    {
+        this._programID = programID;
+        this._has_programID = true;
+    } //-- void setProgramID(int) 
 
     /**
      * 

@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.stars.util.task.DailyTimerTask;
 import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.RefreshTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
@@ -28,6 +29,7 @@ public class TimerTaskServlet extends HttpServlet {
 	private static Timer timer = new Timer();
     
 	private static StarsTimerTask[] timerTasks = {
+		new DailyTimerTask(),
 		new HourlyTimerTask(),
 		new RefreshTimerTask()
 	};

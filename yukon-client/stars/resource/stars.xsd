@@ -388,6 +388,7 @@
 				<xs:element ref="stars-CreateApplianceResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateAppliance" minOccurs="0"/>
 				<xs:element ref="stars-DeleteAppliance" minOccurs="0"/>
+				<xs:element ref="stars-DeleteApplianceResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateLMHardware" minOccurs="0"/>
 				<xs:element ref="stars-CreateLMHardwareResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLMHardware" minOccurs="0"/>
@@ -407,6 +408,7 @@
 				<xs:element ref="stars-SendOddsForControl" minOccurs="0"/>
 				<xs:element ref="stars-UpdateResidenceInformation" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLMHardwareConfig" minOccurs="0"/>
+				<xs:element ref="stars-UpdateLMHardwareConfigResponse" minOccurs="0"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -418,7 +420,8 @@
 						<xs:attribute name="programID" type="xs:int"/>
 						<xs:attribute name="applianceCategoryID" type="xs:int"/>
 						<xs:attribute name="addressingGroupID" type="xs:int"/>
-					<xs:attribute name="inventoryID"/></xs:complexType>
+						<xs:attribute name="inventoryID"/>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
@@ -449,7 +452,7 @@
 			<xs:sequence>
 				<xs:element ref="stars-LMPrograms" minOccurs="0"/>
 				<xs:element ref="stars-Appliances" minOccurs="0"/>
-				<xs:element ref="stars-Inventories" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="stars-Inventories" minOccurs="0"/>
 				<xs:element name="Description" minOccurs="0" type="xs:string"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -788,6 +791,7 @@
 		<xs:complexType>
 			<xs:attribute name="applianceID" type="xs:int"/>
 			<xs:attribute name="groupID" type="xs:int"/>
+			<xs:attribute name="programID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-WebConfig">
@@ -844,6 +848,13 @@
 	<xs:element name="stars-DeleteAppliance">
 		<xs:complexType>
 			<xs:attribute name="applianceID" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-DeleteApplianceResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-LMPrograms"/>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CreateLMHardware" type="stars-Inv"/>
@@ -1132,6 +1143,16 @@
 				<xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int"/>
+			<xs:attribute name="saveToBatch" type="xs:boolean"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-UpdateLMHardwareConfigResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-LMPrograms" minOccurs="0"/>
+				<xs:element ref="stars-Appliances" minOccurs="0"/>
+				<xs:element ref="stars-Inventories" minOccurs="0"/>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

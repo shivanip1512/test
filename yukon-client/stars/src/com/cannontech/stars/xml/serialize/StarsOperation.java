@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.70 2004/04/22 17:07:34 zyao Exp $
+ * $Id: StarsOperation.java,v 1.71 2004/05/04 16:10:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.70 $ $Date: 2004/04/22 17:07:34 $
+ * @version $Revision: 1.71 $ $Date: 2004/05/04 16:10:35 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -124,6 +124,8 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsDeleteAppliance _starsDeleteAppliance;
 
+    private StarsDeleteApplianceResponse _starsDeleteApplianceResponse;
+
     private StarsCreateLMHardware _starsCreateLMHardware;
 
     private StarsCreateLMHardwareResponse _starsCreateLMHardwareResponse;
@@ -161,6 +163,8 @@ public class StarsOperation implements java.io.Serializable {
     private StarsUpdateResidenceInformation _starsUpdateResidenceInformation;
 
     private StarsUpdateLMHardwareConfig _starsUpdateLMHardwareConfig;
+
+    private StarsUpdateLMHardwareConfigResponse _starsUpdateLMHardwareConfigResponse;
 
 
       //----------------/
@@ -277,6 +281,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsDeleteAppliance;
     } //-- StarsDeleteAppliance getStarsDeleteAppliance() 
+
+    /**
+     * Returns the value of field 'starsDeleteApplianceResponse'.
+     * 
+     * @return the value of field 'starsDeleteApplianceResponse'.
+    **/
+    public StarsDeleteApplianceResponse getStarsDeleteApplianceResponse()
+    {
+        return this._starsDeleteApplianceResponse;
+    } //-- StarsDeleteApplianceResponse getStarsDeleteApplianceResponse() 
 
     /**
      * Returns the value of field 'starsDeleteCallReport'.
@@ -653,6 +667,18 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsUpdateLMHardwareConfig getStarsUpdateLMHardwareConfig() 
 
     /**
+     * Returns the value of field
+     * 'starsUpdateLMHardwareConfigResponse'.
+     * 
+     * @return the value of field
+     * 'starsUpdateLMHardwareConfigResponse'.
+    **/
+    public StarsUpdateLMHardwareConfigResponse getStarsUpdateLMHardwareConfigResponse()
+    {
+        return this._starsUpdateLMHardwareConfigResponse;
+    } //-- StarsUpdateLMHardwareConfigResponse getStarsUpdateLMHardwareConfigResponse() 
+
+    /**
      * Returns the value of field 'starsUpdateLMHardwareResponse'.
      * 
      * @return the value of field 'starsUpdateLMHardwareResponse'.
@@ -940,6 +966,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsDeleteAppliance = starsDeleteAppliance;
     } //-- void setStarsDeleteAppliance(StarsDeleteAppliance) 
+
+    /**
+     * Sets the value of field 'starsDeleteApplianceResponse'.
+     * 
+     * @param starsDeleteApplianceResponse the value of field
+     * 'starsDeleteApplianceResponse'.
+    **/
+    public void setStarsDeleteApplianceResponse(StarsDeleteApplianceResponse starsDeleteApplianceResponse)
+    {
+        this._starsDeleteApplianceResponse = starsDeleteApplianceResponse;
+    } //-- void setStarsDeleteApplianceResponse(StarsDeleteApplianceResponse) 
 
     /**
      * Sets the value of field 'starsDeleteCallReport'.
@@ -1341,6 +1378,18 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateLMHardwareConfig = starsUpdateLMHardwareConfig;
     } //-- void setStarsUpdateLMHardwareConfig(StarsUpdateLMHardwareConfig) 
+
+    /**
+     * Sets the value of field
+     * 'starsUpdateLMHardwareConfigResponse'.
+     * 
+     * @param starsUpdateLMHardwareConfigResponse the value of
+     * field 'starsUpdateLMHardwareConfigResponse'.
+    **/
+    public void setStarsUpdateLMHardwareConfigResponse(StarsUpdateLMHardwareConfigResponse starsUpdateLMHardwareConfigResponse)
+    {
+        this._starsUpdateLMHardwareConfigResponse = starsUpdateLMHardwareConfigResponse;
+    } //-- void setStarsUpdateLMHardwareConfigResponse(StarsUpdateLMHardwareConfigResponse) 
 
     /**
      * Sets the value of field 'starsUpdateLMHardwareResponse'.

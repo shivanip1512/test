@@ -115,6 +115,25 @@ public class OptOutEventQueue {
 			this.energyCompanyID = energyCompanyID;
 		}
 
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		public String toString() {
+			StringBuffer line = new StringBuffer();
+			line.append( getEnergyCompanyID() )
+				.append( " " )
+				.append( getStartDateTime() )
+				.append( " " )
+				.append( getPeriod() )
+				.append( " " )
+				.append( getAccountID() )
+				.append( " \"" )
+				.append( getCommand() )
+				.append( "\"" );
+			
+			return line.toString();
+		}
+
 	}
 	
 	private File diskFile = null;
@@ -153,44 +172,22 @@ public class OptOutEventQueue {
 	
 	private void syncToFile() {
 		PrintWriter fw = null;
+		ArrayList events = null;
+		
 		try {
 			if (reCreateFile) {
 				fw = new PrintWriter( new FileWriter(diskFile, false) );
-				for (int i = 0; i < optOutEvents.size(); i++) {
-					OptOutEvent event = (OptOutEvent) optOutEvents.get(i);
-					StringBuffer line = new StringBuffer();
-					line.append( event.getEnergyCompanyID() )
-						.append( " " )
-						.append( event.getStartDateTime() )
-						.append( " " )
-						.append( event.getPeriod() )
-						.append( " " )
-						.append( event.getAccountID() )
-						.append( " \"" )
-						.append( event.getCommand() )
-						.append( "\"" );
-					fw.println( line.toString() );
-				}
+				events = optOutEvents;
 			}
 			else {
 				if (newEvents.size() == 0) return;
-				
 				fw = new PrintWriter( new FileWriter(diskFile, true) );
-				for (int i = 0; i < newEvents.size(); i++) {
-					OptOutEvent event = (OptOutEvent) newEvents.get(i);
-					StringBuffer line = new StringBuffer();
-					line.append( event.getEnergyCompanyID() )
-						.append( " " )
-						.append( event.getStartDateTime() )
-						.append( " " )
-						.append( event.getPeriod() )
-						.append( " " )
-						.append( event.getAccountID() )
-						.append( " \"" )
-						.append( event.getCommand() )
-						.append( "\"" );
-					fw.println( line.toString() );
-				}
+				events = newEvents;
+			}
+			
+			for (int i = 0; i < events.size(); i++) {
+				OptOutEvent event = (OptOutEvent) events.get(i);
+				fw.println( event.toString() );
 			}
 		}
 		catch (Exception e) {
@@ -199,6 +196,7 @@ public class OptOutEventQueue {
 		finally {
 			if (fw != null) fw.close();
 		}
+		
 		reCreateFile = false;
 		newEvents.clear();
 	}

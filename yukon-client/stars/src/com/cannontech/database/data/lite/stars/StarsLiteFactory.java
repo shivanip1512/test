@@ -1197,6 +1197,45 @@ public class StarsLiteFactory {
 		starsRes.setNotes( liteRes.getNotes() );
 	}
 	
+	public static StarsLMPrograms createStarsLMPrograms(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
+		StarsLMPrograms starsProgs = new StarsLMPrograms();
+		
+		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, energyCompany) );
+		}
+		
+		starsProgs.setStarsLMProgramHistory( createStarsLMProgramHistory(liteAcctInfo.getProgramHistory()) );
+		
+		return starsProgs;
+	}
+	
+	public static StarsAppliances createStarsAppliances(ArrayList liteApps, LiteStarsEnergyCompany energyCompany) {
+		StarsAppliances starsApps = new StarsAppliances();
+		
+		TreeMap appMap = new TreeMap();
+		for (int i = 0; i < liteApps.size(); i++) {
+			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
+			StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompany);
+			
+			ArrayList list = (ArrayList) appMap.get( starsApp.getDescription() );
+			if (list == null) {
+				list = new ArrayList();
+				appMap.put( starsApp.getDescription(), list );
+			}
+			list.add( starsApp );
+		}
+		
+		Iterator it = appMap.values().iterator();
+		while (it.hasNext()) {
+			ArrayList list = (ArrayList) it.next();
+			for (int i = 0; i < list.size(); i++)
+				starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
+		}
+		
+		return starsApps;
+	}
+	
 	public static void setStarsCustAccountInformation(StarsCustAccountInformation starsAcctInfo, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
 		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
@@ -1247,25 +1286,15 @@ public class StarsLiteFactory {
 			starsAcctInfo.setStarsResidenceInformation( residence );
 		}
 		
-		ArrayList liteProgs = liteAcctInfo.getLmPrograms();
-		StarsLMPrograms starsProgs = new StarsLMPrograms();
+		StarsLMPrograms starsProgs = createStarsLMPrograms( liteAcctInfo, energyCompany );
 		starsAcctInfo.setStarsLMPrograms( starsProgs );
-		
-		for (int i = 0; i < liteProgs.size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, energyCompany) );
-		}
-		
-		ArrayList liteProgHist = liteAcctInfo.getProgramHistory();
-		StarsLMProgramHistory starsProgHist = createStarsLMProgramHistory( liteProgHist );
-		starsProgs.setStarsLMProgramHistory( starsProgHist );
 		
 		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
 		if (queue != null) {
 			OptOutEventQueue.OptOutEvent event = queue.findOptOutEvent( liteAcctInfo.getAccountID() );
 			if (event != null) {
-				StarsLMProgramEvent starsEvent = createStarsOptOutEvent( event, liteProgs, energyCompany );
-				starsProgHist.addStarsLMProgramEvent( starsEvent );
+				StarsLMProgramEvent starsEvent = createStarsOptOutEvent( event, liteAcctInfo.getLmPrograms(), energyCompany );
+				starsProgs.getStarsLMProgramHistory().addStarsLMProgramEvent( starsEvent );
 			}
 		}
 		
@@ -1301,29 +1330,7 @@ public class StarsLiteFactory {
 		}
 		
 		if (isOperator) {
-			ArrayList liteApps = liteAcctInfo.getAppliances();
-			StarsAppliances starsApps = new StarsAppliances();
-			starsAcctInfo.setStarsAppliances( starsApps );
-			
-			TreeMap appMap = new TreeMap();
-			for (int i = 0; i < liteApps.size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-				StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompany);
-				
-				ArrayList list = (ArrayList) appMap.get( starsApp.getDescription() );
-				if (list == null) {
-					list = new ArrayList();
-					appMap.put( starsApp.getDescription(), list );
-				}
-				list.add( starsApp );
-			}
-			
-			it = appMap.values().iterator();
-			while (it.hasNext()) {
-				ArrayList list = (ArrayList) it.next();
-				for (int i = 0; i < list.size(); i++)
-					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
-			}
+			starsAcctInfo.setStarsAppliances( createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
 			
 			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
 			StarsCallReportHistory starsCalls = new StarsCallReportHistory();

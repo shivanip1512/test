@@ -60,7 +60,7 @@ function deleteAppliance(form) {
 <%
 	if (program != null) {
 %>
-	if (!confirm('To delete the appliance, the program related with it will be removed as well, do you want to proceed?')) return;
+	if (!confirm('A enrolled program is found for this appliance. To delete the appliance, the program will also be unenrolled. Do you want to proceed?')) return;
 <%
 	}
 	else {
@@ -807,9 +807,7 @@ function deleteAppliance(form) {
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="109" class="HeaderCell"> 
-                            <div align="center">
-                             Enrolled Programs
-                            </div>
+                            <div align="center"> Enrolled Program</div>
                           </td>
                           <td width="151" class="HeaderCell"> 
                             <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> 

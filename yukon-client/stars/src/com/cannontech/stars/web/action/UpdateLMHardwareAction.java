@@ -11,6 +11,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -18,6 +19,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -144,6 +146,14 @@ public class UpdateLMHardwareAction implements ActionBase {
             	
 				liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 				origInvID = deleteHw.getInventoryID();
+				
+				// Send out the configuration command if necessary
+				if (createHw.getLMHardware() != null &&
+					createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
+					AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
+				{
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false );
+				}
 			}
 			else {
 				liteInv = energyCompany.getInventory( updateHw.getInventoryID(), true );

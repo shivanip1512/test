@@ -4,15 +4,29 @@
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	
-	ArrayList appList = new ArrayList();
+	ArrayList attachedApps = new ArrayList();
+	ArrayList attachedProgs = new ArrayList();
+	
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
-		if (app.getInventoryID() == inventory.getInventoryID())
-			appList.add(app);
+		if (app.getInventoryID() == inventory.getInventoryID()) {
+			attachedApps.add(app);
+			
+			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+				StarsLMProgram program = programs.getStarsLMProgram(j);
+				if (program.getProgramID() == app.getLmProgramID()) {
+					if (!attachedProgs.contains(program)) attachedProgs.add(program);
+					break;
+				}
+			}
+		}
 	}
 	
-	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
-	appList.toArray( starsApps );
+	ArrayList unattachedProgs = new ArrayList();
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram program = programs.getStarsLMProgram(i);
+		if (!attachedProgs.contains(program)) unattachedProgs.add(program);
+	}
 %>
 
 <html>
@@ -29,8 +43,8 @@ function sendCommand(cmd) {
 	form.submit();
 }
 
-function changeAppSelection(chkBox) {
-	var grpList = document.getElementById('Group_App' + chkBox.value);
+function changeProgSelection(chkBox) {
+	var grpList = document.getElementById('Group_Prog' + chkBox.value);
 	grpList.disabled = !chkBox.checked;
 }
 </script>
@@ -62,6 +76,7 @@ function changeAppSelection(chkBox) {
             <div align="center">
               <% String header = "HARDWARE - CONFIGURATION"; %>
 			  <%@ include file="include/InfoSearchBar.jsp" %>
+			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
@@ -75,15 +90,9 @@ function changeAppSelection(chkBox) {
                     <td width="45%" class="HeaderCell">Program</td>
                     <td width="50%" class="HeaderCell">Assigned Group</td>
                   </tr>
-                  <%
-	for (int i = 0; i < starsApps.length; i++) {
-		StarsLMProgram program = null;
-		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-			if (programs.getStarsLMProgram(j).getProgramID() == starsApps[i].getLmProgramID()) {
-				program = programs.getStarsLMProgram(j);
-				break;
-			}
-		}
+<%
+	for (int i = 0; i < attachedProgs.size(); i++) {
+		StarsLMProgram program = (StarsLMProgram) attachedProgs.get(i);
 		
 		StarsEnrLMProgram enrProg = null;
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
@@ -101,79 +110,77 @@ function changeAppSelection(chkBox) {
 %>
                   <tr> 
                     <td width="5%" height="2"> 
-                      <input type="checkbox" name="AppID" value="<%= starsApps[i].getApplianceID() %>" checked onClick="changeAppSelection(this)">
+                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" checked onclick="changeProgSelection(this)">
                     </td>
                     <td width="45%" class="TableCell" height="2"><%= program.getProgramName() %></td>
                     <td width="50%" height="2"> 
-                      <select id="Group_App<%= starsApps[i].getApplianceID() %>" name="GroupID">
-                        <%
+                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID">
+<%
 		if (enrProg == null || enrProg.getAddressingGroupCount() == 0) {
 %>
                         <option value="0">(none)</option>
-                        <%
+<%
 		} else {
 			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
 				AddressingGroup group = enrProg.getAddressingGroup(j);
 				String selectedStr = (group.getEntryID() == program.getGroupID()) ? "selected" : "";
 %>
                         <option value="<%= group.getEntryID() %>" <%= selectedStr %>><%= group.getContent() %></option>
-                        <%
+<%
 			}
 		}
 %>
                       </select>
                     </td>
                   </tr>
-                  <%
+<%
 	}
-%>
-                  <%
-	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-		StarsAppliance appliance = appliances.getStarsAppliance(i);
-		if (appliance.getInventoryID() == 0 && appliance.getLmProgramID() > 0) {
-			StarsEnrLMProgram enrProg = null;
-			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-					StarsEnrLMProgram prog = category.getStarsEnrLMProgram(k);
-					if (prog.getProgramID() == appliance.getLmProgramID()) {
-						enrProg = prog;
+	
+	for (int i = 0; i < unattachedProgs.size(); i++) {
+		StarsLMProgram program = (StarsLMProgram) unattachedProgs.get(i);
+		
+		StarsEnrLMProgram enrProg = null;
+		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
+			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
+				for (int k = 0; k < appCat.getStarsEnrLMProgramCount(); k++) {
+					if (appCat.getStarsEnrLMProgram(k).getProgramID() == program.getProgramID()) {
+						enrProg = appCat.getStarsEnrLMProgram(k);
 						break;
 					}
 				}
-				if (enrProg != null) break;
+				break;
 			}
-			
-			if (enrProg == null) continue;
-			boolean disabled = enrProg.getAddressingGroupCount() == 0;
+		}
+		
+		boolean disabled = (enrProg == null) || (enrProg.getAddressingGroupCount() == 0);
 %>
                   <tr> 
                     <td width="5%" height="2"> 
-                      <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onClick="changeAppSelection(this)"
+                      <input type="checkbox" name="ProgID" value="<%= program.getProgramID() %>" onClick="changeProgSelection(this)"
 							 <%= (disabled)? "disabled" : "" %>>
                     </td>
-                    <td width="45%" class="TableCell" height="2"><%= ServletUtils.getProgramDisplayNames(enrProg)[0] %></td>
+                    <td width="45%" class="TableCell" height="2"><%= program.getProgramName() %></td>
                     <td width="50%" height="2"> 
-                      <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
-                        <%
-			if (disabled) {
+                      <select id="Group_Prog<%= program.getProgramID() %>" name="GroupID" disabled="true">
+<%
+		if (disabled) {
 %>
                         <option value="0">(none)</option>
-                        <%
-			} else {
+<%
+		} else {
 				for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
 					AddressingGroup group = enrProg.getAddressingGroup(j);
 %>
                         <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
-                        <%
+<%
 				}
-			}
+		}
 %>
                       </select>
                     </td>
                   </tr>
-                  <%
-		}
+<%
 	}
 %>
                 </table>
@@ -181,8 +188,8 @@ function changeAppSelection(chkBox) {
                 <table width="350" border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td align="center"> 
-                      <input type="submit" name="UpdateLMHardwareConfig" value="Config Now">
-                      <input type="button" name="SaveConfig" value="Save To Batch" onClick="sendCommand('SaveLMHardwareConfig')">
+                      <input type="submit" name="UpdateConfig" value="Config Now">
+                      <input type="button" name="SaveConfig" value="Save To Batch" onclick="sendCommand('SaveLMHardwareConfig')">
                     </td>
                   </tr>
                 </table>
@@ -190,7 +197,7 @@ function changeAppSelection(chkBox) {
                 <table width="300" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td align="center"> 
-                      <input type="button" name="Enable" value="Reenable" onClick="sendCommand('EnableLMHardware')">
+                      <input type="button" name="Enable" value="Reenable" onclick="sendCommand('EnableLMHardware')">
                     </td>
                   </tr>
                 </table>
@@ -204,12 +211,14 @@ function changeAppSelection(chkBox) {
                   <td width="100" class="HeaderCell"> Status</td>
                   <td width="120" class="HeaderCell"> Enrolled Programs</td>
                 </tr>
-                <%
-	for (int i = 0; i < starsApps.length; i++) {
+<%
+	for (int i = 0; i < attachedApps.size(); i++) {
+		StarsAppliance appliance = (StarsAppliance) attachedApps.get(i);
+		
 		StarsLMProgram program = null;
 		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
 			StarsLMProgram starsProg = programs.getStarsLMProgram(j);
-			if (starsProg.getProgramID() == starsApps[i].getLmProgramID()) {
+			if (starsProg.getProgramID() == appliance.getLmProgramID()) {
 				program = starsProg;
 				break;
 			}
@@ -224,7 +233,7 @@ function changeAppSelection(chkBox) {
 		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= starsApps[i].getDescription() %></td>
+                  <td width="104" class="TableCell"> <%= appliance.getDescription() %></td>
                   <td width="100" class="TableCell"><%= program.getStatus() %></td>
                   <td width="120"> 
                     <div align="center">

@@ -41,6 +41,13 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     **/
     private boolean _has_inventoryID;
 
+    private boolean _saveToBatch;
+
+    /**
+     * keeps track of state for field: _saveToBatch
+    **/
+    private boolean _has_saveToBatch;
+
     private java.util.Vector _starsLMHardwareConfigList;
 
 
@@ -90,6 +97,13 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
 
     /**
     **/
+    public void deleteSaveToBatch()
+    {
+        this._has_saveToBatch= false;
+    } //-- void deleteSaveToBatch() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateStarsLMHardwareConfig()
     {
         return _starsLMHardwareConfigList.elements();
@@ -104,6 +118,16 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'saveToBatch'.
+     * 
+     * @return the value of field 'saveToBatch'.
+    **/
+    public boolean getSaveToBatch()
+    {
+        return this._saveToBatch;
+    } //-- boolean getSaveToBatch() 
 
     /**
      * 
@@ -146,6 +170,13 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
     {
         return this._has_inventoryID;
     } //-- boolean hasInventoryID() 
+
+    /**
+    **/
+    public boolean hasSaveToBatch()
+    {
+        return this._has_saveToBatch;
+    } //-- boolean hasSaveToBatch() 
 
     /**
     **/
@@ -213,6 +244,17 @@ public class StarsUpdateLMHardwareConfig implements java.io.Serializable {
         this._inventoryID = inventoryID;
         this._has_inventoryID = true;
     } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'saveToBatch'.
+     * 
+     * @param saveToBatch the value of field 'saveToBatch'.
+    **/
+    public void setSaveToBatch(boolean saveToBatch)
+    {
+        this._saveToBatch = saveToBatch;
+        this._has_saveToBatch = true;
+    } //-- void setSaveToBatch(boolean) 
 
     /**
      * 

@@ -3,7 +3,6 @@ package com.cannontech.stars.web.action;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -36,13 +35,10 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.SULMProgram;
-import com.cannontech.stars.xml.serialize.StarsAppliance;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUpResponse;
@@ -155,12 +151,12 @@ public class ProgramSignUpAction implements ActionBase {
 					progEnrBefore += ", " + liteProg.getLmProgram().getProgramName();
 			}
 	        
-			ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany );
-			
-			// Send out the config/disable command
 			StarsInventories starsInvs = new StarsInventories();
 			
 			try {
+				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany );
+				
+				// Send out the config/disable command
 				for (int i = 0; i < hwsToConfig.size(); i++) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
 					boolean toConfig = false;
@@ -220,41 +216,9 @@ public class ProgramSignUpAction implements ActionBase {
             
 			StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
 			resp.setStarsInventories( starsInvs );
+			resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
+			resp.setStarsAppliances( StarsLiteFactory.createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
 			resp.setDescription( "Program enrollment updated successfully" );
-			
-			ArrayList liteProgs = liteAcctInfo.getLmPrograms();
-			StarsLMPrograms starsProgs = new StarsLMPrograms();
-			resp.setStarsLMPrograms( starsProgs );
-			
-			for (int i = 0; i < liteProgs.size(); i++) {
-				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-				starsProgs.addStarsLMProgram( StarsLiteFactory.createStarsLMProgram(liteProg, energyCompany) );
-			}
-			starsProgs.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo.getProgramHistory()) );
-			
-			ArrayList liteApps = liteAcctInfo.getAppliances();
-			StarsAppliances starsApps = new StarsAppliances();
-			resp.setStarsAppliances( starsApps );
-			
-			TreeMap tmap = new TreeMap();
-			for (int i = 0; i < liteApps.size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-				StarsAppliance starsApp = (StarsAppliance) StarsLiteFactory.createStarsAppliance(liteApp, energyCompany);
-				
-				ArrayList list = (ArrayList) tmap.get( starsApp.getDescription() );
-				if (list == null) {
-					list = new ArrayList();
-					tmap.put( starsApp.getDescription(), list );
-				}
-				list.add( starsApp );
-			}
-			
-			Iterator it = tmap.values().iterator();
-			while (it.hasNext()) {
-				ArrayList list = (ArrayList) it.next();
-				for (int i = 0; i < list.size(); i++)
-					starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
-			}
 			
 			respOper.setStarsProgramSignUpResponse( resp );
 			return SOAPUtil.buildSOAPMessage( respOper );
@@ -423,9 +387,9 @@ public class ProgramSignUpAction implements ActionBase {
 				liteStarsProg.setGroupID( groupID );
         		
 				for (int idx = 0; idx < invIDs.length; idx++) {
-					LiteInventoryBase liteHw = null;
+					LiteStarsLMHardware liteHw = null;
 					if (invIDs[idx] > 0)
-						liteHw = energyCompany.getInventory( invIDs[idx], true );
+						liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[idx], true );
         			
 					// Find appliance attached to this hardware or not attached to any hardware, and assigned to this program or another program of the same category.
 					// Priority: same hardware & same program > same hardware & same category > no hardware & same program > no hardware & same category
@@ -453,10 +417,9 @@ public class ProgramSignUpAction implements ActionBase {
 					if (liteApp != null) {
 						liteApp.setInventoryID( invIDs[idx] );
 						
-						// If the appliance isn't enrolled in any program now, assign the program to it
 						// If the appliance is enrolled in some other program, update its program enrollment
-						// If the appliance is enrolled in the same program -- nothing changed (except the group)
 						if (liteApp.getLmProgramID() != program.getProgramID()) {
+							// The appliance isn't enrolled in any program now, assign the program to it
 							Integer newProgID = new Integer( program.getProgramID() );
 							if (!progEnrollList.contains(newProgID)) progEnrollList.add( newProgID );
 							
@@ -466,9 +429,9 @@ public class ProgramSignUpAction implements ActionBase {
 							}
 			            	
 							if (invIDs[idx] > 0) {
+								liteApp.setAddressingGroupID( groupID );
 								if (liteApp.getAddressingGroupID() != groupID && !hwsToConfig.contains( liteHw ))
 									hwsToConfig.add( liteHw );
-								liteApp.setAddressingGroupID( groupID );
 							}
 							
 							liteApp.setLmProgramID( program.getProgramID() );
@@ -479,10 +442,26 @@ public class ProgramSignUpAction implements ActionBase {
 									Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 						}
 						else {
-							if (invIDs[idx] > 0 && program.hasAddressingGroupID()) {
-								if (liteApp.getAddressingGroupID() != groupID && !hwsToConfig.contains( liteHw ))
-									hwsToConfig.add( liteHw );
+							// The appliance is enrolled in the same program, update the addressing group if necessary.
+							// If liteInv is not null, it's from the import program or hardware configuration page;
+							// in the later case, update the group of all loads assigned to this program if necessary.
+							if (invIDs[idx] > 0 && program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID) {
 								liteApp.setAddressingGroupID( groupID );
+								if (!hwsToConfig.contains( liteHw ))
+									hwsToConfig.add( liteHw );
+								
+								if (liteInv != null) {
+									for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+										LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+										if (lApp.getLmProgramID() == program.getProgramID() && lApp.getInventoryID() > 0 && !lApp.equals(liteApp)) {
+											lApp.setAddressingGroupID( groupID );
+											
+											LiteStarsLMHardware lHw = (LiteStarsLMHardware) energyCompany.getInventory( lApp.getInventoryID(), true );
+											if (!hwsToConfig.contains( lHw ))
+												hwsToConfig.add( lHw );
+										}
+									}
+								}
 							}
 						}
 						
@@ -534,7 +513,7 @@ public class ProgramSignUpAction implements ActionBase {
 						if (!progUnenrollList.contains(progID)) progUnenrollList.add( progID );
 						
 						if (liteApp.getInventoryID() > 0) {
-							LiteInventoryBase liteHw = energyCompany.getInventory( liteApp.getInventoryID(), true );
+							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
 							if (!hwsToConfig.contains( liteHw ))
 								hwsToConfig.add( liteHw );
 						}

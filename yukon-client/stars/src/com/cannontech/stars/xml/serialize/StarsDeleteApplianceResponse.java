@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchCustomerAccount.java,v 1.71 2004/05/04 16:10:38 zyao Exp $
+ * $Id: StarsDeleteApplianceResponse.java,v 1.2 2004/05/04 16:10:37 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,27 +23,25 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.71 $ $Date: 2004/05/04 16:10:38 $
+ * @version $Revision: 1.2 $ $Date: 2004/05/04 16:10:37 $
 **/
-public class StarsSearchCustomerAccount implements java.io.Serializable {
+public class StarsDeleteApplianceResponse implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private SearchBy _searchBy;
-
-    private java.lang.String _searchValue;
+    private StarsLMPrograms _starsLMPrograms;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsSearchCustomerAccount() {
+    public StarsDeleteApplianceResponse() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount()
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteApplianceResponse()
 
 
       //-----------/
@@ -51,24 +49,14 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'searchBy'.
+     * Returns the value of field 'starsLMPrograms'.
      * 
-     * @return the value of field 'searchBy'.
+     * @return the value of field 'starsLMPrograms'.
     **/
-    public SearchBy getSearchBy()
+    public StarsLMPrograms getStarsLMPrograms()
     {
-        return this._searchBy;
-    } //-- SearchBy getSearchBy() 
-
-    /**
-     * Returns the value of field 'searchValue'.
-     * 
-     * @return the value of field 'searchValue'.
-    **/
-    public java.lang.String getSearchValue()
-    {
-        return this._searchValue;
-    } //-- java.lang.String getSearchValue() 
+        return this._starsLMPrograms;
+    } //-- StarsLMPrograms getStarsLMPrograms() 
 
     /**
     **/
@@ -108,35 +96,25 @@ public class StarsSearchCustomerAccount implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'searchBy'.
+     * Sets the value of field 'starsLMPrograms'.
      * 
-     * @param searchBy the value of field 'searchBy'.
+     * @param starsLMPrograms the value of field 'starsLMPrograms'.
     **/
-    public void setSearchBy(SearchBy searchBy)
+    public void setStarsLMPrograms(StarsLMPrograms starsLMPrograms)
     {
-        this._searchBy = searchBy;
-    } //-- void setSearchBy(SearchBy) 
-
-    /**
-     * Sets the value of field 'searchValue'.
-     * 
-     * @param searchValue the value of field 'searchValue'.
-    **/
-    public void setSearchValue(java.lang.String searchValue)
-    {
-        this._searchValue = searchValue;
-    } //-- void setSearchValue(java.lang.String) 
+        this._starsLMPrograms = starsLMPrograms;
+    } //-- void setStarsLMPrograms(StarsLMPrograms) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsDeleteApplianceResponse unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsSearchCustomerAccount unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsDeleteApplianceResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsDeleteApplianceResponse.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteApplianceResponse unmarshal(java.io.Reader) 
 
     /**
     **/

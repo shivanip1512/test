@@ -53,7 +53,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		CTILogger.info( "*** Hourly timer task start ***" );
+		CTILogger.debug( "*** Hourly timer task start ***" );
 		
 		/* Check for opted out programs that should be reactivated */
 		ArrayList companies = SOAPServer.getAllEnergyCompanies();
@@ -61,12 +61,12 @@ public class HourlyTimerTask extends StarsTimerTask {
 		
 		Date now = new Date();
 		for (int i = 0; i < companies.size(); i++) {
-    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			OptOutEventQueue queue = company.getOptOutEventQueue();
 			if (queue == null) {
-				CTILogger.error("Cannot get the OptOutEventQueue for energy company #" + company.getLiteID());
+				CTILogger.debug("Cannot get the opt out event queue for energy company #" + company.getLiteID());
 				continue; 
 			}
 			
@@ -117,14 +117,14 @@ public class HourlyTimerTask extends StarsTimerTask {
 						e.setAccountID( dueEvents[j].getAccountID() );
 		            	
 						commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, company );
-		            	StringBuffer cmd = new StringBuffer();
-		            	if (commands.length > 0) {
-		            		cmd.append( commands[0] );
-		            		for (int k = 1; k < commands.length; k++)
-		            			cmd.append( "," ).append( commands[k] );
-		            	}
-		            	e.setCommand( cmd.toString() );
-		            	company.getOptOutEventQueue().addEvent( e, false );
+						StringBuffer cmd = new StringBuffer();
+						if (commands.length > 0) {
+							cmd.append( commands[0] );
+							for (int k = 1; k < commands.length; k++)
+								cmd.append( "," ).append( commands[k] );
+						}
+						e.setCommand( cmd.toString() );
+						company.getOptOutEventQueue().addEvent( e, false );
 					}
 				}
 				catch (Exception e) {
@@ -136,7 +136,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 			company.getOptOutEventQueue().addEvent( null, true );
 		}
 		
-		CTILogger.info( "*** Hourly timer task stop ***" );
+		CTILogger.debug( "*** Hourly timer task stop ***" );
 	}
 
 }

@@ -373,27 +373,7 @@ public class SOAPClient extends HttpServlet {
 		else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
 			clientAction = new YukonSwitchCommandAction();
 		}
-		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
-			UpdateLMHardwareConfigAction action1 = new UpdateLMHardwareConfigAction();
-			SOAPMessage msg1 = action1.build( req, session );
-			if (msg1 == null) {
-				resp.sendRedirect( errorURL );
-				return;
-			}
-			
-			YukonSwitchCommandAction action2 = new YukonSwitchCommandAction();
-			SOAPMessage msg2 = action2.build( req, session );
-			if (msg2 == null) {
-				resp.sendRedirect( errorURL );
-				return;
-			}
-			
-			MultiAction actions = new MultiAction();
-			actions.addAction( action1, msg1 );
-			actions.addAction( action2, msg2 );
-			clientAction = (ActionBase) actions;
-		}
-		else if (action.equalsIgnoreCase("SaveLMHardwareConfig")) {
+		else if (action.equalsIgnoreCase("UpdateLMHardwareConfig") || action.equalsIgnoreCase("SaveLMHardwareConfig")) {
 			clientAction = new UpdateLMHardwareConfigAction();
 		}
 		else if (action.equalsIgnoreCase("GetLMCtrlHist")) {

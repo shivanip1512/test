@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatTypes.java,v 1.6 2004/04/22 17:07:40 zyao Exp $
+ * $Id: StarsThermostatTypes.java,v 1.7 2004/05/04 16:10:41 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.*;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2004/04/22 17:07:40 $
+ * @version $Revision: 1.7 $ $Date: 2004/05/04 16:10:41 $
 **/
 public class StarsThermostatTypes implements java.io.Serializable {
 

@@ -100,6 +100,48 @@ public class StarsUpdateLMHardwareConfigDescriptor extends org.exolab.castor.xml
         }
         desc.setValidator(fieldValidator);
         
+        //-- _saveToBatch
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_saveToBatch", "saveToBatch", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUpdateLMHardwareConfig target = (StarsUpdateLMHardwareConfig) object;
+                if(!target.hasSaveToBatch())
+                    return null;
+                return new Boolean(target.getSaveToBatch());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUpdateLMHardwareConfig target = (StarsUpdateLMHardwareConfig) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteSaveToBatch();
+                        return;
+                    }
+                    target.setSaveToBatch( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _saveToBatch
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _starsLMHardwareConfigList
