@@ -100,24 +100,6 @@ layer.style.left = layerLeftBnd + offset - (divNo-1) * layerHorDist;
 }
 
 
-function timeChange(t, divId, nextTxtBox, prevTxtBox) {
-  var val = timeStrToVal( t.value );
-  if (prevTxtBox != null) {
-    var prevVal = timeStrToVal( document.getElementById(prevTxtBox).value );
-    if (val < prevVal) val = prevVal + 10;
-  }
-  if (nextTxtBox != null) {
-    var nextVal = timeStrToVal( document.getElementById(nextTxtBox).value );
-    if (val > nextVal) val = nextVal - 10;
-  }
-  t.value = timeValToStr( val );
-  
-  var hour = Math.floor(val / 60);
-  var minute = val % 60;
-  moveLayer(divId, hour, minute);
-}
-
-
 function timeValToStr(val)
 {
   if (val < 0) val = 0;
@@ -245,4 +227,28 @@ function toggleThermostat(idx) {
       layer.style.left = leftBnd + tenMinEqlLen;
     showTime(document.getElementById(thermostats[idx]), document.getElementById(timeFields[idx]), idx);
   }
+}
+
+function timeChange(t, idx) {
+  var val = timeStrToVal( t.value );
+  
+  for (i = idx - 1; i >= 1; i--) {
+    var layer = document.getElementById(thermostats[i]);
+    if (layer != null && layer.style.display == '') {
+      var prevVal = timeStrToVal( document.getElementById(timeFields[i]).value );
+      if (val <= prevVal) val = prevVal + 10;
+    }
+  }
+  for (i = idx + 1; i <= 4; i++) {
+    var layer = document.getElementById(thermostats[i]);
+    if (layer != null && layer.style.display == '') {
+      var nextVal = timeStrToVal( document.getElementById(timeFields[i]).value );
+      if (val >= nextVal) val = nextVal - 10;
+    }
+  }
+  t.value = timeValToStr( val );
+  
+  var hour = Math.floor(val / 60);
+  var minute = val % 60;
+  moveLayer('MovingLayer' + idx, hour, minute);
 }

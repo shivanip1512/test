@@ -218,10 +218,10 @@ function init() {
 		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= ct3 %>,<%= ht3 %>,
 		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= ct4 %>,<%= ht4 %>
 	);
-	<% if (skip1) { %>toggleThermostat(1);<% } %>
-	<% if (skip2) { %>toggleThermostat(2);<% } %>
-	<% if (skip3) { %>toggleThermostat(3);<% } %>
-	<% if (skip4) { %>toggleThermostat(4);<% } %>
+	<% if (!skip1) { %>toggleThermostat(1);<% } %>
+	<% if (!skip2) { %>toggleThermostat(2);<% } %>
+	<% if (!skip3) { %>toggleThermostat(3);<% } %>
+	<% if (!skip4) { %>toggleThermostat(4);<% } %>
 <%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
 	timeoutId = setTimeout("location.reload()", 60000);
 <%	} %>
@@ -361,7 +361,7 @@ MM_reloadPage(true);
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
                             <i>Make temporary adjustments to your heating and 
-                            cooling system<a class="Link1" href="Thermostat.jsp"> 
+                            cooling system<a class="Link1" href="Thermostat2.jsp?InvNo=<%= invNo %>"> 
                             here</a>.</i> </td>
                         </tr>
                       </table>
@@ -386,7 +386,7 @@ MM_reloadPage(true);
                       <table width="478" height="186" background="../../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="50">
-                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');setChanged();">
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top:5px; display:none" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');setChanged();">
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -415,7 +415,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50">
-                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');setChanged();"> 
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top:5px; display:none" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');setChanged();"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -444,7 +444,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50">
-                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');setChanged();"> 
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top:5px; display:none" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');setChanged();"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -473,7 +473,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50">
-                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');setChanged();"> 
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top:5px; display:none" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');setChanged();"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -528,31 +528,31 @@ MM_reloadPage(true);
                             <div align="right">Start At:</div>
                           </td>
 						<td class = "TableCell">  
-                          <input id="time1" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime1().toDate()) %>" name="time1" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer1', 'time2', null);">
+                          <input id="time1" type="text" size="8" name="time1" onchange="Javascript:setChanged();timeChange(this,1);" disabled>
                         </td>
                         <td class = "TableCell">
                             <div align="right">Start At: </div>
                           </td>
 						<td class = "TableCell"> 
-                          <input id="time2" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime2().toDate()) %>" name="time2" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer2', 'time3', 'time1');">
+                          <input id="time2" type="text" size="8" name="time2" onchange="Javascript:setChanged();timeChange(this,2);" disabled>
                         </td>
                         <td class = "TableCell">
                             <div align="right">Start At: </div>
                           </td>
 						<td class = "TableCell"> 
-                          <input id="time3" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime3().toDate()) %>" name="time3" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer3', 'time4', 'time2');">
+                          <input id="time3" type="text" size="8" name="time3" onchange="Javascript:setChanged();timeChange(this,3);" disabled>
                         </td>
                         <td class = "TableCell">
                             <div align="right">Start At: </div>
                           </td>
 						<td class = "TableCell"> 
-                          <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
+                          <input id="time4" type="text" size="8" name="time4" onchange="Javascript:setChanged();timeChange(this,4);" disabled>
                         </td>
                       </tr>
                     </table>
-                      <noscript>
-<table width="100%" border="0" class = "TableCell">
-  <tr>
+					<noscript>
+					  <table width="100%" border="0" class = "TableCell">
+					    <tr>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Temp: </div>
                           </td>
@@ -575,8 +575,8 @@ MM_reloadPage(true);
 						  <td width="15%"> 
                             <input id="temp4" type="text" size="3" name="temp4" onchange="setChanged()" value="<%= schedule.getTemperature4() %>">
                           </td>
-  </tr>
-</table>
+						</tr>
+					  </table>
                     <div class = "TableCell" align = "left">
                       <table width="100%" border="0">
                         <tr>
