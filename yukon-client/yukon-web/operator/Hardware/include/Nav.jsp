@@ -46,12 +46,12 @@
             <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
           </tr>
-		  </cti:checkProperty>
-		  <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_CREATE_MCT %>">
+          <% if (liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, false) != null) { %>
           <tr> 
             <td width="10"><%= ((String[]) links.get("CreateMCT.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("CreateMCT.jsp"))[1] %></td>
           </tr>
+          <% } %>
 		  </cti:checkProperty>
         </table>
       </div>

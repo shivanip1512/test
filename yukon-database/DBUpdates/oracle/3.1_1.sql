@@ -767,12 +767,9 @@ update YukonRoleProperty set DefaultValue='If you would like to temporarily opt 
 
 /* Inventory role properties */
 insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
-insert into YukonRoleProperty values(-20906,-209,'Create MCT','true','Controls whether to allow creating MCT devices');
 
 insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
-insert into yukongrouprole values (-797,-301,-209,-20906,'(none)');
 insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
-insert into yukongrouprole values (-2086,-303,-209,-20906,'(none)');
 
 insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
 insert into yukongrouprole values (-817,-301,-201,-20817,'(none)');
