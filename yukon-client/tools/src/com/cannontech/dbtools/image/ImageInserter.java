@@ -72,7 +72,7 @@ public class ImageInserter {
 				
 				long len = f.length();
 				
-				InputStream in = new FileInputStream(yukName);
+				InputStream in = new FileInputStream(f);
 				
 				pstmt.setInt(1, id);
             	pstmt.setString(2, fDir.getName());
