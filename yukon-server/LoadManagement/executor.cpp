@@ -1115,7 +1115,8 @@ void CtiLMManualControlRequestExecutor::Execute()
 	
     case CtiLMManualControlRequest::START_NOW:
 	stopTime = _controlMsg->getStopTime();
-	if( (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
+	if( _controlMsg->getOverrideConstraints() ||
+	    (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
 	{
 	    if((passed_check = checker.checkConstraints((const CtiLMProgramDirect&)*program, _controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds(), result_vec)))
 	    {
@@ -1154,7 +1155,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 	resp->setPayload(lmResp);
 	resp->setID(_request->getID());
     
-	if(passed_check)
+	if(_controlMsg->getOverrideConstraints() || passed_check)
 	{
 	    resp->setStatus(CtiServerResponseMsg::OK);
 	    resp->setMessage("Manual Control Request Accepted");
@@ -1325,7 +1326,17 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     lmProgramDirect->incrementDailyOps(); 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
+    
+    RWDBDateTime notifyTime(startTime);
+    notifyTime.addSeconds(-1*lmProgramDirect->getNotifyOffset());
+    lmProgramDirect->setNotifyTime(RWDBDateTime(notifyTime));
 
+
+{//kill this
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " - " << " going to notify @: " << notifyTime.asString() << endl;
+    }
+				   
     if( _controlMsg->getStopTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
     {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
 	RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());

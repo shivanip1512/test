@@ -15,6 +15,8 @@
 #ifndef CTILMPROGRAMDIRECTIMPL_H
 #define CTILMPROGRAMDIRECTIMPL_H
 
+#include <set>
+
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/db/db.h>
@@ -24,6 +26,8 @@
 #include "lmprogrambase.h"
 #include "observe.h"
 #include "lmprogramdirectgear.h"
+
+using std::set;
 
 class CtiLMProgramDirect : public CtiLMProgramBase
 {
@@ -38,21 +42,33 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     virtual ~CtiLMProgramDirect();
 
+    LONG getNotifyOffset() const;
+    const string& getMessageSubject() const;
+    const string& getMessageHeader() const;
+    const string& getMessageFooter() const;
+    
     LONG getCurrentGearNumber() const;
     LONG getLastGroupControlled() const;
     LONG getDailyOps();
     const RWDBDateTime& getDirectStartTime() const;
     const RWDBDateTime& getDirectStopTime() const;
+    const RWDBDateTime& getNotifyTime() const;
     RWOrdered& getLMProgramDirectGears();
     RWOrdered& getLMProgramDirectGroups();
+    set<int>&  getNotificationGroupIDs();
 
+    CtiLMProgramDirect& setMessageSubject(const string& subject);
+    CtiLMProgramDirect& setMessageHeader(const string& header);
+    CtiLMProgramDirect& setMessageFooter(const string& footer);
+    
     CtiLMProgramDirect& setCurrentGearNumber(LONG currentgear);
     CtiLMProgramDirect& setLastGroupControlled(LONG lastcontrolled);
     CtiLMProgramDirect& incrementDailyOps();
     CtiLMProgramDirect& resetDailyOps();
     CtiLMProgramDirect& setDirectStartTime(const RWDBDateTime& start);
     CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
-
+    CtiLMProgramDirect& setNotifyTime(const RWDBDateTime& notify);
+    
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
@@ -68,6 +84,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     LONG calculateGroupControlTimeLeft(CtiLMGroupBase* currentLMGroup, LONG estimatedControlTimeInSeconds) const;
     BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupBase* currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
+    BOOL notifyGroupsOfStart(CtiMultiMsg* multiDispatchMsg);
+    
     virtual CtiLMProgramBase* replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     virtual BOOL hasControlHoursAvailable() const;
@@ -94,17 +112,26 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
 private: 
 
+    LONG _notifyoffset;
+
+    string _message_subject;
+    string _message_header;
+    string _message_footer;
+    
     LONG _currentgearnumber;
     LONG _lastgroupcontrolled;
     LONG _dailyops;
     RWDBDateTime _directstarttime;
     RWDBDateTime _directstoptime;
+    RWDBDateTime _notifytime;
 
     //When the dynamic data was last saved
     RWDBDateTime  _dynamictimestamp;
     
     RWOrdered _lmprogramdirectgears;
     RWOrdered _lmprogramdirectgroups;
+
+    set<int> _notificationgroupids;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

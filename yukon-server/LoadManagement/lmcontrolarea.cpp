@@ -1640,6 +1640,31 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
         }
     }
 }
+
+/*----------------------------------------------------------------------------
+  handleNotification
+
+  Send out any necessary notifications
+----------------------------------------------------------------------------*/
+void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+    for(LONG i=0;i<_lmprograms.entries();i++)
+    {
+        CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
+        if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+	{
+	    CtiLMProgramDirect* currentLMDirectProgram = (CtiLMProgramDirect*) currentLMProgram;
+	    if( currentLMDirectProgram->getNotifyTime().seconds() > RWDBDateTime(1991,1,1,0,0,0,0).seconds() &&
+		currentLMDirectProgram->getNotifyTime().seconds() <= secondsFrom1901 )
+	    {
+		currentLMDirectProgram->notifyGroupsOfStart(multiDispatchMsg);
+		currentLMDirectProgram->setNotifyTime(RWDBDateTime(1990,1,1,0,0,0,0));
+		currentLMDirectProgram->dumpDynamicData();
+	    }
+	}
+    }    
+}
+
 /*---------------------------------------------------------------------------
     createControlStatusPointUpdates
 

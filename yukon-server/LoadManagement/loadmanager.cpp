@@ -238,6 +238,8 @@ void CtiLoadManager::controlLoop()
 
                         try
                         {
+			    currentControlArea->handleNotification(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+			    
                             if( currentControlArea->isManualControlReceived() )
                             {
                                 currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg);

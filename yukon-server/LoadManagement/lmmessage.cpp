@@ -306,6 +306,15 @@ const RWCString& CtiLMManualControlRequest::getAdditionalInfo() const
     return _additionalinfo;
 }
 
+/*----------------------------------------------------------------------------
+  getOverrideConstraints
+
+  Returns whether to override constraint checking
+----------------------------------------------------------------------------*/
+BOOL CtiLMManualControlRequest::getOverrideConstraints() const
+{
+    return _override_constraints;
+}
 
 /*---------------------------------------------------------------------------
     replicateMessage

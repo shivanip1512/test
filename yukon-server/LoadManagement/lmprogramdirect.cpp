@@ -15,6 +15,7 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "dbaccess.h"
+#include "rwutil.h"
 #include "lmprogramdirect.h"
 #include "lmprogramdirectgear.h"
 #include "lmgroupbase.h"
@@ -28,6 +29,7 @@
 #include "logger.h"
 #include "loadmanager.h"
 #include "msg_pcrequest.h"
+#include "msg_email.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogramthermostatgear.h"
 #include "lmprogramcontrolwindow.h"
@@ -39,11 +41,12 @@ RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramDirect::CtiLMProgramDirect()
+CtiLMProgramDirect::CtiLMProgramDirect() : _notifytime(RWDBDateTime(1990,1,1,0,0,0,0))
 {
+
 }
 
-CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr)
+CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr) : _notifytime(RWDBDateTime(1990,1,1,0,0,0,0))
 {
     restore(rdr);
 }
@@ -61,6 +64,43 @@ CtiLMProgramDirect::~CtiLMProgramDirect()
 
     _lmprogramdirectgears.clearAndDestroy();
     _lmprogramdirectgroups.clearAndDestroy();
+}
+
+/*----------------------------------------------------------------------------
+  getNotifyOffset
+
+  Returns the notification offset in seconds
+----------------------------------------------------------------------------*/
+LONG CtiLMProgramDirect::getNotifyOffset() const
+{
+    return _notifyoffset;
+}
+
+/*----------------------------------------------------------------------------
+  getMessageSubject
+  Returns the subject of the notification messages sent by this program
+----------------------------------------------------------------------------*/
+const string& CtiLMProgramDirect::getMessageSubject() const
+{
+    return _message_subject;
+}
+
+/*----------------------------------------------------------------------------
+  getMessageHeader
+  Returns the header of the notification messages sent by this program
+----------------------------------------------------------------------------*/
+const string& CtiLMProgramDirect::getMessageHeader() const
+{
+    return _message_header;
+}
+
+/*----------------------------------------------------------------------------
+  getMessageFooter
+  Returns the footer of the notification messages sent by this program
+  ----------------------------------------------------------------------------*/
+const string& CtiLMProgramDirect::getMessageFooter() const
+{
+    return _message_footer;
 }
 
 /*---------------------------------------------------------------------------
@@ -126,6 +166,16 @@ const RWDBDateTime& CtiLMProgramDirect::getDirectStopTime() const
     return _directstoptime;
 }
 
+/*----------------------------------------------------------------------------
+  getNotifyTime
+
+  Returns the notify time
+----------------------------------------------------------------------------*/
+const RWDBDateTime& CtiLMProgramDirect::getNotifyTime() const
+{
+    return _notifytime;
+}
+
 /*---------------------------------------------------------------------------
     getLMProgramDirectGears
 
@@ -146,6 +196,46 @@ RWOrdered& CtiLMProgramDirect::getLMProgramDirectGroups()
 {
 
     return _lmprogramdirectgroups;
+}
+
+/*----------------------------------------------------------------------------
+  getNotificationGroups
+
+  Returns a set of notification group ids
+----------------------------------------------------------------------------*/
+set<int>& CtiLMProgramDirect::getNotificationGroupIDs() 
+{
+    return _notificationgroupids;
+}
+
+/*----------------------------------------------------------------------------
+  setMessageSubject
+  Sets the subject for notifications that are sent out
+----------------------------------------------------------------------------*/
+CtiLMProgramDirect& CtiLMProgramDirect::setMessageSubject(const string& subject)
+{
+    _message_subject = subject;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setMessageHeader
+  Sets the header for the notifications that are sent out
+----------------------------------------------------------------------------*/
+CtiLMProgramDirect& CtiLMProgramDirect::setMessageHeader(const string& header)
+{
+    _message_header = header;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setMessageFooter
+  Sets the footer for the notifications that are sent out
+----------------------------------------------------------------------------*/
+CtiLMProgramDirect& CtiLMProgramDirect::setMessageFooter(const string& footer)
+{
+    _message_footer = footer;
+    return *this;
 }
 
 /*---------------------------------------------------------------------------
@@ -224,6 +314,16 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& st
     return *this;
 }
 
+/*----------------------------------------------------------------------------
+  setNotifyTime
+
+  Sets the notify time
+----------------------------------------------------------------------------*/
+CtiLMProgramDirect& CtiLMProgramDirect::setNotifyTime(const RWDBDateTime& notify)
+{
+    _notifytime = notify;
+    return *this;
+}
 
 /*---------------------------------------------------------------------------
     reduceProgramLoad
@@ -2445,7 +2545,9 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
             {
                 CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
-                if( RWDBDateTime().seconds() > currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
+		RWDBDateTime now;
+                if( now.seconds() >
+		    currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
                     getManualControlReceivedFlag() )
                 {
                     if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::SmartCycleMethod,RWCString::ignoreCase) ||
@@ -2717,6 +2819,48 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
     currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
 
     return TRUE;
+}
+
+/*----------------------------------------------------------------------------
+  notifyGroupsOfStart
+
+  Let the notification groups know when we are going to start the program
+  Returns true if a notifcation was sent.
+----------------------------------------------------------------------------*/
+BOOL CtiLMProgramDirect::notifyGroupsOfStart(CtiMultiMsg* multiDispatchMsg)
+{
+    BOOL sent_notify = FALSE;
+    
+    for(set<int>::const_iterator iter = _notificationgroupids.begin();
+	iter != _notificationgroupids.end();
+	iter++)
+    {
+	CtiEmailMsg* emailMsg = new CtiEmailMsg(*iter, CtiEmailMsg::NGroupIDEmailType);
+	emailMsg->setSubject(RWCString(getMessageSubject().data()));
+	string body = getMessageHeader();
+	body += "\r\n\r\n";
+	body += "Load Control Program:  ";
+	body += getPAOName();
+	body += "\r\n\r\n";
+	body += "Is scheduled to run between ";
+        body += getDirectStartTime().rwtime().asString();
+	body += " and ";
+	body += getDirectStopTime().rwtime().asString();
+	body += "\r\n\r\n\r\n\r\n";
+	body += getMessageFooter();
+
+	emailMsg->setText(body.data());
+	multiDispatchMsg->insert(emailMsg);
+	sent_notify = TRUE;
+
+	if( _LM_DEBUG & LM_DEBUG_DIRECT_NOTIFY )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    dout << RWTime() << " sending notification of direct program start to notification group id: " << (int) *iter << endl;
+	    dout << body;
+	}
+    }
+    return sent_notify;
 }
 
 /*---------------------------------------------------------------------------
@@ -4020,23 +4164,30 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     rdr["currentgearnumber"] >> isNull;
     if( !isNull )
     {
+	rdr["heading"] >> _message_subject;
+	rdr["messageheader"] >> _message_header;
+	rdr["messagefooter"] >> _message_footer;
+	rdr["notifyoffset"] >> _notifyoffset;
         rdr["currentgearnumber"] >> _currentgearnumber;
         rdr["lastgroupcontrolled"] >> _lastgroupcontrolled;
-	rdr["dailyops"] >> _dailyops;
         rdr["starttime"] >> _directstarttime;
         rdr["stoptime"] >> _directstoptime;
 	rdr["timestamp"] >> _dynamictimestamp;
+	rdr["dailyops"] >> _dailyops;
+	rdr["notifytime"] >> _notifytime;
 
         _insertDynamicDataFlag = FALSE;
     }
     else
     {
+	_notifyoffset = 0;
         setCurrentGearNumber(0);
         setLastGroupControlled(0);
 	resetDailyOps();
         setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
 	_dynamictimestamp = RWDBDateTime(1990,1,1,0,0,0,0);
+	_notifytime = RWDBDateTime(1990,1,1,0,0,0,0);
         _insertDynamicDataFlag = TRUE;
     }
 }
@@ -4074,7 +4225,9 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 << dynamicLMProgramDirectTable["starttime"].assign(getDirectStartTime())
                 << dynamicLMProgramDirectTable["stoptime"].assign(getDirectStopTime())
                 << dynamicLMProgramDirectTable["timestamp"].assign((RWDBDateTime)currentDateTime)
-		<< dynamicLMProgramDirectTable["dailyops"].assign(getDailyOps());
+		<< dynamicLMProgramDirectTable["dailyops"].assign(getDailyOps())
+        	<< dynamicLMProgramDirectTable["notifytime"].assign(getNotifyTime());
+		
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
@@ -4101,7 +4254,8 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 << getDirectStartTime()
                 << getDirectStopTime()
                 << currentDateTime
-		<< getDailyOps();
+		<< getDailyOps()
+		<< getNotifyTime();
 		
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {

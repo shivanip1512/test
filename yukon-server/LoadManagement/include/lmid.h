@@ -63,6 +63,7 @@
 #define LM_DEBUG_CONTROL_PARAMS    0x00000010
 #define LM_DEBUG_DYNAMIC_DB        0x00000020
 #define LM_DEBUG_CONSTRAINTS       0x00000040
+#define LM_DEBUG_DIRECT_NOTIFY     0x00000080
 
 //#define LM_DEBUG_                  0x00000004
 //#define LM_DEBUG_                  0x00000004

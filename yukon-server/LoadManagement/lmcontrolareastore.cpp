@@ -607,6 +607,10 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
+				 << lmProgramDirectTable["heading"]
+				 << lmProgramDirectTable["messageheader"]
+				 << lmProgramDirectTable["messagefooter"]
+			         << lmProgramDirectTable["notifyoffset"]
                                  << dynamicLMProgramTable["programstate"]
                                  << dynamicLMProgramTable["reductiontotal"]
                                  << dynamicLMProgramTable["startedcontrolling"]
@@ -614,10 +618,11 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramTable["manualcontrolreceivedflag"]
                                  << dynamicLMProgramDirectTable["currentgearnumber"]
                                  << dynamicLMProgramDirectTable["lastgroupcontrolled"]
-			         << dynamicLMProgramDirectTable["dailyops"]
                                  << dynamicLMProgramDirectTable["starttime"]
                                  << dynamicLMProgramDirectTable["stoptime"]
 			         << dynamicLMProgramDirectTable["timestamp"]
+    			         << dynamicLMProgramDirectTable["dailyops"]
+				 << dynamicLMProgramDirectTable["notifytime"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -777,7 +782,52 @@ void CtiLMControlAreaStore::reset()
                         gearsTimer.reset();
                     }
 
+		    RWTimer notificationGroupTimer;
+		    notificationGroupTimer.start();
+		    
+		{ //loading notification groups start
+		    RWDBTable lmProgramDirectNotifGrpListTable = db.table("lmdirectnotifgrplist");
+		    RWDBSelector selector = db.selector();
 
+		    selector << lmProgramDirectNotifGrpListTable["programid"]
+			     << lmProgramDirectNotifGrpListTable["notificationgrpid"];
+
+		    selector.from(lmProgramDirectNotifGrpListTable);
+
+		    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+		    {
+			CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - " << selector.asString().data() << endl;
+		    }
+
+		    RWDBReader rdr = selector.reader(conn);
+		    while(rdr())
+		    {
+			int program_id;
+			int notif_grp_id;
+			rdr["programid"] >> program_id;
+			rdr["notificationgrpid"] >> notif_grp_id;
+
+			CtiLMProgramBase* program = NULL;
+			if( directProgramHashMap.findValue(program_id, program ) )
+			{
+			    ((CtiLMProgramDirect*)program)->getNotificationGroupIDs().insert(notif_grp_id);
+			}
+			else
+			{
+			    CtiLockGuard<CtiLogger> dout_guard(dout);
+			    dout << RWTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
+			}
+		    }
+		} //loading notification groups end
+
+		if( _LM_DEBUG & LM_DEBUG_DATABASE )
+		{
+		    CtiLockGuard<CtiLogger> logger_guard(dout);
+		    dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
+		    notificationGroupTimer.reset();
+		}
+		
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
 
                     RWTimer curtailProgsTimer;
