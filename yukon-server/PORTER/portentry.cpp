@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/02/17 23:25:29 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/03/17 19:15:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,7 @@ using namespace std;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
+extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > DNPUDPOutMessageQueue;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
@@ -337,6 +338,12 @@ VOID ConnectionThread (VOID *Arg)
 
                 SendError(OutMessage, BADPARAM);
             }
+
+            continue;
+        }
+        else if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD )
+        {
+            DNPUDPOutMessageQueue.putQueue( OutMessage );
 
             continue;
         }
