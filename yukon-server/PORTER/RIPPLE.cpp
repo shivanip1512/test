@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/05/05 15:31:45 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/11/09 21:56:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@
 
 extern CtiPortManager   PortManager;
 extern HCTIQUEUE*       QueueHandle(LONG pid);
-
+     
 void Send4PartToDispatch(RWCString Source, RWCString MajorName, RWCString MinorName, RWCString Message1 = RWCString(""), RWCString Message2 = RWCString(""));
 INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
 INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans );
@@ -101,7 +101,7 @@ INT ReleaseAnLCU(OUTMESS *&OutMessage, CtiDeviceLCU *lcu);
 bool AnyLCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUCanExecute( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
 bool LCUPortHasAnLCUScan( OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now );
-
+        
 bool findAnyLCUsTransmitting(const long key, CtiDeviceSPtr Dev, void* ptr)
 {
     bool bStatus = false;
@@ -1698,12 +1698,13 @@ static void applyQueueForScanTrue(const long unusedid, CtiDeviceSPtr Dev, void *
     if(isLCU(Dev->getType()) &&
        Dev->getPortID() == lcu->getPortID() &&
        Dev->getID() != lcu->getID() &&
-       Dev->getID() != LCUGLOBAL )
+       Dev->getAddress() != LCUGLOBAL )
     {
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
         QueueForScan( pOtherLCU, true);
     }
 }
+
 static void applyQueueForScanFalse(const long unusedid, CtiDeviceSPtr Dev, void *plcu)
 {
     CtiDeviceLCU *lcu = (CtiDeviceLCU *)plcu;
@@ -1711,7 +1712,7 @@ static void applyQueueForScanFalse(const long unusedid, CtiDeviceSPtr Dev, void 
     if(isLCU(Dev->getType()) &&
        Dev->getPortID() == lcu->getPortID() &&
        Dev->getID() != lcu->getID() &&
-       Dev->getID() != LCUGLOBAL )
+       Dev->getAddress() != LCUGLOBAL )
     {
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
         QueueForScan( pOtherLCU, false);
@@ -1735,7 +1736,7 @@ INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
 
 
 
-void SubmitDataToDispatch( RWTPtrSlist< CtiMessage >  &vgList )
+void SubmitDataToDispatch  ( RWTPtrSlist< CtiMessage >  &vgList )
 {
     extern CtiConnection VanGoghConnection;
 
