@@ -83,13 +83,6 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
         try
         {
-            /* set the modem parameters */
-            if((status = setup(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error setting port on " << getName() << endl;
-            }
-
             /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
             initPrivateStores();
 
