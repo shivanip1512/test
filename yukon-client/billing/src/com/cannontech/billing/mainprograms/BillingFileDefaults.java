@@ -47,11 +47,6 @@ public class BillingFileDefaults
 		"COLLECTIONGROUP", "TESTCOLLECTIONGROUP", "BILLINGGROUP"
 	};
 	
-//
-//	private static String COLLECTION_GROUP_SQL_STRING = "COLLECTIONGROUP";
-//	private static String ALTERNATE_GROUP_SQL_STRING = "TESTCOLLECTIONGROUP";
-//	private static String BILLING_GROUP_SQL_STRING = "BILLINGGROUP";
-
 	private String billGroupSQLString = validBillGroupSQLStrings[COLLECTION_GROUP];
 /**
  * DynamicBilling constructor comment.
@@ -360,7 +355,7 @@ public void parseDefaultsFile()
 // These are the collection groups the user last used.
 // Ex.  collection1,collection2,collection3...
 
-private void setBillGroup(String newBillGrpString)
+public void setBillGroup(String newBillGrpString)
 {
 	java.util.Vector tempBillGrp = null;
 	int endIndex = newBillGrpString.indexOf(",");
@@ -391,7 +386,7 @@ private void setBillGroup(String newBillGrpString)
 	if( tempBillGrp != null)
 		setBillGroup(tempBillGrp);
 }
-private void setBillGroup(java.util.Vector newBillGroup)
+public void setBillGroup(java.util.Vector newBillGroup)
 {
 	billGroup = newBillGroup;
 }
@@ -482,9 +477,9 @@ public void updateFileDefaults(java.util.Vector infileDefaultsVector)
 	setBillGroup((String)infileDefaultsVector.get(index++));
 	setOutputFile((String)infileDefaultsVector.get(index++));
 	
-//	if( index < infileDefaultsVector.size())
-		setBillGroupSQLString((String)infileDefaultsVector.get(index++));
-		setRemoveMultiplier(new Boolean((String)infileDefaultsVector.get(index++)).booleanValue());
+	//	if( index < infileDefaultsVector.size())
+	setBillGroupSQLString((String)infileDefaultsVector.get(index++));
+	setRemoveMultiplier(new Boolean((String)infileDefaultsVector.get(index++)).booleanValue());
 	//setInputFile((String)infileDefaultsVector.get(index++));
 }
 /**
