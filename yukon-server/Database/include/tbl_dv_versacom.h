@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/30 15:03:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,6 @@
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "dllbase.h"
-#include "dbmemobject.h"
 #include "dbaccess.h"
 #include "resolvers.h"
 
