@@ -286,8 +286,8 @@ public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsDefaultThermostatSettings
-        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSettings.class, "_starsDefaultThermostatSettings", "stars-DefaultThermostatSettings", NodeType.Element);
+        //-- _starsDefaultThermostatSettingsList
+        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSettings.class, "_starsDefaultThermostatSettingsList", "stars-DefaultThermostatSettings", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -300,7 +300,7 @@ public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.
             {
                 try {
                     StarsGetEnergyCompanySettingsResponse target = (StarsGetEnergyCompanySettingsResponse) object;
-                    target.setStarsDefaultThermostatSettings( (StarsDefaultThermostatSettings) value);
+                    target.addStarsDefaultThermostatSettings( (StarsDefaultThermostatSettings) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -311,11 +311,13 @@ public class StarsGetEnergyCompanySettingsResponseDescriptor extends org.exolab.
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(false);
+        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsDefaultThermostatSettings
+        //-- validation code for: _starsDefaultThermostatSettingsList
         fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMaxOccurs(3);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponseDescriptor()

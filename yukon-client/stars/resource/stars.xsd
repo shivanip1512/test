@@ -54,7 +54,7 @@
 			<xs:enumeration value="On"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType name="stars-ContactNotification">
+	<xs:simpleType name="stars-ThermostatTypes"><xs:restriction base="xs:NMTOKEN"><xs:enumeration value="Basic"/><xs:enumeration value="EnergyPro"/><xs:enumeration value="Commercial"/></xs:restriction></xs:simpleType><xs:complexType name="stars-ContactNotification">
 		<xs:sequence>
 			<xs:element name="Enabled" type="xs:boolean"/>
 			<xs:element name="Notification" type="xs:string"/>
@@ -292,7 +292,7 @@
 			<xs:element ref="stars-ThermostatDynamicData" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="inventoryID" type="xs:int"/>
-	</xs:complexType>
+	<xs:attribute name="thermostatType" type="stars-ThermostatTypes"/></xs:complexType>
 	<xs:complexType name="stars-Usr">
 		<xs:sequence>
 			<xs:element name="Username" type="xs:string"/>
@@ -379,8 +379,6 @@
 				<xs:element ref="stars-UpdateLogin" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLoginResponse" minOccurs="0"/>
 				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0"/>
-				<xs:element ref="stars-GetDefaultThermostatSettings" minOccurs="0"/>
-				<xs:element ref="stars-GetDefaultThermostatSettingsResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatSchedule" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatScheduleResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOption" minOccurs="0"/>
@@ -894,20 +892,8 @@
 	</xs:element>
 	<xs:element name="stars-ThermostatSettings" type="stars-ThermoSettings"/>
 	<xs:element name="stars-DefaultThermostatSettings" type="stars-ThermoSettings"/>
-	<xs:element name="stars-GetDefaultThermostatSettings">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="EnergyCompanyID" minOccurs="0" type="xs:int"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-GetDefaultThermostatSettingsResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-DefaultThermostatSettings"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	
+	
 	<xs:element name="stars-ThermostatManualEvent">
 		<xs:complexType>
 			<xs:complexContent>
@@ -1107,7 +1093,7 @@
 				<xs:element ref="stars-CustomerFAQs" minOccurs="0"/>
 				<xs:element ref="stars-ServiceCompanies" minOccurs="0"/>
 				<xs:element ref="stars-ExitInterviewQuestions" minOccurs="0"/>
-				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0"/>
+				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0" maxOccurs="3"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

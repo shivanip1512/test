@@ -2,10 +2,10 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsThermostatTypesDescriptor.java,v 1.1 2004/02/10 20:21:14 zyao Exp $
  */
 
-package com.cannontech.stars.xml.serialize;
+package com.cannontech.stars.xml.serialize.types;
 
   //---------------------------------/
  //- Imported classes and packages -/
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/02/10 20:21:14 $
 **/
-public class StarsGetDefaultThermostatSettingsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsThermostatTypesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,63 +47,17 @@ public class StarsGetDefaultThermostatSettingsDescriptor extends org.exolab.cast
      //- Constructors -/
     //----------------/
 
-    public StarsGetDefaultThermostatSettingsDescriptor() {
+    public StarsThermostatTypesDescriptor() {
         super();
-        xmlName = "stars-GetDefaultThermostatSettings";
+        xmlName = "stars-ThermostatTypes";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _energyCompanyID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "EnergyCompanyID", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsGetDefaultThermostatSettings target = (StarsGetDefaultThermostatSettings) object;
-                if(!target.hasEnergyCompanyID())
-                    return null;
-                return new Integer(target.getEnergyCompanyID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsGetDefaultThermostatSettings target = (StarsGetDefaultThermostatSettings) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteEnergyCompanyID();
-                        return;
-                    }
-                    target.setEnergyCompanyID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _energyCompanyID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsGetDefaultThermostatSettingsDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.types.StarsThermostatTypesDescriptor()
 
 
       //-----------/
@@ -135,7 +89,7 @@ public class StarsGetDefaultThermostatSettingsDescriptor extends org.exolab.cast
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetDefaultThermostatSettings.class;
+        return com.cannontech.stars.xml.serialize.types.StarsThermostatTypes.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

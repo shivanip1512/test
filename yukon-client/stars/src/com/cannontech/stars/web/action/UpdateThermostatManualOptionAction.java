@@ -224,12 +224,13 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
 					resp.setStarsThermostatManualEvent( starsEvent );
 				}
+				
+				if (liteHw.isTwoWayThermostat()) hasTwoWay = true;
 			}
             
             if (hasTwoWay) {
-				Thread.sleep(3 * 1000);		// Wait a while
+				Thread.sleep(3 * 1000);	// Wait a while for the new settings to be reflected in the table
 				energyCompany.updateThermostatSettings( liteAcctInfo );
-	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
             }
 			
 			respOper.setStarsUpdateThermostatManualOptionResponse( resp );

@@ -214,9 +214,10 @@ public class CreateLMHardwareAction implements ActionBase {
 				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID()
 		};
 		
-		ArrayList liteSeasons = energyCompany.getDefaultThermostatSettings().getThermostatSeasons();
+		int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
+		ArrayList liteSeasons = energyCompany.getDefaultLMHardware(hwTypeDefID).getThermostatSettings().getThermostatSeasons();
 		LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];
-				
+		
 		for (int i = 0; i < liteSeasons.size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
 			seasons[i] = new LMThermostatSeason();

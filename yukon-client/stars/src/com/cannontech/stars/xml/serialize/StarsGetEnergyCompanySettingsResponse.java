@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -46,7 +48,7 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
 
     private StarsExitInterviewQuestions _starsExitInterviewQuestions;
 
-    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
+    private java.util.Vector _starsDefaultThermostatSettingsList;
 
 
       //----------------/
@@ -55,12 +57,49 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
 
     public StarsGetEnergyCompanySettingsResponse() {
         super();
+        _starsDefaultThermostatSettingsList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * 
+     * 
+     * @param vStarsDefaultThermostatSettings
+    **/
+    public void addStarsDefaultThermostatSettings(StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        if (!(_starsDefaultThermostatSettingsList.size() < 3)) {
+            throw new IndexOutOfBoundsException();
+        }
+        _starsDefaultThermostatSettingsList.addElement(vStarsDefaultThermostatSettings);
+    } //-- void addStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vStarsDefaultThermostatSettings
+    **/
+    public void addStarsDefaultThermostatSettings(int index, StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        if (!(_starsDefaultThermostatSettingsList.size() < 3)) {
+            throw new IndexOutOfBoundsException();
+        }
+        _starsDefaultThermostatSettingsList.insertElementAt(vStarsDefaultThermostatSettings, index);
+    } //-- void addStarsDefaultThermostatSettings(int, StarsDefaultThermostatSettings) 
+
+    /**
+    **/
+    public java.util.Enumeration enumerateStarsDefaultThermostatSettings()
+    {
+        return _starsDefaultThermostatSettingsList.elements();
+    } //-- java.util.Enumeration enumerateStarsDefaultThermostatSettings() 
 
     /**
      * Returns the value of field 'starsCustomerFAQs'.
@@ -83,14 +122,39 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     } //-- StarsCustomerSelectionLists getStarsCustomerSelectionLists() 
 
     /**
-     * Returns the value of field 'starsDefaultThermostatSettings'.
      * 
-     * @return the value of field 'starsDefaultThermostatSettings'.
+     * 
+     * @param index
     **/
-    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings()
+    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings(int index)
+        throws java.lang.IndexOutOfBoundsException
     {
-        return this._starsDefaultThermostatSettings;
-    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsDefaultThermostatSettingsList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        return (StarsDefaultThermostatSettings) _starsDefaultThermostatSettingsList.elementAt(index);
+    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings(int) 
+
+    /**
+    **/
+    public StarsDefaultThermostatSettings[] getStarsDefaultThermostatSettings()
+    {
+        int size = _starsDefaultThermostatSettingsList.size();
+        StarsDefaultThermostatSettings[] mArray = new StarsDefaultThermostatSettings[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = (StarsDefaultThermostatSettings) _starsDefaultThermostatSettingsList.elementAt(index);
+        }
+        return mArray;
+    } //-- StarsDefaultThermostatSettings[] getStarsDefaultThermostatSettings() 
+
+    /**
+    **/
+    public int getStarsDefaultThermostatSettingsCount()
+    {
+        return _starsDefaultThermostatSettingsList.size();
+    } //-- int getStarsDefaultThermostatSettingsCount() 
 
     /**
      * Returns the value of field 'starsEnergyCompany'.
@@ -180,6 +244,25 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+    **/
+    public void removeAllStarsDefaultThermostatSettings()
+    {
+        _starsDefaultThermostatSettingsList.removeAllElements();
+    } //-- void removeAllStarsDefaultThermostatSettings() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public StarsDefaultThermostatSettings removeStarsDefaultThermostatSettings(int index)
+    {
+        java.lang.Object obj = _starsDefaultThermostatSettingsList.elementAt(index);
+        _starsDefaultThermostatSettingsList.removeElementAt(index);
+        return (StarsDefaultThermostatSettings) obj;
+    } //-- StarsDefaultThermostatSettings removeStarsDefaultThermostatSettings(int) 
+
+    /**
      * Sets the value of field 'starsCustomerFAQs'.
      * 
      * @param starsCustomerFAQs the value of field
@@ -202,14 +285,36 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     } //-- void setStarsCustomerSelectionLists(StarsCustomerSelectionLists) 
 
     /**
-     * Sets the value of field 'starsDefaultThermostatSettings'.
      * 
-     * @param starsDefaultThermostatSettings the value of field
-     * 'starsDefaultThermostatSettings'.
+     * 
+     * @param index
+     * @param vStarsDefaultThermostatSettings
     **/
-    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings starsDefaultThermostatSettings)
+    public void setStarsDefaultThermostatSettings(int index, StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
+        throws java.lang.IndexOutOfBoundsException
     {
-        this._starsDefaultThermostatSettings = starsDefaultThermostatSettings;
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsDefaultThermostatSettingsList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (!(index < 3)) {
+            throw new IndexOutOfBoundsException();
+        }
+        _starsDefaultThermostatSettingsList.setElementAt(vStarsDefaultThermostatSettings, index);
+    } //-- void setStarsDefaultThermostatSettings(int, StarsDefaultThermostatSettings) 
+
+    /**
+     * 
+     * 
+     * @param starsDefaultThermostatSettingsArray
+    **/
+    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings[] starsDefaultThermostatSettingsArray)
+    {
+        //-- copy array
+        _starsDefaultThermostatSettingsList.removeAllElements();
+        for (int i = 0; i < starsDefaultThermostatSettingsArray.length; i++) {
+            _starsDefaultThermostatSettingsList.addElement(starsDefaultThermostatSettingsArray[i]);
+        }
     } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
 
     /**

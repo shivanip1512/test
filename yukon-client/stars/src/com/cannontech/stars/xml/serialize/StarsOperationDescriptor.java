@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.64 2004/02/02 23:05:38 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.65 2004/02/10 20:21:13 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.64 $ $Date: 2004/02/02 23:05:38 $
+ * @version $Revision: 1.65 $ $Date: 2004/02/10 20:21:13 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -1590,70 +1590,6 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsDefaultThermostatSettings
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetDefaultThermostatSettings
-        desc = new XMLFieldDescriptorImpl(StarsGetDefaultThermostatSettings.class, "_starsGetDefaultThermostatSettings", "stars-GetDefaultThermostatSettings", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetDefaultThermostatSettings();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetDefaultThermostatSettings( (StarsGetDefaultThermostatSettings) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetDefaultThermostatSettings();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetDefaultThermostatSettings
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsGetDefaultThermostatSettingsResponse
-        desc = new XMLFieldDescriptorImpl(StarsGetDefaultThermostatSettingsResponse.class, "_starsGetDefaultThermostatSettingsResponse", "stars-GetDefaultThermostatSettingsResponse", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsOperation target = (StarsOperation) object;
-                return target.getStarsGetDefaultThermostatSettingsResponse();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsOperation target = (StarsOperation) object;
-                    target.setStarsGetDefaultThermostatSettingsResponse( (StarsGetDefaultThermostatSettingsResponse) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsGetDefaultThermostatSettingsResponse();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsGetDefaultThermostatSettingsResponse
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.stars.util.ECUtils;
 
@@ -44,9 +44,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	}
 	
 	public void updateThermostatSettings(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		int hwTypeDefID = energyCompany.getYukonListEntry(
-				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
-				).getYukonDefID();
+		int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
 		
 		Object[][] data = com.cannontech.database.db.stars.hardware.GatewayEndDevice.getHardwareData(
 				liteHw.getManufacturerSerialNumber(), new Integer(hwTypeDefID) );

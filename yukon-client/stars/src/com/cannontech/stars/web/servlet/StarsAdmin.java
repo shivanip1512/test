@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -55,6 +54,7 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -86,7 +86,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
-import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 
 /**
  * @author yao
@@ -1115,7 +1115,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			for (int i = 0; i < subjectIDs.length; i++) {
 				int subjectID = Integer.parseInt( subjectIDs[i] );
-				YukonListEntry subject = energyCompany.getYukonListEntry( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, subjectID );
+				YukonListEntry subject = YukonListFuncs.getYukonListEntry( subjectID );
 				subject.setEntryOrder( i+1 );
 				
 				com.cannontech.database.db.constants.YukonListEntry entry =
@@ -1217,8 +1217,7 @@ public class StarsAdmin extends HttpServlet {
 					}
 				}
 				
-				YukonListEntry cEntry = energyCompany.getYukonListEntry(
-						YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, subjectID );
+				YukonListEntry cEntry = YukonListFuncs.getYukonListEntry( subjectID );
 				if (!cEntry.getEntryText().equals( subject )) {
 					com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry( cEntry );
 					entry.setEntryText( subject );
@@ -1302,8 +1301,7 @@ public class StarsAdmin extends HttpServlet {
 					}
 				}
 				
-				YukonListEntry cEntry = energyCompany.getYukonListEntry(
-						YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, starsGroup.getSubjectID() );
+				YukonListEntry cEntry = YukonListFuncs.getYukonListEntry( starsGroup.getSubjectID() );
 				com.cannontech.database.db.constants.YukonListEntry entry =
 						StarsLiteFactory.createYukonListEntry( cEntry );
 				entry.setDbConnection( conn );
@@ -1391,18 +1389,10 @@ public class StarsAdmin extends HttpServlet {
 						StarsExitInterviewQuestion starsQuestion = new StarsExitInterviewQuestion();
 						starsQuestion.setQuestionID( liteQuestion.getQuestionID() );
 						starsQuestion.setQuestion( liteQuestion.getQuestion() );
-						starsQuestion.setQuestionType( (QuestionType)
-								StarsFactory.newStarsCustListEntry(
-									energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_QUESTION_TYPE, liteQuestion.getQuestionType()),
-									QuestionType.class
-									)
-								);
-						starsQuestion.setAnswerType( (AnswerType)
-								StarsFactory.newStarsCustListEntry(
-									energyCompany.getYukonListEntry(YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE, liteQuestion.getAnswerType()),
-									AnswerType.class
-									)
-								);
+						starsQuestion.setQuestionType( (QuestionType)StarsFactory.newStarsCustListEntry(
+								YukonListFuncs.getYukonListEntry(liteQuestion.getQuestionType()), QuestionType.class) );
+						starsQuestion.setAnswerType( (AnswerType)StarsFactory.newStarsCustListEntry(
+								YukonListFuncs.getYukonListEntry(liteQuestion.getAnswerType()), AnswerType.class) );
 						starsExitQuestions.addStarsExitInterviewQuestion( starsQuestion );
 					}
 				}
@@ -1691,15 +1681,21 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-        	StarsDefaultThermostatSettings dftSettings = energyCompany.getStarsDefaultThermostatSettings();
+        	StarsThermostatTypes thermType = StarsThermostatTypes.valueOf( req.getParameter("type") );
+			int hwTypeDefID = ECUtils.getLMHardwareTypeDefID(thermType).intValue();
         	
-        	UpdateThermostatScheduleAction action = new UpdateThermostatScheduleAction();
-        	SOAPMessage reqMsg = action.build( req, session );
-        	StarsUpdateThermostatSchedule updateSched = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
+        	StarsUpdateThermostatSchedule updateSched = UpdateThermostatScheduleAction.getRequestOperation(req).getStarsUpdateThermostatSchedule();
         	
-        	LiteStarsLMHardware liteHw = energyCompany.getDefaultLMHardware();
+        	LiteStarsLMHardware liteHw = energyCompany.getDefaultLMHardware( hwTypeDefID );
         	StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
-			UpdateThermostatScheduleAction.parseResponse( resp, dftSettings );
+        	
+			StarsDefaultThermostatSettings[] dftSettings = energyCompany.getStarsDefaultThermostatSettings();
+			for (int i = 0; i < dftSettings.length; i++) {
+				if (dftSettings[i].getThermostatType().getType() == thermType.getType()) {
+					UpdateThermostatScheduleAction.parseResponse( resp, dftSettings[i] );
+					break;
+				}
+			}
 			
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Default thermostat schedule updated successfully");
         }

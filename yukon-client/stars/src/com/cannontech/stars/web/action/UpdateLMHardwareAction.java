@@ -148,13 +148,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 				else {
 					com.cannontech.database.db.stars.hardware.InventoryBase invDB =
 							new com.cannontech.database.db.stars.hardware.InventoryBase();
+					
 					StarsLiteFactory.setInventoryBase( invDB, liteInv );
-					
-					if (updateHw.getDeviceLabel().length() > 0)
-						invDB.setDeviceLabel( updateHw.getDeviceLabel() );
-					else
-						invDB.setDeviceLabel( ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber() );
-					
+					invDB.setDeviceLabel( updateHw.getDeviceLabel() );
 					invDB.setDbConnection( conn );
 					invDB.update();
 					
@@ -239,7 +235,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			updateHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
 			updateHw.setDeviceLabel( req.getParameter("DeviceLabel") );
 		}
-			
+		
 		operation.setStarsUpdateLMHardware( updateHw );
 		return operation;
 	}

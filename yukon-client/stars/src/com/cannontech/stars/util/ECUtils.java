@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 
 /**
  * @author yao
@@ -182,7 +183,7 @@ public class ECUtils {
 	public static StarsThermoFanSettings getThermFanSetting(int fanOpID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( fanOpID );
 		
-		if (fanOpID == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT)
 			return null;
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO)
 			return StarsThermoFanSettings.AUTO;
@@ -199,6 +200,26 @@ public class ECUtils {
 			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO).getEntryID() );
 		else if (setting.getType() == StarsThermoFanSettings.ON_TYPE)
 			return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON).getEntryID() );
+		else
+			return null;
+	}
+	
+	public static StarsThermostatTypes getThermostatType(int hwTypeID) {
+		YukonListEntry entry = YukonListFuncs.getYukonListEntry( hwTypeID );
+		
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT)
+			return StarsThermostatTypes.BASIC;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
+			return StarsThermostatTypes.ENERGYPRO;
+		else
+			return null;
+	}
+	
+	public static Integer getLMHardwareTypeDefID(StarsThermostatTypes type) {
+		if (type.getType() == StarsThermostatTypes.BASIC_TYPE)
+			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT);
+		else if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE)
+			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
 		else
 			return null;
 	}

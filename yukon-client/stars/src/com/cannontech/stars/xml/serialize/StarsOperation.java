@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.64 2004/02/02 23:05:34 zyao Exp $
+ * $Id: StarsOperation.java,v 1.65 2004/02/10 20:21:10 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.64 $ $Date: 2004/02/02 23:05:34 $
+ * @version $Revision: 1.65 $ $Date: 2004/02/10 20:21:10 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -139,10 +139,6 @@ public class StarsOperation implements java.io.Serializable {
     private StarsUpdateLoginResponse _starsUpdateLoginResponse;
 
     private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
-
-    private StarsGetDefaultThermostatSettings _starsGetDefaultThermostatSettings;
-
-    private StarsGetDefaultThermostatSettingsResponse _starsGetDefaultThermostatSettingsResponse;
 
     private StarsUpdateThermostatSchedule _starsUpdateThermostatSchedule;
 
@@ -352,30 +348,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsGetCustomerAccountResponse;
     } //-- StarsGetCustomerAccountResponse getStarsGetCustomerAccountResponse() 
-
-    /**
-     * Returns the value of field
-     * 'starsGetDefaultThermostatSettings'.
-     * 
-     * @return the value of field
-     * 'starsGetDefaultThermostatSettings'.
-    **/
-    public StarsGetDefaultThermostatSettings getStarsGetDefaultThermostatSettings()
-    {
-        return this._starsGetDefaultThermostatSettings;
-    } //-- StarsGetDefaultThermostatSettings getStarsGetDefaultThermostatSettings() 
-
-    /**
-     * Returns the value of field
-     * 'starsGetDefaultThermostatSettingsResponse'.
-     * 
-     * @return the value of field
-     * 'starsGetDefaultThermostatSettingsResponse'.
-    **/
-    public StarsGetDefaultThermostatSettingsResponse getStarsGetDefaultThermostatSettingsResponse()
-    {
-        return this._starsGetDefaultThermostatSettingsResponse;
-    } //-- StarsGetDefaultThermostatSettingsResponse getStarsGetDefaultThermostatSettingsResponse() 
 
     /**
      * Returns the value of field 'starsGetEnergyCompanySettings'.
@@ -1044,29 +1016,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsGetCustomerAccountResponse = starsGetCustomerAccountResponse;
     } //-- void setStarsGetCustomerAccountResponse(StarsGetCustomerAccountResponse) 
-
-    /**
-     * Sets the value of field 'starsGetDefaultThermostatSettings'.
-     * 
-     * @param starsGetDefaultThermostatSettings the value of field
-     * 'starsGetDefaultThermostatSettings'.
-    **/
-    public void setStarsGetDefaultThermostatSettings(StarsGetDefaultThermostatSettings starsGetDefaultThermostatSettings)
-    {
-        this._starsGetDefaultThermostatSettings = starsGetDefaultThermostatSettings;
-    } //-- void setStarsGetDefaultThermostatSettings(StarsGetDefaultThermostatSettings) 
-
-    /**
-     * Sets the value of field
-     * 'starsGetDefaultThermostatSettingsResponse'.
-     * 
-     * @param starsGetDefaultThermostatSettingsResponse the value
-     * of field 'starsGetDefaultThermostatSettingsResponse'.
-    **/
-    public void setStarsGetDefaultThermostatSettingsResponse(StarsGetDefaultThermostatSettingsResponse starsGetDefaultThermostatSettingsResponse)
-    {
-        this._starsGetDefaultThermostatSettingsResponse = starsGetDefaultThermostatSettingsResponse;
-    } //-- void setStarsGetDefaultThermostatSettingsResponse(StarsGetDefaultThermostatSettingsResponse) 
 
     /**
      * Sets the value of field 'starsGetEnergyCompanySettings'.

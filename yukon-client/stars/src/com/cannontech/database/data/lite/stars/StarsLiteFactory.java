@@ -1097,8 +1097,10 @@ public class StarsLiteFactory {
 			starsDynData.addInfoString( (String) liteDynData.getInfoStrings().get(i) );
 	}
 	
-	public static void setStarsThermostatSettings(StarsThermoSettings starsSettings, LiteStarsThermostatSettings liteSettings, LiteStarsEnergyCompany energyCompany) {
+	public static void setStarsThermostatSettings(StarsThermoSettings starsSettings, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
+		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
 		starsSettings.setInventoryID( liteSettings.getInventoryID() );
+		starsSettings.setThermostatType( ECUtils.getThermostatType(liteHw.getLmHardwareTypeID()) );
 		
 		for (int i = 0; i < liteSettings.getThermostatSeasons().size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(i);
@@ -1556,7 +1558,7 @@ public class StarsLiteFactory {
 			
 			if (liteHw.getThermostatSettings() != null) {
 				StarsThermostatSettings starsSettings = new StarsThermostatSettings();
-				setStarsThermostatSettings( starsSettings, liteHw.getThermostatSettings(), energyCompany );
+				setStarsThermostatSettings( starsSettings, liteHw, energyCompany );
 				hw.setStarsThermostatSettings( starsSettings );
 			}
 			

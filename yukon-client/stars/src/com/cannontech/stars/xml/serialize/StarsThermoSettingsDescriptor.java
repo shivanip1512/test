@@ -100,6 +100,38 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         }
         desc.setValidator(fieldValidator);
         
+        //-- _thermostatType
+        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes.class, "_thermostatType", "thermostatType", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermoSettings target = (StarsThermoSettings) object;
+                return target.getThermostatType();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    target.setThermostatType( (com.cannontech.stars.xml.serialize.types.StarsThermostatTypes) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes.class, handler));
+        desc.setImmutable(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _thermostatType
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _starsThermostatSeasonList

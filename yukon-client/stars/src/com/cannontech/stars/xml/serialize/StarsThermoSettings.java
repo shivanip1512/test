@@ -11,6 +11,7 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -40,6 +41,8 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
      * keeps track of state for field: _inventoryID
     **/
     private boolean _has_inventoryID;
+
+    private com.cannontech.stars.xml.serialize.types.StarsThermostatTypes _thermostatType;
 
     private java.util.Vector _starsThermostatSeasonList;
 
@@ -227,6 +230,16 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     } //-- int getStarsThermostatSeasonCount() 
 
     /**
+     * Returns the value of field 'thermostatType'.
+     * 
+     * @return the value of field 'thermostatType'.
+    **/
+    public com.cannontech.stars.xml.serialize.types.StarsThermostatTypes getThermostatType()
+    {
+        return this._thermostatType;
+    } //-- com.cannontech.stars.xml.serialize.types.StarsThermostatTypes getThermostatType() 
+
+    /**
     **/
     public boolean hasInventoryID()
     {
@@ -384,6 +397,16 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
             _starsThermostatSeasonList.addElement(starsThermostatSeasonArray[i]);
         }
     } //-- void setStarsThermostatSeason(StarsThermostatSeason) 
+
+    /**
+     * Sets the value of field 'thermostatType'.
+     * 
+     * @param thermostatType the value of field 'thermostatType'.
+    **/
+    public void setThermostatType(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes thermostatType)
+    {
+        this._thermostatType = thermostatType;
+    } //-- void setThermostatType(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes) 
 
     /**
     **/
