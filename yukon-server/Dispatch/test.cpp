@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/09/29 13:55:00 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/09/29 20:26:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,9 +89,8 @@ class EThread : public CtiThread
 {
 public:
 
-   EThread( string n, int t = 10 );
+   EThread( string n, CtiThreadRegData::Behaviours type, int t = 10 );
    ~EThread();
-   void setQuit( bool in );
 
 protected:
 
@@ -99,14 +98,14 @@ protected:
 
 private:
 
-   string            _name;
-   int               _heart_beat;
-   bool              _quit;
+   CtiThreadRegData::Behaviours  _type;
+   string                        _name;
+   int                           _heart_beat;
 };
 
-EThread::EThread( string n, int t ) :
-   _name( n ),
-   _quit( false )
+EThread::EThread( string n, CtiThreadRegData::Behaviours type, int t ) :
+   _type( type ),
+   _name( n )
 {
    _heart_beat = t;     //how often we'll tickle the monitor
 }
@@ -115,26 +114,30 @@ EThread::~EThread()
 {
 }
 
-void EThread::setQuit( bool in )
-{
-   _quit = in;
-}
-
 void EThread::run( void )
 {
-   int cnt = _heart_beat;
+   int cnt = 0;
+   CtiThreadRegData  *data = new CtiThreadRegData( getID(), _name, _type, _heart_beat, ha, 0 , booya, 0 );
+   ThreadMonitor.tickle( data );
    
-   while( !_quit )
+   while( !isSet( SHUTDOWN ) )
    {
       sleep( 1000 );
 
-      if( cnt++ == _heart_beat )
+      if( cnt++ == _heart_beat - 4 )
       {
-         CtiThreadRegData  *data = new CtiThreadRegData( getID(), _name, CtiThreadRegData::None, _heart_beat, ha, 0 , booya, 0 );
+         CtiThreadRegData  *data = new CtiThreadRegData( getID(), _name, _type, _heart_beat, ha, 0 , booya, 0 );
          ThreadMonitor.tickle( data );
          cnt = 0;
       }
+
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << _name << " working" << endl;
+      }
+
    }
+   set( SHUTDOWN, false ); //reset the flag so we can start it again
 }
 
 //===========================================================================================================
@@ -142,80 +145,107 @@ void EThread::run( void )
 
 void testThreads( int argc, char **argv )
 {
-   EThread  *bob = new EThread( "bob" );
-   EThread  *sam = new EThread( "sam", 20 );
-   EThread  *joe = new EThread( "joe", 11 );
-   EThread  *rat = new EThread( "rat", 40 );
+   EThread  *bob = new EThread( "bob", CtiThreadRegData::KillApp );
+   EThread  *sam = new EThread( "sam", CtiThreadRegData::None, 20 );
+   EThread  *joe = new EThread( "joe", CtiThreadRegData::Restart, 11 );
+   EThread  *rat = new EThread( "rat", CtiThreadRegData::KillApp, 40 );
    int      index = 0;
 
    ThreadMonitor.start();
 
+   Sleep( 3000 );
+
+   if( !( bob->isRunning() ) )
+   {
+      bob->start();
+   }
+
    for( ;; )
    {
       Sleep( 1000 );
-
-      if( !bob->isRunning() )
-      {
-         bob->start();
-      }
-
-      if(( index == 40 ) && ( joe->isRunning() ))
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << " joe->setQuit" << endl;
-         }
-//         joe->setQuit( true );
-         joe->interrupt( CtiThread::SHUTDOWN );
-      }
-
-      if(( index == 53 ) && ( !joe->isRunning() ))
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << " joe->start" << endl;
-         }
-         joe->start();
-      }
-
-      if(( index == 55 ) && ( !sam->isRunning() ))
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << " sam->start" << endl;
-         }
-         sam->start();
-      }
-
-      if(( index % 12 == 0 ) && ( !rat->isRunning() ))
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << " rat->start" << endl;
-         }
-         rat->start();
-      }
-
-      if(( index % 50 == 0 ) && ( rat->isRunning() ))
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << " rat->setQuit" << endl;
-         }
-         rat->interrupt( CtiThread::SHUTDOWN );
-//         rat->setQuit( true );
-      }
-
-      if( index % 60 == 0 )
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << " ThreadMonitor.dump" << endl;
-         }
-         ThreadMonitor.dump();
-      }
-
       index++;
+
+      if( !( index % 25 )) 
+      {
+         if( bob->isRunning() )
+         {
+            bob->interrupt( CtiThread::SHUTDOWN );
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "bob exiting" << endl;
+            }
+         }
+         else
+         {
+            bob->start();
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "bob starting" << endl;
+            }
+         }
+      }
+
+      if( !( index % 35 )) 
+      {
+         if( sam->isRunning() )
+         {
+            sam->interrupt( CtiThread::SHUTDOWN );
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "sam exiting" << endl;
+            }
+         }
+         else
+         {
+            sam->start();
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "sam starting" << endl;
+            }
+         }
+      }
+
+      if( !( index % 94 )) 
+      {
+         if( rat->isRunning() )
+         {
+            rat->interrupt( CtiThread::SHUTDOWN );
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "rat exiting" << endl;
+            }
+         }
+         else
+         {
+            rat->start();
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "rat starting" << endl;
+            }
+         }
+      }
+
+      if( !( index % 61 )) 
+      {
+         if( joe->isRunning() )
+         {
+            joe->interrupt( CtiThread::SHUTDOWN );
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "joe exiting" << endl;
+            }
+         }
+         else
+         {
+            joe->start();
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "joe starting" << endl;
+            }
+         }
+      }
+
+
    }
 }
 

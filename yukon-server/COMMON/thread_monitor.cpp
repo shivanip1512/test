@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/09/29 14:15:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/09/29 20:26:37 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -49,6 +49,11 @@ void CtiThreadMonitor::run( void )
    while( !_quit )
    {
       sleep( 1000 );
+
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << now() << " Monitor Loop" << endl;
+      }
 
       checkForExpriration();
 
@@ -183,8 +188,10 @@ void CtiThreadMonitor::processExpired( void )
 
             i = _threadData.erase( i );
          }
-
-         i++;
+         else
+         {
+            i++;
+         }
       }
    }
    catch( ... )
@@ -200,7 +207,10 @@ void CtiThreadMonitor::processExpired( void )
 
 void CtiThreadMonitor::dump( void )
 {  
-   for( map < int, CtiThreadRegData >::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
+   //if we only operate on a copy, we can't explode if someone changes the map
+   ThreadData temp_map = _threadData;
+
+   for( map < int, CtiThreadRegData >::iterator i = temp_map.begin(); i != temp_map.end(); i++ )
    {
       CtiThreadRegData temp = i->second;
 
@@ -219,6 +229,8 @@ void CtiThreadMonitor::dump( void )
 
 //===========================================================================================================
 // each thread that reports to us will give us info (at least initially) that looks like the regdata
+// we're trying hard to keep from anyone sending us illegal data, so we check for an id of zero before we
+// accept the pointer as that is a CtiThreadRegData default
 //===========================================================================================================
 
 void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
@@ -227,34 +239,40 @@ void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
    //data that is not ours when we delete the queue
    try
    {
-      CtiThreadRegData *data = new CtiThreadRegData( *in );
-
-      data->setTickledTime( second_clock::local_time() );
-
-      if( data->getId() != 0 )
+      if( in != NULL )
       {
-         _queue.putQueue( data );
+         CtiThreadRegData *data = new CtiThreadRegData( *in );
 
+         if( data->getId() != 0 )
          {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << now() << " Thread " << data->getName() << " " << data->getId() << " inserted" << endl;
-         }
+            data->setTickledTime( second_clock::local_time() );
 
-         //our thread may have shut down, so we don't want the queue to keep growing
-         //as we won't be processing it anymore
-         if( !isRunning() )
-         {
+            if( data->getId() != 0 )
+            {
+               _queue.putQueue( data );
+
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard( dout );
+                  dout << now() << " Thread " << data->getName() << " " << data->getId() << " inserted" << endl;
+               }
+
+               //our thread may have shut down, so we don't want the queue to keep growing
+               //as we won't be processing it anymore
+               if( !isRunning() )
+               {
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard( dout );
+                     dout << now() <<" WARNING: Monitor is NOT running, deleting monitor queue" << endl;
+                  }
+                  _queue.clearAndDestroy();
+               }
+            }
+            else
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << now() <<" WARNING: Monitor is NOT running, deleting monitor queue" << endl;
+               dout << now() <<" Thread id INVALID" << endl;
             }
-            _queue.clearAndDestroy();
          }
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << now() <<" Thread id INVALID" << endl;
       }
    }
    catch( ... )

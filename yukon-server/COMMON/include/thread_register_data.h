@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/29 14:02:17 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/09/29 20:26:37 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -39,11 +39,10 @@ public:
 
    typedef void (*behaviourFuncPtr)( void *p );
 
-   CtiThreadRegData();
-   CtiThreadRegData( int id,
-                      string name,
-                      Behaviours type,
-                      int tickle_freq,
+   CtiThreadRegData( int id = 0,
+                      string name = "default",
+                      Behaviours type = None,
+                      int tickle_freq = 0,
                       behaviourFuncPtr ptr1 = 0,
                       void *args1 = 0,
                       behaviourFuncPtr ptr2 = 0,
@@ -83,11 +82,11 @@ public:
    bool getReported( void );
    void setReported( const bool in );
 
-
-
 protected:
 
 private:
+
+//   CtiThreadRegData();
 
    bool                 _reported;
    ptime                _tickledTime;
