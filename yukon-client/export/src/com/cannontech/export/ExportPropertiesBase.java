@@ -20,8 +20,7 @@ public class ExportPropertiesBase
 
 	private Character delimiter = new Character('|');
 	private boolean showColumnHeadings = false;
-	private String energyFileName = "c:/yukon/client/config/EnergyNumbers.txt";
-		
+	
 	//DBPURGE PROPERTIES
 	int daysToRetain = 90;
 	Integer runTimeHour = null;
@@ -81,15 +80,6 @@ public class ExportPropertiesBase
 	public Character getDelimiter()
 	{
 		return delimiter;
-	}
-
-	/**
-	 * Returns the energyFileName.
-	 * @return String
-	 */
-	public String getEnergyFileName()
-	{
-		return energyFileName;
 	}
 
 	/**
@@ -197,15 +187,6 @@ public class ExportPropertiesBase
 	public void setDelimiter(Character delimiter)
 	{
 		this.delimiter = delimiter;
-	}
-
-	/**
-	 * Sets the energyFileName.
-	 * @param energyFileName The energyFileName to set
-	 */
-	public void setEnergyFileName(String energyFileName)
-	{
-		this.energyFileName = energyFileName;
 	}
 
 	/**

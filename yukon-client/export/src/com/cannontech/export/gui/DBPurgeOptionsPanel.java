@@ -1,7 +1,5 @@
 package com.cannontech.export.gui;
 
-import com.cannontech.export.ExportFormatTypes;
-import com.cannontech.export.ExportPropertiesBase;
 public class DBPurgeOptionsPanel extends javax.swing.JPanel
 {
 	private javax.swing.JLabel ivjDaysToRetainLabel = null;

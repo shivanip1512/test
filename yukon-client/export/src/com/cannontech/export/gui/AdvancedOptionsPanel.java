@@ -302,7 +302,6 @@ private DBPurgeOptionsPanel getDBPurgeOptionsPanel() {
 			if( delTemp.length() > 0)
 				exportProps.setDelimiter(new Character(delTemp.charAt(0)));
 					
-			exportProps.setEnergyFileName(getCSVBillingOptionsPanel().getEnergyFileTextField().getText().toString().trim());
 		}
 	
 		return exportProps;
@@ -437,7 +436,6 @@ private DBPurgeOptionsPanel getDBPurgeOptionsPanel() {
 				getCSVBillingOptionsPanel().getStopDateComboBox().setSelectedDate(props.getMaxTimestamp().getTime());
 				getCSVBillingOptionsPanel().getHeadingsCheckBox().setSelected(props.isShowColumnHeadings());
 				getCSVBillingOptionsPanel().getDelimiterTextBox().setText(String.valueOf(props.getDelimiter()));
-				getCSVBillingOptionsPanel().getEnergyFileTextField().setText(props.getEnergyFileName().toString());
 
 				getCSVBillingOptionsPanel().setVisible(true);
 			}
@@ -496,7 +494,7 @@ private DBPurgeOptionsPanel getDBPurgeOptionsPanel() {
 		getOkButton().removeActionListener(listener);
 		getCancelButton().removeActionListener(listener);
 			
-		if( getButtonPushed() == this.OK )
+		if( getButtonPushed() == AdvancedOptionsPanel.OK )
 			return (ExportPropertiesBase) getValue(getExportProperties());
 		else
 			return null;

@@ -8,12 +8,14 @@ package com.cannontech.export.record;
 public class CSVBillingCustomerRecord implements RecordBase
 {
 	private String customerName;
-	private String energyDebtor;
-	private String energyPremise;
+	private Integer customerID;
 	private String meterLocation;
+	private String accountNumber;
 	private Integer baselinePointId;
 	private Integer curtailPointId;
+	private Double pdl;
 	
+	private static Character delimiter = new Character('|');
 	/**
 	 * CSVBillingCustomerRecord constructor comment.
 	 */
@@ -23,15 +25,17 @@ public class CSVBillingCustomerRecord implements RecordBase
 	/**
 	 * CSVBillingCustomerRecord constructor comment.
 	 */
-	public CSVBillingCustomerRecord(String custName, String meterLoc, String engDebt, String engPre, Integer baselinePt, Integer curtailPt)
+	public CSVBillingCustomerRecord(String custName, Integer custID, String meterLoc,
+									String actNum, Integer baselinePt, Integer curtailPt, Double pdl)
 	{
 		super();
 		setCustomerName(custName);
+		setCustomerID(custID);
 		setMeterLocation(meterLoc);
-		setEnergyDebtor(engDebt);
-		setEnergyPremise(engPre);
+		setAccountNumber(actNum);
 		setBaselinePointId(baselinePt);
 		setCurtailPointId(curtailPt);
+		setPDL(pdl);
 	}
 	/**
 	 * @see com.cannontech.export.record.RecordBase#dataToString()
@@ -39,8 +43,16 @@ public class CSVBillingCustomerRecord implements RecordBase
 	 * Returns null
 	 */
 	public String dataToString()
-	{
-		return null;
+	{		
+		String dataString = new String("CUSTOMER: " + getCustomerName() + "\n");
+		
+		dataString += "Account: " + getAccountNumber() + "\n";	
+			
+		dataString += "Meter: " + getMeterLocation() + "\n";
+
+		dataString += "PDL: " + getPDL() + "\r\n";
+	
+		return dataString;
 	}
 	/**
 	 * Returns the baselinePointId.
@@ -67,24 +79,6 @@ public class CSVBillingCustomerRecord implements RecordBase
 	public String getCustomerName()
 	{
 		return customerName;
-	}
-
-	/**
-	 * Returns the energyDebtor.
-	 * @return String
-	 */
-	public String getEnergyDebtor()
-	{
-		return energyDebtor;
-	}
-
-	/**
-	 * Returns the energyPremise.
-	 * @return String
-	 */
-	public String getEnergyPremise()
-	{
-		return energyPremise;
 	}
 
 	/**
@@ -124,30 +118,76 @@ public class CSVBillingCustomerRecord implements RecordBase
 	}
 
 	/**
-	 * Sets the energyDebtor.
-	 * @param energyDebtor The energyDebtor to set
-	 */
-	public void setEnergyDebtor(String energyDebtor)
-	{
-		this.energyDebtor = energyDebtor;
-	}
-
-	/**
-	 * Sets the energyPremise.
-	 * @param energyPremise The energyPremise to set
-	 */
-	public void setEnergyPremise(String energyPremise)
-	{
-		this.energyPremise = energyPremise;
-	}
-
-	/**
 	 * Sets the meterLocation.
 	 * @param meterLocation The meterLocation to set
 	 */
 	public void setMeterLocation(String meterLocation)
 	{
 		this.meterLocation = meterLocation;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getPDL()
+	{
+		return pdl;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setPDL(Double pdl)
+	{
+		this.pdl = pdl;
+	}
+
+	/**
+	 * @return
+	 */
+	public Character getDelimiter()
+	{
+		return delimiter;
+	}
+
+	/**
+	 * @param character
+	 */
+	public void setDelimiter(Character character)
+	{
+		delimiter = character;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getCustomerID()
+	{
+		return customerID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setCustomerID(Integer integer)
+	{
+		customerID = integer;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getAccountNumber()
+	{
+		return accountNumber;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setAccountNumber(String string)
+	{
+		accountNumber = string;
 	}
 
 }

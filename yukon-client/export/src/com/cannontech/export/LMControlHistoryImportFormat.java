@@ -1,8 +1,8 @@
 package com.cannontech.export;
 
-import com.cannontech.export.record.LMControlHistoryRecord;
-import com.cannontech.export.record.DynamicLMProgramRecord;
 import com.cannontech.export.record.DynamicLMProgramDirectRecord;
+import com.cannontech.export.record.DynamicLMProgramRecord;
+import com.cannontech.export.record.LMControlHistoryRecord;
 /**
  * @author snebben
  *

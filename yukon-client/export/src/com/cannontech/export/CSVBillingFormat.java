@@ -1,7 +1,16 @@
 package com.cannontech.export;
 
-import com.cannontech.export.record.CSVBillingRecord;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
+import com.cannontech.calchist.Baseline;
+import com.cannontech.calchist.HoursAndValues;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.export.record.CSVBillingCustomerRecord;
+import com.cannontech.export.record.CSVBillingRecord;
 import com.cannontech.export.record.StringRecord;
 /**
  * Insert the type's description here.
@@ -57,10 +66,6 @@ public class CSVBillingFormat extends ExportFormatBase
 					setExportDirectory(values[i].toString());
 					java.io.File file = new java.io.File( getExportDirectory() );
 					file.mkdirs();
-				}
-				else if( keys[i].equalsIgnoreCase("ENERGYFILE"))
-				{
-					getExportProperties().setEnergyFileName(values[i]);
 				}
 				else if( keys[i].equalsIgnoreCase("DELIMITER"))
 				{
@@ -166,9 +171,6 @@ public class CSVBillingFormat extends ExportFormatBase
 		keys[i] = "DIR";
 		values[i++] = getExportDirectory();
 	
-		keys[i] = "ENERGYFILE";
-		values[i++] = getExportProperties().getEnergyFileName();
-	
 		keys[i] = "START";
 		values[i++] = COMMAND_LINE_FORMAT.format(getExportProperties().getMinTimestamp().getTime());
 	
@@ -213,7 +215,7 @@ public class CSVBillingFormat extends ExportFormatBase
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
@@ -260,36 +262,29 @@ public class CSVBillingFormat extends ExportFormatBase
 		logEvent("...BASELINE DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + " millis.", com.cannontech.common.util.LogWriter.INFO);
 		return;
 	}
-	
 	/**
 	 * Method retrieveBillingData.
 	 * @param keyId
 	 * @param csvBillingCust
 	 */
-	public void retrieveBillingData(int keyId, CSVBillingCustomerRecord csvBillingCust)
+	public Vector retrieveCurtailHistory(CSVBillingCustomerRecord csvBillingCust)
 	{
-		long timer = System.currentTimeMillis();
-		int rowCount = 0;
-			
+		//contains RecordBase values.
+		Vector curtailHistoryVector = new Vector();
+		
 		StringBuffer sql = new StringBuffer	("SELECT LMEEHO.OFFERID, LMEEHO.REVISIONNUMBER");
-		sql.append(", LMEEHO.PRICE, LMEEHC.AMOUNTCOMMITTED, RPH.TIMESTAMP, RPH.VALUE, RPH.POINTID, LMEEHO.HOUR ");
+		sql.append(", LMEEHO.PRICE, LMEEHC.AMOUNTCOMMITTED, LMEEHO.HOUR, LMEEPO.OFFERDATE ");
 		sql.append("FROM LMENERGYEXCHANGEHOURLYCUSTOMER LMEEHC, ");
 		sql.append("LMENERGYEXCHANGEPROGRAMOFFER LMEEPO, ");
-		sql.append("LMENERGYEXCHANGEHOURLYOFFER LMEEHO, ");
-		sql.append("RAWPOINTHISTORY RPH");
-	
-		sql.append(" WHERE LMEEHC.CUSTOMERID = " + keyId);
+		sql.append("LMENERGYEXCHANGEHOURLYOFFER LMEEHO ");
+		sql.append(" WHERE LMEEHC.CUSTOMERID = " + csvBillingCust.getCustomerID().intValue());
 		sql.append(" AND LMEEPO.OFFERID = LMEEHO.OFFERID");
 		sql.append(" AND LMEEPO.OFFERID = LMEEHC.OFFERID");
 		sql.append(" AND LMEEHO.REVISIONNUMBER = LMEEHC.REVISIONNUMBER");
 		sql.append(" AND LMEEHO.HOUR = LMEEHC.HOUR");
 		sql.append(" AND LMEEHC.AMOUNTCOMMITTED > 0");
-		sql.append(" AND LMEEHO.REVISIONNUMBER = (SELECT MAX(REVISIONNUMBER) FROM LMENERGYEXCHANGEHOURLYOFFER");
-		sql.append(" WHERE LMEEHO.OFFERID = OFFERID");
-		sql.append(" AND LMEEHO.HOUR = HOUR)");
-		sql.append(" AND RPH.POINTID = " + csvBillingCust.getCurtailPointId());
-		sql.append(" AND RPH.TIMESTAMP > ? AND RPH.TIMESTAMP <= ?");
-		sql.append(" ORDER BY RPH.TIMESTAMP");
+		sql.append(" AND LMEEPO.OFFERDATE > ? AND LMEEPO.OFFERDATE <= ?");
+		sql.append(" ORDER BY LMEEPO.OFFERID, LMEEPO.OFFERDATE, LMEEHO.HOUR ");
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
@@ -298,77 +293,50 @@ public class CSVBillingFormat extends ExportFormatBase
 		retrieveBaselineData(csvBillingCust.getBaselinePointId().intValue());
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
 				logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.INFO);
-				return;
+				return null;
 			}
 			else
 			{
 				stmt = conn.prepareStatement(sql.toString());
-				stmt.setTimestamp(1, new java.sql.Timestamp(getExportProperties().getMinTimestamp().getTime().getTime()));
-				stmt.setTimestamp(2, new java.sql.Timestamp(getExportProperties().getMaxTimestamp().getTime().getTime()));
-	
+				// Curtail Dates are stored with a 00:00 timestamp but we still want that actual date 
+				// so we have to subtract one day from each timestamp to get an accurate date for offer info queries.
+				GregorianCalendar tempCal = (GregorianCalendar)getExportProperties().getMinTimestamp().clone();
+				tempCal.add(Calendar.DATE, -1);
+				stmt.setTimestamp(1, new java.sql.Timestamp(tempCal.getTime().getTime()));
+				
+				tempCal = (GregorianCalendar)getExportProperties().getMaxTimestamp().clone();
+				tempCal.add(Calendar.DATE, -1);
+				stmt.setTimestamp(2, new java.sql.Timestamp(tempCal.getTime().getTime()));
 				rset = stmt.executeQuery();
 				while( rset.next())
 				{
-					//LMEEPO.OFFERID ||'-'||LMEEPO.REVISIONNUMBER")
-					//LMEEHO.PRICE, LMEEHC.AMOUNTCOMMITTED, RPH.TIMESTAMP, RPH.VALUE, RPH.POINTID
-					String offerID = rset.getString(1) + "-" + rset.getString(2);
+					//1LMEEHO.OFFERID, 2LMEEHO.REVISIONNUMBER, 3LMEEHO.PRICE, 
+					// 4LMEEHC.AMOUNTCOMMITTED, 5LMEEHO.HOUR, 6LMEEPO.OFFERDATE
+					String offerID = rset.getString(1) + " - " + rset.getString(2);
 					Double price = new Double(rset.getDouble(3));
 					Double amtCommit = new Double(rset.getDouble(4));
-					java.util.GregorianCalendar offerDate = new java.util.GregorianCalendar();
-					offerDate.setTime(rset.getTimestamp(5));
-					Double value = new Double(rset.getDouble(6));
-					int ptId = rset.getInt(7);
-					int hour = rset.getInt(8);
-	
-					boolean addRec = false;
-					if( offerDate.get(java.util.GregorianCalendar.HOUR_OF_DAY) == hour)
-					{
-						if( offerDate.get(java.util.GregorianCalendar.MINUTE) > 0)
-						{
-							addRec = true;
-						}
-					}
-					else if( offerDate.get(java.util.GregorianCalendar.HOUR_OF_DAY) == hour + 1)
-					{
-						if( offerDate.get(java.util.GregorianCalendar.MINUTE) == 0)
-						{
-							addRec = true;
-						}
-					}
-					else if ( offerDate.get(java.util.GregorianCalendar.HOUR_OF_DAY) == hour - 23)	//00:00
-					{
-						if (offerDate.get(java.util.GregorianCalendar.MINUTE) == 0)
-						{
-							addRec = true;
-						}
-					}
-	
-					if( addRec)
-					{
-						rowCount++;
-						CSVBillingRecord csvBillingRec = new CSVBillingRecord();
-						csvBillingRec.setCustomerName(csvBillingCust.getCustomerName());
-						csvBillingRec.setEnergyDebtor(csvBillingCust.getEnergyDebtor());
-						csvBillingRec.setEnergyPremise(csvBillingCust.getEnergyPremise());
-						csvBillingRec.setCurtailOffer(offerID);
-						csvBillingRec.setMeterLocation(csvBillingCust.getMeterLocation());
-						csvBillingRec.setCurtailDate(offerDate);
-						csvBillingRec.setCurtailPeriodInterval(offerDate);
-						csvBillingRec.setCurtailRate(price);
-						csvBillingRec.setHDL((Double)baselineValues[hour]);
-						csvBillingRec.setSCL(amtCommit);
-						csvBillingRec.setADL(value);
-	
-						csvBillingRec.setDelimiter(getExportProperties().getDelimiter());
-			
-						getRecordVector().add(csvBillingRec);
-					}
+					int hour = rset.getInt(5);
+					GregorianCalendar offerDate = new GregorianCalendar();
+					offerDate.setTime(rset.getTimestamp(6));
+
+					GregorianCalendar curtailDate = (GregorianCalendar)offerDate.clone();
+					curtailDate.set(Calendar.HOUR_OF_DAY, hour);
 					
+					CSVBillingRecord csvBillingRec = new CSVBillingRecord();
+					csvBillingRec.setCurtailOffer(offerID);
+					csvBillingRec.setCurtailDate(curtailDate);
+					csvBillingRec.setCurtailRate(price);
+					csvBillingRec.setRLP((Double)baselineValues[hour]);
+					csvBillingRec.setCLR(amtCommit);
+					csvBillingRec.setPDL(csvBillingCust.getPDL());
+					csvBillingRec.setDelimiter(getExportProperties().getDelimiter());
+		
+					curtailHistoryVector.add(csvBillingRec);
 				}
 			}
 		}
@@ -391,9 +359,47 @@ public class CSVBillingFormat extends ExportFormatBase
 				e.printStackTrace();
 			}
 		}
-	
-		logEvent("SYSTEMLOG DATA COLLECTION: Took " + (System.currentTimeMillis() - timer) + 	" millis.", com.cannontech.common.util.LogWriter.INFO);
-		
+		return curtailHistoryVector;
+	}
+
+
+
+	/**
+	 * Method retrieveBillingData.
+	 * @param keyId
+	 * @param csvBillingCust
+	 */
+	public void retrieveBillingData(Vector recordVector, CSVBillingCustomerRecord csvBillingCust)
+	{
+		GregorianCalendar prevCurtailDate = new GregorianCalendar();
+		HoursAndValues hoursAndValues = null;
+		for (int i = 0; i < recordVector.size(); i++)
+		{
+			if( recordVector.get(i) instanceof CSVBillingRecord)
+			{
+//				if( csvBillingCust.getd=)
+				CSVBillingRecord record = (CSVBillingRecord)recordVector.get(i);
+				GregorianCalendar curtailDate = (GregorianCalendar)record.getCurtailDate().clone();
+				curtailDate.set(Calendar.HOUR_OF_DAY, 0);
+				curtailDate.set(Calendar.MINUTE, 0);
+				curtailDate.set(Calendar.SECOND, 0);
+				
+				if( curtailDate.getTime().compareTo(prevCurtailDate.getTime()) != 0)
+				{
+					prevCurtailDate = (GregorianCalendar)curtailDate.clone();
+					Vector validTimestamps = new Vector(1);
+					validTimestamps.add(curtailDate.getTime());
+					hoursAndValues = Baseline.retrieveData(csvBillingCust.getCurtailPointId(), validTimestamps);
+				}
+				int hourOfDay = record.getCurtailDate().get(Calendar.HOUR_OF_DAY);
+				if( hoursAndValues != null)
+				{
+					Double value = hoursAndValues.getValue(hourOfDay);
+					if( value != null)
+						record.setADL(value);
+				}
+			}
+		}
 		return;
 	}
 
@@ -405,32 +411,30 @@ public class CSVBillingFormat extends ExportFormatBase
 		long timer = System.currentTimeMillis();
 		int rowCount = 0;
 			
-		StringBuffer sql = new StringBuffer	("SELECT PAO.PAONAME, PAO.PAOBJECTID");
-		sql.append(", CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER ");
-		sql.append("FROM YUKONPAOBJECT PAO, ");
-		sql.append("CUSTOMERBASELINEPOINT CBP, ");
-		sql.append("CALCCOMPONENT CC, ");
-		sql.append("POINT PT, ");
-		sql.append("DEVICEMETERGROUP DMG ");
-	
-		sql.append(" WHERE PAO.PAOBJECTID = CBP.CUSTOMERID");
-		sql.append(" AND CBP.POINTID = CC.POINTID");
-		sql.append(" AND CC.POINTID = PT.POINTID");
-		sql.append(" AND PT.PAOBJECTID = DMG.DEVICEID");
-	
+		StringBuffer sql = new StringBuffer	("SELECT CCB.COMPANYNAME, CCB.CUSTOMERID, CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER, CCB.CUSTOMERDEMANDLEVEL, DMG.DEVICEID, PAO.PAONAME ");
+		sql.append(" FROM CICUSTOMERBASE CCB, ");
+		sql.append(" DEVICECUSTOMERLIST DCL, ");
+		sql.append(" CALCCOMPONENT CC, ");
+		sql.append(" POINT PT, ");
+		sql.append(" YUKONPAOBJECT PAO, ");
+		sql.append(" DEVICEMETERGROUP DMG ");
+		sql.append(" WHERE CCB.CUSTOMERID = DCL.CUSTOMERID ");
+		sql.append(" AND DCL.DEVICEID = DMG.DEVICEID ");
+		sql.append(" AND PAO.PAOBJECTID = PT.PAOBJECTID ");
+		sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+		sql.append(" AND CC.POINTID = PT.POINTID ");
+		sql.append(" AND PT.POINTOFFSET = " + PointTypes.PT_OFFSET_BILLING_BASELINE);
+		sql.append(" AND FUNCTIONNAME = '" + CalcComponentTypes.BASELINE_FUNCTION+"'");
+		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement stmt = null;
 		java.sql.ResultSet rset = null;
 	
-		java.util.Hashtable energyNumbersHashTable = retrieveEnergyNumbers("yukon");
-		if( energyNumbersHashTable == null)
-			return;
-			
 		customerHashtable = new java.util.Hashtable(10);
 		
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
@@ -443,22 +447,21 @@ public class CSVBillingFormat extends ExportFormatBase
 				rset = stmt.executeQuery();
 				while( rset.next())
 				{
-					//SELECT PAO.PAONAME, PAO.PAOBJECTID, CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER, CEN.ENERGYDEBTOR, CEN.ENERGYPREMISE  
-					String paoName = rset.getString(1);
-					Integer paoId = new Integer(rset.getInt(2));
+					//CCB.COMPANYNAME, CCB.CUSTOMERID, CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER, CCB.CUSTOMERDEMANDLEVEL, DMG.DEVICEID 
+					String custName = rset.getString(1);
+					Integer custID = new Integer(rset.getInt(2));
 					Integer baselinePtId = new Integer(rset.getInt(3));
-					Integer curatailPtId = new Integer(rset.getInt(4));
+					Integer curtailPtId = new Integer(rset.getInt(4));
 					String meterLoc = rset.getString(5);
+					Double pdl = new Double(rset.getDouble(6));
+					Integer paoID = new Integer(rset.getInt(7));
+					String paoName = new String(rset.getString(8));
 					
-					EnergyNumbers nums = (EnergyNumbers)energyNumbersHashTable.get(paoName);
-									
-					String energyDebtor = nums.energyDebtor;
-					String energyPremise = nums.energyPremise;
-	
 					CSVBillingCustomerRecord csvBillingCust = new CSVBillingCustomerRecord(
-						paoName, meterLoc, energyDebtor, energyPremise, baselinePtId, curatailPtId);
+						custName, custID, meterLoc, paoName, baselinePtId, curtailPtId, pdl);
 	
-					customerHashtable.put(paoId, csvBillingCust);
+					csvBillingCust.setDelimiter(getExportProperties().getDelimiter());	
+					customerHashtable.put(paoID, csvBillingCust);
 				}
 			}
 		}
@@ -481,78 +484,9 @@ public class CSVBillingFormat extends ExportFormatBase
 				e.printStackTrace();
 			}
 		}
-		logEvent("...CUSOTMER DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + " millis.", com.cannontech.common.util.LogWriter.INFO);
 		return;
 	}
-		/**
-	// This method creates a hash table of MeterNumbers (keys) and AccountNumbers(values).
-	 */
-	public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
-	{
-		java.util.Vector linesInFile = new java.util.Vector();
-		java.util.Hashtable energyNumberHashTable = null;
-		
-		if (dbAlias == null)
-			dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-			
-		try
-		{
-			logEvent("ENERGYFILENAME " + getExportProperties().getEnergyFileName(), com.cannontech.common.util.LogWriter.INFO);		
-			java.io.FileReader energyNumbersFileReader = new java.io.FileReader(getExportProperties().getEnergyFileName());
-			java.io.BufferedReader readBuffer = new java.io.BufferedReader(energyNumbersFileReader);
-	
-			try
-			{
-				String tempLineString = readBuffer.readLine();
-							
-				while(tempLineString != null)
-				{
-					linesInFile.add(new String(tempLineString));
-					tempLineString = readBuffer.readLine();	
-				}
-			}
-			catch(java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-		}
-		catch(java.io.FileNotFoundException fnfe)
-		{
-			//fnfe.printStackTrace();
-			logEvent("***********************************************************************************************", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("Cannot find " + getExportProperties().getEnergyFileName().toString() + ", aborting.", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("***********************************************************************************************", com.cannontech.common.util.LogWriter.INFO);
-			return null;	//with null return, meternumbers will be used in place of accountnumbers
-		}
-	
-		if(linesInFile != null)
-		{	
-			java.util.Collections.sort(linesInFile);
-			int hashCapacity = (linesInFile.size() + 1);
-			energyNumberHashTable = new java.util.Hashtable(hashCapacity);
-	
-			for (int i = 0; i < linesInFile.size(); i++)
-			{
-				String line = (String)linesInFile.get(i);
-//				int commaIndex = line.indexOf(",");
-	
-				java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character('|')).toString(), false );
-				EnergyNumbers nums = new EnergyNumbers();
-				String custName = "";
-				if( t.countTokens() != 3 )
-					return null;	//bad line should we be more wrathfull?
-	
-				custName = t.nextToken().trim();
-				nums.energyDebtor = t.nextToken().trim();
-				nums.energyPremise = t.nextToken().trim();
-								
-	//			String keyMeterNumber = line.substring(0, commaIndex);
-	//			String valueAccountNumber = line.substring(commaIndex + 1);
-				energyNumberHashTable.put(custName, nums);
-			}
-		}
-		return energyNumberHashTable;
-	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (1/8/2002 5:07:44 PM)
@@ -575,11 +509,6 @@ public class CSVBillingFormat extends ExportFormatBase
 				
 			//Add a title record
 			getRecordVector().add(stringRec);
-			
-			//Add a column headings record
-			stringRec = new StringRecord(CSVBillingRecord.getColumnHeadingsString());
-			getRecordVector().add(stringRec);
-			
 		}
 	
 		logEvent("...Retrieving data for Date > " + getExportProperties().getMinTimestamp().getTime() +
@@ -595,11 +524,21 @@ public class CSVBillingFormat extends ExportFormatBase
 		java.util.Iterator iter = keyset.iterator();
 		while(iter.hasNext())
 		{
+			Vector tempRecordVector = null;
 			Integer keyid = (Integer)iter.next();
 			com.cannontech.export.record.CSVBillingCustomerRecord custRec = (com.cannontech.export.record.CSVBillingCustomerRecord)customerHashtable.get(keyid);
 			if( custRec != null)
 			{
-				retrieveBillingData(keyid.intValue(), custRec);
+				getRecordVector().add(custRec);
+				if( getExportProperties().isShowColumnHeadings())
+				{
+					StringRecord stringRec = new StringRecord(CSVBillingRecord.getColumnHeadingsString()); 
+					//Add a column headings record
+					getRecordVector().add(stringRec);
+				}				
+				tempRecordVector = retrieveCurtailHistory(custRec);
+				retrieveBillingData(tempRecordVector, custRec);
+				getRecordVector().addAll(tempRecordVector);
 			}
 		}
 	
