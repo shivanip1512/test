@@ -223,9 +223,6 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	public void getPredefinedGraphs()
 	{
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		if ( allPredefinedGraphsList != null)
-			allPredefinedGraphsList.clear();
-		
 		synchronized(cache)
 		{
 			allPredefinedGraphsList = cache.getAllGraphDefinitions();
