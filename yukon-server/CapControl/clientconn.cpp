@@ -156,12 +156,22 @@ void CtiCCConnection::_sendthr()
             }
         }
         while ( isValid() && oStream->good() );
-    } catch ( RWxmsg& msg )
+    }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
+    catch(RWxmsg& msg)
     {
         /*{    
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiCCConnection::_sendthr - " << msg.why() << endl;
         }*/
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;
@@ -248,12 +258,22 @@ void CtiCCConnection::_recvthr()
 
         }
         while ( isValid()  && iStream->good() );
-    } catch ( RWxmsg& msg )
+    }
+    catch(RWCancellation& )
+    {
+        throw;
+    }
+    catch(RWxmsg& msg)
     {
         /*{    
             RWMutexLock::LockGuard guard(coutMux);
             cout << "CtiCCClientConnection::_recvthr - " << msg.why() << endl;
         }*/
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
     _valid = FALSE;
