@@ -2058,9 +2058,8 @@ public synchronized void processPointDataReceived( PointData point )
 		
 		setCorrectRowValue( 
 				pv,
-				point.getPointDataTimeStamp(),
 				rowLocation );
-				
+
 	}
 	
 	
@@ -2133,7 +2132,7 @@ public synchronized void processSignalReceived( Signal signal )
 			getPointValue(rNum).updateSignal( signal );
 
 			//update the tables view of the data
-			setCorrectRowValue(
+			setRowTimeStamp(
 					getPointValue(rNum),
 					signal.getTimeStamp(),
 					rNum );
@@ -2296,16 +2295,52 @@ public boolean setBGRowColor(int rowNumber, int color)
 		}
 	} // end synch pointValues
 }
+
+private Integer getCellQualityCount( PointValues point_, int loc_, final Integer lastValue_ )
+{
+	PointValues pt = null;
+	Integer retValue = new Integer(0);
+
+	try
+	{
+		pt = ((PointValues)pointValues.elementAt( loc_ ));
+
+		if( pt != null 
+			 && (pt.getPointQuality() == point_.getPointQuality()) )
+		{
+			retValue = new Integer( lastValue_.intValue() + 1 );
+		}
+	}
+	catch(ArrayIndexOutOfBoundsException ex )
+	{
+		CTILogger.info("***** ArrayIndexOutOfBoundsException in " + this.getClass() + " of handleQualityCount() exception = " + ex.getMessage() );
+	}
+
+
+	return retValue;
+}
+
 /**
  * This method was created in VisualAge.
  * @param Point com.cannontech.message.dispatch.message.SinglePointChange
  */
-private void setCorrectRowValue( PointValues point, Date timeStamp, int location ) 
+private void setCorrectRowValue( PointValues point, int location ) 
 {
 	
 	if ( rows.size() > 0 )   // make sure there are some rows
 	{
 		Vector dataRow = (Vector)rows.elementAt( location );
+
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_QUALITYCNT) )
+		{
+			Object currentCnt = dataRow.get( columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_QUALITYCNT) );
+			if( !(currentCnt instanceof Integer) )
+				currentCnt = new Integer(0);
+			
+			dataRow.setElementAt(
+					getCellQualityCount( point, location, (Integer)currentCnt ),
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_QUALITYCNT) );
+		}
 
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
 		{
@@ -2365,13 +2400,10 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
 		{				
-			Object tempDate = new String();
-			if( timeStamp.after(CtiUtilities.get1990GregCalendar().getTime()) )
-				tempDate = new ModifiedDate( timeStamp.getTime() );
-
-			dataRow.setElementAt( 
-					tempDate, 
-					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ); 
+			setRowTimeStamp( 
+					point,
+					point.getTimeStamp(),
+					location );
 		}
 
 
@@ -2381,7 +2413,8 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 		 			TagUtils.isPointOutOfService((int)point.getTags()) ? "Disabled" : "Enabled",
 		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTSTATE) );
 		}
-		
+
+
 		// More Dyanmic cell changes should follow
 
 		
@@ -2389,6 +2422,28 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 	}
 
 }
+
+private void setRowTimeStamp( PointValues point, Date timeStamp, int location ) 
+{
+	
+	if ( rows.size() > 0 )   // make sure there are some rows
+	{
+		Vector dataRow = (Vector)rows.elementAt( location );
+
+		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
+		{				
+			Object tempDate = new String();
+			if( timeStamp.after(CtiUtilities.get1990GregCalendar().getTime()) )
+				tempDate = new ModifiedDate( timeStamp.getTime() );
+
+			dataRow.setElementAt( 
+					tempDate, 
+					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ); 
+		}
+	}
+
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/20/00 4:47:45 PM)

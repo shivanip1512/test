@@ -125,8 +125,13 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 	// column is the PointValue, because the user could have moved it.
 	try
 	{
-		if( model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
-			renderPointValueColumn();
+		if( model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(CustomDisplay.COLUMN_TYPE_POINTVALUE)
+			 || model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(CustomDisplay.COLUMN_TYPE_DEVICEID)
+			 || model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(CustomDisplay.COLUMN_TYPE_POINTID)
+			 || model.getColumnTypeName( table.convertColumnIndexToModel(column) ).equalsIgnoreCase(CustomDisplay.COLUMN_TYPE_QUALITYCNT) )
+		{
+			renderNumberColumns();
+		}
 		else
 			this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
 	}
@@ -142,7 +147,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
  * Insert the method's description here.
  * Creation date: (12/19/2000 5:39:02 PM)
  */
-private void renderPointValueColumn() 
+private void renderNumberColumns() 
 {
 	this.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
 }

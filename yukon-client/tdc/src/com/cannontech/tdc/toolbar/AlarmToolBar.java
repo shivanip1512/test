@@ -92,7 +92,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	else if (e.getSource() == getDateJComboBox()) 
 		connEtoC6(e);		
 	else if( e.getSource() == getJComboBoxFilter() ) 
-		fireJToolBarFilter_actionPerformed(new java.util.EventObject(this));
+		fireJToolBarFilter_actionPerformed( e );
 	else
 	{
 		// make sure the event wasnt handled above first

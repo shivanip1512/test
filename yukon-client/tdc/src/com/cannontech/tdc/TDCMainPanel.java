@@ -79,7 +79,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	
 	
 	private boolean refreshPressed = false;
-	private boolean initOnce = true;
+	private boolean initialStart = true;
 	private Date previousDate = new Date();
 	
 	private javax.swing.JOptionPane closeBox = null;
@@ -124,28 +124,6 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 public TDCMainPanel() {
 	super();
 	initialize();
-}
-/**
- * TDC constructor comment.
- * @param layout java.awt.LayoutManager
- */
-public TDCMainPanel(java.awt.LayoutManager layout) {
-	super(layout);
-}
-/**
- * TDC constructor comment.
- * @param layout java.awt.LayoutManager
- * @param isDoubleBuffered boolean
- */
-public TDCMainPanel(java.awt.LayoutManager layout, boolean isDoubleBuffered) {
-	super(layout, isDoubleBuffered);
-}
-/**
- * TDC constructor comment.
- * @param isDoubleBuffered boolean
- */
-public TDCMainPanel(boolean isDoubleBuffered) {
-	super(isDoubleBuffered);
 }
 /**
  * Method to handle events for the ActionListener interface.
@@ -561,7 +539,7 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 			return new StatusPanelManualEntry( data, currentValue );
 		}
 		else
-			com.cannontech.clientutils.CTILogger.info("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");
+			CTILogger.info("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");
 	}
 	catch( NullPointerException ex )
 	{   // one of the values we have is null, lets not create the panel
@@ -760,23 +738,27 @@ public void fireBookMarkSelected( Object source )
 			
 			try
 			{
-				if( getLastDisplays()[ Display.getDisplayTitle(currentDisplayTitle) ] != null )
-					getJComboCurrentDisplay().setSelectedItem( getLastDisplays()[Display.getDisplayTitle(currentDisplayTitle)] );
-				else
+				if( !initialStart )
 				{
-					if( getJComboCurrentDisplay().getItemCount() > 0 )
-						getJComboCurrentDisplay().setSelectedIndex(0);
+					if( getLastDisplays()[ Display.getDisplayTitle(currentDisplayTitle) ] != null )
+					{
+						getJComboCurrentDisplay().setSelectedItem( getLastDisplays()[Display.getDisplayTitle(currentDisplayTitle)] );
+					}
 					else
-						getJComboCurrentDisplay().setSelectedIndex(-1);
+					{
+						if( getJComboCurrentDisplay().getItemCount() > 0 )
+							getJComboCurrentDisplay().setSelectedIndex(0);
+						else
+							getJComboCurrentDisplay().setSelectedIndex(-1);
+					}
 				}
-				
 			}
 			catch( IllegalArgumentException e )
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				com.cannontech.clientutils.CTILogger.info("*****************************************************");
-				com.cannontech.clientutils.CTILogger.info("  Most likely cause is an invalid database.");
-				com.cannontech.clientutils.CTILogger.info("*****************************************************");
+				CTILogger.error( e.getMessage(), e );
+				CTILogger.info("*****************************************************");
+				CTILogger.info("  Most likely cause is an invalid database.");
+				CTILogger.info("*****************************************************");
 			}
 
 		}
@@ -840,7 +822,7 @@ public void fireBookMarkSelected( Object source )
  * Method to support listener events.
  * @param newEvent java.util.EventObject
  */
-protected void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObject newEvent)
+private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObject newEvent)
 {
 	//only save the column data IF we have not done so already. Will happen when coming from
 	// fireBookMarkSelected()
@@ -907,8 +889,12 @@ protected void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObj
 	formatDisplayColumns();
 	
 	// tell the MAIN FRAME we just changed displays
-	if ( fieldTDCMainPanelListenerEventMulticaster != null)
+	if( !(newEvent.getSource() instanceof TDCMainFrame)
+		 && fieldTDCMainPanelListenerEventMulticaster != null)
+	{
 		fieldTDCMainPanelListenerEventMulticaster.JComboCurrentDisplayAction_actionPerformed(newEvent);
+	}
+
 		
 	return;
 }
@@ -947,7 +933,7 @@ private Object[][] getAlarmStatesCache()
 	}
 
 	if( alarmStates.size() <= 1 )
-		com.cannontech.clientutils.CTILogger.info("*** The AlarmState Table has 1 or less entries in it, not good");
+		CTILogger.info("*** The AlarmState Table has 1 or less entries in it, not good");
 
 	return data;
 }
@@ -956,7 +942,7 @@ private Object[][] getAlarmStatesCache()
  * Creation date: (10/3/00 3:28:51 PM)
  * @return Display[]
  */
-public Display[] getAllDisplays() 
+private Display[] getAllDisplays() 
 {
 	return allDisplays;
 }
@@ -1835,8 +1821,8 @@ public java.util.ArrayList getViewableRowNumbers()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 	
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
 }
@@ -1981,49 +1967,16 @@ public boolean initComboCurrentDisplay()
 																		  // Thus, we couldn't have DisplayCoulmns that did not belong to a display.
 			initDisplays( values, i );
 
-			
-			// add the radio buttons for the display types to the mainframe
-			if( initOnce && getAllDisplays()[i].getDisplayNumber() <= Display.BEGINNING_CLIENT_DISPLAY_NUMBER )
-			{
-				boolean enabled = true;
-            
-            if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
-				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
-            else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
-					enabled = !CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
-            else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
-					enabled = CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
 
-				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
-			}
-         
-
-			if( getCurrentDisplay() != null )
+			if( getCurrentDisplay() != null
+				 && getCurrentDisplay().getType().equalsIgnoreCase(getAllDisplays()[i].getType()) )
 			{
-				if( getCurrentDisplay().getType().equalsIgnoreCase(getAllDisplays()[i].getType()) )
-					getJComboCurrentDisplay().addItem( getAllDisplays()[i] );
-			}
-			else if( initOnce 
-						&& getCurrentDisplay() == null 
-						&& Display.isReadOnlyDisplay(getAllDisplays()[i].getDisplayNumber()) )
-			{
-				// we must not have a currentDisplay set yet, set it to the EVENT VIEWER
-				setCurrentDisplay( getAllDisplays()[i] );
 				getJComboCurrentDisplay().addItem( getAllDisplays()[i] );
 			}
-			
 		}
 
-		if( initOnce )
-		{
-			Display.setDISPLAY_TITLES( getAllDisplays() );
-		}
-			
 		readAllDisplayColumnData(); //get all the display column data for each display
 
-		initOnce = false;
 		getJComboCurrentDisplay().addActionListener(this);
 		getJComboCurrentDisplay().revalidate();
 		getJComboCurrentDisplay().repaint();
@@ -2208,7 +2161,8 @@ private void initializeParameters()
 		if( Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() )
 			parentFrame.alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed( null );
 
-		setStartUpDisplay( pf, parentFrame );		
+		setStartUpDisplay( pf, parentFrame );
+
 		//TDCMainFrame.messageLog.addMessage("Parameters file found and parsed successfully", MessageBoxFrame.INFORMATION_MSG );
 	}
 	catch( Exception e ) 
@@ -2231,10 +2185,10 @@ private void initializeParameters()
 			}
 			catch( Exception ex )
 			{
-				com.cannontech.clientutils.CTILogger.error( ex.getMessage(), ex );
-				com.cannontech.clientutils.CTILogger.info("*****************************************************");
-				com.cannontech.clientutils.CTILogger.info("*** Most likely cause is an invalid database.  ******");
-				com.cannontech.clientutils.CTILogger.info("*****************************************************");
+				CTILogger.error( ex.getMessage(), ex );
+				CTILogger.info("*****************************************************");
+				CTILogger.info("*** Most likely cause is an invalid database.  ******");
+				CTILogger.info("*****************************************************");
 			}
 		}
 
@@ -2255,7 +2209,41 @@ public void initializeTable()
 	// check to see if any rows are in the display table
 	if ( (connectedToDB = initComboCurrentDisplay()) == true )
 	{		
+		Display.setDISPLAY_TITLES( getAllDisplays() );
+
+		for( int i = 0; i < getAllDisplays().length; i++ )
+		{
+			// add the radio buttons for the display types to the mainframe
+			if( getAllDisplays()[i].getDisplayNumber() <= Display.BEGINNING_CLIENT_DISPLAY_NUMBER )
+			{
+				boolean enabled = true;
+            
+				if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
+					enabled = !CtiProperties.isHiddenCapControl(TDCDefines.USER_RIGHTS);
+				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
+					enabled = !CtiProperties.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
+				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
+					enabled = !CtiProperties.isHiddenMACS(TDCDefines.USER_RIGHTS);
+				else if( getAllDisplays()[i].getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
+					enabled = CtiProperties.isClientEnabled(TDCDefines.USER_RIGHTS);
+
+				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
+			}
+ 
+        
+			if( getCurrentDisplay() == null 
+				 && Display.isReadOnlyDisplay(getAllDisplays()[i].getDisplayNumber()) )
+			{
+				// we must not have a currentDisplay set yet, set it to the EVENT VIEWER
+				setCurrentDisplay( getAllDisplays()[i] );
+				getJComboCurrentDisplay().addItem( getAllDisplays()[i] );
+			}
+			
+		}
+
 		initializeParameters();
+		
+		initialStart = false;
 	}
 
 }
@@ -2263,7 +2251,7 @@ public void initializeTable()
  * Insert the method's description here.
  * Creation date: (3/23/00 5:33:39 PM)
  */
-protected void initCoreDisplays() 
+private void initCoreDisplays() 
 {
 	// add in todays data
 	Date newDate = getPreviousDate();
@@ -2331,7 +2319,7 @@ public void jLabelDisplayTitle_MousePressed(java.awt.event.MouseEvent mouseEvent
 	if( getDisplayTable().getSelectedRow() >= 0 )
 	{
 		PointValues point = getTableDataModel().getPointValue( getDisplayTable().getSelectedRow() );
-		com.cannontech.clientutils.CTILogger.info("CLCIKSD for ptID = "+ point.getPointID() + " Time = "+ point.getTimeStamp() + " tags = " + Long.toHexString(point.getTags()) );
+		CTILogger.info("CLCIKSD for ptID = "+ point.getPointID() + " Time = "+ point.getTimeStamp() + " tags = " + Long.toHexString(point.getTags()) );
 	}
 	
 /*  // a test to force a point into an alarming state
@@ -3015,8 +3003,8 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 	}
 	catch( Exception e)
 	{
-		com.cannontech.clientutils.CTILogger.info("*** Exception caught in : jRadioButtonPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
-      com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.info("*** Exception caught in : jRadioButtonPage_ActionPerformed(ActionEvent) in class : " + this.getClass().getName() );
+      CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -3047,7 +3035,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+		CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**
@@ -3165,7 +3153,7 @@ public void executeRefresh_Pressed()
 		{
 			//setUpMainFrame( getJComboCurrentDisplay().getSelectedItem() );
 			Object previousItem = getJComboCurrentDisplay().getSelectedItem();
-			initComboCurrentDisplay();
+			//initComboCurrentDisplay();
 		
 			//select the last item if we have one
 			if( previousItem != null )

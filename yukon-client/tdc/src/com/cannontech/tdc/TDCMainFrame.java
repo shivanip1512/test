@@ -3971,15 +3971,16 @@ public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObj
  */
 public void JToolBarFilter_actionPerformed(java.util.EventObject newEvent) 
 {
-	if( newEvent.getSource() == getAlarmToolBar() )
+	if( newEvent.getSource() == getAlarmToolBar().getJComboBoxFilter() )
 	{
 		ITDCFilter filter = getAlarmToolBar().getSelectedFilter();
 		
 		getMainPanel().getCurrentDisplay().setTdcFilter( filter );
 
-		//refresh the display we are looking at			
-		getMainPanel().fireJComboCurrentDisplayAction_actionPerformed( 
-				new java.util.EventObject( getMainPanel() ) );
+		//refresh the display we are looking at
+		alarmToolBar_JToolBarButtonRefreshAction_actionPerformed( newEvent );			
+//		getMainPanel().fireJComboCurrentDisplayAction_actionPerformed( 
+//				new java.util.EventObject(this) );
 	}
 
 }
@@ -4417,14 +4418,9 @@ private void setUpMainFrame( String previousItem )
 			}
 	}
 
+	alarmToolBar_JToolBarButtonRefreshAction_actionPerformed( null );
 
-	// doesnt fire the getMainPanel().jComboCurrentDisplay_ActionPerformed() if
-	// the new previousItem is at index 0, so I do it manually
-	if( getMainPanel().getJComboCurrentDisplay().getSelectedIndex() == 0 )
-		getMainPanel().fireJComboCurrentDisplayAction_actionPerformed( new java.util.EventObject( getMainPanel() ) );
-
-		
-	this.repaint();	
+	repaint();
 }
 
 
