@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class TurtleFormatBase extends FileFormatBase 
 {
-	public String header = "H    Meter    Kwh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
+	public String header = "H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
 
 	/**
 	 * Default SEDC constructor

@@ -8,7 +8,7 @@ package com.cannontech.billing;
  */
 public class NCDCFormat extends TurtleFormatBase
 {
-	private static final String HEADER = "H    Meter    Kwh   Time   Date    Peak   PeakT   PeakD\r\n";
+	private static final String HEADER = "H    Meter    kWh   Time   Date    Peak   PeakT   PeakD\r\n";
 	/**
 	 * Default NCDC constructor
 	 */

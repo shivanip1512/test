@@ -9,7 +9,7 @@ package com.cannontech.billing;
 public class SEDCFormat extends TurtleFormatBase 
 {
 
-	private static final String HEADER = "H    Meter    Kwh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
+	private static final String HEADER = "H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
 	/**
 	 * Default SEDC constructor
 	 */
