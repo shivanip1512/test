@@ -5,11 +5,12 @@ import java.util.Date;
 import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /*** 
  * @author alauinger
  */
-public class YukonUser extends DBPersistent {
+public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange {
 	
 	private com.cannontech.database.db.user.YukonUser yukonUser;
 	
@@ -226,5 +227,22 @@ public class YukonUser extends DBPersistent {
 
 
 
+
+	/**
+	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
+	 */
+	public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
+		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
+		{
+			new com.cannontech.message.dispatch.message.DBChangeMsg(
+					getYukonUser().getUserID().intValue(),
+					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB,
+					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_YUKON_USER,
+					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_YUKON_USER,
+					typeOfChange)
+		};
+
+		return msgs;
+	}
 
 }
