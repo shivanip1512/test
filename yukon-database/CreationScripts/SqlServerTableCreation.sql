@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     3/10/2003 11:45:47 AM                        */
+/* Created on:     3/18/2003 1:55:13 PM                         */
 /*==============================================================*/
 
 
@@ -2374,6 +2374,7 @@ EnergyCompanyID      numeric              not null,
 Name                 varchar(60)          not null,
 RouteID              numeric              not null,
 WebConfigID          numeric              not null,
+PrimaryContactID     numeric              not null,
 constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
 )
 go
@@ -4992,6 +4993,12 @@ go
 alter table EnergyCompany
    add constraint FK_EnCmpRt foreign key (RouteID)
       references Route (RouteID)
+go
+
+
+alter table EnergyCompany
+   add constraint FK_EngCmp_Cnt foreign key (PrimaryContactID)
+      references Contact (ContactID)
 go
 
 
