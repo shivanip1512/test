@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:14 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/12 17:35:23 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
         set< LONG > executedRouteSet;
         deviceIter_t devIter(_deviceList.begin( ));
         size_t vglistsize = vgList.entries();
-        size_t CTIDBG_CTIDBG_newvglistsize = 0;
+        size_t newvglistsize = 0;
 
         for( ; devIter != _deviceList.end( ); devIter++)
         {
@@ -157,18 +157,18 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
             }
         }
 
-        CTIDBG_CTIDBG_newvglistsize = vgList.entries();
+        newvglistsize = vgList.entries();
 
         CtiPoint *pPoint = 0;
 
         if ((pPoint = (CtiPoint*)getDeviceControlPointOffsetEqual(GRP_CONTROL_STATUS)) != 0)
         {
-            if(CTIDBG_CTIDBG_newvglistsize > vglistsize)
+            if(newvglistsize > vglistsize)
             {
                 /*
                  *  We claim all generated messages as having come from the device macro and not their causal device object here.
                  */
-                for(int i = CTIDBG_CTIDBG_newvglistsize; i > vglistsize; i-- )
+                for(int i = newvglistsize; i > vglistsize; i-- )
                 {
                     CtiMessage *&pMsg = vgList[i-1];
 

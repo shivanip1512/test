@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/20 22:28:40 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/12/12 17:38:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -464,7 +464,7 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case (CtiProtocolEmetcon::Control_Conn):
         case (CtiProtocolEmetcon::Control_Disc):
         {
-            CtiRequestMsg CTIDBG_CTIDBG_newReq(getID(),
+            CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
                                  InMessage->Return.UserID,
                                  InMessage->Return.TrxID,
@@ -472,9 +472,9 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                  InMessage->Return.MacroOffset,
                                  InMessage->Return.Attempt);
 
-            CTIDBG_CTIDBG_newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-            CtiDeviceBase::ExecuteRequest(&CTIDBG_CTIDBG_newReq, CtiCommandParser(CTIDBG_CTIDBG_newReq.CommandString()), vgList, retList, outList);
+            CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
             break;
         }

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:07:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/12 17:33:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,7 +118,7 @@ USHORT CtiPortShare::ProcessEventCode(USHORT EventCode)
 void CtiPortShare::createNexus(RWCString nexusName)
 {
    INT nRet;
-   CTINEXUS CTIDBG_CTIDBG_newNexus;
+   CTINEXUS newNexus;
 
    /*
     *  4/8/99 This is the server side of a CTIDBG_new Nexus
@@ -148,7 +148,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
    /*
     *  Blocking wait on the listening nexus.  Will return a CTIDBG_new nexus for the connection
     */
-   nRet = _listenNexus.CTINexusConnect(&CTIDBG_CTIDBG_newNexus);
+   nRet = _listenNexus.CTINexusConnect(&newNexus);
 
    if(nRet)
    {
@@ -174,7 +174,7 @@ void CtiPortShare::createNexus(RWCString nexusName)
       dout << RWTime() << " closed " << nexusName << endl;
    }
 
-   _listenNexus = CTIDBG_CTIDBG_newNexus;
+   _listenNexus = newNexus;
 
    return;
 }

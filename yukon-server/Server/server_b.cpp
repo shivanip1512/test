@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/11/15 14:08:25 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/12/12 17:35:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,7 +230,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
         case (CtiCommandMsg::NoOp):
             {
                 // cout << "VGMain: Looping the Client " << endl;
-                // "CTIDBG_new" memory is deleted in the connection machinery!.
+                // "new" memory is deleted in the connection machinery!.
                 // use the copy constructor to return to the client.
                 pConn->WriteConnQue(CTIDBG_new CtiCommandMsg(*Cmd));
                 break;

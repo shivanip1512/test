@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/11 21:48:43 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/12/12 17:33:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -309,9 +309,9 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
     }
     else
     {
-        LONG CTIDBG_newcid = CommErrorHistoryIdGen(true);
+        LONG newcid = CommErrorHistoryIdGen(true);
 
-        if(CTIDBG_newcid != getCommErrorID())
+        if(newcid != getCommErrorID())
         {
             RWTime Now;
 
@@ -321,7 +321,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
                 dout << Now << "   CommErrorId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
             }
 
-            setCommErrorID( CTIDBG_newcid );
+            setCommErrorID( newcid );
 
             if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok )
             {

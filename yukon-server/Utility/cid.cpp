@@ -128,7 +128,7 @@ void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
    HANDLE fHandle;
 
    RWCString findthis = path;
-   RWCString CTIDBG_newdir;
+   RWCString newdir;
    RWCString filename;
 
    findthis += "\\*";
@@ -249,7 +249,7 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
    CtiDirBuild   &dinfo = db;
 
    char oldnum[10];
-   char CTIDBG_newnum[10];
+   char newnum[10];
 
    char temp[128];
    char dir[128];
@@ -319,9 +319,9 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
                sprintf(oldnum, "%d", dinfo._majorRevision);
 
                dinfo._majorRevision = gMajorRevision;
-               sprintf(CTIDBG_newnum, "%d", dinfo._majorRevision);
+               sprintf(newnum, "%d", dinfo._majorRevision);
 
-               origstr.replace(oldnum,CTIDBG_newnum);
+               origstr.replace(oldnum,newnum);
             }
             else
             {
@@ -347,9 +347,9 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
                sprintf(oldnum, "%d", dinfo._minorRevision);
 
                dinfo._minorRevision = gMinorRevision;
-               sprintf(CTIDBG_newnum, "%d", dinfo._minorRevision);
+               sprintf(newnum, "%d", dinfo._minorRevision);
 
-               origstr.replace(oldnum,CTIDBG_newnum);
+               origstr.replace(oldnum,newnum);
             }
             else
             {
@@ -373,9 +373,9 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = gBuildRevision;
-               sprintf(CTIDBG_newnum, "%d", dinfo._buildNumber);
+               sprintf(newnum, "%d", dinfo._buildNumber);
 
-               origstr.replace(oldnum,CTIDBG_newnum);
+               origstr.replace(oldnum,newnum);
 
                cout << __LINE__ << " " << gBuildRevision << endl;
             }
@@ -385,7 +385,7 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = 0;
-               sprintf(CTIDBG_newnum, "%d", dinfo._buildNumber);
+               sprintf(newnum, "%d", dinfo._buildNumber);
 
                cout << __LINE__ << endl;
             }
@@ -393,12 +393,12 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
             {
                // We need to generate a CTIDBG_new buildnumber define!
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
-               sprintf(CTIDBG_newnum, "%d", dinfo._buildNumber);
+               sprintf(newnum, "%d", dinfo._buildNumber);
 
                cout << __LINE__ << endl;
             }
 
-            origstr.replace(oldnum,CTIDBG_newnum);
+            origstr.replace(oldnum,newnum);
 
             //cout << "BuildNumber " << dinfo._buildNumber << endl;
 

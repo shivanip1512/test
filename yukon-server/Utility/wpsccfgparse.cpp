@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/UTILITY/wpsccfgparse.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:26 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 17:35:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ void mergefiles(const string &dir)
    HANDLE fHandle;
 
    string findthis = dir;
-   string CTIDBG_newdir;
+   string newdir;
    string filename;
    char temp[MAX_PATH];
 

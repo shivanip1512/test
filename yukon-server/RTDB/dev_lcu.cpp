@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:13 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/12 17:35:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2061,7 +2061,7 @@ void CtiDeviceLCU::dumpStatus(BYTE Byte4, BYTE Byte5)
 bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a valid MASTERCOM message
 {
     bool bStatus = false;
-    bool bCTIDBG_CTIDBG_newminute = false;
+    bool bnewminute = false;
     static int currentminute = 0;                  // What minute was it last?
     int nextinterval = DUTYCYCLESIZE;
     RWTime now;                             // Current Time.
@@ -2093,7 +2093,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
 
         if(currentminute != (now.minute() % DUTYCYCLESIZE))
         {
-            bCTIDBG_CTIDBG_newminute = true;
+            bnewminute = true;
             currentminute = now.minute() % DUTYCYCLESIZE;
             if(currentminute > 0) nextinterval = currentminute - 1;
             _honktime[currentminute] = make_pair( now.seconds() - now.seconds() % 60, 0.0 );
@@ -2115,7 +2115,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
         {
             bStatus = true;
 
-            if( bCTIDBG_CTIDBG_newminute )
+            if( bnewminute )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " DUTY CYCLE PAUSE: ";

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2002/12/04 22:45:14 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2002/12/12 17:39:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2703,7 +2703,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         }
                     }
 
-                    OutTemplate = CTIDBG_new(OUTMESS);
+                    OutTemplate = CTIDBG_new OUTMESS;
 
                     InEchoToOut( InMessage, OutTemplate );
 

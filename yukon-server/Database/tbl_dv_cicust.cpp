@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_cicust.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:07:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/12 17:33:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,7 +261,7 @@ void CtiTableCICustomerBase::dump() const
 
 set< int > CtiTableCICustomerBase::getRecipientSet() const
 {
-    INTSET CTIDBG_newset;
+    INTSET newset;
 
     INTSET::const_iterator   theIterator;
 
@@ -272,7 +272,7 @@ set< int > CtiTableCICustomerBase::getRecipientSet() const
         for( theIterator = _custLocationIDs.begin(); theIterator != _custLocationIDs.end(); theIterator++ )
         {
             const int &aInt = *theIterator;
-            CTIDBG_newset.insert( aInt );
+            newset.insert( aInt );
         }
     }
     catch(...)
@@ -282,7 +282,7 @@ set< int > CtiTableCICustomerBase::getRecipientSet() const
     }
 
 
-    return CTIDBG_newset;
+    return newset;
 }
 
 

@@ -1530,7 +1530,7 @@ ULONG S4BCDtoBase10(UCHAR* buffer, ULONG len)
 *
 *  s = sign bit
 *
-* Formula for conversion is CTIDBG_CTIDBG_newFloat = POW (-1,s) * 1.F * POW (2,e-128)
+* Formula for conversion is newFloat = POW (-1,s) * 1.F * POW (2,e-128)
 *
 *  NOTE:  Implied 1. added to F and the S4 varies from IEEE by a degree of one
 ************************************************************************************
@@ -2351,7 +2351,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 // always set this because it gets zeroed out if a data packet comes in
                 setNewDate (RWTime(recordDate).seconds());
 
-                // set previous date only if CTIDBG_CTIDBG_newDate doesn't exists
+                // set previous date only if newDate doesn't exists
                 if (getOldTime() != 0)
                 {
                     // we have a CTIDBG_new date, figure out how long the change is
@@ -2434,10 +2434,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 *
                                 *****************************
                                 */
-                                ULONG CTIDBG_CTIDBG_newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
+                                ULONG newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
 
                                 // plug data from current to CTIDBG_new interval
-                                for (int x = getCurrentLPInterval(); x < CTIDBG_CTIDBG_newInterval; x++)
+                                for (int x = getCurrentLPInterval(); x < newInterval; x++)
                                 {
                                     // fill message with plug data to next interval
                                     for (int y=0; y < localLP->configuration.numberOfChannels;y++)
@@ -2458,7 +2458,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                 *  reset this once out of the loop
                                 ****************************
                                 */
-                                setCurrentLPInterval ((ULONG)CTIDBG_CTIDBG_newInterval);
+                                setCurrentLPInterval ((ULONG)newInterval);
 
                                 intervalTime = RWTime (getCurrentLPDate() +
                                                        ((getCurrentLPInterval()+1) * localLP->configuration.intervalLength * 60));
@@ -2672,9 +2672,9 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             *
                             *****************************
                             */
-                            ULONG CTIDBG_CTIDBG_newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
+                            ULONG newInterval (getPowerUpTime() / (localLP->configuration.intervalLength * 60));
 
-                            setCurrentLPInterval ((ULONG)CTIDBG_CTIDBG_newInterval);
+                            setCurrentLPInterval ((ULONG)newInterval);
 
                             /********************
                             * must go through all the channels before I reset these guys

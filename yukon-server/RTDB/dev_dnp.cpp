@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/11/15 14:08:11 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/12 17:33:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@ CtiProtocolBase *CtiDeviceDNP::getProtocol() const
 INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
-    CtiCommandParser CTIDBG_CTIDBG_newParse("scan general");
+    CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -76,7 +76,7 @@ INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
     pReq->setCommandString("scan general");
 
-    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {
@@ -91,7 +91,7 @@ INT CtiDeviceDNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
-    CtiCommandParser CTIDBG_CTIDBG_newParse("scan integrity");
+    CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -101,7 +101,7 @@ INT CtiDeviceDNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
     pReq->setCommandString("scan integrity");
 
-    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {

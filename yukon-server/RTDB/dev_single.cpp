@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/12/03 17:55:06 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/12/12 17:41:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -686,7 +686,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
         if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
         {
-            OUTMESS *OutTemplate = CTIDBG_new(OUTMESS);
+            OUTMESS *OutTemplate = CTIDBG_new OUTMESS;
 
             InEchoToOut( InMessage, OutTemplate );
 
@@ -1793,23 +1793,23 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 
         if(!found)
         {
-            CtiTableDeviceWindow CTIDBG_CTIDBG_newWindow;
-            CTIDBG_CTIDBG_newWindow.setID (getID());
-            CTIDBG_CTIDBG_newWindow.setType (DeviceWindowSignaledAlternateRate);
-            CTIDBG_CTIDBG_newWindow.setDuration (aDuration);
-            CTIDBG_CTIDBG_newWindow.setAlternateDuration (aDuration);
+            CtiTableDeviceWindow newWindow;
+            newWindow.setID (getID());
+            newWindow.setType (DeviceWindowSignaledAlternateRate);
+            newWindow.setDuration (aDuration);
+            newWindow.setAlternateDuration (aDuration);
 
             if(aOpen == -1)
             {
-                CTIDBG_CTIDBG_newWindow.setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
-                CTIDBG_CTIDBG_newWindow.setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
+                newWindow.setOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
+                newWindow.setAlternateOpen (RWTime().seconds() - RWTime(RWDate()).seconds());
             }
             else
             {
-                CTIDBG_CTIDBG_newWindow.setOpen (aOpen);
-                CTIDBG_CTIDBG_newWindow.setAlternateOpen (aOpen);
+                newWindow.setOpen (aOpen);
+                newWindow.setAlternateOpen (aOpen);
             }
-            _windowVector.push_back (CTIDBG_CTIDBG_newWindow);
+            _windowVector.push_back (newWindow);
         }
 
         if(aOpen == -1)
@@ -1926,8 +1926,8 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
 
     if(!isNull)
     {
-        CtiTableDeviceWindow CTIDBG_CTIDBG_newWindow;
-        CTIDBG_CTIDBG_newWindow.DecodeDatabaseReader(rdr);
+        CtiTableDeviceWindow newWindow;
+        newWindow.DecodeDatabaseReader(rdr);
 
         /*************************
         * if open and close were equal, duration of the window will be 0
@@ -1935,7 +1935,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         * sounds like a config problem to me, make the window always open
         **************************
         */
-        if(CTIDBG_CTIDBG_newWindow.getDuration() == 0)
+        if(newWindow.getDuration() == 0)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1944,7 +1944,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         }
         else
         {
-            _windowVector.push_back (CTIDBG_CTIDBG_newWindow);
+            _windowVector.push_back (newWindow);
         }
     }
 }

@@ -2247,19 +2247,19 @@ USHORT  CtiDeviceDR87::calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd)
         0104001,
         042000};
 
-    BYTEUSHORT CTIDBG_CTIDBG_newCRC;
+    BYTEUSHORT newCRC;
     USHORT j0,j1,j2;
 
-    CTIDBG_CTIDBG_newCRC.sh = 0;
+    newCRC.sh = 0;
 
     for (int x=1; x < length; x++)
     {
-        j0 = CTIDBG_CTIDBG_newCRC.sh ^ (buffer[x] & 0377);
+        j0 = newCRC.sh ^ (buffer[x] & 0377);
         j1 = j0 & 017;
         j2 = (j0 >> 4) & 017;
         j0 = lowNib[j1] ^ highNib[j2];
 
-        CTIDBG_CTIDBG_newCRC.sh = (CTIDBG_CTIDBG_newCRC.sh >> 8) ^ j0;
+        newCRC.sh = (newCRC.sh >> 8) ^ j0;
     }
 
     /*******************
@@ -2270,11 +2270,11 @@ USHORT  CtiDeviceDR87::calculateCRC(UCHAR* buffer, LONG length, BOOL bAdd)
     if (bAdd)
     {
         // low byte first
-        buffer[length]     = CTIDBG_CTIDBG_newCRC.ch[0];
-        buffer[length + 1] = CTIDBG_CTIDBG_newCRC.ch[1];
+        buffer[length]     = newCRC.ch[0];
+        buffer[length + 1] = newCRC.ch[1];
     }
 
-    return CTIDBG_CTIDBG_newCRC.sh;
+    return newCRC.sh;
 }
 
 INT CtiDeviceDR87::checkCRC(BYTE *InBuffer,ULONG InCount)

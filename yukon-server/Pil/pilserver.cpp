@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2002/11/15 14:07:58 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2002/12/12 17:33:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1261,21 +1261,21 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              */
 
             RWCString lmgroup = parse.getsValue("template");
-            char CTIDBG_newparse[128];
+            char newparse[128];
 
             Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
             CtiDevice *GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev != NULL)
             {
-                sprintf(CTIDBG_newparse, "PutConfig serial %d %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment());
+                sprintf(newparse, "PutConfig serial %d %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Template putconfig **** " << endl << "   " << CTIDBG_newparse << endl;
+                    dout << RWTime() << " **** Template putconfig **** " << endl << "   " << newparse << endl;
                 }
 
-                pReq->setCommandString(CTIDBG_newparse);      // Make the request match our CTIDBG_new choices
-                parse = CtiCommandParser(CTIDBG_newparse);    // Should create a CTIDBG_new actionItem list
+                pReq->setCommandString(newparse);      // Make the request match our CTIDBG_new choices
+                parse = CtiCommandParser(newparse);    // Should create a CTIDBG_new actionItem list
             }
         }
         else if(INT_MIN != parse.getiValue("fromutility"))
@@ -1284,22 +1284,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              *  This indicates the user wants to put the devices defined by group addressing defined in the "fromxxx"
              *  keys into the selected versacom group.
              */
-            char CTIDBG_newparse[128];
+            char newparse[128];
 
             CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev;
             // Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
-                _snprintf(CTIDBG_newparse, 127, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
+                _snprintf(newparse, 127, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << CTIDBG_newparse << endl;
+                    dout << RWTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << newparse << endl;
                 }
 
-                pReq->setCommandString(CTIDBG_newparse);       // Make the request match our CTIDBG_new choices
+                pReq->setCommandString(newparse);       // Make the request match our CTIDBG_new choices
                 pReq->setRouteId(GrpDev->getRouteID()); // Just on this route.
-                parse = CtiCommandParser(CTIDBG_newparse);     // Should create a CTIDBG_new actionItem list
+                parse = CtiCommandParser(newparse);     // Should create a CTIDBG_new actionItem list
             }
         }
     }
@@ -1388,7 +1388,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
             if(roleVector.size() > 0)
             {
-                RWCString CTIDBG_newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
+                RWCString newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
                 RWCString roleStr;
 
                 for(i = 0; i < roleVector.size(); i++)
@@ -1410,19 +1410,19 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
                     roleStr += " " + CtiNumStr((int)roleVector[i].getStages());
                 }
 
-                CTIDBG_newReqString += roleStr;
+                newReqString += roleStr;
 
-                if( parse.isKeyValid("noqueue") && CTIDBG_newReqString.subString("noqueue").isNull() )
+                if( parse.isKeyValid("noqueue") && newReqString.subString("noqueue").isNull() )
                 {
-                    CTIDBG_newReqString += " noqueue";
+                    newReqString += " noqueue";
                 }
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << "  " << CTIDBG_newReqString << endl;
+                    dout << RWTime() << "  " << newReqString << endl;
                 }
 
-                Req.setCommandString( CTIDBG_newReqString );
+                Req.setCommandString( newReqString );
             }
         }
     }

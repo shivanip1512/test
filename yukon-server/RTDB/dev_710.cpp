@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:08 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/12 17:35:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ using namespace std;
 INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
-    CtiCommandParser CTIDBG_CTIDBG_newParse("loop");
+    CtiCommandParser newParse("loop");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -63,7 +63,7 @@ INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     pReq->setCommandString("loop");
 
-    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {

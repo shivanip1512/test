@@ -285,7 +285,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
-    CtiCommandParser CTIDBG_CTIDBG_newParse("scan general");
+    CtiCommandParser newParse("scan general");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -295,7 +295,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     pReq->setCommandString("scan general");
 
-    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {
@@ -311,7 +311,7 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
-    CtiCommandParser CTIDBG_CTIDBG_newParse("scan integrity");
+    CtiCommandParser newParse("scan integrity");
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -321,7 +321,7 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     pReq->setCommandString("scan integrity");
 
-    status = ExecuteRequest(pReq,CTIDBG_CTIDBG_newParse,OutMessage,vgList,retList,outList);
+    status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
     if(OutMessage)
     {

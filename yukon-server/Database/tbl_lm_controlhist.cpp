@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:07:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/12 17:33:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -469,9 +469,9 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     }
     else
     {
-        LONG CTIDBG_newcid = LMControlHistoryIdGen(true);
+        LONG newcid = LMControlHistoryIdGen(true);
 
-        if(CTIDBG_newcid != getLMControlHistoryID())
+        if(newcid != getLMControlHistoryID())
         {
             RWTime Now;
 
@@ -481,7 +481,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
                 dout << Now << "   LMCtrlHistId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
             }
 
-            setLMControlHistoryID( CTIDBG_newcid );
+            setLMControlHistoryID( newcid );
 
             if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok )
             {
@@ -552,21 +552,21 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
     RWDate prevdate(getPreviousLogTime());
     RWDate today(now);
 
-    bool CTIDBG_newday = false;
-    bool CTIDBG_newmonth = false;
-    bool CTIDBG_newyear = false;
-    bool CTIDBG_newseason = false;
+    bool newday = false;
+    bool newmonth = false;
+    bool newyear = false;
+    bool newseason = false;
 
-    if(today.day() != prevdate.day())       CTIDBG_newday = true;
-    if(today.month() != prevdate.month())   CTIDBG_newmonth = true;
-    if(today.year() != prevdate.year())     CTIDBG_newyear = true;
+    if(today.day() != prevdate.day())       newday = true;
+    if(today.month() != prevdate.month())   newmonth = true;
+    if(today.year() != prevdate.year())     newyear = true;
 
-    LONG CTIDBG_newincrement = ( (double)getReductionRatio() * (double)increment / 100.0);
+    LONG newincrement = ( (double)getReductionRatio() * (double)increment / 100.0);
 
-    setCurrentDailyTime( CTIDBG_newday         ? CTIDBG_newincrement : getCurrentDailyTime() + CTIDBG_newincrement );
-    setCurrentMonthlyTime( CTIDBG_newmonth     ? CTIDBG_newincrement : getCurrentMonthlyTime() + CTIDBG_newincrement );
-    setCurrentSeasonalTime( CTIDBG_newseason   ? CTIDBG_newincrement : getCurrentSeasonalTime() + CTIDBG_newincrement );
-    setCurrentAnnualTime( CTIDBG_newyear       ? CTIDBG_newincrement : getCurrentAnnualTime() + CTIDBG_newincrement );
+    setCurrentDailyTime   ( newday      ? newincrement : getCurrentDailyTime()    + newincrement );
+    setCurrentMonthlyTime ( newmonth    ? newincrement : getCurrentMonthlyTime()  + newincrement );
+    setCurrentSeasonalTime( newseason   ? newincrement : getCurrentSeasonalTime() + newincrement );
+    setCurrentAnnualTime  ( newyear     ? newincrement : getCurrentAnnualTime()   + newincrement );
 
     setStopTime( now );
 

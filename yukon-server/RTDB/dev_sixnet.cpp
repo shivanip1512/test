@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/12/12 17:35:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,18 +35,18 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
     int i;
     int status = NORMAL;
     CtiSxlFieldHistory hist;
-    CtiSxlRecord CTIDBG_CTIDBG_newRec;
+    CtiSxlRecord newRec;
 
     time_t tstamp = CtiDeviceSixnet::get32(rec);
 
     FIELDHISTORY::iterator histitr;
 
-    CTIDBG_CTIDBG_newRec.setTime( RWTime(tstamp + rwEpoch) );
+    newRec.setTime( RWTime(tstamp + rwEpoch) );
 
     if (getDebugLevel() & 0x10000000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Record Time is " << CTIDBG_CTIDBG_newRec.getTime().asString() << endl;
+        dout << RWTime() << " Record Time is " << newRec.getTime().asString() << endl;
     }
 
     switch (m_eType)
@@ -65,7 +65,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 if (getDebugLevel() & 0x10000000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                 }
             }
             break;
@@ -77,7 +77,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 if (getDebugLevel() & 0x10000000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                 }
             }
             break;
@@ -90,17 +90,17 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 hist._time = tstamp;
 
                 // Process the analog data as an analog..
-                CTIDBG_CTIDBG_newRec.setType( AnalogPointType );
-                CTIDBG_CTIDBG_newRec.setValue( hist._pulses );
-                CTIDBG_CTIDBG_newRec.setOffset( hist._offset );
+                newRec.setType( AnalogPointType );
+                newRec.setValue( hist._pulses );
+                newRec.setOffset( hist._offset );
 
                 if (getDebugLevel() & 0x10000000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                 }
 
-                _recordData.push_back( CTIDBG_CTIDBG_newRec );
+                _recordData.push_back( newRec );
 
 
 
@@ -168,19 +168,19 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                         }
 
-                        CTIDBG_CTIDBG_newRec.setType( DemandAccumulatorPointType );
-                        CTIDBG_CTIDBG_newRec.setValue( deltaPH );
-                        CTIDBG_CTIDBG_newRec.setOffset( hist._offset );
+                        newRec.setType( DemandAccumulatorPointType );
+                        newRec.setValue( deltaPH );
+                        newRec.setOffset( hist._offset );
 
                         aHist = hist;  // Assign it over ok...
 
                         if (getDebugLevel() & 0x10000000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                            dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                         }
 
-                        _recordData.push_back( CTIDBG_CTIDBG_newRec );
+                        _recordData.push_back( newRec );
                     }
                 }
             }
@@ -189,16 +189,16 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
         case AOUT:
             for (i = 0; i < m_nNumRegs; ++i)
             {
-                CTIDBG_CTIDBG_newRec.setType( AnalogOutputPointType );
-                CTIDBG_CTIDBG_newRec.setValue( CtiDeviceSixnet::get16(rec + m_nOffset + 2*i) );
-                CTIDBG_CTIDBG_newRec.setOffset( i + 1 );
+                newRec.setType( AnalogOutputPointType );
+                newRec.setValue( CtiDeviceSixnet::get16(rec + m_nOffset + 2*i) );
+                newRec.setOffset( i + 1 );
 
                 if (getDebugLevel() & 0x10000000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                 }
-                _recordData.push_back( CTIDBG_CTIDBG_newRec );
+                _recordData.push_back( newRec );
             }
             break;
 
@@ -207,16 +207,16 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
             {
                 uint32 ofs = m_nOffset + i;
 
-                CTIDBG_CTIDBG_newRec.setType( StatusPointType );
-                CTIDBG_CTIDBG_newRec.setValue( ((rec[ofs / 8] >> (ofs & 0x7)) & 1) );
-                CTIDBG_CTIDBG_newRec.setOffset( i + 1 );
+                newRec.setType( StatusPointType );
+                newRec.setValue( ((rec[ofs / 8] >> (ofs & 0x7)) & 1) );
+                newRec.setOffset( i + 1 );
 
                 if (getDebugLevel() & 0x10000000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                 }
-                _recordData.push_back( CTIDBG_CTIDBG_newRec );
+                _recordData.push_back( newRec );
             }
             break;
 
@@ -225,16 +225,16 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
             {
                 uint32 ofs = m_nOffset + i;
 
-                CTIDBG_CTIDBG_newRec.setType( StatusOutputPointType );
-                CTIDBG_CTIDBG_newRec.setValue( ((rec[ofs / 8] >> (ofs & 0x7)) & 1) );
-                CTIDBG_CTIDBG_newRec.setOffset( i + 1 );
+                newRec.setType( StatusOutputPointType );
+                newRec.setValue( ((rec[ofs / 8] >> (ofs & 0x7)) & 1) );
+                newRec.setOffset( i + 1 );
 
                 if (getDebugLevel() & 0x10000000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << CTIDBG_CTIDBG_newRec.getTime() << "  Type " << CTIDBG_CTIDBG_newRec.getType() << " Offset " << CTIDBG_CTIDBG_newRec.getOffset() << "  Value " << CTIDBG_CTIDBG_newRec.getValue() << endl;
+                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
                 }
-                _recordData.push_back( CTIDBG_CTIDBG_newRec );
+                _recordData.push_back( newRec );
             }
             break;
 
@@ -1260,7 +1260,7 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                     else if (tailtime <= _lpTime && _lpTime < headTime)
                     {
                         // The start point is in there somewhere!
-                        ULONG CTIDBG_CTIDBG_newtail = _tail;
+                        ULONG newtail = _tail;
                         ULONG deltaT = headTime.seconds() - tailtime.seconds();                    // What is the timespan in the box.
                         ULONG deltaR = (_head > _tail ? _head - _tail: UINT_MAX - _tail + _head);  // How many records in the box.
                         ULONG recordCnt = (deltaT / _logRate) + 1;                                 // Number of records I would expect based solely upon timed logs.  Event triggered logs would be in addition to these!.
@@ -1307,21 +1307,21 @@ INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPt
                         if (skiprecords > 0)
                         {
                             // Move/skip the "_tail" forward to our CTIDBG_new try..
-                            CTIDBG_CTIDBG_newtail = _tail + skiprecords;      // Add the number of records to skip to the tail record number.  Assume the rollover happens correctly on a uint32.
+                            newtail = _tail + skiprecords;      // Add the number of records to skip to the tail record number.  Assume the rollover happens correctly on a uint32.
 
-                            if (!(isRecLT(_tail, CTIDBG_CTIDBG_newtail) && isRecLT(CTIDBG_CTIDBG_newtail, _head + 1)))
+                            if (!(isRecLT(_tail, newtail) && isRecLT(newtail, _head + 1)))
                             {
                                 // Whoops the logic sucks.. This better not happen
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " _tail = " << _tail << "  CTIDBG_CTIDBG_newtail = " << CTIDBG_CTIDBG_newtail << "  _head = " << _head << endl;
+                                    dout << " _tail = " << _tail << "  newtail = " << newtail << "  _head = " << _head << endl;
                                 }
-                                CTIDBG_CTIDBG_newtail = _tail;     // Just be a slop monger.
+                                newtail = _tail;     // Just be a slop monger.
                             }
                         }
 
-                        _tail = CTIDBG_CTIDBG_newtail;
+                        _tail = newtail;
 
                         // We must collect the records now..
                         _executionState = SXNT_GETRECORDS;
