@@ -31,6 +31,10 @@ public:
     bool acquire(unsigned long millis);
     void release();
 
+#ifdef _DEBUG
+    DWORD lastAcquiredByTID() const;
+#endif
+
 private:
 
 #ifdef _WINDOWS

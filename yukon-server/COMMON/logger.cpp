@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/05/19 14:46:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/09/15 20:49:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,6 +147,7 @@ CtiLogger& CtiLogger::acquire()
         if(!isacq)
         {
             cerr << RWTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << endl;
+            cerr << "  Thread TID=" << _log_mux.lastAcquiredByTID() << " was the last to acquire " << endl;
         }
 
     } while (!isacq);

@@ -78,3 +78,11 @@ void CtiMutex::release()
 #endif
 #endif
 }
+
+#ifdef _DEBUG
+DWORD CtiMutex::lastAcquiredByTID() const
+{
+    return _threadID;
+}
+#endif
+
