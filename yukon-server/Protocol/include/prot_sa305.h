@@ -8,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/10 19:22:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/03/17 05:15:34 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.9  2005/03/17 05:15:34  mfisher
+* 305 currently doesn't share any similarities with Protocol::Interface, so it's going to be orphaned for a while
+*
 * Revision 1.8  2005/03/10 19:22:50  mfisher
 * changed CtiProtocolBase to Cti::Protocol::Interface
 *
@@ -53,11 +56,9 @@ using namespace std;
 #include "dllbase.h"
 #include "dsm2.h"
 #include "pointtypes.h"
-#include "prot_base.h"
-using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
-class IM_EX_PROT CtiProtocolSA305 : public Protocol::Interface
+class IM_EX_PROT CtiProtocolSA305
 {
 protected:
 
