@@ -267,7 +267,6 @@ private javax.swing.JComboBox getJComboBoxSeasonSchedule() {
 			ivjJComboBoxSeasonSchedule.setToolTipText("Season schedule used to exclude control");
 			ivjJComboBoxSeasonSchedule.setPreferredSize(new java.awt.Dimension(155, 23));
 			// user code begin {1}
-			ivjJComboBoxSeasonSchedule.addItem(CtiUtilities.STRING_NONE);
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
@@ -1340,8 +1339,11 @@ public void setValue(Object o)
 				break;
 			}
 		
+		getJComboBoxSeasonSchedule().addItem(CtiUtilities.STRING_NONE);
 		if(con.getSeasonScheduleID().compareTo(new Integer(0)) == 0)
+		{
 			getJComboBoxSeasonSchedule().setSelectedItem(CtiUtilities.STRING_NONE);
+		}
 	}
 }
 /**
