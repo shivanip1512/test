@@ -7,6 +7,8 @@ package com.cannontech.graph;
  */
 import java.util.GregorianCalendar;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -16,6 +18,7 @@ import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.application.WebGraphRole;
 
 
 public class WebGraph implements Runnable
@@ -289,6 +292,19 @@ public class WebGraph implements Runnable
 	 */
 	public static void main(String[] args) 
 	{
+/*		ClientSession session = ClientSession.getInstance(); 
+		if(!session.establishSession()){
+			System.exit(-1);			
+		}
+	  	
+		if(session == null) 		
+			System.exit(-1);
+				
+		if(!session.checkRole(WebGraphRole.ROLEID)) 
+		{
+		  CTILogger.info("User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.");
+		  System.exit(-1);				
+		}		*/
 		com.cannontech.clientutils.CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +com.cannontech.common.version.VersionTools.getDatabaseVersion());
 	
 		System.setProperty("cti.app.name", "WebGraph");
