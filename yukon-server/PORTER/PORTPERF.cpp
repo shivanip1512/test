@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/02/18 14:36:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -991,10 +991,6 @@ void statisticsRecord()
 
                 for(dstatitr = gDeviceStatMap.begin(); dstatitr != gDeviceStatMap.end(); dstatitr++)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
                     CtiStatistics &dStats = (*dstatitr).second;
                     if(dStats.isDirty())
                     {
