@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:13 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/07/23 12:54:28 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ public:
                                           RWTPtrSlist< CtiMessage > &retList,
                                           RWTPtrSlist< OUTMESS >    &outList )  { return NoResultDecodeMethod; };
 
-   virtual BOOL verifyAndAddPointToReturnMsg( USHORT aPointId,
+   virtual BOOL verifyAndAddPointToReturnMsg( LONG   aPointId,
                                               DOUBLE aValue,
                                               USHORT aQuality,
                                               RWTime aTime,

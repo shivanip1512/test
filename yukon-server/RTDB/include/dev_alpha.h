@@ -247,7 +247,7 @@ public:
     virtual INT freeDataBins();
 
 
-    virtual BOOL verifyAndAddPointToReturnMsg (USHORT        aPointId,
+    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                                DOUBLE        aValue,
                                                USHORT        aQuality,
                                                RWTime        aTime,

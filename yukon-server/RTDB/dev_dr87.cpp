@@ -2135,7 +2135,7 @@ INT CtiDeviceDR87::ResultDisplay (INMESS *InMessage)
     return NORMAL;
 }
 
-BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (USHORT aPointId,
+BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                   DOUBLE aValue,
                                                   USHORT aQuality,
                                                   RWTime aTime,

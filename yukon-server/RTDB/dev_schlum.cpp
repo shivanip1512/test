@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:59 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/07/23 12:54:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -391,7 +391,7 @@ INT CtiDeviceSchlumberger::GeneralScan(CtiRequestMsg *pReq,
     return status;
 }
 
-BOOL CtiDeviceSchlumberger::verifyAndAddPointToReturnMsg (USHORT        aPointId,
+BOOL CtiDeviceSchlumberger::verifyAndAddPointToReturnMsg (LONG          aPointId,
                                                           DOUBLE        aValue,
                                                           USHORT        aQuality,
                                                           RWTime        aTime,

@@ -3782,7 +3782,7 @@ void CtiDeviceLandisGyrS4::syncAppropriateTime (ULONG seconds)
 }
 
 
-BOOL CtiDeviceLandisGyrS4::verifyAndAddPointToReturnMsg (USHORT aPointId,
+BOOL CtiDeviceLandisGyrS4::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                          DOUBLE aValue,
                                                          USHORT aQuality,
                                                          RWTime aTime,

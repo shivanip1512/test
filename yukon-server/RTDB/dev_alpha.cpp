@@ -6,12 +6,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/04/10 21:45:47 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/07/23 12:54:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*    History: 
+*    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.10  2004/07/23 12:54:28  cplender
+      USHORT pointids are not large enough.  Changed to LONG.
+      dispatch was having point type mismatch issues because of id truncation.
+
       Revision 1.9  2003/04/10 21:45:47  dsutton
       Added code to check the CRC on the multiple message classes (ones over 64 bytes)
       and added checks to make sure we had received the entire message
@@ -384,7 +388,7 @@ USHORT  CtiDeviceAlpha::addCRC(UCHAR* buffer, LONG length, BOOL bAdd)
         for(i = 0; i < (ULONG)length; i++)
         {
            CRC.ch[1] ^= buffer[i];
-    
+
            for(j = 0; j < 8; j++)
            {
               if(CRC.sh & 0x8000)
@@ -397,15 +401,15 @@ USHORT  CtiDeviceAlpha::addCRC(UCHAR* buffer, LONG length, BOOL bAdd)
                  CRC.sh = CRC.sh << 1;
               }
            }
-    
+
         }
-    
+
         if(bAdd)
         {
            buffer[length]     = CRC.ch[1];
            buffer[length + 1] = CRC.ch[0];
         }
-    
+
    }
    return CRC.sh;
 }
@@ -418,7 +422,7 @@ INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
     if(InCount > 3)
     {
         CRC.sh = addCRC(InBuffer, InCount - 2, FALSE);
-        
+
         if( CRC.ch[0] == InBuffer[InCount - 1] &&
             CRC.ch[1] == InBuffer[InCount - 2] )
         {
@@ -858,7 +862,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
                 int ret_crc;
 
                 // decode message
-                if ( commReturnValue || 
+                if ( commReturnValue ||
                    (Transfer.getInCountActual() != 15 ) ||
                    (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())))
 
@@ -894,7 +898,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
             {
                 int ret_crc;
 
-                if (decodeAckNak(Transfer.getInBuffer()[2]) || 
+                if (decodeAckNak(Transfer.getInBuffer()[2]) ||
                     (Transfer.getInCountActual() != 6) ||
                     (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())))
 
@@ -962,7 +966,7 @@ INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, RWTPtrSlist< C
 }
 
 
-BOOL CtiDeviceAlpha::verifyAndAddPointToReturnMsg (USHORT aPointId,
+BOOL CtiDeviceAlpha::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                    DOUBLE aValue,
                                                    USHORT aQuality,
                                                    RWTime aTime,
