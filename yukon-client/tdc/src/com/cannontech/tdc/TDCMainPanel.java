@@ -2280,6 +2280,9 @@ private void initSystemDisplays()
 	{
 		// add in todays data
 		java.util.Date newDate = new java.util.Date();
+      if( previousDate != null )
+         newDate = previousDate;
+
 		getReadOnlyDisplayData( newDate );
 	}
 }
@@ -3321,21 +3324,12 @@ private void setDisplayTitle(String title, java.util.Date date )
 {
 	if( date != null )
 	{
-		java.util.GregorianCalendar today = new java.util.GregorianCalendar();
 		java.util.GregorianCalendar calendar = new java.util.GregorianCalendar();
 		calendar.setTime( date );
-		today.setTime( new java.util.Date() );
 
-		//if we are not looking at todays values, we must be looking at some history
-		if( calendar.get(calendar.DAY_OF_MONTH) != today.get(calendar.DAY_OF_MONTH)
-			 || calendar.get(calendar.YEAR) != today.get(calendar.YEAR)
-			 || calendar.get(calendar.MONTH) != today.get(calendar.MONTH) )
-		{
-			title = "Historical View For " + CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
-					calendar.get( calendar.DAY_OF_MONTH ) + ", " +
-					calendar.get( calendar.YEAR );
-		}
-		
+      title = "Event Viewer For " + CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
+            calendar.get( calendar.DAY_OF_MONTH ) + ", " +
+            calendar.get( calendar.YEAR );
 	}
 
 	if( totalPages > 1 )

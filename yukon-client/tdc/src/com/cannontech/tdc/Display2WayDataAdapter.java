@@ -563,12 +563,26 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 					  " and s.datetime >= ? " +
 					  " and s.datetime < ? " +					  
 		 			  " order by s.datetime desc, s.soe_tag desc";
-		 			  
-	Object[] objs = new Object[2];
-	Date tmpDate = new Date( date.getTime() - 86399999 ); // 86399999 == One day in millesconds minus 1.999 seconds
-	objs[0] = tmpDate;	
-	objs[1] = date;
+   
+   java.util.GregorianCalendar lowerCal = new java.util.GregorianCalendar();
+   lowerCal.setTime( date );
+   lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
+   lowerCal.set( lowerCal.MINUTE, 0 );
+   lowerCal.set( lowerCal.SECOND, 0 );
+   
+   java.util.GregorianCalendar upperCal = new java.util.GregorianCalendar();
+   upperCal.setTime( date );
+   upperCal.set( upperCal.HOUR_OF_DAY, 23 );
+   upperCal.set( upperCal.MINUTE, 59 );
+   upperCal.set( upperCal.SECOND, 59 );
+   upperCal.set( upperCal.MILLISECOND, 999 );
+
+   
+   Object[] objs = new Object[2];
+	objs[0] = lowerCal.getTime();
+   objs[1] = upperCal.getTime();
 	Object[][] rowData = DataBaseInteraction.queryResults( rowQuery, objs );
+
 
 	if( rowData == null )
 		return -1;
@@ -594,9 +608,9 @@ public int createRowsForHistoricalView(java.util.Date date, int page)
 	int firstValue = (page - 1) * maxDataRows; // what row we should start at to get the data
 	int endingValueIndex = (rowData.length > (firstValue + maxDataRows)) ? 
 						   (firstValue + maxDataRows) - 1 : rowData.length - 1;
-
 /********* Page checking and processing ends here *******/
-	
+
+
 	java.util.Date prevDate = null;
 	java.util.GregorianCalendar currentCalendar = null;
 	java.util.GregorianCalendar prevCalendar = null;
