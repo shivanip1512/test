@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/05/20 22:43:12 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/08 20:32:08 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.7  2004/10/08 20:32:08  cplender
+* Added method queuedWorkCount()
+*
 * Revision 1.6  2004/05/20 22:43:12  cplender
 * Support for repeating 205 messages after n minutes.
 *
@@ -86,6 +89,7 @@ public:
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
+    INT queuedWorkCount() const;
     virtual bool hasQueuedWork() const;
     virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/20 16:04:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/08 20:32:32 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,7 @@ public:
 
     void processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, RWCString &info );
 
+    INT queuedWorkCount() const;
     bool hasQueuedWork() const;
     bool readEchoed() const;
     INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2004/07/27 16:58:15 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2004/10/08 20:32:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,6 +235,7 @@ public:
     virtual LONG deviceQueueCommunicationTime() const;          // how many millis of comm time do we have?
     virtual LONG deviceMaxCommunicationTime() const;            // maximum transmitter transmit time that this device is permitted to grab.  Assigned by db or CPARM "PORTER_MAX_TRANSMITTER_TIME"
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
+    virtual INT queuedWorkCount() const;                        // Number of queued commnads on the device.
 
     /*
      *  The rsvpToDispatch method allows the device object to produce a message to dispatch.
@@ -313,6 +314,7 @@ inline INT CtiDeviceBase::getProtocolWrap() const { return ProtocolWrapNone; }
 inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
 inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
+inline INT CtiDeviceBase::queuedWorkCount() const { return 0; }
 inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
 
 

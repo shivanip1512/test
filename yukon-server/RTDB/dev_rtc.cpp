@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/06/24 13:16:11 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/10/08 20:32:57 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.13  2004/10/08 20:32:57  cplender
+* Added method queuedWorkCount()
+*
 * Revision 1.12  2004/06/24 13:16:11  cplender
 * Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
 * Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
@@ -285,6 +288,8 @@ INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
 
             retList.insert( pMsg );
         }
+
+        delete pPIL;
     }
     else
     {
@@ -386,6 +391,11 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
     }
 
     return status;
+}
+
+INT CtiDeviceRTC::queuedWorkCount() const
+{
+    return _workQueue.entries();
 }
 
 bool CtiDeviceRTC::hasQueuedWork() const

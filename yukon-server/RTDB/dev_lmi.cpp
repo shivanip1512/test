@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/09/20 16:04:03 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/10/08 20:32:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -397,6 +397,11 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
 bool CtiDeviceLMI::hasQueuedWork() const
 {
     return _lmi.hasQueuedCodes() || _lmi.codeVerificationPending();
+}
+
+INT CtiDeviceLMI::queuedWorkCount() const
+{
+    return _lmi.getNumCodes();
 }
 
 
