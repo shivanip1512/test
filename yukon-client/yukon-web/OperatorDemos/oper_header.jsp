@@ -1,5 +1,6 @@
 <%@ page language="java" %>
-<%@ page import="com.cannontech.database.data.web.Operator" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.database.data.lite.LiteEnergyCompany" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
@@ -29,7 +30,6 @@
 		<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
 	<jsp:setProperty name="graphBean" property="startStr" value="<%=datePart.format(ServletUtil.getToday())%>"/>
-	<jsp:setProperty name="graphBean" property="tab" value="graph"/>
 	<jsp:setProperty name="graphBean" property="period" value="<%=ServletUtil.historicalPeriods[0]%>"/>
 	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	
 	    <%-- intialize bean properties --%>

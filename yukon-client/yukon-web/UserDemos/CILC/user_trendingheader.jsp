@@ -5,7 +5,6 @@
    Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( session, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.CustomerID=" + user.getCustomerId() + " order by GraphCustomerList.CustomerOrder", types );
  %>                   
 <jsp:setProperty name="graphBean" property="startStr" param="start"/>
-<jsp:setProperty name="graphBean" property="tab" param="tab"/>
 <jsp:setProperty name="graphBean" property="period" param="period"/>
 <jsp:setProperty name="graphBean" property="gdefid" param="gdefid"/>
 <jsp:setProperty name="graphBean" property="viewType" param="view"/>
@@ -17,7 +16,8 @@ var LINE  = parseInt(<%=TrendModelType.LINE_VIEW%>);
 var BAR   = parseInt(<%=TrendModelType.BAR_VIEW%>);
 var DBAR  = parseInt(<%=TrendModelType.BAR_3D_VIEW%>);
 var STEP  = parseInt(<%=TrendModelType.STEP_VIEW%>);
-var SHAPE = parseInt(<%=TrendModelType.SHAPES_LINE_VIEW%>);
+var TABULAR = parseInt(<%=TrendModelType.TABULAR_VIEW%>);
+var SUMMARY = parseInt(<%=TrendModelType.SUMMARY_VIEW%>);
 
 //options
 var BASIC = parseInt(<%=TrendModelType.BASIC_MASK%>); 
@@ -31,7 +31,7 @@ var LEGEND_LOAD_FACTOR = parseInt(<%=TrendModelType.LEGEND_LOAD_FACTOR_MASK%>);
 
 //Global variables
 var viewType = parseInt(<%=graphBean.getViewType()%>);
-var tabType = "<%=graphBean.getTab()%>";
+
 var currentMenu;
 var selectedItem;
 var loadDur = false;
@@ -46,35 +46,29 @@ function init()
 
 function initViewMenu()
 {
-	
-	if (tabType == 'tab')
+	switch(viewType)
 	{
-		document.getElementById('TABULARID').innerHTML = "&nbsp;&#149;&nbsp;Tabular";
-	}
-	else if (tabType == 'summary')
-	{
-		document.getElementById('SUMMARYID').innerHTML = "&nbsp;&#149;&nbsp;Summary";
-	}
-	else if (tabType == 'graph')
-	{
-		switch(viewType)
-		{
-			case LINE:
-				document.getElementById('LINEID').innerHTML = "&nbsp;&#149;&nbsp;<%=TrendModelType.LINE_VIEW_STRING%>";
-				break;
-			case BAR:
-				document.getElementById('BARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.BAR_VIEW_STRING%>";
-				break;
-			case DBAR:
-				document.getElementById('3DBARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%>";
-				break;
-			case STEP:
-				document.getElementById('STEPID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%>";
-				break;
-			case SHAPE:
-				document.getElementById('SHAPEID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%>";
+		case LINE:
+			document.getElementById('LINEID').innerHTML = "&nbsp;&#149;&nbsp;<%=TrendModelType.LINE_VIEW_STRING%>";
 			break;
-		}
+		case BAR:
+			document.getElementById('BARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.BAR_VIEW_STRING%>";
+			break;
+		case DBAR:
+			document.getElementById('3DBARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%>";
+			break;
+		case STEP:
+			document.getElementById('STEPID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%>";
+			break;
+		case SHAPE:
+			document.getElementById('SHAPEID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%>";
+			break;
+		case TABULAR:
+			document.getElementById('TABULARID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.TABULAR_VIEW_STRING%>";
+			break;
+		case STEP:
+			document.getElementById('SUMMARYID').innerHTML =  "&nbsp;&#149;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%>";
+			break;
 	}
 }
 
@@ -108,14 +102,7 @@ function initOptions()
 
 function changeView(viewType)
 {
-	if (viewType == 'tab') 
-		document.MForm.tab.value = viewType;
-	else if (viewType == 'summary')
-		document.MForm.tab.value = viewType;
-	else {
-	document.MForm.tab.value = 'graph';
 	document.MForm.view.value = viewType;
-	}
 	submitMForm();
 }
 

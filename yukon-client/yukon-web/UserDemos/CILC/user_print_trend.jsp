@@ -1,39 +1,28 @@
-<%@ include file="user_header.jsp" %>
-<%@ include file="user_trendingheader.jsp" %>  
+<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session"></jsp:useBean>
+	<%
+	if( graphBean.getGdefid() <= 0 )
+	{
+	%>
+		<p class="Main"> No Data Set Selected 
+	<%
+	}
+	else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW)
+	{
+		graphBean.updateCurrentPane();				
+		out.println(graphBean.getHtmlString());
+	}
+	else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
+	{
+		graphBean.updateCurrentPane();
+		out.println(graphBean.getHtmlString());
+	}
+	else // "graph" is default
+	{
+	%>
+		<img src="/servlet/GraphGenerator?">
+	<%
+	}
+	%>
 
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
-<%
-             if( graphDefinitionId <= 0 )
-             {
-            %>
-            <p>
-              <center>
-                No Data Set Selected 
-               </center> 
-           </p>
-            
-<%
-             }
-             else             
-             //Check to see which tab is selected (tab paramater) and show the appropriate content
-             if( tab.equalsIgnoreCase("summary") )
-             {
-              %>
-<%@ include file="../trendingsummary.jsp" %>
-<%
-             }
-             else
-             if( tab.equalsIgnoreCase("tab") )
-             {
-              %>
-<%@ include file="../trendingtabular.jsp" %>
-<%
-             }
-             else // "graph" is default
-             {
-              %>
-<img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=" + width + "&height=" + height + "&format=pmg&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>"> 
+<a href="javascript:history.back()" class="Link3">Back</a> 
 
-<%
-             }
-          %><a href="<%= referrer %>" class = "Link1"><span class = "Main">Back</span></a> 

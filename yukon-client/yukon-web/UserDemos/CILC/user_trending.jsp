@@ -133,7 +133,6 @@ MM_reloadPage(true);
                   <form name = "MForm">
                     <div name = "date/period" align = "right" style = "border:solid 1px #666999;" > 
                       <input type="hidden" name="gdefid" value="<%=graphBean.getGdefid()%>">
-                      <input type="hidden" name="tab" value="<%=graphBean.getTab()%>">
                       <input type="hidden" name="view" value="<%=graphBean.getViewType()%>">
                       <input type="hidden" name="option" value = "<%=graphBean.getOption()%>" >
                       <table width="99%" border="0" cellspacing="0" cellpadding="2" height="40">
@@ -189,12 +188,12 @@ MM_reloadPage(true);
 				{%>
                       <p> No Data Set Selected 
                         <%}
-				else if( graphBean.getTab().equalsIgnoreCase("summary") )
+				else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW)
 				{
 					graphBean.updateCurrentPane();
 					out.println(graphBean.getHtmlString());
 				}
-				else if( graphBean.getTab().equalsIgnoreCase("tab") )
+				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW)
 				{
 					graphBean.updateCurrentPane();
 					out.println(graphBean.getHtmlString());
@@ -276,8 +275,8 @@ MM_reloadPage(true);
               <div id = "3DBARID" name = "view"  style = "width:120px" onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView(<%=TrendModelType.BAR_3D_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%></div>
               <div id = "SHAPEID" name = "view"  style = "width:120px" onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView(<%=TrendModelType.SHAPES_LINE_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%></div>
               <div id = "STEPID" name = "view" style = "width:120px"  onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView(<%=TrendModelType.STEP_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%></div>
-              <div id = "TABULARID" name = "view"  style = "width:120px" onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView('tab')">&nbsp;&nbsp;&nbsp;Tabular</div>
-              <div id = "SUMMARYID" name = "view" style = "width:120px"  onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView('summary')">&nbsp;&nbsp;&nbsp;Summary</div>
+              <div id = "TABULARID" name = "view"  style = "width:120px" onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView(<%=TrendModelType.TABULAR_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.TABULAR_VIEW_STRING%></div>
+              <div id = "SUMMARYID" name = "view" style = "width:120px"  onMouseOver = "changeOptionStyle(this)" class = "optmenu1" onClick = "changeView(<%=TrendModelType.SUMMARY_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%></div>
               <hr>
               <div id = "LDID" onMouseOver = "changeOptionStyle(this)" style = "width:120px;" class = "optmenu1" onClick = "changeLD()">&nbsp;&nbsp;&nbsp;Load 
                 Duration</div>

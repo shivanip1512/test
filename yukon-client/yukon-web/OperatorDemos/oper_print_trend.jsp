@@ -6,12 +6,12 @@
 		<p class="Main"> No Data Set Selected 
 	<%
 	}
-	else if( graphBean.getTab().equalsIgnoreCase("summary") )
+	else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW)
 	{
 		graphBean.updateCurrentPane();				
 		out.println(graphBean.getHtmlString());
 	}
-	else if( graphBean.getTab().equalsIgnoreCase("tab") )
+	else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
 	{
 		graphBean.updateCurrentPane();
 		out.println(graphBean.getHtmlString());

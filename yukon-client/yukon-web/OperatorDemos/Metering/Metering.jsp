@@ -1,7 +1,6 @@
 <html>
 <%@ include file="../oper_header.jsp" %>
 <%@ include file="../oper_trendingheader.jsp" %>
-<!--<%@ include file="menu.jsp" %>-->
 
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 
@@ -124,7 +123,6 @@ function jumpPage(form)
 				<div name = "date/period" align = "right" style = "border:solid 1px #666999;" >
 				
 				<INPUT TYPE="hidden" NAME="gdefid" VALUE="<%=graphBean.getGdefid()%>">
-				<INPUT TYPE="hidden" NAME="tab" VALUE="<%=graphBean.getTab()%>">
 				<INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
 				<INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >
 
@@ -179,12 +177,12 @@ function jumpPage(form)
 				{%>
 					<p> No Data Set Selected 
 				<%}
-				else if( graphBean.getTab().equalsIgnoreCase("summary") )
+				else if( graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
 				{
 					graphBean.updateCurrentPane();
 					out.println(graphBean.getHtmlString());
 				}
-				else if( graphBean.getTab().equalsIgnoreCase("tab") )
+				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
 				{
 					graphBean.updateCurrentPane();
 					out.println(graphBean.getHtmlString());
@@ -266,8 +264,8 @@ function jumpPage(form)
   					<div id = "3DBARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.BAR_3D_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%></div>
 					<div id = "SHAPEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.SHAPES_LINE_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%></div>
 					<div id = "STEPID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.STEP_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%></div>
-					<div id = "TABULARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView('tab')">&nbsp;&nbsp;&nbsp;Tabular</div>
-					<div id = "SUMMARYID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView('summary')">&nbsp;&nbsp;&nbsp;Summary</div>
+					<div id = "TABULARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.TABULAR_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.TABULAR_VIEW_STRING%></div>
+					<div id = "SUMMARYID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.SUMMARY_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%></div>
 					<hr>
 					<div id = "LDID" onmouseover = "changeOptionStyle(this)" style = "width:120px" class = "optmenu1" onclick = "changeLD()">&nbsp;&nbsp;&nbsp;Load Duration</div>
 				</div>
@@ -278,7 +276,7 @@ function jumpPage(form)
 				
 				<script language = "JavaScript">
 				document.writeln('<FORM NAME = "exportForm">');
-				document.writeln('<INPUT TYPE="hidden" NAME="ext" VALUE="CSV">');
+				document.writeln('<INPUT TYPE="hidden" NAME="format" VALUE="png">');
 				if (navigator.userAgent.indexOf("Mozilla/2") != -1)
 					document.writeln('<INPUT TYPE = BUTTON VALUE="Jump!">');
 				document.writeln('</FORM>');
