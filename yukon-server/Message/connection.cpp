@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/03/20 00:39:53 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/10/08 20:39:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1225,7 +1225,7 @@ UINT CtiConnection::valid() const
 
 void CtiConnection::cleanExchange()
 {
-    LockGuard guard(monitor());
+    // LockGuard guard(monitor());
 
     if(Ex != NULL)
     {
