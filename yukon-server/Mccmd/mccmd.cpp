@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/05/13 22:46:26 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/05/14 15:41:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -633,6 +633,8 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
 
 int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
+    int tcl_ret = TCL_OK;
+
     if( argc != 2 )
     {
         WriteOutput("Usage: mcu8100wepco filename");
@@ -655,10 +657,17 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
         RWCollectableString* str = (RWCollectableString*) iter.key();
         Tcl_Eval( interp, (char*) str->data());
         Sleep(100); // CGP 051302  Buy some sanity.
+
+        if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
+        {
+            Tcl_SetResult( interp, "interrupted", NULL );
+            tcl_ret = TCL_ERROR;
+            break;
+        }
     }
 
     results.clearAndDestroy();
-    return TCL_OK;
+    return tcl_ret;
 }
 
 
