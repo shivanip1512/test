@@ -49,6 +49,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.task.LoadInventoryTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -65,7 +66,7 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
@@ -176,6 +177,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private boolean inventoryLoaded = false;
 	private boolean workOrdersLoaded = false;
 	
+	// When the energy company is initiated, this object is created to load the inventory
+	// It will be set to null and inventoryLoaded set to true after the loading is done
+	private LoadInventoryTask loadInvTask = null;
+	
 	private int dftRouteID = CtiUtilities.NONE_ID;
 	private TimeZone dftTimeZone = null;
 	private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
@@ -195,8 +200,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private StarsServiceCompanies starsServCompanies = null;
 	private StarsExitInterviewQuestions starsExitQuestions = null;
 	private StarsDefaultThermostatSettings[] starsDftThermSettings = null;
-	private StarsGetEnergyCompanySettingsResponse starsOperECSettings = null;
-	private StarsGetEnergyCompanySettingsResponse starsCustECSettings = null;
+	private StarsEnergyCompanySettings starsOperECSettings = null;
+	private StarsEnergyCompanySettings starsCustECSettings = null;
 	
 	private Hashtable starsCustSelLists = null;		// Map String(list name) to StarsSelectionListEntry
 	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
@@ -355,10 +360,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public TimeZone getDefaultTimeZone() {
 		if (dftTimeZone == null) {
-			dftTimeZone = TimeZone.getTimeZone( getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
+			String tz = getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE);
+			if (tz != null)
+				dftTimeZone = TimeZone.getTimeZone( tz );
 			if (dftTimeZone == null)
 				dftTimeZone = TimeZone.getDefault();
 		}
+		
 		return dftTimeZone;
 	}
 
@@ -407,7 +415,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	
-	public void init() {
+	public synchronized void init() {
 		getAllSelectionLists();
 		
 		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
@@ -415,10 +423,33 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			getAllServiceCompanies();
 			getAllInterviewQuestions();
 			getAllCustomerFAQs();
+			
+			// Load the inventory when energy company is initiated
+			if (!inventoryLoaded && loadInvTask == null) {
+				loadInvTask = new LoadInventoryTask( this );
+				new Thread( loadInvTask ).start();
+			}
 		}
 	}
 	
 	public void clear() {
+		// If load inventory task is present, cancel it first
+		if (loadInvTask != null) {
+			loadInvTask.cancel();
+			
+			while (true) {
+				if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED ||
+					loadInvTask.getStatus() == LoadInventoryTask.STATUS_CANCELED ||
+					loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR)
+					break;
+				
+				try {
+					Thread.sleep( 100 );
+				}
+				catch (InterruptedException e) {}
+			}
+		} 
+		
 		custAccountInfos = null;
 		addresses = null;
 		lmPrograms = null;
@@ -1555,7 +1586,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	private LiteInventoryBase loadInventory(int invID) {
+	public LiteInventoryBase loadInventory(int invID) {
 		try {
 			com.cannontech.database.db.stars.hardware.InventoryBase invDB =
 					new com.cannontech.database.db.stars.hardware.InventoryBase();
@@ -1595,26 +1626,35 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
+	public void setInventoryLoaded() {
+		inventoryLoaded = true;
+	}
+	
 	public synchronized ArrayList loadAllInventory() {
 		if (inventoryLoaded) return getAllInventory();
 		
 		try {
-			String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = " + getEnergyCompanyID() + " AND InventoryID >= 0";
-			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-			
-			for (int i = 0; i < stmt.getRowCount(); i++) {
-				int invID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-				if (getInventoryBrief(invID, false) != null) continue;
-				
-				if (loadInventory(invID) == null)
-					throw new Exception( "Failed to load inventory with id=" + invID );
+			if (loadInvTask == null) {
+				loadInvTask = new LoadInventoryTask( this );
+				new Thread( loadInvTask ).start();
 			}
 			
-			inventoryLoaded = true;
-			CTILogger.info( "All inventory loaded for energy company #" + getEnergyCompanyID() );
-			
-			return getAllInventory();
+			while (true) {
+				if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED) {
+					loadInvTask = null;
+					inventoryLoaded = true;
+					return getAllInventory();
+				}
+				else if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR) {
+					loadInvTask = null;
+					throw new Exception( loadInvTask.getErrorMsg() );
+				}
+				
+				try {
+					Thread.sleep( 1000 );
+				}
+				catch (InterruptedException e) {}
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1625,17 +1665,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
 		ArrayList inventory = getAllInventory();
-		LiteInventoryBase liteInv = null;
 		
 		synchronized (inventory) {
 			for (int i = 0; i < inventory.size(); i++) {
-				liteInv = (LiteInventoryBase) inventory.get(i);
+				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
 				if (liteInv.getInventoryID() == inventoryID)
 					return liteInv;
 			}
 		}
 		
-		return loadInventory( inventoryID );
+		if (autoLoad) return loadInventory( inventoryID );
+		
+		return null;
 	}
 	
 	public LiteInventoryBase getInventory(int inventoryID, boolean autoLoad) {
@@ -1734,7 +1775,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search for LM hardware with specified device type and serial # 
+	 * Search for LM hardware with specified device type and serial #.
+	 * If this energy company is a member of a higher level energy company,
+	 * and the hardware belongs to another member of that energy company,
+	 * the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteStarsLMHardware searchForLMHardware(int deviceType, String serialNo)
 		throws ObjectInOtherEnergyCompanyException
@@ -1803,6 +1847,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	/**
 	 * Search for device with the specified category and device name.
+	 * If this energy company is a member of a higher level energy company,
+	 * and the device belongs to another member of that energy company,
+	 * the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
 		throws ObjectInOtherEnergyCompanyException
@@ -1874,41 +1921,175 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search the inventory for device with the specified device ID 
+	 * Search the inventory for device with the specified device ID.
+	 * If this energy company is a member of a higher level energy company,
+	 * and the device belongs to another member of that energy company,
+	 * the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteInventoryBase getDevice(int deviceID) throws ObjectInOtherEnergyCompanyException {
 		return getDevice( deviceID, this );
 	}
 	
-	public LiteStarsLMHardware[] searchForLMHardwares(String serialNo, boolean searchMembers) {
-		ArrayList companies = null;
-		if (searchMembers) {
-			companies = ECUtils.getAllDescendants( this );
-		}
-		else {
-			companies = new ArrayList();
-			companies.add( this );
-		}
-		
+	/**
+	 * Search the inventory by serial number. The returned LiteInventoryBase
+	 * objects may be "unextended".
+	 * @param searchMembers Controls whether to search through member energy companies
+	 */
+	public LiteInventoryBase[] searchInventoryBySerialNo(String serialNo, boolean searchMembers) {
 		ArrayList hwList = new ArrayList();
+		ArrayList inventory = loadAllInventory();
 		
-		for (int i = 0; i < companies.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			
-			ArrayList inventory = company.loadAllInventory();
+		synchronized (inventory) {
+			for (int i = 0; i < inventory.size(); i++) {
+				if (inventory.get(i) instanceof LiteStarsLMHardware) {
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
+					if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
+					hwList.add( liteHw );
+				}
+			}
+		}
+		
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteInventoryBase[] hardwares = company.searchInventoryBySerialNo( serialNo, searchMembers );
+				for (int j = 0; j < hardwares.length; j++)
+					hwList.add( hardwares[j] );
+			}
+		}
+		
+		LiteInventoryBase[] hardwares = new LiteInventoryBase[ hwList.size() ];
+		hwList.toArray( hardwares );
+		return hardwares;
+	}
+	
+	/**
+	 * Search the inventory by account # the hardware belongs to
+	 */
+	public LiteInventoryBase[] searchInventoryByAccountNo(String accountNo, boolean searchMembers) {
+		ArrayList invList = new ArrayList();
+		ArrayList inventory = loadAllInventory();
+		
+		LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
+		if (liteAcctInfo != null) {
 			synchronized (inventory) {
-				for (int j = 0; j < inventory.size(); j++) {
-					if (inventory.get(j) instanceof LiteStarsLMHardware) {
-						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(j);
-						if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
-							hwList.add( liteHw );
+				for (int i = 0; i < inventory.size(); i++) {
+					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+					if (liteInv.getAccountID() == liteAcctInfo.getAccountID())
+						invList.add( liteInv );
+				}
+			}
+		}
+		
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteInventoryBase[] hardwares = company.searchInventoryByAccountNo( accountNo, searchMembers );
+				for (int j = 0; j < hardwares.length; j++)
+					invList.add( hardwares[j] );
+			}
+		}
+		
+		LiteInventoryBase[] hardwares = new LiteInventoryBase[ invList.size() ];
+		invList.toArray( hardwares );
+		return hardwares;
+	}
+	
+	private LiteInventoryBase[] searchInventoryByContactIDs(int[] contactIDs, boolean searchMembers) {
+		ArrayList invList = new ArrayList();
+		ArrayList inventory = loadAllInventory();
+		LiteStarsCustAccountInformation[] accounts = searchAccountByContactIDs( contactIDs, false );
+		
+		synchronized (inventory) {
+			for (int i = 0; i < inventory.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+				for (int j = 0; j < accounts.length; j++) {
+					if (liteInv.getAccountID() == accounts[j].getAccountID()) {
+						invList.add( liteInv );
+						break;
 					}
 				}
 			}
 		}
 		
-		LiteStarsLMHardware[] hardwares = new LiteStarsLMHardware[ hwList.size() ];
-		hwList.toArray( hardwares );
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteInventoryBase[] hardwares = company.searchInventoryByContactIDs( contactIDs, searchMembers );
+				for (int j = 0; j < hardwares.length; j++)
+					invList.add( hardwares[j] );
+			}
+		}
+		
+		LiteInventoryBase[] hardwares = new LiteInventoryBase[ invList.size() ];
+		invList.toArray( hardwares );
+		return hardwares;
+	}
+	
+	/**
+	 * Search the inventory by phone # of the account the hardware belongs to
+	 */
+	public LiteInventoryBase[] searchInventoryByPhoneNo(String phoneNo, boolean searchMembers) {
+		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
+				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE} );
+		
+		int[] contactIDs = new int[ contacts.length ];
+		for (int i = 0; i < contacts.length; i++)
+			contactIDs[i] = contacts[i].getContactID();
+		
+		return searchInventoryByContactIDs( contactIDs, searchMembers );
+	}
+	
+	/**
+	 * Search the inventory by last name of the account the hardware belongs to
+	 */
+	public LiteInventoryBase[] searchInventoryByLastName(String lastName, boolean searchMembers) {
+		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName );
+		
+		int[] contactIDs = new int[ contacts.length ];
+		for (int i = 0; i < contacts.length; i++)
+			contactIDs[i] = contacts[i].getContactID();
+		
+		return searchInventoryByContactIDs( contactIDs, searchMembers );
+	}
+	
+	public LiteInventoryBase[] searchInventoryByOrderNo(String orderNo, boolean searchMembers) {
+		ArrayList invList = new ArrayList();
+		ArrayList inventory = loadAllInventory();
+		ArrayList workOrders = loadWorkOrders();
+		LiteWorkOrderBase liteOrder = null;
+		
+		synchronized (workOrders) {
+			for (int i = 0; i < workOrders.size(); i++) {
+				LiteWorkOrderBase lOrder = (LiteWorkOrderBase) workOrders.get(i);
+				if (liteOrder.getOrderNumber().equalsIgnoreCase( orderNo )) {
+					liteOrder = lOrder;
+					break;
+				}
+			}
+		}
+		
+		if (liteOrder != null) {
+			synchronized (inventory) {
+				for (int i = 0; i < inventory.size(); i++) {
+					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+					if (liteInv.getAccountID() == liteOrder.getAccountID())
+						invList.add( liteInv );
+				}
+			}
+		}
+		
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteInventoryBase[] hardwares = company.searchInventoryByOrderNo( orderNo, searchMembers );
+				for (int j = 0; j < hardwares.length; j++)
+					invList.add( hardwares[j] );
+			}
+		}
+		
+		LiteInventoryBase[] hardwares = new LiteInventoryBase[ invList.size() ];
+		invList.toArray( hardwares );
 		return hardwares;
 	}
 	
@@ -2368,7 +2549,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		getAllCustAccountInformation().remove( liteAcctInfo );
 	}
 	
-	private LiteStarsCustAccountInformation searchBriefByAccountNumber(String accountNo) {
+	private LiteStarsCustAccountInformation searchByAccountNo(String accountNo) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation();
 		for (int i = 0; i < custAcctInfoList.size(); i++) {
 			LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
@@ -2396,8 +2577,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public LiteStarsCustAccountInformation searchByAccountNumber(String accountNo) {
-		LiteStarsCustAccountInformation liteAcctInfo = searchBriefByAccountNumber( accountNo );
+	/**
+	 * Search customer account by account # within the energy company.
+	 */
+	public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) {
+		LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
 		if (liteAcctInfo != null && !liteAcctInfo.isExtended())
 			extendCustAccountInfo( liteAcctInfo );
 		
@@ -2405,25 +2589,33 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * The LiteStarsCustAccountInformation objects returned by this method
-	 * may not have been "extended"
+	 * Search customer accounts by account #. Wildcard character "*" is allowed.
+	 * The returned LiteStarsCustAccountInformation objects may be "unextended".
+	 * @param searchMembers Controls whether to search through member energy companies.
 	 */
-	public LiteStarsCustAccountInformation[] searchByAccountNumber(String accountNo, boolean searchMembers) {
-		ArrayList companies = null;
-		if (searchMembers) {
-			companies = ECUtils.getAllDescendants( this );
-		}
-		else {
-			companies = new ArrayList();
-			companies.add( this );
-		}
-		
+	public LiteStarsCustAccountInformation[] searchAccountByAccountNo(String accountNo, boolean searchMembers) {
 		ArrayList accountList = new ArrayList();
 		
-		for (int i = 0; i < companies.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			LiteStarsCustAccountInformation liteAcctInfo = company.searchBriefByAccountNumber( accountNo );
+		if (accountNo.indexOf('*') == -1) {
+			LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
 			if (liteAcctInfo != null) accountList.add( liteAcctInfo );
+		}
+		else {
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
+					getEnergyCompanyID(), accountNo.replace('*','%') );
+			if (accountIDs != null) {
+				for (int i = 0; i < accountIDs.length; i++)
+					accountList.add( getBriefCustAccountInfo(accountIDs[i], true) );
+			}
+		}
+		
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteStarsCustAccountInformation[] accounts = company.searchAccountByAccountNo( accountNo, searchMembers );
+				for (int j = 0; j < accounts.length; j++)
+					accountList.add( accounts[j] );
+			}
 		}
 		
 		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
@@ -2432,40 +2624,94 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Returns IDs of the customer accounts containing hardware
-	 * with the specified serial number
+	 * Search customer accounts by hardware serial # assigned to the account.
 	 */
-	public int[] searchBySerialNumber(String serialNo) {
-		ArrayList acctIDList = new ArrayList();
-		ArrayList inventory = loadAllInventory();
+	public LiteStarsCustAccountInformation[] searchAccountBySerialNo(String serialNo, boolean searchMembers) {
+		LiteInventoryBase[] hardwares = searchInventoryBySerialNo( serialNo, false );
+		ArrayList accountList = new ArrayList();
 		
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getInventoryID() < 0) continue;
-				
-				if (liteInv instanceof LiteStarsLMHardware) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-					if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase(serialNo) && liteHw.getAccountID() > 0)
-						acctIDList.add( new Integer(liteHw.getAccountID()) );
-				}
+		for (int i = 0; i < hardwares.length; i++) {
+			if (hardwares[i].getAccountID() > 0) {
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( hardwares[i].getAccountID(), true );
+				if (liteAcctInfo != null) accountList.add( liteAcctInfo );
 			}
 		}
 		
-		int[] accountIDs = new int[ acctIDList.size() ];
-		for (int i = 0; i < acctIDList.size(); i++)
-			accountIDs[i] = ((Integer) acctIDList.get(i)).intValue();
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteStarsCustAccountInformation[] accounts = company.searchAccountBySerialNo( serialNo, searchMembers );
+				for (int j = 0; j < accounts.length; j++)
+					accountList.add( accounts[j] );
+			}
+		}
 		
-		return accountIDs;
+		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
+		accountList.toArray( accounts );
+		return accounts;
+	}
+	
+	private LiteStarsCustAccountInformation[] searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
+		ArrayList accountList = new ArrayList();
+		
+		int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactIDs(
+				contactIDs, getLiteID() );
+		if (accountIDs != null) {
+			for (int i = 0; i < accountIDs.length; i++)
+				accountList.add( getBriefCustAccountInfo(accountIDs[i], true) );
+		}
+		
+		if (searchMembers) {
+			for (int i = 0; i < getChildren().size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) getChildren().get(i);
+				LiteStarsCustAccountInformation[] accounts = company.searchAccountByContactIDs( contactIDs, searchMembers );
+				for (int j = 0; j < accounts.length; j++)
+					accountList.add( accounts[j] );
+			}
+		}
+		
+		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
+		accountList.toArray( accounts );
+		return accounts;
+	}
+	
+	/**
+	 * Search customer accounts by phone number.
+	 */
+	public LiteStarsCustAccountInformation[] searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
+		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
+				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE} );
+		
+		int[] contactIDs = new int[ contacts.length ];
+		for (int i = 0; i < contacts.length; i++)
+			contactIDs[i] = contacts[i].getContactID();
+		
+		return searchAccountByContactIDs( contactIDs, searchMembers );
+	}
+	
+	/**
+	 * Search customer accounts by last name. The search is based on partial match,
+	 * in which all the accounts with last names started with the search string are
+	 * returned. It is also case-insensitive.
+	 */
+	public LiteStarsCustAccountInformation[] searchAccountByLastName(String lastName, boolean searchMembers) {
+		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName );
+		
+		int[] contactIDs = new int[ contacts.length ];
+		for (int i = 0; i < contacts.length; i++)
+			contactIDs[i] = contacts[i].getContactID();
+		
+		return searchAccountByContactIDs( contactIDs, searchMembers );
 	}
 	
 	
 	/* The following methods are only used when SOAPClient exists locally */
 	
-	public StarsGetEnergyCompanySettingsResponse getStarsEnergyCompanySettings(StarsYukonUser user) {
+	public StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
 		if (ServerUtils.isOperator(user)) {
 			if (starsOperECSettings == null) {
-				starsOperECSettings = new StarsGetEnergyCompanySettingsResponse();
+				starsOperECSettings = new StarsEnergyCompanySettings();
+				starsOperECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
 				starsOperECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
 				starsOperECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
 				starsOperECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
@@ -2479,7 +2725,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		else if (ServerUtils.isResidentialCustomer(user)) {
 			if (starsCustECSettings == null) {
-				starsCustECSettings = new StarsGetEnergyCompanySettingsResponse();
+				starsCustECSettings = new StarsEnergyCompanySettings();
+				starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
 				starsCustECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
 				starsCustECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
 				starsCustECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
