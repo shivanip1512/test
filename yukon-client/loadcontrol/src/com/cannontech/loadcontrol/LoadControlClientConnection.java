@@ -7,6 +7,8 @@ package com.cannontech.loadcontrol;
  */
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
@@ -192,7 +194,7 @@ public LMProgramBase[] getPrograms(int lmControlAreaID)
  */
 private synchronized void handleLMControlArea(LMControlArea controlArea) 
 {
-	com.cannontech.clientutils.CTILogger.info( new com.cannontech.clientutils.commonutils.ModifiedDate(new java.util.Date().getTime()).toString() 
+	CTILogger.debug( new ModifiedDate(new java.util.Date().getTime()).toString() 
 		+ " ---> Received a control area named " + controlArea.getYukonName() );
 
 	synchronized ( getControlAreas() )
@@ -283,7 +285,7 @@ public synchronized void removeClient(Object client)
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 
 }
@@ -314,7 +316,7 @@ public synchronized void messageReceived( MessageEvent e )
 	}
 	else
 	{
-		com.cannontech.clientutils.CTILogger.info("Received an unknown message of type:  " + obj.getClass() );
+		CTILogger.info("Received an unknown message of type:  " + obj.getClass() );
 	}
 
 }
