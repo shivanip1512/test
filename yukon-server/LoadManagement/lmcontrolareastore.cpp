@@ -614,8 +614,10 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramTable["manualcontrolreceivedflag"]
                                  << dynamicLMProgramDirectTable["currentgearnumber"]
                                  << dynamicLMProgramDirectTable["lastgroupcontrolled"]
+			         << dynamicLMProgramDirectTable["dailyops"]
                                  << dynamicLMProgramDirectTable["starttime"]
                                  << dynamicLMProgramDirectTable["stoptime"]
+			         << dynamicLMProgramDirectTable["timestamp"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -640,7 +642,7 @@ void CtiLMControlAreaStore::reset()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
-
+ 
                         CtiLMProgramDirect* currentLMProgramDirect = NULL;
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;

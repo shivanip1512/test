@@ -94,7 +94,7 @@ public:
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
 
-    void dumpAllDynamicData();
+    void dumpAllDynamicData(); 
     bool isValid();
     void setValid(bool valid);
     bool getReregisterForPoints();

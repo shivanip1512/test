@@ -186,6 +186,7 @@ void CtiLoadManager::controlLoop()
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
+		RWDBDateTime prevDateTime = currentDateTime;
                 currentDateTime.now();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
@@ -396,7 +397,7 @@ void CtiLoadManager::controlLoop()
                     if( controlAreaChanges.entries() > 0 )
                     {
                         store->dumpAllDynamicData();
-                        CtiLMExecutorFactory f;
+                        CtiLMExecutorFactory f; 
                         CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
 
                         try

@@ -15,6 +15,8 @@
 #ifndef LMMESSAGE_H
 #define LMMESSAGE_H
 
+#include <vector>
+
 #include <rw/cstring.h>
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -109,7 +111,7 @@ RWDECLARE_COLLECTABLE( CtiLMManualControlRequest )
 public:
 
     enum 
-    {
+    { 
         SCHEDULED_START = 0,
         SCHEDULED_STOP,
         START_NOW,
@@ -133,7 +135,8 @@ public:
     LONG getStartGear() const;
     LONG getStartPriority() const;
     const RWCString& getAdditionalInfo() const;
-
+    BOOL getOverrideConstraints() const;
+    
     virtual CtiMessage* replicateMessage() const;
 	
     void restoreGuts(RWvistream&);
@@ -150,6 +153,7 @@ private:
     LONG _startgear;
     LONG _startpriority;
     RWCString _additionalinfo;
+    BOOL _override_constraints;
 };
 
 class CtiLMManualControlResponse : public CtiLMMessage
@@ -162,6 +166,9 @@ public:
     CtiLMManualControlResponse(const CtiLMManualControlResponse& resp);
     virtual ~CtiLMManualControlResponse() { };
 
+    const vector< string >& getConstraintViolations() const;
+    CtiLMManualControlResponse& setConstraintViolations(const vector< string >& constraintViolations);
+    
     virtual CtiMessage* replicateMessage() const;
     
     void restoreGuts(RWvistream&);
@@ -169,7 +176,7 @@ public:
 
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
-//add constraints?
+    vector< string > _constraintViolations;
 };
 
 class CtiLMEnergyExchangeControlMsg : public CtiLMMessage

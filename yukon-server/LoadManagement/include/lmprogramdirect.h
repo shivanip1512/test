@@ -40,6 +40,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     LONG getCurrentGearNumber() const;
     LONG getLastGroupControlled() const;
+    LONG getDailyOps();
     const RWDBDateTime& getDirectStartTime() const;
     const RWDBDateTime& getDirectStopTime() const;
     RWOrdered& getLMProgramDirectGears();
@@ -47,6 +48,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     CtiLMProgramDirect& setCurrentGearNumber(LONG currentgear);
     CtiLMProgramDirect& setLastGroupControlled(LONG lastcontrolled);
+    CtiLMProgramDirect& incrementDailyOps();
+    CtiLMProgramDirect& resetDailyOps();
     CtiLMProgramDirect& setDirectStartTime(const RWDBDateTime& start);
     CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
 
@@ -74,6 +77,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
 
+    ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
+    
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -87,13 +92,17 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     static int defaultLMStartPriority;
     static int defaultLMRefreshPriority;
 
-private:
+private: 
 
     LONG _currentgearnumber;
     LONG _lastgroupcontrolled;
+    LONG _dailyops;
     RWDBDateTime _directstarttime;
     RWDBDateTime _directstoptime;
 
+    //When the dynamic data was last saved
+    RWDBDateTime  _dynamictimestamp;
+    
     RWOrdered _lmprogramdirectgears;
     RWOrdered _lmprogramdirectgroups;
 

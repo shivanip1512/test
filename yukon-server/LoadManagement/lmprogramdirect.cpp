@@ -88,6 +88,23 @@ LONG CtiLMProgramDirect::getLastGroupControlled() const
 }
 
 /*---------------------------------------------------------------------------
+    getDailyOps
+
+    Returns the number of times this program has operated today
+ ---------------------------------------------------------------------------*/
+LONG CtiLMProgramDirect::getDailyOps() 
+{
+    // If we haven't written out dynamic data today
+    RWDate today;
+    if(today > _dynamictimestamp.rwdate())
+    {
+	resetDailyOps();
+    }
+    
+    return _dailyops; //TODO: check if this is the value for today!
+}
+
+/*---------------------------------------------------------------------------
     getDirectStartTime
 
     Returns the direct start time for a manual control of the direct program
@@ -160,6 +177,28 @@ CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(LONG lastcontroll
 }
 
 /*---------------------------------------------------------------------------
+  incrementDailyOps
+
+  Increments this programs daily operations count by 1
+  ---------------------------------------------------------------------------*/  
+CtiLMProgramDirect& CtiLMProgramDirect::incrementDailyOps()
+{
+    _dailyops++;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+  resetDailyOps
+
+  Resets this programs daily operations count to 0
+  ---------------------------------------------------------------------------*/
+CtiLMProgramDirect& CtiLMProgramDirect::resetDailyOps()
+{
+    _dailyops = 0;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setDirectStartTime
 
     Sets the direct start time for manual controls of the direct program
@@ -225,6 +264,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 {
                     setProgramState(CtiLMProgramBase::ActiveState);
                     setStartedControlling(RWDBDateTime());
+		    incrementDailyOps();
                     setDirectStartTime(RWDBDateTime());
                     setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
                     {
@@ -3152,7 +3192,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         currentLMGroup->setControlCompleteTime(RWDBDateTime());
                         returnBoolean = TRUE;
                     }
-                }
+                } 
 
                 if( currentLMGroup->getLastControlSent().seconds()+sendRate > sendRateEndFrom1901 )
                 {//sendRateEndFrom1901 is set to the latest of the new group controls
@@ -3627,6 +3667,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 	RWDBDateTime startTime(RWTime((unsigned long)secondsFrom1901));
 	RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
 
+	incrementDailyOps();
         setDirectStartTime(startTime);
 	setDirectStopTime(endTime);
 	return TRUE;
@@ -3981,8 +4022,10 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     {
         rdr["currentgearnumber"] >> _currentgearnumber;
         rdr["lastgroupcontrolled"] >> _lastgroupcontrolled;
+	rdr["dailyops"] >> _dailyops;
         rdr["starttime"] >> _directstarttime;
         rdr["stoptime"] >> _directstoptime;
+	rdr["timestamp"] >> _dynamictimestamp;
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -3990,9 +4033,10 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     {
         setCurrentGearNumber(0);
         setLastGroupControlled(0);
+	resetDailyOps();
         setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
-
+	_dynamictimestamp = RWDBDateTime(1990,1,1,0,0,0,0);
         _insertDynamicDataFlag = TRUE;
     }
 }
@@ -4029,8 +4073,8 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 << dynamicLMProgramDirectTable["lastgroupcontrolled"].assign(getLastGroupControlled())
                 << dynamicLMProgramDirectTable["starttime"].assign(getDirectStartTime())
                 << dynamicLMProgramDirectTable["stoptime"].assign(getDirectStopTime())
-                << dynamicLMProgramDirectTable["timestamp"].assign((RWDBDateTime)currentDateTime);
-
+                << dynamicLMProgramDirectTable["timestamp"].assign((RWDBDateTime)currentDateTime)
+		<< dynamicLMProgramDirectTable["dailyops"].assign(getDailyOps());
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
@@ -4040,6 +4084,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 }
 
                 updater.execute( conn );
+		_dynamictimestamp = currentDateTime;
             }
             else
             {
@@ -4055,8 +4100,9 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 << getLastGroupControlled()
                 << getDirectStartTime()
                 << getDirectStopTime()
-                << currentDateTime;
-
+                << currentDateTime
+		<< getDailyOps();
+		
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4064,7 +4110,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 }
 
                 inserter.execute( conn );
-
+		_dynamictimestamp = currentDateTime;
                 _insertDynamicDataFlag = FALSE;
             }
         }
@@ -4074,6 +4120,57 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             dout << RWTime() << " - Invalid database connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
+}
+
+/*
+ * estimateOffTime
+ * Attempts to estimate how much time the groups in this program will be off given a period of time
+ * that the program would be active.  
+ */
+
+ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULONG stop) 
+{
+    RWOrdered lm_gears = getLMProgramDirectGears();
+    CtiLMProgramDirectGear* cur_gear = (CtiLMProgramDirectGear*) lm_gears[proposed_gear];
+    
+    string method = cur_gear->getControlMethod();
+    long control_time = start - stop;
+
+    if(method == CtiLMProgramDirectGear::TimeRefreshMethod.data())
+    {
+	return control_time;
+    }
+    else if(method == CtiLMProgramDirectGear::MasterCycleMethod.data())
+    {
+	return control_time * (double) cur_gear->getMethodRate()/100.0;
+    }
+    else if(method == CtiLMProgramDirectGear::TrueCycleMethod.data() ||
+	    method == CtiLMProgramDirectGear::SmartCycleMethod.data())
+    {
+	return control_time * (double) cur_gear->getMethodRate()/100.0;//	getMethodRateCount()
+    }
+    else if(method == CtiLMProgramDirectGear::RotationMethod.data())
+    {
+	long send_rate = cur_gear->getMethodRate();
+	long shed_time = cur_gear->getMethodPeriod();
+	long number_of_groups = getLMProgramDirectGroups().entries();
+	long number_of_groups_to_take = cur_gear->getMethodRateCount();
+
+	long implied_period = (number_of_groups / number_of_groups_to_take) * send_rate;
+	double implied_percent = (double) shed_time / (double) implied_period;
+
+	return control_time * implied_percent;
+    }
+    else
+    {
+    {
+	CtiLockGuard<CtiLogger> dout_guard(dout);
+	dout << RWTime() << " **Checkpoint** " << "invalid gear type" << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    }
+
+       
+    return 0;
 }
 
 // Static Members

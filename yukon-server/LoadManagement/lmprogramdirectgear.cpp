@@ -470,6 +470,7 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionType(const RWCStr
     return *this;
 }
 
+
 /*---------------------------------------------------------------------------
     setMethodOptionMax
     

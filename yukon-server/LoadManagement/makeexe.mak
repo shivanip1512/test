@@ -13,6 +13,7 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(SERVER)\include \
+-I$(BOOST) \
 -I$(RW)
 
 
@@ -28,6 +29,7 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PROCLOG)\include \
 ;$(MSG)\include \
+;$(BOOST) \
 ;$(RW)
 
 
@@ -46,6 +48,7 @@ BASEOBJS= \
 clientconn.obj \
 clistener.obj \
 executor.obj \
+lmconstraint.obj \
 lmcontrolarea.obj \
 lmcontrolareastore.obj \
 lmcontrolareatrigger.obj \
@@ -90,7 +93,7 @@ loadmanagement.exe:     $(BASEOBJS) Makefile
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

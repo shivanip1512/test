@@ -32,6 +32,7 @@
 #include "lmcontrolarea.h"
 #include "devicetypes.h"
 #include "lmcurtailcustomer.h"
+#include "lmconstraint.h"
 
 #include <rw/collstr.h>
 
@@ -1095,19 +1096,45 @@ void CtiLMManualControlRequestExecutor::Execute()
 	    return;
 	}
     }
+
+    
+    RWDBDateTime startTime;
+    RWDBDateTime stopTime;
+
+    //prepare to send a response to the clients
+    CtiLMConstraintChecker checker;
+    vector<string> result_vec;
+    bool passed_check = false;
+
     
     switch ( _controlMsg->getCommand() )
     {
-    case CtiLMManualControlRequest::START_NOW:
-    case CtiLMManualControlRequest::SCHEDULED_START:
-	//CheckConstraints();
-        StartProgram(program, controlArea);
-        break;
 
-    case CtiLMManualControlRequest::STOP_NOW:
+    case CtiLMManualControlRequest::SCHEDULED_START:
+	startTime = _controlMsg->getStartTime();
+	
+    case CtiLMManualControlRequest::START_NOW:
+	stopTime = _controlMsg->getStopTime();
+	if( (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
+	{
+	    if((passed_check = checker.checkConstraints((const CtiLMProgramDirect&)*program, _controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds(), result_vec)))
+	    {
+		StartProgram(program, controlArea);
+	    }
+	}
+	else
+	{
+	    StartProgram(program, controlArea);
+	}
+        break;
+	
     case CtiLMManualControlRequest::SCHEDULED_STOP:
-	//CheckConstraints();
-	StopProgram(program, controlArea);
+	stopTime = _controlMsg->getStopTime();
+	
+    case CtiLMManualControlRequest::STOP_NOW:
+	stopTime = _controlMsg->getStopTime();
+	passed_check = true; //check constraints on stop?
+        StopProgram(program, controlArea);
         break;
 
     default:
@@ -1118,13 +1145,29 @@ void CtiLMManualControlRequestExecutor::Execute()
         }
 
     }
-
+    //Only send a response if we received a request
+    if(_request != NULL)
+    {
+	CtiServerResponseMsg* resp = new CtiServerResponseMsg();
+	CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
+	lmResp->setConstraintViolations(result_vec);
+	resp->setPayload(lmResp);
+	resp->setID(_request->getID());
     
-    CtiServerResponseMsg* resp = new CtiServerResponseMsg(_request->getID(), CtiServerResponseMsg::OK, " Success ");
-    CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
-    resp->setPayload(lmResp);
-    CtiLoadManager::getInstance()->sendMessageToClients(resp);
+	if(passed_check)
+	{
+	    resp->setStatus(CtiServerResponseMsg::OK);
+	    resp->setMessage("Manual Control Request Accepted");
+	}
+	else
+	{
+	    resp->setStatus(CtiServerResponseMsg::ERR);
+	    resp->setMessage("Manual Control Request Violated Constraints");
+	}
 
+	//Send the response to all the clients
+	CtiLoadManager::getInstance()->sendMessageToClients(resp);
+    }
 }
 
 void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea)
@@ -1278,7 +1321,8 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     }
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
     lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
-    
+
+    lmProgramDirect->incrementDailyOps(); 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
 
@@ -2480,7 +2524,7 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
         case CTILMMANUALCONTROLREQUEST_ID:
             ret_val = new CtiLMManualControlRequestExecutor( (CtiLMManualControlRequest*)message, request );
             break;
-    
+
         case CTILMENERGYEXCHANGECONTROLMSG_ID:
             ret_val = new CtiLMEnergyExchangeControlMsgExecutor( (CtiLMEnergyExchangeControlMsg*)message );
             break;

@@ -82,11 +82,11 @@ public:
 private:
     void StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea);
     void StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea);
-    void StartDirectProgram(CtiLMProgramDirect* program, CtiLMControlArea* controlArea);
-    void StopDirectProgram(CtiLMProgramDirect* program, CtiLMControlArea* controlArea);
-    void StartCurtailmentProgram(CtiLMProgramCurtailment* program, CtiLMControlArea* controlArea);
-    void StopCurtailmentProgram(CtiLMProgramCurtailment* program, CtiLMControlArea* controlArea);
-
+    void StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea);
+    void StopDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea);
+    void StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea);
+    void StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea);
+    
     CtiServerRequestMsg* _request;
     CtiLMManualControlRequest* _controlMsg;
 };

@@ -334,7 +334,8 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
          >> tempTime3
          >> _startgear
          >> _startpriority
-         >> _additionalinfo;
+         >> _additionalinfo
+         >> _override_constraints;
 
     _notifytime = RWDBDateTime(tempTime1);
     _starttime = RWDBDateTime(tempTime2);
@@ -350,7 +351,7 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
 void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
-
+    
     strm << _command
          << _paoid
          << _notifytime.rwtime()
@@ -358,7 +359,8 @@ void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
          << _stoptime.rwtime()
          << _startgear
          << _startpriority
-         << _additionalinfo;
+         << _additionalinfo
+	 << _override_constraints;
 
     return;
 }
@@ -414,6 +416,13 @@ CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
+    RWOrdered* rw_ordered;
+
+    strm >> rw_ordered;
+    for(int i = 0; i < rw_ordered->entries(); i++)
+    {
+	_constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
+    }
     return;
 }
 
@@ -425,6 +434,15 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
+    RWOrdered* rw_ordered = new RWOrdered();
+    for(vector< string >::const_iterator iter = _constraintViolations.begin();
+	iter != _constraintViolations.end();
+	iter++)
+    {
+	rw_ordered->insert(new RWCollectableString(iter->data()));
+    }
+
+    strm << rw_ordered;
     return;
 }
 
@@ -432,14 +450,36 @@ void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
     operator=
 ---------------------------------------------------------------------------*/
 CtiLMManualControlResponse& CtiLMManualControlResponse::operator=(const CtiLMManualControlResponse& right)
-{//call super?
+{//super?
     if( this != &right )
     {
-	//add fields here
+	_constraintViolations = right.getConstraintViolations();
     }
 
     return *this;
 }
+
+/*----------------------------------------------------------------------------
+  getConstraintViolations
+
+  Returns the contraint violations
+----------------------------------------------------------------------------*/
+const vector<string>& CtiLMManualControlResponse::getConstraintViolations() const
+{
+    return _constraintViolations;
+}
+
+/*----------------------------------------------------------------------------
+  setConstraintViolations
+
+  Sets the constraint violations
+----------------------------------------------------------------------------*/
+CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(const vector<string>& constraintViolations)
+{
+    _constraintViolations = constraintViolations;
+    return *this;
+}
+
 // end response
 
 /*===========================================================================

@@ -16,6 +16,8 @@
 #include "rtdb.h"
 #include "ctibase.h"
 
+#include "rwutil.h"
+
 int main(int argc, char* argv[] )
 {
     INT RunningInConsole = FALSE;
@@ -23,6 +25,8 @@ int main(int argc, char* argv[] )
     LPTSTR szDisplayName = "Yukon Load Management Service";
     HANDLE hExclusion;
 
+    date today(2002, Jan, 10);
+    
     /*{
         RWMutexLock::LockGuard guard(coutMux);
         cout << RWTime() << " - Load Management starting up..." << endl;

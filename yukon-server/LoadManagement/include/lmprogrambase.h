@@ -66,7 +66,7 @@ public:
     LONG getHolidayScheduleId() const;
     LONG getSeasonScheduleId() const;
     LONG getProgramStatusPointId() const;
-    LONG getProgramState() const;
+    LONG getProgramState() const; 
     LONG getReductionAnalogPointId() const;
     DOUBLE getReductionTotal() const;
     const RWDBDateTime& getStartedControlling() const;
@@ -115,12 +115,14 @@ public:
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
+    
     virtual BOOL hasControlHoursAvailable() const = 0;
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901) = 0;
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
+
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
