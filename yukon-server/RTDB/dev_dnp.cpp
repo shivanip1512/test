@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/03/10 21:00:32 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/03/17 04:41:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -628,8 +628,8 @@ int DNP::recvCommRequest( OUTMESS *OutMessage )
         _porter_info.pseudo_info        = om_buf->pseudo_info;
 
         char *buf = reinterpret_cast<char *>(OutMessage->Buffer.OutMessage) + sizeof(outmess_header);
-        buf[127] = 0;           //  make sure it's null-terminated somewhere before we do this:
-        _porter_info.user = buf;   //  ooo, how daring
+        buf[127] = 0;             //  make sure it's null-terminated somewhere before we do this:
+        _porter_info.user = buf;  //  ooo, how daring
 
         _dnp.setCommand(_porter_info.protocol_command, _porter_info.protocol_parameter);
     }
@@ -652,10 +652,10 @@ int DNP::sendCommResult(INMESS *InMessage)
     int retval = NoError;
 
     char *buf;
-    inmess_header *ih;
     int offset;
     string result_string;
-    queue<string *> strings;
+    Protocol::DNPInterface::stringlist_t strings;
+    Protocol::DNPInterface::stringlist_t::iterator itr;
 
     buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
     offset = 0;
@@ -664,24 +664,32 @@ int DNP::sendCommResult(INMESS *InMessage)
 
     _dnp.getInboundStrings(strings);
 
-    while( !strings.empty() )
+    for( itr = strings.begin(); itr != strings.end(); itr++ )
     {
         result_string += getName().data();
         result_string += " / ";
-        result_string += *(strings.front());
+        result_string += *(*itr);
         result_string += "\n";
-
-        delete strings.front();
-        strings.pop();
     }
 
-    while( !_results.empty() )
+    while( !strings.empty() )
     {
-        result_string += *(_results.front());
-        result_string += "\n";
+        delete strings.back();
 
-        delete _results.front();
-        _results.pop();
+        strings.pop_back();
+    }
+
+    for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
+    {
+        result_string += *(*itr);
+        result_string += "\n";
+    }
+
+    while( !_string_results.empty() )
+    {
+        delete _string_results.back();
+
+        _string_results.pop_back();
     }
 
     strncpy(buf, result_string.c_str(), sizeof(InMessage->Buffer.InMessage) - 1);
@@ -696,12 +704,14 @@ int DNP::sendCommResult(INMESS *InMessage)
 void DNP::sendDispatchResults(CtiConnection &vg_connection)
 {
     CtiReturnMsg                *vgMsg;
-    CtiPointDataMsg             *tmpMsg;
+    CtiPointDataMsg             *pt_msg;
     CtiPointBase                *point;
     CtiPointNumeric             *pNumeric;
     RWCString                    resultString;
     RWTime                       Now;
-    queue<CtiPointDataMsg *>     points;
+
+    Protocol::Interface::pointlist_t points;
+    Protocol::Interface::pointlist_t::iterator itr;
 
     vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage->Return.CommandStr
 
@@ -709,13 +719,67 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
 
     _dnp.getInboundPoints(points);
 
-    while( !points.empty() )
-    {
-        tmpMsg = points.front();
-        points.pop();
+    //  do any device-dependent work on the points (CBC 6510, for example)
+    processPoints(points);
 
-        //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
-        if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+    //  then toss them into the return msg
+    for( itr = points.begin(); itr != points.end(); itr++ )
+    {
+        pt_msg = *itr;
+
+        if( pt_msg )
+        {
+            _string_results.push_back(CTIDBG_new string(pt_msg->getString()));
+
+            vgMsg->PointData().append(pt_msg);
+        }
+    }
+
+    points.erase(points.begin(), points.end());
+
+    //  now send the pseudos related to the control point
+    //    note:  points are the domain of the device, not the protocol,
+    //           so i have to handle pseudo points here, in the device code
+    switch( _porter_info.protocol_command )
+    {
+        case Protocol::DNPInterface::Command_SetDigitalOut_Direct:
+        case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select:  //  presumably this will transition...  we need to verify this...
+        case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate:
+        {
+            if( _porter_info.pseudo_info.is_pseudo /*&& !_dnp.errorCondition()*/ )  //  ... for example, make sure the control was successful
+            {
+                CtiPointDataMsg *msg = CTIDBG_new CtiPointDataMsg(_porter_info.pseudo_info.pointid,
+                                                                  _porter_info.pseudo_info.state,
+                                                                  NormalQuality,
+                                                                  StatusPointType,
+                                                                  "This point has been controlled");
+                msg->setUser(_porter_info.user.data());
+                vgMsg->PointData().append(msg);
+            }
+
+            break;
+        }
+    }
+
+    vg_connection.WriteConnQue(vgMsg);
+}
+
+
+void DNP::processPoints( Protocol::Interface::pointlist_t &points )
+{
+    Protocol::Interface::pointlist_t::iterator itr;
+    CtiPointDataMsg *msg;
+    CtiPoint *point;
+    RWCString resultString;
+
+    Protocol::Interface::pointlist_t demand_points;
+
+    for( itr = points.begin(); itr != points.end(); itr++ )
+    {
+        msg = *itr;
+
+        //  !!! msg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+        if( msg && (point = getDevicePointOffsetTypeEqual(msg->getId(), msg->getType())) )
         {
             //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
             if( point->getType() == PulseAccumulatorPointType )
@@ -725,19 +789,19 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
                 //  is there an accompanying demand accumulator for this pulse accumulator?
                 if( (demandPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) != NULL )
                 {
-                    dnp_accumulator_pointdata_map::iterator itr;
+                    dnp_accumulator_pointdata_map::iterator pd_itr;
                     dnp_accumulator_pointdata previous, current;
 
                     //  get the raw pulses from the pulse accumulator
-                    current.point_value = tmpMsg->getValue();
-                    current.point_time  = Now.seconds();
+                    current.point_value = msg->getValue();
+                    current.point_time  = RWTime::now().seconds();
 
-                    itr = _lastIntervalAccumulatorData.find(demandPoint->getPointOffset());
+                    pd_itr = _lastIntervalAccumulatorData.find(demandPoint->getPointOffset());
 
-                    if( itr != _lastIntervalAccumulatorData.end() )
+                    if( pd_itr != _lastIntervalAccumulatorData.end() )
                     {
                         float demandValue;
-                        previous = itr->second;
+                        previous = pd_itr->second;
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -778,7 +842,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
 
                             CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
 
-                            vgMsg->PointData().append(demandMsg->replicateMessage());
+                            demand_points.push_back(demandMsg);
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -787,7 +851,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
                                 dout << "current.point_time   = " << current.point_time << endl;
                             }
 
-                            itr->second = current;
+                            pd_itr->second = current;
                         }
                         else
                         {
@@ -811,64 +875,41 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
                 }
             }
 
-            tmpMsg->setId(point->getID());
+            //  NOTE:  we had to retrieve the actual pointid by offset+type (see above), so we assign the actual id now
+            msg->setId(point->getID());
 
             if( point->isNumeric() )
             {
-                pNumeric = (CtiPointNumeric *)point;
+                CtiPointNumeric *pNumeric = (CtiPointNumeric *)point;
 
-                tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
+                msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
 
-                tmpMsg->setValue(tmpValue);
-
-                resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(tmpMsg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
-                resultString += " @ " + tmpMsg->getTime().asString();
+                resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(msg->getValue(), ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                resultString += " @ " + msg->getTime().asString();
             }
             else if( point->isStatus() )
             {
-                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), tmpMsg->getValue());
-                resultString += " @ " + tmpMsg->getTime().asString();
+                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), msg->getValue());
+                resultString += " @ " + msg->getTime().asString();
             }
             else
             {
                 resultString = "";
             }
 
-            _results.push(CTIDBG_new string(resultString.data()));
-            tmpMsg->setString(resultString);
-
-            vgMsg->PointData().append(tmpMsg->replicateMessage());
+            msg->setString(resultString);
         }
         else
         {
-            delete tmpMsg;
+            delete *itr;
+
+            *itr = 0;
         }
     }
 
-    //  now send the pseudos related to the control point
-    //    note:  points are the domain of the device, not the protocol,
-    //           so i have to handle pseudo points here, in the device code
-    switch( _porter_info.protocol_command )
-    {
-        case Protocol::DNPInterface::Command_SetDigitalOut_Direct:
-        case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate:
-        {
-            if( _porter_info.pseudo_info.is_pseudo /*&& !_dnp.errorCondition()*/ )  //  if the control was successful
-            {
-                CtiPointDataMsg *msg = CTIDBG_new CtiPointDataMsg(_porter_info.pseudo_info.pointid,
-                                                                  _porter_info.pseudo_info.state,
-                                                                  NormalQuality,
-                                                                  StatusPointType,
-                                                                  "This point has been controlled");
-                msg->setUser(_porter_info.user.data());
-                vgMsg->PointData().append(msg);
-            }
+    points.insert(points.end(), demand_points.begin(), demand_points.end());
 
-            break;
-        }
-    }
-
-    vg_connection.WriteConnQue(vgMsg);
+    demand_points.erase(demand_points.begin(), demand_points.end());
 }
 
 
