@@ -5,24 +5,26 @@ package com.cannontech.database.data.lite;
  */
 public class LiteYukonRole extends LiteBase {	
 	private String roleName;
+	private String category;
 	private String defaultValue;
 	
 	public LiteYukonRole() {
-		initialize(0,null,null);
+		initialize(0,null,null,null);
 	}
 
 	public LiteYukonRole(int roleID) {
-		initialize(roleID,null,null);
+		initialize(roleID,null,null,null);
 	}
 
-	public LiteYukonRole(int roleID, String roleName, String defaultValue) {
-		initialize(roleID,roleName,defaultValue);
+	public LiteYukonRole(int roleID, String roleName, String category, String defaultValue) {
+		initialize(roleID,roleName,category, defaultValue);
 	}
 	
-	private void initialize(int roleID, String roleName, String defaultValue) {
+	private void initialize(int roleID, String roleName, String category, String defaultValue) {
 		setLiteType(LiteTypes.YUKON_ROLE);
 		setRoleID(roleID);
 		setRoleName(roleName);		
+		setCategory(category);
 		setDefaultValue(defaultValue);
 	}
 	
@@ -72,6 +74,29 @@ public class LiteYukonRole extends LiteBase {
 	 */
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	/**
+	 * Returns the category.
+	 * @return String
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+	/**
+	 * Sets the category.
+	 * @param category The category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return getRoleName();
 	}
 
 }

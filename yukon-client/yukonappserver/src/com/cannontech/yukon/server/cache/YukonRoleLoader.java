@@ -30,7 +30,7 @@ public class YukonRoleLoader implements Runnable
 	{
    		long timerStart = System.currentTimeMillis();
    		
-   		String sql = "SELECT RoleID,RoleName,DefaultValue FROM YukonRole";
+   		String sql = "SELECT RoleID,RoleName,Category,DefaultValue FROM YukonRole";
    		
       	Connection conn = null;
       	Statement stmt = null;
@@ -43,9 +43,10 @@ public class YukonRoleLoader implements Runnable
       		while (rset.next() ) {      			
       			int roleID = rset.getInt(1);
       			String roleName = rset.getString(2).trim();
-      			String defaultValue = rset.getString(3).trim();
+      			String category = rset.getString(3).trim();
+      			String defaultValue = rset.getString(4).trim();
       			
-      			LiteYukonRole role = new LiteYukonRole(roleID, roleName, defaultValue);      			      			
+      			LiteYukonRole role = new LiteYukonRole(roleID, roleName, category, defaultValue);      			      			
             	allRoles.add(role);                       		
          	}
       	}
