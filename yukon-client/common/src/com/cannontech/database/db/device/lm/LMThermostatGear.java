@@ -29,7 +29,7 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
 
-	public static final String TABLE_NAME = "LMThermoStatGear";
+	public static final String TABLE_NAME = "LMThermostatGear";
 
 
 /**
@@ -61,9 +61,9 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	super.delete();
-	
 	delete( TABLE_NAME, "GearID", getGearID() );
+	
+	super.delete();
 
 }
 

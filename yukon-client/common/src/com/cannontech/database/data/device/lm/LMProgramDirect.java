@@ -200,16 +200,6 @@ public void update() throws java.sql.SQLException
 	getDirectProgram().update();
 	java.util.Vector gearVector = new java.util.Vector();
 
-	//to prevent violation of a SQL deletion constraint, remove the proper gears
-	//from the thermostat DB table to allow for deletion from the main table
-	java.util.Vector someIDs = new java.util.Vector();
-	someIDs = LMProgramDirectGear.getTheGearIDs(getPAObjectID(), getDbConnection() );
-	int j = 0;
-	while(! someIDs.isEmpty())
-	{
-		com.cannontech.database.db.device.lm.LMThermostatGear.deleteSomeThermoGears(((Integer)someIDs.remove(j)), getDbConnection() );
-	}
-	
 	//grab all the previous gear entries for this program
 	java.util.Vector oldGears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
 	
