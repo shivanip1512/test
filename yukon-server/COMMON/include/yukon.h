@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/05/10 21:35:52 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/05/17 07:55:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -252,6 +252,7 @@ typedef enum
     ErrPortInitFailed,
     ErrPortDialupConnect_Port,        // Error making connection.. Assumed to be the port's fault
     ErrPortDialupConnect_Device,      // Error making connection.. Assumed to be the device's fault
+    ErrPortSimulated,                 // The port is being simulated - there will be no inbound
 
     // Paging errors
     ErrorPageRS,                  // Invalid transaction, typ. bad pager id or password

@@ -45,100 +45,103 @@ INT CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
     INT      status = NORMAL;
     ULONG    Result, i;
 
-    if( isViable() )
+    if( !gSimulatePorts )
     {
-        close(FALSE);
-    }
-
-    if(isInhibited())
-    {
-        status = PORTINHIBITED;
-    }
-    else
-    {
-        try
+        if( isViable() )
         {
-            if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()),
-                        &getHandle(),
-                        &Result,
-                        0L,
-                        FILE_NORMAL,
-                        FILE_OPEN,
-                        OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
-                        0L) || Result != 1)
-            {
-                close(false);
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
-                }
-
-                return(BADPORT);
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
-            }
-
-
-            /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
-            initPrivateStores();
-
-            /* set the baud rate bits parity etc! on the port */
-            if((i = setLine()) != NORMAL)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                return(i);
-            }
-
-            /* set the Read Timeout for the port */
-            if((i = setPortReadTimeOut(1000)) != NORMAL)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                return(i);
-            }
-
-            /* set the write timeout for the port */
-            if((i = setPortWriteTimeOut(1000)) != NORMAL)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                return(i);
-            }
-
-            /* Lower RTS */
-            lowerRTS();
-
-            /* Raise DTR */
-            raiseDTR();
-
-            if((status = reset(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error resetting port on " << getName() << endl;
-            }
-            /* set the modem parameters */
-            if((status = setup(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Error setting port on " << getName() << endl;
-            }
+            close(FALSE);
         }
-        catch(...)
+
+        if(isInhibited())
         {
+            status = PORTINHIBITED;
+        }
+        else
+        {
+            try
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << getName() << endl;
+                if(CTIOpen ((char*)(_localSerial.getPhysicalPort().data()),
+                            &getHandle(),
+                            &Result,
+                            0L,
+                            FILE_NORMAL,
+                            FILE_OPEN,
+                            OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE | OPEN_FLAGS_WRITE_THROUGH,
+                            0L) || Result != 1)
+                {
+                    close(false);
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
+                    }
+
+                    return(BADPORT);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
+                }
+
+
+                /* load _dcb and set the default DCB/COMMTIMEOUTS info for the port */
+                initPrivateStores();
+
+                /* set the baud rate bits parity etc! on the port */
+                if((i = setLine()) != NORMAL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    return(i);
+                }
+
+                /* set the Read Timeout for the port */
+                if((i = setPortReadTimeOut(1000)) != NORMAL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    return(i);
+                }
+
+                /* set the write timeout for the port */
+                if((i = setPortWriteTimeOut(1000)) != NORMAL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    return(i);
+                }
+
+                /* Lower RTS */
+                lowerRTS();
+
+                /* Raise DTR */
+                raiseDTR();
+
+                if((status = reset(true)) != NORMAL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error resetting port on " << getName() << endl;
+                }
+                /* set the modem parameters */
+                if((status = setup(true)) != NORMAL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Error setting port on " << getName() << endl;
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << getName() << endl;
+                }
             }
         }
     }
@@ -283,153 +286,160 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMess
 
     Xfer.setInCountActual( (ULONG)0 );     // Mark it as zero to prevent any "lies"
 
-    if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
+    if( gSimulatePorts )
     {
-        int bytesavail = 0;
-        int lpcnt = 0;
-        ULONG expected = Xfer.getInCountExpected();
-
-        while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
-        {
-            Sleep(250);
-
-            bytesavail = 0;
-            bytesavail = getPortInQueueCount();
-
-            if(0)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/20 seconds " << endl;
-            }
-
-            if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
-            {
-                /*
-                 *   If we specified a byte count, we will wait one timeout amount of time before returning (and
-                 *   return whatever is available). If not we will wait for any bytes to become available and
-                 *   return them.
-                 */
-                break; // the while loop
-            }
-        }
-
-        Xfer.setInCountExpected( bytesavail );
+        status = ErrPortSimulated;
     }
-
-    if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
+    else
     {
-        /* If getInCountExpected() is 0 just return */
-        return(NORMAL);
-    }
-
-    if(Xfer.isMessageStart())           // Are we the initial request?
-    {
-        if(getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY))
+        if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
         {
-            if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
+            int bytesavail = 0;
+            int lpcnt = 0;
+            ULONG expected = Xfer.getInCountExpected();
+
+            while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "  Flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
+                Sleep(250);
 
-            if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "  Done flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            inClear();
-        }
+                bytesavail = 0;
+                bytesavail = getPortInQueueCount();
 
-        if(getTablePortSettings().getCDWait() != 0)
-        {
-            status = NODCD;
-
-            /* Check if we have DCD */
-            while(!dcdTest() && DCDCount < getTablePortSettings().getCDWait())
-            {
-                /* We do not have DCD... Wait 1/20 second and try again */
-                CTISleep (50L);
-                DCDCount += 50;
-            }
-
-            if(DCDCount < getTablePortSettings().getCDWait())
-            {
-                status = NORMAL;
-            }
-        }
-    }
-
-    /* Make sure that any errors on the port are cleared */
-    getPortCommError();
-
-    if(status == NORMAL)
-    {
-        USHORT Told, Tnew, Tmot;
-
-        /* set the read timeout */
-        Told = (USHORT)(Xfer.getInTimeout() + (USHORT)getDelay(EXTRA_DELAY));
-        Tnew = (USHORT)(byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
-
-        Tmot = (Told > Tnew) ? Told : Tnew;
-
-        setPortReadTimeOut( Tmot * 1000 );
-
-        //  if the beginning of an IDLC message
-        if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
-        {
-            status = readIDLCHeader(Xfer, &byteCount, true);
-        }
-        else
-        {
-            if((status = CTIRead(getHandle(), Message, Xfer.getInCountExpected(), &byteCount)) != NORMAL)
-            {
-                if(status == ERROR_INVALID_HANDLE)
+                if(0)
                 {
-                    close(false);
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/20 seconds " << endl;
                 }
 
-                status = PORTREAD;
-            }
-        }
-    }
-
-    if(status == NORMAL)
-    {
-        if(byteCount != Xfer.getInCountExpected())
-        {
-            INT oldcount = byteCount;
-
-            if((status = CTIRead(getHandle(), Message + byteCount, Xfer.getInCountExpected() - byteCount, &byteCount)) != NORMAL)
-            {
-                if(status == ERROR_INVALID_HANDLE)
+                if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
                 {
-                    close(false);
+                    /*
+                     *   If we specified a byte count, we will wait one timeout amount of time before returning (and
+                     *   return whatever is available). If not we will wait for any bytes to become available and
+                     *   return them.
+                     */
+                    break; // the while loop
+                }
+            }
+
+            Xfer.setInCountExpected( bytesavail );
+        }
+
+        if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
+        {
+            /* If getInCountExpected() is 0 just return */
+            return(NORMAL);
+        }
+
+        if(Xfer.isMessageStart())           // Are we the initial request?
+        {
+            if(getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY))
+            {
+                if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "  Flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
+
+                if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "  Done flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                inClear();
+            }
+
+            if(getTablePortSettings().getCDWait() != 0)
+            {
+                status = NODCD;
+
+                /* Check if we have DCD */
+                while(!dcdTest() && DCDCount < getTablePortSettings().getCDWait())
+                {
+                    /* We do not have DCD... Wait 1/20 second and try again */
+                    CTISleep (50L);
+                    DCDCount += 50;
                 }
 
-                status = PORTREAD;
+                if(DCDCount < getTablePortSettings().getCDWait())
+                {
+                    status = NORMAL;
+                }
             }
+        }
 
+        /* Make sure that any errors on the port are cleared */
+        getPortCommError();
+
+        if(status == NORMAL)
+        {
+            USHORT Told, Tnew, Tmot;
+
+            /* set the read timeout */
+            Told = (USHORT)(Xfer.getInTimeout() + (USHORT)getDelay(EXTRA_DELAY));
+            Tnew = (USHORT)(byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
+
+            Tmot = (Told > Tnew) ? Told : Tnew;
+
+            setPortReadTimeOut( Tmot * 1000 );
+
+            //  if the beginning of an IDLC message
+            if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
+            {
+                status = readIDLCHeader(Xfer, &byteCount, true);
+            }
+            else
+            {
+                if((status = CTIRead(getHandle(), Message, Xfer.getInCountExpected(), &byteCount)) != NORMAL)
+                {
+                    if(status == ERROR_INVALID_HANDLE)
+                    {
+                        close(false);
+                    }
+
+                    status = PORTREAD;
+                }
+            }
+        }
+
+        if(status == NORMAL)
+        {
             if(byteCount != Xfer.getInCountExpected())
             {
-                byteCount += oldcount;
-                status = READTIMEOUT;
+                INT oldcount = byteCount;
+
+                if((status = CTIRead(getHandle(), Message + byteCount, Xfer.getInCountExpected() - byteCount, &byteCount)) != NORMAL)
+                {
+                    if(status == ERROR_INVALID_HANDLE)
+                    {
+                        close(false);
+                    }
+
+                    status = PORTREAD;
+                }
+
+                if(byteCount != Xfer.getInCountExpected())
+                {
+                    byteCount += oldcount;
+                    status = READTIMEOUT;
+                }
             }
         }
-    }
 
-    Xfer.setInCountActual((ULONG)byteCount);      // This is the number of bytes filled into the buffer!
+        Xfer.setInCountActual((ULONG)byteCount);      // This is the number of bytes filled into the buffer!
 
-    /* Do the extra delay if the message is a completing type */
-    if( Xfer.isMessageComplete() )
-    {
-        if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
-    }
+        /* Do the extra delay if the message is a completing type */
+        if( Xfer.isMessageComplete() )
+        {
+            if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
+        }
 
-    if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
-    {
-        status = BADCRC;
+        if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
+        {
+            status = BADCRC;
+        }
     }
 
 
@@ -552,7 +562,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
     ULONG    StartWrite;
     ULONG    ReturnWrite;
 
-    if(getHandle() == NULL)
+    if(!gSimulatePorts && (getHandle() == NULL))
     {
         status = BADPORT;        // Invalid Handle really
     }
@@ -588,100 +598,103 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
         }
 #endif
 
-        /* Check if we need to key ... Pre Key Delay */
-        if(getDelay(PRE_RTS_DELAY))
+        if( !gSimulatePorts )
         {
-            CTISleep (getDelay(PRE_RTS_DELAY));
-        }
-
-        /* Clear the Buffers */
-        outClear();
-        inClear();
-
-        /* Key the radio */
-        raiseRTS();
-
-        ULONG rtstoout = getDelay(RTS_TO_DATA_OUT_DELAY);
-        if(rtstoout)
-        {
-            CTISleep(rtstoout);
-        }
-
-        // We should determine if CTS is high.
-        if( getDebugLevel() & DEBUGLEVEL_PORTCOMM && !ctsTest() )
-        {
+            /* Check if we need to key ... Pre Key Delay */
+            if(getDelay(PRE_RTS_DELAY))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " CTS has not come high." << endl;
-                dout << "  CTS has not come high.  Check your communications channel timings" << endl;
-            }
-#if 0
-            INT cnt = rtstoout / 10;
-
-            // We will wait one more RTS to DATA out cycle looking for this.
-            while( !ctsTest() && cnt-- > 0 )
-            {
-                CTISleep(10);
+                CTISleep (getDelay(PRE_RTS_DELAY));
             }
 
-            if(cnt <= 0)
+            /* Clear the Buffers */
+            outClear();
+            inClear();
+
+            /* Key the radio */
+            raiseRTS();
+
+            ULONG rtstoout = getDelay(RTS_TO_DATA_OUT_DELAY);
+            if(rtstoout)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  CTS never came high.  Check your communications channel timings" << endl;
+                CTISleep(rtstoout);
             }
-#endif
-        }
 
-        /* Remember when we started writing */
-        MilliTime (&StartWrite);
-
-        setPortWriteTimeOut( (10000L * Xfer.getOutCount()) / getTablePortSettings().getBaudRate() + 500 );
-
-        if(CTIWrite (getHandle(), Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
-        {
-            close(false);
-            status = PORTWRITE;
-        }
-
-        if(status == NORMAL)
-        {
-            /* if software queue is not empty wait for it to be */
-            for(int cnt=0; cnt < 5; cnt++)
+            // We should determine if CTS is high.
+            if( getDebugLevel() & DEBUGLEVEL_PORTCOMM && !ctsTest() )
             {
-                if((ByteCount = getPortOutQueueCount()) != 0)
                 {
-                    CTISleep ((10000L * ByteCount) / getTablePortSettings().getBaudRate());
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << getName() << " CTS has not come high." << endl;
+                    dout << "  CTS has not come high.  Check your communications channel timings" << endl;
                 }
-                else
+    #if 0
+                INT cnt = rtstoout / 10;
+
+                // We will wait one more RTS to DATA out cycle looking for this.
+                while( !ctsTest() && cnt-- > 0 )
                 {
-                    break;
+                    CTISleep(10);
                 }
+
+                if(cnt <= 0)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  CTS never came high.  Check your communications channel timings" << endl;
+                }
+    #endif
             }
 
-            /* Now outwait the hardware queue if neccessary */
-            if(Xfer.getOutCount() > 2)
+            /* Remember when we started writing */
+            MilliTime (&StartWrite);
+
+            setPortWriteTimeOut( (10000L * Xfer.getOutCount()) / getTablePortSettings().getBaudRate() + 500 );
+
+            if(CTIWrite (getHandle(), Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
             {
-                MilliTime (&ReturnWrite);
-                if(ReturnWrite < (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate())))
-                {
-                    CTISleep (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate()) - ReturnWrite);
-                }
+                close(false);
+                status = PORTWRITE;
             }
 
-            if(getDelay(DATA_OUT_TO_RTS_DOWN_DELAY))    /* Time to do the RTS thing */
+            if(status == NORMAL)
             {
-                CTISleep (getDelay(DATA_OUT_TO_RTS_DOWN_DELAY));
-
-                if(!isDialup())
+                /* if software queue is not empty wait for it to be */
+                for(int cnt=0; cnt < 5; cnt++)
                 {
-                    lowerRTS();
+                    if((ByteCount = getPortOutQueueCount()) != 0)
+                    {
+                        CTISleep ((10000L * ByteCount) / getTablePortSettings().getBaudRate());
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-            }
 
-            if(Dev->getAddress() == RTUGLOBAL || Dev->getAddress() == CCUGLOBAL)
-            {
-                CTISleep (Dev->getPostDelay());
+                /* Now outwait the hardware queue if neccessary */
+                if(Xfer.getOutCount() > 2)
+                {
+                    MilliTime (&ReturnWrite);
+                    if(ReturnWrite < (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate())))
+                    {
+                        CTISleep (StartWrite + (((ULONG) (Xfer.getOutCount() - 2) * 10000L) / getTablePortSettings().getBaudRate()) - ReturnWrite);
+                    }
+                }
+
+                if(getDelay(DATA_OUT_TO_RTS_DOWN_DELAY))    /* Time to do the RTS thing */
+                {
+                    CTISleep (getDelay(DATA_OUT_TO_RTS_DOWN_DELAY));
+
+                    if(!isDialup())
+                    {
+                        lowerRTS();
+                    }
+                }
+
+                if(Dev->getAddress() == RTUGLOBAL || Dev->getAddress() == CCUGLOBAL)
+                {
+                    CTISleep (Dev->getPostDelay());
+                }
             }
         }
 
@@ -1012,3 +1025,4 @@ int CtiPortDirect::getPortCommError()
     DWORD   Errors;
     return( ClearCommError(_portHandle, &Errors, NULL) ? Errors : SYSTEM );
 }
+

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/10/28 16:02:27 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/05/17 07:55:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,6 +73,8 @@ IM_EX_CTIBASE bool          gDNPVerbose = false;
 IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
 IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
+IM_EX_CTIBASE bool          gSimulatePorts = false;
+
 /*
  *  These are global to the ctibase, but
  */
@@ -329,6 +331,15 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         dout << RWTime() << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
     }
 
+    if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).isNull() && (!stricmp("TRUE", str.data())))
+    {
+        gSimulatePorts = true;
+    }
+    if(DebugLevel & 0x0001)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
+    }
 }
 
 DLLEXPORT INT getDebugLevel(void)

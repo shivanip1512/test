@@ -68,8 +68,16 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
 
                 if(ErrorCode)
                 {
-                    trace.setBrightRed();
-                    msg = " IN: " + CtiNumStr(ErrorCode).spad(3);
+                    if( ErrorCode == ErrPortSimulated )
+                    {
+                        trace.setBrightWhite();
+                        msg = " IN: (simulated, no bytes returned)";
+                    }
+                    else
+                    {
+                        trace.setBrightRed();
+                        msg = " IN: " + CtiNumStr(ErrorCode).spad(3);
+                    }
                 }
                 else
                 {
@@ -88,7 +96,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                     traceBytes(Xfer.getInBuffer(), Xfer.getInCountActual(), trace, traceList);
                 }
 
-                if(ErrorCode)
+                if(ErrorCode && ErrorCode != ErrPortSimulated)
                 {
                     trace.setBrightRed();
                     trace.setTrace( FormatError(ErrorCode) );
@@ -109,7 +117,7 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiD
 
     if(!isTAP() || (Dev && !Dev->isTAP()))
     {
-        if(Xfer.traceError() && ErrorCode != NORMAL)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
+        if(Xfer.traceError() && ErrorCode != NORMAL && ErrorCode != ErrPortSimulated)      // if Error is set, it happened on the InMessage, and we didn't print the outmessage before
         {
             status = traceOut(Xfer, traceList, Dev, ErrorCode);
         }
@@ -777,9 +785,13 @@ pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
 {
     pair< bool, INT > rpair = make_pair( false, NORMAL );
 
-    if( !isDialup() ) // We don't always want to re-open these types of port.
+    //  no need to attempt this if we're simulating the port
+    if( !gSimulatePorts )
     {
-        rpair = checkCommStatus(Device, trace);
+        if( !isDialup() ) // We don't always want to re-open these types of port.
+        {
+            rpair = checkCommStatus(Device, trace);
+        }
     }
 
     return rpair;

@@ -193,6 +193,7 @@ ERRSTRUCT CTIErrors[] = {
     { ErrPortInitFailed,    "Port Init Failed",     ERRTYPESYSTEM                , " N/A"},
     { ErrPortDialupConnect_Port,    "Diailup connection failed. Port in error",     ERRTYPECOMM    , " N/A"},
     { ErrPortDialupConnect_Device,  "Diailup connection failed. Device in error",   ERRTYPESYSTEM  , " N/A"},
+    { ErrPortSimulated,  "Port is simulated, no inbound data available",   ERRTYPEPROTOCOL  , " N/A"},
 
     { RETRY_SUBMITTED,      "Retry Resubmitted",       ERRTYPESYSTEM                , " N/A"},
     { SCAN_ERROR_DEVICE_INHIBITED, "Scanned device is inhibited",   ERRTYPESYSTEM                , " N/A"},
