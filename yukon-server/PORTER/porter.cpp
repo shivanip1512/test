@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2005/02/17 23:27:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,7 +253,6 @@ bool isTAPTermPort(LONG PortNumber)
     INT            i;
     bool           result = false;
 
-    CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());
     result = DeviceManager.find(findTAPDevice, (void*)PortNumber);
 
     return result;
@@ -1007,7 +1006,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     }
 
     PorterCleanUp(0);
-
     _CrtSetAllocHook(pfnOldCrtAllocHook);
 
 #ifdef HARDLOCK
@@ -2146,60 +2144,73 @@ static int MyAllocHook(int nAllocType, void *pvData,
     static ULONG prevLastAlloc = 0;
     static ULONG pprevLastAlloc = 0;
 
-    int twnetyfourcnt = 0;
+    int alloc_cnt = 0;
+    int dealloc_cnt = 0;
 
+    if( (nAllocType == _HOOK_ALLOC) || (nAllocType == _HOOK_REALLOC) )
+    {
     if(lRequest > 1000000 )
     {
         if( (nSize == 24) )
         {
             if(lastAlloc == (lRequest - 1))
             {
-                twnetyfourcnt++;
+                    alloc_cnt++;
 
                 if(prevLastAlloc == (lRequest - 2))
                 {
-                    twnetyfourcnt++;
+                        alloc_cnt++;
 
                     if(pprevLastAlloc == (lRequest - 3))
                     {
-                        twnetyfourcnt++;
-                    }
+                            alloc_cnt++;
+                        }
                     pprevLastAlloc = prevLastAlloc;
                 }
                 prevLastAlloc = lastAlloc;
             }
 
-            twnetyfourcnt++;
+                alloc_cnt++;
 
             lastAlloc = lRequest;
         }
         if((nSize == 52) )
         {
-            twnetyfourcnt++;
-        }
+                alloc_cnt++;
+            }
         else if((nSize == 1316) )
         {
-            twnetyfourcnt++;
-        }
+                alloc_cnt++;
+            }
         else if( (nSize == 68) )
         {
-            twnetyfourcnt++;
-        }
+                alloc_cnt++;
+            }
         else if( (nSize == 63) )
         {
-            twnetyfourcnt++;
-        }
+                alloc_cnt++;
+            }
         else if( (nSize == 416) )
         {
-            twnetyfourcnt++;
-        }
+                alloc_cnt++;
+            }
         else if( (nSize == 40) )
         {
-            twnetyfourcnt++;
-        }
+                alloc_cnt++;
+            }
         else if( (nSize == 164) )  // RWDBDatabase::RWDBDatabase() constructor.
         {
-            twnetyfourcnt++;
+                alloc_cnt++;
+            }
+        }
+    }
+    else if(nAllocType == _HOOK_FREE)
+    {
+        // Hmm, freeing memory here!
+        // pvData is being freed
+        if(pvData != 0)
+        {
+            dealloc_cnt++;
         }
     }
 
@@ -2211,7 +2222,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
     if( ((_CRTDBG_ALLOC_MEM_DF & _crtDbgFlag) == 0) && ( (nAllocType == _HOOK_ALLOC) || (nAllocType == _HOOK_REALLOC) ) )
     {
-        // Someone has disabled that the runtime should log this allocation
+        // Someone has pdisabled that the runtime should log this allocation
         // so we do not log this allocation
         if(pfnOldCrtAllocHook != NULL)
             pfnOldCrtAllocHook(nAllocType, pvData, nSize, nBlockUse, lRequest, szFileName, nLine);
