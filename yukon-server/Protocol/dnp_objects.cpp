@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/12/26 17:25:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/09/01 19:21:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -811,6 +811,10 @@ void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList, co
                         if( tmpObj->getGroup() == CtiDNPBinaryOutput::Group )
                         {
                             pMsg->setId(pMsg->getId() + CtiDNPBinaryOutput::BinaryOutputStatusOffset);
+                        }
+                        else if( tmpObj->getGroup() == CtiDNPAnalogOutput::Group )
+                        {
+                            pMsg->setId(pMsg->getId() + CtiDNPAnalogOutput::AnalogOutputOffset);
                         }
                     }
 
