@@ -237,6 +237,7 @@ private void handleMessage(com.cannontech.message.util.Message msg) {
 		PointData pd = (PointData) msg;
 		Long id = new Long(pd.getId());
 		pointData.put(id, pd);		
+		tagData.put(id, new Integer((int) pd.getTags())); //Check this, ok?
 		CTILogger.debug("Received point data for point id:  " + id);
 	}
 	else
