@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/08 16:36:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/20 15:29:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -250,6 +250,10 @@ void CtiMCServer::executeCommand(const string& command, const string& target)
 
     // Acquire an interpreter and send out the command
     CtiMCInterpreter* interp = _interp_pool.acquireInterpreter();
+            
+    // init default pil request priority        
+    interp->evaluate("set MessagePriority 7");
+
     interp->evaluate( to_send, false ); //no blocking
     
     _executing_commands.push_back(interp);
