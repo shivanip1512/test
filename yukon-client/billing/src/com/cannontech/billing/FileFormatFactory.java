@@ -16,13 +16,8 @@ public final static FileFormatBase createFileFormat(int type)
 	FileFormatBase retFFB = null;
 	switch(type)
 	{
-		case FileFormatTypes.MVRS:
-			retFFB =  new MVRSFormat();
-			break;
-		
 		case FileFormatTypes.SEDC:
 			retFFB =  new SEDCFormat();
-			((SEDCFormat)retFFB).setVersion(FileFormatTypes.NEW_VERSION);			
 			break;
 
 		case FileFormatTypes.CADP:
@@ -35,10 +30,6 @@ public final static FileFormatBase createFileFormat(int type)
 
 		case FileFormatTypes.NCDC:
 			retFFB = new NCDCFormat();
-			break;
-
-		case FileFormatTypes.CTIStandard2:
-			retFFB = new CTIStandard2Format();
 			break;
 
 		case FileFormatTypes.CTICSV:
@@ -62,9 +53,20 @@ public final static FileFormatBase createFileFormat(int type)
 			break;
 
 		case FileFormatTypes.SEDC_5_4:
-			retFFB =  new SEDCFormat();
-			((SEDCFormat)retFFB).setVersion(FileFormatTypes.OLD_VERSION);
+			retFFB =  new SEDC54Format();
 			break;
+
+		case FileFormatTypes.NISC:
+			retFFB =  new NISCFormat();
+			break;
+
+/*		case FileFormatTypes.MVRS:
+			retFFB =  new MVRSFormat();
+			break;
+		case FileFormatTypes.CTIStandard2:
+			retFFB = new CTIStandard2Format();
+			break;
+*/
 			
 		
 		default: //this is bad
