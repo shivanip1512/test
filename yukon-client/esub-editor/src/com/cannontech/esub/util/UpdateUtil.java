@@ -124,7 +124,14 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
-			text += "Not Available";
+			Map offsetMap = DefaultDatabaseCache.getInstance().getAllPointIDOffsetMap();
+			Integer offset = (Integer) offsetMap.get(new Integer(pointID));
+			if(offset != null) {
+				text += offset.toString();
+			}
+			else {
+				text += "-";
+			}
 			prev = true;			
 		}
 		

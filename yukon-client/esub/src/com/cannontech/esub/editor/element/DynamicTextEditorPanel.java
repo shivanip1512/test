@@ -28,7 +28,7 @@ public class DynamicTextEditorPanel extends com.cannontech.common.gui.util.DataI
 	private static final String ATTRIBUTE_HIGH_LIMIT = "High Limit";
 	private static final String ATTRIBUTE_LIMIT_DURATION = "Limit Duration";
 	private static final String ATTRIBUTE_MULTIPLIER = "Multiplier";
-//	private static final String ATTRIBUTE_DATA_OFFSET = "Data Offset";
+	private static final String ATTRIBUTE_DATA_OFFSET = "Data Offset";
 	private static final String ATTRIBUTE_ALARM_TEXT = "Alarm Text";
 	private static final String ATTRIBUTE_CURRENT_STATE = "Current State";	
 			
@@ -208,7 +208,7 @@ private javax.swing.JComboBox getDisplayAttributesComboBox() {
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_HIGH_LIMIT);
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_LIMIT_DURATION);
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_MULTIPLIER);
-//			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_DATA_OFFSET);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_DATA_OFFSET);
 			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_ALARM_TEXT);
 			
 			// user code end
@@ -499,10 +499,10 @@ public Object getValue(Object o) {
 	if( attStr.equals(ATTRIBUTE_MULTIPLIER) ) {
 		att = PointAttributes.MULTIPLIER;
 	}
-/*	else
+	else
 	if( attStr.equals(ATTRIBUTE_DATA_OFFSET) ) {
 		att = PointAttributes.DATA_OFFSET;
-	}		*/
+	}		
 	else
 	if( attStr.equals(ATTRIBUTE_ALARM_TEXT) ) {
 		att = PointAttributes.ALARM_TEXT;
@@ -684,10 +684,10 @@ public void setValue(Object o) {
 	if( (att & PointAttributes.MULTIPLIER) != 0 ) {
 		attStr = ATTRIBUTE_MULTIPLIER;
 	}
-/*	else
+	else
 	if( (att & PointAttributes.DATA_OFFSET) != 0 ) {
 		attStr = ATTRIBUTE_DATA_OFFSET;
-	}*/
+	}
 	else
 	if( (att & PointAttributes.ALARM_TEXT) != 0 ) {
 		attStr = ATTRIBUTE_ALARM_TEXT;
