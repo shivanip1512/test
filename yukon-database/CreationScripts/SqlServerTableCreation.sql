@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/31/2005 3:24:36 PM                         */
+/* Created on:     4/1/2005 9:14:18 AM                          */
 /*==============================================================*/
 
 
@@ -3903,7 +3903,6 @@ create table DynamicLMGroup (
    CurrentHoursAnnually numeric              not null,
    LastControlSent      datetime             not null,
    TimeStamp            datetime             not null,
-   LMProgramID          numeric              not null,
    ControlStartTime     datetime             not null,
    ControlCompleteTime  datetime             not null,
    NextControlTime      datetime             not null,
@@ -3913,7 +3912,7 @@ go
 
 
 alter table DynamicLMGroup
-   add constraint PK_DYNAMICLMGROUP primary key  (DeviceID, LMProgramID)
+   add constraint PK_DYNAMICLMGROUP primary key  (DeviceID)
 go
 
 
@@ -8894,12 +8893,6 @@ go
 alter table DynamicLMGroup
    add constraint FK_LMGrp_DynLmGrp foreign key (DeviceID)
       references LMGroup (DeviceID)
-go
-
-
-alter table DynamicLMGroup
-   add constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
-      references LMProgramDirect (DeviceID)
 go
 
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/31/2005 3:25:46 PM                         */
+/* Created on:     4/1/2005 9:15:20 AM                          */
 /*==============================================================*/
 
 
@@ -2235,7 +2235,6 @@ create table DynamicLMGroup  (
    CurrentHoursAnnually NUMBER                          not null,
    LastControlSent      DATE                            not null,
    TimeStamp            DATE                            not null,
-   LMProgramID          NUMBER                          not null,
    ControlStartTime     DATE                            not null,
    ControlCompleteTime  DATE                            not null,
    NextControlTime      DATE                            not null,
@@ -2243,7 +2242,7 @@ create table DynamicLMGroup  (
 );
 
 alter table DynamicLMGroup
-   add constraint PK_DYNAMICLMGROUP primary key (DeviceID, LMProgramID);
+   add constraint PK_DYNAMICLMGROUP primary key (DeviceID);
 
 /*==============================================================*/
 /* Table: DynamicLMProgram                                      */
@@ -6532,10 +6531,6 @@ alter table DynamicLMControlHistory
 alter table DynamicLMGroup
    add constraint FK_LMGrp_DynLmGrp foreign key (DeviceID)
       references LMGroup (DeviceID);
-
-alter table DynamicLMGroup
-   add constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
-      references LMProgramDirect (DeviceID);
 
 alter table DynamicLMProgram
    add constraint FK_LMProg_DynLMPrg foreign key (DeviceID)
