@@ -1059,6 +1059,7 @@ private void initialize() {
 
 		billingFile = new BillingFile();
 		billingFile.setAllCollectionGroupsVector(getBillingFile().retreiveAllCollectionGroupsVector());
+		billingFile.retreiveFileFormats();
 		System.out.println("Yukon Billing File Client Version: "  + BILLING_VERSION);
 		// user code end
 		setName("BillingFile");

@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/4/2002 3:56:10 PM)
@@ -91,15 +93,16 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				{
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					int ptOffset = rset.getInt(6);
-					
+					Date tsDate = new Date(ts.getTime());
+										
 					if( isKWH(ptOffset) || ptOffset == 1) 
 					{
-						if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+						if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 							break inValidTimestamp;
 					}
 					else if( isKW(ptOffset) || isKVAR(ptOffset))
 					{
-						if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+						if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 							break inValidTimestamp;
 					}
 					

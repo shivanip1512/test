@@ -158,8 +158,8 @@ public void retreiveFileFormats()
 				
 				for (int i = 0; i < rowCount; i++)
 				{
-					formatIDs[i] = ((Integer)formatIDVector.get(rowCount)).intValue();
-					formatTypes[i] = (String)formatTypeVector.get(rowCount);
+					formatIDs[i] = ((Integer)formatIDVector.get(i)).intValue();
+					formatTypes[i] = (String)formatTypeVector.get(i);
 				}	
 				//Copy into class arrays.
 				FileFormatTypes.setValidFormatIDs(formatIDs);

@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/28/00 11:55:04 AM)
@@ -131,14 +133,14 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					value = rset.getDouble(5);
 					deviceID = rset.getInt(6);
 					paoName = rset.getString(7);
-
+					Date tsDate = new Date(ts.getTime());
 					// Our break label so we can exit the if-else checks
 					inValidTimestamp:
 					if( deviceID == lastDeviceID)
 					{
 						if ( ptOffset == 1 || isKWH(ptOffset) )
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							kwhValueVector.set(vectorRecordCount -1, new Double(value));
@@ -146,7 +148,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if ( isKW(ptOffset) )
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							kwValueVector.set(vectorRecordCount - 1, new Double(value));
@@ -154,7 +156,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if ( isKVAR(ptOffset) )
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							kvarValueVector.set(vectorRecordCount -1, new Double(value));
@@ -175,7 +177,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						*/
 						if (ptOffset == 1 || isKWH(ptOffset))
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							kwhValueVector.set(vectorRecordCount, new Double(value));
@@ -183,7 +185,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if (isKW(ptOffset))
 						{
-							if (ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							kwValueVector.set(vectorRecordCount, new Double(value));
@@ -192,7 +194,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 						else if (isKVAR(ptOffset))
 						{
-							if (ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							kvarValueVector.set(vectorRecordCount, new Double(value));

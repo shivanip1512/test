@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/18/00 3:46:39 PM)
@@ -116,7 +118,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					java.sql.Timestamp ts = rset.getTimestamp(4);
 					deviceID = rset.getInt(6);
 					paoName = rset.getString(7);
-
+					Date tsDate = new Date(ts.getTime());
 					
 					java.util.Vector registerNumberVector = new java.util.Vector();
 					java.util.Vector kwValueVector = new java.util.Vector();
@@ -129,7 +131,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					{
 						if ( ptOffset == 1 || isKWH(ptOffset) )
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 	
 							//** Get the last record and add to it the other pointOffsets' values. **//								
@@ -140,7 +142,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if ( isKW(ptOffset) )
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							//** Get the last record and add to it the other pointOffsets' values. **//
@@ -156,7 +158,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 						else if ( isKVAR(ptOffset) )
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							//** Get the last record and add to it the other pointOffsets' values. **//
@@ -176,14 +178,14 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						*/
 						if (ptOffset == 1 || isKWH(ptOffset))
 						{
-							if( ts.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							kwhValueVector.add(new Double(rset.getDouble(5)));
 						}
 						else if (isKW(ptOffset))
 						{
-							if (ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							kwValueVector.add (new Double(rset.getDouble(5)));
@@ -191,7 +193,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 						else if (isKVAR(ptOffset))
 						{
-							if (ts.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							kvarValueVector.add(new Double(rset.getDouble(5)));
