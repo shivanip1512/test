@@ -153,7 +153,7 @@ function saveChanges() {
                                   <div align="right">Last Name:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="LastName3" maxlength="30" size="24" value="<%= contacts[0].getLastName() %>" onChange="setChanged()">
+                                  <input type="text" name="LastName2" maxlength="30" size="24" value="<%= contacts[0].getLastName() %>" onChange="setChanged()">
                                 </td>
                               </tr>
                               <tr> 
@@ -161,7 +161,7 @@ function saveChanges() {
                                   <div align="right">First Name:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="FirstName3" maxlength="30" size="24" value="<%= contacts[0].getFirstName() %>" onChange="setChanged()">
+                                  <input type="text" name="FirstName2" maxlength="30" size="24" value="<%= contacts[0].getFirstName() %>" onChange="setChanged()">
                                 </td>
                               </tr>
                               <tr> 
@@ -169,7 +169,7 @@ function saveChanges() {
                                   <div align="right">Home #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= contacts[0].getHomePhone() %>" onChange="setChanged()">
+                                  <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= contacts[0].getHomePhone() %>" onChange="setChanged()">
                                 </td>
                               </tr>
                               <tr> 
@@ -177,7 +177,7 @@ function saveChanges() {
                                   <div align="right">Work #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= contacts[0].getWorkPhone() %>" onChange="setChanged()">
+                                  <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= contacts[0].getWorkPhone() %>" onChange="setChanged()">
                                 </td>
                               </tr>
 							  <tr>
@@ -185,7 +185,7 @@ function saveChanges() {
 								  <div align="right">e-mail Address:</div>
 							    </td>
 							    <td width="210">
-								  <input type="text" name="Email3" maxlength="50" size="24" value="<%= contacts[0].getEmail().getNotification() %>" onChange="setChanged()">
+								  <input type="text" name="Email2" maxlength="50" size="24" value="<%= contacts[0].getEmail().getNotification() %>" onChange="setChanged()">
 							    </td>
 							  </tr>
                             </table>
@@ -203,7 +203,7 @@ function saveChanges() {
                             <div align="right">Last Name:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="LastName2" maxlength="30" size="24" value="<%= contacts[1].getLastName() %>" onchange="setChanged()">
+                            <input type="text" name="LastName3" maxlength="30" size="24" value="<%= contacts[1].getLastName() %>" onchange="setChanged()">
                           </td>
                         </tr>
                         <tr> 
@@ -211,7 +211,7 @@ function saveChanges() {
                             <div align="right">First Name:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="FirstName2" maxlength="30" size="24" value="<%= contacts[1].getFirstName() %>" onchange="setChanged()">
+                            <input type="text" name="FirstName3" maxlength="30" size="24" value="<%= contacts[1].getFirstName() %>" onchange="setChanged()">
                           </td>
                         </tr>
                         <tr> 
@@ -219,7 +219,7 @@ function saveChanges() {
                             <div align="right">Home #:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= contacts[1].getHomePhone() %>" onchange="setChanged()">
+                            <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= contacts[1].getHomePhone() %>" onchange="setChanged()">
                           </td>
                         </tr>
                         <tr> 
@@ -227,7 +227,7 @@ function saveChanges() {
                             <div align="right">Work #:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= contacts[1].getWorkPhone() %>" onchange="setChanged()">
+                            <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= contacts[1].getWorkPhone() %>" onchange="setChanged()">
                           </td>
                         </tr>
                         <tr>
@@ -235,7 +235,7 @@ function saveChanges() {
                             <div align="right">e-mail Address:</div>
                           </td>
                           <td width="210">
-                            <input type="text" name="Email2" maxlength="50" size="24" value="<%= contacts[1].getEmail().getNotification() %>" onChange="setChanged()">
+                            <input type="text" name="Email3" maxlength="50" size="24" value="<%= contacts[1].getEmail().getNotification() %>" onChange="setChanged()">
                           </td>
                         </tr>
                       </table>
