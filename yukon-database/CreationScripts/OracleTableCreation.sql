@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     5/24/2004 4:02:01 PM                         */
+/* Created on:     6/2/2004 4:07:00 PM                          */
 /*==============================================================*/
 
 
@@ -4934,6 +4934,12 @@ insert into YukonGroupRole values(-64,-1,-3,-1214,'(none)');
 insert into YukonGroupRole values(-65,-1,-3,-1215,'(none)');
 insert into YukonGroupRole values(-66,-1,-3,-1216,'(none)');
 
+insert into YukonGroupRole values(-85,-1,-4,-1300,'(none)');
+insert into YukonGroupRole values(-86,-1,-4,-1301,'(none)');
+insert into YukonGroupRole values(-87,-1,-4,-1302,'(none)');
+insert into YukonGroupRole values(-88,-1,-4,-1303,'(none)');
+insert into YukonGroupRole values(-89,-1,-4,-1304,'(none)');
+insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
 
 /* Calc Historical for Yukon Gorup */
 insert into YukonGroupRole values(-190,-1,-104,-10400,'(none)');
@@ -5814,7 +5820,7 @@ create table YukonRole  (
 /* Default role for all users - yukon category */
 insert into YukonRole values(-1,'Yukon','Yukon','Default Yukon role. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-3,'Logging','Yukon','Settings for how Yukon logs output. Edit this role from the Yukon SetUp page.');
-insert into YukonRole values(-4,'Radius Login','Yukon','Settings for using RADIUS server to login instead of standard yukon login.');
+insert into YukonRole values(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
 insert into YukonRole values(-104,'Calc Historical','Yukon','Calc Historical. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-105,'Web Graph','Yukon','Web Graph. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-106,'Billing','Yukon','Billing. Edit this role from the Yukon SetUp page.');
@@ -5905,11 +5911,12 @@ insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File 
 insert into YukonRoleProperty values(-1013,-1,'stars_soap_server','(none)','Where the soap server is running, the default value is the local host');
 insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The logo that is used for the yukon web applications');
 
-insert into YukonRoleProperty values(-1300,-4,'radius_server_address','(none)','Radius server machine address');
-insert into YukonRoleProperty values(-1301,-4,'radius_auth_port','1812','Radius authentication port.');
-insert into YukonRoleProperty values(-1302,-4,'radius_acct_port','1813','Radius accounting port.');
-insert into YukonRoleProperty values(-1303,-4,'radius_secret_key','(none)','Radius clients secret key value, defined by the radius server.');
-insert into YukonRoleProperty values(-1304,-4,'radius_auth_method','PAP','Radius authentication method. Possible values are PAP, [chap, others to follow soon]');
+insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
+insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
+insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting port.');
+insert into YukonRoleProperty values(-1303,-4,'secret_key','cti','Client machine secret key value, defined by the server.');
+insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
+insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
@@ -6373,7 +6380,7 @@ insert into YukonUserRole values(-102,-1,-100,-10002,'(none)');
 insert into YukonUserRole values(-103,-1,-100,-10003,'(none)');
 insert into YukonUserRole values(-104,-1,-100,-10004,'(none)');
 insert into YukonUserRole values(-105,-1,-100,-10005,'(none)');
-insert into YukonUserRole values(-107,-1,-100,-10007,'(none)');
+insert into YukonUserRole values(-107,-1,-100,-10007,'true');
 insert into YukonUserRole values(-108,-1,-100,-10008,'(none)');
 insert into YukonUserRole values(-109,-1,-100,-10009,'(none)');
 
