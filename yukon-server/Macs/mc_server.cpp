@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/13 22:24:07 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/17 17:49:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,14 +83,7 @@ void CtiMCServer::run()
                         long next = millisToTime(nextTime);
                         if( next < delay ) delay = next;
                     }
-                   /*// if( nextTime.isValid() )
-                    //    delay = millisToTime(_scheduler.getNextEventTime());
-                    //else
-                    millis = millisToNextMinute();
-
-
-                    delay = min_element( delay, millisToNextMinute() );
-                     */
+                   
                     continue;
                 }
 
@@ -133,15 +126,6 @@ void CtiMCServer::run()
                 if( next < delay ) delay = next;
              }
 
-
-            /*RWTime nextTime = _scheduler.getNextEventTime();
-            //if( nextTime.isValid() )
-            //    delay = millisToTime(_scheduler.getNextEventTime());
-            //else
-                delay = millisToNextMinute();
-
-            delay = min_element( delay, millisToNextMinute() );
-              */
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
                 _scheduler.dumpEventQueue();
@@ -1162,7 +1146,7 @@ bool CtiMCServer::isToday(const RWTime& t) const
     return ( RWDate(t) == RWDate::now() );
 }
 
-long CtiMCServer::millisToNextMinute() const
+unsigned long CtiMCServer::millisToNextMinute() const
 {
     struct tm* b_time;
 
@@ -1171,10 +1155,10 @@ long CtiMCServer::millisToNextMinute() const
     return (60 - b_time->tm_sec) * 1000;
 }
 
-long CtiMCServer::millisToTime(const RWTime& t) const
+unsigned long CtiMCServer::millisToTime(const RWTime& t) const
 {
-    long millis = ((long) (t.seconds() - RWTime::now().seconds())) * 1000;
-
+    CtiLockGuard< CtiLogger > guard(dout);    
+    unsigned long millis = (t.seconds() - RWTime::now().seconds()) * 1000;
     return ( millis < 0 ? 0 : millis );
 }
 
