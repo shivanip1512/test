@@ -5,6 +5,10 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LCUtils;
@@ -16,6 +20,10 @@ import com.cannontech.loadcontrol.gui.manualentry.CurtailmentEntryPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.loadcontrol.messages.LMManualControlResponse;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.ServerRequest;
 
 public class ProgramPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
@@ -263,7 +271,54 @@ private void showDirectManualEntry( final int panelMode )
 									selected[i].getGearNum() ) );
 				}
 	
-				LoadControlClientConnection.getInstance().write(multi);
+				if( multi.getVector().size() == 1 )
+				{
+					try
+					{ 
+						LMManualControlRequest lmReq = 
+								(LMManualControlRequest)multi.getVector().get(0);
+
+						ServerRequest req = ServerRequest.makeServerRequest(
+								LoadControlClientConnection.getInstance(), lmReq);
+						
+						//what we will show our client
+						String resStr = null;
+
+						ServerResponseMsg responseMsg = req.execute(30000); //30 seconds
+						if(responseMsg.getStatus() != ServerResponseMsg.STATUS_OK)
+						{
+							// some type of error occured
+							resStr = "Messaging problem occured: " 
+									+ responseMsg.getStatusStr() +
+									System.getProperty("line.separator") + System.getProperty("line.separator");
+						}
+	
+						LMManualControlResponse lmResp = (LMManualControlResponse) responseMsg.getPayload();
+						if(lmResp != null)
+						{
+							//do something interesting.
+							List violationStrs = lmResp.getConstraintViolations();
+							for( int i = 0; i < violationStrs.size(); i++ )
+								resStr += violationStrs.get(i) + System.getProperty("line.separator");
+						}
+						
+						if( resStr != null )
+							JOptionPane.showMessageDialog( this, resStr,
+								"Program Constraint Violated",
+								JOptionPane.WARNING_MESSAGE );	
+					}
+					catch(Exception e)
+					{
+						// didn't get a response!
+					}
+
+				}
+				else  //the old way of doing things for now
+					LoadControlClientConnection.getInstance().write(multi);
+				
+
+				
+				
 			}
 	
 	
