@@ -556,13 +556,10 @@ function removeAllMembers(form) {
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
 		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
-		
-		StarsCustSelectionList list = (StarsCustSelectionList) selectionListTable.get( cList.getListName() );
-		if (list == null) continue;
 %>
                                 <tr> 
                                   <td class="TableCell" width="5%">&nbsp;</td>
-                                  <td class="TableCell" width="30%"><%= list.getListName() %></td>
+                                  <td class="TableCell" width="30%"><%= cList.getListName() %></td>
                                   <td class="TableCell" width="40%"> 
                                     <hr width="90%" align="left">
                                   </td>
@@ -570,11 +567,11 @@ function removeAllMembers(form) {
 <%
 		if (liteEC.getParent() == null) {
 %>
-                                    <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
+                                    <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= cList.getListName() %>'">
 <%
 		} else {
 %>
-                                    <input type="button" name="Edit" value="View" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
+                                    <input type="button" name="Edit" value="View" onclick="location.href='SelectionList.jsp?List=<%= cList.getListName() %>'">
                                     (Inherited) 
 <%
 		}

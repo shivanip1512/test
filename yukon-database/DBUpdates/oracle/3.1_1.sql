@@ -1438,9 +1438,24 @@ insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePropertyID=-10805;
 
 
+
 alter table MacSchedule add template NUMBER;
 update MacSchedule set template = 0 where commandfile is not null;
 alter table MacSchedule MODIFY template NULL;
+
+delete from YukonListEntry where ListID in
+(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%');
+delete from ECToGenericMapping where MappingCategory = 'YukonSelectionList' and ItemID in
+(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000);
+delete from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000;
+
+insert into YukonListEntry values (1241,1049,1,'1 Day',1);
+insert into YukonListEntry values (1242,1049,2,'2 Days',2);
+insert into YukonListEntry values (1243,1049,3,'3 Days',3);
+insert into YukonListEntry values (1244,1049,4,'4 Days',4);
+insert into YukonListEntry values (1245,1049,5,'5 Days',5);
+insert into YukonListEntry values (1246,1049,6,'6 Days',6);
+insert into YukonListEntry values (1247,1049,7,'7 Days',7);
 
 
 

@@ -7,17 +7,6 @@
 	YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName);
 	if (dftList == null) dftList = new YukonSelectionList();
 	
-	boolean isOptOutPeriod = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-	boolean isOptOutPeriodCus = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
-	boolean sameAsOp = false;
-	if (isOptOutPeriodCus) {
-		dftList = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-		if (list == null) {
-			list = dftList;
-			sameAsOp = true;
-		}
-	}
-	
 	String viewOnly = (liteEC.getParent() != null)? "disabled" : "";
 %>
 <html>
@@ -46,10 +35,8 @@ var dftListIndices = new Array();
 <%
 	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
-		int entryID = entry.getEntryID();
-		if (isOptOutPeriodCus && sameAsOp) entryID = 0;
 %>
-	entryIDs[<%= i %>] = <%= entryID %>;
+	entryIDs[<%= i %>] = <%= entry.getEntryID() %>;
 	entryTexts[<%= i %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
 	entryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
 	dftListIndices[<%= i %>] = getDefaultListIndex(entryTexts[<%= i %>], entryYukDefIDs[<%= i %>]);
@@ -241,26 +228,6 @@ function prepareSubmit(form) {
 <% } %>
 }
 
-<%	if (isOptOutPeriodCus) { %>
-function setSameAsOp(form, checked) {
-	form.SameAsOp.checked = checked;
-<% if (liteEC.getParent() == null) { %>
-	form.WhereIsList.disabled = checked;
-	form.Ordering.disabled = checked;
-	form.Label.disabled = checked;
-	form.ListEntries.disabled = checked;
-	form.MoveUp.disabled = checked;
-	form.MoveDown.disabled = checked;
-	form.Delete.disabled = checked;
-	form.Default.disabled = checked;
-	form.EntryText.disabled = checked;
-	form.Save.disabled = checked;
-	form.DefaultListEntries.disabled = checked;
-<% } %>
-	if (!checked) showEntry(form);
-}
-<%	} %>
-
 function changeOrdering(form) {
 <% if (liteEC.getParent() == null) { %>
 	var disabled = (form.Ordering.value == "A");
@@ -270,9 +237,6 @@ function changeOrdering(form) {
 }
 
 function init() {
-<%	if (isOptOutPeriodCus) { %>
-	setSameAsOp(document.form1, <%= sameAsOp %>);
-<%	} %>
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 	changeOrdering(document.form1);
 <%	} %>
@@ -318,35 +282,10 @@ function init() {
                       <input type="hidden" name="ListName" value="<%= listName %>">
                       <tr> 
                         <td width="15%" align="right" class="TableCell">List Name:</td>
-                        <td width="85%" class="TableCell"> 
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                              <td width="30%" class="MainText"><%= listName %></td>
-                              <td width="70%" class="TableCell"> 
-                                <% if (isOptOutPeriodCus) { %>
-                                <input type="checkbox" name="SameAsOp" value="true" onclick="setSameAsOp(this.form, this.checked);setContentChanged(true);" <%= viewOnly %>>
-                                Same As Operator Side List 
-                                <% } %>
-                              </td>
-                            </tr>
-                          </table>
-                          
+                        <td width="85%" class="MainText"><%= listName %>
+                          <% if (listName.equals(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD)) { %><b>(For consumer side only)</b><% } %>
                         </td>
                       </tr>
-<%	if (isOptOutPeriod || isOptOutPeriodCus) { %>
-                      <tr> 
-                        <td width="15%" align="right" class="TableCell">&nbsp;</td>
-                        <td width="85%" class="TableCell"> 
-                          <% if (isOptOutPeriod) { %>
-                          <a href="SelectionList.jsp?List=OptOutPeriodCustomer">View 
-                          Customer Side List</a> 
-                          <% } else { %>
-                          <a href="SelectionList.jsp?List=OptOutPeriod">View 
-                          Operator Side List</a> 
-                          <% } %>
-                        </td>
-                      </tr>
-<%	} %>
 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
 					  <tr> 
                         <td width="15%" align="right" class="TableCell">Description:</td>
@@ -358,8 +297,8 @@ function init() {
                         <td width="15%" align="right" class="TableCell" height="7">Ordering:</td>
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Ordering" onchange="changeOrdering(this.form);setContentChanged(true);">
-                            <option value="A" <%= list.getOrdering().equalsIgnoreCase("A")? "selected" : "" %>>Alphabetical</option>
-                            <option value="O" <%= list.getOrdering().equalsIgnoreCase("O")? "selected" : "" %>>List 
+                            <option value="A" <% if (list.getOrdering().equalsIgnoreCase("A")) out.print("selected"); %>>Alphabetical</option>
+                            <option value="O" <% if (list.getOrdering().equalsIgnoreCase("O")) out.print("selected"); %>>List 
                             Order</option>
                           </select>
                         </td>

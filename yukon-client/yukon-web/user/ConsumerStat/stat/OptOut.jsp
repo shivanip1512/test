@@ -1,7 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%
-	boolean needMoreInfo = exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0;
-%>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -71,7 +68,7 @@ function confirmSubmit(form) { //v1.0
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/General.jsp">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
-<% if (needMoreInfo) { %>
+<% if (exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0) { %>
                 <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
                 <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/OptForm.jsp">
 <% } %>
@@ -88,14 +85,19 @@ function confirmSubmit(form) { //v1.0
                     </td>
                   </tr>
                   <tr>
-                    <td align="right" width="120">End Date (midnight of):</td>
+                    <td align="right" width="120">Duration:</td>
                     <td width="168"> 
-                      <input type="text" name="EndDate" id="EndDate" size="14" value="<%= datePart.format(new Date()) %>">
-                      <a href="javascript:openCalendar(document.getElementById('EndDate'))"
-					    onMouseOver="window.status='Start Date Calendar';return true;"
-						onMouseOut="window.status='';return true;">
-					    <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0">
-					  </a> 
+                      <select name="Duration">
+<%
+	StarsCustSelectionList optOutList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+	for (int i = 0; i < optOutList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = optOutList.getStarsSelectionListEntry(i);
+%>
+                        <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
+                      </select>
                     </td>
                   </tr>
                 </table>

@@ -125,7 +125,10 @@ alter table LMPROGRAM
       references LMProgramConstraints (ConstraintID);
 go
 
-/* If running by hand, this line will need the semi-colon removed at the end */
+/*******************************************/
+/*If this line is being run by itself, the SEMICOLON MUST BE REMOVED due to a SQLServer oddity.
+Otherwise, the view creation will fail*/
+/*******************************************/
 create view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
 select t.DEVICEID, t.CONTROLTYPE, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u
@@ -1095,7 +1098,10 @@ update YukonRoleProperty set Description='Sender address of emails sent on behal
 
 drop view ExpressComAddress_View;
 
-/* If running by hand, this line will need the semi-colon removed at the end */
+/*******************************************/
+/*If this line is being run by itself, the SEMICOLON MUST BE REMOVED due to a SQLServer oddity.
+Otherwise, the view creation will fail*/
+/*******************************************/
 create view ExpressComAddress_View as
 select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
 g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
@@ -1568,6 +1574,19 @@ update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePr
 alter table MACSchedule add template numeric null;
 update macschedule set template = 0 where commandfile is not null;
 
+delete from YukonListEntry where ListID in
+(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%');
+delete from ECToGenericMapping where MappingCategory = 'YukonSelectionList' and ItemID in
+(select ListID from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000);
+delete from YukonSelectionList where ListName like 'OptOutPeriod%' and ListID > 2000;
+
+insert into YukonListEntry values (1241,1049,1,'1 Day',1);
+insert into YukonListEntry values (1242,1049,2,'2 Days',2);
+insert into YukonListEntry values (1243,1049,3,'3 Days',3);
+insert into YukonListEntry values (1244,1049,4,'4 Days',4);
+insert into YukonListEntry values (1245,1049,5,'5 Days',5);
+insert into YukonListEntry values (1246,1049,6,'6 Days',6);
+insert into YukonListEntry values (1247,1049,7,'7 Days',7);
 
 
 
