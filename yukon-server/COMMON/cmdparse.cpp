@@ -4561,6 +4561,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             }
             else if(!(temp = CmdStr.match(" lorm0[ =]+[0-9]+")).isNull())
             {
+                temp.replace(" lorm0[ =]+", "");
                 if(!(valStr = temp.match("[0-9]+")).isNull())
                 {
                     iValue = atoi(valStr.data());
@@ -4569,6 +4570,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             }
             else if(!(temp = CmdStr.match(" horm0[ =]+[0-9]+")).isNull())
             {
+                temp.replace(" horm0[ =]+", "");
                 if(!(valStr = temp.match("[0-9]+")).isNull())
                 {
                     iValue = atoi(valStr.data());
@@ -4577,6 +4579,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             }
             else if(!(temp = CmdStr.match(" lorm1[ =]+[0-9]+")).isNull())
             {
+                temp.replace(" lorm1[ =]+", "");
                 if(!(valStr = temp.match("[0-9]+")).isNull())
                 {
                     iValue = atoi(valStr.data());
@@ -4585,6 +4588,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             }
             else if(!(temp = CmdStr.match(" horm1[ =]+[0-9]+")).isNull())
             {
+                temp.replace(" horm1[ =]+", "");
                 if(!(valStr = temp.match("[0-9]+")).isNull())
                 {
                     iValue = atoi(valStr.data());
@@ -4606,6 +4610,14 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             else if(!(temp = CmdStr.match(" clear hc")).isNull())
             {
                 _cmd["sa_clearhc"] = TRUE;
+            }
+            else if(!(temp = CmdStr.match(" clear pcd")).isNull())
+            {
+                _cmd["sa_clearpcd"] = TRUE;
+            }
+            else if(!(temp = CmdStr.match(" freeze pcd")).isNull())
+            {
+                _cmd["sa_freezepcd"] = TRUE;
             }
             else if(!(temp = CmdStr.match(" rawdata +[0-9]+ +[0-9]+")).isNull())
             {
