@@ -3416,8 +3416,8 @@ public class ImportManager extends HttpServlet {
 				fields[fieldIdx] = (id != null)? id.toString() : "0";
 			}
 			
-			if (fields[IDX_DEVICE_NAME].equals("")) {
-				// This is a receiver
+			int categoryID = ECUtils.getInventoryCategoryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]), energyCompany );
+			if (ECUtils.isLMHardware( categoryID )) {
 				for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
 					int listIdx = RECV_LIST_FIELDS[j][0];
 					int fieldIdx = RECV_LIST_FIELDS[j][1];
