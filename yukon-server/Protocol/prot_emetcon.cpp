@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/04/15 22:11:14 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/30 17:35:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,16 +192,7 @@ INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTME
    }
    else
    {
-      if(aOutTemplate.Buffer.BSt.Length == 0)   /*  IO_FCT_WRITE - function write */
-      {
-         // Function writes are fully qualified already, however, they may require an ARM message.
-         // To preceed them to the device.
-         if( generateARMMessage(parse, aOutTemplate) )
-         {
-            curOutMessage = _out[_last];              // reset it since generate changed _out[_last]!
-         }
-      }
-      else           /* IO_WRITE */
+      if(aOutTemplate.Buffer.BSt.Length > 0)
       {
          // Nail the CWORDS into the correct location in the current message.
          C_Words (curOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
@@ -256,72 +247,6 @@ INT CtiProtocolEmetcon::determineDWordCount(INT Length)
       cnt = 3;
 
    return cnt;
-}
-
-bool CtiProtocolEmetcon::generateARMMessage(CtiCommandParser  &parse, const OUTMESS &aOutTemplate)
-{
-   bool status = false;
-
-   OUTMESS *armOutMessage = _out[_last];                 // Grab a pointer to the current OUTMESS
-
-   switch(armOutMessage->Buffer.BSt.Function)
-   {
-   case 0x41:
-   case 0x42:
-   case 0x51:
-   case 0x52:
-      {
-         status = true;    // We must ARM
-
-         OUTMESS PeekMessage = *armOutMessage;
-
-         /* We need to generate the appropriate arm command */
-         advanceAndPrime(*armOutMessage);    // This copied the OUTMESS at the end of the list.
-         OUTMESS *curOutMessage = _out[_last];
-
-         /* Make sure we decode it on the return */
-         armOutMessage->EventCode |= DTRAN;
-
-         /* Load up an Arm */
-         PeekMessage.Buffer.BSt.IO = 0;
-         PeekMessage.Buffer.BSt.Length = 0;
-
-         switch(curOutMessage->Buffer.BSt.Function)
-         {
-         case 0x41:
-         case 0x42:
-            PeekMessage.Sequence = Control_ARML;
-            PeekMessage.Buffer.BSt.Function = ARML;
-            break;
-
-         case 0x51:
-         case 0x52:
-            PeekMessage.Sequence = Control_ARMS;
-            PeekMessage.Buffer.BSt.Function = ARMS;
-            break;
-         }
-
-         armOutMessage->InLength = 2;
-
-         /* build the b word */
-         BPreamble(armOutMessage->Buffer.OutMessage + PREIDLEN, PeekMessage.Buffer.BSt, 0);
-         B_Word(armOutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, PeekMessage.Buffer.BSt, getDouble());
-
-         armOutMessage->Sequence = PeekMessage.Sequence;
-
-         armOutMessage->TimeOut = TIMEOUT + PeekMessage.Buffer.BSt.DlcRoute.Stages;
-         armOutMessage->OutLength = PREAMLEN + BWORDLEN + 3;
-
-         /* load the IDLC specific stuff for DTRAN */
-         armOutMessage->Source = 0;
-         armOutMessage->Destination = DEST_DLC;
-         armOutMessage->Command = CMND_DTRAN;
-         armOutMessage->Buffer.OutMessage[6] = (UCHAR)armOutMessage->InLength;
-         armOutMessage->EventCode &= ~RCONT;
-      }
-   }
-
-   return status;
 }
 
 OUTMESS CtiProtocolEmetcon::getOutMessage(INT pos) const
