@@ -49,10 +49,16 @@ public class DeleteLMHardwareAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			StarsOperation operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_OPERATION_REQUEST);
-			session.removeAttribute( InventoryManager.STARS_OPERATION_REQUEST );
-			if (operation == null)
+			StarsOperation operation = null;
+			if (req.getParameter("InvID") != null) {
+				// Request directly from the webpage
 				operation = getRequestOperation( req );
+			}
+			else {
+				// Request redirected from InventoryManager
+				operation = (StarsOperation) session.getAttribute(InventoryManager.STARS_OPERATION_REQUEST);
+				session.removeAttribute( InventoryManager.STARS_OPERATION_REQUEST );
+			}
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
@@ -80,19 +86,36 @@ public class DeleteLMHardwareAction implements ActionBase {
 						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
-            
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			if (liteAcctInfo == null) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
         	
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
         	
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
+			LiteStarsLMHardware liteHw = energyCompany.getLMHardware( delHw.getInventoryID(), true );
+			if (liteHw.getAccountID() == 0) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "The hardware doesn't belong to any customer account") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+            
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			boolean fromInventory = false;
+			if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteHw.getAccountID()) {
+				// Request from InventoryDetail.jsp
+				liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
+				fromInventory = true;
+			}
+			
 			removeLMHardware( delHw.getInventoryID(), delHw.getDeleteFromInventory(), liteAcctInfo, null, energyCompany, conn );
+        	
+        	if (fromInventory) {
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+				if (starsAcctInfo != null)
+					parseResponse( delHw.getInventoryID(), starsAcctInfo );
+				
+				respOper.setStarsSuccess( new StarsSuccess() );
+				return SOAPUtil.buildSOAPMessage( respOper );
+        	}
         	
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription("Hardware deleted successfully");
@@ -135,6 +158,11 @@ public class DeleteLMHardwareAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
+			if (operation.getStarsSuccess() == null)
+				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			if (operation.getStarsSuccess().getDescription() == null)
+				return 0;
+			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
@@ -155,7 +183,12 @@ public class DeleteLMHardwareAction implements ActionBase {
 	
 	public static StarsOperation getRequestOperation(HttpServletRequest req) {
 		StarsDeleteLMHardware delHw = new StarsDeleteLMHardware();
-		delHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
+		if (req.getParameter("OrigInvID") != null)
+			delHw.setInventoryID( Integer.parseInt(req.getParameter("OrigInvID")) );
+		else {
+			delHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
+			delHw.setDeleteFromInventory( true );
+		}
 			
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsDeleteLMHardware( delHw );
@@ -179,15 +212,6 @@ public class DeleteLMHardwareAction implements ActionBase {
 	LiteStarsCustAccountInformation nextAccount, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
 	throws java.sql.SQLException
 	{
-		boolean foundHardware = false;
-		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			if (((Integer) liteAcctInfo.getInventories().get(i)).intValue() == invID) {
-				foundHardware = true;
-				break;
-			}
-		}
-		if (!foundHardware) return;
-    	
 		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
         
         if (deletePerm) {
