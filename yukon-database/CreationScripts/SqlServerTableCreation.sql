@@ -1754,7 +1754,7 @@ insert into CTIDatabase values('2.16', 'Ryan', '26-JUL-2002', 'Added the ImageID
 
 insert into CTIDatabase values('2.31', 'Ryan', '9-AUG-2002', 'Added DeviceDNP table.');
 
-insert into CTIDatabase values('2.32', 'Ryan', '16-AUG-2002', 'Added the ImageName to the StateImage table.');
+insert into CTIDatabase values('2.33', 'Ryan', '16-AUG-2002', 'Added the ImageName to the StateImage table.');
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
