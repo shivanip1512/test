@@ -33,7 +33,7 @@ public final class TrendModelType
 	public final static int NONE_MASK = 0x0000;
 	public final static int BASIC_MASK= 0x0001;
 	public final static int LOAD_DURATION_MASK= 0x0002;
-	public final static int GRAPH_MULTIPLIER = 0x0004;
+	public final static int GRAPH_MULTIPLIER_MASK = 0x0004;
 	public final static int PLOT_MIN_MAX_MASK = 0x0008;
 	
 	// Legend Display
