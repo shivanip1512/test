@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/03/13 19:36:09 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/04/16 21:25:08 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,6 @@ class CtiPointManager;
 class CtiTransmitterInfo;
 class CtiProtocolBase;
 
-#define COMM_FAIL_COUNT 10
 #define COMM_FAIL_OFFSET 2000
 
 /*
@@ -101,6 +100,8 @@ public:
 
 
     virtual ULONG getUniqueIdentifier() const;
+    virtual bool hasLongScanRate(const RWCString &cmd) const;
+
 
     /*
      *  This method is called to mark any and all tables which may need removal based upon a DBChange.

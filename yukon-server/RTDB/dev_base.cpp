@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/03/13 19:35:51 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/04/16 21:25:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -419,7 +419,7 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
 }
 
 CtiDeviceBase::CtiDeviceBase() :
-_commFailCount(COMM_FAIL_COUNT),
+_commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
 _attemptRetryCount(0),
@@ -433,7 +433,7 @@ _currTrxID(0)
 {}
 
 CtiDeviceBase::CtiDeviceBase(const CtiDeviceBase& aRef) :
-_commFailCount(COMM_FAIL_COUNT),
+_commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
 _attemptRetryCount(0),
@@ -574,7 +574,7 @@ CtiDeviceBase& CtiDeviceBase::setAttemptSuccessCount(const INT i)
 
 INT CtiDeviceBase::deviceMaxCommFails() const
 {
-    return COMM_FAIL_COUNT;
+    return gDefaultCommFailCount;
 }
 
 #define COMM_FAIL_REPORT_TIME 300
@@ -773,5 +773,10 @@ bool CtiDeviceBase::hasExclusions() const
 CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
 {
     return _excluded;
+}
+
+bool CtiDeviceBase::hasLongScanRate(const RWCString &cmd) const
+{
+    return false;
 }
 

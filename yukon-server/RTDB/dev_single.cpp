@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/03/13 19:36:00 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/04/16 21:25:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -667,6 +667,11 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
     CtiPointBase    *commPoint;
 
 
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " " << getName() << endl;
+    }
+
     if( !nRet )
     {
         nRet = ResultDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -681,6 +686,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
         if(InMessage->Return.CommandStr[0] != '\0')
         {
             CmdStr = RWCString(InMessage->Return.CommandStr);
+            CmdStr.toLower();
         }
 
         if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
@@ -735,6 +741,14 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             if(OutTemplate != NULL)
             {
                 delete OutTemplate;
+                OutTemplate = 0;
+            }
+        }
+        else if( CmdStr.contains("scan") && hasLongScanRate( CmdStr ) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         else
@@ -882,15 +896,16 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 if( retMsg != NULL )
                 {
                     commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << getName() << " " << endl;
+                    }
 
                     if( commStatus != NULL )
                     {
                         retMsg->PointData().insert(commStatus);
                         commStatus = NULL;
                     }
-
-                    //RWCString resultString = getName() + " / operation succeeded";
-                    //retMsg->setResultString(resultString);
 
                     vgList.append(retMsg);
                 }
@@ -2168,3 +2183,43 @@ ULONG CtiDeviceSingle::getTardyTime(int scantype) const
 
     return maxtardytime;
 }
+
+bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
+{
+    bool bret = false;
+
+    if( useScanFlags() )
+    {
+        // First decide what scan rate we are.
+        INT scanratetype = ScanRateInvalid;
+
+        if(cmd.contains(" general") || cmd.contains(" status"))
+        {
+            scanratetype = ScanRateGeneral;
+        }
+        else if(cmd.contains(" integrity"))
+        {
+            scanratetype = ScanRateIntegrity;
+        }
+        else if(cmd.contains(" accumulator"))
+        {
+            scanratetype = ScanRateIntegrity;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Cmd: " << cmd << endl;
+            }
+        }
+
+        if(getScanRate(scanratetype) > 15) // 3600)
+        {
+            bret = true;
+        }
+    }
+
+    return bret;
+}
+

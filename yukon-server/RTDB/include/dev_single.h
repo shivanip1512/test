@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/04/16 21:25:08 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,6 +217,7 @@ public:
     virtual bool clearedForScan(int scantype);
     virtual void resetForScan(int scantype);
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
+    virtual bool hasLongScanRate(const RWCString &cmd) const;
 
     RWTime peekDispatchTime() const;
 
