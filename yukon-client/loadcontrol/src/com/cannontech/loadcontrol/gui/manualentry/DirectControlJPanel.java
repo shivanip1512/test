@@ -1139,7 +1139,7 @@ private javax.swing.JLabel getJLabelScenario() {
 		if( getJCheckBoxNeverStop().isSelected() )
 		{
 			GregorianCalendar c = new GregorianCalendar();
-			c.add( c.YEAR, 1 ); //set the stop time to 1 year from now
+			c.add( c.YEAR, 50 ); //set the stop time to 50 years from now
 			return c.getTime();
 		}
 		else if( getJTextFieldStopTime().getText() == null
