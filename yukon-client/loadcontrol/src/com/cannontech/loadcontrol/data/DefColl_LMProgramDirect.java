@@ -3,6 +3,10 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -57,23 +61,25 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	Integer currentGearNumber = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer lastGroupControlled = new Integer( (int)vstr.extractUnsignedInt() );
-	java.util.GregorianCalendar directStartTime = new java.util.GregorianCalendar();
-	directStartTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
+	GregorianCalendar directStartTime = new java.util.GregorianCalendar();
+	directStartTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time ) );
 
-	java.util.GregorianCalendar directStopTime = new java.util.GregorianCalendar();
-	directStopTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );	
+	GregorianCalendar directStopTime = new java.util.GregorianCalendar();
+	directStopTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time ) );	
 	
 	Integer dailyOps = new Integer( (int) vstr.extractUnsignedInt() );
 	
-	java.util.GregorianCalendar notifyTime = new java.util.GregorianCalendar();
-	notifyTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time) );
+	GregorianCalendar notifyTime = new java.util.GregorianCalendar();
+	notifyTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
 	
-	java.util.GregorianCalendar startedRampingOutTime = new java.util.GregorianCalendar(); 
-	startedRampingOutTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time) );
+	GregorianCalendar startedRampingOutTime = new java.util.GregorianCalendar(); 
+	startedRampingOutTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
 
 	
-	java.util.Vector directGearVector = (java.util.Vector) vstr.restoreObject( polystr );	
-	java.util.Vector groupVector = (java.util.Vector) vstr.restoreObject( polystr );
+	Vector directGearVector = (Vector) vstr.restoreObject( polystr );	
+	Vector groupVector = (Vector) vstr.restoreObject( polystr );
+	Vector activeMastersVector = (Vector) vstr.restoreObject(polystr);
+	Vector activeSubordinatesVector = (Vector) vstr.restoreObject(polystr);
 
 	
 	lmProgramDirect.setCurrentGearNumber(currentGearNumber);
@@ -86,6 +92,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	lmProgramDirect.setDirectGearVector(directGearVector);
 	lmProgramDirect.setLoadControlGroupVector( groupVector );
+	lmProgramDirect.setActiveMasterPrograms(activeMastersVector);
+	lmProgramDirect.setActiveSubordinatePrograms(activeSubordinatesVector);
 }
 /**
  * saveGuts method comment.

@@ -1,9 +1,12 @@
 package com.cannontech.loadcontrol.data;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
- * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
@@ -11,14 +14,15 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 {
 	private Integer currentGearNumber = null;
 	private Integer lastGroupControlled = null;
-	private java.util.GregorianCalendar directStartTime = null;
-	private java.util.GregorianCalendar directStopTime = null;
+	private GregorianCalendar directStartTime = null;
+	private GregorianCalendar directStopTime = null;
 	private Integer dailyOps = null;
-	private java.util.GregorianCalendar notifyTime = null;
-	private java.util.GregorianCalendar startedRampingOut = null;
+	private GregorianCalendar notifyTime = null;
+	private GregorianCalendar startedRampingOut = null;
 	
-	private java.util.Vector directGearVector = null;
-
+	private Vector directGearVector = null;
+	private Vector activeMasterProgramsVector = null;
+	private Vector activeSubordinateProgramsVector = null;
 
 /**
  * Insert the method's description here.
@@ -32,7 +36,7 @@ public LMProgramDirect()
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlRequest createScheduledStartMsg( java.util.Date start, java.util.Date stop, int gearNumber, java.util.Date notifyTime, String additionalInfo )
+public LMManualControlRequest createScheduledStartMsg( Date start, Date stop, int gearNumber, Date notifyTime, String additionalInfo )
 {
 	LMManualControlRequest msg = new LMManualControlRequest();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
@@ -59,7 +63,7 @@ public LMManualControlRequest createScheduledStartMsg( java.util.Date start, jav
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlRequest createScheduledStopMsg( java.util.Date start, java.util.Date stop, int gearNumber, String additionalInfo )
+public LMManualControlRequest createScheduledStopMsg( Date start, Date stop, int gearNumber, String additionalInfo )
 {
 	LMManualControlRequest msg = new LMManualControlRequest();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
@@ -87,7 +91,7 @@ public LMManualControlRequest createScheduledStopMsg( java.util.Date start, java
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlRequest createStartStopNowMsg( java.util.Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
+public LMManualControlRequest createStartStopNowMsg( Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
 {
 	LMManualControlRequest msg = new LMManualControlRequest();	
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
@@ -175,7 +179,7 @@ public java.util.GregorianCalendar getStopTime()
  * Creation date: (4/2/2001 4:30:28 PM)
  * @param newCurrentGearNumber java.lang.Integer
  */
-public void setCurrentGearNumber(java.lang.Integer newCurrentGearNumber) {
+public void setCurrentGearNumber(Integer newCurrentGearNumber) {
 	currentGearNumber = newCurrentGearNumber;
 }
 /**
@@ -183,7 +187,7 @@ public void setCurrentGearNumber(java.lang.Integer newCurrentGearNumber) {
  * Creation date: (4/2/2001 4:30:28 PM)
  * @param newDirectGearVector java.util.Vector
  */
-public void setDirectGearVector(java.util.Vector newDirectGearVector) {
+public void setDirectGearVector(Vector newDirectGearVector) {
 	directGearVector = newDirectGearVector;
 }
 /**
@@ -191,7 +195,7 @@ public void setDirectGearVector(java.util.Vector newDirectGearVector) {
  * Creation date: (4/25/2001 10:57:20 AM)
  * @param newDirectStartTime java.util.GregorianCalendar
  */
-public void setDirectStartTime(java.util.GregorianCalendar newDirectStartTime) {
+public void setDirectStartTime(GregorianCalendar newDirectStartTime) {
 	directStartTime = newDirectStartTime;
 }
 /**
@@ -207,7 +211,7 @@ public void setDirectStopTime(java.util.GregorianCalendar newDirectStopTime) {
  * Creation date: (4/2/2001 4:30:28 PM)
  * @param newLastGroupControlled java.lang.Integer
  */
-public void setLastGroupControlled(java.lang.Integer newLastGroupControlled) {
+public void setLastGroupControlled(Integer newLastGroupControlled) {
 	lastGroupControlled = newLastGroupControlled;
 }
 	/**
@@ -220,7 +224,7 @@ public void setLastGroupControlled(java.lang.Integer newLastGroupControlled) {
 	/**
 	 * @param calendar
 	 */
-	public void setStartedRampingOut(java.util.GregorianCalendar calendar) {
+	public void setStartedRampingOut(GregorianCalendar calendar) {
 		startedRampingOut = calendar;
 	}
 
@@ -252,4 +256,29 @@ public void setLastGroupControlled(java.lang.Integer newLastGroupControlled) {
 		notifyTime = calendar;
 	}
 
+	/**
+	 * @return Returns the activeMasterProgramsVector.
+	 */
+	public Vector getActiveMasterPrograms() {
+		return activeMasterProgramsVector;
+	}
+	/**
+	 * @param activeMasterProgramsVector The activeMasterProgramsVector to set.
+	 */
+	public void setActiveMasterPrograms(Vector activeMasterProgramsVector) {
+		this.activeMasterProgramsVector = activeMasterProgramsVector;
+	}
+	/**
+	 * @return Returns the activeSubordinateProgramsVector.
+	 */
+	public Vector getActiveSubordinatePrograms() {
+		return activeSubordinateProgramsVector;
+	}
+	/**
+	 * @param activeSubordinateProgramsVector The activeSubordinateProgramsVector to set.
+	 */
+	public void setActiveSubordinatePrograms(
+			Vector activeSubordinateProgramsVector) {
+		this.activeSubordinateProgramsVector = activeSubordinateProgramsVector;
+	}
 }
