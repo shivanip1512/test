@@ -263,113 +263,122 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				lineNo = fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				if (acctID.intValue() > 0) {	
-					Object obj = acctIDMap.get(acctID);
-					if (obj != null) {
-						if (obj instanceof LiteStarsCustAccountInformation) {
-							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+				try {
+					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					LiteStarsCustAccountInformation liteAcctInfo = null;
+					
+					if (acctID.intValue() > 0) {	
+						Object obj = acctIDMap.get(acctID);
+						if (obj != null) {
+							if (obj instanceof LiteStarsCustAccountInformation) {
+								liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+							}
+							else if (obj instanceof Integer) {
+								// This is loaded from file customer.map
+								liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+								if (liteAcctInfo != null)
+									acctIDMap.put(acctID, liteAcctInfo);
+							}
 						}
-						else if (obj instanceof Integer) {
-							// This is loaded from file customer.map
-							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-							if (liteAcctInfo != null)
-								acctIDMap.put(acctID, liteAcctInfo);
-						}
+						
+						if (liteAcctInfo == null)
+							throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 					}
 					
-					if (liteAcctInfo == null)
-						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
-				}
-				
-				LiteInventoryBase liteInv = ImportManager.insertLMHardware(fields, liteAcctInfo, energyCompany, conn, first);
-				first = false;
-				
-				if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
-					logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
-				else if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
-					logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
-				
-				for (int i = 0; i < 3; i++) {
-					if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
-						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " is out of service");
-					else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
-						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " was out before switch placed out");
-				}
-				
-				if (ECUtils.isMCT( liteInv.getCategoryID() ) && liteInv.getDeviceID() == 0)
-					logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ") doesn't match any MCT device in Yukon");
-				
-				if (liteAcctInfo != null) {
-					// If load groups for relays are specified, automatically add appliances through program enrollment
-					ArrayList appCats = energyCompany.getAllApplianceCategories();
-					ArrayList programs = new ArrayList();
-					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
-					
+					LiteInventoryBase liteInv = ImportManager.insertLMHardware(fields, liteAcctInfo, energyCompany, conn, first);
+					first = false;
+/*					
+					if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
+						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
+					else if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
+						logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
+*/					
 					for (int i = 0; i < 3; i++) {
-						if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
-							continue;
+						if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
+							logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " is out of service");
+						else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
+							logMsg.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " was out before switch placed out");
+					}
+					
+					if (ECUtils.isMCT( liteInv.getCategoryID() ) && liteInv.getDeviceID() == 0)
+						logMsg.add("Meter (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",dev_name=" + fields[ImportManager.IDX_DEVICE_NAME] + ") doesn't match any MCT device in Yukon");
+					
+					if (liteAcctInfo != null) {
+						// If load groups for relays are specified, automatically add appliances through program enrollment
+						ArrayList appCats = energyCompany.getAllApplianceCategories();
+						ArrayList programs = new ArrayList();
+						int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
 						
-						int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
-						int progID = 0;
-						int appCatID = 0;
-						
-						for (int j = 0; j < appCats.size(); j++) {
-							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
-							for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
-								LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
-								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
-									if (liteProg.getGroupIDs()[l] == groupID) {
-										progID = liteProg.getProgramID();
-										appCatID = liteAppCat.getApplianceCategoryID();
-										progIDs[i] = progID;
-										break;
+						for (int i = 0; i < 3; i++) {
+							if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
+								continue;
+							
+							int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
+							int progID = 0;
+							int appCatID = 0;
+							
+							for (int j = 0; j < appCats.size(); j++) {
+								LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+								for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
+									LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
+									for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
+										if (liteProg.getGroupIDs()[l] == groupID) {
+											progID = liteProg.getProgramID();
+											appCatID = liteAppCat.getApplianceCategoryID();
+											progIDs[i] = progID;
+											break;
+										}
 									}
+									if (progID > 0) break;
 								}
 								if (progID > 0) break;
 							}
-							if (progID > 0) break;
+							
+							if (progID == 0)
+								throw new WebClientException( "Cannot find LM program for load group id = " + groupID );
+							
+							programs.add( new int[] {progID, appCatID, groupID} );
 						}
 						
-						if (progID == 0)
-							throw new WebClientException( "Cannot find LM program for load group id = " + groupID );
-						
-						programs.add( new int[] {progID, appCatID, groupID} );
-					}
-					
-					if (programs.size() > 0) {
-						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
-						
-						int[] appIDs = new int[3];
-						for (int i = 0; i < 3; i++) {
-							if (progIDs[i] == 0) continue;
+						if (programs.size() > 0) {
+							ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
 							
-							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-								if (liteApp.getLmProgramID() == progIDs[i]) {
-									appIDs[i] = liteApp.getApplianceID();
-									break;
+							int[] appIDs = new int[3];
+							for (int i = 0; i < 3; i++) {
+								if (progIDs[i] == 0) continue;
+								
+								for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+									LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+									if (liteApp.getLmProgramID() == progIDs[i]) {
+										appIDs[i] = liteApp.getApplianceID();
+										break;
+									}
 								}
+								
+								if (appIDs[i] == 0)	// shouldn't happen
+									throw new WebClientException("Cannot find appliance with RelayNum = " + (i+1));
 							}
 							
-							if (appIDs[i] == 0)	// shouldn't happen
-								throw new WebClientException("Cannot find appliance with RelayNum = " + (i+1));
+							appIDMap.put( new Integer(fields[ImportManager.IDX_INV_ID]), appIDs );
+							fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
+							
+							numAppAdded += programs.size();
 						}
-						
-						appIDMap.put( new Integer(fields[ImportManager.IDX_INV_ID]), appIDs );
-						fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
-						
-						numAppAdded += programs.size();
 					}
+					
+					numInvAdded++;
+					if (fields[ImportManager.IDX_DEVICE_NAME].equals(""))
+						numRecvrAdded++;
+					else
+						numMeterAdded++;
+				}
+				catch (WebClientException e) {
+					if (e.getMessage().equals("Cannot insert duplicate hardware into the customer account"))
+						logMsg.add("Error at inventory file line #" + lineNo + ": " + e.getMessage());
+					else
+						throw e;
 				}
 				
-				numInvAdded++;
-				if (fields[ImportManager.IDX_DEVICE_NAME].equals(""))
-					numRecvrAdded++;
-				else
-					numMeterAdded++;
 				it.remove();
 				
 				if (isCanceled) {
@@ -545,15 +554,15 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				
 				if (lineNo != null) {
 					if (numAcctAdded < acctFieldsCnt)
-						errorMsg = "Error encountered when processing customer file line #" + lineNo;
+						errorMsg = "Error at customer file line #" + lineNo;
 					else if (numInvAdded < invFieldsCnt)
-						errorMsg = "Error encountered when processing inventory file line #" + lineNo;
+						errorMsg = "Error at inventory file line #" + lineNo;
 					else if (numAppImported < appFieldsCnt)
-						errorMsg = "Error encountered when processing loadinfo file line #" + lineNo;
+						errorMsg = "Error at loadinfo file line #" + lineNo;
 					else if (numOrderAdded < orderFieldsCnt)
-						errorMsg = "Error encountered when processing workorder file line #" + lineNo;
+						errorMsg = "Error at workorder file line #" + lineNo;
 					else if (numResAdded < resFieldsCnt)
-						errorMsg = "Error encountered when processing resinfo file line #" + lineNo;
+						errorMsg = "Error at resinfo file line #" + lineNo;
 				}
 				if (errorMsg == null)
 					errorMsg = "Failed to import old STARS data";
