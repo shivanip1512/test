@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/10/02 19:28:23 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/10/03 16:13:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,7 +242,7 @@ void CtiConnection::InThread()
                     }
                     else
                     {
-                        ResetConnection();      // Make us reconnect or die trying...
+                        ResetConnection();      // Make us prepare for reconnect or die trying...
                     }
 
                     continue;
@@ -250,31 +250,39 @@ void CtiConnection::InThread()
 
                 checkCancellation();
 
-                if( c != NULL)
+                try
                 {
-                    MsgPtr = (CtiMessage*)c;
-
-                    MsgPtr->setConnectionHandle( (void*)this );   // Pee on this message to mark some teritory...
-
-                    if(inQueue)
+                    if( c != NULL)
                     {
-                        if(inQueue->isFull())
+                        MsgPtr = (CtiMessage*)c;
+
+                        MsgPtr->setConnectionHandle( (void*)this );   // Pee on this message to mark some teritory...
+
+                        if(inQueue)
                         {
+                            if(inQueue->isFull())
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
+                                }
                             }
+
+                            _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
+
+                            inQueue->putQueue(MsgPtr);
                         }
-
-                        _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
-
-                        inQueue->putQueue(MsgPtr);
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
             else if( _dontReconnect || _serverConnection)        // This is really !_valid && _dontReconnect OK Joe...
@@ -291,18 +299,19 @@ void CtiConnection::InThread()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
             }
-            dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
+            _bQuit = TRUE;
             break;
         }
         catch( ... )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
-                dout << who() << endl;
+                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << who() << endl;
             }
+            _bQuit = TRUE;
+            break;
         }
     }
 
@@ -356,11 +365,11 @@ void CtiConnection::OutThread()
             {
                 MyMsg = outQueue.getQueue(1000);
             }
-            catch(RWxmsg &e)
+            catch(...)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << e.why() << endl;
+                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << who() << endl;
                 }
             }
 
@@ -398,31 +407,15 @@ void CtiConnection::OutThread()
 
                     if( _valid )
                     {
-                        try
-                        {
-                            Out() << *MyMsg;
-                            Out().vflush();
+                        Out() << *MyMsg;
+                        Out().vflush();
 
-                            messagePeek( MyMsg );
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        messagePeek( MyMsg );
 
-                        try
+                        if( MyMsg ) // Clean up the memory, after all, it just went out the door...
                         {
-                            if( MyMsg ) // Clean up the memory, after all, it just went out the door...
-                            {
-                                delete MyMsg;
-                                MyMsg = NULL;
-                            }
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            delete MyMsg;
+                            MyMsg = NULL;
                         }
                     }
                 }
@@ -726,11 +719,10 @@ void CtiConnection::ShutdownConnection()
 
 void CtiConnection::ResetConnection()
 {
-
     if(getDebugLevel() & 0x00001000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** InThread is ressetting the connection **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "**** Resetting the connection **** " << who() << endl;
     }
 
     cleanExchange();
@@ -746,11 +738,13 @@ INT CtiConnection::verifyConnection()
         if(getDebugLevel() & 0x00001000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " InThread " << who() << " has exited with a completion state of " << status << endl;
+            dout << RWTime() << " InThread " << who() << " has exited with a completion state of " << status;
             if(!_serverConnection)
             {
-                dout << " Will attempt a restart" << endl;
+                dout << ". May restart";
             }
+
+            dout << endl;
         }
 
         if(!_serverConnection)
@@ -770,12 +764,14 @@ INT CtiConnection::verifyConnection()
         if(getDebugLevel() & 0x00001000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " OutThread " << who() << " has exited with a completion state of " << status << endl;
+            dout << RWTime() << " OutThread " << who() << " has exited with a completion state of " << status;
 
             if(!_serverConnection)
             {
-                dout << " Will attempt a restart" << endl;
+                dout << ". May restart";
             }
+
+            dout << endl;
         }
 
         if(!_serverConnection)
@@ -859,9 +855,6 @@ void CtiConnection::forceTermination()
     _dontReconnect = TRUE;
     _valid         = FALSE;
     _noLongerViable = TRUE;
-
-    cleanExchange();
-
     return;
 }
 
@@ -1144,6 +1137,8 @@ UINT CtiConnection::valid() const
 
 void CtiConnection::cleanExchange()
 {
+    LockGuard guard(monitor());
+
     if(Ex != NULL)
     {
         delete Ex;
