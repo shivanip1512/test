@@ -5,8 +5,22 @@ package com.cannontech.yc.gui;
  * Creation date: (2/25/2002 3:24:43 PM)
  * @author: 
  */
-import java.sql.SQLException;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.KeysAndValues;
+import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
+import com.cannontech.message.porter.ClientConnection;
+import com.cannontech.message.porter.message.Request;
 
 public class YC
 {
@@ -25,9 +39,9 @@ public class YC
 	private boolean DIRECTLY_SEND_COMMAND = false;	//allows a shortcut send method, changes with CGPCheckBox.
 
 	private volatile int currentUserMessageID = 1;
-	public static volatile int sendMore = 0;
+	public volatile int sendMore = 0;
 
-	public  static com.cannontech.message.porter.message.Request porterRequest = null;
+	public  static Request porterRequest = null;
 
 	public Object[] allRoutes = null;
 
@@ -38,8 +52,8 @@ public class YC
 	public static int LOOPLOCATE = 3;//loop locate parsed
 	public static int LOOPLOCATE_ROUTE = 4;//loop locate route parsed
 	
-	private com.cannontech.message.porter.ClientConnection connToPorter = null;
-	private com.cannontech.common.util.KeysAndValuesFile keysAndValuesFile = null;
+	private ClientConnection connToPorter = null;
+	private KeysAndValuesFile keysAndValuesFile = null;
 
 	private YCDefaults ycDefaults = null;
 	/**
@@ -81,7 +95,7 @@ public class YC
 		{
 			if ( isDirectSend() )
 			{
-				porterRequest = new com.cannontech.message.porter.message.Request( 0, getCommand(), currentUserMessageID );
+				porterRequest = new Request( 0, getCommand(), currentUserMessageID );
 				porterRequest.setPriority(getCommandPriority());
 				writeNewRequestToPorter( porterRequest );
 			}
@@ -92,16 +106,16 @@ public class YC
 				sendMore = 0;
 					
 				// Device item selected (including other models)
-				if( getTreeItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
+				if( getTreeItem() instanceof LiteYukonPAObject )
 				{
-					com.cannontech.database.data.lite.LiteYukonPAObject lpao = (com.cannontech.database.data.lite.LiteYukonPAObject) getTreeItem();
+					LiteYukonPAObject lpao = (LiteYukonPAObject) getTreeItem();
 					handleDevice ( lpao.getYukonID(), lpao.getType() );
 				}
 				// Meter number item in tree selected.
-				else if( getTreeItem() instanceof com.cannontech.database.data.lite.LiteDeviceMeterNumber )
+				else if( getTreeItem() instanceof LiteDeviceMeterNumber )
 				{
-					com.cannontech.database.data.lite.LiteDeviceMeterNumber ldmn = (com.cannontech.database.data.lite.LiteDeviceMeterNumber) getTreeItem();
-					com.cannontech.database.data.lite.LiteYukonPAObject litePao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(ldmn.getLiteID());
+					LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
+					LiteYukonPAObject litePao = DeviceFuncs.getLiteDevice(ldmn.getLiteID());
 					handleDevice (ldmn.getDeviceID(), litePao.getType());
 				}		
 				// Serial Number item in tree selected.
@@ -112,26 +126,26 @@ public class YC
 				// TestCollectionGroup is selected.
 				else if ( getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
 				{
-					Integer [] deviceMeterGroupIds = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(com.cannontech.common.util.CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
+					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
 					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 					{
-						com.cannontech.database.data.lite.LiteYukonPAObject lpao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
+						LiteYukonPAObject lpao = DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
 						handleDevice ( lpao.getYukonID(), lpao.getType() );
 					}
 				}
 				// Collectiongroup is selected.
 				else if ( getModelType() == ModelFactory.COLLECTIONGROUP )
 				{
-					Integer [] deviceMeterGroupIds = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceIDs_CollectionGroups(com.cannontech.common.util.CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
+					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
 					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 					{
-						com.cannontech.database.data.lite.LiteYukonPAObject lpao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
+						LiteYukonPAObject lpao = DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
 						handleDevice ( lpao.getYukonID(), lpao.getType() );
 					}
 				}
 				else
 				{
-					com.cannontech.clientutils.CTILogger.info(getModelType() + " - New type needs to be handled");
+					CTILogger.info(getModelType() + " - New type needs to be handled");
 				}
 			}
 			else
@@ -185,7 +199,7 @@ public class YC
 	 * Creation date: (2/26/2002 2:02:30 PM)
 	 * @return com.cannontech.message.porter.ClientConnection
 	 */
-	public com.cannontech.message.porter.ClientConnection getConnToPorter()
+	public ClientConnection getConnToPorter()
 	{
 		if( connToPorter == null )
 		{
@@ -193,20 +207,18 @@ public class YC
 			int port = 1510;
 			try
 			{
-				host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-	                  com.cannontech.common.util.CtiProperties.KEY_PORTER_MACHINE, 
+				host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_MACHINE, 
 	                  "127.0.0.1");
 	            
-				port = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-	                  com.cannontech.common.util.CtiProperties.KEY_PORTER_PORT, 
+				port = (new Integer( CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_PORT, 
 	                  "1510"))).intValue();
 			}
 			catch( Exception e)
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 	
-			connToPorter = new com.cannontech.message.porter.ClientConnection();
+			connToPorter = new ClientConnection();
 			connToPorter.setHost(host);
 			connToPorter.setPort(port);
 			connToPorter.setAutoReconnect(true);
@@ -217,7 +229,7 @@ public class YC
 			}
 			catch( Exception e ) 
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 	
@@ -310,25 +322,24 @@ public class YC
 		setLoopType( parseLoopCommand() );
 		String command = getCommand();
 	
-		if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(type)
-			|| com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(type))
+		if ( DeviceTypesFuncs.isMCT(type) || DeviceTypesFuncs.isRepeater(type))
 			setCommand( command + getQueueCommandString());
 	
-		porterRequest = new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
+		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 	
 		if (getLoopType() == LOOPLOCATE)
 	 	{
-			if( getAllRoutes() != null && getAllRoutes()[sendMore] instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+			if( getAllRoutes() != null && getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
 			{
-				com.cannontech.database.data.lite.LiteYukonPAObject rt = (com.cannontech.database.data.lite.LiteYukonPAObject) getAllRoutes()[sendMore];
-				while( rt.getType() == com.cannontech.database.data.pao.PAOGroups.ROUTE_MACRO && sendMore > 0)
+				LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+				while( rt.getType() == PAOGroups.ROUTE_MACRO && sendMore > 0)
 				{
 					sendMore--;
-					rt = (com.cannontech.database.data.lite.LiteYukonPAObject) getAllRoutes()[sendMore];
+					rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
 				}
 	
-				if( rt.getType() == com.cannontech.database.data.pao.PAOGroups.ROUTE_MACRO)
+				if( rt.getType() == PAOGroups.ROUTE_MACRO)
 					return;
 	
 				porterRequest.setRouteID(rt.getYukonID());
@@ -336,9 +347,9 @@ public class YC
 	 	}
 		else if( getLoopType() == LOOPLOCATE_ROUTE )
 		{
-			if( getRoute() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+			if( getRoute() instanceof LiteYukonPAObject)
 			{
-				porterRequest.setRouteID( ((com.cannontech.database.data.lite.LiteYukonPAObject)getRoute()).getYukonID());
+				porterRequest.setRouteID( ((LiteYukonPAObject)getRoute()).getYukonID());
 			}
 		}
 		writeNewRequestToPorter(porterRequest);
@@ -364,14 +375,18 @@ public class YC
 	
 		setLoopType( parseLoopCommand() );
 		
-		porterRequest = new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
+		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 	
 		// Get routeID from comboBox / set it in the request
-		if( getRoute() != null && getRoute() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
+		if( getRoute() != null && getRoute() instanceof LiteYukonPAObject)
 		{
-			com.cannontech.database.data.lite.LiteYukonPAObject r = (com.cannontech.database.data.lite.LiteYukonPAObject) getRoute();
+			LiteYukonPAObject r = (LiteYukonPAObject) getRoute();
 			porterRequest.setRouteID(r.getYukonID());
+		}
+		else
+		{
+			CTILogger.info("Route cannot be determined. " + getRoute());
 		}
 	
 		if( deviceID < 0 )	//no device selected
@@ -495,15 +510,6 @@ public class YC
 	{
 		command = newCommand;
 	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/11/2001 2:05:16 PM)
-	 * @param newCommandFile java.lang.String
-	 */
-//	public void setCommandFileName(String newCommandFileName)
-//	{
-//		commandFileName = newCommandFileName;
-//	}
 
 	public void setCommandFileName(Object item)
 	{
@@ -517,24 +523,24 @@ public class YC
 		{
 			className = (String) item;
 		}
-		else if( item instanceof com.cannontech.database.data.device.DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+		else if( item instanceof DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
 		{
-			className = ((com.cannontech.database.data.device.DeviceBase)item).getPAOType();
+			className = ((DeviceBase)item).getPAOType();
 		}
-		else if(item instanceof com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)//		ModelFactory.DEVICE_METERNUMBER,		
+		else if(item instanceof DeviceMeterGroupBase)//		ModelFactory.DEVICE_METERNUMBER,		
 		{
-			int devID = ((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)item).getDeviceMeterGroup().getDeviceID().intValue();
-			com.cannontech.database.data.lite.LiteYukonPAObject litePao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(devID);
-			className = com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(litePao.getType());
+			int devID = ((DeviceMeterGroupBase)item).getDeviceMeterGroup().getDeviceID().intValue();
+			LiteYukonPAObject litePao = DeviceFuncs.getLiteDevice(devID);
+			className = PAOGroups.getDeviceTypeString(litePao.getType());
 		}		
 		else 
 		{
-			com.cannontech.clientutils.CTILogger.debug("FILENAME: undefined. Item instance of " + item.getClass());
-			com.cannontech.clientutils.CTILogger.debug(" THIS IS REALLY A BAD CATCH ALL HUH");
+			CTILogger.debug("FILENAME: undefined. Item instance of " + item.getClass());
+			CTILogger.debug(" THIS IS REALLY A BAD CATCH ALL HUH");
 		}
 		commandFileName = className + ".txt";
-		com.cannontech.clientutils.CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ commandFileName);
-		keysAndValuesFile = new com.cannontech.common.util.KeysAndValuesFile(getCommandFileDirectory(), commandFileName);
+		CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ commandFileName);
+		keysAndValuesFile = new KeysAndValuesFile(getCommandFileDirectory(), commandFileName);
 	}
 			
 	/**
@@ -542,7 +548,7 @@ public class YC
 	 * Creation date: (2/26/2002 2:02:49 PM)
 	 * @param connection com.cannontech.message.porter.ClientConnection
 	 */
-	public void setConnToPorter(com.cannontech.message.porter.ClientConnection connection)
+	public void setConnToPorter(ClientConnection connection)
 	{
 		connToPorter = connection;
 	}
@@ -657,7 +663,7 @@ public class YC
 	 * Creation date: (10/15/2001 3:52:17 PM)
 	 * @param request com.cannontech.message.porter.message.Request
 	 */
-	public void writeNewRequestToPorter(com.cannontech.message.porter.message.Request request)
+	public void writeNewRequestToPorter(Request request)
 	{
 		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");					
 		long timer = (System.currentTimeMillis());
@@ -673,12 +679,12 @@ public class YC
 			}
 			else
 			{
-				com.cannontech.clientutils.CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
+				CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 			}
 		}
 		else
 		{
-			com.cannontech.clientutils.CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+			CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
 		}
 			
 	}
@@ -686,7 +692,7 @@ public class YC
 	 * Returns the porterRequest.
 	 * @return com.cannontech.message.porter.message.Request
 	 */
-	public static com.cannontech.message.porter.message.Request getPorterRequest()
+	public Request getPorterRequest()
 	{
 		return porterRequest;
 	}
@@ -695,7 +701,7 @@ public class YC
 	 * Returns the keysAndValuesFile.
 	 * @return com.cannontech.common.util.KeysAndValuesFile
 	 */
-	public com.cannontech.common.util.KeysAndValuesFile getKeysAndValuesFile()
+	public KeysAndValuesFile getKeysAndValuesFile()
 	{
 		return keysAndValuesFile;
 	}
@@ -704,7 +710,7 @@ public class YC
 	 * Returns the keysAndValues.
 	 * @return com.cannontech.common.util.KeysAndValues
 	 */
-	public com.cannontech.common.util.KeysAndValues getKeysAndValues()
+	public KeysAndValues getKeysAndValues()
 	{
 		return getKeysAndValuesFile().getKeysAndValues();
 	}
