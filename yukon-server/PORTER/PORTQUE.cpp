@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/03/13 19:35:33 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/07/14 18:27:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -648,22 +648,30 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
             IDLCRColQ(Dev, MAXPRIORITY);
         }
 
-        // Decrement retries...
-        OutMessage->Retry--;
-
-        /* Put it back on the queue for this port */
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if( OutMessage->Retry > 0 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Error Requeing Command" << endl;
+            // Decrement retries...
+            OutMessage->Retry--;
+
+            /* Put it back on the queue for this port */
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Error Requeing Command" << endl;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " REQACK'd LGRPQ message has been requeued for retry on " << Dev->getName() << endl;
+            }
+
+            return RETRY_SUBMITTED;
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " REQACK'd LGRPQ message has been requeued for retry on " << Dev->getName() << endl;
+            return REQACK;
         }
 
-        return RETRY_SUBMITTED;
     }
 
     /* Check if this was a related reply */
@@ -1269,7 +1277,7 @@ BuildLGrpQ (CtiDevice *Dev)
     REQUESTDATA QueueResult;
     USHORT Offset;
     USHORT SETLPos, QueTabEnt;
-    BYTE Priority;
+    BYTE Priority = 7;
     USHORT QueueEntrySequence;
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Dev->getTrxInfo();
