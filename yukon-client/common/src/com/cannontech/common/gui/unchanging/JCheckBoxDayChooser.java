@@ -361,6 +361,7 @@ private javax.swing.JCheckBox getJCheckBoxHoliday() {
 			// user code begin {1}
 			
 			ivjJCheckBoxHoliday.setText("Holiday");
+			ivjJCheckBoxHoliday.setVisible(false);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
