@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/01/15 21:46:55 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/05/19 14:47:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -795,6 +795,36 @@ typedef struct
 
 } GWRESPONSESTRUCT;
 
+#define MAX_SA_MSG_SIZE 256
+
+typedef struct
+{
+    BYTE _buffer[MAX_SA_MSG_SIZE];      // This MUST be first in the struct.
+    int _bufferLen;                     // This is the valid size of the prepared _buffer
+
+    INT  _commandType;
+    BYTE _lbt;
+    BYTE _delayToTx;                    // Time in seconds before transmitting codes.
+    BYTE _maxTxTime;                    // Maximum Time in seconds to transmit codes.
+
+    int _transmitterAddress;            // The address of the RTC, or RTU.
+    int _groupType;                     // This must be one of the supported DCU types in the lib.. ie. SA205, GOLAY...
+
+    BOOL _shed;                         // NON DCU205 groups use this bool to determine shed or restore.
+    int _function;                      // This is the function to execute on the DCU....  Should be directly applied in the switch.
+
+    int _code205;                       // This is the code to transmit iff this is an SA205 DCU type group.
+    CHAR _codeSimple[7];                // This is the code to transmit iff this is NOT an SA205 DCU type group.
+    CHAR _serial205[33];                // This is a 205 serial number.
+
+    // The parameters below are assigned typically by the parse object
+    int _swTimeout;                     // Switch OFF time in seconds.
+    int _cycleTime;                     // Switch on + off time in seconds.
+    int _repeats;                       // Number of _cycleTimes to repeat the operation (DCU205)
+
+
+} CtiSAData;
+
 /* queing  structures used by protected mode */
 typedef class CtiOutMessage
 {
@@ -844,6 +874,7 @@ public:
       TAPSTRUCT       TAPSt;
       DIALUPREQUEST   DUPReq;
       GWSTRUCT        GWSt;
+      CtiSAData       SASt;
    } Buffer;
    BYTE               TailFrame[2];               // 082702 CGP    // Hey, it should have been in there for a long time!
 
