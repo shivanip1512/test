@@ -35,6 +35,7 @@ public class DrawingExporter {
 				drawing.load(f.getCanonicalPath());
 				CTILogger.info(".updating.");
 				DrawingUpdater updater = new DrawingUpdater(drawing);
+				updater.setUpdateGraphs(true);
 				updater.updateDrawing();
 				CTILogger.info(".writing.");
 				drawing.exportAs(outDir.getCanonicalPath() + File.separatorChar + f.getName());
