@@ -76,7 +76,7 @@
 	</attribute>
   </tag>
   
-  <!- Start of user/role/roleproperty tags -->
+  <!-- Start of user/role/roleproperty tags -->
   <tag>
   	<name>checklogin</name>
 	<tagclass>com.cannontech.web.taglib.CheckLoginTag</tagclass>		
