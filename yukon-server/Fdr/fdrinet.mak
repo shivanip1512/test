@@ -95,10 +95,10 @@ fdrinet.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h connection.h exchange.h \
 		queue.h pointtypes.h logger.h thread.h fdrsocketinterface.h \
 		queues.h fdrinterface.h mgr_fdrpoint.h rtdb.h hashkey.h \
-		fdrpoint.h fdrdestination.h fdrdebuglevel.h \
-		fdrprotectedmaplist.h fdrpointidmap.h fdrserverconnection.h \
-		fdrsocketconnection.h fdrclientconnection.h fdrsocketlayer.h \
-		device.h devicetypes.h fdrinet.h
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h fdrserverconnection.h fdrsocketlayer.h \
+		device.h devicetypes.h fdrsocketconnection.h \
+		fdrclientconnection.h fdrinet.h
 #ENDUPDATE#
 
 

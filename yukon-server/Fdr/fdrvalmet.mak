@@ -95,9 +95,9 @@ fdrvalmet.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
 		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
 		exchange.h queue.h pointtypes.h logger.h thread.h \
 		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
-		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdrdebuglevel.h \
-		fdrprotectedmaplist.h fdrpointidmap.h fdrsinglesocket.h \
-		fdrsocketlayer.h fdrsocketconnection.h device.h devicetypes.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
+		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrvalmet.h
 #ENDUPDATE#
 

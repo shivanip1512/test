@@ -94,8 +94,8 @@ fdrstec.obj:	cparms.h dlldefs.h msg_multi.h collectable.h msg_pdata.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h connection.h exchange.h \
 		queue.h pointtypes.h logger.h thread.h fdrstec.h \
 		fdrftpinterface.h fdrinterface.h mgr_fdrpoint.h rtdb.h \
-		hashkey.h fdrpoint.h fdrdestination.h fdrdebuglevel.h \
-		fdrprotectedmaplist.h queues.h fdrpointidmap.h
+		hashkey.h fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h
 #ENDUPDATE#
 
 
