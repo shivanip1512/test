@@ -30,7 +30,7 @@ function showAdditionalAppInfo(index)
 }
 </script>
 </head>
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="showAdditionalAppInfo(0)">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -182,21 +182,17 @@ function showAdditionalAppInfo(index)
                   </tr>
                 </table>
 <%
-	int categoryID_AC = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryACUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_AC) {
-			isCategoryACUsed = true;
-			break;
-		}
-	if (isCategoryACUsed) {
+	StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+	for (int idx = 0; idx < appCatList.getStarsSelectionListEntryCount(); idx++) {
+		StarsSelectionListEntry category = appCatList.getStarsSelectionListEntry(idx);
+		if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT) {
 %>
-				<div id="Category<%= categoryID_AC %>" style="display:none">
+				<div id="Category<%= category.getEntryID() %>" style="display:none"></div>
+<%
+		}
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
+%>
+				<div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -237,23 +233,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_WH = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryWHUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_WH) {
-			isCategoryWHUsed = true;
-			break;
 		}
-	if (isCategoryWHUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER) {
 %>
-				<div id="Category<%= categoryID_WH %>" style="display:none">
+				<div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -302,23 +285,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_DF = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryDFUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_DF) {
-			isCategoryDFUsed = true;
-			break;
 		}
-	if (isCategoryDFUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL) {
 %>
-				<div id="Category<%= categoryID_DF %>" style="display:none">
+                <div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -367,23 +337,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_GEN = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryGENUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_GEN) {
-			isCategoryGENUsed = true;
-			break;
 		}
-	if (isCategoryGENUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR) {
 %>
-				<div id="Category<%= categoryID_GEN %>" style="display:none">
+				<div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -448,23 +405,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_GD = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryGDUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_GD) {
-			isCategoryGDUsed = true;
-			break;
 		}
-	if (isCategoryGDUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER) {
 %>
-                <div id="Category<%= categoryID_GD %>" style="display:none">
+                <div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell" height="17"> 
@@ -559,23 +503,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_SH = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategorySHUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_SH) {
-			isCategorySHUsed = true;
-			break;
 		}
-	if (isCategorySHUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT) {
 %>
-				<div id="Category<%= categoryID_SH %>" style="display:none">
+				<div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -614,23 +545,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_HP = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryHPUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_HP) {
-			isCategoryHPUsed = true;
-			break;
 		}
-	if (isCategoryHPUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP) {
 %>
-				<div id="Category<%= categoryID_HP %>" style="display:none">
+                <div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -679,23 +597,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
-	}
-	
-	int categoryID_IRR = ServletUtils.getStarsCustListEntry(
-			selectionListTable,
-			YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-			YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION
-			).getEntryID();
-	// Check if this category is used by this energy company
-	boolean isCategoryIRRUsed = false;
-	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++)
-		if (categories.getStarsApplianceCategory(i).getCategoryID() == categoryID_IRR) {
-			isCategoryIRRUsed = true;
-			break;
 		}
-	if (isCategoryIRRUsed) {
+		else if (category.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION) {
 %>
-				<div id="Category<%= categoryID_IRR %>" style="display:none">
+                <div id="Category<%= category.getEntryID() %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell" height="17"> 
@@ -808,12 +713,10 @@ function showAdditionalAppInfo(index)
                 </table>
 				</div>
 <%
+		}
 	}
 %>
-<script language="JavaScript">
-	showAdditionalAppInfo(0);
-</script>
-                <br>
+            <br>
                 <table width="150" border="0">
                 <tr>
                   <td align = "center" width = "50%"> 
