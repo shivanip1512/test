@@ -59,29 +59,8 @@ function setRedirect(form, progNo) {
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <table width="600" border="0" cellspacing="0">
-                <tr> 
-                  <td width="202"> 
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
-                      SUMMARY </span></b></div>
-                  </td>
-                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %> 
-               
-                  </td>
-                </tr>
-              </table>
+              <% String header = "PROGRAMS - CONTROL SUMMARY"; %>
+              <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
                   <td> 
@@ -124,6 +103,14 @@ function setRedirect(form, progNo) {
                     </div>
                   </td>
                   <td width="302" valign="top"> 
+<%
+		if (program.getStatus().equalsIgnoreCase("Out of Service")) {
+%>
+					<div align="center" class="TableCell">Out of Service</div>
+<%
+		}
+		else {
+%>
                     <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
                         <td width="61" class="TableCell"> 
@@ -132,9 +119,9 @@ function setRedirect(form, progNo) {
                         <td width="61" class="TableCell">Stop</td>
                         <td width="60" class="TableCell">Duration</td>
                       </tr>
-                      <%
-		StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
-		if (ctrlHistToday.getControlHistoryCount() == 0) {
+<%
+			StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
                         <td width="61" class="TableCell">No Control</td>
@@ -148,24 +135,24 @@ function setRedirect(form, progNo) {
                         </td>
                         <td width="60" class="TableCell">----</td>
                       </tr>
-                      <%
-		}
-		else {
-			int totalSec = 0;
-			for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
-				ControlHistory hist = ctrlHistToday.getControlHistory(j);
-				
-				int durationSec = hist.getControlDuration();
-				totalSec += durationSec;
-				Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
+<%
+			}
+			else {
+				int totalSec = 0;
+				for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
+					ControlHistory hist = ctrlHistToday.getControlHistory(j);
+					
+					int durationSec = hist.getControlDuration();
+					totalSec += durationSec;
+					Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                       <tr> 
                         <td width="61" class="TableCell"><%= timePart.format(hist.getStartDateTime()) %></td>
                         <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
                         <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
                       </tr>
-                      <%
-			}
+<%
+				}
 %>
                       <tr> 
                         <td width="61" class="TableCell"> 
@@ -176,12 +163,15 @@ function setRedirect(form, progNo) {
                         </td>
                         <td width="60" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
                       </tr>
-                      <%
-		}
+<%
+			}
 %>
                     </table>
+<%
+		}
+%>
                   </td>
-                  <%
+<%
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 %>
                   <td width="180"> 
@@ -189,7 +179,6 @@ function setRedirect(form, progNo) {
                       <input type="hidden" name="action" value="GetLMCtrlHist">
                       <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
                       <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
-                      <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/ProgramHist.jsp">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="180" valign="top" align="center"> 

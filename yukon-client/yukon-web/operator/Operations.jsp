@@ -1,4 +1,4 @@
-<%@ include file="Consumer/StarsHeader.jsp" %>
+<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -30,6 +30,7 @@
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="1" background="VerticalRule.gif" height="1"></td>
   </tr>
+<cti:checkRole name="OPERATOR_CONSUMER_INFO">
   <tr> 
     <td width="102" background="ConsumerImage.jpg" height="102">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="ConsumerHeader.gif" width="229" height="15" border="0"><br>
@@ -51,6 +52,7 @@
             <td  class = "Main" width="109" >&nbsp;</td>
             <td  class = "Main" width="250" align = "right"> 
               <select name="SearchBy">
+<%@ include file="Consumer/StarsHeader.jsp" %>
 <%
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
@@ -74,6 +76,7 @@
     </td>
     <td width="1" background="VerticalRule.gif" height="102"></td>
   </tr>
+</cti:checkRole>
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="VerticalRule.gif"></td>

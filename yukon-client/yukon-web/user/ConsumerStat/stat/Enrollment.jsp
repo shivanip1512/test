@@ -78,29 +78,8 @@ function changeProgram(radioBtn, index) {
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <table width="600" border="0" cellspacing="0">
-                <tr>
-                  <td width="202">
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr>
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                    
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">PROGRAMS - ENROLLMENT</span></b></div>
-                  </td>
-                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %>
-                  
-                  </td>
-                </tr>
-              </table>
+              <% String header = "PROGRAMS - ENROLLMENT"; %>
+              <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
@@ -108,6 +87,7 @@ function changeProgram(radioBtn, index) {
                   </td>
                 </tr>
               </table>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
               </div>
             <table width="90%" border="0" align = "center">
@@ -118,8 +98,10 @@ function changeProgram(radioBtn, index) {
 				  <form action = "ProgramDetails.jsp">
                   <input type="submit" name="Details" value="Program Details"></form>
                 
-			   <form method="post" action="/servlet/SOAPClient">
-				 <input type="hidden" name="action" value="UpdatePrograms">
+				<form method="post" action="/servlet/SOAPClient">
+				  <input type="hidden" name="action" value="ProgramSignUp">
+				  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/Enrollment.jsp">
+				  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/Enrollment.jsp">
                   <table border="1" cellspacing="0" cellpadding="3">
                     <tr align = "center"> 
                       <td width="175" class="HeaderCell"> 
@@ -189,7 +171,7 @@ function changeProgram(radioBtn, index) {
                           </table> 
                           
                         </td>
-                          <td width="100" valign="top" class="TableCell"> 
+                          <td width="100" valign="middle" class="TableCell"> 
                             <div align="center"><%= programStatus %></div>
                           </td>
                         </tr>

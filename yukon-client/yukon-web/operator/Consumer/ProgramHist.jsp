@@ -93,15 +93,23 @@
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>
-                  <td width="332" valign="top"> 
+                  <td width="332" valign="top">
+<%
+		if (program.getStatus().equalsIgnoreCase("Out of Service")) {
+%>
+					<div align="center" class="TableCell">Out of Service</div>
+<%
+		}
+		else {
+%>
                     <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
                         <td width="220" class="TableCell"> Begin Date/Time </td>
                         <td width="93" class="TableCell"> Duration </td>
                       </tr>
 <%
-		StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
-		if (ctrlHistToday.getControlHistoryCount() == 0) {
+			StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
                         <td width="219" class="TableCell">No Control </td>
@@ -114,21 +122,21 @@
                         <td width="94" class="TableCell">---- </td>
                       </tr>
 <%
-		}
-		else {
-			int totalSec = 0;
-			for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
-				ControlHistory hist = ctrlHistToday.getControlHistory(j);
-				
-				int durationSec = hist.getControlDuration();
-				totalSec += durationSec;
+			}
+			else {
+				int totalSec = 0;
+				for (int j = 0; j < ctrlHistToday.getControlHistoryCount(); j++) {
+					ControlHistory hist = ctrlHistToday.getControlHistory(j);
+					
+					int durationSec = hist.getControlDuration();
+					totalSec += durationSec;
 %>
                       <tr> 
                         <td width="220" class="TableCell"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
                         <td width="93" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
                       </tr>
 <%
-			}
+				}
 %>
                       <tr> 
                         <td width="220" class="TableCell"> 
@@ -137,9 +145,12 @@
                         <td width="93" class="TableCell"><%= ServletUtils.getDurationString(totalSec) %></td>
                       </tr>
 <%
-		}
+			}
 %>
                     </table>
+<%
+		}
+%>
                   </td>
 <%
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
@@ -169,7 +180,6 @@
 					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
 					<input type="hidden" name="REDIRECT" value="/operator/Consumer/ContHist.jsp?prog=<%= i %>">
-					<input type="hidden" name="REFERRER" value="/operator/Consumer/ProgramHist.jsp">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
 					    <td width="180" valign="top" align="center"> 

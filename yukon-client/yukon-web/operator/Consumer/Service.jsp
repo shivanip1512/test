@@ -1,16 +1,33 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	String orderNumber = "";
-	Integer orderNo = user.getIncAttribute("NEXT_ORDER_NUMBER");
-	if (orderNo != null)
-		orderNumber = orderNo.toString();
+	String orderNo = null;
 %>
+<cti:checkRole name="ORDER_NUMBER_MANUAL">
+<%
+	orderNo = (String) user.getAttribute(ServletUtils.ATT_ORDER_TRACKING_NUMBER);
+	if (orderNo == null) {
+		if (request.getParameter("getOrderNo") == null)
+			response.sendRedirect("/servlet/SOAPClient?action=GetNextOrderNo");
+		else
+			orderNo = "";
+	}
+%>
+</cti:checkRole>
 
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+function checkOrderNumber(form) {
+	if (form.OrderNo.value == '') {
+		alert("Order # cannot be empty");
+		return false;
+	}
+	return true;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -71,20 +88,22 @@
                     <td valign="top" bgcolor="#FFFFFF"> 
                         
                       <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
-                        <tr> 
+<cti:checkRole name="ORDER_NUMBER_MANUAL"> 
+                        <tr>
                           <td width="100" class="TableCell"> 
                             <div align="right">Service Order #:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="OrderNumber" size="14" value="<%= orderNumber %>">
+                            <input type="text" name="OrderNo" size="14" value="<%= orderNo %>">
                           </td>
                         </tr>
+</cti:checkRole>
                         <tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Date Reported:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="DateAssigned" size="14" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
+                            <input type="text" name="DateReported" size="14" value="<%= datePart.format(Calendar.getInstance().getTime()) %>">
                           </td>
                         </tr>
                         <tr> 
@@ -144,7 +163,7 @@
                         <tr> 
                           <td width="169"> 
                             <div align="right"> 
-                                <input type="submit" name="Send" value="Send">
+                                <input type="submit" name="Send" value="Send" onclick="return checkOrderNumber(this.form)">
                               </div>
                             </td>
                           <td width="211"> 

@@ -4,6 +4,25 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+var changed = false;
+
+function setChanged(form, idx) {
+	form.changed[idx].value = 'true';
+	changed = true;
+}
+
+function checkCallNo(form) {
+	if (!changed) return false;
+	for (i = 0; i < form.changed.length; i++) {
+		if (form.changed[i].value == 'true' && form.CallNo[i].value == '') {
+			alert("Call # cannot be empty");
+			return false;
+		}
+	}
+	return true;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -56,9 +75,11 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "ACCOUNT - CALL TRACKING"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
-              <br>
-              <form name="form1" method="post" action="Details.jsp">
+              <%@ include file="InfoSearchBar.jsp" %><br>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  
+              <form name="form1" method="post" action="/servlet/SOAPClient">
+			    <input type="hidden" name="action" value="UpdateCalls">
                 <table width="600" border="1" cellspacing="0" align="center" cellpadding="2">
                   <tr> 
                     <td class="HeaderCell" width="61">Call #</td>
@@ -71,12 +92,29 @@
 	for (int i = 0; i < callHist.getStarsCallReportCount(); i++) {
 		StarsCallReport call = callHist.getStarsCallReport(i);
 %>
+				  <input type="hidden" name="CallID" value="<%= call.getCallID() %>">
+				  <input type="hidden" name="changed" value="false">
                   <tr> 
-                    <td class="TableCell" width="61"><%= call.getCallNumber() %></td>
+                    <td class="TableCell" width="61">
+					  <input type="text" name="CallNo" size="10" value="<%= call.getCallNumber() %>" onchange="setChanged(this.form, <%= i %>)">
+					</td>
                     <td class="TableCell" width="65"><%= datePart.format( call.getCallDate() ) %></td>
-                    <td class="TableCell" width="69"><%= call.getCallType().getContent() %></td>
+                    <td class="TableCell" width="69">
+					  <select name="CallType" onchange="setChanged(this.form, <%= i %>)">
+<%
+	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
+	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
+		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(j);
+		String selectedStr = (call.getCallType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+%>
+						<option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+<%
+	}
+%>
+					  </select>
+					</td>
                     <td class="TableCell" width="217"> 
-                      <textarea name="textarea" rows="3"" wrap="soft" cols="50" class = "TableCell"><%= call.getDescription() %></textarea>
+                      <textarea name="Description" rows="3" wrap="soft" cols="50" class="TableCell" onchange="setChanged(this.form, <%= i %>)"><%= call.getDescription() %></textarea>
                     </td>
                     <td class="TableCell" width="69"><%= call.getTakenBy() %></td>
                   </tr>
@@ -84,13 +122,12 @@
 	}
 %>
                 </table>
-              </form>
                 <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Save2" value="Save">
+                        <input type="submit" name="Save2" value="Save" onclick="return checkCallNo(this.form)">
                       </div>
                     </td>
                     <td width="194"> 
@@ -100,6 +137,7 @@
                     </td>
                   </tr>
                 </table>
+              </form>
              
             </div>
             <p align="center">&nbsp;</p>

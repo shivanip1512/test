@@ -1,10 +1,18 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	String callNumber = "";
-	Integer callNo = user.getIncAttribute("NEXT_CALL_NUMBER");
-	if (callNo != null)
-		callNumber = callNo.toString();
+	String callNo = null;
 %>
+<cti:checkRole name="CALL_NUMBER_MANUAL">
+<%
+	callNo = (String) user.getAttribute(ServletUtils.ATT_CALL_TRACKING_NUMBER);
+	if (callNo == null) {
+		if (request.getParameter("getCallNo") == null)
+			response.sendRedirect("/servlet/SOAPClient?action=GetNextCallNo");
+		else
+			callNo = "";
+	}
+%>
+</cti:checkRole>
 
 <html>
 <head>
@@ -17,8 +25,7 @@
   
 function goBack() {
  document.location = "CreateWizard.jsp";
- 
- }  
+}  
   
 function getCurrentDateFormatted() {
 	
@@ -39,12 +46,18 @@ function getCurrentDateFormatted() {
 	return strDate;
 }
 
-
+function checkCallNo(form) {
+	if (form.callNo.value == '') {
+		alert("Tracking# cannot be empty");
+		return false;
+	}
+	return true;
+}
 
   //End hiding script -->
   </SCRIPT>
 </head>
-<body class="Background" leftmargin="0" topmargin="0" onload = "javascript:document.MForm.date.value = getCurrentDateFormatted();">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -113,12 +126,14 @@ function getCurrentDateFormatted() {
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                           </td>
                         </tr>
+<cti:checkRole name="CALL_NUMBER_MANUAL">
                         <tr> 
                           <td width = "50%" align = "right">Tracking #:</td>
                           <td width="50%"> 
-                            <input type="text" name="CallNumber" size="10" value="<%= callNumber %>">
+                            <input type="text" name="CallNo" size="10" value="<%= callNo %>">
                           </td>
                         </tr>
+</cti:checkRole>
 						<tr> 
                           <td width = "50%" align = "right">Type:</td>
                           <td width="50%"> 
@@ -155,7 +170,7 @@ function getCurrentDateFormatted() {
                 <table width="150" border="0">
                 <tr>
                   <td align = "center" width = "50%"> 
-                    <input type="submit" name="Submit" value=" Save ">
+                    <input type="submit" name="Submit" value="Save" onclick="return checkCallNo(this.form)">
                   </td>
                   <td width = "50%"> 
                     <input type="reset" name="Submit2" value="Cancel" >

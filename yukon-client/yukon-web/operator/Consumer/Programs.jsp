@@ -163,14 +163,18 @@ function changeProgram(radioBtn, index) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - ENROLLMENT"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="InfoSearchBar.jsp" %><br>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <div align="center"><span class="TableCell">Select the check boxes 
                 and corresponding radio button of the programs this customer would 
                 like to be enrolled in. </span><br>
                 <br>
               </div>
-			  <form name="form1" method="post" action="ChangeForm.jsp">
+			  <form name="form1" method="post" action="/servlet/SOAPClient">
+			  <input type="hidden" name="action" value="ProgramSignUp">
+			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
+			  <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
               <table border="1" cellspacing="0" cellpadding="3" width="366" height="321">
                 <tr>
                   <td width="83" class="HeaderCell" align = "center">Description</td>
@@ -240,7 +244,7 @@ function changeProgram(radioBtn, index) {
 		}	// End of program list
 %>
                   </td>
-                  <td width="125" valign="top" class="TableCell"> 
+                  <td width="125" valign="middle" class="TableCell"> 
                     <div align="center"><%= programStatus %></div>
                   </td>
                 </tr>

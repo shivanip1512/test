@@ -177,7 +177,7 @@
                                   <div align="right">Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="">
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= datePart.format(new Date()) %>">
                                 </td>
                               </tr>
                               <tr> 

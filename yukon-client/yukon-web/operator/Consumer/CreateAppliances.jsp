@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 
 </head>
-<body class="Background" leftmargin="0" topmargin="0" onload = "javascript:MForm.date.value = getCurrentDateFormatted();">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 

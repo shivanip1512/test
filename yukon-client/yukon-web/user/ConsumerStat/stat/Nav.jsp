@@ -10,7 +10,8 @@
 						  {"Enrollment.jsp", "Enrollment"},
 						  {"OptOut.jsp", "Opt Out"},
 						  {"Thermostat.jsp", "Manual"},
-						  {"ThermSchedule.jsp", "Schedule"}
+						  {"ThermSchedule.jsp", "Schedule"},
+						  {"Password.jsp", "Change Password"}
 						 };
 						   
 	Hashtable links = new Hashtable();
@@ -23,6 +24,9 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
+<%
+	if (dftThermoSettings != null) {	// Hide thermostat settings if it's not available
+%>
   <tr>
     <td height="65"><br>
 <div align="left"><span class="NavHeader">Thermostat</span><br>
@@ -30,6 +34,9 @@
         <%= links.get("Thermostat.jsp") %></div>
     </td>
   </tr>
+<%
+	}
+%>
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">
@@ -58,6 +65,12 @@
         <%= links.get("Util.jsp") %><br>
         <%= links.get("Installer.jsp") %><br>
         <%= links.get("FAQ.jsp") %></div>
+    </td>
+  </tr>
+  <tr> 
+    <td> 
+      <div align="left"><span class="NavHeader">Administration</span><br>
+        <%= links.get("Password.jsp") %></div>
     </td>
   </tr>
 </table>

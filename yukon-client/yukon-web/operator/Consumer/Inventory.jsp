@@ -47,6 +47,23 @@ function sendCommand(cmd) {
 	form.action.value = cmd;
 	form.submit();
 }
+
+function deleteHardware(form) {
+<%
+	if (starsApps.length > 0) {
+%>
+	if (!confirm('To delete the hardware, all programs related with it will be invalidated, do you want to proceed?')) return;
+<%
+	}
+	else {
+%>
+	if (!confirm('Are you sure you would like to delete this hardware?')) return;
+<%
+	}
+%>
+	form.elements('action').value = "DeleteLMHardware";
+	form.submit();
+}
 </script>
 </head>
 
@@ -333,7 +350,7 @@ function sendCommand(cmd) {
                               </tr>
 <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
-	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
+	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
 							  <tr valign="top"> 
@@ -366,7 +383,7 @@ function sendCommand(cmd) {
                   </td>
                   <td width="43%"> 
                     <div align="left">
-                      <input type="button" name="Submit" value="Delete" onclick = "Javascript:confirm('Are you sure you would like to delete this hardware?');">
+                      <input type="button" name="Submit" value="Delete" onclick="deleteHardware(document.invForm)">
                     </div>
                   </td>
               </tr>

@@ -1,6 +1,6 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	String referrer = request.getParameter(ServletUtils.ATT_REFERRER);
+	String referrer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
 	
 	String progNoStr = request.getParameter("prog");
 	int progNo = Integer.parseInt( progNoStr );

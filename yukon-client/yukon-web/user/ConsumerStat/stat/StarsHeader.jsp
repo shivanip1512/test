@@ -29,6 +29,7 @@
 	StarsLMPrograms programs = null;
 	StarsThermostatSettings thermoSettings = null;
 	StarsDefaultThermostatSettings dftThermoSettings = null;
+	StarsUser userLogin = null;
 	
 	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
@@ -41,6 +42,13 @@
 		programs = accountInfo.getStarsLMPrograms();
 		thermoSettings = accountInfo.getStarsThermostatSettings();
 		dftThermoSettings = accountInfo.getStarsDefaultThermostatSettings();
+		
+		userLogin = accountInfo.getStarsUser();
+		if (userLogin == null) {
+			userLogin = new StarsUser();
+			userLogin.setUsername( "" );
+			userLogin.setPassword( "" );
+		}
 		
 		if (account.getTimeZone() != null && !account.getTimeZone().equals("") && !account.getTimeZone().equals("(none)")) {
 			TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );

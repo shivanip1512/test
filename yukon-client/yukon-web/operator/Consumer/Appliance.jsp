@@ -51,6 +51,24 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+function deleteAppliance(form) {
+<%
+	if (program != null) {
+%>
+	if (!confirm('To delete the appliance, the program related with it will be removed as well, do you want to proceed?')) return;
+<%
+	}
+	else {
+%>
+	if (!confirm('Are you sure you would like to delete this appliance?')) return;
+<%
+	}
+%>
+	form.elements('action').value = 'DeleteAppliance';
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -106,7 +124,9 @@
 			
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr>
-				<form name="form6" method="get" action=""> 
+				<form name="form1" method="post" action="/servlet/SOAPClient"> 
+				  <input type="hidden" name="action" value="UpdateAppliance">
+				  <input type="hidden" name="AppID" value="<%= appliance.getApplianceID() %>">
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                         <tr> 
@@ -168,7 +188,7 @@
                             <div align="right">Service Company:</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="Company" maxlength="40" size="30" value="<%= appliance.getServiceCompany().getContent() %>">
+                            <input type="text" name="ServiceCompany" maxlength="40" size="30" value="<%= appliance.getServiceCompany().getContent() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -190,7 +210,6 @@
 					  <input type="hidden" name="action" value="GetLMCtrlHist">
 					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
 					  <input type="hidden" name="REDIRECT" value="/operator/Consumer/ContHist.jsp?prog=<%= progNo %>">
-					  <input type="hidden" name="REFERRER" value="Appliance.jsp?AppNo=<%= appNo %>">
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="109" class="HeaderCell"> 
@@ -254,22 +273,18 @@
               <table width="250" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                 <tr>
                   <td width="33%" align = "right"> 
-                    <input type="submit" name="Submit2" value="Submit">
+                    <input type="button" name="Submit" value="Submit" onclick="document.form1.submit()">
                   </td>
-                  <form name="form1" method="get" action="Appliances.jsp">
                     <td width="33%" align = "center"> 
                       <div>
-                        <input type="reset" name="Cancel" value="Cancel">
+                        <input type="button" name="Cancel" value="Cancel" onclick="document.form1.reset()">
                       </div>
                     </td>
-                  </form>
-                  <form name="form1" method="get" action="">
                     <td width="33%"> 
                       <div align="left"> 
-                        <input type="button" name="Submit" value="Delete" onclick = "Javascript:confirm('Are you sure you would like to delete this appliance?');">
+                        <input type="button" name="Delete" value="Delete" onclick="deleteAppliance(document.form1)">
                       </div>
                     </td>
-                  </form>
                 </tr>
               </table>
               <hr>
