@@ -180,6 +180,7 @@ public class Util {
 	private static PointSelectionPanel pointSelectionPanel = null;
 	private static javax.swing.JColorChooser colorChooser = null;
 	private static javax.swing.JFileChooser drawingFileChooser = null;
+	private static javax.swing.JFileChooser linkFileChooser = null;
 	private static ClientConnection dispatchConnection = null;
 
 	/**
@@ -198,6 +199,18 @@ public class Util {
 
 		return drawingFileChooser;
 	}
+	
+
+	public static synchronized javax.swing.JFileChooser getLinkJFileChooser() {
+		if (linkFileChooser == null) {
+			linkFileChooser = new javax.swing.JFileChooser();
+//			FileFilter filter = new FileFilter(new String("jlx"), "JLX files");
+//			drawingFileChooser.addChoosableFileFilter(filter);
+		}
+
+		return linkFileChooser;
+	}
+	
 	public static synchronized javax.swing.JColorChooser getJColorChooser() {
 		if (colorChooser == null) {
 			colorChooser = new javax.swing.JColorChooser();
@@ -224,33 +237,14 @@ public class Util {
 	public static String getAbsolutePath(Drawing d, String relPath) {
 		return new File(d.getFileName()).getParent() + "/" + relPath;
 	}
-
 	/**
-	 * Determines the image in image paths relative path to the drawing
-	 * Returns null if it cannot be determined
-	 * @param d
-	 * @param imagePath
-	 * @return String
+	 * Determines the path to file f from directory d
 	 */
-	public static String getRelativePath(Drawing d, String absImagePath) {
-		String dFileName = d.getFileName();
-
-		if (dFileName == null) {
-			return null;
-		}
-
-		File dFile = new File(d.getFileName());
-		File iFile = new File(absImagePath);
-
-		String relPath = null;
-
-		try {
-			relPath = getRelativePath(dFile, iFile);
-		} catch (IOException e) {
-		}
-
-		return relPath;
+	public static String getRelativePathD(File d, File f) throws IOException {
+		File dummy = new File(d.getCanonicalPath() + File.separatorChar + "dummy.txt");
+		return getRelativePath(dummy, f);		
 	}
+	
 	/**
 	 * Determines the path to f2 from f1.
 	 * f1 = c:\temp\joe.txt
@@ -259,21 +253,47 @@ public class Util {
 	 * note this only works if f2 is below f1
 	 * images\joe.gif
 	*/
-	public static String getRelativePath(java.io.File f1, java.io.File f2)
-		throws java.io.IOException {
+	public static String getRelativePath(File f1, File f2) throws IOException {
 		String p1 = f1.getCanonicalPath();
 		String p2 = f2.getCanonicalPath();
-
-		// strip the file off the path to f1
-		p1 = p1.substring(0, p1.lastIndexOf(java.io.File.separatorChar));
-
-		if (p2.indexOf(p1) == -1) // start of paths do not match
+		
+		int p1Len = p1.length();
+		int p2Len = p2.length();
+		
+		int i = 0; 
+		while(i < p1Len && i < p2Len && p1.charAt(i) == p2.charAt(i)) 
+			i++;
+		
+		if(i == 0) //nothing matched (different drives?)
 			return null;
-		p2 = p2.substring(p1.length() + 1);
-
-		return p2;
+				
+		if(i == p1Len && i == p2Len) //they are the same file
+			return p2.substring(p1.lastIndexOf(File.separatorChar) + 1);
+						
+		p1 = p1.substring(i);
+		p2 = p2.substring(i);
+		
+		if(p1.length() < p2.length()) {
+			return p2;
+		}
+		
+		StringBuffer p = new StringBuffer();
+		for(i = 0; i < p1.length(); i++) {
+			if(p1.charAt(i) == File.separatorChar) {
+				p.append("../");
+			}
+		}
+		p.append(p2);
+		return p.toString();
 	}
-
+	
+	
+	public static int compare(String s1, String s2) {
+		int i = 0;
+		while(s1.charAt(i) == s2.charAt(i)) i++;
+		return i;
+	}
+	
 	public static Image findImage(String imageName) {
 		if (!imageName.startsWith("/")) {
 			imageName = "/" + imageName;

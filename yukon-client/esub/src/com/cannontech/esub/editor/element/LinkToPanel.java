@@ -1,11 +1,17 @@
 package com.cannontech.esub.editor.element;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JButton; 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import com.cannontech.esub.editor.EditorPrefs;
+import com.cannontech.esub.util.Util;
 /**
  * Creation date: (1/22/2002 4:01:18 PM)
  * @author: 
@@ -226,12 +232,20 @@ private void initialize() {
  * Comment
  */
 public void linkToButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	JFileChooser fileChooser = com.cannontech.esub.util.Util.getDrawingJFileChooser();
-	fileChooser.setApproveButtonText("Open");
+	JFileChooser fileChooser = com.cannontech.esub.util.Util.getLinkJFileChooser();
+	fileChooser.setApproveButtonText("Select");
+	fileChooser.setCurrentDirectory(new File(EditorPrefs.getPreferences().getWorkingDir()));
 	int returnVal = fileChooser.showOpenDialog(null);
 
 	if(returnVal == JFileChooser.APPROVE_OPTION) {
-		setLinkTo(fileChooser.getSelectedFile().getName());
+		String link = fileChooser.getSelectedFile().getName();
+		try {
+			link = Util.getRelativePathD(new File(EditorPrefs.getPreferences().getWorkingDir()), fileChooser.getSelectedFile());
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}
+		
+		setLinkTo(link);
 	}
 }
 /**
