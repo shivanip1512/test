@@ -3,15 +3,14 @@ package com.cannontech.servlet;
 /**
  * Parameters
  * 
- * start	- Start date string, undefined
- * stop     - Stop date string, undefined
- * reportType - the type of report to create, value int from ReportTypes
+ * start	- Start date string, (mm/dd/yy)
+ * stop     - Stop date string, undefined (mm/dd/yy)
+ * type 	- the type of report to create, value int from ReportTypes
  * period	- undefined
- * ext - gif | png | jpg | svg
- * action - theSaction/function to perform
- * page - the page number (0 based) of the report to view/return
+ * ext 		- gif | png | jpg | svg
+ * page		- the page number (0 based) of the report to view/return (PNG)
  * fileName - the name of the file to download to
- * action - the action to perform - download | 
+ * ACTION 	- the action to perform - DownloadReport | PagedReport
  * REDIRECT - 
  * REFERRER - 
  * 
@@ -23,6 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -31,20 +32,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.ext.servletdemo.AbstractPageableReportServletWorker;
-import org.jfree.report.ext.servletdemo.AbstractTableReportServletWorker;
+import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
+import org.jfree.report.modules.output.pageable.base.ReportStateList;
 import org.jfree.report.modules.output.pageable.graphics.G2OutputTarget;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
-import org.jfree.report.modules.output.table.xls.ExcelProcessor;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.servlet.worker.StaticPageableReportServletWorker;
-import com.cannontech.servlet.worker.StaticTableReportServletWorker;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.util.ServletUtil;
 import com.keypoint.PngEncoder;
+import com.klg.jclass.util.swing.encode.EncoderException;
 import com.klg.jclass.util.swing.encode.page.PDFEncoder;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet
@@ -60,28 +63,95 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 	 */
 	public synchronized void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException
 	{
+		String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
+		String errorURL = req.getParameter( ServletUtil.ATT_REFERRER );	//failed action URL
+
 		try
 		{	 	
 			HttpSession session = req.getSession(false);
-			String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
-			String errorURL = req.getParameter( ServletUtil.ATT_REFERRER );	//failed action URL
-	
-			String param;
-			int page = 0, reportType=ReportTypes.SYSTEM_LOG_DATA;
-			String ext = "png";
-			
-			param = req.getParameter("page");
-			if( param != null)
-				page = Integer.valueOf(param).intValue();
 
+			//a string value for unique reports held in session.
+			//ECID + type + startDate.toString() + stopDate.toString()
+			String reportKey = "";
+			boolean isKeyIncomplete = false;
+
+
+//			DEBUG
+			java.util.Enumeration enum1 = req.getParameterNames();
+			  while (enum1.hasMoreElements()) {
+				String ele = enum1.nextElement().toString();
+				 System.out.println(" --" + ele + "  " + req.getParameter(ele));
+			 }
+
+			LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
+			//Default energycompany properties in case we can't find one?
+			int energyCompanyID = -1;	//default?
+			TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
+			if( EnergyCompanyFuncs.getEnergyCompany(liteYukonUser) != null)
+			{
+				energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+				//Get the EnergyCompany user to find the TimzeZone
+				LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
+				tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+			}
+			
+			//Add ECId to the reportkey.
+			reportKey += String.valueOf(energyCompanyID);
+		
+			String param;	//holder for the requested parameter
+			int type=ReportTypes.SYSTEM_LOG_DATA;
+			String ext = "pdf", action="";
+			Date startDate = ServletUtil.getToday(), stopDate = ServletUtil.getTomorrow();
+
+			//The report Type (see com.cannontech.analysis.ReportTypes)
+			// Uses the type stored in the session if one can't be found, this is needed for PagedReport action
 			param = req.getParameter("type");
 			if( param != null)
-				reportType = Integer.valueOf(param).intValue();
+			{
+				type = Integer.valueOf(param).intValue();
+				reportKey += String.valueOf(type);
+			}
+			else
+				isKeyIncomplete = true;
+			
+			//The starting date for the report data.
+			param = req.getParameter("start");
+			if( param != null)
+			{
+				startDate= ServletUtil.parseDateStringLiberally(param, tz);
+				reportKey += startDate.toString();	
+			}
+			else
+				isKeyIncomplete = true;
+				
+			
+			//The stop date for the data.
+			param = req.getParameter("stop");
+			if( param != null)
+			{
+				stopDate = ServletUtil.parseDateStringLiberally(param, tz);
+				reportKey += stopDate.toString();
+			}
+			else
+				isKeyIncomplete = true;	
 
+			if( !isKeyIncomplete ) //last "key" added to reportKey, through the current one it into the session
+			{
+				System.out.println("KEY " + reportKey);
+				session.setAttribute("ReportKey", reportKey);
+			}
+			else
+			{
+				if(session.getAttribute("ReportKey") != null)
+					reportKey = (String)session.getAttribute("ReportKey");
+			}
+
+			//The extension for the report, the format it is to be generated in
 			param = req.getParameter("ext");
 			if( param != null)
 				ext = param.toLowerCase();
 				
+			//A filename for downloading the report to.
 			String fileName = "Report";
 			param = req.getParameter("fileName");
 			if( param != null)
@@ -89,21 +159,18 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
 			fileName += "." + ext;
 
-			java.util.Enumeration enum1 = req.getParameterNames();
-			  while (enum1.hasMoreElements()) {
-				String ele = enum1.nextElement().toString();
-				 System.out.println(" --" + ele + "  " + req.getParameter(ele));
-			 }
-
-			param = req.getParameter("action");
-			if( param != null && param.equalsIgnoreCase("download"))
+			//The action of generating a report, content-disposition changes based on downloading or viewing option.
+			param = req.getParameter("ACTION");
+			if( param != null)
+				action = param;
+				
+			if( param != null && param.equalsIgnoreCase("DownloadReport"))
 				resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 			else
-				resp.setHeader("Content-Disposition", "inline; filename="+fileName);			
-
+				resp.setHeader("Content-Disposition", "inline; filename="+fileName);					
 
 			//Define start and stop parameters for a default 90 day report.
-			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+/*			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 			cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 			cal.set(java.util.Calendar.MINUTE, 0);
 			cal.set(java.util.Calendar.SECOND, 0);
@@ -112,26 +179,30 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			long stop = cal.getTimeInMillis();
 			cal.add(java.util.Calendar.DATE, -90);
 			long start = cal.getTimeInMillis();
-
-			YukonReportBase rpt = ReportFuncs.createYukonReport(reportType);
-			rpt.getModel().setStartTime(start);
-			rpt.getModel().setStopTime(stop);
-			
-			//Initialize the report data and populate the TableModel (collectData).
-			rpt.getModel().collectData();
-
+*/
 			//Define the report Paper properties and format.
 			java.awt.print.Paper reportPaper = new java.awt.print.Paper();
 			reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
 			java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
 			pageFormat.setPaper(reportPaper);
 		
-	
 			//Create the report
-			JFreeReport report = rpt.createReport();
-			report.setDefaultPageFormat(pageFormat);
-			report.setData(rpt.getModel());
-		
+			JFreeReport report = (JFreeReport)session.getAttribute(reportKey + "Report");
+			if( report == null )
+			{
+				YukonReportBase rpt = ReportFuncs.createYukonReport(type);
+				rpt.getModel().setECIDs(new Integer(energyCompanyID));
+				rpt.getModel().setStartTime(startDate.getTime());
+				rpt.getModel().setStopTime(stopDate.getTime());
+			
+				//Initialize the report data and populate the TableModel (collectData).
+				rpt.getModel().collectData();
+				
+				report = rpt.createReport();
+				report.setDefaultPageFormat(pageFormat);
+				report.setData(rpt.getModel());
+				session.setAttribute(reportKey + "Report", report);
+			}
 
 			//create buffered image
 			BufferedImage image = createImage(pageFormat);
@@ -141,7 +212,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
 			final ServletOutputStream out = resp.getOutputStream();
 			
-			if (ext.equalsIgnoreCase("csv"))
+			/*if (ext.equalsIgnoreCase("csv"))
 			{
 				try
 				{
@@ -158,20 +229,23 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				  return;
 				}				
 			}
-			else if (ext.equalsIgnoreCase("pdf"))
+			else */if (ext.equalsIgnoreCase("pdf"))
 			{
 				try{
 					resp.setContentType("application/pdf");
-					resp.setHeader("Content-Type", "application/pdf");
-					final AbstractPageableReportServletWorker worker = new StaticPageableReportServletWorker(session, report, report.getData());
-					worker.getReport();
+					resp.addHeader("Content-Type", "application/pdf");
 					final PDFOutputTarget target = new PDFOutputTarget(out,pageFormat,true);
+					
 					target.setProperty(PDFOutputTarget.TITLE, "Title");
 					target.setProperty(PDFOutputTarget.AUTHOR, "Author");
-					worker.setOutputTarget(target);
-					worker.processReport();
-//					encodePDF(out, image);
-//					out.flush();
+					
+					final PageableReportProcessor processor = new PageableReportProcessor(report);
+					processor.setOutputTarget(target);
+					target.open();
+					processor.processReport();
+					target.close();
+					encodePDF(out, image);
+					out.flush();
 				}
 				catch (Exception e)
 				{
@@ -181,29 +255,39 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				}							
 				
 			}
-			else if (ext.equalsIgnoreCase("jpeg"))
+			/*else if (ext.equalsIgnoreCase("jpeg"))
 			{
 				resp.setContentType("image/jpeg");
-			}
+			}*/
 			else if (ext.equalsIgnoreCase("png"))
 			{
 				resp.setHeader("Content-Type", "image/png");
 
-				final AbstractPageableReportServletWorker worker = new StaticPageableReportServletWorker(session, report, report.getData());
-				final G2OutputTarget target = new G2OutputTarget(g2, pageFormat); 
-				worker.setOutputTarget(target);
-				
-				if (page >= worker.getNumberOfPages() || page < 0)
-				{
-				  CTILogger.debug("The page-parameter is invalid: " + page + ": " + worker.getNumberOfPages());
-				  resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-				  return;
+				final G2OutputTarget target = new G2OutputTarget(g2, pageFormat);
+				final PageableReportProcessor processor = new PageableReportProcessor(report);
+				processor.setOutputTarget(target);
+
+				Object statelist = session.getAttribute(reportKey + "StateList");
+				if( statelist == null)
+				{			
+					statelist = processor.repaginate();
+					session.setAttribute(reportKey + "StateList", statelist);
 				}
-				worker.processPage(page);
-				final PngEncoder encoder = new PngEncoder(image, true, 0, 9);
-				final byte[] data = encoder.pngEncode();
-				
-				out.write(data);
+				else
+				{
+					if( action.equalsIgnoreCase("PagedReport"))
+					{
+						int page = 0;  //The page number of the report to generate
+						param = req.getParameter("page");
+						if( param != null)
+							page = Integer.valueOf(param).intValue();
+
+						target.open();
+						processor.processPage(((ReportStateList)statelist).get(page), target);
+						encodePNG(out, image);
+						target.close();
+					}
+				}
 				out.flush();
 			}
 		}
@@ -212,6 +296,15 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			CTILogger.error("An exception was throw in GraphGenerator:  ");
 			t.printStackTrace();
 		}
+		finally
+		{
+			if( destURL!= null ) {
+				resp.sendRedirect(destURL);
+			}
+	//		else {
+	//			resp.sendRedirect(req.getContextPath() + "/user/CILC/user_reporting.jsp");
+	//		}
+		}		
 	}
 	
 	/**
@@ -229,6 +322,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 	   return bi;
 	 }
 	
+	
 	public void encodePDF(java.io.OutputStream out, Image image) throws java.io.IOException
 	{
 		try
@@ -240,9 +334,16 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 		{
 			io.printStackTrace();
 		}
-		catch( com.klg.jclass.util.swing.encode.EncoderException ee )
+		catch( EncoderException ee )
 		{
 			ee.printStackTrace();
 		}
-	}
+	}	
+
+	public void encodePNG(java.io.OutputStream out, Image image) throws java.io.IOException
+	{
+		final PngEncoder encoder = new PngEncoder(image, true, 0, 9);
+		final byte[] data = encoder.pngEncode();
+		out.write(data);
+	}	
 }
