@@ -62,7 +62,14 @@ public:
         DISABLE_CONTROL_AREA,
         ENABLE_PROGRAM,
         DISABLE_PROGRAM,
-        REQUEST_ALL_CONTROL_AREAS
+        REQUEST_ALL_CONTROL_AREAS,
+        SHED_GROUP,
+        SMART_CYCLE_GROUP,
+        TRUE_CYCLE_GROUP,
+        RESTORE_GROUP,
+        ENABLE_GROUP,
+        DISABLE_GROUP,
+        CONFIRM_GROUP
     };
 
     CtiLMCommand() { }; //provided for polymorphic persitence only
@@ -76,6 +83,8 @@ public:
     LONG getPAOId() const;
     LONG getNumber() const;
     DOUBLE getValue() const;
+    LONG getCount() const;
+    LONG getAuxId() const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -88,6 +97,8 @@ private:
     LONG _paoid;
     LONG _number;
     DOUBLE _value;
+    LONG _count;
+    LONG _auxid;
 };
 
 
