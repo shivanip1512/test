@@ -3,6 +3,7 @@ package com.cannontech.common.version;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.version.CTIDatabase;
 
 /**
  * Insert the type's description here.
@@ -13,7 +14,10 @@ public final class VersionTools
 {	
 	public static final String KEY_YUKON_VERSION = "Yukon-Version";
 	public static final String COMMON_JAR = "common.jar";
+	
 	public static String yukonVersion = null;
+	private static CTIDatabase db_obj = null;
+		
 
 	//we need a set of query strings for backward compatability
 	// since this is used in DBUpdates that get executed before
@@ -37,14 +41,18 @@ public final class VersionTools
 private VersionTools() {
 	super();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/25/2001 9:18:30 AM)
  * @return java.lang.String
  */
-public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVersion() 
-{
-	com.cannontech.database.db.version.CTIDatabase db = new com.cannontech.database.db.version.CTIDatabase();
+public final static CTIDatabase getDatabaseVersion() 
+{	
+	if( db_obj != null )
+		return db_obj;
+
+	db_obj = new CTIDatabase();
 	java.sql.Connection conn = PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 	java.sql.PreparedStatement stat = null;
 
@@ -72,13 +80,13 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 	
 		rs.next();
 		
-		db.setVersion( rs.getString("Version") );
-		db.setCtiEmployeeName( rs.getString("CTIEmployeeName") );
-		db.setDateApplied( new java.util.Date( rs.getTimestamp("DateApplied").getTime() ) );
-		db.setNotes( rs.getString("Notes") );
+		db_obj.setVersion( rs.getString("Version") );
+		db_obj.setCtiEmployeeName( rs.getString("CTIEmployeeName") );
+		db_obj.setDateApplied( new java.util.Date( rs.getTimestamp("DateApplied").getTime() ) );
+		db_obj.setNotes( rs.getString("Notes") );
 		
 		if( i == 0 ) //zeroth query string has the build column
-			db.setBuild( new Integer(rs.getInt("Build")) );
+			db_obj.setBuild( new Integer(rs.getInt("Build")) );
 	}
 	catch( java.sql.SQLException e )
 	{
@@ -100,7 +108,7 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 		}
 	}
 		
-	return db;
+	return db_obj;
 }
 
 /**

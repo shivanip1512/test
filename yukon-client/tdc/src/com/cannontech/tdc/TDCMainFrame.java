@@ -15,6 +15,7 @@ import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.message.util.MessageUtils;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
@@ -4564,7 +4565,23 @@ public void messageReceived( MessageEvent e )
 
 		getAlarmHandler().handleSignal( sig );
 
-	} //end Signal handler
+	}
+	
+	if( in instanceof Command
+		 && ((Command)in).getOperation() == Command.ARE_YOU_THERE )
+	{
+		String retStr = null;
+		if( (retStr = MessageUtils.getVersionComp((Command)in)) != null )
+		{
+			//we have a version mismatch, alert the user
+			JOptionPane.showMessageDialog(
+				this,
+				"The client you are running is of a different version than the server. Please update your client software." + System.getProperty("line.separator") +
+				retStr,
+				"Client/Server Version Mismatch",
+				JOptionPane.OK_OPTION );
+		}
+	}
 
 }
 

@@ -47,7 +47,7 @@ public Message buildRegistrationMessage()
 	reg.setAppName("TDC_RECEIVER@" + com.cannontech.common.util.CtiUtilities.getUserName() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
-	reg.setAppExpirationDelay( 300 );  // 5 minutes
+	reg.setAppExpirationDelay( 10 );  // 5 minutes
 
 	//we must do this for all displays now that alarms show on all displays!
 	Multi multiReg = new Multi();
