@@ -89,7 +89,6 @@ public javax.swing.JButton getExecuteButton()
 			executeButton.setPreferredSize(new java.awt.Dimension(77, 24));
 			executeButton.setFont(new java.awt.Font("dialog", 0, 12));
 			executeButton.setMinimumSize(new java.awt.Dimension(77, 24));
-			//executeButton.addActionListener(this);
 		}
 		catch (java.lang.Throwable t)
 		{

@@ -27,7 +27,7 @@ public class YC
 	private volatile int currentUserMessageID = 1;
 	public static volatile int sendMore = 0;
 
-	public  static com.cannontech.message.porter.message.Request loopReq = null;
+	public  static com.cannontech.message.porter.message.Request porterRequest = null;
 
 	public Object[] allRoutes = null;
 
@@ -80,10 +80,9 @@ public void executeCommand()
 	{
 		if ( isDirectSend() )
 		{
-			com.cannontech.message.porter.message.Request req = 
-				new com.cannontech.message.porter.message.Request( 0, getCommand(), currentUserMessageID );
-			req.setPriority(getCommandPriority());
-			writeNewRequestToPorter( req );
+			porterRequest = new com.cannontech.message.porter.message.Request( 0, getCommand(), currentUserMessageID );
+			porterRequest.setPriority(getCommandPriority());
+			writeNewRequestToPorter( porterRequest );
 		}
 			
 		else if( getTreeItem() != null )
@@ -91,7 +90,7 @@ public void executeCommand()
 			// Stops the requests from continuing (a.k.a. kills the "loop" command).
 			sendMore = 0;
 				
-			// Device item selected (including other models)	
+			// Device item selected (including other models)
 			if( getTreeItem() instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
 			{
 				com.cannontech.database.data.lite.LiteYukonPAObject lpao = (com.cannontech.database.data.lite.LiteYukonPAObject) getTreeItem();
@@ -100,10 +99,9 @@ public void executeCommand()
 			// Meter number item in tree selected.
 			else if( getTreeItem() instanceof com.cannontech.database.data.lite.LiteDeviceMeterNumber )
 			{
-				//  ** ADD CODE HERE TO HANDLE NOQUEUE
 				com.cannontech.database.data.lite.LiteDeviceMeterNumber ldmn = (com.cannontech.database.data.lite.LiteDeviceMeterNumber) getTreeItem();
-				//handleDevice (ldmn.getDeviceID(), ldmn.getLiteType());
-				handleDevice (ldmn.getDeviceID());
+				com.cannontech.database.data.lite.LiteYukonPAObject litePao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(ldmn.getLiteID());
+				handleDevice (ldmn.getDeviceID(), litePao.getType());
 			}		
 			// Serial Number item in tree selected.
 			else if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
@@ -114,23 +112,29 @@ public void executeCommand()
 			else if ( getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
 			{
 				Integer [] deviceMeterGroupIds = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(com.cannontech.common.util.CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-				handleGroup( deviceMeterGroupIds );
+				for ( int i = 0; i < deviceMeterGroupIds.length; i++)
+				{
+					com.cannontech.database.data.lite.LiteYukonPAObject lpao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
+					handleDevice ( lpao.getYukonID(), lpao.getType() );
+				}
 			}
 			// Collectiongroup is selected.
 			else if ( getModelType() == ModelFactory.COLLECTIONGROUP )
 			{
 				Integer [] deviceMeterGroupIds = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceIDs_CollectionGroups(com.cannontech.common.util.CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-				handleGroup( deviceMeterGroupIds );
+				for ( int i = 0; i < deviceMeterGroupIds.length; i++)
+				{
+					com.cannontech.database.data.lite.LiteYukonPAObject lpao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
+					handleDevice ( lpao.getYukonID(), lpao.getType() );
+				}
 			}
-			
 			else
 			{
-				//appendOutputTextArea("Unable to interpret command -> " + getCommand() + "\n");
+				com.cannontech.clientutils.CTILogger.info(getModelType() + " - New type needs to be handled");
 			}
 		}
 		else
 		{
-			//appendOutputTextArea(" && getTreeItem() == null");
 		}
 	}
 	catch( java.sql.SQLException e )
@@ -190,16 +194,13 @@ public int getCommandPriority()
  */
 public com.cannontech.common.util.KeysAndValuesFile getConfigFile(Object item)
 {
-	String className = null;
+	String className = DEFAULT_FILENAME;
 
 	if (item.toString() == SERIALNUMBER_FILENAME  ||item.toString() == ALT_SERIALNUMBER_FILENAME)	//get serial number class name (constant var)
 		className = (String) item;
 	else if (item.toString() == DEFAULT_FILENAME )
 		className = (String) item;
-	else
-//		className = item.getClass().getName() ;	//use the class name as the file name (.txt)
-
-	if( item instanceof com.cannontech.database.data.device.DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+	else if( item instanceof com.cannontech.database.data.device.DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
 	{
 		className = ((com.cannontech.database.data.device.DeviceBase)item).getPAOType();
 	}
@@ -209,21 +210,15 @@ public com.cannontech.common.util.KeysAndValuesFile getConfigFile(Object item)
 		com.cannontech.database.data.lite.LiteYukonPAObject litePao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(devID);
 		className = com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(litePao.getType());
 	}		
-//	else if(item instanceof com.cannontech.database.data.customer.Customer)//		ModelFactory.CICUSTOMER (CONTACT),
-//	{
-//		System.out.println(" Instance of CUSTOMER " + item.getClass());
-//		className = "Customer";
-//	}		
 	else 
 	{
-		System.out.println(" Instance of ??? " + item.getClass());
-		System.out.println(" THIS IS REALLY A BAD CATCH ALL HUH");
+		com.cannontech.clientutils.CTILogger.debug("FILENAME: undefined. Item instance of " + item.getClass());
+		com.cannontech.clientutils.CTILogger.debug(" THIS IS REALLY A BAD CATCH ALL HUH");
 	}
 //		ModelFactory.COLLECTIONGROUP,
 //		ModelFactory.TESTCOLLECTIONGROUP,
 //		ModelFactory.EDITABLELCRSERIAL,
-	
-	className = className.substring( className.lastIndexOf('.') + 1) + ".txt";
+	className += ".txt";
 	return new com.cannontech.common.util.KeysAndValuesFile(getCommandFileDirectory(), className);	
 }
 /**
@@ -239,7 +234,7 @@ public com.cannontech.message.porter.ClientConnection getConnToPorter()
 		int port = 1510;
 		try
 		{
-         host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+			host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
                   com.cannontech.common.util.CtiProperties.KEY_PORTER_MACHINE, 
                   "127.0.0.1");
             
@@ -341,58 +336,7 @@ public YCDefaults getYCDefaults()
  * Write's the Request to the porter connection.
  * Creation date: (9/16/2001 5:32:40 PM)
  */
-public void handleDevice(long deviceID)
-{
-	if( deviceID < 0 )	//no device selected
-	{
-		if ( getSerialNumber() == null)	// NO serial Number Selected
-		{
-			logCommand(" *** Warning: Please select a Device or Serial Number ***");
-			//appendOutputTextArea( "\n *** Warning: Please select a Device or Serial Number ***\n");
-			return;
-		}
-	}
-
-	setLoopType( parseLoopCommand() );
-
-	//**  SEND WITH QUEUE COMMANDS STRING ON ALL **
-	//**  FIX:  NEED TO CHECK IF PAOBJECT IS AN MCT OR NOT
-	String command = getCommand();
-	setCommand(command + getQueueCommandString());
-	
-	com.cannontech.message.porter.message.Request req = 
-		new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
-	req.setPriority(getCommandPriority());
-
- 	if( getLoopType() > LOOP)
- 	{
-		loopReq = req;
- 	}
-	else if( getLoopType() == LOOPLOCATE )
-	{
-		//for (int i = get
-	}
-	else if( getLoopType() == LOOPLOCATE_ROUTE)
-	{
-		if( getRoute() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
-		{
-			req.setRouteID( ((com.cannontech.database.data.lite.LiteYukonPAObject) getRoute()).getYukonID());
-		}
-	}	
-
-	//appendOutputTextArea( "\n-> Executing command -> " + getCommand() +"\n");
-	writeNewRequestToPorter( req );
-}
-/**
- * Insert the method's description here.
- * Gets the device ID of the object, and selected serial number (which should "never" happen)
- * Checks for the command string "loop" to exist.
- * Creates the message.Request to send to porter.
- * Saves the message.Request if "loop" was found in the string so the Request can be resubmitted.
- * Write's the Request to the porter connection.
- * Creation date: (9/16/2001 5:32:40 PM)
- */
-public void handleDevice(long deviceID, int type)
+public void handleDevice(int deviceID, int type)
 {
 		
 	if( deviceID < 0 )	//no device selected
@@ -407,17 +351,12 @@ public void handleDevice(long deviceID, int type)
 	setLoopType( parseLoopCommand() );
 	String command = getCommand();
 
-	//else if( DeviceTypesFuncs.isMCT( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((CarrierBase)val).getPAOType() ) ) )
 	if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(type)
 		|| com.cannontech.database.data.device.DeviceTypesFuncs.isRepeater(type))
 		setCommand( command + getQueueCommandString());
 
-	com.cannontech.message.porter.message.Request req = 
-		new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
-	req.setPriority(getCommandPriority());
-
- 	if( getLoopType() > LOOP )
-		loopReq = req;
+	porterRequest = new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
+	porterRequest.setPriority(getCommandPriority());
 
 	if (getLoopType() == LOOPLOCATE)
  	{
@@ -433,50 +372,17 @@ public void handleDevice(long deviceID, int type)
 			if( rt.getType() == com.cannontech.database.data.pao.PAOGroups.ROUTE_MACRO)
 				return;
 
-			req.setRouteID(rt.getYukonID());
-			loopReq = req;
+			porterRequest.setRouteID(rt.getYukonID());
 		}
  	}
 	else if( getLoopType() == LOOPLOCATE_ROUTE )
 	{
 		if( getRoute() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
 		{
-			req.setRouteID( ((com.cannontech.database.data.lite.LiteYukonPAObject)getRoute()).getYukonID());
+			porterRequest.setRouteID( ((com.cannontech.database.data.lite.LiteYukonPAObject)getRoute()).getYukonID());
 		}
 	}
-	writeNewRequestToPorter( req );
-}
-/**
- * Insert the method's description here.
- * Obtains each member (device) that belong's to the currently selected group and creates
- *  a message.Request for each device.
- * Write's the Request to the porter connection.
- * Creation date: (9/16/2001 5:32:40 PM)
- */
-public void handleGroup( Integer [] deviceMeterGroupIds )
-{
-	long deviceID = -1;						//defaulted to the system device
-	
-	String command = getCommand();
-
-	//else if( DeviceTypesFuncs.isMCT( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((CarrierBase)val).getPAOType() ) ) )
-	//com.cannontech.clientutils.CTILogger.info(" TYPE = " + com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(type));
-	//if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(type))
-	//**  SEND WITH QUEUE COMMANDS STRING ON ALL **
-	//**  FIX:  NEED TO CHECK IF PAOBJECT IS AN MCT OR NOT
-	setCommand(getCommand().concat(getQueueCommandString()));
-
-	for ( int i = 0; i < deviceMeterGroupIds.length; i++)
-	{
-		deviceID = deviceMeterGroupIds [i].intValue();
-				
-		com.cannontech.message.porter.message.Request req = 
-			new com.cannontech.message.porter.message.Request( deviceID, command, currentUserMessageID );
-		req.setPriority(getCommandPriority());
-
-		//appendOutputTextArea( "\n-> Executing command -> " + getCommand() +"\n");
-		writeNewRequestToPorter( req );
-	}
+	writeNewRequestToPorter(porterRequest);
 }
 /**
  * Insert the method's description here.
@@ -489,7 +395,7 @@ public void handleGroup( Integer [] deviceMeterGroupIds )
  */
 public void handleSerialNumber()
 {
-	long deviceID = -1;						//defaulted to the system device
+	int deviceID = -1;						//defaulted to the system device
 		 
 	int index = getCommand().indexOf("serial");
 	
@@ -499,19 +405,14 @@ public void handleSerialNumber()
 
 	setLoopType( parseLoopCommand() );
 	
-	com.cannontech.message.porter.message.Request req = 
-			new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
-	req.setPriority(getCommandPriority());
+	porterRequest = new com.cannontech.message.porter.message.Request( deviceID, getCommand(), currentUserMessageID );
+	porterRequest.setPriority(getCommandPriority());
 
-	// Set/save the loop request command.
- 	if( getLoopType() > LOOP ) 	//more than just loop there
-		loopReq = req;
-				
 	// Get routeID from comboBox / set it in the request
 	if( getRoute() != null && getRoute() instanceof com.cannontech.database.data.lite.LiteYukonPAObject)
 	{
 		com.cannontech.database.data.lite.LiteYukonPAObject r = (com.cannontech.database.data.lite.LiteYukonPAObject) getRoute();
-		req.setRouteID(r.getYukonID());
+		porterRequest.setRouteID(r.getYukonID());
 	}
 
 	if( deviceID < 0 )	//no device selected
@@ -523,7 +424,7 @@ public void handleSerialNumber()
 		}
 	}
 
-	writeNewRequestToPorter( req );
+	writeNewRequestToPorter( porterRequest );
 }
 /**
  * Insert the method's description here.
@@ -771,23 +672,26 @@ public String substituteCommand(String command)
 
 
 	com.cannontech.common.util.KeysAndValues keysAndValues = kavFile.getKeysAndValues();
-	String lowerCommand = command.toLowerCase().trim();
-
-	//try to match the command to a key in cpf
-	for (int i = 0; i < keysAndValues.getKeys().length; i++)
+	if( keysAndValues != null)
 	{
-		String lowerKey = keysAndValues.getKeys()[i].toLowerCase().trim();
-
-		if (lowerKey.equals(lowerCommand))
-			return keysAndValues.getValues()[i];
-	}
-
-	for (int i = 0; i < keysAndValues.getValues().length; i++)
-	{
-		String lowerKey = keysAndValues.getValues()[i].toLowerCase().trim();
-
-		if (lowerKey.equals(lowerCommand))
-			return keysAndValues.getValues()[i];
+		String lowerCommand = command.toLowerCase().trim();
+	
+		//try to match the command to a key in cpf
+		for (int i = 0; i < keysAndValues.getKeys().length; i++)
+		{
+			String lowerKey = keysAndValues.getKeys()[i].toLowerCase().trim();
+	
+			if (lowerKey.equals(lowerCommand))
+				return keysAndValues.getValues()[i];
+		}
+	
+		for (int i = 0; i < keysAndValues.getValues().length; i++)
+		{
+			String lowerKey = keysAndValues.getValues()[i].toLowerCase().trim();
+	
+			if (lowerKey.equals(lowerCommand))
+				return keysAndValues.getValues()[i];
+		}
 	}
 
 	return command; //default, return whatever they typed in on the command line
@@ -809,7 +713,6 @@ public void writeNewRequestToPorter(com.cannontech.message.porter.message.Reques
 		if( getConnToPorter().isValid())
 		{
 			getConnToPorter().write( request );
-			com.cannontech.clientutils.CTILogger.info(" REQUEST = "+ request.toString());
 			currentUserMessageID++;
 		}
 		else
@@ -823,4 +726,13 @@ public void writeNewRequestToPorter(com.cannontech.message.porter.message.Reques
 	}
 		
 }
+	/**
+	 * Returns the porterRequest.
+	 * @return com.cannontech.message.porter.message.Request
+	 */
+	public static com.cannontech.message.porter.message.Request getPorterRequest()
+	{
+		return porterRequest;
+	}
+
 }
