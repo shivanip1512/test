@@ -1,15 +1,13 @@
 package com.cannontech.database.cache.functions;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.YukonGroupRoleDefs;
 
 /**
  * A collection of methods to handle Roles and property lookups for Groups and Users
@@ -42,6 +40,27 @@ public class RoleFuncs
 		
 		LiteYukonRoleProperty[] retVal = new LiteYukonRoleProperty[vect.size()];
 		return (LiteYukonRoleProperty[])vect.toArray( retVal );
+	}
+
+
+	/**
+	 * Returns the LiteYukonRoleProperty specified by the roleProeprtyID_.
+	 * This global value is a property that belongs to the Yukon Group.
+	 *  
+	 * @param LiteYukonRole
+	 * @return LiteYukonRoleProperty[]
+	 */
+	public static String getGlobalPropertyValue( int rolePropertyID_ ) 
+	{
+		LiteYukonRoleProperty p = 
+			AuthFuncs.getRoleProperty( rolePropertyID_ );
+
+		String val = AuthFuncs.getRolePropValueGroup(
+				AuthFuncs.getGroup(YukonGroupRoleDefs.GRP_YUKON),
+				p.getRolePropertyID(),
+				p.getDefaultValue() );
+		
+		return val;
 	}
 
 
