@@ -110,9 +110,10 @@ function selectMemberAccount(accountID, memberID) {
 				
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(
 						resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
+				if (liteAcctInfo == null) continue;
+				
 				LiteContact contact = ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
-				
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
 				String address = ServletUtils.getOneLineAddress(starsAddr);
