@@ -26,7 +26,8 @@ public final class TDCDefines
 	
 	// JTable model constants
 	public static final int ROW_BREAK_COUNT = 8;
-	public static final long ROW_BREAK_ID = com.cannontech.database.data.point.PointTypes.SYSTEM_POINT;
+	public static final long ROW_BREAK_ID = 
+            com.cannontech.database.data.point.PointTypes.SYS_PID_SYSTEM;
 
 	public static int MAX_ROWS = 500;
 	public static final String BOOKMARK_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "/TDCBookMarks.txt";
