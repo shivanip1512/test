@@ -17,10 +17,15 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2002/09/12 21:33:33 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2002/10/11 14:12:49 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.9  2002/10/11 14:12:49  dsutton
+      Updated the db reload methods to handle reload rates
+      that are over 3600 seconds.  Anything bigger than 3600 was
+      returning the time in GMT instead of the time zone appropriate
+
       Revision 1.8  2002/09/12 21:33:33  dsutton
       Updated how FDR reconnects to dispatch in the event dispatch has swept
       the leg on the connection.  We now reconnect in one place, receivefromdispatch
@@ -1128,8 +1133,14 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0;
-    RWTime         timeNow;
-    RWTime         refreshTime = timeNow - (timeNow.seconds() % getReloadRate()) + getReloadRate();
+    RWTime timeNow;
+    RWTime hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
+    RWTime refreshTime = RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
+
+    {
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << RWTime() << " Now " << timeNow.seconds() << " reload " << getReloadRate() << " refresh " << refreshTime << " sec " << refreshTime.seconds() << endl;
+    }
 
     try
     {
@@ -1183,7 +1194,8 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     setDbReloadReason(NotReloaded);
 
                     // reset refresh time
-                    refreshTime = timeNow - (timeNow.seconds() % getReloadRate()) + getReloadRate();
+                    hourstart = RWTime(timeNow.seconds() - (timeNow.seconds() % 3600)); // align to the hour.
+                    refreshTime = RWTime(hourstart.seconds() - ((hourstart.hour()* 3600) % getReloadRate()) + getReloadRate());
                 }
                 else
                 {
