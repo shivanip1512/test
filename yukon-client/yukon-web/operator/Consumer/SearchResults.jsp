@@ -9,7 +9,7 @@
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
 			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
 	
-	Integer lastSearchOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
+	Integer lastSearchOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
 	int searchByDefID = YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO;
 	if (lastSearchOption != null)
 		searchByDefID = YukonListFuncs.getYukonListEntry(lastSearchOption.intValue()).getYukonDefID();

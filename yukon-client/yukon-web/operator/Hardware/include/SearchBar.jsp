@@ -7,11 +7,13 @@
 		<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
         <select name="SearchBy">
           <%
+	Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+		String selectedStr = (lastInvOption != null && entry.getYukonDefID() == lastInvOption.intValue()) ? "selected" : "";
 %>
-          <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+          <option value="<%= entry.getYukonDefID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
           <%
 	}
 %>

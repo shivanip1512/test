@@ -97,12 +97,12 @@ function confirmDelete() {
             <td class = "MainText" width="43%" align = "right" nowrap> 
               <select name="SearchBy">
 <%
-	Integer lastOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
 	if (selectionListTable != null) {
+		Integer lastAcctOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
 		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
-			String selectedStr = (lastOption != null && entry.getEntryID() == lastOption.intValue()) ? "selected" : "";
+			String selectedStr = (lastAcctOption != null && entry.getEntryID() == lastAcctOption.intValue()) ? "selected" : "";
 %>
                 <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
@@ -245,11 +245,13 @@ function confirmDelete() {
               <select name="SearchBy">
 <%
 	if (selectionListTable != null) {
+		Integer lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
 		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
 		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+			String selectedStr = (lastInvOption != null && entry.getYukonDefID() == lastInvOption.intValue()) ? "selected" : "";
 %>
-			    <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+			    <option value="<%= entry.getYukonDefID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
 		}
 	}
@@ -258,7 +260,7 @@ function confirmDelete() {
 			  &nbsp; 
               <input type="text" name="SearchValue" size="15">
               &nbsp; </td>
-            <td valign = "top" class="MainText" width="7%"> <img src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
+            <td valign = "top" class="MainText" width="7%"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
             </td>
           </form>
         </tr>
@@ -298,11 +300,13 @@ function confirmDelete() {
               <select name="SearchBy">
 <%
 	if (selectionListTable != null) {
+		Integer lastSrvcOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION);
 		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
 		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+			String selectedStr = (lastSrvcOption != null && entry.getYukonDefID() == lastSrvcOption.intValue()) ? "selected" : "";
 %>
-              <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
+              <option value="<%= entry.getYukonDefID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
 		}
 	}
@@ -311,7 +315,7 @@ function confirmDelete() {
             &nbsp; 
             <input type="text" name="SearchValue" size="15">
             &nbsp; </td>
-            <td width="7%" valign="top" class="MainText"><img src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
+            <td width="7%" valign="top" class="MainText"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
 		  </form>
         </tr>
       </table>

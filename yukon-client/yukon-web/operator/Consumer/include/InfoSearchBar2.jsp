@@ -6,11 +6,11 @@
 	    <input type="hidden" name="action" value="SearchCustAccount">
         <select name="SearchBy">
           <%
-	Integer lastOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
+	Integer lastAcctOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
-		String selectedStr = (lastOption != null && entry.getEntryID() == lastOption.intValue()) ? "selected" : "";
+		String selectedStr = (lastAcctOption != null && entry.getEntryID() == lastAcctOption.intValue()) ? "selected" : "";
 %>
           <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
           <%
