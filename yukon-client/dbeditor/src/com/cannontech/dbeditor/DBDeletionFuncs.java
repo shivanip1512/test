@@ -40,6 +40,7 @@ public class DBDeletionFuncs
 	public static final int LMPROG_CONSTR_TYPE = 15;
 	public static final int SEASON_SCHEDULE = 16;
 	public static final int TOU_TYPE = 17;
+	public static final int ROUTE_TYPE = 18;
 
    //the return types of each possible delete
    public static final byte STATUS_ALLOW = 1;
@@ -82,7 +83,7 @@ public class DBDeletionFuncs
 	private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( deviceID );
-	   String str = null;   
+	   	String str = null;   
 	
 	   /* Some day we could consolidate all these seperate delete statements into one
 	    * statement. Do this when performance becomes an issue and put it into the
@@ -112,6 +113,34 @@ public class DBDeletionFuncs
 		//this device is deleteable
 		return STATUS_ALLOW;
 	}
+	
+	private static byte createDeleteStringForRoute(int routeID) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( routeID );
+	   	String str = null;   
+		/* Some day we could consolidate all these seperate delete statements into one
+		* statement. Do this when performance becomes an issue and put it into the
+		* DeviceBase class 
+		*/
+		if( (str = com.cannontech.database.data.route.RouteBase.hasDevice(theID)) != null )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "because it is utilized by the device named '"+ str + "'");
+			return STATUS_DISALLOW;
+		}
+		
+		if( (str = com.cannontech.database.data.route.RouteBase.inMacroRoute(theID)) != null )
+	   	{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "If you continue, this route will be removed from \n the macro route '" + str + "'." +
+				"  Delete anyway?");
+			return STATUS_CONFIRM;
+		}
+		
+		//this route is deleteable
+		return STATUS_ALLOW;
+	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (5/31/2001 2:36:20 PM)
@@ -427,6 +456,13 @@ public class DBDeletionFuncs
 			anID = ((com.cannontech.database.data.device.DeviceBase) toDelete).getDevice().getDeviceID().intValue();
 			deletionType = DBDeletionFuncs.DEVICE_TYPE;
 		}
+		else if (toDelete instanceof com.cannontech.database.data.route.RouteBase)
+		{
+			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the route '" + nodeName + "'");
+			anID = ((com.cannontech.database.data.route.RouteBase) toDelete).getRouteID().intValue();
+			deletionType = DBDeletionFuncs.ROUTE_TYPE;
+		}
 		else if (toDelete instanceof com.cannontech.database.data.baseline.Baseline)
 		{
 			anID = ((com.cannontech.database.data.baseline.Baseline) toDelete).getBaseline().getBaselineID().intValue();
@@ -542,8 +578,6 @@ public class DBDeletionFuncs
 			retValue = false;
 		}
 
-	
-	
 		delID.val = anID;
 		delType.val = deletionType;
 		return retValue;
@@ -572,6 +606,9 @@ public class DBDeletionFuncs
 			
 			else if(type == DEVICE_TYPE)
 				return createDeleteStringForDevice(anID);
+			
+			else if(type == ROUTE_TYPE)
+				return createDeleteStringForRoute(anID);
 			
 			else if(type == CONTACT_TYPE)
 				return createDeleteStringForContact(anID);

@@ -11,7 +11,7 @@ public class DeviceRoutes extends com.cannontech.database.db.DBPersistent {
 	public static final String SETTER_COLUMNS[] = { "RouteID" };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
-	private final String TABLE_NAME = "DeviceRoutes";
+	public static final String TABLE_NAME = "DeviceRoutes";
 /**
  * DeviceRoutes constructor comment.
  */

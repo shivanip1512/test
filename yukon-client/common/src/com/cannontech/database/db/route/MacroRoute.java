@@ -74,7 +74,25 @@ public final static boolean deleteAllMacroRoutes(Integer macroRouteID, java.sql.
 		new com.cannontech.database.SqlStatement(
             "DELETE FROM MacroRoute WHERE RouteID=" + macroRouteID,
 				conn );
+	try
+	{
+		stmt.execute();
+	}
+	catch(Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		return false;
+	}
 
+	return true;
+}
+
+public final static boolean deleteFromMacro(Integer singleID, java.sql.Connection conn) throws SQLException {
+
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement(
+			"DELETE FROM MacroRoute WHERE SingleRouteID=" + singleID,
+				conn );
 	try
 	{
 		stmt.execute();

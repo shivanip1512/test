@@ -34,8 +34,15 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
+	deleteFromMacro();
 	getRoute().delete();
 	super.delete();
+}
+
+public void deleteFromMacro() throws java.sql.SQLException 
+{
+	com.cannontech.database.db.route.MacroRoute.deleteFromMacro( 
+		 getRouteID(), getDbConnection() );
 }
 /**
  * This method was created in VisualAge.
@@ -90,6 +97,58 @@ public Integer getRouteID()
 public String getRouteName()
 {
 	return getYukonPAObject().getPaoName();
+}
+
+public final static String hasDevice( Integer routeID ) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement(
+			"SELECT PAOName FROM " + 
+			com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
+			com.cannontech.database.db.device.DeviceRoutes.TABLE_NAME + " r" +             
+			" WHERE r.RouteID=" + routeID +
+			" AND r.DeviceID=y.PAObjectID",
+			com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+	try
+	{
+		stmt.execute();
+		if(stmt.getRowCount() > 0 )
+		 return stmt.getRow(0)[0].toString();
+	  else
+		 return null;
+	}
+	catch( Exception e )
+	{
+		return null;
+	}
+
+}
+
+public final static String inMacroRoute( Integer routeID ) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement(
+			"SELECT PAOName FROM " + 
+			com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
+			com.cannontech.database.db.route.MacroRoute.TABLE_NAME + " r" +             
+			" WHERE r.SingleRouteID=" + routeID +
+			" AND r.RouteID=y.PAObjectID",
+			com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+	try
+	{
+		stmt.execute();
+		if(stmt.getRowCount() > 0 )
+		 return stmt.getRow(0)[0].toString();
+	  else
+		 return null;
+	}
+	catch( Exception e )
+	{
+		return null;
+	}
+
 }
 /**
  * This method was created in VisualAge.
