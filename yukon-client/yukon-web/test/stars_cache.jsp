@@ -2,6 +2,7 @@
 <%@ page import="java.io.StringWriter" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %>
+<%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
