@@ -15,7 +15,7 @@ public class StrategyReceiver implements com.cannontech.tdc.SpecialTDCChild, jav
 	
 	public final static String CBC_NAME = "Cap Bank Control";
 	public final static String CBC_VERSION = 
-			com.cannontech.common.version.VersionTools.getYUKON_VERSION() + ".2.3";
+			com.cannontech.common.version.VersionTools.getYUKON_VERSION();
 
 	private ReceiverMainPanel mainPanel = null;
 	private CBCClientConnection connectionWrapper = null;
