@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/05/15 22:36:41 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/03/18 19:56:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@ protected:
     long        _functionId;        // function id represents the type of exclusion that is defined by this data set.
     RWCString   _funcName;          // a rwcstring which can represent a dynamicly loaded function (future)
     long        _funcRequeue;       // This value indicates the requeue behaviour to execute if excluded.
+    RWCString   _funcParams;        // a rwcstring which can represent arguments to a function (to be parsed by that function)
 
 private:
 
@@ -79,6 +80,8 @@ public:
     long getFunctionRequeue() const;
     CtiTablePaoExclusion& setFunctionRequeue(long val);
 
+    RWCString getFunctionParams() const;
+    CtiTablePaoExclusion& setFunctionParams(RWCString val);
 
     static RWCString getTableName();
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
@@ -103,7 +106,7 @@ public:
     enum
     {
         ExFunctionIdExclusion,          // This is the default and stipulates a non-simultaneous execution.  A cannot execute with B.
-        ExFunctionTimeMethod1
+        ExFunctionTimeMethod1           // Excludes based upon an aligned windo offset and duration from aligned window start.
 
 
     } CtiExclusionFunction_t;

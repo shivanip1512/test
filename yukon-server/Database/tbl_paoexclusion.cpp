@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/05/15 22:36:41 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/03/18 19:56:02 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,6 +123,16 @@ CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionName(RWCString val)
     return *this;
 }
 
+RWCString CtiTablePaoExclusion::getFunctionParams() const
+{
+    return _funcParams;
+}
+CtiTablePaoExclusion& CtiTablePaoExclusion::setFunctionParams(RWCString val)
+{
+    _funcParams = val;
+    return *this;
+}
+
 long CtiTablePaoExclusion::getFunctionRequeue() const
 {
     return _funcRequeue;
@@ -150,7 +160,8 @@ void CtiTablePaoExclusion::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
     keyTable["value"] <<
     keyTable["functionid"] <<
     keyTable["funcname"] <<
-    keyTable["funcrequeue"];
+    keyTable["funcrequeue"] <<
+    keyTable["funcparams"];
 
     selector.from(keyTable);
 }
@@ -170,6 +181,7 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["functionid"]       >> _functionId;
     rdr["funcname"]         >> _funcName;
     rdr["funcrequeue"]      >> _funcRequeue;
+    rdr["funcparams"]       >> _funcParams;
 }
 
 RWDBStatus CtiTablePaoExclusion::Restore()
@@ -191,7 +203,8 @@ RWDBStatus CtiTablePaoExclusion::Restore()
     table["value"] <<
     table["functionid"] <<
     table["funcname"] <<
-    table["funcrequeue"];
+    table["funcrequeue"] <<
+    table["funcparams"];
 
     selector.where( table["exclusionid"] == getExclusionId() );  //??
 
@@ -275,6 +288,7 @@ void CtiTablePaoExclusion::dump() const
         dout << "functionid     " <<  _functionId << endl;
         dout << "funcname       " <<  _funcName << endl;
         dout << "funcrequeue    " <<  _funcRequeue << endl;
+        dout << "funcparams     " <<  _funcParams << endl;
 
     }
 }
