@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     4/5/2004 4:59:44 PM                          */
+/* Created on:     4/27/2004 12:03:15 PM                        */
 /*==============================================================*/
 
 
@@ -471,6 +471,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DeviceAddress')
+            and   type = 'U')
+   drop table DeviceAddress
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('DeviceCBC')
             and   type = 'U')
    drop table DeviceCBC
@@ -482,14 +490,6 @@ if exists (select 1
            where  id = object_id('DeviceCustomerList')
             and   type = 'U')
    drop table DeviceCustomerList
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('DeviceDNP')
-            and   type = 'U')
-   drop table DeviceDNP
 go
 
 
@@ -514,6 +514,14 @@ if exists (select 1
            where  id = object_id('DeviceRoutes')
             and   type = 'U')
    drop table DeviceRoutes
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceSeries5RTU')
+            and   type = 'U')
+   drop table DeviceSeries5RTU
 go
 
 
@@ -786,6 +794,14 @@ if exists (select 1
            where  id = object_id('LMDirectCustomerList')
             and   type = 'U')
    drop table LMDirectCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMDirectNotifGrpList')
+            and   type = 'U')
+   drop table LMDirectNotifGrpList
 go
 
 
@@ -1563,15 +1579,6 @@ go
 
 
 /*==============================================================*/
-/* Index: Indx_BASELINE_PK                                      */
-/*==============================================================*/
-create unique  index Indx_BASELINE_PK on BaseLine (
-BaselineID
-)
-go
-
-
-/*==============================================================*/
 /* Table : BillingFileFormats                                   */
 /*==============================================================*/
 create table BillingFileFormats (
@@ -2163,7 +2170,9 @@ create table DEVICELOADPROFILE (
 DEVICEID             numeric              not null,
 LASTINTERVALDEMANDRATE numeric              not null,
 LOADPROFILEDEMANDRATE numeric              not null,
-LOADPROFILECOLLECTION varchar(4)           not null
+LOADPROFILECOLLECTION varchar(4)           not null,
+VoltageDmdInterval   numeric              not null,
+VoltageDmdRate       numeric              not null
 )
 go
 
@@ -2676,6 +2685,23 @@ go
 
 
 /*==============================================================*/
+/* Table : DeviceAddress                                        */
+/*==============================================================*/
+create table DeviceAddress (
+DeviceID             numeric              not null,
+MasterAddress        numeric              not null,
+SlaveAddress         numeric              not null,
+PostCommWait         numeric              not null
+)
+go
+
+
+alter table DeviceAddress
+   add constraint PK_DEVICEADDRESS primary key  (DeviceID)
+go
+
+
+/*==============================================================*/
 /* Table : DeviceCBC                                            */
 /*==============================================================*/
 create table DeviceCBC (
@@ -2707,23 +2733,6 @@ go
 
 
 /*==============================================================*/
-/* Table : DeviceDNP                                            */
-/*==============================================================*/
-create table DeviceDNP (
-DeviceID             numeric              not null,
-MasterAddress        numeric              not null,
-SlaveAddress         numeric              not null,
-PostCommWait         numeric              not null
-)
-go
-
-
-alter table DeviceDNP
-   add constraint PK_DEVICEDNP primary key  (DeviceID)
-go
-
-
-/*==============================================================*/
 /* Table : DeviceDirectCommSettings                             */
 /*==============================================================*/
 create table DeviceDirectCommSettings (
@@ -2745,7 +2754,8 @@ create table DeviceRTC (
 DeviceID             numeric              not null,
 RTCAddress           numeric              not null,
 Response             varchar(1)           not null,
-LBTMode              numeric              not null
+LBTMode              numeric              not null,
+DisableVerifies      varchar(1)           not null
 )
 go
 
@@ -2767,6 +2777,28 @@ go
 
 alter table DeviceRoutes
    add constraint PK_DEVICEROUTES primary key  (DEVICEID, ROUTEID)
+go
+
+
+/*==============================================================*/
+/* Table : DeviceSeries5RTU                                     */
+/*==============================================================*/
+create table DeviceSeries5RTU (
+DeviceID             numeric              not null,
+TickTime             numeric              not null,
+TransmitOffset       numeric              not null,
+PowerValueHighLimit  numeric              not null,
+PowerValueLowLimit   numeric              not null,
+PowerValueMultiplier float                not null,
+PowerValueOffset     float                not null,
+StartCode            numeric              not null,
+StopCode             numeric              not null
+)
+go
+
+
+alter table DeviceSeries5RTU
+   add constraint PK_DEVICESERIES5RTU primary key  (DeviceID)
 go
 
 
@@ -3145,8 +3177,9 @@ insert into FDRInterface values (10,'DSM2IMPORT','Receive,Receive for control','
 insert into FDRInterface values (11,'TELEGYR','Receive,Receive for control','f');
 insert into FDRInterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
 insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
-insert into FDRInterface values (14, 'LODESTAR', 'Receive', 'f' );
 
+insert into fdrinterface values(16,'LODESTAR_STD','Receive','f');
+insert into fdrinterface values(17,'LODESTAR_ENH','Receive','f');
 
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
@@ -3187,8 +3220,15 @@ insert into FDRInterfaceOption values(11, 'Point', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(11, 'Group', 2, 'Query', 'select GroupName from FDRTelegyrGroup' );
 insert into FDRInterfaceOption values(12,'Point ID',1,'Text','(none)');
 insert into FDRInterfaceOption values(13,'Point ID',1,'Text','(none)');
-insert into fdrinterfaceoption values(14,'Customer',1,'Text','(none)');
-insert into fdrinterfaceoption values(14,'Channel',2,'Text','(none)');
+
+insert into fdrinterfaceoption values (16,'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values (16,'Channel',2,'Text','(none)');
+insert into fdrinterfaceoption values (16,'DrivePath',3,'Text','(none)');
+insert into fdrinterfaceoption values (16,'Filename',4,'Text','(none)');
+insert into fdrinterfaceoption values (17,'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values (17,'Channel',2,'Text','(none)');
+insert into fdrinterfaceoption values (17,'DrivePath',3,'Text','(none)');
+insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
 
 
 alter table FDRInterfaceOption
@@ -3493,7 +3533,7 @@ create table LMControlScenarioProgram (
 ScenarioID           numeric              not null,
 ProgramID            numeric              not null,
 StartDelay           numeric              not null,
-Duration             numeric              not null,
+StopOffset           numeric              not null,
 StartGear            numeric              not null
 )
 go
@@ -3587,6 +3627,21 @@ go
 
 alter table LMDirectCustomerList
    add constraint PK_LMDIRECTCUSTOMERLIST primary key  (ProgramID, CustomerID)
+go
+
+
+/*==============================================================*/
+/* Table : LMDirectNotifGrpList                                 */
+/*==============================================================*/
+create table LMDirectNotifGrpList (
+ProgramID            numeric              not null,
+NotificationGrpID    numeric              not null
+)
+go
+
+
+alter table LMDirectNotifGrpList
+   add constraint PK_LMDIRECTNOTIFGRPLIST primary key  (ProgramID, NotificationGrpID)
 go
 
 
@@ -5318,6 +5373,10 @@ insert into YukonGroupRole values(-150,-100,-102,-10200,'(none)');
 
 /* Commander */
 insert into YukonGroupRole values(-170,-100,-103,-10300,'(none)');
+insert into YukonGroupRole values(-171,-100,-103,-10301,'true');
+insert into YukonGroupRole values(-172,-100,-103,-10302,'true');
+insert into YukonGroupRole values(-173,-100,-103,-10303,'false');
+insert into YukonGroupRole values(-174,-100,-103,-10304,'false');
 
 /* Esubstation Editor */
 insert into YukonGroupRole values(-250,-100,-107,-10700,'(none)');
@@ -5358,6 +5417,8 @@ insert into yukongrouprole values (-414, -302, -304, -30401, 'true');
 
 /* Web Client Customers Administrator role */
 insert into yukongrouprole values (-415, -302, -305, -30500, 'true');
+insert into YukonGroupRole values (-416, -302, -304, -30402, '(none)');
+insert into YukonGroupRole values (-417, -302, -304, -30403, '(none)');
 
 insert into yukongrouprole values (-500,-300,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
 insert into yukongrouprole values (-502,-300,-108,-10802,'(none)');
@@ -5495,9 +5556,9 @@ insert into yukongrouprole values (-856,-301,-201,-20856,'(none)');
 insert into yukongrouprole values (-870,-301,-201,-20870,'(none)');
 
 
-/*Add the user-control properties to the Web Client Customers group */
+/* Add the user-control properties to the Web Client Customers group */
 insert into yukongrouprole values ( -985, -302, -306, -30600, '(none)');
-insert into yukongrouprole values ( -986, -302, -306, -30601, 'true)');
+insert into yukongrouprole values ( -986, -302, -306, -30601, 'true');
 insert into yukongrouprole values ( -987, -302, -306, -30602, 'true');
 insert into yukongrouprole values ( -988, -302, -306, -30603, 'true');
 
@@ -5529,6 +5590,10 @@ insert into YukonGroupRole values(-1030,-2,-101,-10111,'(none)');
 insert into YukonGroupRole values(-1050,-2,-102,-10200,'(none)');
 
 insert into YukonGroupRole values(-1070,-2,-103,-10300,'(none)');
+insert into YukonGroupRole values(-1071,-2,-103,-10301,'true');
+insert into YukonGroupRole values(-1072,-2,-103,-10302,'true');
+insert into YukonGroupRole values(-1073,-2,-103,-10303,'false');
+insert into YukonGroupRole values(-1074,-2,-103,-10304,'false');
 
 insert into YukonGroupRole values(-1080,-2,-107,-10700,'(none)');
 insert into YukonGroupRole values(-1081,-2,-206,-20600,'(none)');
@@ -5558,6 +5623,8 @@ insert into YukonGroupRole values (-1121,-2, -302, -30200, '(none)');
 
 insert into YukonGroupRole values (-1130,-2, -304, -30400, '(none)');
 insert into YukonGroupRole values (-1131,-2, -304, -30401, 'true');
+insert into YukonGroupRole values (-1132,-2, -304, -30402, '(none)');
+insert into YukonGroupRole values (-1133,-2, -304, -30403, '(none)');
 
 insert into YukonGroupRole values (-1140,-2, -305, -30500, 'true');
 insert into YukonGroupRole values (-1141,-2,-400,-40000,'(none)');
@@ -5740,7 +5807,7 @@ insert into YukonListEntry values (1021,1002,0,'Uninstall',1111);
 insert into YukonListEntry values (1031,1003,0,'OneWayReceiver',1201);
 insert into YukonListEntry values (1032,1003,0,'TwoWayReceiver',1202);
 insert into YukonListEntry values (1033,1003,0,'MCT',1203);
-insert into YukonListEntry values (1041,1004,0,'',0);
+insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
 insert into YukonListEntry values (1051,1005,0,'LCR-5000',1302);
 insert into YukonListEntry values (1052,1005,0,'LCR-4000',1302);
@@ -5847,7 +5914,7 @@ insert into YukonListEntry values (1342,1055,0,'Date/Time',3402);
 insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
 insert into YukonListEntry values (1353,1056,0,'Service Company',3503);
 
-insert into YukonListEntry values (1400,1032,0,'',0);
+insert into YukonListEntry values (1400,1032,0,' ',0);
 insert into YukonListEntry values (1401,1032,0,'2',0);
 insert into YukonListEntry values (1402,1032,0,'2.5',0);
 insert into YukonListEntry values (1403,1032,0,'3',0);
@@ -5855,32 +5922,32 @@ insert into YukonListEntry values (1404,1032,0,'3.5',0);
 insert into YukonListEntry values (1405,1032,0,'4',0);
 insert into YukonListEntry values (1406,1032,0,'4.5',0);
 insert into YukonListEntry values (1407,1032,0,'5',0);
-insert into YukonListEntry values (1410,1033,0,'',0);
+insert into YukonListEntry values (1410,1033,0,' ',0);
 insert into YukonListEntry values (1411,1033,0,'Central Air',0);
-insert into YukonListEntry values (1420,1034,0,'',0);
+insert into YukonListEntry values (1420,1034,0,' ',0);
 insert into YukonListEntry values (1421,1034,0,'30',0);
 insert into YukonListEntry values (1422,1034,0,'40',0);
 insert into YukonListEntry values (1423,1034,0,'52',0);
 insert into YukonListEntry values (1424,1034,0,'80',0);
 insert into YukonListEntry values (1425,1034,0,'120',0);
-insert into YukonListEntry values (1430,1035,0,'',0);
+insert into YukonListEntry values (1430,1035,0,' ',0);
 insert into YukonListEntry values (1431,1035,0,'Propane',0);
 insert into YukonListEntry values (1432,1035,0,'Electric',0);
 insert into YukonListEntry values (1433,1035,0,'Natural Gas',0);
 insert into YukonListEntry values (1434,1035,0,'Oil',0);
-insert into YukonListEntry values (1440,1036,0,'',0);
+insert into YukonListEntry values (1440,1036,0,' ',0);
 insert into YukonListEntry values (1441,1036,0,'Automatic',0);
 insert into YukonListEntry values (1442,1036,0,'Manual',0);
-insert into YukonListEntry values (1450,1037,0,'',0);
+insert into YukonListEntry values (1450,1037,0,' ',0);
 insert into YukonListEntry values (1451,1037,0,'Propane',0);
 insert into YukonListEntry values (1452,1037,0,'Electric',0);
 insert into YukonListEntry values (1453,1037,0,'Natural Gas',0);
 insert into YukonListEntry values (1454,1037,0,'Oil',0);
-insert into YukonListEntry values (1460,1038,0,'',0);
+insert into YukonListEntry values (1460,1038,0,' ',0);
 insert into YukonListEntry values (1461,1038,0,'Batch Dry',0);
 insert into YukonListEntry values (1462,1038,0,'Aerate',0);
 insert into YukonListEntry values (1463,1038,0,'Low Temp Air',0);
-insert into YukonListEntry values (1470,1039,0,'',0);
+insert into YukonListEntry values (1470,1039,0,' ',0);
 insert into YukonListEntry values (1471,1039,0,'0-2500 Bushels',0);
 insert into YukonListEntry values (1472,1039,0,'2500-5000 Bushels',0);
 insert into YukonListEntry values (1473,1039,0,'5000-7500 Bushels',0);
@@ -5892,9 +5959,9 @@ insert into YukonListEntry values (1478,1039,0,'17500-20000 Bushels',0);
 insert into YukonListEntry values (1479,1039,0,'20000-25000 Bushels',0);
 insert into YukonListEntry values (1480,1039,0,'25000-30000 Bushels',0);
 insert into YukonListEntry values (1481,1039,0,'30000+ Bushels',0);
-insert into YukonListEntry values (1490,1040,0,'',0);
+insert into YukonListEntry values (1490,1040,0,' ',0);
 insert into YukonListEntry values (1491,1040,0,'Electric',0);
-insert into YukonListEntry values (1500,1041,0,'',0);
+insert into YukonListEntry values (1500,1041,0,' ',0);
 insert into YukonListEntry values (1501,1041,0,'5',0);
 insert into YukonListEntry values (1502,1041,0,'10',0);
 insert into YukonListEntry values (1503,1041,0,'15',0);
@@ -5910,41 +5977,41 @@ insert into YukonListEntry values (1512,1041,0,'70',0);
 insert into YukonListEntry values (1513,1041,0,'80',0);
 insert into YukonListEntry values (1514,1041,0,'100',0);
 insert into YukonListEntry values (1515,1041,0,'150',0);
-insert into YukonListEntry values (1520,1042,0,'',0);
+insert into YukonListEntry values (1520,1042,0,' ',0);
 insert into YukonListEntry values (1521,1042,0,'Propane',0);
 insert into YukonListEntry values (1522,1042,0,'Electric',0);
 insert into YukonListEntry values (1523,1042,0,'Natural Gas',0);
-insert into YukonListEntry values (1530,1043,0,'',0);
+insert into YukonListEntry values (1530,1043,0,' ',0);
 insert into YukonListEntry values (1531,1043,0,'Ceramic Brick',0);
 insert into YukonListEntry values (1532,1043,0,'Concrete Slab',0);
 insert into YukonListEntry values (1533,1043,0,'Water',0);
 insert into YukonListEntry values (1534,1043,0,'Phase-Change Comp',0);
 insert into YukonListEntry values (1535,1043,0,'Pond',0);
 insert into YukonListEntry values (1536,1043,0,'Rock Box',0);
-insert into YukonListEntry values (1540,1044,0,'',0);
+insert into YukonListEntry values (1540,1044,0,' ',0);
 insert into YukonListEntry values (1541,1044,0,'Air Source',0);
 insert into YukonListEntry values (1542,1044,0,'Water Heater Closed',0);
 insert into YukonListEntry values (1543,1044,0,'Water Heater Open',0);
 insert into YukonListEntry values (1544,1044,0,'Water Heater Direct',0);
 insert into YukonListEntry values (1545,1044,0,'Dual-Fuel (Gas)',0);
-insert into YukonListEntry values (1550,1045,0,'',0);
+insert into YukonListEntry values (1550,1045,0,' ',0);
 insert into YukonListEntry values (1551,1045,0,'Propane',0);
 insert into YukonListEntry values (1552,1045,0,'Electric',0);
 insert into YukonListEntry values (1553,1045,0,'Natural Gas',0);
 insert into YukonListEntry values (1554,1045,0,'Oil',0);
-insert into YukonListEntry values (1560,1046,0,'',0);
+insert into YukonListEntry values (1560,1046,0,' ',0);
 insert into YukonListEntry values (1561,1046,0,'Pivot',0);
 insert into YukonListEntry values (1562,1046,0,'Gated Pipe',0);
 insert into YukonListEntry values (1563,1046,0,'Pivot/Power Only',0);
 insert into YukonListEntry values (1564,1046,0,'Reuse Pit Only',0);
 insert into YukonListEntry values (1565,1046,0,'Ditch W/Syphon Tube',0);
 insert into YukonListEntry values (1566,1046,0,'Flood',0);
-insert into YukonListEntry values (1570,1047,0,'',0);
+insert into YukonListEntry values (1570,1047,0,' ',0);
 insert into YukonListEntry values (1571,1047,0,'Heavy Loam',0);
 insert into YukonListEntry values (1572,1047,0,'Loam',0);
 insert into YukonListEntry values (1573,1047,0,'Medium',0);
 insert into YukonListEntry values (1574,1047,0,'Sandy',0);
-insert into YukonListEntry values (1580,1059,0,'',0);
+insert into YukonListEntry values (1580,1059,0,' ',0);
 insert into YukonListEntry values (1581,1059,0,'5',0);
 insert into YukonListEntry values (1582,1059,0,'10',0);
 insert into YukonListEntry values (1583,1059,0,'15',0);
@@ -5963,28 +6030,28 @@ insert into YukonListEntry values (1595,1059,0,'150',0);
 insert into YukonListEntry values (1596,1059,0,'200',0);
 insert into YukonListEntry values (1597,1059,0,'250',0);
 insert into YukonListEntry values (1598,1059,0,'300',0);
-insert into YukonListEntry values (1600,1060,0,'',0);
+insert into YukonListEntry values (1600,1060,0,' ',0);
 insert into YukonListEntry values (1601,1060,0,'Propane',0);
 insert into YukonListEntry values (1602,1060,0,'Electric',0);
 insert into YukonListEntry values (1603,1060,0,'Natural Gas',0);
 insert into YukonListEntry values (1604,1060,0,'Oil',0);
-insert into YukonListEntry values (1610,1061,0,'',0);
+insert into YukonListEntry values (1610,1061,0,' ',0);
 insert into YukonListEntry values (1611,1061,0,'At Road',0);
 insert into YukonListEntry values (1612,1061,0,'At Pump',0);
 insert into YukonListEntry values (1613,1061,0,'At Pivot',0);
-insert into YukonListEntry values (1620,1062,0,'',0);
+insert into YukonListEntry values (1620,1062,0,' ',0);
 insert into YukonListEntry values (1621,1062,0,'120 (PT)',0);
 insert into YukonListEntry values (1622,1062,0,'240',0);
 insert into YukonListEntry values (1623,1062,0,'277/480',0);
 insert into YukonListEntry values (1624,1062,0,'480',0);
-insert into YukonListEntry values (1630,1063,0,'',0);
+insert into YukonListEntry values (1630,1063,0,' ',0);
 insert into YukonListEntry values (1631,1063,0,'Basement',0);
 insert into YukonListEntry values (1632,1063,0,'Crawl Space',0);
 insert into YukonListEntry values (1633,1063,0,'Main Floor Closet',0);
 insert into YukonListEntry values (1634,1063,0,'Second Floor Closet',0);
 insert into YukonListEntry values (1635,1063,0,'Under Counter',0);
 insert into YukonListEntry values (1636,1063,0,'Attic',0);
-insert into YukonListEntry values (1640,1064,0,'',0);
+insert into YukonListEntry values (1640,1064,0,' ',0);
 insert into YukonListEntry values (1641,1064,0,'2',0);
 insert into YukonListEntry values (1642,1064,0,'2.5',0);
 insert into YukonListEntry values (1643,1064,0,'3',0);
@@ -5993,7 +6060,7 @@ insert into YukonListEntry values (1645,1064,0,'4',0);
 insert into YukonListEntry values (1646,1064,0,'4.5',0);
 insert into YukonListEntry values (1647,1064,0,'5',0);
 
-insert into YukonListEntry values (1700,1021,0,'',0);
+insert into YukonListEntry values (1700,1021,0,' ',0);
 insert into YukonListEntry values (1701,1021,0,'One Story Unfinished Basement',0);
 insert into YukonListEntry values (1702,1021,0,'One Story Finished Basement',0);
 insert into YukonListEntry values (1703,1021,0,'Two Story',0);
@@ -6001,10 +6068,10 @@ insert into YukonListEntry values (1704,1021,0,'Manufactured Home',0);
 insert into YukonListEntry values (1705,1021,0,'Apartment',0);
 insert into YukonListEntry values (1706,1021,0,'Duplex',0);
 insert into YukonListEntry values (1707,1021,0,'Townhome',0);
-insert into YukonListEntry values (1710,1022,0,'',0);
+insert into YukonListEntry values (1710,1022,0,' ',0);
 insert into YukonListEntry values (1711,1022,0,'Frame',0);
 insert into YukonListEntry values (1712,1022,0,'Brick',0);
-insert into YukonListEntry values (1720,1023,0,'',0);
+insert into YukonListEntry values (1720,1023,0,' ',0);
 insert into YukonListEntry values (1721,1023,0,'pre-1900',0);
 insert into YukonListEntry values (1722,1023,0,'1910',0);
 insert into YukonListEntry values (1723,1023,0,'1920',0);
@@ -6016,7 +6083,7 @@ insert into YukonListEntry values (1728,1023,0,'1970',0);
 insert into YukonListEntry values (1729,1023,0,'1980',0);
 insert into YukonListEntry values (1730,1023,0,'1990',0);
 insert into YukonListEntry values (1731,1023,0,'2000',0);
-insert into YukonListEntry values (1740,1024,0,'',0);
+insert into YukonListEntry values (1740,1024,0,' ',0);
 insert into YukonListEntry values (1741,1024,0,'Less Than 1000',0);
 insert into YukonListEntry values (1742,1024,0,'1000-1499',0);
 insert into YukonListEntry values (1743,1024,0,'1500-1999',0);
@@ -6031,12 +6098,12 @@ insert into YukonListEntry values (1753,1025,0,'Fair (3-5)"',0);
 insert into YukonListEntry values (1754,1025,0,'Average (6-8)"',0);
 insert into YukonListEntry values (1755,1025,0,'Good (9-11)"',0);
 insert into YukonListEntry values (1756,1025,0,'Excellant (12+)"',0);
-insert into YukonListEntry values (1760,1026,0,'',0);
+insert into YukonListEntry values (1760,1026,0,' ',0);
 insert into YukonListEntry values (1761,1026,0,'Poor',0);
 insert into YukonListEntry values (1762,1026,0,'Fair',0);
 insert into YukonListEntry values (1763,1026,0,'Good',0);
 insert into YukonListEntry values (1764,1026,0,'Excellent',0);
-insert into YukonListEntry values (1770,1027,0,'',0);
+insert into YukonListEntry values (1770,1027,0,' ',0);
 insert into YukonListEntry values (1771,1027,0,'None',0);
 insert into YukonListEntry values (1772,1027,0,'Central Air',0);
 insert into YukonListEntry values (1773,1027,0,'GSHP',0);
@@ -6044,7 +6111,7 @@ insert into YukonListEntry values (1774,1027,0,'ASHP',0);
 insert into YukonListEntry values (1775,1027,0,'Window Unit',0);
 insert into YukonListEntry values (1776,1027,0,'Gas ASHP',0);
 insert into YukonListEntry values (1777,1027,0,'Attic Fan',0);
-insert into YukonListEntry values (1780,1028,0,'',0);
+insert into YukonListEntry values (1780,1028,0,' ',0);
 insert into YukonListEntry values (1781,1028,0,'Electric Forced Air',0);
 insert into YukonListEntry values (1782,1028,0,'GSHP',0);
 insert into YukonListEntry values (1783,1028,0,'ASHP',0);
@@ -6053,16 +6120,16 @@ insert into YukonListEntry values (1785,1028,0,'Ceiling Fan',0);
 insert into YukonListEntry values (1786,1028,0,'ETS',0);
 insert into YukonListEntry values (1787,1028,0,'Gas Forced Air',0);
 insert into YukonListEntry values (1788,1028,0,'Gas Wall Unit',0);
-insert into YukonListEntry values (1790,1029,0,'',0);
+insert into YukonListEntry values (1790,1029,0,' ',0);
 insert into YukonListEntry values (1791,1029,0,'1 - 2',0);
 insert into YukonListEntry values (1792,1029,0,'3 - 4',0);
 insert into YukonListEntry values (1793,1029,0,'5 - 6',0);
 insert into YukonListEntry values (1794,1029,0,'7 - 8',0);
 insert into YukonListEntry values (1795,1029,0,'9+',0);
-insert into YukonListEntry values (1800,1030,0,'',0);
+insert into YukonListEntry values (1800,1030,0,' ',0);
 insert into YukonListEntry values (1801,1030,0,'Own',0);
 insert into YukonListEntry values (1802,1030,0,'Rent',0);
-insert into YukonListEntry values (1810,1031,0,'',0);
+insert into YukonListEntry values (1810,1031,0,' ',0);
 insert into YukonListEntry values (1811,1031,0,'Propane',0);
 insert into YukonListEntry values (1812,1031,0,'Electric',0);
 insert into YukonListEntry values (1813,1031,0,'Natural Gas',0);
@@ -6283,6 +6350,10 @@ insert into YukonRoleProperty values(-10200,-102,'graph_edit_graphdefinition','t
 
 /* Commander Role Properties */ 
 insert into YukonRoleProperty values(-10300,-103,'msg_priority','14','Tells commander what the outbound priority of messages are (low)1 - 14(high)');
+insert into YukonRoleProperty values(-10301,-103,'Versacom Serial','true','Show a Versacom Serial Number SortBy display');
+insert into YukonRoleProperty values(-10302,-103,'Expresscom Serial','true','Show an Expresscom Serial Number SortBy display');
+insert into YukonRoleProperty values(-10303,-103,'DCU SA203 Serial','false','Show a DCU SA205 Serial Number SortBy display');
+insert into YukonRoleProperty values(-10304,-103,'DCU SA305 Serial','false','Show a DCU SA305 Serial Number SortBy display');
 
 /* Calc Historical Role Properties */
 insert into YukonRoleProperty values(-10400,-104,'interval','900','<description>');
@@ -6306,7 +6377,7 @@ insert into YukonRoleProperty values(-10802,-108,'style_sheet','yukon/CannonStyl
 insert into YukonRoleProperty values(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
 insert into YukonRoleProperty values(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
 insert into YukonRoleProperty values(-10805,-108,'header_logo','yukon/DemoHeader.gif','The main header logo');
-insert into YukonRoleProperty values(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
+insert into YukonRoleProperty values(-10806, -108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 
@@ -6418,11 +6489,13 @@ insert into YukonRoleProperty values(-30201,-302,'Energy Buyback Phone Number','
 /* CICustomer Commercial Metering Role Properties */
 insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
 insert into yukonroleproperty values(-30401, -304, 'Trending Get Data Now Button', 'false', 'Controls access to retrieve meter data on demand');
+insert into yukonroleproperty values(-30402, -304, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events');
+insert into yukonroleproperty values(-30403, -304, 'Maximum Daily Scans', '2', 'Maximum number of get data now scans available daily');
 
 /* CICustomer Administrator Role */
 insert into yukonroleproperty values(-30500, -305, 'Contact Information Editable', 'false', 'Contact information is editable by the customer');
 
-/*Add the CICustomer user-control properties */
+/* Add the CICustomer user-control properties */
 insert into yukonroleproperty values(-30600, -306, 'User Control Label', 'User-Control', 'The customer specific name for user control');
 insert into yukonroleproperty values(-30601, -306, 'Auto Control', 'true', 'Controls access to auto control.');
 insert into yukonroleproperty values(-30602, -306, 'Time Based Control', 'true', 'Controls access to time based control');
@@ -6588,9 +6661,8 @@ go
 
 
 insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.services.DynamicNotifcationServer', '(none)', '(none)' );
-/*insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' );*/
-/*insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );*/
-
+/* insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' ); */
+/* insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' ); */
 
 alter table YukonServices
    add constraint PK_YUKSER primary key  (ServiceID)
@@ -6691,6 +6763,10 @@ insert into YukonUserRole values(-150,-1,-102,-10200,'(none)');
 
 /* Commander */
 insert into YukonUserRole values(-170,-1,-103,-10300,'(none)');
+insert into YukonUserRole values(-171,-1,-103,-10301,'true');
+insert into YukonUserRole values(-172,-1,-103,-10302,'true');
+insert into YukonUserRole values(-173,-1,-103,-10303,'false');
+insert into YukonUserRole values(-174,-1,-103,-10304,'false');
 
 /* Esubstation Editor */
 insert into YukonUserRole values(-250,-1,-107,-10700,'(none)');
@@ -6728,6 +6804,8 @@ insert into YukonUserRole values (-431, -1, -302, -30200, '(none)');
 /* Web Client Customers Commercial Metering role */
 insert into YukonUserRole values (-440, -1, -304, -30400, '(none)');
 insert into YukonUserRole values (-441, -1, -304, -30401, 'true');
+insert into YukonUserRole values (-442, -1, -304, -30402, '(none)'); 
+insert into YukonUserRole values (-443, -1, -304, -30403, '(none)');
 
 /* Web Client Customers Administrator role */
 insert into YukonUserRole values (-450, -1, -305, -30500, 'true');
@@ -6859,7 +6937,7 @@ create table YukonWebConfiguration (
 ConfigurationID      numeric              not null,
 LogoLocation         varchar(100)         null,
 Description          varchar(500)         null,
-AlternateDisplayName varchar(50)          null,
+AlternateDisplayName varchar(100)         null,
 URL                  varchar(100)         null
 )
 go
@@ -7508,7 +7586,7 @@ alter table DeviceWindow
 go
 
 
-alter table DeviceDNP
+alter table DeviceAddress
    add constraint FK_Dev_DevDNP foreign key (DeviceID)
       references DEVICE (DEVICEID)
 go
@@ -7523,6 +7601,12 @@ go
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)
       references YukonPAObject (PAObjectID)
+go
+
+
+alter table DeviceSeries5RTU
+   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
+      references DEVICE2WAYFLAGS (DEVICEID)
 go
 
 
@@ -7688,6 +7772,12 @@ alter table LMGroupSA305
 go
 
 
+alter table LMDirectNotifGrpList
+   add constraint FK_LMDi_DNGrpL foreign key (ProgramID)
+      references LMProgramDirect (DeviceID)
+go
+
+
 alter table LMDirectOperatorList
    add constraint FK_LMDirOpLs_LMPrD foreign key (ProgramID)
       references LMProgramDirect (DeviceID)
@@ -7733,6 +7823,12 @@ go
 alter table LMPROGRAM
    add constraint FK_LMPr_PrgCon foreign key (ConstraintID)
       references LMProgramConstraints (ConstraintID)
+go
+
+
+alter table LMControlScenarioProgram
+   add constraint FK_LmCScP_YkPA foreign key (ScenarioID)
+      references YukonPAObject (PAObjectID)
 go
 
 
@@ -7811,6 +7907,12 @@ go
 alter table MCTConfigMapping
    add constraint FK_McCfgM_McCfg foreign key (ConfigID)
       references MCTConfig (ConfigID)
+go
+
+
+alter table LMDirectNotifGrpList
+   add constraint FK_NtGr_DNGrpL foreign key (NotificationGrpID)
+      references NotificationGroup (NotificationGroupID)
 go
 
 
