@@ -39,7 +39,6 @@ public final class LiteTypes
 	public final static int STARS_CONTROL_HISTORY = 109;
 	public final static int STARS_APPLIANCE_CATEGORY = 110;
 	public final static int STARS_CUSTOMER_WEB_CONFIGURATION = 111;
-	public final static int STARS_CUSTOMER_SELECTION_LIST = 112;
 	public final static int STARS_CUSTOMER_ACCOUNT = 113;
 	public final static int STARS_WORK_ORDER_BASE = 114;
 	public final static int STARS_CALL_REPORT_BASE = 115;
