@@ -202,8 +202,10 @@
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_PASSWORD %>">
         <%= links.get("Password.jsp") %><br>
 </cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_NOT_IMPLEMENTED %>">
         <%= links.get("Privileges.jsp")%><br>
 		<%= links.get("PrintExport.jsp")%><br>
+</cti:checkRole>
 	  </div>
     </td>
   </tr>
