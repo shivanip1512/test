@@ -12,6 +12,7 @@ import com.cannontech.cbc.data.StreamableCapObject;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.messages.CBCCommand;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.database.data.point.PointQualities;
@@ -39,15 +40,6 @@ public class CapControlEntryPanel extends javax.swing.JPanel implements java.awt
 /**
  * CapBankEntryPanel constructor comment.
  */
-public CapControlEntryPanel() {
-	super();
-	initialize();
-}
-
-
-/**
- * CapBankEntryPanel constructor comment.
- */
 public CapControlEntryPanel( CBCClientConnection conn ) 
 {
 	super();
@@ -71,9 +63,9 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 
 	if( e.getSource() == getJCheckBoxOpCount() )
 	{
+		getJTextFieldOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
 //		getJLabelOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
-//		getJTextFieldOpCount().setEnabled( getJCheckBoxOpCount().isSelected() );
-//		
+		
 //		getJLabelState().setEnabled( !getJCheckBoxOpCount().isSelected() );
 //		getJComboBoxState().setEnabled( !getJCheckBoxOpCount().isSelected() );
 	}
@@ -250,11 +242,12 @@ private javax.swing.JTextField getJTextFieldOpCount()
 		{
 			jTextFieldOpCount = new javax.swing.JTextField();
 			jTextFieldOpCount.setName("JTextFieldOpCount");
+			jTextFieldOpCount.setMinimumSize( new Dimension(50, 20) );
+			jTextFieldOpCount.setMaximumSize( new Dimension(50, 20) );
+			jTextFieldOpCount.setPreferredSize( new Dimension(50, 20) );
 			
-			jTextFieldOpCount.setDocument( new LongRangeDocument(0, 999999) );
-			
-			jTextFieldOpCount.setEnabled( false );
-			jTextFieldOpCount.setVisible( false );
+			jTextFieldOpCount.setEnabled( false );			
+			jTextFieldOpCount.setDocument( new LongRangeDocument(0, 999999) );			
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
@@ -330,8 +323,8 @@ private javax.swing.JCheckBox getJCheckBoxOpCount()
 			jCheckBoxOpCount = new javax.swing.JCheckBox();
 			jCheckBoxOpCount.setName("JLabelOpCount");
 			jCheckBoxOpCount.setFont(new java.awt.Font("dialog", 0, 14));
-			jCheckBoxOpCount.setText("Reset Daily Operation Count");
-			jCheckBoxOpCount.setToolTipText("Check this option to set the daily operations count to zero");
+			jCheckBoxOpCount.setText("Change Daily Operation Count");
+			jCheckBoxOpCount.setToolTipText("Check this option to set the daily operations count");
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
@@ -448,8 +441,8 @@ private javax.swing.JPanel getJPanel1() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 
 
@@ -476,7 +469,7 @@ private void initialize()
 	{
 		setName("CapBankEntryPanel");
 		setLayout(new java.awt.GridBagLayout());
-		setPreferredSize( new Dimension(280, 180) );
+		setPreferredSize( new Dimension(280, 200) );
 
 		java.awt.GridBagConstraints constraintsJLabelCapBank = new java.awt.GridBagConstraints();
 		constraintsJLabelCapBank.gridx = 1; constraintsJLabelCapBank.gridy = 1;
@@ -523,7 +516,6 @@ private void initialize()
 
 		java.awt.GridBagConstraints conOpCntText = new java.awt.GridBagConstraints();
 		conOpCntText.gridx = 2; conOpCntText.gridy = 4;
-		conOpCntText.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		conOpCntText.anchor = java.awt.GridBagConstraints.WEST;
 		conOpCntText.insets = new java.awt.Insets(5, 3, 10, 5);
 		add(getJTextFieldOpCount(), conOpCntText );
@@ -556,7 +548,7 @@ public void jButtonDismiss_ActionPerformed(java.awt.event.ActionEvent actionEven
 	return;
 }
 
-private PointData createPointData()
+private PointData createPointData( int pointID_, String msg_, double value_, int ptType_ )
 {
 	PointData pt = null;
 	
@@ -564,14 +556,13 @@ private PointData createPointData()
 	{
 		pt = new PointData();
 
-		pt.setId( ((CapBankDevice)getCapObject()).getStatusPointID().intValue() );
-			
-		pt.setValue( (double)getJComboBoxState().getSelectedIndex() );
+		pt.setId( pointID_ );
+		pt.setValue( value_ );
 		pt.setQuality( PointQualities.MANUAL_QUALITY );
-		pt.setStr("Capacitor Bank manual change from CBC Client");
+		pt.setStr( msg_ );
 		pt.setTime( new java.util.Date() );
 		pt.setTimeStamp( new java.util.Date() );
-		pt.setType( PointTypes.STATUS_POINT );
+		pt.setType( ptType_ );
 	}
 		
 	return pt;
@@ -587,16 +578,37 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	{
 		Message msg = null;
 		Message cmdMsg = null;
+		Message opCntMsg = null;
 
 		if( getJComboBoxState().isEnabled() )
 		{
-			msg = createPointData();
+			msg = createPointData(
+						((CapBankDevice)getCapObject()).getStatusPointID().intValue(),
+						"Capacitor Bank manual change from CBC Client",
+						(double)getJComboBoxState().getSelectedIndex(),
+						PointTypes.STATUS_POINT );
 		}
+		
 		
 		if( getJCheckBoxOpCount().isSelected() )
 		{
 			cmdMsg = new CBCCommand(
 					CBCCommand.RESET_OPCOUNT, getCapObject().getCcId().intValue() );
+					
+			//if we have a valid NON-ZERO value for the new opcount, send it
+			//  in a PointData message
+			
+			if( getJTextFieldOpCount().getText() != null
+				 && getJTextFieldOpCount().getText().length() > 0 )
+			{
+				opCntMsg = 
+					createPointData(
+							((CapBankDevice)getCapObject()).getOperationAnalogPointID().intValue(),
+							"Capacitor Bank OP_COUNT change from CBC Client",
+							new Double(getJTextFieldOpCount().getText()).doubleValue(),
+							PointTypes.ANALOG_POINT );
+			}
+
 		}
 
 
@@ -606,6 +618,9 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 			
 			if( cmdMsg != null )
 				getConnectionWrapper().write( cmdMsg );
+
+			if( opCntMsg!= null )
+				getConnectionWrapper().write( opCntMsg );
 		}
 		else
 		{
