@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/08/31 16:02:19 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/10/19 20:24:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,6 +149,7 @@ private:
 
     void acknowledgeCommandMsg( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
     void acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
+    bool processInputFunction(CHAR Char);
 
 public:
 

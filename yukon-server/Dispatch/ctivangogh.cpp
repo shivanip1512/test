@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2004/10/12 20:15:55 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2004/10/19 20:24:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,6 +216,10 @@ void CtiVanGogh::VGMainThread()
     ULONG MessageCount = 0;
     ULONG MessageLog = 0;
 
+    INPUT_RECORD      inRecord;
+    HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD             Count;
+    CHAR              Char;
     /*
      *  Iterators, place pointers etc.
      */
@@ -251,7 +255,7 @@ void CtiVanGogh::VGMainThread()
         loadPendingControls();      // Reload any controls written out at last shutdown.
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Reloading pending control information" << endl;
+            dout << RWTime() << " Done Reloading pending control information" << endl;
         }
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -289,131 +293,159 @@ void CtiVanGogh::VGMainThread()
 
         for(;!bQuit;)
         {
+            MsgPtr = MainQueue_.getQueue( 1000 );
+
+            if(MsgPtr != NULL)
             {
-                do
+                switch( MsgPtr->isA() )
                 {
-                    MsgPtr = MainQueue_.getQueue( 1000 );
-
-                    if(MsgPtr != NULL)
+                case MSG_PCRETURN:
+                case MSG_MULTI:
                     {
-                        switch( MsgPtr->isA() )
+                        MessageCount += ((CtiMultiMsg*)MsgPtr)->getCount();
+                        MessageLog += ((CtiMultiMsg*)MsgPtr)->getCount();
+                        break;
+                    }
+                default:
+                    {
+                        MessageCount++;
+                        MessageLog++;
+                        break;
+                    }
+                }
+
+
+                if( MessageLog > 1000  )
+                {
+                    MessageLog = 0;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Dispatch has processed " << MessageCount << " inbound messages." << endl;
+                }
+
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSFRMCLIENT)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "\n>>>> INCOMING " << endl;
+                    }
+                    MsgPtr->dump();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << ">>>> INCOMING COMPLETE\n" << endl;
+                    }
+                }
+
+
+                try
+                {
+                    nRet = NORMAL;
+
+                    if( MsgPtr->isValid() )
+                    {
+                        if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
                         {
-                        case MSG_PCRETURN:
-                        case MSG_MULTI:
-                            {
-                                MessageCount += ((CtiMultiMsg*)MsgPtr)->getCount();
-                                MessageLog += ((CtiMultiMsg*)MsgPtr)->getCount();
-                                break;
-                            }
-                        default:
-                            {
-                                MessageCount++;
-                                MessageLog++;
-                                break;
-                            }
+                            nRet = pExec->ServerExecute(this);     // The "this" in question is the CtiVanGogh object...
+                            delete pExec;
                         }
-
-
-                        if( MessageLog > 1000  )
+                        else
                         {
-                            MessageLog = 0;
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Dispatch has processed " << MessageCount << " inbound messages." << endl;
-                        }
-
-                        if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSFRMCLIENT)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "\n>>>> INCOMING " << endl;
-                            }
-                            MsgPtr->dump();
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << ">>>> INCOMING COMPLETE\n" << endl;
-                            }
-                        }
-
-
-                        try
-                        {
-                            nRet = NORMAL;
-
-                            if( MsgPtr->isValid() )
-                            {
-                                if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
-                                {
-                                    nRet = pExec->ServerExecute(this);     // The "this" in question is the CtiVanGogh object...
-                                    delete pExec;
-                                }
-                                else
-                                {
-                                    delete MsgPtr;
-                                }
-                            }
-                            else
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Message reported itself as invalid " << endl;
-                                }
-
-                                delete MsgPtr;
-                            }
-
-                            if( nRet )
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  ServerExecute returned an error = " << nRet << endl;
-                                }
-                            }
-                        }
-                        catch( ... )
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            delete MsgPtr;
                         }
                     }
                     else
                     {
-                        if( !(ConnThread_.isValid() &&
-                              ConnThread_.getExecutionState() & RW_THR_ACTIVE &&
-                              ConnThread_.getCompletionState() == RW_THR_PENDING) )
                         {
-                            if(ConnThread_.getCompletionState() != RW_THR_PENDING)
-                            {
-                                CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Restarting ConnThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-
-                                establishListener();
-
-                                // all that is good and ready has been started, open up for business from clients
-                                ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
-                                ConnThread_.start();
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  Message reported itself as invalid " << endl;
                         }
 
+                        delete MsgPtr;
+                    }
 
-                        if(!(++sanity % SANITY_RATE))
+                    if( nRet )
+                    {
                         {
-                            reportOnThreads();
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  ServerExecute returned an error = " << nRet << endl;
+                        }
+                    }
+                }
+                catch( ... )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+            else
+            {
+                if( !(ConnThread_.isValid() &&
+                      ConnThread_.getExecutionState() & RW_THR_ACTIVE &&
+                      ConnThread_.getCompletionState() == RW_THR_PENDING) )
+                {
+                    if(ConnThread_.getCompletionState() != RW_THR_PENDING)
+                    {
+                        CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
 
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Restarting ConnThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        establishListener();
+
+                        // all that is good and ready has been started, open up for business from clients
+                        ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
+                        ConnThread_.start();
+                    }
+                }
+
+
+                if(!(++sanity % SANITY_RATE))
+                {
+                    reportOnThreads();
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " VG Main Thread Active " << endl;
+                    }
+                }
+
+            }
+
+            if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))     // There is something ther if we succeed.
+            {
+                if(inRecord.EventType != KEY_EVENT)
+                {
+                    ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);     // Read out the offending input.
+                }
+                else    // These are to only kind we care about!
+                {
+                    ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
+
+                    if( inRecord.Event.KeyEvent.bKeyDown != FALSE )
+                    {
+                        if((inRecord.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
+                        {
+                            Char = tolower(inRecord.Event.KeyEvent.uChar.AsciiChar);
+                        }
+                        else
+                        {
+                            Char = 0;
+                        }
+
+                        if( processInputFunction(Char) )
+                        {
+                            if(Char != 0)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " VG Main Thread Active " << endl;
+                                fprintf(stdout, " No ALT 0x%04X, 0x%04X, 0x%02X 0x%08X\n",inRecord.Event.KeyEvent.wVirtualScanCode,inRecord.Event.KeyEvent.wVirtualKeyCode, Char, inRecord.Event.KeyEvent.dwControlKeyState);
                             }
                         }
                     }
-                } while(MsgPtr != NULL);
+                }
             }
 
             iteration++;
@@ -5328,7 +5360,6 @@ void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " An unprocessed message in the queue indicates a non-viable connection." << endl;
-            dout << "   " << endl;
         }
         Msg->setConnectionHandle(NULL);
     }
@@ -7560,3 +7591,106 @@ void CtiVanGogh::updateGroupPseduoControlPoint(CtiPointBase *&pPt, const RWTime 
     }
 }
 
+
+bool CtiVanGogh::processInputFunction(CHAR Char)
+{
+    bool process_fail = false;
+    PSZ Environment;
+
+    try
+    {
+        switch(Char)
+        {
+        case 0x68:              // alt - h
+        case 0x3f:              // alt - ?
+            /* Print some instructions */
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+                dout << endl;
+                dout << "Dispatch " << endl << endl;
+                dout << endl;
+
+                break;
+            }
+        case 0x6d:              // alt-m trace filter.
+            {
+                _CrtDumpMemoryLeaks();
+                break;
+            }
+        case 0x71:              // alt-q
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Vangogh mainqueue has " << MainQueue_.entries() << " entries" << endl;
+                }
+                break;
+            }
+        case 0x74:              // alt-t
+            {
+                CtiVanGoghConnectionManager *Mgr = NULL;
+
+                {
+                    CtiServer::iterator  iter(mConnectionTable);
+
+                    for(;(Mgr = (CtiVanGoghConnectionManager *)iter());)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Manager " << Mgr->getName() << " has " << Mgr->outQueueCount() << " outqueue entries " << endl;
+                        }
+                    }
+                }
+                break;
+            }
+        case 0x72:              // alt-r
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  CtiLMControlHistoryMsg   icnt = " << CtiLMControlHistoryMsg::getInstanceCount() << endl;
+                    dout << "  CtiPointdataMsg          icnt = " << CtiPointDataMsg::getInstanceCount() << endl;
+                    dout << "  CtiSignalMsg             icnt = " << CtiSignalMsg::getInstanceCount() << endl;
+                }
+
+                break;
+            }
+        case 0x65:              // alt-e
+            {
+            }
+        case 0x64:              // alt-d
+            {
+            }
+        case 0x66:              // alt-f trace filter.
+            {
+            }
+        case 0x6c:              // alt-l
+            {
+            }
+        case 0x63:              // alt-c
+            {
+            }
+        case 0x6b:              // alt-k
+            {
+            }
+        case 0x73:              // alt-s
+            {
+            }
+        case 0x70:              // alt-p
+            {
+            }
+        default:
+            process_fail = true;
+            break;
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return process_fail;
+}
