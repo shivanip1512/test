@@ -854,9 +854,9 @@ insert into YukonRoleProperty values(-1400,-5,'voice_app','login','The voice ser
 insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
 
-insert into YukonGroupRole values(-100,-1,-5,-1400,'(none)');
-insert into YukonGroupRole values(-101,-1,-5,-1401,'(none)');
-insert into YukonGroupRole values(-102,-1,-5,-1402,'(none)');
+insert into YukonGroupRole values(-70,-1,-5,-1400,'(none)');
+insert into YukonGroupRole values(-71,-1,-5,-1401,'(none)');
+insert into YukonGroupRole values(-72,-1,-5,-1402,'(none)');
 
 
 
