@@ -250,3 +250,30 @@ create unique  index YukWbCfg_PK on YukonWebConfiguration (
 ConfigurationID
 )
 go
+
+
+insert into YukonRole values(-150,'LOADCONTROL_CONTROL_ODDS','LoadControl','(none)','(none)');
+insert into YukonRole values(-151,'CONSUMERINFO_NOT_IMPLEMENTED','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-161,'CONSUMERINFO_ACCOUNT_GENERAL','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-162,'CONSUMERINFO_ACCOUNT_CALL_TRACKING','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-163,'CONSUMERINFO_METERING','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-164,'CONSUMERINFO_METERING_INTERVAL_DATA','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-165,'CONSUMERINFO_METERING_USAGE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-166,'CONSUMERINFO_PROGRAMS','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-167,'CONSUMERINFO_PROGRAMS_CONTROL_HISTORY','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-168,'CONSUMERINFO_PROGRAMS_ENROLLMENT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-169,'CONSUMERINFO_PROGRAMS_OPTOUT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-170,'CONSUMERINFO_APPLIANCES','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-171,'CONSUMERINFO_APPLIANCES_CREATE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-172,'CONSUMERINFO_HARDWARES','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-173,'CONSUMERINFO_HARDWARES_CREATE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-174,'CONSUMERINFO_WORKORDERS','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_LOGIN','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-179,'CONSUMERINFO_ACCOUNT_RESIDENCE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-180,'CONSUMERINFO_QUESTIONS_UTIL','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-181,'CONSUMERINFO_QUESTIONS_FAQ','ConsumerInfo','(none)','(none)');
+go

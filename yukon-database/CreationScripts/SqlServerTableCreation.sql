@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     3/19/2003 4:16:40 PM                         */
+/* Created on:     4/23/2003 4:44:48 PM                         */
 /*==============================================================*/
 
 
@@ -3967,7 +3967,6 @@ insert into yukongrouprole values(-210,-122,'(none)');
 insert into yukongrouprole values(-210,-123,'(none)');
 insert into yukongrouprole values(-210,-124,'(none)');
 insert into yukongrouprole values(-210,-125,'(none)');
-insert into yukongrouprole values(-210,-150,'(none)');
 insert into yukongrouprole values(-210,-160,'(none)');
 insert into yukongrouprole values(-210,-161,'(none)');
 insert into yukongrouprole values(-210,-162,'(none)');
@@ -3985,13 +3984,6 @@ insert into yukongrouprole values(-210,-173,'(none)');
 insert into yukongrouprole values(-210,-174,'(none)');
 insert into yukongrouprole values(-210,-175,'(none)');
 insert into yukongrouprole values(-210,-176,'(none)');
-insert into yukongrouprole values(-210,-179,'(none)');
-insert into yukongrouprole values(-210,-9000,' ');
-insert into yukongrouprole values(-210,-9001,'Energy Exchange');
-insert into yukongrouprole values(-210,-9002,'Energy Exchange');
-insert into yukongrouprole values(-210,-9003,' ');
-insert into yukongrouprole values(-210,-9010,'Notification');
-insert into yukongrouprole values(-210,-9011,'Curtailment Provider');
 insert into yukongrouprole values(-211,-100,'/user/ConsumerStat/stat/General.jsp');
 insert into yukongrouprole values(-211,-102,'(none)');
 insert into yukongrouprole values(-211,-177,'(none)');
@@ -4039,12 +4031,71 @@ constraint PK_YUKONLISTENTRY primary key  (EntryID)
 go
 
 
-insert into YukonListEntry values( 0, 0, 0, '(none)', 0 );
+insert into YukonListEntry values( 0, 1, 0, '(none)', 0 );
 insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
 insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
 
+
+insert into YukonListEntry values (1001,1001,0,'Program',1001);
+insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
+insert into YukonListEntry values (1003,1002,0,'Signup',1101);
+insert into YukonListEntry values (1004,1002,0,'Activation Pending',1102);
+insert into YukonListEntry values (1005,1002,0,'Activation Completed',1103);
+insert into YukonListEntry values (1006,1002,0,'Termination',1104);
+insert into YukonListEntry values (1007,1002,0,'Temp Opt Out',1105);
+insert into YukonListEntry values (1008,1002,0,'Future Activation',1106);
+insert into YukonListEntry values (1009,1002,0,'Install',1107);
+insert into YukonListEntry values (1010,1002,0,'Configure',1108);
+insert into YukonListEntry values (1011,1003,0,'OneWayReceiver',1201);
+insert into YukonListEntry values (1012,1004,0,'120/120',0);
+insert into YukonListEntry values (1013,1005,0,'LCR-5000',0);
+insert into YukonListEntry values (1014,1005,0,'LCR-4000',0);
+insert into YukonListEntry values (1015,1005,0,'LCR-3000',0);
+insert into YukonListEntry values (1016,1005,0,'LCR-2000',0);
+insert into YukonListEntry values (1017,1005,0,'LCR-1000',0);
+insert into YukonListEntry values (1018,1005,0,'Thermostat',1301);
+insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401);
+insert into YukonListEntry values (1020,1007,0,'Water Heater',1402);
+insert into YukonListEntry values (1021,1007,0,'Heating System',1403);
+insert into YukonListEntry values (1022,1007,0,'Pool Pump',1404);
+insert into YukonListEntry values (1023,1007,0,'Hot Tub',1405);
+insert into YukonListEntry values (1024,1008,0,'General',0);
+insert into YukonListEntry values (1025,1008,0,'Credit',0);
+insert into YukonListEntry values (1026,1009,0,'Service Call',0);
+insert into YukonListEntry values (1027,1009,0,'Install',0);
+insert into YukonListEntry values (1028,1010,0,'Unscheduled',1501);
+insert into YukonListEntry values (1029,1010,0,'Scheduled',1502);
+insert into YukonListEntry values (1030,1010,0,'Completed',1503);
+insert into YukonListEntry values (1031,1011,0,'Acct #',1601);
+insert into YukonListEntry values (1032,1011,0,'Phone #',1602);
+insert into YukonListEntry values (1033,1011,0,'Last name',1603);
+insert into YukonListEntry values (1034,1011,0,'Serial #',1604);
+insert into YukonListEntry values (1035,1006,0,'Available',1701);
+insert into YukonListEntry values (1036,1006,0,'Temp Unavail',1702);
+insert into YukonListEntry values (1037,1006,0,'Unavailable',1703);
+insert into YukonListEntry values (1038,1012,0,'(Unknown);',1801);
+insert into YukonListEntry values (1039,1012,0,'Century',0);
+insert into YukonListEntry values (1040,1012,0,'Universal',0);
+insert into YukonListEntry values (1041,1013,0,'(Unknown);',1901);
+insert into YukonListEntry values (1042,1013,0,'Basement',0);
+insert into YukonListEntry values (1043,1013,0,'North Side',0);
+insert into YukonListEntry values (1044,1014,0,'Likely',2001);
+insert into YukonListEntry values (1045,1014,0,'Unlikely',2002);
+insert into YukonListEntry values (1046,1015,0,'Weekday',2101);
+insert into YukonListEntry values (1047,1015,0,'Weekend',2102);
+insert into YukonListEntry values (1048,1015,0,'Saturday',2103);
+insert into YukonListEntry values (1049,1015,0,'Sunday',2104);
+insert into YukonListEntry values (1050,1016,0,'Signup',2201);
+insert into YukonListEntry values (1051,1016,0,'Exit',2202);
+insert into YukonListEntry values (1052,1017,0,'Selection',2301);
+insert into YukonListEntry values (1053,1017,0,'Free Form',2302);
+insert into YukonListEntry values (1054,1018,0,'Cool',2401);
+insert into YukonListEntry values (1055,1018,0,'Heat',2402);
+insert into YukonListEntry values (1056,1018,0,'Off',2403);
+insert into YukonListEntry values (1057,1019,0,'Auto',2501);
+insert into YukonListEntry values (1058,1019,0,'On',2502);
 
 /*==============================================================*/
 /* Index: Indx_YkLstDefID                                       */
@@ -4154,6 +4205,7 @@ insert into YukonRole values(-141,'CICUSTOMER_CURTAILMENT','WebClient','(none)',
 insert into YukonRole values(-142,'CICUSTOMER_ENERGY_EXCHANGE','WebClient','(none)','(none)');
 
 insert into YukonRole values(-150,'LOADCONTROL_CONTROL_ODDS','LoadControl','(none)','(none)');
+insert into YukonRole values(-151,'CONSUMERINFO_NOT_IMPLEMENTED','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-161,'CONSUMERINFO_ACCOUNT_GENERAL','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-162,'CONSUMERINFO_ACCOUNT_CALL_TRACKING','ConsumerInfo','(none)','(none)');
@@ -4170,16 +4222,18 @@ insert into YukonRole values(-172,'CONSUMERINFO_HARDWARES','ConsumerInfo','(none
 insert into YukonRole values(-173,'CONSUMERINFO_HARDWARES_CREATE','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-174,'CONSUMERINFO_WORKORDERS','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)','(none)');
-insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_PASSWORD','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_LOGIN','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)','(none)');
 insert into YukonRole values(-179,'CONSUMERINFO_ACCOUNT_RESIDENCE','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-180,'CONSUMERINFO_QUESTIONS_UTIL','ConsumerInfo','(none)','(none)');
+insert into YukonRole values(-181,'CONSUMERINFO_QUESTIONS_FAQ','ConsumerInfo','(none)','(none)');
+
+
 
 insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
 insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
 insert into yukonrole values(-202,'ESUBCONTROL','Esub','true','(none)');
-
-insert into yukonrole values(-300,'READMETER_MAIN_LOGO','Readmeter','DemoHeader.gif','(none)');
 
 insert into yukonrole values(-9000,'TRENDING_DISCLAIMER_TEXT','WebClient',' ','(none)');
 insert into yukonrole values(-9001,'ENERGYEXCHANGE_TEXT','WebClient','Energy Exchange','(none)');
@@ -4215,6 +4269,26 @@ go
 
 insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
 insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
+
+insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
+insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N');
+insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
+insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','N');
+insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','N');
+insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection', 'DeviceStatus','N');
+insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
+insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','N');
+insert into YukonSelectionList values (1009,'A','(none)','Service type selection', 'ServiceType','N');
+insert into YukonSelectionList values (1010,'N','(none)','Service request status', 'ServiceStatus','N');
+insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
+insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection', 'Manufacturer','N');
+insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection', 'ApplianceLocation','N');
+insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection', 'ChanceOfControl','N');
+insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection', 'TimeOfWeek','N');
+insert into YukonSelectionList values (1016,'N','(none)','Question type selection', 'QuestionType','N');
+insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
+insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection', 'ThermostatMode','N');
+insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection', 'ThermostatFanState','N');
 
 
 /*==============================================================*/
@@ -4289,6 +4363,7 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
+go
 create view DISPLAY2WAYDATA_VIEW (POINTID, POINTNAME , POINTTYPE , POINTSTATE , DEVICENAME, DEVICETYPE, DEVICECURRENTSTATE, DEVICEID, POINTVALUE, POINTQUALITY, POINTTIMESTAMP, UofM, TAGS) as
 select POINTID, POINTNAME, POINTTYPE, SERVICEFLAG, YukonPAObject.PAOName, YukonPAObject.Type, YukonPAObject.Description, YukonPAObject.PAObjectID, '**DYNAMIC**', '**DYNAMIC**', '**DYNAMIC**', (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid), '**DYNAMIC**'
 from YukonPAObject, POINT
@@ -4299,6 +4374,7 @@ go
 /*==============================================================*/
 /* View: ExpressComAddress_View                                 */
 /*==============================================================*/
+go
 create view ExpressComAddress_View  as
 select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
 g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
@@ -4317,6 +4393,7 @@ go
 /*==============================================================*/
 /* View: FeederAddress_View                                     */
 /*==============================================================*/
+go
 create view FeederAddress_View  as
 select x.LMGroupID, a.Address as FeederAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -4327,6 +4404,7 @@ go
 /*==============================================================*/
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
+go
 create view FullEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from YukonPAObject y, POINT p, SYSTEMLOG s
@@ -4337,6 +4415,7 @@ go
 /*==============================================================*/
 /* View: FullPointHistory_View                                  */
 /*==============================================================*/
+go
 create view FullPointHistory_View (PointID, DeviceName, PointName, DataValue, DataTimeStamp, DataQuality) as
 select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from YukonPAObject y, POINT p, RAWPOINTHISTORY r
@@ -4347,6 +4426,7 @@ go
 /*==============================================================*/
 /* View: GeoAddress_View                                        */
 /*==============================================================*/
+go
 create view GeoAddress_View  as
 select x.LMGroupID, a.Address as GeoAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -4357,6 +4437,7 @@ go
 /*==============================================================*/
 /* View: LMCurtailCustomerActivity_View                         */
 /*==============================================================*/
+go
 create view LMCurtailCustomerActivity_View  as
 select cust.CustomerID, prog.CurtailmentStartTime, prog.CurtailReferenceID, prog.CurtailmentStopTime, cust.AcknowledgeStatus, cust.AckDateTime, cust.NameOfAckPerson, cust.AckLateFlag
 from LMCurtailProgramActivity prog, LMCurtailCustomerActivity cust
@@ -4367,6 +4448,7 @@ go
 /*==============================================================*/
 /* View: LMGroupMacroExpander_View                              */
 /*==============================================================*/
+go
 create view LMGroupMacroExpander_View  as
 select distinct PAObjectID, Category, PAOClass, PAOName, Type, Description, DisableFlag, 
 ALARMINHIBIT, CONTROLINHIBIT, KWCapacity, dg.DeviceID, 
@@ -4382,6 +4464,7 @@ go
 /*==============================================================*/
 /* View: Peakpointhistory_View                                  */
 /*==============================================================*/
+go
 create view Peakpointhistory_View  as
 select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
 from RAWPOINTHISTORY rph1
@@ -4393,6 +4476,7 @@ go
 /*==============================================================*/
 /* View: PointEventLog_View                                     */
 /*==============================================================*/
+go
 create view PointEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, PointName, EventDescription, AdditionalInfo, EventUserName) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from POINT p, SYSTEMLOG s
@@ -4403,6 +4487,7 @@ go
 /*==============================================================*/
 /* View: PointHistory_View                                      */
 /*==============================================================*/
+go
 create view PointHistory_View (PointID, PointName, DataValue, DataTimeStamp, DataQuality) as
 select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from POINT p, RAWPOINTHISTORY r
@@ -4413,6 +4498,7 @@ go
 /*==============================================================*/
 /* View: ProgramAddress_View                                    */
 /*==============================================================*/
+go
 create view ProgramAddress_View  as
 select x.LMGroupID, a.Address as ProgramAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -4423,6 +4509,7 @@ go
 /*==============================================================*/
 /* View: ServiceAddress_View                                    */
 /*==============================================================*/
+go
 create view ServiceAddress_View  as
 select x.LMGroupID, a.Address as ServiceAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -4433,6 +4520,7 @@ go
 /*==============================================================*/
 /* View: SubstationAddress_View                                 */
 /*==============================================================*/
+go
 create view SubstationAddress_View  as
 select x.LMGroupID, a.Address as SubstationAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
