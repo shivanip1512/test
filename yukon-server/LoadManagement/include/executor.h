@@ -55,7 +55,6 @@ private:
     void ChangeDailyStopTime();
 
     CtiLMCommand* _command;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -74,7 +73,6 @@ private:
     void StopNow();
 
     CtiLMManualControlMsg* _controlMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -94,7 +92,6 @@ private:
     void CancelOffer();
 
     CtiLMEnergyExchangeControlMsg* _energyExchangeMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -108,7 +105,6 @@ public:
 
 private:
     CtiLMControlAreaMsg* _controlAreaMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -127,7 +123,6 @@ private:
     void CurtailmentStop();*/
 
     CtiLMCurtailmentAcknowledgeMsg* _curtailAckMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -146,7 +141,6 @@ private:
     void CurtailmentStop();*/
 
     CtiLMEnergyExchangeAcceptMsg* _energyExchangeAcceptMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -160,7 +154,6 @@ public:
 
 private:
     CtiMessage* _ctiMessage;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -174,7 +167,6 @@ public:
 
 private:
     CtiMultiMsg* _multiMsg;
-    RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 

@@ -46,8 +46,6 @@ extern BOOL _LM_DEBUG;
 ---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     switch ( _command->getCommand() )
     {
         case CtiLMCommand::CHANGE_THRESHOLD:
@@ -103,11 +101,10 @@ void CtiLMCommandExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::ChangeThreshold()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     ULONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -153,11 +150,10 @@ void CtiLMCommandExecutor::ChangeThreshold()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::ChangeRestoreOffset()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     ULONG triggerNumber = _command->getNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -203,7 +199,6 @@ void CtiLMCommandExecutor::ChangeRestoreOffset()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::ChangeCurrentOperationalState()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 }
 
 /*---------------------------------------------------------------------------
@@ -211,10 +206,9 @@ void CtiLMCommandExecutor::ChangeCurrentOperationalState()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::EnableControlArea()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -240,10 +234,9 @@ void CtiLMCommandExecutor::EnableControlArea()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::DisableControlArea()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -285,11 +278,10 @@ void CtiLMCommandExecutor::DisableControlArea()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::EnableProgram()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -323,11 +315,10 @@ void CtiLMCommandExecutor::EnableProgram()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::DisableProgram()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     bool found = FALSE;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -372,10 +363,9 @@ void CtiLMCommandExecutor::DisableProgram()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::SendAllControlAreas()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     CtiLMExecutorFactory f;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
     try
     {
@@ -394,11 +384,10 @@ void CtiLMCommandExecutor::SendAllControlAreas()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::ChangeDailyStartTime()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     ULONG newStartTime = (ULONG)_command->getValue();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -436,11 +425,10 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
 ---------------------------------------------------------------------------*/    
 void CtiLMCommandExecutor::ChangeDailyStopTime()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     ULONG commandPAOID = _command->getPAOId();
     ULONG newStopTime = (ULONG)_command->getValue();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
 
     for(ULONG i=0;i<controlAreas.entries();i++)
@@ -482,8 +470,6 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     switch ( _controlMsg->getCommand() )
     {
     case CtiLMManualControlMsg::SCHEDULED_START:
@@ -516,11 +502,10 @@ void CtiLMManualControlMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMManualControlMsgExecutor::ScheduledStart()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -643,11 +628,10 @@ void CtiLMManualControlMsgExecutor::ScheduledStart()
 ---------------------------------------------------------------------------*/    
 void CtiLMManualControlMsgExecutor::ScheduledStop()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -762,11 +746,10 @@ void CtiLMManualControlMsgExecutor::ScheduledStop()
 ---------------------------------------------------------------------------*/    
 void CtiLMManualControlMsgExecutor::StartNow()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -887,11 +870,10 @@ void CtiLMManualControlMsgExecutor::StartNow()
 ---------------------------------------------------------------------------*/    
 void CtiLMManualControlMsgExecutor::StopNow()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     BOOL found = FALSE;
     ULONG directProgramID = _controlMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1009,8 +991,6 @@ void CtiLMManualControlMsgExecutor::StopNow()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     switch ( _energyExchangeMsg->getCommand() )
     {
     case CtiLMEnergyExchangeControlMsg::NEW_OFFER:
@@ -1047,8 +1027,6 @@ void CtiLMEnergyExchangeControlMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1065,6 +1043,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1152,8 +1131,6 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1172,6 +1149,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1269,8 +1247,6 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1289,6 +1265,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1397,8 +1374,6 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1417,6 +1392,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1501,8 +1477,6 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1521,6 +1495,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
     BOOL found = FALSE;
     ULONG energyExchangeProgramID = _energyExchangeMsg->getPAOId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1612,8 +1587,6 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 ---------------------------------------------------------------------------*/    
 void CtiLMControlAreaMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     CtiLMClientListener::getInstance()->BroadcastMessage(((CtiMessage*)_controlAreaMsg));
 }
 
@@ -1626,8 +1599,6 @@ void CtiLMControlAreaMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1651,6 +1622,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
     ULONG curtailmentCustomerID = _curtailAckMsg->getPAOId();
     ULONG curtailReferenceID = _curtailAckMsg->getCurtailReferenceId();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1693,7 +1665,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
                                     {
                                         currentLMCurtailCustomer->setAckLateFlag(FALSE);
                                     }
-                                    currentLMCurtailCustomer->updateLMCurtailCustomerActivityTable();
+                                    currentLMCurtailCustomer->dumpDynamicData();
                                     currentControlArea->setUpdatedFlag(TRUE);
                                     //currentLMCurtailCustomer->dumpDynamicData();
                                     found = TRUE;
@@ -1729,8 +1701,6 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1758,6 +1728,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
     ULONG offerID = _energyExchangeAcceptMsg->getOfferId();
     ULONG revisionNumber = _energyExchangeAcceptMsg->getRevisionNumber();
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& controlAreas = *store->getControlAreas(RWDBDateTime().seconds());
 
     if( controlAreas.entries() > 0 )
@@ -1880,8 +1851,6 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMMultiMsgExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
-
     CtiLMExecutorFactory f;
     RWOrdered& messages = _multiMsg->getData();
     while(messages.entries( )>0)
@@ -1909,7 +1878,6 @@ void CtiLMMultiMsgExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiLMForwardMsgToDispatchExecutor::Execute()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     CtiLoadManager::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
 }
 
