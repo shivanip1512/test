@@ -16,8 +16,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.ImportManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.servlet.StarsAdmin;
 
 /**
  * @author yao
@@ -102,14 +102,14 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 			
 			for (numAcctImported = 0; numAcctImported < fieldsList.size(); numAcctImported++) {
 				String[] custFields = (String[]) fieldsList.get(numAcctImported);
-				String[] invFields = new String[ StarsAdmin.NUM_INV_FIELDS ];
-				System.arraycopy( custFields, StarsAdmin.NUM_ACCOUNT_FIELDS, invFields, 0, StarsAdmin.NUM_INV_FIELDS );
+				String[] invFields = new String[ ImportManager.NUM_INV_FIELDS ];
+				System.arraycopy( custFields, ImportManager.NUM_ACCOUNT_FIELDS, invFields, 0, ImportManager.NUM_INV_FIELDS );
 				
-				lineNo = custFields[ StarsAdmin.IDX_LINE_NUM ];
+				lineNo = custFields[ ImportManager.IDX_LINE_NUM ];
 				
 				ArrayList enrProgs = new ArrayList( programs );
 				
-				if (invFields[StarsAdmin.IDX_ADDR_GROUP].length() > 0) {
+				if (invFields[ImportManager.IDX_ADDR_GROUP].length() > 0) {
 					// Assign group ID to program enrollment
 					for (int i = 0; i < programs.size(); i++) {
 						int[] program = (int[]) programs.get(i);
@@ -118,7 +118,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						int groupID = 0;
 						if (liteProg.getGroupIDs() != null) {
 							for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-								if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( invFields[StarsAdmin.IDX_ADDR_GROUP] ))
+								if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( invFields[ImportManager.IDX_ADDR_GROUP] ))
 								{
 									groupID = liteProg.getGroupIDs()[j];
 									break;
@@ -134,42 +134,42 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 					}
 				}
 				
-				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[StarsAdmin.IDX_ACCOUNT_NO] );
+				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[ImportManager.IDX_ACCOUNT_NO] );
 				
 				if (liteAcctInfo == null) {
-					liteAcctInfo = StarsAdmin.newCustomerAccount( custFields, user, energyCompany );
+					liteAcctInfo = ImportManager.newCustomerAccount( custFields, user, energyCompany );
 					
 					LiteInventoryBase liteInv = null;
-					if (!invFields[StarsAdmin.IDX_SERIAL_NO].equalsIgnoreCase(""))
-						liteInv = StarsAdmin.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+					if (!invFields[ImportManager.IDX_SERIAL_NO].equalsIgnoreCase(""))
+						liteInv = ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 					
 					Integer invID = null;
 					if (liteInv != null)
 						invID = new Integer( liteInv.getInventoryID() );
-					StarsAdmin.programSignUp( programs, liteAcctInfo, invID, energyCompany, conn );
+					ImportManager.programSignUp( programs, liteAcctInfo, invID, energyCompany, conn );
 					
 					numAcctAdded++;
 				}
 				else {
-					StarsAdmin.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, conn );
+					ImportManager.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, conn );
 					//updateLogin( fields, liteAcctInfo, energyCompany, session );
 					
-					if (!invFields[StarsAdmin.IDX_SERIAL_NO].equalsIgnoreCase(""))
+					if (!invFields[ImportManager.IDX_SERIAL_NO].equalsIgnoreCase(""))
 					{
-						if (invFields[StarsAdmin.IDX_HARDWARE_ACTION].equalsIgnoreCase( StarsAdmin.HARDWARE_ACTION_INSERT )) {
-							StarsAdmin.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+						if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_INSERT )) {
+							ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						}
-						else if (invFields[StarsAdmin.IDX_HARDWARE_ACTION].equalsIgnoreCase( StarsAdmin.HARDWARE_ACTION_UPDATE )) {
-							StarsAdmin.updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+						else if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_UPDATE )) {
+							ImportManager.updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						}
-						else if (invFields[StarsAdmin.IDX_HARDWARE_ACTION].equalsIgnoreCase( StarsAdmin.HARDWARE_ACTION_REMOVE )) {
-							StarsAdmin.removeLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+						else if (invFields[ImportManager.IDX_HARDWARE_ACTION].equalsIgnoreCase( ImportManager.HARDWARE_ACTION_REMOVE )) {
+							ImportManager.removeLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						}
 						else {	// Hardware action field not specified
 							if (liteAcctInfo.getInventories().size() == 0)
-								StarsAdmin.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+								ImportManager.insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 							else
-								StarsAdmin.updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
+								ImportManager.updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
 						}
 					}
 					
@@ -177,7 +177,7 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 						Integer dftInvID = null;
 						if (liteAcctInfo.getInventories().size() == 1)
 							dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
-						StarsAdmin.programSignUp( programs, liteAcctInfo, dftInvID, energyCompany, conn );
+						ImportManager.programSignUp( programs, liteAcctInfo, dftInvID, energyCompany, conn );
 					}
 					
 					numAcctUpdated++;
