@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/01/07 21:19:36 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/01/17 16:27:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,15 +69,9 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
         }
         case AI32BitNoFlag:
         {
-            if( buf[pos] & 0x80 )
-            {
-                _value = -1;
-            }
-            else
-            {
-                _value = 0;
-            }
+            _value = 0;
 
+            //  these 32 bits will fill up the long, including the sign bit
             _value |= buf[pos++] ;
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
@@ -93,17 +87,16 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
         }
         case AI16BitNoFlag:
         {
-            if( buf[pos] & 0x80 )
-            {
-                _value = -1;
-            }
-            else
-            {
-                _value = 0;
-            }
+            short tmpValue;
 
-            _value |= buf[pos++];
-            _value |= buf[pos++] << 8;
+            tmpValue = 0;
+
+            //  these 16 bits bytes will fill up the short, including the sign bit...
+            tmpValue |= buf[pos++];
+            tmpValue |= buf[pos++] << 8;
+
+            //  ...  so we can use the compiler's cast to convert it over
+            _value = tmpValue;
 
             break;
         }

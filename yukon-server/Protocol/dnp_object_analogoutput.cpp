@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/01/07 21:19:36 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/01/17 16:27:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,15 +69,9 @@ int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variat
         {
             _flags.raw = buf[pos++];
 
-            if( buf[pos] & 0x80 )
-            {
-                _value = -1;
-            }
-            else
-            {
-                _value = 0;
-            }
+            _value = 0;
 
+            //  these 32 bits will fill up the long, including the sign bit
             _value |= buf[pos++];
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
@@ -88,19 +82,18 @@ int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variat
 
         case AO16Bit:
         {
+            short tmpValue;
+
             _flags.raw = buf[pos++];
 
-            if( buf[pos] & 0x80 )
-            {
-                _value = -1;
-            }
-            else
-            {
-                _value = 0;
-            }
+            tmpValue = 0;
 
-            _value |= buf[pos++];
-            _value |= buf[pos++] << 8;
+            //  these 16 bits bytes will fill up the short, including the sign bit...
+            tmpValue |= buf[pos++];
+            tmpValue |= buf[pos++] << 8;
+
+            //  ...  so we can use the compiler's cast to convert it over
+            _value = tmpValue;
 
             break;
         }
@@ -324,12 +317,10 @@ int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int v
         {
             _status = buf[pos++];
 
-            if( buf[pos] & 0x80 )
-            {
-                _value = -1;
-            }
+            _value = 0;
 
-            _value  = buf[pos++];
+            //  these 32 bits will fill up the long, including the sign bit
+            _value |= buf[pos++];
             _value |= buf[pos++] <<  8;
             _value |= buf[pos++] << 16;
             _value |= buf[pos++] << 24;
@@ -339,15 +330,18 @@ int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int v
 
         case AOB16Bit:
         {
+            short tmpValue;
+
             _status = buf[pos++];
 
-            if( buf[pos] & 0x80 )
-            {
-                _value = -1;
-            }
+            tmpValue = 0;
 
-            _value  = buf[pos++];
-            _value |= buf[pos++] << 8;
+            //  these 16 bits bytes will fill up the short, including the sign bit...
+            tmpValue |= buf[pos++];
+            tmpValue |= buf[pos++] << 8;
+
+            //  ...  so we can use the compiler's cast to convert it over
+            _value = tmpValue;
 
             break;
         }
