@@ -283,15 +283,15 @@ public String[] getAllPoolsStrings()
    {   	
    	try
    	{
-			if( DB_BASE == null ) //unknown catalina base, try in the CLASSPATH
-			{
-				return PoolManager.class.getResource( DB_PROPERTIES_FILE );
-			}
-			else
+   		URL retURL = PoolManager.class.getResource( DB_PROPERTIES_FILE );
+   		
+			if( retURL == null )  //not in CLASSPATH, check catalina
 			{
 				File f = new File( DB_BASE + DB_PROPERTIES_FILE );			
-	   		return f.toURL();
+	   		retURL = f.toURL();
 			}
+
+			return retURL;
    	}
    	catch( Exception ex )
    	{
@@ -308,13 +308,9 @@ public String[] getAllPoolsStrings()
    		
 		try
 		{
-			InputStream is = null;		
+			InputStream is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
 
-			if( DB_BASE == null ) //unknown catalina base, try in the CLASSPATH
-			{
-				is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
-			}
-			else
+			if( is == null ) //not in CLASSPATH, check catalina
 			{
 				File f = new File( DB_BASE + DB_PROPERTIES_FILE);
 				is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
