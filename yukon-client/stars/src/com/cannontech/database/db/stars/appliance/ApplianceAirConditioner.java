@@ -1,5 +1,6 @@
 package com.cannontech.database.db.stars.appliance;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -12,11 +13,11 @@ import com.cannontech.database.db.DBPersistent;
  * @version 1.0
  */
 
-public class AirConditioner extends DBPersistent {
+public class ApplianceAirConditioner extends DBPersistent {
 
     private Integer applianceID = null;
-    private Integer tonageID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
-    private Integer typeID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ID );
+    private Integer tonageID = new Integer( CtiUtilities.NONE_ID );
+    private Integer typeID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
         "TonageID", "TypeID"
@@ -24,9 +25,9 @@ public class AirConditioner extends DBPersistent {
 
     public static final String[] CONSTRAINT_COLUMNS = { "ApplianceID" };
 
-    public static final String TABLE_NAME = "AirConditioner";
+    public static final String TABLE_NAME = "ApplianceAirConditioner";
 
-    public AirConditioner() {
+    public ApplianceAirConditioner() {
         super();
     }
 

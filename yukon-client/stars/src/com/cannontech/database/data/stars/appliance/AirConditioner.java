@@ -11,7 +11,7 @@ package com.cannontech.database.data.stars.appliance;
 
 public class AirConditioner extends ApplianceBase {
 
-    private com.cannontech.database.db.stars.appliance.AirConditioner airConditioner = null;
+    private com.cannontech.database.db.stars.appliance.ApplianceAirConditioner airConditioner = null;
 
     public AirConditioner() {
         super();
@@ -47,13 +47,13 @@ public class AirConditioner extends ApplianceBase {
         getAirConditioner().retrieve();
     }
 
-    public com.cannontech.database.db.stars.appliance.AirConditioner getAirConditioner() {
+    public com.cannontech.database.db.stars.appliance.ApplianceAirConditioner getAirConditioner() {
         if (airConditioner == null)
-            airConditioner = new com.cannontech.database.db.stars.appliance.AirConditioner();
+            airConditioner = new com.cannontech.database.db.stars.appliance.ApplianceAirConditioner();
         return airConditioner;
     }
 
-    public void setAirConditioner(com.cannontech.database.db.stars.appliance.AirConditioner newAirConditioner) {
+    public void setAirConditioner(com.cannontech.database.db.stars.appliance.ApplianceAirConditioner newAirConditioner) {
         airConditioner = newAirConditioner;
     }
 
