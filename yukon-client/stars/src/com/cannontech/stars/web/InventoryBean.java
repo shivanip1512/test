@@ -82,6 +82,7 @@ public class InventoryBean {
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
+	private ArrayList hardwareList = null;
 	
 	public InventoryBean() {
 	}
@@ -93,6 +94,8 @@ public class InventoryBean {
 	}
 	
 	private ArrayList getHardwareList() {
+		if (hardwareList != null) return hardwareList;
+		
 		ArrayList hardwares = getEnergyCompany().loadInventory();
 		java.util.TreeSet sortedHws = null;
 		
@@ -171,7 +174,7 @@ public class InventoryBean {
 				sortedHws.add( hardwares.get(i) );
 		}
 		
-		ArrayList hardwareList = new ArrayList();
+		hardwareList = new ArrayList();
 		java.util.Iterator it = sortedHws.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
@@ -222,6 +225,11 @@ public class InventoryBean {
         	navBuf.append("<a class='Link1' href='Inventory.jsp?page=").append(maxPageNo).append("'>Last</a>");
 		
 		StringBuffer htmlBuf = new StringBuffer();
+		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+			htmlBuf.append("<form name='form1' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append("\r\n");
+			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append("\r\n");
+		}
+		
 		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>").append("\r\n");
 		htmlBuf.append("  <tr>").append("\r\n");
         htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
@@ -254,7 +262,8 @@ public class InventoryBean {
 	        	htmlBuf.append("</td>").append("\r\n");
 	        }
             htmlBuf.append("          <td class='TableCell' width='17%'>");
-            htmlBuf.append("<a href='InventoryDetail.jsp'>").append(liteHw.getManufactureSerialNumber()).append("</a>");
+            htmlBuf.append("<a href='InventoryDetail.jsp?InvId=").append(liteHw.getInventoryID()).append("'>");
+            htmlBuf.append(liteHw.getManufactureSerialNumber()).append("</a>");
             htmlBuf.append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append("\r\n");
             htmlBuf.append("          <td class='TableCell' width='17%'>").append(instDate).append("</td>").append("\r\n");
@@ -264,8 +273,9 @@ public class InventoryBean {
             else {
             	LiteStarsCustAccountInformation liteAcctInfo = getEnergyCompany().getBriefCustAccountInfo( liteHw.getAccountID(), true );
             	LiteAddress liteAddr = getEnergyCompany().getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
-            	htmlBuf.append("Acct #").append(liteAcctInfo.getCustomerAccount().getAccountNumber())
-            			.append(" (").append(ServerUtils.getOneLineAddress(liteAddr)).append(")");
+            	htmlBuf.append("<a href='' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
+            	htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
+            	htmlBuf.append(" (").append(ServerUtils.getOneLineAddress(liteAddr)).append(")");
             }
             htmlBuf.append("</td>").append("\r\n");
             htmlBuf.append("        </tr>").append("\r\n");
@@ -278,7 +288,38 @@ public class InventoryBean {
         htmlBuf.append("    <td>").append(navBuf).append("</td>").append("\r\n");
         htmlBuf.append("  </tr>").append("\r\n");
         htmlBuf.append("</table>").append("\r\n");
-
+        
+        if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+        	String referer = (String) req.getSession(false).getAttribute(ServletUtils.ATT_REFERRER);
+        	htmlBuf.append("<br>").append("\r\n");
+			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append("\r\n");
+			htmlBuf.append("  <tr>").append("\r\n");
+			htmlBuf.append("    <td align='right'>").append("\r\n");
+			htmlBuf.append("      <input type='submit' name='Submit' value='Submit'>").append("\r\n");
+			htmlBuf.append("    </td>").append("\r\n");
+			htmlBuf.append("    <td>").append("\r\n");
+			htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append("\r\n");
+			htmlBuf.append("    </td>").append("\r\n");
+			htmlBuf.append("  </tr>").append("\r\n");
+			htmlBuf.append("</table>").append("\r\n");
+			htmlBuf.append("</form>").append("\r\n");
+        }
+        
+        htmlBuf.append("<form name='cusForm' method='post' action='").append(req.getContextPath()).append("/servlet/SOAPClient'>").append("\r\n");
+        htmlBuf.append("  <input type='hidden' name='action' value='GetCustAccount'>").append("\r\n");
+        htmlBuf.append("  <input type='hidden' name='AccountID' value=''>").append("\r\n");
+        htmlBuf.append("  <input type='hidden' name='REDIRECT' value='").append(req.getContextPath()).append("/operator/Consumer/Update.jsp'>").append("\r\n");
+        htmlBuf.append("  <input type='hidden' name='REFERRER' value='").append(req.getRequestURI()).append("'>").append("\r\n");
+        htmlBuf.append("</form>").append("\r\n");
+        
+        htmlBuf.append("<script language='JavaScript'>").append("\r\n");
+        htmlBuf.append("function selectAccount(accountID) {").append("\r\n");
+        htmlBuf.append("  var form = document.cusForm;").append("\r\n");
+        htmlBuf.append("  form.AccountID.value = accountID;").append("\r\n");
+        htmlBuf.append("  form.submit();").append("\r\n");
+        htmlBuf.append("}").append("\r\n");
+        htmlBuf.append("</script>").append("\r\n");
+        
 		return htmlBuf.toString();
 	}
 
@@ -336,6 +377,8 @@ public class InventoryBean {
 	 */
 	public void setFilterBy(int filterBy) {
 		this.filterBy = filterBy;
+		// Update the search result
+		hardwareList = null;
 	}
 
 	/**
