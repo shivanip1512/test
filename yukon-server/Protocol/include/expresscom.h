@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/31 17:56:38 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/05 19:31:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,7 @@ public:
         mtCycleLoadControl          = 0x0a,
         mtThermostatSetpointControl = 0x0b,
         mtThermostatLoadControl     = 0x0c,
+        mtThermostatSetState        = 0x0d,
         mtConfiguration             = 0x10,
         mtMaintenance               = 0x14,
         mtService                   = 0x15,
@@ -165,6 +166,7 @@ private:
      *
      */
     INT thermostatSetpointControl(BYTE minTemp = 0, BYTE maxTemp = 0, USHORT T_r = 0, USHORT T_a = 0, USHORT T_b = 0, BYTE delta_S_b = 0, USHORT T_c = 0, USHORT T_d = 0, BYTE delta_S_d = 0, USHORT T_e = 0, USHORT T_f = 0, BYTE delta_S_f = 0, bool hold = false);
+    INT thermostatSetState(UINT loadmask = 0x01, bool run = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
     INT rawconfiguration(RWCString str);
     INT rawmaintenance(RWCString str);

@@ -2694,7 +2694,7 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
         _cmd["xcdelta"] = CtiParseValue( TRUE );    // Temperatures are delta offsets
     }
 
-    if(CmdStr.contains("noramp"))
+    if(CmdStr.contains(" noramp"))
     {
         _cmd["xcnoramp"] = CtiParseValue( TRUE );
     }
@@ -2945,6 +2945,65 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
                     iValue = atoi(valStr.data());
                     _cmd["xcdsf"] = CtiParseValue( iValue );
                 }
+            }
+        }
+    }
+    else if(CmdStr.contains(" setstate"))
+    {
+        _cmd["xcsetstate"] = CtiParseValue( TRUE );
+
+        if(CmdStr.contains("run"))
+        {
+            _cmd["xcrunprog"] = CtiParseValue( TRUE );
+        }
+
+        if(!(temp = CmdStr.match(" fan +((on)|(off)|(auto))")).isNull())
+        {
+            if(temp.contains("on"))
+            {
+                _cmd["xcfanstate"] = CtiParseValue( 0x03 );
+            }
+            else if(temp.contains("auto"))
+            {
+                _cmd["xcfanstate"] = CtiParseValue( 0x02 );
+            }
+            else if(temp.contains("off"))
+            {
+                _cmd["xcfanstate"] = CtiParseValue( 0x02 );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" system +((off)|(heat)|(cool))")).isNull())
+        {
+            if(temp.contains("off"))
+            {
+                _cmd["xcsysstate"] = CtiParseValue( 0x04 );
+            }
+            else if(temp.contains("heat"))
+            {
+                _cmd["xcsysstate"] = CtiParseValue( 0x08 );
+            }
+            else if(temp.contains("cool"))
+            {
+                _cmd["xcsysstate"] = CtiParseValue( 0x0c );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" temp +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xcsettemp"] = CtiParseValue( iValue );
+            }
+        }
+
+        if(!(temp = CmdStr.match(" timeout +[0-9]+")).isNull())         // in hours
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["xctimeout"] = CtiParseValue( iValue * 60 );       // In minutes
             }
         }
     }

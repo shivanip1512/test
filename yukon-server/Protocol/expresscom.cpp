@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/31 17:56:37 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/05 19:31:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1000,6 +1000,22 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
                                    parse.getiValue("xcdsf", 0),
                                    hold);
     }
+    else if(parse.isKeyValid("xcsetstate"))
+    {
+        BYTE fanstate = (BYTE)parse.getiValue("xcfanstate", 0);
+        BYTE sysstate = (BYTE)parse.getiValue("xcsysstate", 0);;
+        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+        bool run = parse.isKeyValid("xcrunprog") ? true : false;
+
+
+        thermostatSetState( relaymask,
+                            run,
+                            parse.getiValue("xctimeout", -1),
+                            parse.getiValue("xcsettemp", -1),
+                            fanstate,
+                            sysstate,
+                            delay);
+    }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1263,3 +1279,72 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     return status;
 }
 
+INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool run, int timeout_min, int setpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
+{
+    INT status = NoError;
+    BYTE flaghi;
+    BYTE flaglo;
+    BYTE load;
+
+    for(load = 1; load < 16; load++)
+    {
+        if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
+        {
+            flaghi = ((fanstate & 0x03) | (sysstate & 0x0c) | (run ? 0x10 : 0x00));
+            flaglo = ( _celsiusMode ? 0x20 : 0x00) | (load & 0x0f);                  // Pick up the load designator;
+
+            _message.push_back( mtThermostatSetState );
+            size_t flagposhi = _message.size();
+            _message.push_back(flaghi);
+            size_t flagposlo = _message.size();
+            _message.push_back(flaglo);
+
+            if(timeout_min > 0)
+            {
+                BYTE timeout;
+
+                flaghi |= 0x20;         // Timout included.
+
+                if(timeout_min > 255)
+                {
+                    flaglo |= 0x80;                         // Control time is in hours!
+
+                    if(timeout_min / 60 > 255)
+                    {
+                        timeout = 255;
+                    }
+                    else
+                    {
+                        timeout = LOBYTE(timeout_min / 60);     // This is now in integer hours
+                    }
+                }
+                else
+                {
+                    timeout = LOBYTE(timeout_min);
+                }
+
+                _message.push_back(timeout);
+            }
+
+            if(setpoint > 0)
+            {
+                flaglo |= 0x10;         // Timout included.
+                _message.push_back(LOBYTE(setpoint));
+            }
+
+            if(delay > 0)
+            {
+                flaglo |= 0x40;
+                _message.push_back(HIBYTE(delay));
+                _message.push_back(LOBYTE(delay));
+            }
+
+            _message[flagposhi] = flaghi;
+            _message[flagposlo] = flaglo;
+
+            _messageCount++;
+        }
+    }
+
+    return status;
+}
