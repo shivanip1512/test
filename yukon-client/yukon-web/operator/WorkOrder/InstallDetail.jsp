@@ -2,7 +2,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">

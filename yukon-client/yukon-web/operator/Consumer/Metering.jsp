@@ -2,10 +2,8 @@
 <%@ include file="StarsHeader.jsp" %>
 <%@ include file="metering_header.jsp" %>
 <%@ include file="../../trending_functions.jsp" %>
-<link id="StyleSheet" rel="stylesheet" href="../demostyle.css" type="text/css">
-<script language="JavaScript">
-	document.getElementById("StyleSheet").href = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
-</script>
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 

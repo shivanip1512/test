@@ -3,17 +3,17 @@
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
-
-<%@ page import="javax.xml.soap.SOAPMessage" %>
 <%@ page import="com.cannontech.stars.web.action.*" %>
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
-<%@ page import="com.cannontech.common.constants.RoleTypes" %>
 
+<%@ page import="javax.xml.soap.SOAPMessage" %>
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	if (lYukonUser == null) {

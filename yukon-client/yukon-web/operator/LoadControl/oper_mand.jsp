@@ -159,6 +159,9 @@
 <head>
 <META NAME="robots" CONTENT="noindex, nofollow">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+
 </head>
 
 <body text="#000000" link="#000000" vlink="#000000" alink="#000000">
