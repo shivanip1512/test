@@ -15,7 +15,7 @@ public class Signal extends com.cannontech.message.util.Message
 	// Logging priority - replaces classification
 	// It would appear (from yukon.h header)that 6 is the most important and
 	// 11 being the least important
-	private long alarmStateID = EVENT_SIGNAL;
+	private long categoryID = EVENT_SIGNAL;
 
 	// What is this textually
 	private java.lang.String description = "";
@@ -107,12 +107,12 @@ public java.lang.String getAction() {
 	return action;
 }
 /**
- * Insert the method's description here.
+ * Return the category id
  * Creation date: (5/22/00 10:29:03 AM)
  * @return long
  */
-public long getAlarmStateID() {
-	return alarmStateID;
+public long getCategoryID() {
+	return categoryID;
 }
 /**
  * Insert the method's description here.
@@ -156,12 +156,11 @@ public void setAction(String action)
 	this.action = action;
 }
 /**
- * Insert the method's description here.
  * Creation date: (5/22/00 10:29:03 AM)
- * @param newLogPriority long
+ * @param newCategoryID long
  */
-public void setAlarmStateID(long newAlarmStateID) {
-	alarmStateID = newAlarmStateID;
+public void setCategoryID(long newCategoryID) {
+	categoryID = newCategoryID;
 }
 /**
  * Insert the method's description here.
@@ -207,7 +206,7 @@ public String toString()
 	
 	retStr += "PointID:  " + getPointID() + "\n";
 	retStr += "Log Type:  " + getLogType() + "\n";	
-	retStr += "Logging Priority:  " + getAlarmStateID() + "\n";
+	retStr += "Category:  " + getCategoryID() + "\n";
 	retStr += "Description:  " + getDescription() + "\n";
 	retStr += "Action:  " + getAction() + "\n";
 	retStr += "Tags:  " + getTags() + "\n";

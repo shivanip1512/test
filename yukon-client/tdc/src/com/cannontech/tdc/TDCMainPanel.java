@@ -2649,7 +2649,7 @@ public void jMenuItemPopUpDisable_ActionPerformed(java.awt.event.ActionEvent act
 		ptValue.getDeviceName().toString() + " / " + ptValue.getPointName()); //who
 	
 	sig.setAction("A " + msg + " control point event was executed");
-	sig.setAlarmStateID( com.cannontech.message.dispatch.message.Signal.EVENT_SIGNAL );
+	sig.setCategoryID( com.cannontech.message.dispatch.message.Signal.EVENT_SIGNAL );
 	sig.setUserName(CtiUtilities.getUserName());
 	sig.setTimeStamp( new Date() );
 	

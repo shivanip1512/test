@@ -76,7 +76,7 @@ public int getAlarmColor() {
  */
 public long getAlarmStateID()
 {
-	return getSignal().getAlarmStateID();
+	return getSignal().getCategoryID();
 }
 /**
  * Insert the method's description here.

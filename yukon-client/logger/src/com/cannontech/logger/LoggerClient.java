@@ -216,7 +216,7 @@ public void receivedSignal( Signal point )
 			CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ) + " " +
 			CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
 			CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
-			point.getAlarmStateID() );
+			point.getCategoryID() );
 	}
 		
 }

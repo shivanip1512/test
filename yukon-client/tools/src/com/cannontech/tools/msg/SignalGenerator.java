@@ -86,7 +86,7 @@ public static void main(String[] args)
 			com.cannontech.message.dispatch.message.Signal signal = new com.cannontech.message.dispatch.message.Signal();
 
 //			signal.setLogPriority((int)(Math.round(Math.random() * 6.0)+1)); // log between 1-7
-			signal.setAlarmStateID(2); // log between 1==EVENT,  2-11==ALARM
+			signal.setCategoryID(2); // log between 1==EVENT,  2-11==ALARM
 			signal.setTags( com.cannontech.message.dispatch.message.Signal.MASK_ANY_ALARM | com.cannontech.message.dispatch.message.Signal.MASK_ANY_SERVICE_DISABLE);
 //			signal.setTags(0);
 			

@@ -521,7 +521,7 @@ public String toString()
 		if( getSignal() == null )
 			return -1; //we are not alarming
 		else
-			return getSignal().getAlarmStateID();
+			return getSignal().getCategoryID();
 	}
 
 	public int getCondition()

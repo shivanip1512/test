@@ -94,7 +94,7 @@ public static void main(String[] args) {
 			pData.setValue( Math.random() * 100.0 );
 			pData.setTime( new java.util.Date() );
 			
-			signal.setAlarmStateID(6);
+			signal.setCategoryID(6);
 			//signal.setFlag(0);
 			signal.setDescription("Test Signal");
 			

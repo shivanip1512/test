@@ -235,7 +235,7 @@ class SignalAlarmHandler
             Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX] +
             BookMarkBase.BOOKMARK_TOKEN +
             AlarmCatFuncs.getAlarmCategoryName(
-                  (int)sig.getAlarmStateID()) );
+                  (int)sig.getCategoryID()) );
 
 
       newItem.addActionListener(

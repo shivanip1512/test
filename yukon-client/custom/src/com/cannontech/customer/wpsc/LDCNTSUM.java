@@ -334,7 +334,7 @@ public void run()
 							WPSCMain.logMessage("   Signal received:" , com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("                Id: " + sig.getPointID(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("          Log Type: " + sig.getLogType(), com.cannontech.common.util.LogWriter.DEBUG);
-							WPSCMain.logMessage("  Logging Priority: " + sig.getAlarmStateID(), com.cannontech.common.util.LogWriter.DEBUG);
+							WPSCMain.logMessage("  Logging Priority: " + sig.getCategoryID(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("       Description: " + sig.getDescription(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("            Action: " + sig.getAction(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("              Tags: " + sig.getTags(), com.cannontech.common.util.LogWriter.DEBUG);

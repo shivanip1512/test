@@ -646,7 +646,7 @@ public int createRowsForHistoricalAlarmView( Date date, int page, int displayNum
 			sig.setTimeStamp( new ModifiedDate( ((Timestamp)rowData[i][2]).getTime() ) );
 			sig.setSOE_Tag( Integer.parseInt(rowData[i][3].toString()) );
 			sig.setLogType( Integer.parseInt(rowData[i][4].toString()) );
-			sig.setAlarmStateID( Integer.parseInt(rowData[i][5].toString()) );
+			sig.setCategoryID( Integer.parseInt(rowData[i][5].toString()) );
 			sig.setAction( CommonUtils.createString( rowData[i][6] ) );
 			sig.setDescription( CommonUtils.createString( rowData[i][7] ) );
 			sig.setUserName( CommonUtils.createString( rowData[i][8] ) );
@@ -1731,18 +1731,18 @@ private boolean isDateInCurrentDay( Date date_ )
  */
 private void insertAlarmDisplayAlarmedRow( Signal signal )
 {
-	if( signal.getPointID() < 0 || signal.getAlarmStateID() < Signal.EVENT_SIGNAL )
+	if( signal.getPointID() < 0 || signal.getCategoryID() < Signal.EVENT_SIGNAL )
 		return;
 
 	long alarmPage = 0;
-	if( signal.getAlarmStateID() > Signal.EVENT_SIGNAL && signal.getAlarmStateID() <= Signal.MAX_DISPLAYABLE_ALARM_SIGNAL )
-		alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getAlarmStateID() - Signal.EVENT_SIGNAL);
-	else if( signal.getAlarmStateID() == Signal.EVENT_SIGNAL ) //if we have a Signal.EVENT_SIGNAL, then we want every display possibly handle this Signal
+	if( signal.getCategoryID() > Signal.EVENT_SIGNAL && signal.getCategoryID() <= Signal.MAX_DISPLAYABLE_ALARM_SIGNAL )
+		alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getCategoryID() - Signal.EVENT_SIGNAL);
+	else if( signal.getCategoryID() == Signal.EVENT_SIGNAL ) //if we have a Signal.EVENT_SIGNAL, then we want every display possibly handle this Signal
 		alarmPage = currentDisplayNumber;
 
 	// all alarms display	
 	if( (currentDisplayNumber == Display.GLOBAL_ALARM_DISPLAY || alarmPage == currentDisplayNumber) 
-		 && isValidAlarm(signal.getAlarmStateID()) )
+		 && isValidAlarm(signal.getCategoryID()) )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
@@ -1752,10 +1752,10 @@ private void insertAlarmDisplayAlarmedRow( Signal signal )
 				{
 					int rNum = getRowNumber(signal);
 
-					if( signal.getAlarmStateID() > Signal.EVENT_SIGNAL )
+					if( signal.getCategoryID() > Signal.EVENT_SIGNAL )
 					{
 						getAlarmingRowVector().getAlarmingRow(rNum).setAlarmColor(
-								getAlarmColor((int)signal.getAlarmStateID()) );
+								getAlarmColor((int)signal.getCategoryID()) );
 					}
 
 
@@ -1781,7 +1781,7 @@ private void insertAlarmDisplayAlarmedRow( Signal signal )
 				// if the point isn't alarming and its an EVENT_SIGNAL, we do not want to add it.
 				// This means that some other app besides Dispatch has ACKED or CLEARED an existing alarm.
 				// If we didnt do this, all AKED alarms would show up on every display!!!
-				if( signal.getAlarmStateID() != Signal.EVENT_SIGNAL )
+				if( signal.getCategoryID() != Signal.EVENT_SIGNAL )
 				{
 					int rowLoc = getRowNumber(signal);
 
@@ -2493,7 +2493,7 @@ public void setObservedRow( int location )
 public void setRowAlarmed( Signal signal ) 
 {
 	//do not process EVENT_SIGNAL messages
-	if( signal.getAlarmStateID() <= Signal.EVENT_SIGNAL )
+	if( signal.getCategoryID() <= Signal.EVENT_SIGNAL )
 		return;
 
 	
@@ -2512,14 +2512,14 @@ public void setRowAlarmed( Signal signal )
 			{
 				getAlarmingRowVector().addElement( new AlarmingRow(
 						rowLocation, 
-						getAlarmColor((int)signal.getAlarmStateID()), 
+						getAlarmColor((int)signal.getCategoryID()), 
 						getRowBackgroundColor(rowLocation),
 						signal) );
 			}
 			else
 			{
 				getAlarmingRowVector().getAlarmingRow(rowLocation).setAlarmColor( 
-						getAlarmColor((int)signal.getAlarmStateID()) );
+						getAlarmColor((int)signal.getCategoryID()) );
 				
 				getAlarmingRowVector().getAlarmingRow(rowLocation).setSignal( signal );
 			}

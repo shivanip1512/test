@@ -48,7 +48,7 @@ public Class getJavaClass() {
 	return Signal.class;
 }
 /**
- * restoreGuts method comment.
+ * restoreGuts method comment. 
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.restoreGuts( obj, vstr, polystr );
@@ -57,7 +57,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	signal.setPointID(vstr.extractInt());
 	signal.setLogType( vstr.extractInt());
-	signal.setAlarmStateID( vstr.extractUnsignedInt() );
+	signal.setCategoryID( vstr.extractUnsignedInt() );
 	signal.setDescription( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	signal.setAction( (String) vstr.restoreObject( SimpleMappings.CString ));
 	signal.setTags( vstr.extractUnsignedInt() );
@@ -73,7 +73,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.insertLong( signal.getPointID() );
 	vstr.insertInt( signal.getLogType() );
-	vstr.insertUnsignedInt( signal.getAlarmStateID() );	
+	vstr.insertUnsignedInt( signal.getCategoryID() );	
 	vstr.saveObject( signal.getDescription(), SimpleMappings.CString );
 	vstr.saveObject( signal.getAction(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( signal.getTags() );
