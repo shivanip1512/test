@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/23 15:45:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/09/27 17:14:39 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ void CtiThreadMonitor::run( void )
 
 void CtiThreadMonitor::checkForExpriration( void )
 {
-   ptime now( second_clock::local_time() );
+   ptime current( second_clock::local_time() );
 
    if( _threadData.size() != 0 )
    {
@@ -81,7 +81,7 @@ void CtiThreadMonitor::checkForExpriration( void )
 
          ptime check = temp.getTickledTime() + seconds( temp.getTickleFreq() );  //needs validation
 
-         if( check < now  )
+         if( check < current )
          {
             i->second.setReported( false );
          }
@@ -122,7 +122,7 @@ void CtiThreadMonitor::processExpired( void )
 {
    try
    {
-      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
+      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); /*i++*/ )
       {
          if( !i->second.getReported() )
          {
@@ -142,38 +142,26 @@ void CtiThreadMonitor::processExpired( void )
 
             case CtiThreadRegData::Restart:
                {
-                  CtiThreadRegData::fooptr alt = i->second.getAlternateFunc();
+                  CtiThreadRegData::behaviourFuncPtr alt = i->second.getAlternateFunc();
                   void* altArgs = i->second.getAlternateArgs();
 
                   if( alt != NULL )
-                  {
-                     if( altArgs != NULL )
-                     {
-                        alt( altArgs );
-                     }
-                     else
-                     {
-                        alt( 0 );
-                     }
+                  {  
+                     //it doesn't matter if the args are null
+                     alt( altArgs );
                   }
                }
                break;
 
             case CtiThreadRegData::KillApp:
                {
-                  CtiThreadRegData::fooptr hammer = i->second.getShutdownFunc();
+                  CtiThreadRegData::behaviourFuncPtr hammer = i->second.getShutdownFunc();
                   void* hammerArgs = i->second.getShutdownArgs();
 
                   if( hammer != NULL )
                   {
-                     if( hammerArgs != NULL )
-                     {
-                        hammer( hammerArgs );
-                     }
-                     else
-                     {
-                        hammer( 0 );
-                     }
+                     //it doesn't matter if the args are null
+                     hammer( hammerArgs );
                   }
                }
                break;
@@ -185,12 +173,9 @@ void CtiThreadMonitor::processExpired( void )
                }
                break;
             }
-
-            i = _threadData.erase( i );
-
-            if( i == _threadData.end() )
-               break;
          }
+
+         i = _threadData.erase( i );
       }
    }
    catch( ... )
@@ -216,7 +201,8 @@ void CtiThreadMonitor::dump( void )
       dout << "Thread name             : " << temp.getName() << endl;
       dout << "Thread id               : " << temp.getId() << endl;
       dout << "Thread behaviour type   : " << temp.getBehaviour() << endl;
-      dout << "Thread tickle frequency : " << temp.getTickleFreq() << endl; 
+      dout << "Thread tickle frequency : " << temp.getTickleFreq() << endl;
+      dout << "Thread tickle time      : " << timeString( temp.getTickledTime() ) << endl;
       dout << endl;
    }  
 }
@@ -225,11 +211,11 @@ void CtiThreadMonitor::dump( void )
 // each thread that reports to us will give us info (at least initially) that looks like the regdata
 //===========================================================================================================
 
-void CtiThreadMonitor::insertThread( const CtiThreadRegData *in )
+void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
 {
    //we need to copy the data locally to put on the queue or we'll destroy
    //data that is not ours when we delete the queue
-   CtiThreadRegData  data = *in;
+   CtiThreadRegData data = *in;
 
    data.setTickledTime( second_clock::local_time() );
 
@@ -238,10 +224,8 @@ void CtiThreadMonitor::insertThread( const CtiThreadRegData *in )
       _queue.putQueue( &data );
 
       {
-         ptime now( second_clock::local_time() );
-
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << boost::posix_time::to_simple_string( now ) << " Thread " << data.getId() << " inserted" << endl;
+         dout << now() << " Thread " << data.getId() << " inserted" << endl;
       }
 
       //our thread may have shut down, so we don't want the queue to keep growing
@@ -277,27 +261,19 @@ void CtiThreadMonitor::removeThread( int id )
       dout << now() << " Thread with id " << id << " has unregistered" << endl;
    }
 }
-/*
-//===========================================================================================================
-//===========================================================================================================
 
-void CtiThreadMonitor::setQuit( bool in )
-{
-   _quit = in;
-}
-
-//===========================================================================================================
-//===========================================================================================================
-
-void CtiThreadMonitor::terminate( void )
-{
-   _quit = true;
-}
-*/
 //===========================================================================================================
 //===========================================================================================================
 
 string CtiThreadMonitor::now( void )
 {
-   return( boost::posix_time::to_simple_string( second_clock::local_time() ) );
+   return( to_simple_string( second_clock::local_time() ) );
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+string CtiThreadMonitor::timeString( ptime in )
+{
+   return( to_simple_string( in ) );
 }
