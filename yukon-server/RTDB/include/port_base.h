@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/07/21 22:04:30 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/09/12 21:42:42 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,7 +211,7 @@ public:
     INT requeueToParent(OUTMESS *&OutMessage);            // Return all queue entries to the processing parent.
     bool isMinMaxIdle() const;
     void setMinMaxIdle(bool mmi);
-    void waitForPost(HANDLE quitEvent = INVALID_HANDLE_VALUE, LONG timeout = -1L) const;
+    bool waitForPost(HANDLE quitEvent = INVALID_HANDLE_VALUE, LONG timeout = -1L) const;
     void postParent();
     void postEvent();
     LONG getPoolAssignedGUID() const;

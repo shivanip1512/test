@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/09/12 02:37:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/09/12 21:42:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,7 +239,16 @@ VOID PortPoolDialoutThread(void *pid)
                 }
             }
 
-            ParentPort->waitForPost(hPorterEvents[P_QUIT_EVENT], 15000);
+            if( ParentPort->waitForPost(hPorterEvents[P_QUIT_EVENT], 15000) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << ParentPort->getName() << " awakened by a postParent() " << endl;
+                }
+
+                // Now we need to do a pool-port-queue-sweep looking for OutMessages which can be allocated onto any child port.
+                status = AllocateOutMessagesToChildPorts(ParentPort);
+            }
         }
         else if(status == CtiPortPoolDialout::PPSC_ChildReady)
         {

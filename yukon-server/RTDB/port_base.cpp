@@ -263,14 +263,12 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
             if(QueEntries > QueueGripe)
             {
+                ULONG gripemore = QueueGripe * 2;
+                QueueGripe = QueueGripe + ( gripemore < 1000 ? gripemore : 1000);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << getName() << " has just received a new port queue entry.  There are " << QueEntries << " pending." << endl;
                 }
-
-                ULONG gripemore = QueueGripe * 2;
-
-                QueueGripe = QueueGripe + ( gripemore < 1000 ? gripemore : 100);
             }
             else if(QueEntries < DEFAULT_QUEUE_GRIPE_POINT)
             {
@@ -1117,8 +1115,10 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
     return status;
 }
 
-void CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
+bool CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
 {
+    bool status = false;
+
     if(_postEvent != INVALID_HANDLE_VALUE)
     {
         HANDLE hWaitObjects[2];
@@ -1134,6 +1134,10 @@ void CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
         switch(dwWaitResult)
         {
         case WAIT_OBJECT_0:         // This is a post... Wake up!
+            {
+                status = true;
+                break;
+            }
         case WAIT_OBJECT_0 + 1:     // This is QUIT by the way.
         case WAIT_TIMEOUT:
             {
@@ -1154,6 +1158,8 @@ void CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+
+    return status;
 }
 
 void CtiPort::postParent()
