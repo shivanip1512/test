@@ -314,7 +314,7 @@ public Object getValueAt(int row, int col)
 			{
             if( sub.isPowerFactorControlled() )
             {
-               return getPowerFactorText(sub.getPeakSetPoint().doubleValue());
+               return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
             }
             else
 				  return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
@@ -326,7 +326,7 @@ public Object getValueAt(int row, int col)
 			{
             if( sub.isPowerFactorControlled() )
             {
-               return getPowerFactorText(sub.getPeakSetPoint().doubleValue());
+               return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
             }
             else
    				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
@@ -358,9 +358,9 @@ public Object getValueAt(int row, int col)
       
 		case POWER_FACTOR_COLUMN:
       {
-         return getPowerFactorText( sub.getPowerFactorValue().doubleValue() )
+         return getPowerFactorText( sub.getPowerFactorValue().doubleValue(), true )
                  + " / " +
-                 getPowerFactorText( sub.getEstimatedPFValue().doubleValue() );
+                 getPowerFactorText( sub.getEstimatedPFValue().doubleValue(), true );
       }
 			
 		case WATTS_COLUMN:
@@ -383,13 +383,13 @@ public Object getValueAt(int row, int col)
 	
 }
 
-private String getPowerFactorText( double value  )
+private String getPowerFactorText( double value, boolean compute )
 {   
    if( value <= CapControlConst.PF_INVALID_VALUE )
       return "  NA";
    else
       return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            value * 100, 1 ) + "%"; //get percent   
+            value * (compute ? 100 : 1), 1 ) + "%"; //get percent   
 }
 
 /**
