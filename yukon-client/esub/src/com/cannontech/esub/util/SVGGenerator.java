@@ -1,6 +1,7 @@
 package com.cannontech.esub.util;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
@@ -32,6 +33,7 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.util.ServletUtil;
 import com.loox.jloox.LxAbstractImage;
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxAbstractText;
@@ -78,8 +80,8 @@ public class SVGGenerator {
 	 	// get the root element (the svg element)
 		Element svgRoot = doc.getDocumentElement();
 
-		svgRoot.setAttributeNS(null, "width", Integer.toString(d.getMetaElement().getDrawingWidth()));
-		svgRoot.setAttributeNS(null, "height", Integer.toString(d.getMetaElement().getDrawingHeight()));
+		//svgRoot.setAttributeNS(null, "width", Integer.toString(d.getMetaElement().getDrawingWidth()));
+		//svgRoot.setAttributeNS(null, "height", Integer.toString(d.getMetaElement().getDrawingHeight()));
 	 	svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
 	 	//svgRoot.setAttributeNS(null, "onerror", "suppressErrors()");
 	 		 	
@@ -233,9 +235,16 @@ public class SVGGenerator {
 		String pathStr = getPathString(s, rect.getCenterX(), rect.getCenterY());
 		float width = rect.getStyle().getLineThickness();
 		
+		String fillStr = "none";
+		
+		Paint p = rect.getPaint();
+		if(p != null) {
+			fillStr = "#" + ServletUtil.getHTMLColor((Color) p);		
+		}
+
 		Element rectElem = doc.createElementNS(svgNS, "path");
 		rectElem.setAttributeNS(null, "id", rect.getName());
-		rectElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
+		rectElem.setAttributeNS(null, "style", "fill: " + fillStr + ";opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
 		rectElem.setAttributeNS(null, "d", pathStr);
 		
 		return rectElem;
