@@ -113,7 +113,7 @@
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
+                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;<cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -186,7 +186,7 @@
                   </td>
               <td class="MainHeader"><%= offerId + "-" + revisionNumber %></td>
               <td class="MainHeader"> 
-                    <p align=RIGHT><b>Offer Date:</b> 
+                    <p align=RIGHT><b>Control Date:</b> 
                   </td>
               <td class="MainHeader"><%= eeTimeFormat.format( offer.getOfferDate() ) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + eeDateFormat.format( offer.getOfferDate() ) %>
               </td>
@@ -250,7 +250,7 @@
           </table>
         </div>
             <p align="center" class="MainHeader"><b>TOTAL: <%= totalCommitted %> 
-              kW</b></p>
+              kWh</b></p>
             <p align="center" class="MainHeader"><a href="<%= referrer %>" class="Link1"><b>Back</b></a><br><br>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
