@@ -2,7 +2,42 @@
 <tomcatProjectProperties>
     <rootDir>/</rootDir>
     <exportSource>false</exportSource>
+    <reloadable>true</reloadable>
+    <redirectLogger>true</redirectLogger>
     <updateXml>true</updateXml>
-    <warLocation>c:/temp/esub-web.war</warLocation>
+    <warLocation></warLocation>
     <webPath></webPath>
+    <webClassPathEntries>
+        <webClassPathEntry>c:\dev\head\yukon-client\billing\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\common\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\dbeditor\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\esub-editor\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\esub-web\WEB-INF\classes</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\tdc\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\SqlServer.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\acme.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\batik111.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\classes12.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\commons-logging.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcchart401K.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcfield401K.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcommon.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jcpagelayout450K.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jfreechart.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jloox2.0.2.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jnp-client.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\jruntags.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\junit.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\led.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\log4j-1.2.4.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\rwav.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\struts.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\trending\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\yukonappclient\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\yukonappserver\bin</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\ejbonly.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\resource</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\third-party\xerces.jar</webClassPathEntry>
+        <webClassPathEntry>c:\dev\head\yukon-client\servlet\bin</webClassPathEntry>
+    </webClassPathEntries>
 </tomcatProjectProperties>

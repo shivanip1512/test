@@ -5,6 +5,8 @@
 	<projects>
 		<project>common</project>
 		<project>dbeditor</project>
+		<project>resource</project>
+		<project>servlet</project>
 		<project>tdc</project>
 		<project>trending</project>
 		<project>yukonappclient</project>

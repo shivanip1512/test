@@ -3,9 +3,8 @@
 	<name>esub-web</name>
 	<comment></comment>
 	<projects>
-		<project>common</project>
 		<project>esub-editor</project>
-		<project>servlet</project>
+		<project>third-party</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
