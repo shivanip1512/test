@@ -25,6 +25,7 @@
  	    <fileset dir="resource">
 		<include name="**/*.gif"/>
  		<include name="**/*.ico"/>
+ 		<include name="**/*.dll"/>
 	    </fileset>
        </copy>
    </target>
