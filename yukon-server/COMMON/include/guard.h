@@ -56,7 +56,8 @@ public:
 
     ~CtiLockGuard()
     {
-        _res.release();
+        if(_acquired)
+            _res.release();
     }
 
     bool isAcquired() const { return _acquired;}
