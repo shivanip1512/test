@@ -12,11 +12,6 @@
 			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
 	int statusCancelled = ServletUtils.getStarsCustListEntry(
 			selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
-	
-	Date dateScheduled = order.getDateScheduled();
-	if (dateScheduled == null) dateScheduled = new Date();
-	Date dateCompleted = order.getDateCompleted();
-	if (dateCompleted == null) dateCompleted = new Date();
 %>
 <html>
 <head>
@@ -52,19 +47,46 @@ function validate(form) {
 	return true;
 }
 
+function getCurrentDate() {
+	var date = new Date();
+	var year = date.getFullYear();
+	var month = "0" + (date.getMonth() + 1);
+	month = month.substring(month.length - 2);
+	var date = "0" + date.getDate();
+	date = date.substring(date.length - 2);
+	return (month + "/" + date + "/" + year);
+}
+
+function getCurrentTime() {
+	var date = new Date();
+	var hour = "0" + date.getHours();
+	hour = hour.substring(hour.length - 2);
+	var minute = "0" + date.getMinutes();
+	minute = minute.substring(minute.length - 2);
+	return (hour + ":" + minute);
+}
+
 var currentDivName = null;
 
 function showDateDiv(form, divName) {
 	currentDivName = divName;
-	document.getElementById("Div" + divName).style.display = "";
-	form.elements[divName].disabled= false;
-	form.elements[divName].select();
+	form.elements["Date" + divName].disabled = false;
+	form.elements["Time" + divName].disabled = false;
+	form.elements["Date" + divName].value = getCurrentDate();
+	form.elements["Time" + divName].value = getCurrentTime();
+	if (document.getElementById("Div" + divName) != null)
+		document.getElementById("Div" + divName).style.display = "";
+	form.elements["Date" + divName].focus();
 }
 
 function resetOrder(form) {
 	if (currentDivName != null) {
-		document.getElementById("Div" + currentDivName).style.display = "none";
-		form.elements[currentDivName].disabled = true;
+		if (document.getElementById("Div" + currentDivName) != null)
+			document.getElementById("Div" + currentDivName).style.display = "none";
+		form.elements["Date" + currentDivName].value = "";
+		form.elements["Time" + currentDivName].value = "";
+		form.elements["Date" + currentDivName].disabled = true;
+		form.elements["Time" + currentDivName].disabled = true;
 		currentDivName = null;
 	}
 }
@@ -72,29 +94,20 @@ function resetOrder(form) {
 function scheduleOrder(form) {
 	form.CurrentState.value = "<%= statusScheduled %>";
 	resetOrder(form);
-	showDateDiv(form, "DateScheduled");
+	showDateDiv(form, "Scheduled");
 }
 
 function closeOrder(form) {
-	form.CurrentState.value = "<%= statusCompleted %>";
 	resetOrder(form);
-	showDateDiv(form, "DateCompleted");
-}
-
-function cancelOrder(form) {
-	form.CurrentState.value = "<%= statusCancelled %>";
-	resetOrder(form);
-	showDateDiv(form, "DateCancelled");
+	showDateDiv(form, "Completed");
 }
 
 function changeStatus(form) {
 <%
 	if (order.getCurrentState().getEntryID() != statusCompleted && order.getCurrentState().getEntryID() != statusCancelled) {
 %>
-	if (form.CurrentState.value == "<%= statusCompleted %>")
+	if (form.CurrentState.value == "<%= statusCompleted %>" || form.CurrentState.value == "<%= statusCancelled %>")
 		closeOrder(form);
-	else if (form.CurrentState.value == "<%= statusCancelled %>")
-		cancelOrder(form);
 	else if (form.CurrentState.value == "<%= statusScheduled %>")
 <%
 		if (order.getCurrentState().getEntryID() != statusScheduled) {
@@ -116,17 +129,17 @@ function changeStatus(form) {
 }
 
 function init() {
-<% if (order.getCurrentState().getEntryID() != statusPending) { %>
-	document.getElementById("DivDateScheduled").style.display = "";
+<% if (order.getCurrentState().getEntryID() == statusPending) { %>
+	document.soForm.Schedule.disabled = false;
+<% } %>
+<% if (order.getCurrentState().getEntryID() == statusScheduled || order.getDateScheduled() != null) { %>
 	document.soForm.DateScheduled.disabled = false;
+	document.soForm.TimeScheduled.disabled = false;
+	document.getElementById("DivScheduled").style.display = "";
 <% } %>
-<% if (order.getCurrentState().getEntryID() == statusCompleted) { %>
-	document.getElementById("DivDateCompleted").style.display = "";
+<% if (order.getCurrentState().getEntryID() == statusCompleted || order.getCurrentState().getEntryID() == statusCancelled) { %>
 	document.soForm.DateCompleted.disabled = false;
-<% } %>
-<% if (order.getCurrentState().getEntryID() == statusCancelled) { %>
-	document.getElementById("DivDateCancelled").style.display = "";
-	document.soForm.DateCancelled.disabled = false;
+	document.soForm.TimeCompleted.disabled = false;
 <% } %>
 }
 </script>
@@ -268,100 +281,66 @@ function init() {
                     </table>
                   </td>
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
-                    <table width="100%" border="1" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td>
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                      <tr> 
+                        <td><span class="SubtitleHeader">STATUS</span> 
+                          <hr>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
                             <tr> 
-                              <td><span class="SubtitleHeader">STATUS</span> 
-                                <hr>
-                                <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-                                  <tr> 
-                                    <td width="30%" class="TableCell"> 
-                                      <div align="right">Status:</div>
-                                    </td>
-                                    <td width="70%"> 
-                                      <select name="CurrentState" onChange="changeStatus(this.form)">
-                                        <%
+                              <td width="30%" class="TableCell"> 
+                                <div align="right">Status:</div>
+                              </td>
+                              <td width="70%"> 
+                                <select name="CurrentState" onChange="changeStatus(this.form)">
+                                  <%
 	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
 	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
 		String selected = (entry.getEntryID() == order.getCurrentState().getEntryID())? "selected" : "";
 %>
-                                        <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                        <%	} %>
-                                      </select>
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="30%" class="TableCell"> 
-                                      <div align="right">Action Taken:</div>
-                                    </td>
-                                    <td width="70%"> 
-                                      <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getActionTaken().replaceAll("<br>", "\r\n") %></textarea>
-                                    </td>
-                                  </tr>
-                                </table>
+                                  <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                  <%	} %>
+                                </select>
+                                <input type="button" name="Schedule" value="Schedule" onClick="scheduleOrder(this.form)" disabled>
                               </td>
                             </tr>
                           </table>
-                          <div id="DivDateScheduled" style="display:none"> 
-                            <table width="100%" border="0" cellspacing="0" cellpadding="1">
-                              <tr> 
-                                <td width="30%" align="right" class="TableCell">Date 
-                                  Scheduled:</td>
-                                <td width="70%"> 
-                                  <input type="text" name="DateScheduled" size="14" value="<%= datePart.format(dateScheduled) %>" disabled>
-                                  - 
-                                  <input type="text" name="TimeScheduled" size="8" value="<%= timeFormat.format(dateScheduled) %>">
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                          <div id="DivDateCompleted" style="display:none"> 
-                            <table width="100%" border="0" cellspacing="0" cellpadding="1">
-                              <tr> 
-                                <td width="30%" align="right" class="TableCell">Date 
-                                  Completed:</td>
-                                <td width="70%"> 
-                                  <input type="text" name="DateCompleted" size="14" value="<%= datePart.format(dateCompleted) %>" disabled>
-                                  - 
-                                  <input type="text" name="TimeCompleted" size="8" value="<%= timeFormat.format(dateCompleted) %>">
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                          <div id="DivDateCancelled" style="display:none"> 
-                            <table width="100%" border="0" cellspacing="0" cellpadding="1">
-                              <tr> 
-                                <td width="30%" align="right" class="TableCell">Date 
-                                  Cancelled:</td>
-                                <td width="70%"> 
-                                  <input type="text" name="DateCancelled" size="14" value="<%= datePart.format(dateCompleted) %>" disabled>
-                                  - 
-                                  <input type="text" name="TimeCancelled" size="8" value="<%= timeFormat.format(dateCompleted) %>">
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                          <% if (order.getCurrentState().getEntryID() != statusCompleted && order.getCurrentState().getEntryID() != statusCancelled) { %>
-                          <br>
-                          <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
-                            <tr> 
-                              <td align="center"> 
-                                <% if (order.getCurrentState().getEntryID() == statusPending) { %>
-                                <input type="button" name="Schedule" value="Schedule" onclick="scheduleOrder(this.form)">
-                                <% } %>
-                                <input type="button" name="Close" value="Close" onclick="closeOrder(this.form)">
-                                <input type="button" name="Cancel" value="Cancel" onclick="cancelOrder(this.form)">
-                              </td>
-                            </tr>
-                          </table>
-                          <% } %>
                         </td>
                       </tr>
                     </table>
-                    
+                    <div id="DivScheduled" style="display:none"> 
+                      <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                        <tr> 
+                          <td width="30%" align="right" class="TableCell">Date 
+                            Scheduled:</td>
+                          <td width="70%"> 
+                            <input type="text" name="DateScheduled" size="14" value="<%= ServletUtils.formatDate(order.getDateScheduled(), datePart) %>" disabled>
+                            - 
+                            <input type="text" name="TimeScheduled" size="8" value="<%= ServletUtils.formatDate(order.getDateScheduled(), timeFormat) %>" disabled>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="1">
+                      <tr> 
+                        <td width="30%" align="right" class="TableCell">Date Closed:</td>
+                        <td width="70%"> 
+                          <input type="text" name="DateCompleted" size="14" value="<%= ServletUtils.formatDate(order.getDateCompleted(), datePart) %>" disabled>
+                          - 
+                          <input type="text" name="TimeCompleted" size="8" value="<%= ServletUtils.formatDate(order.getDateCompleted(), timeFormat) %>" disabled>
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+                      <tr>
+                        <td width="30%" class="TableCell"> 
+                          <div align="right">Action Taken:</div>
+                        </td>
+                        <td width="70%"> 
+                          <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%= order.getActionTaken().replaceAll("<br>", "\r\n") %></textarea>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
