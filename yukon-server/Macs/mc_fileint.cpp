@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_fileint.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:06 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/23 21:11:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
     FILE* fptr;
     char buf[MC_FILE_BUF_SIZE];
     char* sep_ptr;
-    bool did_something = false;
+    int line = 0;
 
     if( (fptr = fopen( filename, "r" ) ) == NULL )
     {
@@ -85,10 +85,11 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
 
         return;
     }
-
+   
     while( !feof(fptr) )
     {
         fgets( buf, MC_FILE_BUF_SIZE, fptr);
+        line++;
 
         if( *buf == 0 )
             break;
@@ -112,7 +113,14 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
 
         // Could be a bogus line
         if( sep_ptr == NULL )
-            break;
+        {
+            {
+                CtiLockGuard< CtiLogger > guard(dout);
+                dout << RWTime() << " File Interface: An error occured at line: " << line << " in file: " << filename << endl;
+            }
+            continue;
+        }
+         
 
         *sep_ptr = NULL;
 
@@ -127,8 +135,6 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
         //this causes some lines to be interpreted twice -
         //zeroing out buf will avoid this 
         memset( buf, 0, MC_FILE_BUF_SIZE );
-
-        did_something = true;
     }
                    
     fclose( fptr );
@@ -149,13 +155,6 @@ void CtiMCFileInterface::handleFile(const RWCString& filename )
     consume_file += RWLocale::global().asString((long) now_time.minute());
     consume_file += RWLocale::global().asString((long) now_time.second());
 
-    if( !did_something )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << RWTime() << " File Interface: An error occured processing file:  " << filename << endl;
-    }
-
-    
     if( CopyFile(filename.data(), consume_file.data(), FALSE) == 0 ) {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime() << " File Interface:  failed copying processed file " << filename << endl;
