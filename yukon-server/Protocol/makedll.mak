@@ -2,6 +2,7 @@ include ..\common\global.inc
 include ..\common\rwglobal.inc
 
 INCLPATHS+= \
+-I$(BOOST) \
 -I$(PROT)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
@@ -15,6 +16,7 @@ INCLPATHS+= \
 
 .PATH.H = \
 .\include \
+;$(BOOST) \
 ;$(COMMON)\include \
 ;$(DATABASE)\include \
 ;$(RTDB)\include \
@@ -106,6 +108,8 @@ prot_dnp.obj \
 $(DNPOBJS) \
 prot_ion.obj \
 $(IONOBJS) \
+prot_seriesv.obj \
+prot_lmi.obj \
 prot_ansi_kv2.obj \
 prot_ansi.obj \
 $(ANSIOBJS) \
@@ -144,7 +148,7 @@ ctiprot.dll:   $(OBJS) Makefile
                 @%cd $(CWD)
 
 
-                
+
 saprotocol.dll:
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist 3rdparty\saprotocol.lib copy 3rdparty\saprotocol.lib $(COMPILEBASE)\lib
@@ -456,6 +460,16 @@ prot_ion.obj:   logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
                 ion_value_fixed_time.h ion_net_application.h \
                 ion_net_network.h ion_net_datalink.h \
                 ion_value_variable_program.h
+prot_lmi.obj:   logger.h thread.h mutex.h dlldefs.h guard.h porter.h \
+                dsm2.h dsm2err.h devicetypes.h queues.h types.h prot_lmi.h \
+                prot_seriesv.h prot_base.h msg_pdata.h pointdefs.h message.h \
+                ctidbgmem.h collectable.h msg_signal.h yukon.h dllbase.h \
+                os2_2w32.h cticalls.h xfer.h dialup.h pointtypes.h
+prot_seriesv.obj:       prot_seriesv.h dlldefs.h prot_base.h msg_pdata.h \
+                pointdefs.h message.h ctidbgmem.h collectable.h msg_signal.h \
+                yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+                mutex.h guard.h xfer.h dialup.h pointtypes.h logger.h \
+                thread.h porter.h dsm2err.h devicetypes.h queues.h
 prot_sixnet.obj:        guard.h dlldefs.h logger.h thread.h mutex.h \
                 prot_sixnet.h cmdparse.h parsevalue.h dllbase.h os2_2w32.h \
                 types.h cticalls.h dsm2.h

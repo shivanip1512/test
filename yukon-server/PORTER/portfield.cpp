@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2004/03/23 20:42:44 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2004/04/14 17:10:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1058,6 +1058,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPECBC6510:
                 case TYPE_DNPRTU:
                 case TYPE_DARTRTU:
+                case TYPE_SERIESVRTU:
+                case TYPE_SERIESVLMIRTU:
                     {
                         CtiProtocolBase *protocol;
                         int protocolStatus;
@@ -1635,6 +1637,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPECBC6510:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
+                    case TYPE_SERIESVRTU:
+                    case TYPE_SERIESVLMIRTU:
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
@@ -1677,6 +1681,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TDMARKV:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
+                    case TYPE_SERIESVRTU:
+                    case TYPE_SERIESVLMIRTU:
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
