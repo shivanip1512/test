@@ -132,6 +132,73 @@ public java.lang.Integer getMinActivateTime() {
 public java.lang.Integer getMinRestartTime() {
 	return minRestartTime;
 }
+
+/**
+ * This method was created in VisualAge.
+ * @param
+ * @return java.util.Vector of Integers
+ *
+ * This method returns all the LMProgram ID's that are not assgined
+ *  to a Control Area.
+ */
+public static java.util.Vector getUnassignedPrograms()
+{
+	java.util.Vector returnVector = null;
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+
+	String sql = "SELECT DeviceID FROM " + TABLE_NAME + " where " +
+					 " deviceid not in (select lmprogramdeviceid from " + LMControlAreaProgramList.TABLE_NAME +
+					 ") ORDER BY deviceid";
+
+	try
+	{		
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+
+		if( conn == null )
+		{
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();
+			returnVector = new java.util.Vector(5); //rset.getFetchSize()
+	
+			while( rset.next() )
+			{				
+				returnVector.addElement( 
+						new Integer(rset.getInt("DeviceID")) );
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) 
+				pstmt.close();
+			if( conn != null ) 
+				conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+
+	return returnVector;
+}
+
 /**
  * retrieve method comment.
  */

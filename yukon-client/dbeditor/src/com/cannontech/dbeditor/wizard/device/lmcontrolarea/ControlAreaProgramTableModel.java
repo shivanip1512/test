@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+
 /**
  * Insert the type's description here.
  * Creation date: (3/19/2001 4:37:05 PM)
@@ -193,11 +195,14 @@ public boolean isCellEditable(int rowIndex, int columnIndex)
  * Creation date: (3/19/2001 4:57:45 PM)
  * @param type int
  */
-public void removeRow( int rowNumber )
+public LiteYukonPAObject removeRow( int rowNumber )
 {
+	LiteYukonPAObject removed = getRowAt(rowNumber).getLiteDevice(); 
 	getRows().remove( rowNumber );
 
 	fireTableDataChanged();
+	
+	return removed;
 }
 /**
  *  What to store when a cell is edited.

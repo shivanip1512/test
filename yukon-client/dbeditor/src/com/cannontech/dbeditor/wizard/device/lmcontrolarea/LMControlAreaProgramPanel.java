@@ -4,6 +4,12 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+import java.util.Vector;
+
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.lm.LMProgram;
 
 public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JButton ivjJButtonAdd = null;
@@ -138,10 +144,20 @@ private javax.swing.JComboBox getJComboBoxLMProgram() {
 			synchronized( cache )
 			{
 				java.util.List l = cache.getAllLMPrograms();
+				Vector unassignedPrgIDs = LMProgram.getUnassignedPrograms();
+
 				// fills our JComboBox with LiteDevices!!
 				for( int i = 0; i < l.size(); i++ )
-					ivjJComboBoxLMProgram.addItem( l.get(i) );
+				{
+					LiteYukonPAObject lite = (LiteYukonPAObject)l.get(i);
+					 
+					if( unassignedPrgIDs.contains( new Integer(lite.getYukonID()) ) )
+						ivjJComboBoxLMProgram.addItem( lite );
+				}
 			}
+			
+			if( ivjJComboBoxLMProgram.getItemCount() <= 0 )
+				ivjJComboBoxLMProgram.addItem( "  (No Unassigned Programs Available)" );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -641,8 +657,11 @@ public boolean isInputValid()
  */
 public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	if( getJComboBoxLMProgram().getSelectedItem() == null )
+	if( getJComboBoxLMProgram().getSelectedItem() == null
+	    || !(getJComboBoxLMProgram().getSelectedItem() instanceof LiteBase) )
+	{
 		return;
+	}
 
 	if( getJTableProgram().isEditing() )
 		getJTableProgram().getDefaultEditor(Integer.class).stopCellEditing();
@@ -678,8 +697,26 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	
 	if( getJTableProgram().getSelectedRow() >= 0 )
 	{
-		for( int i = (getJTableProgram().getSelectedRows().length-1); i >= 0; i-- )
-			getJTableModel().removeRow( getJTableProgram().getSelectedRows()[i] );
+		LiteYukonPAObject[] lite = new LiteYukonPAObject[getJTableProgram().getSelectedRows().length];
+		int[] selRows = getJTableProgram().getSelectedRows();
+		
+		for( int i = (selRows.length-1); i >= 0; i-- )
+		{
+			lite[i] = getJTableModel().removeRow( selRows[i] );
+	
+			boolean alreadyFound = false;
+			for( int j = 0; j < getJComboBoxLMProgram().getItemCount(); j++ )
+			{
+				if( getJComboBoxLMProgram().getItemAt(j).equals(lite[i]) )
+				{
+					alreadyFound = true;
+					break;
+				}				
+			}
+				
+			if( !alreadyFound )
+				getJComboBoxLMProgram().addItem( lite[i] );
+		}		
 	}
 
 	getJTableProgram().clearSelection();
@@ -726,23 +763,15 @@ public void setValue(Object o)
 		com.cannontech.database.db.device.lm.LMControlAreaProgramList programList = (com.cannontech.database.db.device.lm.LMControlAreaProgramList)controlArea.getLmControlAreaProgramVector().elementAt(i);
 		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
 
-		// find the Program in the JCombBox	
-		for( int j = 0; j < getJComboBoxLMProgram().getItemCount(); j++ )
-		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getItemAt(j)).getYukonID() 
-				  == programList.getLmProgramDeviceID().intValue() )
-			{
-				liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getItemAt(j);
-				break;
-			}
-		}
-
+		//find the LMProgram that this list item points at
+		liteDevice = PAOFuncs.getLiteYukonPAO( programList.getLmProgramDeviceID().intValue() );
+		
 		if( liteDevice == null )
 			throw new RuntimeException("Unable to find the LMProgram with deviceID " 
 				+ programList.getDeviceID().intValue() + 
 				" for the LMControlAreaList in LMControlArea '" 
 				+ controlArea.getPAOName() + "'" );
-		
+			
 
 		getJTableModel().addRow( programList, liteDevice );
 	}
