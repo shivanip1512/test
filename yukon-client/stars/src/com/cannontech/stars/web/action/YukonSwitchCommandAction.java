@@ -430,22 +430,22 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 				
 				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " xcom assign" +
-						" s " + liteHw.getLMConfiguration().getExpressCom().getServiceProvider() +
-						" g " + liteHw.getLMConfiguration().getExpressCom().getGEO() +
-						" b " + liteHw.getLMConfiguration().getExpressCom().getSubstation() +
-						" f " + liteHw.getLMConfiguration().getExpressCom().getFeeder() +
-						" z " + liteHw.getLMConfiguration().getExpressCom().getZip() +
-						" u " + liteHw.getLMConfiguration().getExpressCom().getUserAddress();
+						" S" + liteHw.getLMConfiguration().getExpressCom().getServiceProvider() +
+						" G" + liteHw.getLMConfiguration().getExpressCom().getGEO() +
+						" B" + liteHw.getLMConfiguration().getExpressCom().getSubstation() +
+						" F" + liteHw.getLMConfiguration().getExpressCom().getFeeder() +
+						" Z" + liteHw.getLMConfiguration().getExpressCom().getZip() +
+						" U" + liteHw.getLMConfiguration().getExpressCom().getUserAddress();
 				if (load != null)
-					cmd += " p " + program + " r " + splinter + " load " + load;
+					cmd += " P" + program + " R" + splinter + " Load " + load;
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getVersaCom() != null) {
 				String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " vcom assign" +
-						" u " + liteHw.getLMConfiguration().getVersaCom().getUtilityID() +
-						" s " + liteHw.getLMConfiguration().getVersaCom().getSection() +
-						" c 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getClassAddress() ) +
-						" d 0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getDivisionAddress() );
+						" U" + liteHw.getLMConfiguration().getVersaCom().getUtilityID() +
+						" S" + liteHw.getLMConfiguration().getVersaCom().getSection() +
+						" C0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getClassAddress() ) +
+						" D0x" + Integer.toHexString( liteHw.getLMConfiguration().getVersaCom().getDivisionAddress() );
 				commands.add( cmd );
 			}
 			else if (liteHw.getLMConfiguration().getSA205() != null) {
