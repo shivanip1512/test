@@ -34,7 +34,8 @@ public class DeviceAddressRange
    private static final RangeBase RANGE_SERIES_5_LMI = 
 		 new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_SERIES_5_LMI[0] + " addresses is 0 to 127" );
 
-
+   private static final RangeBase RANGE_RTC = 
+		 new RangeBase( 0, 15, "Valid range for " + DeviceTypes.STRING_RTC[0] + " addresses is 0 to 15" );
 
    //build any extra params into the RangeBase appropriate intsances
    static
@@ -79,6 +80,10 @@ public class DeviceAddressRange
       else if( DeviceTypes.SERIES_5_LMI == deviceType_ )
 	  {
 	  	 return RANGE_SERIES_5_LMI;
+	  }
+	  else if( DeviceTypes.RTC == deviceType_ )
+	  {
+	     return RANGE_RTC;
 	  }
       else if( DeviceTypes.CAPBANKCONTROLLER == deviceType_
                || DeviceTypes.CBC_FP_2800 == deviceType_
