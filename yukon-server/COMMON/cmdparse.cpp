@@ -780,6 +780,16 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
             _snprintf(tbuf, sizeof(tbuf), "CYCLE %d%%", iValue);
         }
 
+        if(!(token = CmdStr.match(" sbo_selectonly")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        {
+            _cmd["sbo_selectonly"] = CtiParseValue(TRUE);
+        }
+        if(!(token = CmdStr.match(" sbo_operate")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        {
+            _cmd["sbo_operate"] = CtiParseValue(TRUE);
+        }
+
+
         if(flag) _actionItems.insert(tbuf);                      // If anything was set, make sure someone can be informed
 
         if(!(token = CmdStr.match("off(set)? *[0-9]+")).isNull())            // Sourcing from CmdStr, which is the entire command string.
