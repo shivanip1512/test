@@ -478,18 +478,18 @@ public class LCUtils
 										
 				if( defSecs == currSecs || currSecs <= LMControlArea.INVAID_INT )
 				{
-					currTime.set( currTime.HOUR_OF_DAY, 0 ); 
-					currTime.set( currTime.MINUTE, 0 );
-					currTime.set( currTime.SECOND, defSecs );
+					currTime.set( GregorianCalendar.HOUR_OF_DAY, 0 ); 
+					currTime.set( GregorianCalendar.MINUTE, 0 );
+					currTime.set( GregorianCalendar.SECOND, defSecs );
 
 					retStr = TIME_FORMATTER.format( currTime.getTime() );
 				}
 				else
 				{
 					tempTime.setTime( currTime.getTime() );
-					tempTime.set( tempTime.HOUR_OF_DAY, 0 ); 
-					tempTime.set( tempTime.MINUTE, 0 );
-					tempTime.set( tempTime.SECOND, currSecs );
+					tempTime.set( GregorianCalendar.HOUR_OF_DAY, 0 ); 
+					tempTime.set( GregorianCalendar.MINUTE, 0 );
+					tempTime.set( GregorianCalendar.SECOND, currSecs );
 	
 					retStr = TIME_FORMATTER.format( tempTime.getTime() );
 				}
@@ -575,7 +575,7 @@ public class LCUtils
 							startTime, 
 							stopTime,
 							(gearNum == null ? 0 : gearNum.intValue()), 
-							null);
+							null);							
 		}
 		else
 		{
@@ -592,7 +592,6 @@ public class LCUtils
 							null, null );
 		}
 	
-		
 		//return the message created
 		return msg;
 	}
@@ -634,17 +633,16 @@ public class LCUtils
 		startGC.setTime( startTime );
 		stopGC.setTime( stopTime );
 		
-		startGC.add( startGC.SECOND, startDelay );
-		stopGC.add( stopGC.SECOND, stopOffset );
+		startGC.add( GregorianCalendar.SECOND, startDelay );
+		stopGC.add( GregorianCalendar.SECOND, stopOffset );
 		
-				
-		return LCUtils.createProgMessage(
-						doItNow,
-						isStop,
-						startGC.getTime(),
-						stopGC.getTime(),
-						program,
-						(isStop ? null : new Integer(gearNum)) );
+		LMManualControlRequest msg = LCUtils.createProgMessage(
+			doItNow, isStop, startGC.getTime(), stopGC.getTime(),
+			program, (isStop ? null : new Integer(gearNum)) );
+
+		msg.setCoerceStartStopTimes( true );
+
+		return msg;				
 	}
 	
 	
