@@ -3,7 +3,8 @@
 	String linkTable[][] = {{"Inventory.jsp", "Show All"},
 						  {"AddSN.jsp", "Add Range"},
 						  {"UpdateSN.jsp", "Update Range"},
-						  {"ConfigSN.jsp", "Configure"},
+						  {"DeleteSN.jsp", "Delete Range"},
+						  {"ConfigSN.jsp", "Configure Range"},
 						 };
 
 	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif") + "' width='9' height='9'>";
@@ -26,14 +27,6 @@
 		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}
 %>
-
-<script language="Javascript">
-function sendConfig() {
-	if (!confirm("Are you sure you want to send out all scheduled configuration?"))
-		return;
-	document.ConfigForm.submit();
-}
-</script>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
 <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>">
@@ -67,21 +60,16 @@ function sendConfig() {
             <td style="padding:1"><%= ((String[]) links.get("UpdateSN.jsp"))[1] %></td>
           </tr>
 		  </cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= InventoryRole.SN_DELETE_RANGE %>"> 
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("DeleteSN.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("DeleteSN.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
 		  <cti:checkProperty propertyid="<%= InventoryRole.SN_CONFIG_RANGE %>">
           <tr> 
             <td width="10"><%= ((String[]) links.get("ConfigSN.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("ConfigSN.jsp"))[1] %></td>
-          </tr>
-          <tr> 
-            <td width="10">&nbsp;</td>
-            <td style="padding:1">
-              <form name="ConfigForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
-			    <input type="hidden" name="action" value="SendSwitchCommands">
-				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ConfigSN.jsp">
-                <a href="" class="Link2" onclick="sendConfig(); return false;"><span class="NavText">[Send 
-                Scheduled Configuration]</span></a> 
-              </form>
-            </td>
           </tr>
 		  </cti:checkProperty>
         </table>
