@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/07/12 19:05:58 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/07/27 17:04:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -631,6 +631,70 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
     }
 
     return nRet;
+}
+
+
+inline bool CtiDeviceSingle::hasProtocol() const
+{
+    return false;
+}
+
+
+inline CtiProtocolBase *CtiDeviceSingle::getProtocol() const
+{
+    return 0;
+}
+
+
+int CtiDeviceSingle::generate(CtiXfer &xfer)
+{
+    int retval = -1;
+
+    if( getProtocol() )     retval = getProtocol()->generate(xfer);
+
+    return retval;
+}
+
+int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
+{
+    int retval = -1;
+
+    if( getProtocol() )     retval = getProtocol()->decode(xfer, status);
+
+    return retval;
+}
+
+int CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
+{
+    int retval = -1;
+
+    if( getProtocol() )     retval = getProtocol()->recvCommRequest(OutMessage);
+
+    return retval;
+}
+
+int CtiDeviceSingle::sendCommResult(INMESS *InMessage)
+{
+    int retval = -1;
+
+    if( getProtocol() )     retval = getProtocol()->sendCommResult(InMessage);
+
+    return retval;
+}
+
+
+bool CtiDeviceSingle::isTransactionComplete(void)
+{
+    bool retval = true;
+
+    if( getProtocol() )     retval = getProtocol()->isTransactionComplete();
+
+    return retval;
+}
+
+
+void CtiDeviceSingle::getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue)
+{
 }
 
 
@@ -1666,7 +1730,8 @@ BOOL CtiDeviceSingle::isScanWindowOpen(RWTime &aNow) const
     {
         if(_windowVector[x].getType() == DeviceWindowScan)
         {
-            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime lastMidnight(RWDate());
+            RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
             RWTime close (open.seconds()+_windowVector[x].getDuration());
 
             if(open == close)
@@ -1694,7 +1759,8 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
     {
         if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
-            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime lastMidnight(RWDate());
+            RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
             RWTime close (open.seconds()+_windowVector[x].getDuration());
             RWTime now;
 
@@ -1723,7 +1789,8 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNo
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
-        RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+        RWTime lastMidnight(RWDate());
+        RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
         RWTime close (open.seconds()+_windowVector[x].getDuration());
 
         if(_windowVector[x].getType() == DeviceWindowAlternateRate)
@@ -1755,6 +1822,7 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, RWTime &aNo
 RWTime CtiDeviceSingle::getNextWindowOpen() const
 {
     RWTime now;
+    RWTime lastMidnight(RWDate());
     RWTime windowOpens = RWTime(YUKONEOT);
 
     try
@@ -1762,7 +1830,7 @@ RWTime CtiDeviceSingle::getNextWindowOpen() const
         // loop the vector
         for(int x=0; x <_windowVector.size(); x++)
         {
-            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime open (lastMidnight.seconds()+_windowVector[x].getOpen());
 
             if(now <= open && open < windowOpens)
             {
@@ -2268,13 +2336,14 @@ BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
 {
     BOOL status = FALSE;
     RWTime now;
+    RWTime lastMidnight(RWDate());
 
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
         if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
-            RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
+            RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
             RWTime close (open.seconds()+_windowVector[x].getDuration());
 
             /*********************************

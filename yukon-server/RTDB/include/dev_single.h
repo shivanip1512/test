@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/10/23 13:32:50 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/07/27 17:04:53 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@
 #include <rw\cstring.h>
 #include <rw\thr\mutex.h>
 #include <vector>
-
+#include <queue>
 
 #include "dsm2.h"
 
@@ -37,6 +37,9 @@
 #include "msg_pcreturn.h"
 #include "tbl_dv_scandata.h"
 #include "tbl_dv_wnd.h"
+#include "prot_base.h"
+#include "verification_objects.h"
+
 
 /*
  *  A Single (as opposed to group) device entity which is physical device!
@@ -63,6 +66,8 @@ protected:
     CtiTableDeviceScanData     *_scanData;             // Dynamic data only loaded if needed.
 
     bool validatePendingStatus(bool status, int scantype, RWTime &now = RWTime());
+
+    virtual CtiProtocolBase *getProtocol() const;
 
 private:
 
@@ -131,6 +136,14 @@ public:
     BOOL     setUseScanFlags(BOOL b = TRUE);
     BOOL     resetUseScanFlags(BOOL b = FALSE);
 
+    virtual bool hasProtocol() const;
+    virtual int  generate(CtiXfer &xfer);
+    virtual int  decode(CtiXfer &xfer, int status);
+    virtual int  recvCommRequest(OUTMESS *OutMessage);
+    virtual int  sendCommResult(INMESS *InMessage);
+    virtual bool isTransactionComplete();
+
+    virtual void getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue);
 
     virtual INT ProcessResult(INMESS*,
                               RWTime&,
