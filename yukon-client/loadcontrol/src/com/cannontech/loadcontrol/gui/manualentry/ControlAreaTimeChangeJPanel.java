@@ -144,6 +144,9 @@ private javax.swing.JCheckBox getJCheckBoxStartTime() {
 			ivjJCheckBoxStartTime.setMnemonic('d');
 			ivjJCheckBoxStartTime.setText("Dialy Start Time");
 			// user code begin {1}
+			
+			ivjJCheckBoxStartTime.setText("Daily Start Time");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -166,6 +169,9 @@ private javax.swing.JCheckBox getJCheckBoxStopTime() {
 			ivjJCheckBoxStopTime.setMnemonic('s');
 			ivjJCheckBoxStopTime.setText("Dialy Stop Time");
 			// user code begin {1}
+			
+			ivjJCheckBoxStopTime.setText("Daily Stop Time");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
