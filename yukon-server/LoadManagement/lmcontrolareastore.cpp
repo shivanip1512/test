@@ -239,7 +239,7 @@ void CtiLMControlAreaStore::reset()
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
             {
-    
+
                 if( conn.isValid() )
                 {
                     if( _controlAreas->entries() > 0 )
@@ -250,7 +250,7 @@ void CtiLMControlAreaStore::reset()
                         _controlAreas->clearAndDestroy();
                         wasAlreadyRunning = true;
                     }
-    
+
                     RWDBDateTime currentDateTime;
                     RWDBDatabase db = getDatabase();
 
@@ -462,18 +462,18 @@ void CtiLMControlAreaStore::reset()
                                 {
                                     currentLMGroupBase = new CtiLMGroupMCT(rdr);
                                 }
-				else if( tempTypeInt == TYPE_LMGROUP_SA305 )
-				{
-				    currentLMGroupBase = new CtiLMGroupSA305(rdr);
-				}
-				else if( tempTypeInt == TYPE_LMGROUP_SA205OR105 )
-				{
-				    currentLMGroupBase = new CtiLMGroupSA205OR105(rdr);
-				}
-				else if( tempTypeInt == TYPE_LMGROUP_SADIGITALORGOLAY )
-				{
-				    currentLMGroupBase = new CtiLMGroupSADigitalORGolay(rdr);
-				}
+                                else if( tempTypeInt == TYPE_LMGROUP_SA305 )
+                                {
+                                    currentLMGroupBase = new CtiLMGroupSA305(rdr);
+                                }
+                                else if( tempTypeInt == TYPE_LMGROUP_SA105 || tempTypeInt == TYPE_LMGROUP_SA205 )
+                                {
+                                    currentLMGroupBase = new CtiLMGroupSA205OR105(rdr);
+                                }
+                                else if( tempTypeInt == TYPE_LMGROUP_GOLAY || tempTypeInt == TYPE_LMGROUP_SADIGITAL )
+                                {
+                                    currentLMGroupBase = new CtiLMGroupSADigitalORGolay(rdr);
+                                }
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -543,8 +543,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
-			         << lmProgramTable["constraintid"]
-			         << lmProgramTable["constraintname"]
+                     << lmProgramTable["constraintid"]
+                     << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
@@ -569,14 +569,14 @@ void CtiLMControlAreaStore::reset()
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
-    
+
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
                         selector.from(lmProgramDirectTable);
                         selector.from(dynamicLMProgramTable);
                         selector.from(dynamicLMProgramDirectTable);
                         selector.from(pointTable);
-    
+
                         selector.where( yukonPAObjectTable["paobjectid"]==lmProgramDirectTable["deviceid"] &&
                                         lmProgramDirectTable["deviceid"]==lmProgramTable["deviceid"] &&
                                         lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
@@ -645,7 +645,7 @@ void CtiLMControlAreaStore::reset()
                     {//loading direct gears start
                         RWDBTable lmProgramDirectGearTable = db.table("lmprogramdirectgear");
                         RWDBTable lmThermoStatGearTable = db.table("lmthermostatgear");
-    
+
                         RWDBSelector selector = db.selector();
                         selector << lmProgramDirectGearTable["deviceid"]//will be paobjectid
                                  << lmProgramDirectGearTable["gearname"]
@@ -681,18 +681,18 @@ void CtiLMControlAreaStore::reset()
 
                         selector.from(lmProgramDirectGearTable);
                         selector.from(lmThermoStatGearTable);
-    
+
                         selector.where( lmProgramDirectGearTable["gearid"].leftOuterJoin(lmThermoStatGearTable["gearid"]) );
-    
+
                         selector.orderBy( lmProgramDirectGearTable["deviceid"] );
                         selector.orderBy( lmProgramDirectGearTable["gearnumber"] );
-    
+
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
-    
+
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;
                         while( rdr() )
@@ -743,8 +743,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
-			         << lmProgramTable["constraintid"]
-			         << lmProgramTable["constraintname"]
+                     << lmProgramTable["constraintid"]
+                     << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
@@ -753,8 +753,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
-			         << lmProgramTable["maxdailyops"]
-			         << lmProgramTable["maxactivatetime"]
+                     << lmProgramTable["maxdailyops"]
+                     << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << lmProgramCurtailmentTable["minnotifytime"]
@@ -908,8 +908,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
-			         << lmProgramTable["constraintid"]
-			         << lmProgramTable["constraintname"]
+                     << lmProgramTable["constraintid"]
+                     << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
@@ -918,8 +918,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
-			         << lmProgramTable["maxdailyops"]
-			         << lmProgramTable["maxactivatetime"]
+                     << lmProgramTable["maxdailyops"]
+                     << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << lmProgramEnergyExchangeTable["minnotifytime"]
@@ -1626,7 +1626,7 @@ void CtiLMControlAreaStore::doResetThr()
         while(TRUE)
         {
             rwRunnable().serviceCancellation();
-    
+
             if( RWDBDateTime().rwdate() != lastPeriodicDatabaseRefresh.rwdate() )
             {//check to see if it is midnight
                 checkMidnightDefaultsForReset();
@@ -1640,7 +1640,7 @@ void CtiLMControlAreaStore::doResetThr()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Periodic restore of control area list from the database" << endl;
                 }
-    
+
                 setValid(false);
 
                 lastPeriodicDatabaseRefresh = RWDBDateTime();
