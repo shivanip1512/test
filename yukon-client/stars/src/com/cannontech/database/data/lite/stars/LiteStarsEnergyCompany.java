@@ -2778,11 +2778,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	 * returned. It is also case-insensitive.
 	 */
 	public LiteStarsCustAccountInformation[] searchAccountByLastName(String lastName, boolean searchMembers) {
-		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName );
+		ArrayList contactList = new ArrayList();
 		
-		int[] contactIDs = new int[ contacts.length ];
-		for (int i = 0; i < contacts.length; i++)
-			contactIDs[i] = contacts[i].getContactID();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized( cache ) {
+			java.util.List cstCnts = cache.getAllContacts();
+			
+			for( int j = 0; j < cstCnts.size(); j++ ) {
+				LiteContact contact = (LiteContact) cstCnts.get(j);
+				if(contact.getContLastName().toUpperCase().startsWith( lastName.toUpperCase() ))
+					contactList.add( contact );
+			}
+		}
+		
+		int[] contactIDs = new int[ contactList.size() ];
+		for (int i = 0; i < contactList.size(); i++)
+			contactIDs[i] = ((LiteContact)contactList.get(i)).getContactID();
 		
 		return searchAccountByContactIDs( contactIDs, searchMembers );
 	}
