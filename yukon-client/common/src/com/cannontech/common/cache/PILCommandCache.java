@@ -38,7 +38,7 @@ import com.cannontech.message.util.MessageListener;
 public class PILCommandCache implements MessageListener, Observer {
 	
 	// Check the cache for things to purge this often (ms)
-	private static final int PURGE_INTERVAL = 300 * 1000;
+	private static final int PURGE_INTERVAL = 300;// * 1000;
 	 
 	//connection to PIL
 	private ClientConnection pilConn = null;
@@ -60,22 +60,43 @@ public class PILCommandCache implements MessageListener, Observer {
 	private static PILCommandCache instance = null;
 		
 	// A timer task to purge the hashmap of old entries
-	private class PurgeTask extends TimerTask {		
+	/*private class PurgeTask extends TimerTask {		
 		public void run() {
 			long now = System.currentTimeMillis();
 			synchronized(reqRetMap) {
 				Iterator iter = reqRetMap.entrySet().iterator();
 				while(iter.hasNext()) {
-					Request req = (Request) iter.next();
-					if(now > req.getTimeStamp().getTime() + PILCommandCache.this.maxAge) {
-						CTILogger.info("purging request message created: " + req.getTimeStamp());
+					Object key = iter.next();
+					Pair p = (Pair) reqRetMap.get(key);					
+					List reqList = (List) p.first;
+					long newestTS = findNewest(reqList);
+					if(now > newestTS + PILCommandCache.this.maxAge) {
+						CTILogger.info("purging request message created: " + new java.util.Date(newestTS));
 						iter.remove();
 					}
 	 			}
 			}
 		}
+	*/
+		
+		/** 
+		 * find the oldest request in the list
+		 * @param reqList
+		 * @return
+		 */
+	/*private long findNewest(List reqList) {
+			long oldest = Long.MAX_VALUE;
+			Iterator i = reqList.iterator();
+			while(i.hasNext()) {
+				Request r = (Request) i.next();
+				if(r.getTimeStamp().getTime() < oldest) {
+					oldest = r.getTimeStamp().getTime();
+				}
+			}
+			return oldest;
+		}
 	}
-
+	*/
 	/**
 	 * Writes a request message to PIL.  The message ID assigned to this request is returned.
 	 * @param reqMsg

@@ -6,6 +6,7 @@ package com.cannontech.message.dispatch.message;
 import java.util.Date;
 
 import com.cannontech.message.util.Message;
+import com.cannontech.tags.Tag;
 
 /**
  * Message that makes adding, removing, and updating tags for a point possible.
@@ -19,28 +20,21 @@ public class TagMsg extends Message {
 	public static final int REMOVE_TAG_ACTION = 1;
 	public static final int UPDATE_TAG_ACTION = 2;
 	
-	private int instanceID;
-	private int pointID;
-	private int tagID;
-	private String descriptionStr = "";
-	private int action;
-	private Date tagTime;
-	private String referenceStr = "";
-	private String taggedForStr = "";
-	
+	private Tag _tag;
+	private int _action;
 	
 	/**
 	 * @return one of ADD_TAG_ACTION, REMOVE_TAG_ACTION, or UPDATE_TAG_ACTION
 	 */
 	public int getAction() {
-		return action;
+		return _action;
 	}
 
 	/**
 	 * @return Tag description
 	 */
 	public String getDescriptionStr() {
-		return descriptionStr;
+		return _tag.getDescriptionStr();
 	}
 
 	/**
@@ -48,28 +42,28 @@ public class TagMsg extends Message {
 	 * @return instance id
 	 */
 	public int getInstanceID() {
-		return instanceID;
+		return _tag.getInstanceID();
 	}
 
 	/**
 	 * @return id of the point this tag is for
 	 */
 	public int getPointID() {
-		return pointID;
+		return _tag.getPointID();
 	}
 
 	/**
 	 * @return 
 	 */
 	public String getReferenceStr() {
-		return referenceStr;
+		return _tag.getReferenceStr();
 	}
 
 	/**
 	 * @return
 	 */
 	public String getTaggedForStr() {
-		return taggedForStr;
+		return _tag.getTaggedForStr();
 	}
 
 	/**
@@ -77,14 +71,14 @@ public class TagMsg extends Message {
 	 * @return
 	 */
 	public int getTagID() {
-		return tagID;
+		return _tag.getTagID();
 	}
 
 	/**
 	 * @return
 	 */
 	public Date getTagTime() {
-		return tagTime;
+		return _tag.getTagTime();
 	}
 
 	/**
@@ -98,7 +92,7 @@ public class TagMsg extends Message {
 		   	throw new IllegalArgumentException("Action must be one of ADD_TAG_ACTION, REMOVE_TAG_ACTION, or UPDATE_TAG_ACTION");
 		   }
 		   
-		this.action = action;
+		this._action = action;
 	}
 
 	/**
@@ -106,7 +100,7 @@ public class TagMsg extends Message {
 	 * @param string
 	 */
 	public void setDescriptionStr(String description) {
-		this.descriptionStr = description;
+		_tag.setDescriptionStr(description);
 	}
 
 	/**
@@ -115,7 +109,7 @@ public class TagMsg extends Message {
 	 * @param i
 	 */
 	void setInstanceID(int instanceID) {
-		this.instanceID = instanceID;
+		_tag.setInstanceID(instanceID);
 	}
 
 	/**
@@ -123,7 +117,7 @@ public class TagMsg extends Message {
 	 * @param i
 	 */
 	public void setPointID(int pointID) {
-		this.pointID = pointID;
+		_tag.setPointID(pointID);
 	}
 
 	/**
@@ -132,7 +126,7 @@ public class TagMsg extends Message {
 	 * @param string
 	 */
 	public void setReferenceStr(String refID) {
-		this.referenceStr = refID;
+		_tag.setReferenceStr(refID);
 	}
 
 	/**
@@ -141,7 +135,7 @@ public class TagMsg extends Message {
 	 * @param string
 	 */
 	public void setTaggedForStr(String taggedFor) {
-		this.taggedForStr = taggedFor;
+		_tag.setTaggedForStr(taggedFor);
 	}
 
 	/**
@@ -149,7 +143,7 @@ public class TagMsg extends Message {
 	 * @param i
 	 */
 	public void setTagID(int tagID) {
-		this.tagID = tagID;
+		_tag.setTagID(tagID);
 	}
 
 	/**
@@ -158,7 +152,20 @@ public class TagMsg extends Message {
 	 * @param date
 	 */
 	void setTagTime(Date tagTime) {
-		this.tagTime = tagTime;
+		_tag.setTagTime(tagTime);
 	}
 
+	/**
+	 * @return
+	 */
+	public Tag getTag() {
+		return _tag;
+	}
+
+	/**
+	 * @param tag
+	 */
+	public void setTag(Tag tag) {
+		_tag = tag;
+	}
 }
