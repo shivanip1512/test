@@ -69,6 +69,7 @@ CtiLoadManager* CtiLoadManager::getInstance()
   instance member function
   ---------------------------------------------------------------------------*/
 CtiLoadManager::CtiLoadManager()
+    : control_loop_delay(500), control_loop_inmsg_delay(0), control_loop_outmsg_delay(0)
 {
 
     _dispatchConnection = NULL;
@@ -187,6 +188,7 @@ void CtiLoadManager::controlLoop()
         store->setReregisterForPoints(false);
     }
 
+    
     RWDBDateTime currentDateTime;
     RWOrdered controlAreaChanges;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
@@ -194,13 +196,18 @@ void CtiLoadManager::controlLoop()
     
     CtiMessage* msg = NULL;
     CtiLMExecutorFactory executorFactory;
+
+    //remember when the last control area messages were sent
+    time_t last_ca_msg_sent = 0;
+
+    loadControlLoopCParms();
     
     while(TRUE)
     {
-        // first service incoming messages, but let the main loop execute even if there are a lot of incoming messages
-        int num_msgs = 0;
-
-        while( (msg = _main_queue.getQueue(500)) != NULL )
+	long main_wait = control_loop_delay;
+	bool received_message = false;
+	
+        while( (msg = _main_queue.getQueue(main_wait)) != NULL )
         {
             CtiLMExecutor* executor = executorFactory.createExecutor(msg);
             try
@@ -213,7 +220,11 @@ void CtiLoadManager::controlLoop()
                 dout << RWTime() << " **Checkpoint** " <<  " Caught '...' executing executor in main thread." << __FILE__ << "(" << __LINE__ << ")" << endl;
             }
             delete executor;
+	    //Shorten how long to wait in case a message was processed to improve response time
+	    main_wait = control_loop_inmsg_delay;
+	    received_message = true;
         }
+	    
     {        
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
@@ -340,9 +351,7 @@ void CtiLoadManager::controlLoop()
                             examinedControlAreaForControlNeededFlag = TRUE;
                         }
 
-
-#ifdef _BUNG_
-#endif                        //This ends up refreshing any control necessary
+                        //This ends up refreshing any control necessary
                         if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                             currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
                         {
@@ -355,20 +364,8 @@ void CtiLoadManager::controlLoop()
                                     currentControlArea->setUpdatedFlag(TRUE);
                                 }
                             }
-#ifdef _bung_              //This lets off all control, we don't want that now that we have stop prioerites              
-                            else if( examinedControlAreaForControlNeededFlag )
-                            {
-                                if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, secondsFrom1901) )
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Load reduction no longer needed at this time, stopped all control, some groups may still be active waiting to time in, in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                            }
-#endif                            
+
                         }
-#ifdef _bung_                        
-#endif                        
 
                         if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
                             !currentControlArea->isControlStillNeeded() )
@@ -394,21 +391,22 @@ void CtiLoadManager::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-
+#ifdef _CHANGED_HOW_CA_GET_SENT
                 try
                 {
-                    if( currentControlArea->getUpdatedFlag() )
+		       if( currentControlArea->getUpdatedFlag() )
                     {
                         currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
                         controlAreaChanges.insert(currentControlArea);
                         currentControlArea->setUpdatedFlag(FALSE);
-                    }
+			}
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
+#endif		
             }
         }
 
@@ -450,6 +448,43 @@ void CtiLoadManager::controlLoop()
 
         try
         {
+	    // Only send control area changes so often to avoid overwhelming the system
+	    // if we just received a client message then do it anyways however for good response
+	    time_t now = time(NULL);
+	    if(received_message || now > (last_ca_msg_sent + control_loop_outmsg_delay))
+	    {
+		for(LONG i=0;i<controlAreas.entries();i++)
+		{
+		    CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+		
+		    if( currentControlArea->getUpdatedFlag() )
+                    {
+                        currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
+                        controlAreaChanges.insert(currentControlArea);
+                        currentControlArea->setUpdatedFlag(FALSE);
+		    }
+		}
+
+		CtiLMExecutorFactory f;
+                CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
+
+                try
+                {
+                    executor->Execute();
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+                delete executor;
+				       
+		store->dumpAllDynamicData();
+		last_ca_msg_sent = now;
+                controlAreaChanges.clear();
+	    }
+
+#ifdef _BUNG__	    
             if( controlAreaChanges.entries() > 0 )
             {
                 store->dumpAllDynamicData();
@@ -468,7 +503,9 @@ void CtiLoadManager::controlLoop()
                 delete executor;
 
                 controlAreaChanges.clear();
-            }
+		            }
+#endif		
+
         }
         catch(...)
         {
@@ -1087,6 +1124,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 		    }
 		    }
 		}
+                
                 currentControlArea->setUpdatedFlag(TRUE);
             }
         }
@@ -1294,5 +1332,49 @@ void CtiLoadManager::sendMessageToClients( CtiMessage* message )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+
+/*
+ * loadControlLoopCParms
+ * initialize control loop delay cparms that control behavior of the main loop
+ * these cparms are optional.
+ */
+void CtiLoadManager::loadControlLoopCParms()
+{
+    RWCString str;
+    char var[128];
+
+    strcpy(var, "LOAD_MANAGEMENT_CONTROL_LOOP_NORMAL_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+	control_loop_delay = atoi(str);
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    dout << RWTime() << " - " << var << ":  " << str << endl;
+	}
+    }
+    
+    strcpy(var, "LOAD_MANAGEMENT_CONTROL_LOOP_INMSG_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+	control_loop_inmsg_delay = atoi(str);
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    dout << RWTime() << " - " << var << ":  " << str << endl;
+	}
+    }
+
+    strcpy(var, "LOAD_MANAGEMENT_CONTROL_LOOP_OUTMSG_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+	control_loop_outmsg_delay = atoi(str);
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> logger_guard(dout);
+	    dout << RWTime() << " - " << var << ":  " << str << endl;
+	}
     }
 }

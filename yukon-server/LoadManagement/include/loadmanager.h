@@ -79,6 +79,8 @@ private:
     void porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 );
     void signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 );
 
+    void loadControlLoopCParms();
+    
     static CtiLoadManager* _instance;
     RWThread _loadManagerThread;
 
@@ -86,6 +88,11 @@ private:
     
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;
+
+    int control_loop_delay;
+    int control_loop_inmsg_delay;
+    int control_loop_outmsg_delay;
+    
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
