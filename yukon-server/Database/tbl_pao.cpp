@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/02 17:02:35 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/21 15:34:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,7 +242,8 @@ void CtiTblPAO::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &sel
     keyTable["paoname"] <<
     keyTable["type"] <<
     keyTable["description"] <<
-    keyTable["disableflag"];
+    keyTable["disableflag"] <<
+    keyTable["paostatistics"];
 
     selector.from(keyTable);
 
@@ -266,7 +267,8 @@ RWDBStatus CtiTblPAO::Restore()
     table["paoname"] <<
     table["type"] <<
     table["description"] <<
-    table["disableflag"];
+    table["disableflag"] <<
+    table["paostatistics"];
 
     selector.where( table["paobjectid"] == getID() );
 
@@ -299,7 +301,8 @@ RWDBStatus CtiTblPAO::Insert()
     getName() <<
     getTypeStr() <<
     getDescription() <<
-    getDisableFlagStr();
+    getDisableFlagStr() <<
+    getStatisticsStr();
 
     if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
@@ -328,7 +331,8 @@ RWDBStatus CtiTblPAO::Update()
     table["paoname"].assign(getName()) <<
     table["type"].assign(getTypeStr()) <<
     table["description"].assign(getDescription()) <<
-    table["disableflag"].assign(getDisableFlagStr());
+    table["disableflag"].assign(getDisableFlagStr()) <<
+    table["paostatistics"].assign(getStatisticsStr());
 
     if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
     {
@@ -378,6 +382,8 @@ void CtiTblPAO::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["disableflag"] >> rwsTemp;
     rwsTemp.toLower();
     _disableFlag = ((rwsTemp == 'y') ? true : false);
+
+    rdr["paostatistics"] >> _paostatistics;
 }
 
 void CtiTblPAO::DumpData()
@@ -391,5 +397,19 @@ void CtiTblPAO::DumpData()
     dout << "Class                                       : " << _class << endl;
     dout << "Type                                        : " << _type << endl;
     dout << "Disabled                                    : " << (_disableFlag ? "Yes" : "No") << endl;
+    dout << "Statistics                                  : " << getStatisticsStr() << endl;
 }
+
+
+RWCString CtiTblPAO::getStatisticsStr() const
+{
+    return _paostatistics;
+}
+
+CtiTblPAO& CtiTblPAO::setStatisticsStr(const RWCString &Str)
+{
+    _paostatistics = Str;
+    return *this;
+}
+
 

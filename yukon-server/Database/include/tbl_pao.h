@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pao.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/21 15:34:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,7 @@ protected:
     INT            _type;
     RWCString      _typeStr;
     RWCString      _description;
+    RWCString      _paostatistics;
 
     bool           _disableFlag;
 
@@ -103,6 +104,10 @@ public:
     CtiTblPAO& setDisableFlagStr(const RWCString& flag);
 
     void resetDisableFlag(bool b = FALSE);
+
+    RWCString getStatisticsStr() const;
+    CtiTblPAO& setStatisticsStr(const RWCString& );
+
 
     static RWCString getTableName();
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
