@@ -69,7 +69,6 @@ CtiLMControlArea::CtiLMControlArea(const CtiLMControlArea& controlarea)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea::~CtiLMControlArea()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     _lmcontrolareatriggers.clearAndDestroy();
     _lmprograms.clearAndDestroy();
     /*numberOfReferences--;
@@ -86,7 +85,6 @@ CtiLMControlArea::~CtiLMControlArea()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoid;
 }
 
@@ -97,7 +95,6 @@ ULONG CtiLMControlArea::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlArea::getPAOCategory() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paocategory;
 }
 
@@ -108,7 +105,6 @@ const RWCString& CtiLMControlArea::getPAOCategory() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlArea::getPAOClass() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoclass;
 }
 
@@ -119,7 +115,6 @@ const RWCString& CtiLMControlArea::getPAOClass() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlArea::getPAOName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoname;
 }
 
@@ -130,7 +125,6 @@ const RWCString& CtiLMControlArea::getPAOName() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getPAOType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paotype;
 }
 
@@ -141,7 +135,6 @@ ULONG CtiLMControlArea::getPAOType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlArea::getPAODescription() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paodescription;
 }
 
@@ -152,7 +145,6 @@ const RWCString& CtiLMControlArea::getPAODescription() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getDisableFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _disableflag;
 }
 
@@ -163,7 +155,6 @@ BOOL CtiLMControlArea::getDisableFlag() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlArea::getDefOperationalState() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _defoperationalstate;
 }
 
@@ -174,7 +165,6 @@ const RWCString& CtiLMControlArea::getDefOperationalState() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getControlInterval() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlinterval;
 }
 
@@ -185,7 +175,6 @@ ULONG CtiLMControlArea::getControlInterval() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getMinResponseTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _minresponsetime;
 }
 
@@ -197,7 +186,6 @@ ULONG CtiLMControlArea::getMinResponseTime() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getDefDailyStartTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _defdailystarttime;
 }
 
@@ -209,7 +197,6 @@ LONG CtiLMControlArea::getDefDailyStartTime() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getDefDailyStopTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _defdailystoptime;
 }
 
@@ -220,7 +207,6 @@ LONG CtiLMControlArea::getDefDailyStopTime() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getRequireAllTriggersActiveFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _requirealltriggersactiveflag;
 }
 
@@ -231,7 +217,6 @@ BOOL CtiLMControlArea::getRequireAllTriggersActiveFlag() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMControlArea::getNextCheckTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _nextchecktime;
 }
 
@@ -242,7 +227,6 @@ const RWDBDateTime& CtiLMControlArea::getNextCheckTime() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMControlArea::getLMControlAreaTriggers()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _lmcontrolareatriggers;
 }
 
@@ -253,7 +237,6 @@ RWOrdered& CtiLMControlArea::getLMControlAreaTriggers()
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMControlArea::getLMPrograms()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _lmprograms;
 }
 
@@ -264,7 +247,6 @@ RWOrdered& CtiLMControlArea::getLMPrograms()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getNewPointDataReceivedFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _newpointdatareceivedflag;
 }
 
@@ -275,7 +257,6 @@ BOOL CtiLMControlArea::getNewPointDataReceivedFlag() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::getUpdatedFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _updatedflag;
 }
 
@@ -286,7 +267,6 @@ BOOL CtiLMControlArea::getUpdatedFlag() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getControlAreaStatusPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlareastatuspointid;
 }
 
@@ -297,7 +277,6 @@ ULONG CtiLMControlArea::getControlAreaStatusPointId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlArea::getControlAreaState() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _controlareastate;
 }
 
@@ -308,7 +287,7 @@ ULONG CtiLMControlArea::getControlAreaState() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getCurrentPriority() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _currentpriority;
 }
 
@@ -320,7 +299,7 @@ LONG CtiLMControlArea::getCurrentPriority() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getCurrentDailyStartTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _currentdailystarttime;
 }
 
@@ -332,7 +311,7 @@ LONG CtiLMControlArea::getCurrentDailyStartTime() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlArea::getCurrentDailyStopTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _currentdailystoptime;
 }
 
@@ -343,7 +322,7 @@ LONG CtiLMControlArea::getCurrentDailyStopTime() const
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOId(ULONG id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = id;
     //do not notify observers of this!
     return *this;
@@ -356,7 +335,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOId(ULONG id)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOCategory(const RWCString& category)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paocategory = category;
     return *this;
 }
@@ -368,7 +347,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOCategory(const RWCString& category)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOClass(const RWCString& pclass)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoclass = pclass;
     return *this;
 }
@@ -380,7 +359,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOClass(const RWCString& pclass)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOName(const RWCString& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoname = name;
     return *this;
 }
@@ -392,7 +371,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOName(const RWCString& name)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAOType(ULONG type)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paotype = type;
     return *this;
 }
@@ -404,7 +383,7 @@ CtiLMControlArea& CtiLMControlArea::setPAOType(ULONG type)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setPAODescription(const RWCString& description)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paodescription = description;
     return *this;
 }
@@ -416,7 +395,7 @@ CtiLMControlArea& CtiLMControlArea::setPAODescription(const RWCString& descripti
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDisableFlag(BOOL disable)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _disableflag = disable;
 
     return *this;
@@ -429,7 +408,7 @@ CtiLMControlArea& CtiLMControlArea::setDisableFlag(BOOL disable)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDefOperationalState(const RWCString& opstate)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _defoperationalstate = opstate;
 
     return *this;
@@ -442,7 +421,7 @@ CtiLMControlArea& CtiLMControlArea::setDefOperationalState(const RWCString& opst
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlInterval(ULONG interval)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _controlinterval = interval;
 
     return *this;
@@ -455,7 +434,7 @@ CtiLMControlArea& CtiLMControlArea::setControlInterval(ULONG interval)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setMinResponseTime(ULONG response)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _minresponsetime = response;
 
     return *this;
@@ -469,7 +448,7 @@ CtiLMControlArea& CtiLMControlArea::setMinResponseTime(ULONG response)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDefDailyStartTime(LONG start)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _defdailystarttime = start;
 
     return *this;
@@ -483,7 +462,7 @@ CtiLMControlArea& CtiLMControlArea::setDefDailyStartTime(LONG start)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDefDailyStopTime(LONG stop)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _defdailystoptime = stop;
 
     return *this;
@@ -496,7 +475,7 @@ CtiLMControlArea& CtiLMControlArea::setDefDailyStopTime(LONG stop)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setRequireAllTriggersActiveFlag(BOOL requireall)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _requirealltriggersactiveflag = requireall;
 
     return *this;
@@ -510,7 +489,7 @@ CtiLMControlArea& CtiLMControlArea::setRequireAllTriggersActiveFlag(BOOL require
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     if( _controlinterval != 0 )
     {
         ULONG tempsum = (secondsFrom1901-(secondsFrom1901%_controlinterval))+_controlinterval;
@@ -531,7 +510,7 @@ CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatareceived)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _newpointdatareceivedflag = newdatareceived;
 
     return *this;
@@ -544,7 +523,7 @@ CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatarece
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _updatedflag = updated;
 
     return *this;
@@ -557,7 +536,7 @@ CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(ULONG statuspointid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _controlareastatuspointid = statuspointid;
 
     return *this;
@@ -570,7 +549,7 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(ULONG statuspoin
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlAreaState(ULONG state)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _controlareastate = state;
 
     return *this;
@@ -583,7 +562,7 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaState(ULONG state)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _currentpriority = currpriority;
 
     return *this;
@@ -597,7 +576,7 @@ CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _currentdailystarttime = tempstart;
 
     return *this;
@@ -611,7 +590,7 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _currentdailystoptime = tempstop;
 
     return *this;
@@ -626,7 +605,7 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::isControlTime(ULONG secondsFromBeginningOfDay)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     LONG tempCurrentDailyStartTime = getCurrentDailyStartTime();
     LONG tempCurrentDailyStopTime = getCurrentDailyStopTime();
@@ -659,7 +638,7 @@ BOOL CtiLMControlArea::isControlTime(ULONG secondsFromBeginningOfDay)
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::isControlStillNeeded()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     BOOL returnBoolean = TRUE;
 
@@ -727,7 +706,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::isPastMinResponseTime(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWDBDateTime currentDateTime;
     BOOL returnBoolean = TRUE;
@@ -756,7 +735,7 @@ BOOL CtiLMControlArea::isPastMinResponseTime(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::isManualControlReceived()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     BOOL returnBoolean = FALSE;
 
@@ -783,7 +762,7 @@ BOOL CtiLMControlArea::isManualControlReceived()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMControlArea::isThresholdTriggerTripped()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     BOOL returnBoolean = FALSE;
     if( _lmcontrolareatriggers.entries() > 0 )
@@ -814,7 +793,7 @@ BOOL CtiLMControlArea::isThresholdTriggerTripped()
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     DOUBLE returnLoadReductionNeeded = 0.0;
     if( _lmcontrolareatriggers.entries() > 0 )
@@ -1360,18 +1339,24 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this strategy.
+    Writes out the dynamic information.
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::dumpDynamicData()
 {
-    RWDBDateTime currentDateTime = RWDBDateTime();
-
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    {
 
+    dumpDynamicData(conn,RWDBDateTime());
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this strategy.
+---------------------------------------------------------------------------*/
+void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+{
+    {
         RWDBTable dynamicLMControlAreaTable = getDatabase().table( "dynamiclmcontrolarea" );
         if( !_insertDynamicDataFlag )
         {
@@ -1434,7 +1419,7 @@ void CtiLMControlArea::dumpDynamicData()
 void CtiLMControlArea::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -1474,7 +1459,7 @@ void CtiLMControlArea::restoreGuts(RWvistream& istrm)
 void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::saveGuts( ostrm );
 
@@ -1510,7 +1495,7 @@ void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -1557,7 +1542,7 @@ CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
 ---------------------------------------------------------------------------*/
 int CtiLMControlArea::operator==(const CtiLMControlArea& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() == right.getPAOId();
 }
 
@@ -1566,7 +1551,7 @@ int CtiLMControlArea::operator==(const CtiLMControlArea& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMControlArea::operator!=(const CtiLMControlArea& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return !operator==(right);
 }
 
@@ -1587,7 +1572,7 @@ CtiLMControlArea* CtiLMControlArea::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWDBNullIndicator isNull;
     RWDBDateTime dynamicTimeStamp;

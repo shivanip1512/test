@@ -102,6 +102,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -155,8 +156,6 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     void restore(RWDBReader& rdr);
     RWCString* getAutomaticallyStartedSignalString();

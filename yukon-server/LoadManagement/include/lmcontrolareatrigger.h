@@ -47,8 +47,6 @@ public:
 private:
     DOUBLE _value;
     RWTime _timestamp;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 
 
@@ -105,6 +103,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     CtiLMControlAreaTrigger* replicate() const;
 
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     void calculateProjectedValue();
 
     //Members inherited from RWCollectable
@@ -149,8 +148,6 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 
     void restore(RWDBReader& rdr);
 };

@@ -91,9 +91,9 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     CtiLMCurtailCustomer* replicate() const;
 
     void addLMCurtailCustomerActivityTable();
-    void updateLMCurtailCustomerActivityTable();
     void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -144,7 +144,7 @@ private:
     ULONG _currenthoursannually;
     RWDBDateTime _lastcontrolsent;*/
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    void updateLMCurtailCustomerActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 };
 #endif
 

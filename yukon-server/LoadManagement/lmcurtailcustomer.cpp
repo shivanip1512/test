@@ -56,7 +56,7 @@ CtiLMCurtailCustomer::~CtiLMCurtailCustomer()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMCurtailCustomer::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoid;
 }
 
@@ -67,7 +67,7 @@ ULONG CtiLMCurtailCustomer::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getPAOCategory() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paocategory;
 }
 
@@ -78,7 +78,7 @@ const RWCString& CtiLMCurtailCustomer::getPAOCategory() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getPAOClass() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoclass;
 }
 
@@ -89,7 +89,7 @@ const RWCString& CtiLMCurtailCustomer::getPAOClass() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getPAOName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoname;
 }
 
@@ -100,7 +100,7 @@ const RWCString& CtiLMCurtailCustomer::getPAOName() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMCurtailCustomer::getPAOType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paotype;
 }
 
@@ -111,7 +111,7 @@ ULONG CtiLMCurtailCustomer::getPAOType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getPAODescription() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paodescription;
 }
 
@@ -122,7 +122,7 @@ const RWCString& CtiLMCurtailCustomer::getPAODescription() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMCurtailCustomer::getDisableFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _disableflag;
 }
 
@@ -133,7 +133,7 @@ BOOL CtiLMCurtailCustomer::getDisableFlag() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMCurtailCustomer::getCustomerOrder() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _customerorder;
 }
 
@@ -144,7 +144,7 @@ ULONG CtiLMCurtailCustomer::getCustomerOrder() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMCurtailCustomer::getCustFPL() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _custfpl;
 }
 
@@ -155,7 +155,7 @@ DOUBLE CtiLMCurtailCustomer::getCustFPL() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getCustTimeZone() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _custtimezone;
 }
 
@@ -166,7 +166,7 @@ const RWCString& CtiLMCurtailCustomer::getCustTimeZone() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMCurtailCustomer::getRequireAck() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _requireack;
 }
 
@@ -177,7 +177,7 @@ BOOL CtiLMCurtailCustomer::getRequireAck() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMCurtailCustomer::getCurtailReferenceId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _curtailreferenceid;
 }
 
@@ -188,7 +188,7 @@ ULONG CtiLMCurtailCustomer::getCurtailReferenceId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getAcknowledgeStatus() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _acknowledgestatus;
 }
 
@@ -199,7 +199,7 @@ const RWCString& CtiLMCurtailCustomer::getAcknowledgeStatus() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMCurtailCustomer::getAckDateTime() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _ackdatetime;
 }
 
@@ -210,7 +210,7 @@ const RWDBDateTime& CtiLMCurtailCustomer::getAckDateTime() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getIPAddressOfAckUser() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _ipaddressofackuser;
 }
 
@@ -221,7 +221,7 @@ const RWCString& CtiLMCurtailCustomer::getIPAddressOfAckUser() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getUserIdName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _useridname;
 }
 
@@ -232,7 +232,7 @@ const RWCString& CtiLMCurtailCustomer::getUserIdName() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getNameOfAckPerson() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _nameofackperson;
 }
 
@@ -243,7 +243,7 @@ const RWCString& CtiLMCurtailCustomer::getNameOfAckPerson() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMCurtailCustomer::getCurtailmentNotes() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _curtailmentnotes;
 }
 
@@ -254,7 +254,7 @@ const RWCString& CtiLMCurtailCustomer::getCurtailmentNotes() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMCurtailCustomer::getAckLateFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _acklateflag;
 }
 
@@ -265,7 +265,7 @@ BOOL CtiLMCurtailCustomer::getAckLateFlag() const
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOId(ULONG id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = id;
     //do not notify observers of this!
     return *this;
@@ -278,7 +278,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOId(ULONG id)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOCategory(const RWCString& category)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paocategory = category;
     return *this;
 }
@@ -290,7 +290,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOCategory(const RWCString& cate
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOClass(const RWCString& pclass)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoclass = pclass;
     return *this;
 }
@@ -302,7 +302,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOClass(const RWCString& pclass)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOName(const RWCString& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoname = name;
     return *this;
 }
@@ -314,7 +314,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOName(const RWCString& name)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOType(ULONG type)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paotype = type;
     return *this;
 }
@@ -326,7 +326,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAOType(ULONG type)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAODescription(const RWCString& description)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paodescription = description;
     return *this;
 }
@@ -338,7 +338,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setPAODescription(const RWCString& d
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setDisableFlag(BOOL disable)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _disableflag = disable;
     return *this;
 }
@@ -350,7 +350,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setDisableFlag(BOOL disable)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustomerOrder(ULONG order)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _customerorder = order;
     return *this;
 }
@@ -362,7 +362,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustomerOrder(ULONG order)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustFPL(DOUBLE fpl)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _custfpl = fpl;
     return *this;
 }
@@ -374,7 +374,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustFPL(DOUBLE fpl)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustTimeZone(const RWCString& timezone)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _custtimezone = timezone;
     return *this;
 }
@@ -386,7 +386,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCustTimeZone(const RWCString& tim
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setRequireAck(BOOL reqack)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _requireack = reqack;
     return *this;
 }
@@ -398,7 +398,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setRequireAck(BOOL reqack)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailReferenceId(ULONG refid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _curtailreferenceid = refid;
     return *this;
 }
@@ -410,7 +410,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailReferenceId(ULONG refid)
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAcknowledgeStatus(const RWCString& ackstatus)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _acknowledgestatus = ackstatus;
     return *this;
 }
@@ -422,7 +422,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAcknowledgeStatus(const RWCString
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckDateTime(const RWDBDateTime& acktime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _ackdatetime = acktime;
     return *this;
 }
@@ -434,7 +434,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckDateTime(const RWDBDateTime& a
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setIPAddressOfAckUser(const RWCString& ipaddress)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _ipaddressofackuser = ipaddress;
     return *this;
 }
@@ -446,7 +446,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setIPAddressOfAckUser(const RWCStrin
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setUserIdName(const RWCString& username)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _useridname = username;
     return *this;
 }
@@ -458,7 +458,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setUserIdName(const RWCString& usern
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setNameOfAckPerson(const RWCString& nameackperson)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _nameofackperson = nameackperson;
     return *this;
 }
@@ -470,7 +470,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setNameOfAckPerson(const RWCString& 
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailmentNotes(const RWCString& curtailnotes)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _curtailmentnotes = curtailnotes;
     return *this;
 }
@@ -482,7 +482,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setCurtailmentNotes(const RWCString&
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckLateFlag(BOOL acklate)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _acklateflag = acklate;
     return *this;
 }
@@ -496,7 +496,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckLateFlag(BOOL acklate)
 void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -532,7 +532,7 @@ void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
 void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::saveGuts( ostrm );
 
@@ -574,7 +574,7 @@ CtiLMCurtailCustomer* CtiLMCurtailCustomer::replicate() const
 ---------------------------------------------------------------------------*/
 CtiLMCurtailCustomer& CtiLMCurtailCustomer::operator=(const CtiLMCurtailCustomer& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -607,7 +607,7 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::operator=(const CtiLMCurtailCustomer
 ---------------------------------------------------------------------------*/
 int CtiLMCurtailCustomer::operator==(const CtiLMCurtailCustomer& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return( (getPAOId() == right.getPAOId()) && (getCustomerOrder() == right.getCustomerOrder()) );
 }
 
@@ -616,7 +616,7 @@ int CtiLMCurtailCustomer::operator==(const CtiLMCurtailCustomer& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMCurtailCustomer::operator!=(const CtiLMCurtailCustomer& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return !(operator==(right));
 }
 
@@ -627,7 +627,7 @@ int CtiLMCurtailCustomer::operator!=(const CtiLMCurtailCustomer& right) const
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCString tempBoolString;
     RWCString tempTypeString;
@@ -666,7 +666,7 @@ void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -716,14 +716,9 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable()
+void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
         if( conn.isValid() )
         {
             RWDBDatabase db = getDatabase();
@@ -760,13 +755,23 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable()
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this customer.
+    Writes out the dynamic information.
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::dumpDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
 
-    updateLMCurtailCustomerActivityTable();
+    dumpDynamicData(conn,RWDBDateTime());
+}
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this customer.
+---------------------------------------------------------------------------*/
+void CtiLMCurtailCustomer::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+{
+    updateLMCurtailCustomerActivityTable(conn, currentDateTime);
 }
 
 /*---------------------------------------------------------------------------
@@ -776,7 +781,7 @@ void CtiLMCurtailCustomer::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::restoreDynamicData(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();

@@ -59,7 +59,6 @@ CtiLMControlAreaTrigger::~CtiLMControlAreaTrigger()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _paoid;
 }
 
@@ -70,7 +69,7 @@ ULONG CtiLMControlAreaTrigger::getPAOId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getTriggerNumber() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _triggernumber;
 }
 
@@ -81,7 +80,7 @@ ULONG CtiLMControlAreaTrigger::getTriggerNumber() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlAreaTrigger::getTriggerType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _triggertype;
 }
 
@@ -92,7 +91,7 @@ const RWCString& CtiLMControlAreaTrigger::getTriggerType() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _pointid;
 }
 
@@ -103,7 +102,7 @@ ULONG CtiLMControlAreaTrigger::getPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getPointValue() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _pointvalue;
 }
 
@@ -114,7 +113,7 @@ DOUBLE CtiLMControlAreaTrigger::getPointValue() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lastpointvaluetimestamp;
 }
 
@@ -125,7 +124,7 @@ const RWDBDateTime& CtiLMControlAreaTrigger::getLastPointValueTimestamp() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getNormalState() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _normalstate;
 }
 
@@ -136,7 +135,7 @@ ULONG CtiLMControlAreaTrigger::getNormalState() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getThreshold() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _threshold;
 }
 
@@ -147,7 +146,7 @@ DOUBLE CtiLMControlAreaTrigger::getThreshold() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMControlAreaTrigger::getProjectionType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _projectiontype;
 }
 
@@ -158,7 +157,7 @@ const RWCString& CtiLMControlAreaTrigger::getProjectionType() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getProjectionPoints() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _projectionpoints;
 }
 
@@ -169,7 +168,7 @@ ULONG CtiLMControlAreaTrigger::getProjectionPoints() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _projectaheadduration;
 }
 
@@ -180,7 +179,7 @@ ULONG CtiLMControlAreaTrigger::getProjectAheadDuration() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getThresholdKickPercent() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _thresholdkickpercent;
 }
 
@@ -191,7 +190,7 @@ ULONG CtiLMControlAreaTrigger::getThresholdKickPercent() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getMinRestoreOffset() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _minrestoreoffset;
 }
 
@@ -202,7 +201,7 @@ DOUBLE CtiLMControlAreaTrigger::getMinRestoreOffset() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMControlAreaTrigger::getPeakPointId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _peakpointid;
 }
 
@@ -213,7 +212,7 @@ ULONG CtiLMControlAreaTrigger::getPeakPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getPeakPointValue() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _peakpointvalue;
 }
 
@@ -224,7 +223,7 @@ DOUBLE CtiLMControlAreaTrigger::getPeakPointValue() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMControlAreaTrigger::getLastPeakPointValueTimestamp() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lastpeakpointvaluetimestamp;
 }
 
@@ -235,7 +234,7 @@ const RWDBDateTime& CtiLMControlAreaTrigger::getLastPeakPointValueTimestamp() co
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMControlAreaTrigger::getProjectedPointValue() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _projectedpointvalue;
 }
 
@@ -246,7 +245,7 @@ DOUBLE CtiLMControlAreaTrigger::getProjectedPointValue() const
 ---------------------------------------------------------------------------*/
 RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPointEntriesQueue()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _projectionpointentriesqueue;
 }
 
@@ -258,7 +257,7 @@ RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPo
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(ULONG id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = id;
     //do not notify observers of this !
     return *this;
@@ -271,7 +270,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(ULONG id)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(ULONG trignum)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _triggernumber = trignum;
     return *this;
 }
@@ -283,7 +282,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerNumber(ULONG trignum
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const RWCString& trigtype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _triggertype = trigtype;
     return *this;
 }
@@ -295,7 +294,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerType(const RWCString
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointId(ULONG pntid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _pointid = pntid;
     return *this;
 }
@@ -307,7 +306,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointId(ULONG pntid)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointValue(DOUBLE pntval)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _pointvalue = pntval;
     return *this;
 }
@@ -319,7 +318,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPointValue(DOUBLE pntval)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(const RWDBDateTime& lastvaltime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _lastpointvaluetimestamp = lastvaltime;
     return *this;
 }
@@ -331,7 +330,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPointValueTimestamp(con
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setNormalState(ULONG normalst)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _normalstate = normalst;
     return *this;
 }
@@ -343,7 +342,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setNormalState(ULONG normalst)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThreshold(DOUBLE threshold)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _threshold = threshold;
     return *this;
 }
@@ -355,7 +354,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThreshold(DOUBLE threshold)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const RWCString& projtype)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _projectiontype = projtype;
     return *this;
 }
@@ -367,7 +366,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionType(const RWCStr
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(ULONG projpoints)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _projectionpoints = projpoints;
     return *this;
 }
@@ -379,7 +378,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectionPoints(ULONG proj
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(ULONG projaheaddur)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _projectaheadduration = projaheaddur;
     return *this;
 }
@@ -391,7 +390,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectAheadDuration(ULONG 
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdKickPercent(ULONG threskickpercent)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _thresholdkickpercent = threskickpercent;
     return *this;
 }
@@ -403,7 +402,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setThresholdKickPercent(ULONG 
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setMinRestoreOffset(DOUBLE minrestoffset)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _minrestoreoffset = minrestoffset;
     return *this;
 }
@@ -415,7 +414,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setMinRestoreOffset(DOUBLE min
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointId(ULONG peakptid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _peakpointid = peakptid;
     return *this;
 }
@@ -427,7 +426,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointId(ULONG peakptid)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointValue(DOUBLE peakptval)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _peakpointvalue = peakptval;
     return *this;
 }
@@ -439,7 +438,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPeakPointValue(DOUBLE peakp
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPeakPointValueTimestamp(const RWDBDateTime& lastpeakvaltime)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _lastpeakpointvaluetimestamp = lastpeakvaltime;
     return *this;
 }
@@ -451,7 +450,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setLastPeakPointValueTimestamp
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setProjectedPointValue(DOUBLE proptval)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _projectedpointvalue = proptval;
     return *this;
 }
@@ -586,7 +585,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -623,7 +622,7 @@ void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
 void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::saveGuts( ostrm );
 
@@ -653,7 +652,7 @@ void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::operator=(const CtiLMControlAreaTrigger& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -684,7 +683,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::operator=(const CtiLMControlAr
 ---------------------------------------------------------------------------*/
 int CtiLMControlAreaTrigger::operator==(const CtiLMControlAreaTrigger& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() == right.getPAOId();
 }
 
@@ -693,7 +692,7 @@ int CtiLMControlAreaTrigger::operator==(const CtiLMControlAreaTrigger& right) co
 ---------------------------------------------------------------------------*/
 int CtiLMControlAreaTrigger::operator!=(const CtiLMControlAreaTrigger& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return getPAOId() != right.getPAOId();
 }
 
@@ -714,7 +713,7 @@ CtiLMControlAreaTrigger* CtiLMControlAreaTrigger::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     RWDBNullIndicator isNull;
     _insertDynamicDataFlag = FALSE;
 
@@ -756,18 +755,24 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this strategy.
+    Writes out the dynamic information.
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::dumpDynamicData()
 {
-    RWDBDateTime currentDateTime = RWDBDateTime();
-
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
-    {
 
+    dumpDynamicData(conn,RWDBDateTime());
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this strategy.
+---------------------------------------------------------------------------*/
+void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
+{
+    {
         RWDBTable dynamicLMControlAreaTriggerTable = getDatabase().table( "dynamiclmcontrolareatrigger" );
         if( !_insertDynamicDataFlag )
         {
@@ -849,31 +854,31 @@ CtiLMProjectionPointEntry::~CtiLMProjectionPointEntry()
 
 double CtiLMProjectionPointEntry::getValue() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _value;
 }
 const RWTime& CtiLMProjectionPointEntry::getTimestamp() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _timestamp;
 }
 
 CtiLMProjectionPointEntry& CtiLMProjectionPointEntry::setValue(double val)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _value = val;
     return *this;
 }
 CtiLMProjectionPointEntry& CtiLMProjectionPointEntry::setTimestamp(const RWTime& time)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _timestamp = time;
     return *this;
 }
 
 CtiLMProjectionPointEntry& CtiLMProjectionPointEntry::operator=(const CtiLMProjectionPointEntry& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
