@@ -40,6 +40,7 @@ private javax.swing.JComboBox getJComboBoxBaudRate() {
 			ivjJComboBoxBaudRate.setName("JComboBoxBaudRate");
 			// user code begin {1}
 
+         ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_PORT );
 			ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );
 			ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_1200 );
 			ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_2400 );
@@ -49,7 +50,11 @@ private javax.swing.JComboBox getJComboBoxBaudRate() {
 			ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_38400 );
 			ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_57600 );
 			ivjJComboBoxBaudRate.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_115200 );
-			
+
+
+         //select the 300 by default
+         ivjJComboBoxBaudRate.setSelectedItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );			
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -438,7 +443,13 @@ public Object getValue(Object val)
 		dDialup.setMaxConnectTime( maxConnectTime );
 
 		//do the new BaudRate here!!!!!!
-		dDialup.setBaudRate( new Integer(getJComboBoxBaudRate().getSelectedItem().toString()) );
+      if( com.cannontech.common.version.DBEditorDefines.BAUD_PORT.equalsIgnoreCase(
+            getJComboBoxBaudRate().getSelectedItem().toString()) )
+      {
+         dDialup.setBaudRate( new Integer(0) );  //this truly is disabled
+      }
+      else
+         dDialup.setBaudRate( new Integer(getJComboBoxBaudRate().getSelectedItem().toString()) );
 	}
 		
 	return val;
@@ -597,7 +608,16 @@ public void setValue(Object val)
 			getJCSpinnerMaxConnectTimeSecs().setValue( new Integer(maxConnectTime.intValue() % 60) );
 		}
 
-		getJComboBoxBaudRate().setSelectedItem( dDialup.getBaudRate().toString() );
+
+      if( dDialup.getBaudRate().intValue() == 0 )
+      {
+         //this truly is disabled
+         getJComboBoxBaudRate().setSelectedItem( 
+               com.cannontech.common.version.DBEditorDefines.BAUD_PORT );
+      }
+      else
+         getJComboBoxBaudRate().setSelectedItem( dDialup.getBaudRate().toString() );
+
 	}
 
 	setOriginalObject( dDialup );

@@ -8,6 +8,7 @@ package com.cannontech.common.version;
 public interface DBEditorDefines 
 {
 	//possible Baud Rates
+   public static final String BAUD_PORT = "(Use Port Baud)";
 	public static final String BAUD_300 = "300";
 	public static final String BAUD_1200 = "1200";
 	public static final String BAUD_2400 = "2400";

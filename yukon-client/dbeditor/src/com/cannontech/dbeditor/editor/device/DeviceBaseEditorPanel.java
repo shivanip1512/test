@@ -1340,7 +1340,7 @@ public Object getValue(Object val)
 			((IDLCBase)val).getDeviceIDLCRemote().setCcuAmpUseType( getJComboBoxAmpUseType().getSelectedItem().toString() );
 		}
 		
-		if( PAOGroups.isDialupPort(devType) )
+		if( PAOGroups.isDialupPort(port.getType()) )
 		{
 			DeviceDialupSettings dDialup = ((RemoteBase) val).getDeviceDialupSettings();
 
@@ -1348,7 +1348,7 @@ public Object getValue(Object val)
 			
 			dDialup.setPhoneNumber( getPhoneNumberTextField().getText().trim() );
 			if( val instanceof PagingTapTerminal )
-				dDialup.setLineSettings( "7E2" );
+				dDialup.setLineSettings( "7E1" );
 			else
 				dDialup.setLineSettings( "8N1" );
 		}
