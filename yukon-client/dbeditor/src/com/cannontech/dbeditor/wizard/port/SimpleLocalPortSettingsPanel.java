@@ -226,6 +226,7 @@ private javax.swing.JComboBox getPhysicalPortComboBox() {
 			ivjPhysicalPortComboBox.setName("PhysicalPortComboBox");
 			ivjPhysicalPortComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjPhysicalPortComboBox.setEditable(true);
+			ivjPhysicalPortComboBox.setToolTipText("Click inside the box to type if channel is not in list.");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -385,6 +386,8 @@ private void initialize() {
 	getPhysicalPortComboBox().addItem("com14");
 	getPhysicalPortComboBox().addItem("com15");
 	getPhysicalPortComboBox().addItem("com16");
+	getPhysicalPortComboBox().addItem("com50");
+	getPhysicalPortComboBox().addItem("com99");
 	
 	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_300 );
 	ivjBaudRateComboBox.addItem( com.cannontech.common.version.DBEditorDefines.BAUD_1200 );

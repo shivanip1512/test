@@ -792,6 +792,7 @@ private javax.swing.JComboBox getPhysicalPortComboBox() {
 			ivjPhysicalPortComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjPhysicalPortComboBox.setMinimumSize(new java.awt.Dimension(62, 25));
 			ivjPhysicalPortComboBox.setRequestFocusEnabled(true);
+			ivjPhysicalPortComboBox.setToolTipText("Click inside the box to type if channel is not in list.");
 			// user code begin {1}
 			ivjPhysicalPortComboBox.setEditable(true);
 			// user code end
@@ -1095,6 +1096,8 @@ private void initialize() {
 	getPhysicalPortComboBox().addItem("com6");
 	getPhysicalPortComboBox().addItem("com7");
 	getPhysicalPortComboBox().addItem("com8");
+	getPhysicalPortComboBox().addItem("com50");
+	getPhysicalPortComboBox().addItem("com99");
 	// user code end
 }
 /**
