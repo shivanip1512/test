@@ -17,7 +17,9 @@ import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
  * Utility program to insert an entire directory of images
- * into the database.
+ * into the database. This app will recurse through all directories
+ * and insert any images found. The parent directory of an image becomes
+ * the images Category.
  * 
  * Each image will be inserted into the StateImage table with
  * an ascending generated id.
@@ -25,6 +27,8 @@ import com.cannontech.tools.gui.IRunnableDBTool;
  */
 public class ImageInserter extends MessageFrameAdaptor
 {
+	private Connection dbConn = null;
+		
 
 	private static final String DB_TABLE = "YukonImage";
 	
@@ -46,7 +50,7 @@ public class ImageInserter extends MessageFrameAdaptor
 		//ii.insertImages(args[0]);
 	}
 	
-	public void insertImages(String dir) throws Exception 
+	private void insertImages(String dir) 
 	{
 		File fDir = new File(dir);
 		
@@ -58,60 +62,62 @@ public class ImageInserter extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("Directory specified is not actually a directory");
 			return;
 		}		
-	
-		Connection conn = null;
-		PreparedStatement pstmt= null;
+
+
+		PreparedStatement pstmt = null;
+		File currFile = null;
+		File[] allFiles = fDir.listFiles();
+		ImageFilter filter = new ImageFilter();
 		
-		try {
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			pstmt = conn.prepareStatement(INSERT_SQL);
-			
-			//int id = getMaxID(conn) + 1;
-			File[] allFiles = fDir.listFiles();
-			ImageFilter filter = new ImageFilter();
-			
-			for( int i = 0; i < allFiles.length; i++ ) 
+		for( int i = 0; i < allFiles.length; i++ ) 
+		{
+			currFile = allFiles[i];
+			if( currFile.isDirectory() ) 
 			{
-				File f = allFiles[i];
-				if( f.isFile() && filter.accept(f) ) {
-					String yukName = f.getName().substring(f.getName().indexOf('-')+1);
-					int id = Integer.parseInt(f.getName().substring(0, f.getName().indexOf('-')));
+				insertImages( currFile.getAbsolutePath() );
+			}
+			else if( currFile.isFile() && filter.accept(currFile) ) 
+			{
+				try
+				{
+					String yukName = currFile.getName().substring(currFile.getName().indexOf('-')+1);
+					int id = Integer.parseInt(currFile.getName().substring(0, currFile.getName().indexOf('-')));
 					
-					long len = f.length();
+					long len = currFile.length();
 					
-					InputStream in = new FileInputStream(f);
+					InputStream in = new FileInputStream(currFile);
 					
+					pstmt = dbConn.prepareStatement(INSERT_SQL);					
 					pstmt.setInt(1, id);
-	            	pstmt.setString(2, fDir.getName());
+					
+					//use the directory the image is in for its category name
+	            	pstmt.setString(2, currFile.getParentFile().getName());
+	            	
 	            	pstmt.setString(3, yukName);
 					pstmt.setBinaryStream(4, in, (int) len);
 					pstmt.execute();
 	            
 					getIMessageFrame().addOutput(" (success) Inserted " + yukName + " with id: " + id );
-				}	
-			}
-
-			// Not sure why this was here
-			//pstmt.executeBatch();
-		}
-		catch(StringIndexOutOfBoundsException se) {
-		    getIMessageFrame().addOutput(" Error: Ensure the image file name is in the following format:");
-		    getIMessageFrame().addOutput("   <id>-<name>.<extension> ");
-		    getIMessageFrame().addOutput("   example: 12-Breaker.gif");
-			se.printStackTrace();
-			throw se;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			try {
-				pstmt.close();
-				conn.close();
-		    } catch(Exception e2 ) { e2.printStackTrace(); throw e2; }
+				}
+				catch(StringIndexOutOfBoundsException se) {
+					getIMessageFrame().addOutput(" Error on " + currFile.getName() + ": Ensure the image file name is in the following format:");
+					getIMessageFrame().addOutput("   <id>-<name>.<extension> ");
+					getIMessageFrame().addOutput("   example: 12-Breaker.gif");
+					se.printStackTrace();
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+				finally {
+					try {
+						if( pstmt != null ) pstmt.close();
+					} catch(Exception e2 ) { e2.printStackTrace(); }
 			
+				}
+				
+			}	
 		}
+
 		
 		
 	}
@@ -173,8 +179,16 @@ public class ImageInserter extends MessageFrameAdaptor
 			getIMessageFrame().addOutput("");
 			getIMessageFrame().addOutput("-------- Started " + getName() + "..." );
 
+
+			if( dbConn == null )
+				dbConn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
 			//Do the Stuff here
 			insertImages( System.getProperty(IRunnableDBTool.PROP_VALUE) );
+			
+			try {
+				if( dbConn != null ) dbConn.close();
+			} catch(Exception e2 ) { e2.printStackTrace(); }
 			
 			getIMessageFrame().addOutput("-------- " + getName() + " Completed" );
 			
