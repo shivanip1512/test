@@ -17,6 +17,9 @@ import javax.swing.JComponent;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.FileFilter;
+import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.PointSelectionPanel;
 import com.cannontech.esub.element.DynamicGraphElement;
@@ -475,5 +478,10 @@ public class Util {
 		String name = new File(d.getFileName()).getName();
 		name = name.substring(0, name.lastIndexOf('.')) + "-" + dge.getGraphDefinitionID() + ".png";
 		return name;
+	}
+	
+	public static boolean isStatusPoint(int pointID) {
+		LitePoint lp = PointFuncs.getLitePoint(pointID);		
+		return (lp != null && lp.getPointType() == PointTypes.STATUS_POINT);	
 	}
 }
