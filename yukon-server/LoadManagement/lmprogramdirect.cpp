@@ -297,9 +297,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::setMessageFooter(const string& footer)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setCurrentGearNumber(LONG currentgear)
 {
-
-    _currentgearnumber = currentgear;
-
+    if(_currentgearnumber != currentgear)
+    {
+	_currentgearnumber = currentgear;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -311,9 +313,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::setCurrentGearNumber(LONG currentgear)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(LONG lastcontrolled)
 {
-
-    _lastgroupcontrolled = lastcontrolled;
-
+    if(_lastgroupcontrolled != lastcontrolled)
+    {
+	_lastgroupcontrolled = lastcontrolled;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -325,6 +329,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setLastGroupControlled(LONG lastcontroll
 CtiLMProgramDirect& CtiLMProgramDirect::incrementDailyOps()
 {
     _dailyops++;
+    setDirty(true);
     return *this;
 }
 
@@ -346,9 +351,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::resetDailyOps()
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const RWDBDateTime& start)
 {
-
-    _directstarttime = start;
-
+    if(_directstarttime != start)
+    {
+	_directstarttime = start;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -359,9 +366,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStartTime(const RWDBDateTime& s
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& stop)
 {
-
-    _directstoptime = stop;
-
+    if(_directstoptime != stop)
+    {
+	_directstoptime = stop;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -372,13 +381,21 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const RWDBDateTime& st
 ----------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::setNotifyTime(const RWDBDateTime& notify)
 {
-    _notifytime = notify;
+    if(_notifytime != notify)
+    {
+	_notifytime = notify;
+	setDirty(true);
+    }
     return *this;
 }
 
 CtiLMProgramDirect& CtiLMProgramDirect::setStartedRampingOutTime(const RWDBDateTime& startedrampingout)
 {
-    _startedrampingout = startedrampingout;
+    if(_startedrampingout != startedrampingout)
+    {
+	_startedrampingout = startedrampingout;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -4884,6 +4901,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
 	rdr["startedrampingout"] >> _startedrampingout;
 	
         _insertDynamicDataFlag = FALSE;
+	setDirty(false);
     }
     else
     {
@@ -4897,6 +4915,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
 	_notifytime = RWDBDateTime(1990,1,1,0,0,0,0);
 	_startedrampingout = RWDBDateTime(1990,1,1,0,0,0,0);
         _insertDynamicDataFlag = TRUE;
+	setDirty(true);
     }
 }
 
@@ -4920,6 +4939,13 @@ void CtiLMProgramDirect::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
 {
+    if(!isDirty())
+    {
+	return;
+    }
+    
+    CtiLMProgramBase::dumpDynamicData(conn,currentDateTime);
+    
     {
         if( conn.isValid() )
         {
@@ -4947,6 +4973,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
 
                 updater.execute( conn );
 		_dynamictimestamp = currentDateTime;
+		setDirty(false);
             }
             else
             {
@@ -4976,8 +5003,9 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 inserter.execute( conn );
 		_dynamictimestamp = currentDateTime;
                 _insertDynamicDataFlag = FALSE;
+		setDirty(false);
             }
-        }
+	}
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5082,7 +5110,8 @@ void CtiLMProgramDirect::RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectG
 	}
 		for(int j = 0; j < num_to_take; j++)
 	{
-	    CtiLMGroupBase* lm_group = findNextGroupToTake();
+//	    CtiLMGroupBase* lm_group = findNextGroupToTake();
+    	    CtiLMGroupBase* lm_group = findGroupToTake(lm_gear);
 	    if(lm_group != NULL)
 	    {
 		lm_group->setIsRampingIn(true);

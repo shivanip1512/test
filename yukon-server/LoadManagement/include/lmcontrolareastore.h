@@ -94,7 +94,9 @@ public:
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
 
-    void dumpAllDynamicData(); 
+    void dumpAllDynamicData();
+    void updateAllDynamicData();
+    
     bool isValid();
     void setValid(bool valid);
     bool getReregisterForPoints();
@@ -121,7 +123,7 @@ private:
     //Don't allow just anyone to create or destroy control areas
     CtiLMControlAreaStore();
     virtual ~CtiLMControlAreaStore();
-
+    
     void reset();
     void shutdown();
 

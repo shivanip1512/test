@@ -1114,7 +1114,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 	
     case CtiLMManualControlRequest::START_NOW:
 	stopTime = _controlMsg->getStopTime();
-	if( _controlMsg->getOverrideConstraints() ||
+	if( !_controlMsg->getOverrideConstraints() &&
 	    (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
 	{
 	    if((passed_check = checker.checkConstraints((const CtiLMProgramDirect&)*program, _controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds(), result_vec)))

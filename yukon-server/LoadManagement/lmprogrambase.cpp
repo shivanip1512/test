@@ -82,7 +82,6 @@ CtiLMProgramBase::~CtiLMProgramBase()
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getPAOId() const
 {
-
     return _paoid;
 }
 
@@ -93,7 +92,6 @@ LONG CtiLMProgramBase::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAOCategory() const
 {
-
     return _paocategory;
 }
 
@@ -104,7 +102,6 @@ const RWCString& CtiLMProgramBase::getPAOCategory() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAOClass() const
 {
-
     return _paoclass;
 }
 
@@ -115,7 +112,6 @@ const RWCString& CtiLMProgramBase::getPAOClass() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAOName() const
 {
-
     return _paoname;
 }
 
@@ -126,7 +122,6 @@ const RWCString& CtiLMProgramBase::getPAOName() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getPAOType() const
 {
-
     return _paotype;
 }
 
@@ -137,7 +132,6 @@ LONG CtiLMProgramBase::getPAOType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getPAODescription() const
 {
-
     return _paodescription;
 }
 
@@ -148,7 +142,6 @@ const RWCString& CtiLMProgramBase::getPAODescription() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::getDisableFlag() const
 {
-
     return _disableflag;
 }
 
@@ -159,7 +152,6 @@ BOOL CtiLMProgramBase::getDisableFlag() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getUserOrder() const
 {
-
     return _userorder;
 }
 
@@ -170,7 +162,6 @@ LONG CtiLMProgramBase::getUserOrder() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getStopOrder() const
 {
-
     return _stoporder;
 }
 
@@ -181,7 +172,6 @@ LONG CtiLMProgramBase::getStopOrder() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getDefaultPriority() const
 {
-
     return _defaultpriority;
 }
 
@@ -192,10 +182,8 @@ LONG CtiLMProgramBase::getDefaultPriority() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getControlType() const
 {
-
     return _controltype;
 }
-
 
 /*---------------------------------------------------------------------------
     getConstraintID
@@ -224,7 +212,6 @@ const RWCString& CtiLMProgramBase::getConstraintName() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getAvailableSeasons() const
 {
-
     return _availableseasons;
 }
 
@@ -235,7 +222,6 @@ const RWCString& CtiLMProgramBase::getAvailableSeasons() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
 {
-
     return _availableweekdays;
 }
 
@@ -246,7 +232,6 @@ const RWCString& CtiLMProgramBase::getAvailableWeekDays() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMaxHoursDaily() const
 {
-
     return _maxhoursdaily;
 }
 
@@ -257,7 +242,6 @@ LONG CtiLMProgramBase::getMaxHoursDaily() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMaxHoursMonthly() const
 {
-
     return _maxhoursmonthly;
 }
 
@@ -268,7 +252,6 @@ LONG CtiLMProgramBase::getMaxHoursMonthly() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMaxHoursSeasonal() const
 {
-
     return _maxhoursseasonal;
 }
 
@@ -279,7 +262,6 @@ LONG CtiLMProgramBase::getMaxHoursSeasonal() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMaxHoursAnnually() const
 {
-
     return _maxhoursannually;
 }
 
@@ -301,7 +283,6 @@ LONG CtiLMProgramBase::getMinActivateTime() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMinRestartTime() const
 {
-
     return _minrestarttime;
 }
 
@@ -352,7 +333,6 @@ LONG CtiLMProgramBase::getSeasonScheduleId() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getProgramStatusPointId() const
 {
-
     return _programstatuspointid;
 }
 
@@ -363,7 +343,6 @@ LONG CtiLMProgramBase::getProgramStatusPointId() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getProgramState() const
 {
-
     return _programstate;
 }
 
@@ -375,7 +354,6 @@ LONG CtiLMProgramBase::getProgramState() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getReductionAnalogPointId() const
 {
-
     return _reductionanalogpointid;
 }
 
@@ -386,7 +364,6 @@ LONG CtiLMProgramBase::getReductionAnalogPointId() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramBase::getReductionTotal() const
 {
-
     return _reductiontotal;
 }
 
@@ -397,7 +374,6 @@ DOUBLE CtiLMProgramBase::getReductionTotal() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
 {
-
     return _startedcontrolling;
 }
 
@@ -408,7 +384,6 @@ const RWDBDateTime& CtiLMProgramBase::getStartedControlling() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
 {
-
     return _lastcontrolsent;
 }
 
@@ -419,7 +394,6 @@ const RWDBDateTime& CtiLMProgramBase::getLastControlSent() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
 {
-
     return _lmprogramcontrolwindows;
 }
 
@@ -430,7 +404,6 @@ RWOrdered& CtiLMProgramBase::getLMProgramControlWindows()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 {
-
     return _manualcontrolreceivedflag;
 }
 
@@ -441,9 +414,7 @@ BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOId(LONG id)
 {
-
     _paoid = id;
-    //do not notify observers of this!
     return *this;
 }
 
@@ -454,7 +425,6 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOId(LONG id)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
 {
-
     _paocategory = category;
     return *this;
 }
@@ -466,7 +436,6 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOCategory(const RWCString& category)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
 {
-
     _paoclass = pclass;
     return *this;
 }
@@ -478,7 +447,6 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOClass(const RWCString& pclass)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
 {
-
     _paoname = name;
     return *this;
 }
@@ -490,7 +458,6 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOName(const RWCString& name)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAOType(LONG type)
 {
-
     _paotype = type;
     return *this;
 }
@@ -502,7 +469,6 @@ CtiLMProgramBase& CtiLMProgramBase::setPAOType(LONG type)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& description)
 {
-
     _paodescription = description;
     return *this;
 }
@@ -514,9 +480,7 @@ CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const RWCString& descripti
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 {
-
     _disableflag = disable;
-
     return *this;
 }
 
@@ -527,9 +491,7 @@ CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setUserOrder(LONG userorder)
 {
-
     _userorder = userorder;
-
     return *this;
 }
 
@@ -540,9 +502,7 @@ CtiLMProgramBase& CtiLMProgramBase::setUserOrder(LONG userorder)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStopOrder(LONG stoporder)
 {
-
     _stoporder = stoporder;
-
     return *this;
 }
 
@@ -553,9 +513,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStopOrder(LONG stoporder)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(LONG defpriority)
 {
-
     _defaultpriority = defpriority;
-
     return *this;
 }
 
@@ -566,9 +524,7 @@ CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(LONG defpriority)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setControlType(const RWCString& conttype)
 {
-
     _controltype = conttype;
-
     return *this;
 }
 
@@ -601,9 +557,7 @@ CtiLMProgramBase& CtiLMProgramBase::setConstraintName(const RWCString& constrain
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availseasons)
 {
-
     _availableseasons = availseasons;
-
     return *this;
 }
 
@@ -614,9 +568,7 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availse
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availweekdays)
 {
-
     _availableweekdays = availweekdays;
-
     return *this;
 }
 
@@ -627,9 +579,7 @@ CtiLMProgramBase& CtiLMProgramBase::setAvailableWeekDays(const RWCString& availw
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(LONG daily)
 {
-
     _maxhoursdaily = daily;
-
     return *this;
 }
 
@@ -640,9 +590,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursDaily(LONG daily)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(LONG monthly)
 {
-
     _maxhoursmonthly = monthly;
-
     return *this;
 }
 
@@ -653,9 +601,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursMonthly(LONG monthly)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(LONG seasonal)
 {
-
     _maxhoursseasonal = seasonal;
-
     return *this;
 }
 
@@ -666,9 +612,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursSeasonal(LONG seasonal)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(LONG annually)
 {
-
     _maxhoursannually = annually;
-
     return *this;
 }
 
@@ -679,9 +623,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxHoursAnnually(LONG annually)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(LONG activate)
 {
-
     _minactivatetime = activate;
-
     return *this;
 }
 
@@ -692,9 +634,7 @@ CtiLMProgramBase& CtiLMProgramBase::setMinActivateTime(LONG activate)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(LONG restart)
 {
-
     _minrestarttime = restart;
-
     return *this;
 }
 
@@ -728,7 +668,6 @@ CtiLMProgramBase& CtiLMProgramBase::setMaxActivateTime(LONG max_activate_time)
 CtiLMProgramBase& CtiLMProgramBase::setHolidayScheduleId(LONG schdid)
 {
     _holidayscheduleid = schdid;
-
     return *this;
 }
 
@@ -740,7 +679,6 @@ CtiLMProgramBase& CtiLMProgramBase::setHolidayScheduleId(LONG schdid)
 CtiLMProgramBase& CtiLMProgramBase::setSeasonScheduleId(LONG schdid)
 {
     _seasonscheduleid = schdid;
-
     return *this;
 }
 
@@ -751,9 +689,7 @@ CtiLMProgramBase& CtiLMProgramBase::setSeasonScheduleId(LONG schdid)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(LONG statuspointid)
 {
-
     _programstatuspointid = statuspointid;
-
     return *this;
 }
 
@@ -764,9 +700,11 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(LONG statuspointid)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramState(LONG progstate)
 {
-
-    _programstate = progstate;
-
+    if(_programstate != progstate)
+    {
+	_programstate = progstate;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -778,9 +716,7 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramState(LONG progstate)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(LONG reductionpointid)
 {
-
     _reductionanalogpointid = reductionpointid;
-
     return *this;
 }
 
@@ -791,9 +727,11 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(LONG reductionpoin
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 {
-
-    _reductiontotal = reduction;
-
+    if(_reductiontotal != reduction)
+    {
+	_reductiontotal = reduction;
+	setDirty(false);
+    }
     return *this;
 }
 
@@ -804,9 +742,11 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& startcont)
 {
-
-    _startedcontrolling = startcont;
-
+    if(_startedcontrolling != startcont)
+    {
+	_startedcontrolling = startcont;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -817,9 +757,11 @@ CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const RWDBDateTime& st
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastcontrol)
 {
-
-    _lastcontrolsent = lastcontrol;
-
+    if(_lastcontrolsent != lastcontrol)
+    {
+	_lastcontrolsent = lastcontrol;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -830,9 +772,11 @@ CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const RWDBDateTime& lastc
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualreceived)
 {
-
-    _manualcontrolreceivedflag = manualreceived;
-
+    if(_manualcontrolreceivedflag != manualreceived)
+    {
+	_manualcontrolreceivedflag = manualreceived;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -973,9 +917,6 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
 {
-
-
-
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -1016,8 +957,8 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
 {
-
-
+    CtiMemDBObject::operator=(right);
+    
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -1054,9 +995,7 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         {
             _lmprogramcontrolwindows.insert(((CtiLMProgramControlWindow*)right._lmprogramcontrolwindows[i])->replicate());
         }
-
     }
-
     return *this;
 }
 
@@ -1065,7 +1004,6 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
 ---------------------------------------------------------------------------*/
 int CtiLMProgramBase::operator==(const CtiLMProgramBase& right) const
 {
-
     return getPAOId() == right.getPAOId();
 }
 
@@ -1074,7 +1012,6 @@ int CtiLMProgramBase::operator==(const CtiLMProgramBase& right) const
 ---------------------------------------------------------------------------*/
 int CtiLMProgramBase::operator!=(const CtiLMProgramBase& right) const
 {
-
     return !(operator==(right));
 }
 
@@ -1098,6 +1035,10 @@ void CtiLMProgramBase::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime)
 {
+    if(!isDirty())
+    {
+	return;
+    }
     {
         if( conn.isValid() )
         {
@@ -1122,6 +1063,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
                     dout << RWTime() << " - " << updater.asString().data() << endl;
                 }
                 updater.execute( conn );
+		setDirty(false);
             }
             else
             {
@@ -1150,6 +1092,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
                 inserter.execute( conn );
 
                 _insertDynamicDataFlag = FALSE;
+		setDirty(false);
             }
         }
         else
@@ -1190,8 +1133,6 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::restore(RWDBReader& rdr)
 {
-
-
     RWDBNullIndicator isNull;
     RWCString tempBoolString;
     RWCString tempTypeString;
@@ -1242,6 +1183,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
         setManualControlReceivedFlag(tempBoolString=="y"?TRUE:FALSE);
 
         _insertDynamicDataFlag = FALSE;
+	setDirty(false);
     }
     else
     {
@@ -1252,6 +1194,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
         setManualControlReceivedFlag(FALSE);
 
         _insertDynamicDataFlag = TRUE;
+	setDirty(true);
     }
 
     setProgramStatusPointId(0);

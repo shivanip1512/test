@@ -107,9 +107,9 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
     RWDate startDate(startTime);
     RWDate stopDate(stopTime);
 
-    while(startDate++ <= stopDate)
+    do
     {
-	int week_day = startDate.weekDay();
+	int week_day = startDate.weekDay(); 
 	if(week_day == 7) //yukon is 0-6, sunday-sat, rw is 1-7, monday-sunday
 	{
 	    week_day = 0;
@@ -119,8 +119,9 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
 	    string result = "The program is not allowed to run on " + startDate.weekDayName();
 	    results->push_back(result);
 	    violated = true;
+	    break;
 	}
-    }
+    } while(++startDate <= stopDate);
 
     return !violated;
 }

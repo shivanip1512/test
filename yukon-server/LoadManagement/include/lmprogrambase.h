@@ -21,13 +21,14 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "dbmemobject.h"
 #include "observe.h"
 #include "msg_multi.h"
 #include "lmgroupbase.h"
 
 class CtiLMProgramControlWindow;
 
-class CtiLMProgramBase : public RWCollectable
+class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
 {
 
 public:
@@ -109,8 +110,10 @@ public:
 
     BOOL isAvailableToday();
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+
+    virtual void dumpDynamicData();
+    virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded) = 0;

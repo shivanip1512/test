@@ -21,11 +21,12 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "dbmemobject.h"
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
 
-class CtiLMGroupBase : public RWCollectable
+class CtiLMGroupBase : public CtiMemDBObject, public RWCollectable
 {
 
 public:
@@ -130,7 +131,8 @@ public:
     void saveGuts(RWvostream& ) const;
 
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
-
+    bool operator<(const CtiLMGroupBase& right) const;
+    
     RWCString buildShedString(LONG shedTime) const;
     RWCString buildPeriodString(LONG periodTime) const;
     

@@ -219,7 +219,7 @@ void CtiLoadManager::controlLoop()
                 }
 
                 try
-                {
+                { 
                     checkDispatch(secondsFrom1901);
                     checkPIL(secondsFrom1901);
                 }
@@ -674,63 +674,73 @@ void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
         dout << RWTime() << " - Registering for point changes." << endl;
     }
 
-    CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
-    for(LONG i=0;i<controlAreas.entries();i++)
-    {
-        CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+    CtiPointRegistrationMsg* regMsg;
 
-        RWOrdered& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
-
-        for(LONG j=0;j<controlAreaTriggers.entries();j++)
-        {
-            CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[j];
-
-            if( currentTrigger->getPointId() > 0 )
-            {
-                regMsg->insert(currentTrigger->getPointId());
-            }
-            if( currentTrigger->getPeakPointId() > 0 )
-            {
-                regMsg->insert(currentTrigger->getPeakPointId());
-            }
-        }
-
-        RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-
-        for(LONG k=0;k<lmPrograms.entries();k++)
-        {
-            CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
-            if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-            {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
-                for(LONG l=0;l<lmGroups.entries();l++)
-                {
-                    CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
-                    if( currentGroup->getHoursDailyPointId() > 0 )
-                    {
-                        regMsg->insert(currentGroup->getHoursDailyPointId());
-                    }
-                    if( currentGroup->getHoursMonthlyPointId() > 0 )
-                    {
-                        regMsg->insert(currentGroup->getHoursMonthlyPointId());
-                    }
-                    if( currentGroup->getHoursSeasonalPointId() > 0 )
-                    {
-                        regMsg->insert(currentGroup->getHoursSeasonalPointId());
-                    }
-                    if( currentGroup->getHoursAnnuallyPointId() > 0 )
-                    {
-                        regMsg->insert(currentGroup->getHoursAnnuallyPointId());
-                    }
-                    if( currentGroup->getControlStatusPointId() > 0 )
-                    {
-                        regMsg->insert(currentGroup->getControlStatusPointId());
-                    }
-                }
-            }
-        }
+    string simple_registration = gConfigParms.getValueAsString("LOAD_MANAGEMENT_SIMPLE_REGISTRATION", "false");
+    if(simple_registration == "true" || simple_registration == "TRUE")
+    { //register for all points
+	regMsg = new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
     }
+    else
+    { //register for each point specifically
+	regMsg = new CtiPointRegistrationMsg();
+	
+	for(LONG i=0;i<controlAreas.entries();i++)
+	{
+	    CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
 
+	    RWOrdered& controlAreaTriggers = currentControlArea->getLMControlAreaTriggers();
+
+	    for(LONG j=0;j<controlAreaTriggers.entries();j++)
+	    {
+		CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[j];
+
+		if( currentTrigger->getPointId() > 0 )
+		{
+		    regMsg->insert(currentTrigger->getPointId());
+		}
+		if( currentTrigger->getPeakPointId() > 0 )
+		{
+		    regMsg->insert(currentTrigger->getPeakPointId());
+		}
+	    }
+
+	    RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
+
+	    for(LONG k=0;k<lmPrograms.entries();k++)
+	    {
+		CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
+		if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+		{
+		    RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
+		    for(LONG l=0;l<lmGroups.entries();l++)
+		    {
+			CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
+			if( currentGroup->getHoursDailyPointId() > 0 )
+			{
+			    regMsg->insert(currentGroup->getHoursDailyPointId());
+			}
+			if( currentGroup->getHoursMonthlyPointId() > 0 )
+			{
+			    regMsg->insert(currentGroup->getHoursMonthlyPointId());
+			}
+			if( currentGroup->getHoursSeasonalPointId() > 0 )
+			{
+			    regMsg->insert(currentGroup->getHoursSeasonalPointId());
+			}
+			if( currentGroup->getHoursAnnuallyPointId() > 0 )
+			{
+			    regMsg->insert(currentGroup->getHoursAnnuallyPointId());
+			}
+			if( currentGroup->getControlStatusPointId() > 0 )
+			{
+			    regMsg->insert(currentGroup->getControlStatusPointId());
+			}
+		    }
+		}
+	    }
+	}
+    }
     try
     {
         getDispatchConnection()->WriteConnQue(regMsg);

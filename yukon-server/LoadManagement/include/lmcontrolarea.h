@@ -22,13 +22,14 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
+#include "dbmemobject.h"
 #include "connection.h"
 #include "types.h"
 #include "observe.h"
 #include "lmprogrambase.h"
 #include "msg_pcrequest.h"
 
-class CtiLMControlArea : public RWCollectable
+class CtiLMControlArea : public CtiMemDBObject, public RWCollectable
 {
 
 public:

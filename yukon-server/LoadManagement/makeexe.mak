@@ -60,6 +60,7 @@ lmenergyexchangehourlycustomer.obj \
 lmenergyexchangehourlyoffer.obj \
 lmenergyexchangeoffer.obj \
 lmenergyexchangeofferrevision.obj \
+lmfactory.obj \
 lmgroupbase.obj \
 lmgroupemetcon.obj \
 lmgroupexpresscom.obj \

@@ -510,9 +510,11 @@ CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(ULONG secondsFrom1901)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatareceived)
 {
-
-    _newpointdatareceivedflag = newdatareceived;
-
+    if(_newpointdatareceivedflag != newdatareceived)
+    {
+	_newpointdatareceivedflag = newdatareceived;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -523,9 +525,11 @@ CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatarece
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 {
-
-    _updatedflag = updated;
-
+    if(_updatedflag != updated)
+    {
+	_updatedflag = updated;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -549,8 +553,11 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaStatusPointId(LONG statuspoint
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setControlAreaState(LONG state)
 {
-
-    _controlareastate = state;
+    if(_controlareastate != state)
+    {
+	_controlareastate = state;
+	setDirty(true);
+    }
 
     return *this;
 }
@@ -562,9 +569,11 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaState(LONG state)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
 {
-
-    _currentpriority = currpriority;
-
+    if(_currentpriority != currpriority)
+    {
+	_currentpriority = currpriority;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -576,9 +585,11 @@ CtiLMControlArea& CtiLMControlArea::setCurrentPriority(LONG currpriority)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
 {
-
-    _currentdailystarttime = tempstart;
-
+    if(_currentdailystoptime != tempstart)
+    {
+	_currentdailystarttime = tempstart;
+	setDirty(true);
+    }
     return *this;
 }
 
@@ -590,12 +601,13 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
 {
-
-    _currentdailystoptime = tempstop;
-
+    if(_currentdailystoptime != tempstop)
+    {
+	_currentdailystoptime = tempstop;
+	setDirty(true);
+    }
     return *this;
 }
-
 
 /*---------------------------------------------------------------------------
     isTriggerCheckNeeded
@@ -1779,9 +1791,6 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
 --------------------------------------------------------------------------*/
 void CtiLMControlArea::restoreGuts(RWvistream& istrm)
 {
-
-
-
     RWCollectable::restoreGuts( istrm );
 
     RWTime tempTime;
@@ -1819,9 +1828,6 @@ void CtiLMControlArea::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
 {
-
-
-
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -1856,8 +1862,8 @@ void CtiLMControlArea::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
 {
-
-
+    CtiMemDBObject::operator=(right);
+    
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -1994,6 +2000,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         rdr["timestamp"] >> dynamicTimeStamp;
 
         _insertDynamicDataFlag = FALSE;
+	setDirty(false);
     }
     else
     {
@@ -2007,6 +2014,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         setCurrentDailyStopTime(getDefDailyStopTime());
 
         _insertDynamicDataFlag = TRUE;
+	setDirty(true);
     }
 }
 
