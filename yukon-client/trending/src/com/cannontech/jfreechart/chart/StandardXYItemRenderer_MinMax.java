@@ -29,7 +29,7 @@ import com.jrefinery.data.XYDataset;
  */
 public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
 {
-	public Dataset_MinMaxValues [] minMaxValues = null;
+	public Dataset_MinMaxValues [][] minMaxValues = null;
 	private boolean plotMinMaxValues = true;
 
     /**
@@ -101,7 +101,6 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          int item,
                          CrosshairInfo crosshairInfo)
 	{
-
 		super.drawItem(g2, dataArea, info, plot, domainAxis, rangeAxis, data, datasetIndex, series, item, crosshairInfo );
 		
 		// get the data point...
@@ -116,7 +115,7 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
 		
 			if( this.plotMinMaxValues)
 			{                       
-				if (minMaxValues[series] != null && (y1 == minMaxValues[series].getMaximumValue() || y1 == minMaxValues[series].getMinimumValue()))
+				if (minMaxValues[datasetIndex][series] != null && (y1 == minMaxValues[datasetIndex][series].getMaximumValue() || y1 == minMaxValues[datasetIndex][series].getMinimumValue()))
 				{
 					double scale = getShapeScale(plot, series, item, transX1, transY1);
 					Shape shape = getShape(plot, series, item, transX1, transY1, scale);

@@ -26,7 +26,7 @@ import com.jrefinery.data.XYDataset;
 
 public class XYStepRenderer_MinMax extends XYStepRenderer
 {
-	public Dataset_MinMaxValues [] minMaxValues = null;
+	public Dataset_MinMaxValues [][] minMaxValues = null;
 	private boolean plotMinMaxValues = false;
 
     /**
@@ -77,8 +77,8 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 
         if( this.plotMinMaxValues)
 		{                        
-            if (minMaxValues[series] != null && (y1.doubleValue() == minMaxValues[series].getMaximumValue() || 
-            	y1.doubleValue() == minMaxValues[series].getMinimumValue()))
+            if (minMaxValues[datasetIndex][series] != null && (y1.doubleValue() == minMaxValues[datasetIndex][series].getMaximumValue() || 
+            	y1.doubleValue() == minMaxValues[datasetIndex][series].getMinimumValue()))
             {
                 double scale = 6.0;
                 java.awt.Shape shape = plot.getShape(series, item, transX1, transY1, scale);
