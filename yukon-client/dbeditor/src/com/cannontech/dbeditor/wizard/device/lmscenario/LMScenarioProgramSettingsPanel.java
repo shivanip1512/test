@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 import com.cannontech.common.gui.util.ComboBoxTableEditor;
 import java.awt.Component;
+import com.cannontech.database.cache.functions.PAOFuncs;
 
 /**
  * Insert the type's description here.
@@ -33,7 +34,6 @@ public class LMScenarioProgramSettingsPanel extends com.cannontech.common.gui.ut
 	private javax.swing.JTextField ivjNameJTextField = null;
 	
 	private Vector allGears = null;
-	private Vector allDirectPrograms = new Vector();
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -397,7 +397,7 @@ private javax.swing.JTable getProgramsTable()
 			ivjProgramsTable.setRowHeight(20);
 			
 			//Do any column specific initialization here
-			javax.swing.table.TableColumn nameColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.PROGRAMNAME_COLUMN);
+			javax.swing.table.TableColumn nameColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.PROGRAMLITEPAO_COLUMN);
 			javax.swing.table.TableColumn startOffsetColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTOFFSET_COLUMN);
 			javax.swing.table.TableColumn stopOffsetColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STOPOFFSET_COLUMN);
 			javax.swing.table.TableColumn startGearColumn = getProgramsTable().getColumnModel().getColumn(LMControlScenarioProgramTableModel.STARTGEAR_COLUMN);
@@ -501,18 +501,11 @@ public Object getValue(Object o)
 	for(int j = 0; j < getProgramsTable().getRowCount(); j++)
 	{
 		LMControlScenarioProgram newScenarioProgram = new LMControlScenarioProgram();
-		int progID = 0;
-				
+						
 		//program name needs to be converted to id for storage
-		String name = getTableModel().getProgramNameAt(j);
-		for(int g = 0; g < allDirectPrograms.size(); g++)
-{
-		if( ((LiteYukonPAObject)allDirectPrograms.elementAt(g)).getPaoName().compareTo(name) == 0)
-		{
-			progID = ((LiteYukonPAObject)allDirectPrograms.elementAt(g)).getLiteID();
-		}
-}
-		newScenarioProgram.setProgramID(new Integer(progID));
+		LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(j);
+
+		newScenarioProgram.setProgramID(new Integer(thePAO.getLiteID()));
 		
 		newScenarioProgram.setStartOffset(getTableModel().getStartOffsetAt(j));
 		
@@ -632,6 +625,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	for(int h = 0; h < availablePrograms.length; h++)
 	{
 		Integer programID = new Integer(((LiteYukonPAObject)availablePrograms[h]).getLiteID());
+		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(programID.intValue());
 		
 		//do the gears, man
 		LiteGear startingGear = null;
@@ -644,17 +638,8 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 			}
 		}
 	
-		//find the program name
-		String programName = "ERROR";
-		for(int g = 0; g < allDirectPrograms.size(); g++)
-		{
-			if( ((LiteYukonPAObject)allDirectPrograms.elementAt(g)).getLiteID() == programID.intValue())
-			{
-				programName = ((LiteYukonPAObject)allDirectPrograms.elementAt(g)).getPaoName();
-			}
-		}
 		//add the new row
-		getTableModel().addRowValue( programName, new Integer(0), new Integer(0),
+		getTableModel().addRowValue( thePAO, new Integer(0), new Integer(0),
 			startingGear);
 		
 		//update the available programs list
@@ -681,19 +666,9 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	
 	for(int u = selectedRows.length - 1; u >= 0; u--)
 	{
-		LiteYukonPAObject lightProgram = null;
-		String name = getTableModel().getProgramNameAt(selectedRows[u]);
-		//find the program
-		for(int e = 0; e < allDirectPrograms.size(); e++)
-		{
-			if( ((LiteYukonPAObject)allDirectPrograms.elementAt(e)).getPaoName().compareTo(name) == 0)
-			{
-				lightProgram = (LiteYukonPAObject)allDirectPrograms.elementAt(e);
-				break;
-			}
-		}
-		
-		allAvailable.addElement(lightProgram);
+		LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(u);
+				
+		allAvailable.addElement(thePAO);
 		getTableModel().removeRowValue(selectedRows[u]);
 	}
 	
@@ -761,7 +736,7 @@ public void populateAvailableList()
 		}
 	}
 	getAvailableList().setListData(availablePrograms);
-	allDirectPrograms = availablePrograms;
+
 }
 /**
  * Comment
@@ -796,6 +771,7 @@ public void setValue(Object o)
 	{
 		LMControlScenarioProgram lightProgram = (LMControlScenarioProgram)assignedPrograms.elementAt(j);
 		Integer progID = lightProgram.getProgramID();
+		LiteYukonPAObject thePAO = PAOFuncs.getLiteYukonPAO(progID.intValue());
 		
 		//do the gears, man
 		LiteGear startingGear = null;
@@ -810,18 +786,8 @@ public void setValue(Object o)
 			}
 		}
 		
-		//find the program name
-		String programName = "ERROR";
-		for(int g = 0; g < allDirectPrograms.size(); g++)
-		{
-			if( ((LiteYukonPAObject)allDirectPrograms.elementAt(g)).getLiteID() == progID.intValue())
-			{
-				programName = ((LiteYukonPAObject)allDirectPrograms.elementAt(g)).getPaoName();
-			}
-		}
-		
 		//add the new row
-		getTableModel().addRowValue( programName, lightProgram.getStartOffset(), lightProgram.getStopOffset(),
+		getTableModel().addRowValue( thePAO, lightProgram.getStartOffset(), lightProgram.getStopOffset(),
 			startingGear);
 			
 		
@@ -845,23 +811,13 @@ public void userWantsTheirGears()
 
 	LMControlScenarioProgramTableModel scenModel = (LMControlScenarioProgramTableModel) getTableModel();
 
-	String programName = scenModel.getProgramNameAt(currentRow);
-	int progID = 0;
-	//find the program
-	for(int e = 0; e < allDirectPrograms.size(); e++)
-	{
-		if( ((LiteYukonPAObject)allDirectPrograms.elementAt(e)).getPaoName().compareTo(programName) == 0)
-		{
-			progID = ((LiteYukonPAObject)allDirectPrograms.elementAt(e)).getLiteID();
-			break;
-		}
-	}
-	
+	LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(currentRow);
+		
 	Vector specificGears = new Vector();
 	//find the appropriate gears
 	for(int x = 0; x < allGears.size(); x++)
 	{
-		if( ((LiteGear)allGears.elementAt(x)).getOwnerID() == progID )
+		if( ((LiteGear)allGears.elementAt(x)).getOwnerID() == thePAO.getLiteID() )
 			specificGears.addElement(allGears.elementAt(x));
 	}
 	
