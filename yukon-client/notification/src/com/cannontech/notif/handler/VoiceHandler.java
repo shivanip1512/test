@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.CustomerFuncs;
@@ -124,7 +124,7 @@ class VoiceHandler implements INotifHandler, Runnable
                     //if this is a phone number, add the contact for this phone number to 
                     // out list
                     if( !lContDest.isDisabled() &&
-                            YukonListEntryFuncs.isPhoneNumber(lContDest.getNotificationCategoryID()) )
+                            YukonListFuncs.isPhoneNumber(lContDest.getNotificationCategoryID()) )
                     {
                         LiteContact lCont = ContactFuncs.getContact(lContDest.getContactID());
                         if( !contactsList.contains(lCont) )
