@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/09/30 15:04:02 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/10/03 16:17:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,6 +130,9 @@ private:
     void analyzeStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void tagSignalAsAlarm(CtiPointDataMsg *pData, CtiSignalMsg *&pSig, int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point);
 
+    bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
+    bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
+
 public:
 
     typedef CtiServer Inherited;
@@ -237,9 +240,6 @@ public:
     LONG alarmToNotificationGroup(INT signaltrx);
 
     void displayConnections(void);
-
-    bool ablementDevice(LONG did, UINT setmask, UINT tagmask, RWCString user);
-    bool ablementPoint(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
 
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
     bool removePointDataFromPending( LONG pID, const CtiPointDataMsg &Data);
