@@ -100,30 +100,30 @@ public class CTILogger
 
    private static synchronized Logger getLogger()
    {
-   	  if(alwaysUseStandardLogger) {
-   	  		return LogManager.getLogger(STANDARD_LOGGER);
-   	  }
-   	  
-      if( !alwaysUseStandardLogger && !isCreated )
+      if( !isCreated )
       {
          //Init our logger object for the first time
          createLogger( STANDARD_LOGGER );
-         
-
+        
+        // Don't create all the fancy loggers if we just want to use the standard one. 
+		if(!alwaysUseStandardLogger)
+		{
+		
 			//create the extra loggers to keep our web folks sane
 			for( int i = 0; i < ALL_NAMES.length; i++ )
 				createLogger( ALL_NAMES[i][0].toString() );				
-
-
+		}
 			isCreated = true;
 			
 			//initLoggers();
       }
-      
-      
-		//by default, use the standard logger
+            
+	  //by default, use the standard logger
       Logger log = LogManager.getLogger( STANDARD_LOGGER );
 
+	  // Check if we should even look for a fancy logger
+	  if(!alwaysUseStandardLogger)
+	  {
 		t.fillInStackTrace();
 	
 		if( t.getStackTrace().length >= 2 )
@@ -135,16 +135,20 @@ public class CTILogger
 			
 			if( l != null )
 				log = l;
-      }
+      	}
+	  }
 
-
-		return log;
+	  return log;
    }
 
 
 	private static String getLoggerLevel( Logger logger_ )
-	{		
-		String level = null;
+	{	
+		String level = null;	
+		if(alwaysUseStandardLogger) 
+		{
+			return "ALL";	
+		}
 
 		for( int i = 0; i < ALL_NAMES.length; i++ )
 			if( logger_.getName().equalsIgnoreCase(ALL_NAMES[i][0].toString()) )
@@ -181,7 +185,12 @@ public class CTILogger
     */
    private static final void updateLogSettings()
    {
-   	Logger log = getLogger();
+   		if(alwaysUseStandardLogger) 
+   		{
+   			return;
+   		}
+   		
+   		Logger log = getLogger();
 		setLogLevel( getLoggerLevel(log) );
 
 
