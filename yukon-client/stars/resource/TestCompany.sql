@@ -100,12 +100,6 @@ insert into CustomerFAQ values(6,1062,'Does the utility company have access to m
 insert into CustomerFAQ values(7,1063,'How much credit do I receive if I opt out while contolling?','You will receive credit for the protion of time you were controlled.');
 
 /* ECToGenericMapping */
-insert into ECToGenericMapping values (1, 6, 'LMPrograms');
-insert into ECToGenericMapping values (1, 7, 'LMPrograms');
-insert into ECToGenericMapping values (1, 8, 'LMPrograms');
-insert into ECToGenericMapping values (1, 9, 'LMPrograms');
-insert into ECToGenericMapping values (1, 10, 'LMPrograms');
-insert into ECToGenericMapping values (1, 11, 'LMPrograms');
 insert into ECToGenericMapping values (1, 1, 'Substation');
 insert into ECToGenericMapping values (1, 2, 'Substation');
 INSERT INTO ECToGenericMapping VALUES (1, 1, 'ServiceCompany');

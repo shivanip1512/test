@@ -23,6 +23,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<script language="JavaScript">
+function confirmDelete() {
+	if (confirm("Are you sure you want to delete the energy company and all customer account information belongs to it?")
+		&& confirm("Are you really sure you want to delete the energy company?"))
+		document.DeleteForm.submit();
+}
+</script>
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000">
@@ -278,10 +285,10 @@
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
       <table width="525" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
+          <td width="110">&nbsp;</td>
+          <td width="110">&nbsp;</td>
+          <td width="110">&nbsp;</td>
+          <td width="110">&nbsp;</td>
         </tr>
         <tr> 
           <form method="post" action="Admin/Privileges.jsp">
@@ -289,20 +296,22 @@
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/Privileges.jsp" class = "Link1" style = "text-decoration:none;">Privileges 
                 </a></div>
             </td>
-            <td align = "center" class = "Main" width="150"> 
-<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>">
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
-                Energy Company</a></div>
-</cti:checkProperty>
-            </td>
-            <td align = "center" class = "Main" width="150"> 
-<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>">
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Admin_NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
-                Energy Company</a></div>
-</cti:checkProperty>
-			</td>
-            <td align = "center" class = "Main">&nbsp;</td>
           </form>
+          <td align = "center" class = "Main" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY %>"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Config 
+              Energy Company</a></div>
+            </cti:checkProperty> </td>
+		  <form name="DeleteForm" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
+		    <input type="hidden" name="action" value="DeleteEnergyCompany">
+            <td align = "center" class="Main" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY %>"> 
+              <div align = "center" style = "border:solid 1px #666999;"><span class="Clickable" style="text-decoration:none;" onclick="confirmDelete()">Delete 
+                Energy Company</span></div>
+              </cti:checkProperty> </td>
+		  </form>
+          <td align = "center" class = "Main" width="110"> <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY %>"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Admin_NewEnergyCompany.jsp" class = "Link1" style = "text-decoration:none;">New 
+              Energy Company</a></div>
+            </cti:checkProperty> </td>
         </tr>
       </table>
     </td>

@@ -234,6 +234,10 @@ public class ServerUtils {
 			return StarsThermoModeSettings.HEAT;
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF)
 			return StarsThermoModeSettings.OFF;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO)
+			return StarsThermoModeSettings.AUTO;
+		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT)
+			return StarsThermoModeSettings.EMGHEAT;
 		else
 			return null;
 	}
@@ -326,6 +330,15 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_YUKON_USER_DB,
 				DBChangeMsg.CAT_YUKON_USER_GROUP,
 				DBChangeMsg.CAT_YUKON_USER_GROUP,
+				typeOfChange
+				);
+		}
+		else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY || lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+				DBChangeMsg.CAT_ENERGY_COMPANY,
+				DBChangeMsg.CAT_ENERGY_COMPANY,
 				typeOfChange
 				);
 		}

@@ -61,11 +61,14 @@
 		linkList.add( new String[] {"Inventory.jsp?InvNo=" + i, linkText} );
 		
 		if (hw.getStarsThermostatSettings() != null) {
-			linkList.add( new String[] {"ThermSchedule.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
-			if (hw.getStarsThermostatSettings().getStarsThermostatDynamicData() == null)
+			if (hw.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+				linkList.add( new String[] {"ThermSchedule.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
 				linkList.add( new String[] {"Thermostat.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
-			else
+			}
+			else {
+				linkList.add( new String[] {"ThermSchedule2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
 				linkList.add( new String[] {"Thermostat2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
+			}
 		}
 	}
 
@@ -173,15 +176,16 @@
           <tr> 
             <td width="12">&nbsp;</td>
             <td width="78">
-			  <%= links.get("ThermSchedule.jsp?InvNo=" + i) %><br>
 <%
 			if (settings.getStarsThermostatDynamicData() == null) {
 %>
+			  <%= links.get("ThermSchedule.jsp?InvNo=" + i) %><br>
               <%= links.get("Thermostat.jsp?InvNo=" + i) %><br>
 <%
 			}
 			else {
 %>
+			  <%= links.get("ThermSchedule2.jsp?InvNo=" + i) %><br>
               <%= links.get("Thermostat2.jsp?InvNo=" + i) %><br>
 <%
 			}

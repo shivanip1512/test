@@ -20,6 +20,19 @@ var subjectIDs = new Array();
 	subjectIDs[<%= i %>] = <%= faqGroup.getSubjectID() %>;
 <%	} %>
 
+function setButtonStatus(form) {
+	var subjects = form.FAQSubjects;
+	var disabled = (subjects.selectedIndex < 0 || subjects.options[0].value < 0);
+	form.Edit.disabled = disabled;
+	form.Delete.disabled = disabled;
+}
+
+function init() {
+	var form = document.form1;
+	setButtonStatus(form);
+	form.DeleteAll.disabled = form.FAQSubjects.options[0].value < 0;
+}
+
 function moveUp(form) {
 	var subjects = form.FAQSubjects;
 	var idx = subjects.selectedIndex;
@@ -80,12 +93,13 @@ function deleteAllFAQSubjects(form) {
 
 function newFAQSubject(form) {
 	var subjects = form.FAQSubjects;
-	location.href = "Admin_FAQSubject.jsp?Subject=" + subjects.options.length;
+	var idx = (subjects.options[0].value < 0)? 0 : subjects.options.length;
+	location.href = "Admin_FAQSubject.jsp?Subject=" + idx;
 }
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -136,7 +150,7 @@ function newFAQSubject(form) {
               <%@ include file="InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-              <form name="form5" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+              <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
                 <table width="600" border="1" cellspacing="0" cellpadding="0">
                   <tr>
                     <td>
@@ -176,11 +190,11 @@ function newFAQSubject(form) {
                                     <tr valign="middle"> 
                                       <td class="TableCell" width="10%">FAQ Subjects:</td>
                                       <td class="TableCell" width="65%"> 
-                                        <select name="FAQSubjects" size="5" style="width:200">
+                                        <select name="FAQSubjects" size="5" style="width:200" onchange="setButtonStatus(this.form)">
 <%
 	if (customerFAQs.getStarsCustomerFAQGroupCount() == 0) {
 %>
-                                          <option value="-1"><no FAQ Subjects></option>
+                                          <option value="-1">&lt;no FAQ Subjects&gt;</option>
 <%	}
 	else {
 		for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {

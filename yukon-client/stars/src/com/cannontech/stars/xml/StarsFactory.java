@@ -171,7 +171,7 @@ public class StarsFactory {
 
 	public static StarsCallReport[] getStarsCallReports(Integer accountID) {
         com.cannontech.database.db.stars.report.CallReportBase[] calls =
-        		CallReportBase.getAllAccountCallReports( accountID );
+        		CallReportBase.getAllCallReports( accountID );
         if (calls == null) return null;
         
         StarsCallReport[] callRprts = new StarsCallReport[ calls.length ];

@@ -64,7 +64,7 @@ public class YukonSelectionList extends DBPersistent {
     	
     	// Delete all selection list entries
     	com.cannontech.database.db.constants.YukonListEntry.deleteAllListEntries(
-    			getYukonSelectionList().getListID() );
+    			getYukonSelectionList().getListID(), getDbConnection() );
     	
     	getYukonSelectionList().delete();
 	}

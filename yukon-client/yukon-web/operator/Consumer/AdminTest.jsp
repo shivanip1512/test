@@ -452,8 +452,8 @@ function confirmDeleteAllCompanies() {
                           <tr> 
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <%
-	ArrayList selectionLists = new ArrayList();
+<%
+/*	ArrayList selectionLists = new ArrayList();
 	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
 	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
 	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
@@ -462,6 +462,16 @@ function confirmDeleteAllCompanies() {
 
 	for (int i = 0; i < selectionLists.size(); i++) {
 		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get(i);
+		if (list == null) continue;
+*/
+
+	com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
+	for (int i = 0; i < ec.getAllSelectionLists().size(); i++) {
+		com.cannontech.common.constants.YukonSelectionList cList =
+				(com.cannontech.common.constants.YukonSelectionList) ec.getAllSelectionLists().get(i);
+		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
+		
+		StarsCustSelectionList list = (StarsCustSelectionList) selectionListTable.get( cList.getListName() );
 		if (list == null) continue;
 %>
                                 <tr> 

@@ -1,5 +1,9 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsLMHardware thermostat = thermostats.getStarsLMHardware(invNo);
+	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
+
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
 	if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
@@ -44,13 +48,13 @@ confirm("Are you sure you would like to " + type + " the temperature " + n.value
 }
 
 function incTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) + 1;
+	var curTemp = parseInt(document.MForm.tempField.value,10) + 1;
 	if (curTemp <= 88)
 		document.MForm.tempField.value = curTemp;
 }
 
 function decTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) - 1;
+	var curTemp = parseInt(document.MForm.tempField.value,10) - 1;
 	if (curTemp >= 45)
 	document.MForm.tempField.value = curTemp;
 }
@@ -126,7 +130,7 @@ if (browser.isNetscape) {
 var text = document.MForm.tempField.value + key;
 if (text.length == 2) {
 	if (Number(key) || Number(key) == 0){
-		val = parseInt(document.MForm.tempField.value + key);
+		val = parseInt(document.MForm.tempField.value + key,10);
 		
 		if (val < 45)
 			document.MForm.tempField.value = 45;
@@ -180,7 +184,7 @@ if (text.length == 2) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Thermostat.jsp"; %>
+		  <% String pageName = "Thermostat.jsp?InvNo=" + invNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -214,8 +218,9 @@ if (text.length == 2) {
               </div>
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp">
+              <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?InvNo=<%= invNo %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?InvNo=<%= invNo %>">
 			  <input type="hidden" name="mode" value="">
 			  <input type="hidden" name="fan" value="">
 			  <input type="hidden" name="RunProgram" value="false">

@@ -114,7 +114,7 @@ public class CallReportBase extends DBPersistent {
         return new Integer( nextCallID );
     }
 
-    public static CallReportBase[] getAllAccountCallReports(Integer accountID) {
+    public static CallReportBase[] getAllCallReports(Integer accountID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
         		   + " ORDER BY CallID DESC";
         
@@ -144,89 +144,6 @@ public class CallReportBase extends DBPersistent {
         }
         
         return null;
-    }
-
-    public static CallReportBase[] getAllCustomerCallReports(Integer customerID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " call, " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " account "
-        		   + "WHERE call.AccountID = account.AccountID AND account.CustomerID = " + customerID.toString()
-        		   + " ORDER BY CallID DESC";
-
-        try {		   
-	        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-	        stmt.execute();
-	        
-	        CallReportBase[] reports = new CallReportBase[ stmt.getRowCount() ];
-	        for (int i = 0; i < stmt.getRowCount(); i++) {
-	        	Object[] row = stmt.getRow(i);
-                reports[i] = new CallReportBase();
-
-                reports[i].setCallID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                reports[i].setCallNumber( (String) row[1] );
-                reports[i].setCallTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-                reports[i].setDateTaken( (java.util.Date) row[3] );
-                reports[i].setTakenBy( (String) row[4] );
-                reports[i].setDescription( (String) row[5] );
-                reports[i].setAccountID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
-            }
-            
-            return reports;
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-
-    public static void deleteAllAccountCallReports(Integer accountID, java.sql.Connection conn) {
-        CallReportBase[] reports = getAllAccountCallReports(accountID);
-
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE AccountID = ?";
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.Statement stmt = null;
-
-        try
-        {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, accountID.intValue() );
-                pstmt.execute();
-
-                if (reports.length > 0) {
-                    StringBuffer sql2 = new StringBuffer("DELETE FROM ECToCallReportMapping WHERE CallReportID = ");
-                    for (int i = 0; i < reports.length; i++) {
-                        sql2.append( reports[i].getCallID() );
-                        if (i < reports.length - 1)
-                            sql2.append( " OR CallReportID = " );
-                    }
-
-                    stmt = conn.createStatement();
-                    stmt.execute( sql2.toString() );
-                }
-            }
-        }
-        catch( java.sql.SQLException e )
-        {
-                e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if (stmt != null) stmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
     }
 
     public Integer getCallID() {

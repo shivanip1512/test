@@ -69,7 +69,7 @@
     PrimaryContact primContact = null;
 	
 	StarsLMPrograms programs = null;
-	StarsThermostatSettings thermoSettings = null;
+	StarsInventories thermostats = null;
 	StarsUser userLogin = null;
 	
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
@@ -84,15 +84,11 @@
 		
 		programs = accountInfo.getStarsLMPrograms();
 		
+		thermostats = new StarsInventories();
 		StarsInventories inventories = accountInfo.getStarsInventories();
-		if (inventories != null) {
-			for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-				StarsLMHardware hardware = inventories.getStarsLMHardware(i);
-				if (hardware.getStarsThermostatSettings() != null) {
-					thermoSettings = hardware.getStarsThermostatSettings();
-					break;
-				}
-			}
+		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+			if (inventories.getStarsLMHardware(i).getStarsThermostatSettings() != null)
+				thermostats.addStarsLMHardware( inventories.getStarsLMHardware(i) );
 		}
 		
 		userLogin = accountInfo.getStarsUser();

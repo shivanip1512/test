@@ -87,6 +87,7 @@ insert into YukonSelectionList values (1047,'N','(none)','Soil type selection', 
 insert into YukonSelectionList values (1048,'N','(none)','Device location selection', 'DeviceLocation','N');
 insert into YukonSelectionList values (1049,'O','(none)','Opt out period selection','OptOutPeriod','Y');
 insert into YukonSelectionList values (1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N');
+insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 
 /* YukonListEntry */
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
@@ -199,15 +200,20 @@ insert into YukonListEntry values (1107,1049,2,'Today',2602);
 insert into YukonListEntry values (1108,1049,99,'Repeat Last',2699);
 insert into YukonListEntry values (1109,1003,0,'TwoWayRec',1202);
 insert into YukonListEntry values (1110,1005,0,'EnergyPro',3100);
-insert into YukonListEntry values (1201,1050,0,'Last Update Time',3201);
+insert into YukonListEntry values (1111,1018,0,'Auto',2405);
+insert into YukonListEntry values (1112,1018,0,'Emergency Heat',2406);
+insert into YukonListEntry values (1201,1050,0,'Last Updated Time',3201);
 insert into YukonListEntry values (1202,1050,0,'Setpoint',3202);
 insert into YukonListEntry values (1203,1050,0,'Fan',3203);
 insert into YukonListEntry values (1204,1050,0,'System',3204);
 insert into YukonListEntry values (1205,1050,0,'Room,Unit',3205);
 insert into YukonListEntry values (1206,1050,0,'Outdoor',3234);
 insert into YukonListEntry values (1207,1050,0,'Filter Remaining,Filter Restart',3236);
-insert into YukonListEntry values (1208,1050,0,'Lower CoolSetpoint Limit, Upper HeatSetpoint Limit',3237);
+insert into YukonListEntry values (1208,1050,0,'Lower CoolSetpoint Limit,Upper HeatSetpoint Limit',3237);
 insert into YukonListEntry values (1209,1050,0,'Information String',3299);
+insert into YukonListEntry values (1210,1050,0,'Cool Runtime,Heat Runtime',3238);
+insert into YukonListEntry values (1211,1050,0,'Battery',3239);
+insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
 
 /* ECToGenericMapping */
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');

@@ -176,9 +176,11 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			resp.setStarsThermostatManualEvent( starsEvent );
 			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
             
-			Thread.sleep(3 * 1000);		// Wait a while
-			energyCompany.updateThermostatSettings( liteAcctInfo );
-            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+            if (isTwoWay) {
+				Thread.sleep(3 * 1000);		// Wait a while
+				energyCompany.updateThermostatSettings( liteAcctInfo );
+	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+            }
 			
             return SOAPUtil.buildSOAPMessage( respOper );
         }

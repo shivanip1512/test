@@ -1,5 +1,9 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
+	StarsLMHardware thermostat = thermostats.getStarsLMHardware(invNo);
+	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
+
 	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 	
 	StarsThermostatManualEvent lastEvent = null;
@@ -130,7 +134,7 @@ function init() {
 }
 
 function incTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) + 1;
+	var curTemp = parseInt(document.MForm.tempField.value,10) + 1;
 	if (curTemp <= upperLimit) {
 		document.MForm.tempField.value = curTemp;
 <%	if (curSettings != null) { %>
@@ -141,7 +145,7 @@ function incTemp() {
 }
 
 function decTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) - 1;
+	var curTemp = parseInt(document.MForm.tempField.value,10) - 1;
 	if (curTemp >= lowerLimit) {
 		document.MForm.tempField.value = curTemp;
 <%	if (curSettings != null) { %>
@@ -152,7 +156,7 @@ function decTemp() {
 }
 
 function validateTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value);
+	var curTemp = parseInt(document.MForm.tempField.value,10);
 	if (isNaN(curTemp))
 		curTemp = 72;
 	else if (curTemp < lowerLimit)
@@ -277,7 +281,7 @@ function prepareSubmit() {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "Thermostat.jsp"; %>
+		  <% String pageName = "Thermostat2.jsp?InvNo=" + invNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -311,9 +315,9 @@ function prepareSubmit() {
 			  <div id="PromptMsg" align="center" class="ConfirmMsg">&nbsp;</div>
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 				<input type="hidden" name="action" value="UpdateThermostatOption">
-				<input type="hidden" name="invID" value="<%= thermoSettings.getInventoryID() %>">
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp">
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp">
+				<input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
+				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?InvNo=<%= invNo %>">
+				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?InvNo=<%= invNo %>">
 				<input type="hidden" name="mode" value="">
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">
@@ -355,22 +359,21 @@ function prepareSubmit() {
                                 <tr> 
                                   <td class="TableCell" valign="top" bordercolor="#FFFFFF"> 
                                     <div id="CurrentSettings" style="display:none"> 
-                                      <%
-	String unit = "Fahrenheit";
+<%
+	String unit = "F";
 	if (curSettings.getDisplayedTempUnit() != null)
-		unit = curSettings.getDisplayedTempUnit();
+		unit = curSettings.getDisplayedTempUnit().substring(0,1);
 	String displayTemp = "(Unknown)";
 	if (curSettings.getDisplayedTemperature() > 0)
-		displayTemp = curSettings.getDisplayedTemperature() + "&deg;";
+		displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
 %>
-                                      Unit: <%= unit %><br>
                                       Room: <%= displayTemp %><br>
-                                      <%
+<%
 	for (int i = 0; i < curSettings.getInfoStringCount(); i++) {
 		String infoString = (String) curSettings.getInfoString(i);
 %>
                                       <%= infoString %><br>
-                                      <%	} %>
+<%	} %>
                                     </div>
                                     <div id="LastSettings" style="display:none"> 
                                       <b>Last Settings:</b><br>

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.stars.report;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -73,6 +74,25 @@ public class WorkOrderBase extends DBPersistent {
         	customerAccount.setDbConnection( getDbConnection() );
         	customerAccount.retrieve();
         }
+    }
+    
+    public static void deleteAllWorkOrders(Integer accountID, java.sql.Connection conn) {
+    	try {
+	    	com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
+	    			com.cannontech.database.db.stars.report.WorkOrderBase.getAllWorkOrders( accountID );
+	    	
+	    	if (orders != null) {
+	    		for (int i = 0; i < orders.length; i++) {
+	    			WorkOrderBase order = new WorkOrderBase();
+	    			order.setOrderID( orders[i].getOrderID() );
+	    			order.setDbConnection( conn );
+	    			order.delete();
+	    		}
+	    	}
+    	}
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
+    	}
     }
     
     public com.cannontech.database.db.stars.report.WorkOrderBase getWorkOrderBase() {

@@ -145,15 +145,15 @@ public class LMProgramWebPublishing extends DBPersistent {
         return null;
     }
 
-    public static void deleteAllLMProgramWebPublishing(Integer appCatID) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
-        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    public static void deleteAllLMProgramWebPublishing(Integer appCatID, java.sql.Connection conn) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = ?";
         
         try {
+	        java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+	        stmt.setInt( 1, appCatID.intValue() );
         	stmt.execute();
         }
-        catch (Exception e) {
+        catch (java.sql.SQLException e) {
         	e.printStackTrace();
         }
     }

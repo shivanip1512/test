@@ -37,7 +37,7 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Date _lastUpdateTime;
+    private java.util.Date _lastUpdatedTime;
 
     private int _displayedTemperature;
 
@@ -262,14 +262,14 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     } //-- int getInfoStringCount() 
 
     /**
-     * Returns the value of field 'lastUpdateTime'.
+     * Returns the value of field 'lastUpdatedTime'.
      * 
-     * @return the value of field 'lastUpdateTime'.
+     * @return the value of field 'lastUpdatedTime'.
     **/
-    public java.util.Date getLastUpdateTime()
+    public java.util.Date getLastUpdatedTime()
     {
-        return this._lastUpdateTime;
-    } //-- java.util.Date getLastUpdateTime() 
+        return this._lastUpdatedTime;
+    } //-- java.util.Date getLastUpdatedTime() 
 
     /**
      * Returns the value of field 'lowerCoolSetpointLimit'.
@@ -495,14 +495,14 @@ public class StarsThermostatDynamicData implements java.io.Serializable {
     } //-- void setInfoString(java.lang.String) 
 
     /**
-     * Sets the value of field 'lastUpdateTime'.
+     * Sets the value of field 'lastUpdatedTime'.
      * 
-     * @param lastUpdateTime the value of field 'lastUpdateTime'.
+     * @param lastUpdatedTime the value of field 'lastUpdatedTime'.
     **/
-    public void setLastUpdateTime(java.util.Date lastUpdateTime)
+    public void setLastUpdatedTime(java.util.Date lastUpdatedTime)
     {
-        this._lastUpdateTime = lastUpdateTime;
-    } //-- void setLastUpdateTime(java.util.Date) 
+        this._lastUpdatedTime = lastUpdatedTime;
+    } //-- void setLastUpdatedTime(java.util.Date) 
 
     /**
      * Sets the value of field 'lowerCoolSetpointLimit'.

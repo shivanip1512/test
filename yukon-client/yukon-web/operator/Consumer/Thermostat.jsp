@@ -49,13 +49,13 @@ confirm("Are you sure you would like to " + type + " the temperature " + n.value
 }
 
 function incTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) + 1;
+	var curTemp = parseInt(document.MForm.tempField.value, 10) + 1;
 	if (curTemp <= 88)
 		document.MForm.tempField.value = curTemp;
 }
 
 function decTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) - 1;
+	var curTemp = parseInt(document.MForm.tempField.value, 10) - 1;
 	if (curTemp >= 45)
 	document.MForm.tempField.value = curTemp;
 }
@@ -131,7 +131,7 @@ if (browser.isNetscape) {
 var text = document.MForm.tempField.value + key;
 if (text.length == 2) {
 	if (Number(key) || Number(key) == 0){
-		val = parseInt(document.MForm.tempField.value + key);
+		val = parseInt(document.MForm.tempField.value + key, 10);
 		
 		if (val < 45)
 			document.MForm.tempField.value = 45;

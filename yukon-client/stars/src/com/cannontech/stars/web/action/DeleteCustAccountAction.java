@@ -135,21 +135,27 @@ public class DeleteCustAccountAction implements ActionBase {
 	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
+		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+				com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
     	com.cannontech.database.data.stars.customer.CustomerAccount account =
     			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany.getEnergyCompanyID().intValue());
-    	Transaction.createTransaction(Transaction.DELETE, account).execute();
+    	account.setDbConnection( conn );
+    	account.delete();
     	
     	// Delete contacts from database
     	LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
     	com.cannontech.database.data.customer.Contact contact =
     			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-    	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+    	contact.setDbConnection( conn );
+    	contact.delete();
     	
     	java.util.ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
     	for (int i = 0; i < contactIDs.size(); i++) {
     		liteContact = energyCompany.getCustomerContact( ((Integer) contactIDs.get(i)).intValue() );
     		contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-    		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+    		contact.setDbConnection( conn );
+    		contact.delete();
     	}
     	
     	// Delete login

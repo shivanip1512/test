@@ -1,5 +1,6 @@
 package com.cannontech.database.data.stars.report;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -58,6 +59,26 @@ public class CallReportBase extends DBPersistent {
     public void retrieve() throws java.sql.SQLException {
         getCallReportBase().retrieve();
     }
+    
+    public static void deleteAllCallReports(Integer accountID, java.sql.Connection conn) {
+    	try {
+	    	com.cannontech.database.db.stars.report.CallReportBase[] calls =
+	    			com.cannontech.database.db.stars.report.CallReportBase.getAllCallReports( accountID );
+	    	
+	    	if (calls != null) {
+	    		for (int i = 0; i < calls.length; i++) {
+	    			CallReportBase call = new CallReportBase();
+	    			call.setCallID( calls[i].getCallID() );
+	    			call.setDbConnection( conn );
+	    			call.delete();
+	    		}
+	    	}
+    	}
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
 	/**
 	 * Returns the callReportBase.
 	 * @return com.cannontech.database.db.stars.report.CallReportBase

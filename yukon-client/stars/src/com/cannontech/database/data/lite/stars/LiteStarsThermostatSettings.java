@@ -44,35 +44,36 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	}
 	
 	public void updateThermostatSettings(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
-		try {
-			int hwTypeDefID = energyCompany.getYukonListEntry(
-					YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
-					).getYukonDefID();
-			Object[][] data = com.cannontech.database.db.stars.hardware.GatewayEndDevice.getHardwareData(
-					liteHw.getManufactureSerialNumber(), new Integer(hwTypeDefID) );
-					
-			/* Thermostat schedules
-			 * First dimension: weekday, saturday, sunday
-			 * Second dimension: wake, leave, return, sleep
-			 * Third dimension: hour, minute, cool setpoint, heat setpoint
-			 */
-			int[][][] schedules = new int[3][4][4];
-			for (int i = 0; i < 3; i++) 
-				for (int j= 0; j < 4; j++)
-					schedules[i][j][0] = -1;	// -1 means values of schedules[i][j][0...3] haven't been set yet
-			
-			ArrayList infoStrings = getDynamicData().getInfoStrings();
-			infoStrings.clear();
-			
-			int fanStateDftID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT ).getEntryID();
-			int fanStateAutoID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO ).getEntryID();
-			int fanStateOnID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON ).getEntryID();
-			int thermModeDftID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT ).getEntryID();
-			int thermModeCoolID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL ).getEntryID();
-			int thermModeHeatID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT ).getEntryID();
-			int thermModeOffID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF ).getEntryID();
-			
-			for (int i = 0; i < data.length; i++) {
+		int hwTypeDefID = energyCompany.getYukonListEntry(
+				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, liteHw.getLmHardwareTypeID()
+				).getYukonDefID();
+		Object[][] data = com.cannontech.database.db.stars.hardware.GatewayEndDevice.getHardwareData(
+				liteHw.getManufactureSerialNumber(), new Integer(hwTypeDefID) );
+				
+		/* Thermostat schedules
+		 * First dimension: weekday, saturday, sunday
+		 * Second dimension: wake, leave, return, sleep
+		 * Third dimension: hour, minute, cool setpoint, heat setpoint
+		 */
+		int[][][] schedules = new int[3][4][4];
+		for (int i = 0; i < 3; i++) 
+			for (int j= 0; j < 4; j++)
+				schedules[i][j][0] = -1;	// -1 means the time schedule is skipped
+		
+		ArrayList infoStrings = getDynamicData().getInfoStrings();
+		infoStrings.clear();
+		
+		int fanStateDftID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT ).getEntryID();
+		int fanStateAutoID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO ).getEntryID();
+		int fanStateOnID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON ).getEntryID();
+		int thermModeDftID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT ).getEntryID();
+		int thermModeCoolID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL ).getEntryID();
+		int thermModeHeatID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT ).getEntryID();
+		int thermModeOffID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF ).getEntryID();
+		int thermModeAutoID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO ).getEntryID();
+		
+		for (int i = 0; i < data.length; i++) {
+			try {
 				int dataType = ((Integer) data[i][0]).intValue();
 				String dataValue = (String) data[i][1];
 				if (dataValue.equalsIgnoreCase(UNKNOWN_STRING)) continue;
@@ -95,14 +96,21 @@ public class LiteStarsThermostatSettings extends LiteBase {
 					dynamicData.setFanSwitch( fanState );
 				}
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_SYSTEM_SWITCH) {
+					StringTokenizer st = new StringTokenizer(dataValue, ",");
+					String mode = st.nextToken();
 					int thermMode = thermModeDftID;
-					if (dataValue.equalsIgnoreCase("COOL"))
+					if (mode.equalsIgnoreCase("COOL"))
 						thermMode = thermModeCoolID;
-					else if (dataValue.equalsIgnoreCase("HEAT"))
+					else if (mode.equalsIgnoreCase("HEAT"))
 						thermMode = thermModeHeatID;
-					else if (dataValue.equalsIgnoreCase("OFF"))
+					else if (mode.equalsIgnoreCase("OFF"))
 						thermMode = thermModeOffID;
-					dynamicData.setSystemSwitch( thermMode );
+					dynamicData.setLastSystemSwitch( thermMode );
+					
+					if (st.hasMoreTokens() && st.nextToken().equalsIgnoreCase("(AUTO)"))
+						dynamicData.setSystemSwitch( thermModeAutoID );
+					else
+						dynamicData.setSystemSwitch( thermMode );
 				}
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_DISPLAYED_TEMP) {
 					StringTokenizer st = new StringTokenizer( dataValue, "," );
@@ -218,45 +226,59 @@ public class LiteStarsThermostatSettings extends LiteBase {
 					dynamicData.setLowerCoolSetpointLimit( Integer.parseInt(st.nextToken()) );
 					dynamicData.setUpperHeatSetpointLimit( Integer.parseInt(st.nextToken()) );
 				}
+				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_RUNTIMES) {
+					StringTokenizer st = new StringTokenizer( dataValue, "," );
+					dynamicData.setCoolRuntime( Integer.parseInt(st.nextToken()) );
+					dynamicData.setHeatRuntime( Integer.parseInt(st.nextToken()) );
+				}
+				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_BATTERY) {
+					dynamicData.setBattery( dataValue );
+				}
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_STRING) {
 					infoStrings.add( dataValue );
 				}
 			}
-			
-			int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
-			int saturdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID();
-			int sundayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY ).getEntryID();
-			
-			for (int i = 0; i < thermostatSeasons.size(); i++) {
-				LiteLMThermostatSeason season = (LiteLMThermostatSeason) thermostatSeasons.get(i);
-				int dim3 = (season.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
-				int[] towCnt = { 0, 0, 0 };
-				
-				for (int j = 0; j < season.getSeasonEntries().size(); j++) {
-					LiteLMThermostatSeasonEntry entry = (LiteLMThermostatSeasonEntry) season.getSeasonEntries().get(j);
-					int dim1 = 0, dim2 = 0;
-					if (entry.getTimeOfWeekID() == weekdayID) {
-						dim1 = 0;
-						dim2 = towCnt[0]++;
-					}
-					else if (entry.getTimeOfWeekID() == saturdayID) {
-						dim1 = 1;
-						dim2 = towCnt[1]++;
-					}
-					else if (entry.getTimeOfWeekID() == sundayID) {
-						dim1 = 2;
-						dim2 = towCnt[2]++;
-					}
-					
-					if (schedules[dim1][dim2][0] != -1) {
-						entry.setStartTime( schedules[dim1][dim2][0] * 3600 + schedules[dim1][dim2][1] * 60 );
-						entry.setTemperature( schedules[dim1][dim2][dim3] );
-					}
-				}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		
+		int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
+		int saturdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID();
+		int sundayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY ).getEntryID();
+		
+		for (int i = 0; i < thermostatSeasons.size(); i++) {
+			LiteLMThermostatSeason season = (LiteLMThermostatSeason) thermostatSeasons.get(i);
+			int dim3 = (season.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
+			int[] towCnt = { 0, 0, 0 };
+			
+			for (int j = 0; j < season.getSeasonEntries().size(); j++) {
+				LiteLMThermostatSeasonEntry entry = (LiteLMThermostatSeasonEntry) season.getSeasonEntries().get(j);
+				int dim1 = 0, dim2 = 0;
+				if (entry.getTimeOfWeekID() == weekdayID) {
+					dim1 = 0;
+					dim2 = towCnt[0]++;
+				}
+				else if (entry.getTimeOfWeekID() == saturdayID) {
+					dim1 = 1;
+					dim2 = towCnt[1]++;
+				}
+				else if (entry.getTimeOfWeekID() == sundayID) {
+					dim1 = 2;
+					dim2 = towCnt[2]++;
+				}
+				
+				int hour = schedules[dim1][dim2][0];
+				int minute = schedules[dim1][dim2][1];
+				int temp = schedules[dim1][dim2][dim3];
+				if (hour == -1) {
+					hour = minute = 0;
+					temp = -1;
+				}
+				
+				entry.setStartTime( hour * 3600 + minute * 60 );
+				entry.setTemperature( temp );
+			}
 		}
 	}
 

@@ -80,22 +80,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	        
 	        StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
 	        StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );
-/*            
-            // Send only those schedules that have been changed
-            ArrayList changedSchedules = (ArrayList) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CHANGED_THERMOSTAT_SETTINGS );
-            for (int i = 0; i < thermSettings.getStarsThermostatSeasonCount(); i++) {
-            	StarsThermostatSeason season = thermSettings.getStarsThermostatSeason(i);
-            	StarsThermostatSeason season2 = new StarsThermostatSeason();
-            	season2.setMode( season.getMode() );
-            	season2.setStartDate( season.getStartDate() );
-            	for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
-            		if (changedSchedules.contains( season.getStarsThermostatSchedule(j) ))
-            			season2.addStarsThermostatSchedule( season.getStarsThermostatSchedule(j) );
-            	}
-            	
-            	updateSched.addStarsThermostatSeason( season2 );
-            }
-*/
+
             StarsThermostatSeason season = new StarsThermostatSeason();
             season.setMode( mode );
             updateSched.addStarsThermostatSeason( season );
@@ -104,35 +89,58 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             season.addStarsThermostatSchedule( schedule );
 	        
 	        Calendar cal = Calendar.getInstance();
+	        boolean noScript = (req.getParameter("temp1") != null);
 	        
-	        cal.setTime( parseTime(req.getParameter("time1")) );
-	        long time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
-	        schedule.setTime1( new org.exolab.castor.types.Time(time) );
-	        
-	        cal.setTime( parseTime(req.getParameter("time2")) );
-	        time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
-	        schedule.setTime2( new org.exolab.castor.types.Time(time) );
-	        
-	        cal.setTime( parseTime(req.getParameter("time3")) );
-	        time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
-	        schedule.setTime3( new org.exolab.castor.types.Time(time) );
-	        
-	        cal.setTime( parseTime(req.getParameter("time4")) );
-	        time = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000;
-	        schedule.setTime4( new org.exolab.castor.types.Time(time) );
-	        
-	        boolean noscript = (req.getParameter("temp1") != null);
-	        if (noscript) {
-		        schedule.setTemperature1( Integer.parseInt(req.getParameter("temp1")) );
-		        schedule.setTemperature2( Integer.parseInt(req.getParameter("temp2")) );
-		        schedule.setTemperature3( Integer.parseInt(req.getParameter("temp3")) );
-		        schedule.setTemperature4( Integer.parseInt(req.getParameter("temp4")) );
+	        if (req.getParameter("time1") != null) {
+		        cal.setTime( parseTime(req.getParameter("time1")) );
+		        schedule.setTime1( new org.exolab.castor.types.Time(
+		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000) );
+		        schedule.setTemperature1( (noScript)?
+		        		Integer.parseInt(req.getParameter("temp1")) :
+		        		Integer.parseInt(req.getParameter("tempval1")) );
 	        }
 	        else {
-		        schedule.setTemperature1( Integer.parseInt(req.getParameter("tempval1")) );
-		        schedule.setTemperature2( Integer.parseInt(req.getParameter("tempval2")) );
-		        schedule.setTemperature3( Integer.parseInt(req.getParameter("tempval3")) );
-		        schedule.setTemperature4( Integer.parseInt(req.getParameter("tempval4")) );
+	        	schedule.setTime1( new org.exolab.castor.types.Time(0) );
+	        	schedule.setTemperature1( -1 );
+	        }
+	        
+	        if (req.getParameter("time2") != null) {
+		        cal.setTime( parseTime(req.getParameter("time2")) );
+		        schedule.setTime2( new org.exolab.castor.types.Time(
+		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000) );
+		        schedule.setTemperature2( (noScript)?
+		        		Integer.parseInt(req.getParameter("temp2")) :
+		        		Integer.parseInt(req.getParameter("tempval2")) );
+	        }
+	        else {
+	        	schedule.setTime2( new org.exolab.castor.types.Time(0) );
+	        	schedule.setTemperature2( -1 );
+	        }
+	        
+	        if (req.getParameter("time3") != null) {
+		        cal.setTime( parseTime(req.getParameter("time3")) );
+		        schedule.setTime3( new org.exolab.castor.types.Time(
+		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000) );
+		        schedule.setTemperature3( (noScript)?
+		        		Integer.parseInt(req.getParameter("temp3")) :
+		        		Integer.parseInt(req.getParameter("tempval3")) );
+	        }
+	        else {
+	        	schedule.setTime3( new org.exolab.castor.types.Time(0) );
+	        	schedule.setTemperature3( -1 );
+	        }
+	        
+	        if (req.getParameter("time4") != null) {
+		        cal.setTime( parseTime(req.getParameter("time4")) );
+		        schedule.setTime4( new org.exolab.castor.types.Time(
+		        		(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(cal.MINUTE) * 60) * 1000) );
+		        schedule.setTemperature4( (noScript)?
+		        		Integer.parseInt(req.getParameter("temp4")) :
+		        		Integer.parseInt(req.getParameter("tempval4")) );
+	        }
+	        else {
+	        	schedule.setTime4( new org.exolab.castor.types.Time(0) );
+	        	schedule.setTemperature4( -1 );
 	        }
 
 			String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
@@ -211,12 +219,46 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		boolean isTwoWay = ServerUtils.isTwoWayThermostat( liteHw, energyCompany );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 			
+			LiteStarsThermostatSettings dftSettings = energyCompany.getDefaultThermostatSettings();
+			LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
+			
 			// Send out commands to program the thermostat
 			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
 				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
 				
 				for (int j = 0; j < starsSeason.getStarsThermostatScheduleCount(); j++) {
 					StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(j);
+					int towID = ServerUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompanyID ).intValue();
+					
+					ArrayList oldSched = new ArrayList();
+					for (int k = 0; k < liteSettings.getThermostatSeasons().size(); k++) {
+						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(k);
+						if (liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
+							liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
+						{
+							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
+								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
+								if (liteEntry.getTimeOfWeekID() == towID)
+									oldSched.add( liteEntry );
+							}
+							break;
+						}
+					}
+					
+					ArrayList dftOtherSched = new ArrayList();
+					for (int k = 0; k < dftSettings.getThermostatSeasons().size(); k++) {
+						LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftSettings.getThermostatSeasons().get(k);
+						if (liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
+							liteSeason.getWebConfigurationID() == SOAPServer.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
+						{
+							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
+								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
+								if (liteEntry.getTimeOfWeekID() == towID)
+									dftOtherSched.add( liteEntry );
+							}
+							break;
+						}
+					}
 					
 					String dayStr = null;
 					if (starsSched.getDay().getType() == StarsThermoDaySettings.ALL_TYPE)
@@ -232,28 +274,73 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							throw new Exception( "Invalid thermostat schedule attribute: day = " + starsSched.getDay().toString() );
 					}
 					
-					String time1 = starsSched.getTime1().toString().substring(0, 5);
-					String time2 = starsSched.getTime2().toString().substring(0, 5);
-					String time3 = starsSched.getTime3().toString().substring(0, 5);
-					String time4 = starsSched.getTime4().toString().substring(0, 5);
+					boolean isCool = (starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE);
+					boolean skip1 = (starsSched.getTemperature1() == -1);
+					boolean skip2 = (starsSched.getTemperature2() == -1);
+					boolean skip3 = (starsSched.getTemperature3() == -1);
+					boolean skip4 = (starsSched.getTemperature4() == -1);
 					
-					String temp1H, temp2H, temp3H, temp4H;
-					String temp1C, temp2C, temp3C, temp4C;
-					if (starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE) {
-						temp1H = String.valueOf( starsSched.getTemperature1() );
-						temp2H = String.valueOf( starsSched.getTemperature2() );
-						temp3H = String.valueOf( starsSched.getTemperature3() );
-						temp4H = String.valueOf( starsSched.getTemperature4() );
-						temp1C = temp2C = temp3C = temp4C = "ff";
+					boolean oldSkip1 = false, oldSkip2 = false, oldSkip3 = false, oldSkip4 = false;
+					if (oldSched.size() == 4) {
+						oldSkip1 = ((LiteLMThermostatSeasonEntry) oldSched.get(0)).getTemperature() == -1;
+						oldSkip2 = ((LiteLMThermostatSeasonEntry) oldSched.get(1)).getTemperature() == -1;
+						oldSkip3 = ((LiteLMThermostatSeasonEntry) oldSched.get(2)).getTemperature() == -1;
+						oldSkip4 = ((LiteLMThermostatSeasonEntry) oldSched.get(3)).getTemperature() == -1;
+					}
+					
+					String time1 = (skip1)? "HH:MM" : starsSched.getTime1().toString().substring(0, 5);
+					String time2 = (skip2)? "HH:MM" : starsSched.getTime2().toString().substring(0, 5);
+					String time3 = (skip3)? "HH:MM" : starsSched.getTime3().toString().substring(0, 5);
+					String time4 = (skip4)? "HH:MM" : starsSched.getTime4().toString().substring(0, 5);
+					
+					String temp1C = "ff", temp2C = "ff", temp3C = "ff", temp4C = "ff";
+					String temp1H = "ff", temp2H = "ff", temp3H = "ff", temp4H = "ff";
+					if (isCool) {
+						if (!skip1) {
+							temp1C = String.valueOf( starsSched.getTemperature1() );
+							if (oldSkip1) temp1H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
+						}
+						if (!skip2) {
+							temp2C = String.valueOf( starsSched.getTemperature2() );
+							if (oldSkip2) temp2H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
+						}
+						if (!skip3) {
+							temp3C = String.valueOf( starsSched.getTemperature3() );
+							if (oldSkip3) temp3H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
+						}
+						if (!skip4) {
+							temp4C = String.valueOf( starsSched.getTemperature4() );
+							if (oldSkip4) temp4H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
+						}
 					}
 					else {
-						temp1C = String.valueOf( starsSched.getTemperature1() );
-						temp2C = String.valueOf( starsSched.getTemperature2() );
-						temp3C = String.valueOf( starsSched.getTemperature3() );
-						temp4C = String.valueOf( starsSched.getTemperature4() );
-						temp1H = temp2H = temp3H = temp4H = "ff";
+						if (!skip1) {
+							temp1H = String.valueOf( starsSched.getTemperature1() );
+							if (oldSkip1) temp1C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
+						}
+						if (!skip2) {
+							temp2H = String.valueOf( starsSched.getTemperature2() );
+							if (oldSkip2) temp2C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
+						}
+						if (!skip3) {
+							temp3H = String.valueOf( starsSched.getTemperature3() );
+							if (oldSkip3) temp3C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
+						}
+						if (!skip4) {
+							temp4H = String.valueOf( starsSched.getTemperature4() );
+							if (oldSkip4) temp4C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
+						}
 					}
 					
+/*					String temp1C = (isCool && !skip1)? String.valueOf(starsSched.getTemperature1()) : "ff";
+					String temp2C = (isCool && !skip2)? String.valueOf(starsSched.getTemperature2()) : "ff";
+					String temp3C = (isCool && !skip3)? String.valueOf(starsSched.getTemperature3()) : "ff";
+					String temp4C = (isCool && !skip4)? String.valueOf(starsSched.getTemperature4()) : "ff";
+					String temp1H = (!isCool && !skip1)? String.valueOf(starsSched.getTemperature1()) : "ff";
+					String temp2H = (!isCool && !skip2)? String.valueOf(starsSched.getTemperature2()) : "ff";
+					String temp3H = (!isCool && !skip3)? String.valueOf(starsSched.getTemperature3()) : "ff";
+					String temp4H = (!isCool && !skip4)? String.valueOf(starsSched.getTemperature4()) : "ff";
+*/					
 					StringBuffer cmd = new StringBuffer();
 					if (isTwoWay)
 						cmd.append("putconfig epro schedule ");
@@ -294,9 +381,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		resp.setStarsLMHardwareEvent( starsEvent );
 			respOper.setStarsUpdateThermostatScheduleResponse( resp );
 			
-			Thread.sleep(3 * 1000);		// Wait a while
-			energyCompany.updateThermostatSettings( liteAcctInfo );
-            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+			if (isTwoWay) {
+				Thread.sleep(3 * 1000);		// Wait a while
+				energyCompany.updateThermostatSettings( liteAcctInfo );
+	            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+			}
 			
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -370,6 +459,10 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	{
 		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
 		resp.setInventoryID( liteHw.getInventoryID() );
+		
+		// Don't update the database if it's a two-way thermostat
+		if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany))
+			return resp;
 		
 		LiteStarsThermostatSettings liteDftSettings = energyCompany.getDefaultThermostatSettings();
 		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();

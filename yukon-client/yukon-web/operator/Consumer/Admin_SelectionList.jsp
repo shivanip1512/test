@@ -12,6 +12,7 @@
 	LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	YukonSelectionList list = ec.getYukonSelectionList(listName);
 	YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList(listName);
+	if (dftList == null) dftList = new YukonSelectionList();
 	
 	boolean isOptOutPeriod = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 	boolean isOptOutPeriodCus = listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
@@ -122,7 +123,7 @@ function showDefaultEntry(form) {
 function saveEntry(form) {
 	entryTexts[curIdx] = form.EntryText.value;
 	if (form.SetYukonDefID.checked) {
-		var yukonDefID = parseInt(form.YukonDefID.value);
+		var yukonDefID = parseInt(form.YukonDefID.value, 10);
 		if (isNaN(yukonDefID)) yukonDefID = 0;
 		entryYukDefIDs[curIdx] = yukonDefID;
 		dftListIndices[curIdx] = -1;

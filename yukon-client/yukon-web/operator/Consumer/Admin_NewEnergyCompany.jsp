@@ -13,8 +13,12 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 function checkPassword(form) {
-	if (form.Password.value != form.Password2.value) {
-		alert("Password doesn't match, please enter the password again");
+	if (form.Password.value != form.PasswordC.value) {
+		alert("Password of default login doesn't match, please enter the password again");
+		return false;
+	}
+	if (form.Password2.value != form.Password2C.value) {
+		alert("Password of second login doesn't match, please enter the password again");
 		return false;
 	}
 	return true;
@@ -93,7 +97,7 @@ function checkPassword(form) {
                         <td width="85%" class="TableCell"> <span class="ConfirmMsg">Enter 
                           the energy company name:</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
-                            <tr>
+                            <tr> 
                               <td width="20%" align="right">Company Name:</td>
                               <td width="80%"> 
                                 <input type="text" name="CompanyName" size="30">
@@ -105,15 +109,10 @@ function checkPassword(form) {
                       <tr> 
                         <td width="15%" align="right" class="TableCell" valign="top">Step 
                           2:</td>
-                        <td width="85%" class="ConfirmMsg">Create a default group 
-                          for operators and a default group for residential customers 
-                          in DBEditor.</td>
-                      </tr>
-                      <tr> 
-                        <td width="15%" align="right" class="TableCell" valign="top">Step 
-                          3:</td>
-                        <td width="85%" class="TableCell"><span class="ConfirmMsg">Enter 
-                          the group names you just created:</span> 
+                        <td width="85%" class="TableCell"><span class="ConfirmMsg">Create 
+                          a default group for operators and a default group for 
+                          residential customers in DBEditor. Enter the group names 
+                          below: </span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="20%" align="right">Operator Group:</td>
@@ -132,9 +131,11 @@ function checkPassword(form) {
                       </tr>
                       <tr> 
                         <td width="15%" align="right" class="TableCell" valign="top">Step 
-                          4:</td>
+                          3:</td>
                         <td width="85%" class="TableCell"><span class="ConfirmMsg">Create 
-                          a default operator login:</span> 
+                          a default operator login (A default login not only belongs 
+                          to the operator group you just created, but also has 
+                          the privilege to edit energy company configuration):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="20%" align="right">Username:</td>
@@ -151,7 +152,35 @@ function checkPassword(form) {
                             <tr> 
                               <td width="20%" align="right">Confirm Password:</td>
                               <td width="80%"> 
+                                <input type="password" name="PasswordC" size="30">
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="15%" align="right" class="TableCell" valign="top">Step 
+                          4:</td>
+                        <td width="85%" class="ConfirmMsg"><span class="ConfirmMsg">Create 
+                          a second operator login (with only the privileges you 
+                          defined in the operator group) (OPTIONAL):</span> 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                            <tr> 
+                              <td width="20%" align="right">Username:</td>
+                              <td width="80%"> 
+                                <input type="text" name="Username2" size="30">
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td width="20%" align="right">Password:</td>
+                              <td width="80%"> 
                                 <input type="password" name="Password2" size="30">
+                              </td>
+                            </tr>
+                            <tr> 
+                              <td width="20%" align="right">Confirm Password:</td>
+                              <td width="80%"> 
+                                <input type="password" name="Password2C" size="30">
                               </td>
                             </tr>
                           </table>

@@ -12,13 +12,50 @@
 						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")},
 						  {"Password.jsp", "Change Login"}
 						 };
-						   
+
+	ArrayList linkList = new ArrayList();
+	for (int i = 0; i < linkPairs.length; i++)
+		linkList.add( linkPairs[i] );
+
+	String[] thermostatNames = new String[ thermostats.getStarsLMHardwareCount() ];
+	int lastItemType = 0;
+	int itemNo = 1;
+	
+	for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
+		StarsLMHardware hw = thermostats.getStarsLMHardware(i);
+		thermostatNames[i] = hw.getLMDeviceType().getContent();
+		
+		if (hw.getLMDeviceType().getEntryID() != lastItemType) {
+			lastItemType = hw.getLMDeviceType().getEntryID();
+			itemNo = 1;
+		}
+		else {
+			itemNo++;
+			thermostatNames[i] += " (" + Integer.toString(itemNo) + ")";
+		}
+		
+		if (hw.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+			linkList.add( new String[] {"ThermSchedule.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
+			linkList.add( new String[] {"Thermostat.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
+		}
+		else {
+			linkList.add( new String[] {"ThermSchedule2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
+			linkList.add( new String[] {"Thermostat2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
+		}
+	}
+
+	String bulletImg = "../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED);
+	if (bulletImg == null) bulletImg = "../../../WebConfig/Bullet.gif";
+	String bulletImg2 = "../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET);
+	if (bulletImg2 == null) bulletImg2 = "../../../WebConfig/Bullet2.gif";
+	
 	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkPairs.length; i++) {
-		if (linkPairs[i][0].equalsIgnoreCase(pageName))
-			links.put(linkPairs[i][0], "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='12' height='12'><span class='Nav'>" + linkPairs[i][1] + "</span>");
+	for (int i = 0; i < linkList.size(); i++) {
+		String[] linkPair = (String[]) linkList.get(i);
+		if (linkPair[0].equalsIgnoreCase(pageName))
+			links.put(linkPair[0], "<img src='" + bulletImg + "' width='12' height='12'><span class='Nav'>" + linkPair[1] + "</span>");
 		else
-			links.put(linkPairs[i][0], "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET) + "' width='12' height='12'><a href='" + linkPairs[i][0] + "' class='Link2'><span class='NavText'>" + linkPairs[i][1] + "</span></a>");
+			links.put(linkPair[0], "<img src='" + bulletImg2 + "' width='12' height='12'><a href='" + linkPair[0] + "' class='Link2'><span class='NavText'>" + linkPair[1] + "</span></a>");
 	}
 %>
 
@@ -38,26 +75,39 @@
 <!--This checkProperty is meant to be the checkMultiProperty when more options are available-->
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 <%
-	if (thermoSettings != null) {	// Hide thermostat settings if it's not available
+	if (thermostats.getStarsLMHardwareCount() > 0) {
 %>
   <tr>
     <td>
       <div align="left"><span class="NavHeader">Thermostat</span><br>
-        <cti:checkProperty propertyid="<%=ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT%>">
-          <%= links.get("ThermSchedule.jsp") %><br>
 <%
-			if (thermoSettings.getStarsThermostatDynamicData() == null) {
+		for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
 %>
-          <%= links.get("Thermostat.jsp") %><br>
+        <img src="<%= bulletImg2 %>" width="12" height="12"><span class="NavText" style="color:#FFFFFF"><%= thermostatNames[i] %></span><br>
+	    <table width="90" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="12">&nbsp;</td>
+            <td width="78">
+<%
+			if (thermostats.getStarsLMHardware(i).getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+%>
+			  <%= links.get("ThermSchedule.jsp?InvNo=" + i) %><br>
+              <%= links.get("Thermostat.jsp?InvNo=" + i) %><br>
 <%
 			}
 			else {
 %>
-          <%= links.get("Thermostat2.jsp") %><br>
+			  <%= links.get("ThermSchedule2.jsp?InvNo=" + i) %><br>
+              <%= links.get("Thermostat2.jsp?InvNo=" + i) %><br>
 <%
 			}
 %>
-        </cti:checkProperty>
+			</td>
+          </tr>
+        </table>
+<%
+		}
+%>
 	  </div>
     </td>
   </tr>

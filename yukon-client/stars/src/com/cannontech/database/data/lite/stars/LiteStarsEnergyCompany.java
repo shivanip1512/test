@@ -402,6 +402,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        YukonSelectionList subList = new YukonSelectionList();
 	        subList.setListID( FAKE_LIST_ID );
 	        subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+	        subList.setOrdering( "O" );
+	        subList.setSelectionLabel( "" );
+	        subList.setWhereIsList( "" );
+	        subList.setUserUpdateAvailable( "Y" );
 	        
 	        com.cannontech.database.db.stars.Substation[] subs =
 	        		com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
@@ -637,7 +641,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        		com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons(
 	        			new Integer(dftInventoryID) );
 	        			
-	        if (seasons != null) {
+	        if (seasons != null && seasons.length == 2) {
 		        dftThermSettings.setThermostatSeasons( new ArrayList() );
 		        thermModeSettings = new Object[ seasons.length ][];
 		        
@@ -661,10 +665,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        
 	        com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
 	        		com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( new Integer(dftInventoryID) );
-	        if (events != null) {
-	        	for (int i = 0; i < events.length; i++)
-	        		dftThermSettings.getThermostatManualEvents().add(
-	        			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
+	        if (events != null && events.length >= 1) {
+        		dftThermSettings.getThermostatManualEvents().add(
+        			(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[0]) );
 	        }
 	        else if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
 	        	useDefault = true;
@@ -993,6 +996,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			liteContact.setContactID( lContact.getContactID() );
 			liteContact.setLastName( lContact.getContLastName() );
 			liteContact.setFirstName( lContact.getContFirstName() );
+			liteContact.setLoginID( lContact.getLoginID() );
 			for (int i = 0; i < lContact.getLiteContactNotifications().size(); i++) {
 				LiteContactNotification lNotif = (LiteContactNotification) lContact.getLiteContactNotifications().get(i);
 				if (lNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_HOME_PHONE)
@@ -1515,7 +1519,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 				
 	        com.cannontech.database.db.stars.report.WorkOrderBase[] orders =
-	        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllAccountWorkOrders( accountDB.getAccountID() );
+	        		com.cannontech.database.db.stars.report.WorkOrderBase.getAllWorkOrders( accountDB.getAccountID() );
 	        if (orders != null) {
 	        	accountInfo.setServiceRequestHistory( new ArrayList() );
 	        	for (int i = 0; i < orders.length; i++) {
@@ -1574,11 +1578,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Remove all work orders from workOrders
-		for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++) {
-			int orderID = ((Integer) liteAcctInfo.getServiceRequestHistory().get(i)).intValue();
-			ArrayList workOrders = getAllWorkOrders();
-			
-			synchronized (workOrders) {
+		ArrayList workOrders = getAllWorkOrders();
+		synchronized (workOrders) {
+			for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++) {
+				int orderID = ((Integer) liteAcctInfo.getServiceRequestHistory().get(i)).intValue();
+				
 				for (int j = 0; j < workOrders.size(); j++) {
 					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
 					if (liteOrder.getOrderID() == orderID) {

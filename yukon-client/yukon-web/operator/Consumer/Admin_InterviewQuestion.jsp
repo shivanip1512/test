@@ -42,11 +42,13 @@ function showQuestion(form) {
 		curIdx = questions.length;
 		form.Question.value = "";
 		form.AnswerType.selectedIndex = 0;
+		form.Save.value = "Add";
 	}
 	else {
 		curIdx = qList.selectedIndex;
 		form.Question.value = questions[curIdx];
 		form.AnswerType.value = answerTypes[curIdx];
+		form.Save.value = "Save";
 	}
 }
 
@@ -124,6 +126,7 @@ function saveQuestion(form) {
 		qList.selectedIndex = curIdx;
 	}
 	qList.options[curIdx].innerText = getQuestionString(curIdx);
+	showQuestion(form);
 }
 
 function prepareSubmit(form) {
@@ -278,7 +281,7 @@ function prepareSubmit(form) {
                                 </table>
                               </td>
                               <td class="TableCell" width="20%"> 
-                                <input type="button" name="Save" value="Save" onClick="saveQuestion(this.form)">
+                                <input type="button" name="Save" value="Add" onClick="saveQuestion(this.form)">
                               </td>
                             </tr>
                           </table>

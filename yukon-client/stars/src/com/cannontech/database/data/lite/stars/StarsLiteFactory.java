@@ -927,7 +927,7 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setStarsThermostatDynamicData(StarsThermostatDynamicData starsDynData, LiteStarsGatewayEndDevice liteDynData, LiteStarsEnergyCompany energyCompany) {
-		starsDynData.setLastUpdateTime( new Date(liteDynData.getTimestamp()) );
+		starsDynData.setLastUpdatedTime( new Date(liteDynData.getTimestamp()) );
 		starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
 		if (liteDynData.getDisplayedTempUnit() != null)
 			starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit().equalsIgnoreCase("C") ? "Celsius" : "Fahrenheit" );
@@ -945,15 +945,34 @@ public class StarsLiteFactory {
 		starsDynData.setUpperHeatSetpointLimit( liteDynData.getUpperHeatSetpointLimit() );
 		
 		starsDynData.removeAllInfoString();
+
+		// If the current mode is auto, then display that in the text area, and set mode to the last none-auto mode of the thermostat
+		StarsThermoModeSettings mode = ServerUtils.getThermModeSetting( liteDynData.getSystemSwitch() );
+		if (mode != null && mode.getType() == StarsThermoModeSettings.AUTO_TYPE) {
+			mode = ServerUtils.getThermModeSetting( liteDynData.getLastSystemSwitch() );
+			starsDynData.addInfoString( "Mode: AUTO" );
+		}
+		starsDynData.setMode( mode );
+		
 		if (liteDynData.getOutdoorTemperature() > 0) {
 			String desc = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_GED_OUTDOOR_TEMP ).getEntryText();
-			starsDynData.addInfoString( desc + ": " + liteDynData.getOutdoorTemperature() + "&deg;" );
+			starsDynData.addInfoString( desc + ": " + liteDynData.getOutdoorTemperature() + "&deg;" + ServerUtils.forceNotNull(liteDynData.getDisplayedTempUnit()) );
 		}
 		if (liteDynData.getFilterRemaining() > 0) {
 			StringTokenizer st = new StringTokenizer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_GED_FILTER).getEntryText(), "," );
 			String desc = st.nextToken();
-			String dayUnit = (liteDynData.getFilterRemaining() > 1)? "days" : "day";
-			starsDynData.addInfoString( desc + ": " + liteDynData.getFilterRemaining() + " " + dayUnit );
+			starsDynData.addInfoString( desc + "(day): " + liteDynData.getFilterRemaining() );
+		}
+		if (liteDynData.getBattery() != null) {
+			String desc = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_GED_BATTERY ).getEntryText();
+			starsDynData.addInfoString( desc + ": " + liteDynData.getBattery() );
+		}
+		if (liteDynData.getCoolRuntime() > 0 || liteDynData.getHeatRuntime() > 0) {
+			StringTokenizer st = new StringTokenizer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_GED_RUNTIMES).getEntryText(), "," );
+			String coolDesc = st.nextToken();
+			String heatDesc = st.nextToken();
+			starsDynData.addInfoString( coolDesc + "(min): " + liteDynData.getCoolRuntime() );
+			starsDynData.addInfoString( heatDesc + "(min): " + liteDynData.getHeatRuntime() );
 		}
 		for (int i = 0; i < liteDynData.getInfoStrings().size(); i++)
 			starsDynData.addInfoString( (String) liteDynData.getInfoStrings().get(i) );

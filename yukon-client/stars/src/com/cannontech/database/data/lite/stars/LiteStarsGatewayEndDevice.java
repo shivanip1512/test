@@ -24,11 +24,15 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	private String setpointStatus = null;
 	private int fanSwitch = CtiUtilities.NONE_ID;
 	private int systemSwitch = CtiUtilities.NONE_ID;
+	private int lastSystemSwitch = CtiUtilities.NONE_ID;
 	private int lowerCoolSetpointLimit = 0;
 	private int upperHeatSetpointLimit = 0;
 	private int outdoorTemperature = 0;
 	private int filterRemaining = 0;
 	private int filterRestart = 0;
+	private int coolRuntime = 0;
+	private int heatRuntime = 0;
+	private String battery = null;
 	
 	private ArrayList infoStrings = null;
 	
@@ -283,6 +287,70 @@ public class LiteStarsGatewayEndDevice extends LiteBase {
 	 */
 	public void setFilterRestart(int filterRestart) {
 		this.filterRestart = filterRestart;
+	}
+
+	/**
+	 * Returns the battery.
+	 * @return String
+	 */
+	public String getBattery() {
+		return battery;
+	}
+
+	/**
+	 * Returns the coolRuntime.
+	 * @return int
+	 */
+	public int getCoolRuntime() {
+		return coolRuntime;
+	}
+
+	/**
+	 * Returns the heatRuntime.
+	 * @return int
+	 */
+	public int getHeatRuntime() {
+		return heatRuntime;
+	}
+
+	/**
+	 * Sets the battery.
+	 * @param battery The battery to set
+	 */
+	public void setBattery(String battery) {
+		this.battery = battery;
+	}
+
+	/**
+	 * Sets the coolRuntime.
+	 * @param coolRuntime The coolRuntime to set
+	 */
+	public void setCoolRuntime(int coolRuntime) {
+		this.coolRuntime = coolRuntime;
+	}
+
+	/**
+	 * Sets the heatRuntime.
+	 * @param heatRuntime The heatRuntime to set
+	 */
+	public void setHeatRuntime(int heatRuntime) {
+		this.heatRuntime = heatRuntime;
+	}
+
+	/**
+	 * Returns the lastSystemSwitch.
+	 * @return int
+	 */
+	public int getLastSystemSwitch() {
+		return lastSystemSwitch;
+	}
+
+	/**
+	 * Sets the lastSystemSwitch.
+	 * @param lastSystemSwitch The lastSystemSwitch to set
+	 */
+	public void setLastSystemSwitch(int lastSystemSwitch) {
+		this.lastSystemSwitch = lastSystemSwitch;
 	}
 
 }

@@ -79,7 +79,7 @@ arrow.style.top = pos;
 
 function moveLayer(divId, hour, minute) {
 var lgMove = 18 * hour + 200;
-var smMove = parseInt(18 * (Math.floor(minute/10) * 10) / 60);
+var smMove = parseInt(18 * (Math.floor(minute/10) * 10) / 60, 10);
 var layer = document.getElementById(divId);
 layer.style.left = lgMove + smMove;
 }

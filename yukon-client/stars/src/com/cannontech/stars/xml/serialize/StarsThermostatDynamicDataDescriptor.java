@@ -60,21 +60,21 @@ public class StarsThermostatDynamicDataDescriptor extends org.exolab.castor.xml.
         
         //-- initialize element descriptors
         
-        //-- _lastUpdateTime
-        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_lastUpdateTime", "LastUpdateTime", NodeType.Element);
+        //-- _lastUpdatedTime
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_lastUpdatedTime", "LastUpdatedTime", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsThermostatDynamicData target = (StarsThermostatDynamicData) object;
-                return target.getLastUpdateTime();
+                return target.getLastUpdatedTime();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsThermostatDynamicData target = (StarsThermostatDynamicData) object;
-                    target.setLastUpdateTime( (java.util.Date) value);
+                    target.setLastUpdatedTime( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -90,7 +90,7 @@ public class StarsThermostatDynamicDataDescriptor extends org.exolab.castor.xml.
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _lastUpdateTime
+        //-- validation code for: _lastUpdatedTime
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);

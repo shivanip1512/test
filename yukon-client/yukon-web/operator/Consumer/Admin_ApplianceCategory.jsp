@@ -75,13 +75,13 @@ function changeIcon(form) {
 }
 
 function changeProgramIcons(form) {
-	form.IconSmall.style.display = (form.IconNameSmall.value == "") ? "none" : "";
+	form.IconSmall.style.visibility = (form.IconNameSmall.value == "") ? "hidden" : "visible";
 	form.IconSmall.src = "../../Images/Icons/" + form.IconNameSmall.value;
-	form.IconSavings.style.display = (form.IconNameSavings.value == "") ? "none" : "";
+	form.IconSavings.style.visibility = (form.IconNameSavings.value == "") ? "hidden" : "visible";
 	form.IconSavings.src = "../../Images/Icons/" + form.IconNameSavings.value;
-	form.IconControl.style.display = (form.IconNameControl.value == "") ? "none" : "";
+	form.IconControl.style.visibility = (form.IconNameControl.value == "") ? "hidden" : "visible";
 	form.IconControl.src = "../../Images/Icons/" + form.IconNameControl.value;
-	form.IconEnvrn.style.display = (form.IconNameEnvrn.value == "") ? "none" : "";
+	form.IconEnvrn.style.visibility = (form.IconNameEnvrn.value == "") ? "hidden" : "visible";
 	form.IconEnvrn.src = "../../Images/Icons/" + form.IconNameEnvrn.value;
 }
 
@@ -130,15 +130,21 @@ function removeProgram(form) {
 	clearProgramConfig(form);
 }
 
-function init() {
-	removeProgram(document.form1);
-	addProgram(document.form1);
-	removeWarned = false;
+function setSameAsName(form, checked) {
+	form.SameAsName.checked = checked;
+	form.DispName.disabled = checked;
 }
 
 function setSameAsProgName(form, checked) {
 	form.SameAsProgName.checked = checked;
 	form.ProgDispName.disabled = checked;
+}
+
+function init() {
+	setSameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
+	removeProgram(document.form1);
+	addProgram(document.form1);
+	removeWarned = false;
 }
 
 var progID = new Array();
@@ -163,7 +169,7 @@ var idx = 0;
 	progName[idx] = "<%= program.getProgramName() %>";
 	dispName[idx] = "<%= cfg.getURL() %>";
 	shortName[idx] = "<%= cfg.getAlternateDisplayName() %>";
-	description[idx] = '<%= cfg.getDescription().replaceAll("<br>", "\r\n") %>';
+	description[idx] = '<%= cfg.getDescription() %>'.replace(/<br>/g, "\r\n");
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
 	iconNameSmall[idx] = "<%= imgNames[1] %>";
 	iconNameSavings[idx] = "<%= imgNames[2] %>";
@@ -221,10 +227,10 @@ function clearProgramConfig(form) {
 	form.IconNameSavings.value = "";
 	form.IconNameControl.value = "";
 	form.IconNameEnvrn.value = "";
-	form.IconSmall.style.display = "none";
-	form.IconSavings.style.display = "none";
-	form.IconControl.style.display = "none";
-	form.IconEnvrn.style.display = "none";
+	form.IconSmall.style.visibility = "hidden";
+	form.IconSavings.style.visibility = "hidden";
+	form.IconControl.style.visibility = "hidden";
+	form.IconEnvrn.style.visibility = "hidden";
 }
 
 function showProgramConfig(form) {
@@ -362,8 +368,8 @@ function prepareSubmit(form) {
                         <td width="18%" align="right" class="TableCell">Display 
                           Name:</td>
                         <td width="82%" class="TableCell"> 
-                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" disabled>
-                          <input type="checkbox" name="SameAsName" value="true" onClick="this.form.DispName.disabled = this.checked" checked>
+                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>">
+                          <input type="checkbox" name="SameAsName" value="true" onClick="setSameAsName(this.form, this.checked)">
                           Same as category name </td>
                       </tr>
                       <tr> 
@@ -504,38 +510,57 @@ function prepareSubmit(form) {
                             </tr>
                             <tr> 
                               <td width="16%">Program Description Icons:</td>
-                              <td width="84%"> 
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                                  <tr> 
-                                    <td width="17%">Small: </td>
-                                    <td width="43%"> 
-                                      <input type="text" name="IconNameSmall" size="20">
+                              <td width="84%">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <tr>
+                                    <td width="60%"> 
+                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                        <tr> 
+                                          <td width="30%" height="40">Small: </td>
+                                          <td width="70%" height="40"> 
+                                            <input type="text" name="IconNameSmall" size="20">
+                                          </td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="30%" height="40">Savings: 
+                                          </td>
+                                          <td width="70%" height="40"> 
+                                            <input type="text" name="IconNameSavings" size="20">
+                                          </td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="30%" height="40">Control%:</td>
+                                          <td width="70%" height="40"> 
+                                            <input type="text" name="IconNameControl" size="20">
+                                          </td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="30%" height="40">Environment:</td>
+                                          <td width="70%" height="40"> 
+                                            <input type="text" name="IconNameEnvrn" size="20">
+                                          </td>
+                                        </tr>
+                                      </table>
+</td>
+                                    <td width="40%"> 
+                                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                        <tr> 
+                                          <td width="40%" rowspan="4" height="40"> 
+                                            <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)">
+                                          </td>
+                                          <td width="60%" height="40"><img id="IconSmall" src="../../../Images/Icons/ACSm.gif" style="visibility:hidden"></td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="60%" height="40"><img id="IconSavings" src="../../../Images/Icons/$$Sm.gif" style="visibility:hidden"></td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="60%" height="40"><img id="IconControl" src="../../../Images/Icons/HalfSm.gif" style="visibility:hidden"></td>
+                                        </tr>
+                                        <tr> 
+                                          <td width="60%" height="40"><img id="IconEnvrn" src="../../../Images/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
+                                        </tr>
+                                      </table>
                                     </td>
-                                    <td width="15%" rowspan="4"> 
-                                      <input type="button" name="Preview2" value="Preview" onclick="changeProgramIcons(this.form)">
-                                    </td>
-                                    <td width="25%"><img id="IconSmall" src="../../../Images/Icons/ACSm.gif" style="display:none"></td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="17%">Savings: </td>
-                                    <td width="43%"> 
-                                      <input type="text" name="IconNameSavings" size="20">
-                                    </td>
-                                    <td width="25%"><img id="IconSavings" src="../../../Images/Icons/$$Sm.gif" style="display:none"></td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="17%">Control%:</td>
-                                    <td width="43%"> 
-                                      <input type="text" name="IconNameControl" size="20">
-                                    </td>
-                                    <td width="25%"><img id="IconControl" src="../../../Images/Icons/HalfSm.gif" style="display:none"></td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="17%">Environment:</td>
-                                    <td width="43%"> 
-                                      <input type="text" name="IconNameEnvrn" size="20">
-                                    </td>
-                                    <td width="25%"><img id="IconEnvrn" src="../../../Images/Icons/Tree2Sm.gif" style="display:none"></td>
                                   </tr>
                                 </table>
                               </td>

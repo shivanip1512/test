@@ -135,7 +135,7 @@ function init() {
 }
 
 function incTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) + 1;
+	var curTemp = parseInt(document.MForm.tempField.value, 10) + 1;
 	if (curTemp <= upperLimit) {
 		document.MForm.tempField.value = curTemp;
 <%	if (curSettings != null) { %>
@@ -146,7 +146,7 @@ function incTemp() {
 }
 
 function decTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value) - 1;
+	var curTemp = parseInt(document.MForm.tempField.value, 10) - 1;
 	if (curTemp >= lowerLimit) {
 		document.MForm.tempField.value = curTemp;
 <%	if (curSettings != null) { %>
@@ -157,7 +157,7 @@ function decTemp() {
 }
 
 function validateTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value);
+	var curTemp = parseInt(document.MForm.tempField.value, 10);
 	if (isNaN(curTemp))
 		curTemp = 72;
 	else if (curTemp < lowerLimit)
@@ -355,14 +355,13 @@ function prepareSubmit() {
                                 <div id="CurrentSettings" style="display:none"> 
                                   
 <%
-	String unit = "Fahrenheit";
+	String unit = "F";
 	if (curSettings.getDisplayedTempUnit() != null)
-		unit = curSettings.getDisplayedTempUnit();
+		unit = curSettings.getDisplayedTempUnit().substring(0,1);
 	String displayTemp = "(Unknown)";
 	if (curSettings.getDisplayedTemperature() > 0)
-		displayTemp = curSettings.getDisplayedTemperature() + "&deg;";
+		displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
 %>
-                                  Unit: <%= unit %><br>
                                   Room: <%= displayTemp %><br>
 <%
 	for (int i = 0; i < curSettings.getInfoStringCount(); i++) {

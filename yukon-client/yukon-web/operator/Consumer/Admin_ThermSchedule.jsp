@@ -319,7 +319,7 @@ MM_reloadPage(true);
                       <table width="478" height="186" background="../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td width="50"> 
-                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setScheduleChanged()"> 
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left,10)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setScheduleChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -348,7 +348,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50"> 
-                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3+50,parseInt(document.getElementById('MovingLayer1').style.left)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setScheduleChanged()"> 
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer1').style.left,10)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setScheduleChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -377,7 +377,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50"> 
-                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3+50,parseInt(document.getElementById('MovingLayer2').style.left)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setScheduleChanged()"> 
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer2').style.left,10)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setScheduleChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -406,7 +406,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td> 
-                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setScheduleChanged()"> 
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left,10)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setScheduleChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 

@@ -127,46 +127,9 @@ public class WorkOrderBase extends DBPersistent {
         return new Integer( nextOrderID );
     }
 
-    public static WorkOrderBase[] getAllAccountWorkOrders(Integer accountID) {
+    public static WorkOrderBase[] getAllWorkOrders(Integer accountID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
         		   + " ORDER BY DateReported DESC";
-
-		try {
-			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
-
-	        WorkOrderBase[] orders = new WorkOrderBase[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++) {
-            	Object[] row = stmt.getRow(i);
-                orders[i] = new WorkOrderBase();
-
-                orders[i].setOrderID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                orders[i].setOrderNumber( (String) row[1] );
-                orders[i].setWorkTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-                orders[i].setCurrentStateID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-                orders[i].setServiceCompanyID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-                orders[i].setDateReported( (java.util.Date) row[5] );
-                orders[i].setOrderedBy( (String) row[6] );
-                orders[i].setDescription( (String) row[7] );
-                orders[i].setDateScheduled( (java.util.Date) row[8] );
-                orders[i].setDateCompleted( (java.util.Date) row[9] );
-                orders[i].setActionTaken( (String) row[10] );
-                orders[i].setAccountID( new Integer(((java.math.BigDecimal) row[11]).intValue()) );
-            }
-            
-            return orders;
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static WorkOrderBase[] getAllServiceCompanyWorkOrders(Integer serviceCompanyID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " where ServiceCompanyID = " + serviceCompanyID.toString()
-                   + " ORDER BY DateReported DESC";
 
 		try {
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );

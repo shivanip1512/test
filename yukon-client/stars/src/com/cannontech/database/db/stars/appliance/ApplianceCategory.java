@@ -116,6 +116,7 @@ public class ApplianceCategory extends DBPersistent {
     	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + items[0].getItemID().toString() );
     	for (int i = 1; i < items.length; i++)
     		sql.append( " OR ApplianceCategoryID = " ).append( items[i].getItemID() );
+    	sql.append( " ORDER BY ApplianceCategoryID" );
     	
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
     			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );

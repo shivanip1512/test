@@ -66,7 +66,6 @@
 	StarsLMPrograms programs = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
-	//StarsThermostatSettings thermoSettings = null;
 	StarsUser userLogin = null;
 
 	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, ConsumerInfoRole.ROLEID) != null)
@@ -113,7 +112,6 @@
 			programs = accountInfo.getStarsLMPrograms();
 			callHist = accountInfo.getStarsCallReportHistory();
 			serviceHist = accountInfo.getStarsServiceRequestHistory();
-			//thermoSettings = accountInfo.getStarsThermostatSettings();
 			
 			userLogin = accountInfo.getStarsUser();
 			if (userLogin == null) {

@@ -17,6 +17,8 @@
 	StarsThermostatSchedule coolSched = null;
 	StarsThermostatSchedule heatSched = null;
 	StarsThermostatSchedule schedule = null;
+	StarsThermostatSchedule dftCoolSched = null;
+	StarsThermostatSchedule dftHeatSched = null;
 	StarsThermostatSchedule dftSchedule = null;
 	
 	if (thermoSettings != null) {
@@ -26,6 +28,7 @@
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
 						coolSched = season.getStarsThermostatSchedule(j);
+						if (isCooling) schedule = coolSched;
 						break;
 					}
 				}
@@ -34,15 +37,12 @@
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
 						heatSched = season.getStarsThermostatSchedule(j);
+						if (!isCooling) schedule = heatSched;
 						break;
 					}
 				}
 			}
 		}
-		if (isCooling)
-			schedule = coolSched;
-		else
-			schedule = heatSched;
 	}
 	
 	if (dftThermoSettings != null) {
@@ -51,9 +51,9 @@
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
-						StarsThermostatSchedule sched = season.getStarsThermostatSchedule(j);
-						if (coolSched == null) coolSched = sched;
-						if (isCooling) dftSchedule = sched;
+						dftCoolSched = season.getStarsThermostatSchedule(j);
+						if (coolSched == null) coolSched = dftCoolSched;
+						if (isCooling) dftSchedule = dftCoolSched;
 						break;
 					}
 				}
@@ -61,9 +61,9 @@
 			else {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().toString().equalsIgnoreCase( dayStr )) {
-						StarsThermostatSchedule sched = season.getStarsThermostatSchedule(j);
-						if (heatSched == null) heatSched = sched;
-						if (!isCooling) dftSchedule = sched;
+						dftHeatSched = season.getStarsThermostatSchedule(j);
+						if (heatSched == null) heatSched = dftHeatSched;
+						if (!isCooling) dftSchedule = dftHeatSched;
 						break;
 					}
 				}
@@ -72,7 +72,12 @@
 		if (schedule == null) schedule = dftSchedule;
 	}
 	
+	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 	char tempUnit = 'F';
+	if (curSettings != null) {
+		if (curSettings.getDisplayedTempUnit() != null)
+			tempUnit = curSettings.getDisplayedTempUnit().charAt(0);
+	}
 %>
 <html>
 <head>
@@ -89,6 +94,17 @@
 // Set global variable in thermostat2.js
 thermMode = '<%= isCooling ? "C" : "H" %>';
 tempUnit = '<%= tempUnit %>';
+<%	if (curSettings != null) {
+		if (curSettings.getLowerCoolSetpointLimit() > 0) {
+%>
+	lowerLimit = <%= curSettings.getLowerCoolSetpointLimit() %>;
+<%		}
+		if (curSettings.getUpperHeatSetpointLimit() > 0) {
+%>
+	upperLimit = <%= curSettings.getUpperHeatSetpointLimit() %>;
+<%		}
+	}
+%>
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
 	moveLayer('MovingLayer1', hour1, min1);
@@ -110,9 +126,15 @@ function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, 
 }
 
 var changed = false;
+var timeoutId = -1;
 
 function setChanged() {
 	changed = true;
+	if (timeoutId != -1) {
+		clearTimeout(timeoutId);
+		timeoutId = -1;
+		document.getElementById("PromptMsg").innerText = "Schedule changed. Refresh the page to view current schedule.";
+	}
 }
 
 function prepareSubmit(form) {
@@ -121,11 +143,14 @@ function prepareSubmit(form) {
 	form.tempval3.value = document.getElementById('temp3').innerHTML.substr(0,2);
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
 	changed = false;
+<%	if (curSettings != null) { %>
+	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
+<%	} %>
 }
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
 	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
 	{
 		var form = document.form1;
@@ -169,12 +194,37 @@ function setToDefault() {
 }
 
 function init() {
+<%	
+	boolean skip1 = (schedule.getTemperature1() == -1);
+	if (skip1) schedule.setTime1(dftSchedule.getTime1());
+	int ct1 = (skip1)? dftCoolSched.getTemperature1() : coolSched.getTemperature1();
+	int ht1 = (skip1)? dftHeatSched.getTemperature1() : heatSched.getTemperature1();
+	boolean skip2 = (schedule.getTemperature2() == -1);
+	if (skip2) schedule.setTime2(dftSchedule.getTime2());
+	int ct2 = (skip2)? dftCoolSched.getTemperature2() : coolSched.getTemperature2();
+	int ht2 = (skip2)? dftHeatSched.getTemperature2() : heatSched.getTemperature2();
+	boolean skip3 = (schedule.getTemperature3() == -1);
+	if (skip3) schedule.setTime3(dftSchedule.getTime3());
+	int ct3 = (skip3)? dftCoolSched.getTemperature3() : coolSched.getTemperature3();
+	int ht3 = (skip3)? dftHeatSched.getTemperature3() : heatSched.getTemperature3();
+	boolean skip4 = (schedule.getTemperature4() == -1);
+	if (skip4) schedule.setTime4(dftSchedule.getTime4());
+	int ct4 = (skip4)? dftCoolSched.getTemperature4() : coolSched.getTemperature4();
+	int ht4 = (skip4)? dftHeatSched.getTemperature4() : heatSched.getTemperature4();
+%>
 	updateLayout(
-		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
-		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
-		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
-		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
+		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= ct1 %>,<%= ht1 %>,
+		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= ct2 %>,<%= ht2 %>,
+		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= ct3 %>,<%= ht3 %>,
+		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= ct4 %>,<%= ht4 %>
 	);
+	<% if (skip1) { %>toggleThermostat(1);<% } %>
+	<% if (skip2) { %>toggleThermostat(2);<% } %>
+	<% if (skip3) { %>toggleThermostat(3);<% } %>
+	<% if (skip4) { %>toggleThermostat(4);<% } %>
+<%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
+	timeoutId = setTimeout("location.reload()", 60000);
+<%	} %>
 }
 </script>
 
@@ -228,7 +278,7 @@ MM_reloadPage(true);
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule.jsp?InvNo=" + invNo; %>
+		  <% String pageName = "ThermSchedule2.jsp?InvNo=" + invNo; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -253,8 +303,8 @@ MM_reloadPage(true);
 			  <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -336,7 +386,7 @@ MM_reloadPage(true);
                       <table width="478" height="186" background="../../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="50">
-                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left,10)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setChanged()">
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');setChanged();">
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -365,7 +415,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50">
-                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer1').style.left,10)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setChanged()"> 
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');setChanged();"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -394,7 +444,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50">
-                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer2').style.left,10)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setChanged()"> 
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');setChanged();"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -422,8 +472,8 @@ MM_reloadPage(true);
                               </table>
                             </div>
                           </td>
-                          <td>
-                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left,10)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setChanged()"> 
+                          <td width="50">
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');setChanged();"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -451,22 +501,27 @@ MM_reloadPage(true);
                               </table>
                             </div>
                           </td>
+                          <td>&nbsp;</td>
                         </tr>
                       </table>
                       <table width="100%" border="0" height="27">
                         <tr>
 					  	  <td width="10%">&nbsp;</td> 
-                          <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Wake 
-                            (W)</b> </span></td>
+                          <td class = "Main" align = "left" width="15%">
+						    <span class="Clickable" onclick="toggleThermostat(1);setChanged();"><b>Wake (W)</b></span>
+                          </td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Leave 
-                            (L)</b></span> </td>
+						  <td class = "Main" align = "left" width="15%">
+						    <span class="Clickable" onclick="toggleThermostat(2);setChanged();"><b>Leave (L)</b></span>
+						  </td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Return 
-                            (R)</b> </span></td>
+						  <td class = "Main" align = "left" width="15%">
+						    <span class="Clickable" onclick="toggleThermostat(3);setChanged();"><b>Return (R)</b></span>
+						  </td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Sleep 
-                            (S)</b></span></td>
+						  <td class = "Main" align = "left" width="15%">
+						    <span class="Clickable" onclick="toggleThermostat(4);setChanged();"><b>Sleep (S)</b></span>
+						  </td>
                       </tr>
                       <tr> 
                         <td class = "TableCell">

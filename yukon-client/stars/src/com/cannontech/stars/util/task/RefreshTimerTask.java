@@ -51,26 +51,28 @@ public class RefreshTimerTask extends StarsTimerTask {
 	public void run() {
 		CTILogger.info( "*** Start Refresh timer task ***" );
 		
-		LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
+		ArrayList companies = SOAPServer.getAllEnergyCompanies();
 		
 		// Update from LMControlHistory
-		for (int i = 0; i < companies.length; i++) {
-			if (companies[i].getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
+		for (int i = 0; i < companies.size(); i++) {
+    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			if (company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
 			
-			ArrayList ctrlHistList = companies[i].getAllLMControlHistory();
+			ArrayList ctrlHistList = company.getAllLMControlHistory();
 			for (int j = 0; j < ctrlHistList.size(); j++) {
 				LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) ctrlHistList.get(j);
 				SOAPServer.updateLMControlHistory( liteCtrlHist );
-				companies[i].updateStarsLMControlHistory( liteCtrlHist );
+				company.updateStarsLMControlHistory( liteCtrlHist );
 			}
 		}
 		
 		// Update from GatewayEndDevice
 		long now = System.currentTimeMillis();
-		for (int i = 0; i < companies.length; i++) {
-			if (companies[i].getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
+		for (int i = 0; i < companies.size(); i++) {
+    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			if (company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
 			
-			ArrayList accountList = companies[i].getAccountsWithGatewayEndDevice();
+			ArrayList accountList = company.getAccountsWithGatewayEndDevice();
 			
 			// Remove all the "expired" customer accounts
 			synchronized (accountList) {
@@ -84,7 +86,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 			
 			for (int j = 0; j < accountList.size(); j++) {
 				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accountList.get(j);
-				companies[i].updateThermostatSettings( liteAcctInfo );
+				company.updateThermostatSettings( liteAcctInfo );
 			}
 		}
 		

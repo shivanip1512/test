@@ -73,13 +73,7 @@
 		if (schedule == null) schedule = dftSchedule;
 	}
 	
-	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 	char tempUnit = 'F';
-	
-	if (curSettings != null) {
-		if (curSettings.getDisplayedTempUnit() != null)
-			tempUnit = curSettings.getDisplayedTempUnit().charAt(0);
-	}
 %>
 <html>
 <head>
@@ -96,17 +90,6 @@
 // Set global variable in thermostat2.js
 thermMode = '<%= isCooling ? "C" : "H" %>';
 tempUnit = '<%= tempUnit %>';
-<%	if (curSettings != null) {
-		if (curSettings.getLowerCoolSetpointLimit() > 0) {
-%>
-	lowerLimit = <%= curSettings.getLowerCoolSetpointLimit() %>;
-<%		}
-		if (curSettings.getUpperHeatSetpointLimit() > 0) {
-%>
-	upperLimit = <%= curSettings.getUpperHeatSetpointLimit() %>;
-<%		}
-	}
-%>
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
 	moveLayer('MovingLayer1', hour1, min1);
@@ -128,15 +111,9 @@ function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, 
 }
 
 var changed = false;
-var timeoutId = -1;
 
 function setChanged() {
 	changed = true;
-	if (timeoutId != -1) {
-		clearTimeout(timeoutId);
-		timeoutId = -1;
-		document.getElementById("PromptMsg").innerText = "Schedule changed. Refresh the page to view current schedule.";
-	}
 }
 
 function prepareSubmit(form) {
@@ -145,14 +122,18 @@ function prepareSubmit(form) {
 	form.tempval3.value = document.getElementById('temp3').innerHTML.substr(0,2);
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
 	changed = false;
-<%	if (curSettings != null) { %>
-	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
-<%	} %>
 }
 
 function switchSettings(day, mode) {
 	var form = document.form1;
 	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
+	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
+	{
+		var form = document.form1;
+		prepareSubmit(form);
+		form.submit();
+		return;
+	}
 	location.href = form.REDIRECT.value;
 }
 
@@ -188,15 +169,6 @@ function setToDefault() {
 	setChanged();
 }
 
-function confirmExit() {
-	if (changed && confirm('You have made changes to the thermostat schedule. Click "Ok" to submit these changes before leaving the page, or click "Cancel" to discard them.'))
-	{
-		var form = document.form1;
-		prepareSubmit(form);
-		form.submit();
-	}
-}
-
 function init() {
 	updateLayout(
 		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
@@ -204,9 +176,6 @@ function init() {
 		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
 		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
 	);
-<%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
-	timeoutId = setTimeout("location.reload()", 60000);
-<%	} %>
 }
 </script>
 
@@ -222,7 +191,7 @@ MM_reloadPage(true);
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="init()" onunload="confirmExit()">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -330,12 +299,16 @@ MM_reloadPage(true);
                     <td align = "center"> 
                       <table width="478" border="0">
                         <tr> 
-                          <td class = "TableCell" width="71%" height="4" align="left"> 
-                            1) Select Cooling or Heating.<br>
-                            2) Slide thermometers to change start times.<br>
-                            3) Adjust your cooling or heating temperatures.<br>
-                            <a class="Link1" href="Instructions.jsp">Click for 
-                            hints and details</a>. <br>
+                          <td class = "TableCell" width="71%" height="4" align = "center" valign="middle" > 
+                            <div align="left"> 
+                              <p>1) Select Cooling or Heating.<br>
+                                2) Slide thermometers to change start times.<br>
+                                3) Adjust your cooling or heating temperatures.<br>
+                                <a class="Link1" href="Instructions.jsp">Click 
+                                for hints and details</a>. <br>
+                                <br>
+                              </p>
+                            </div>
                           </td>
                           <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
                             <i>Make temporary adjustments to your heating and 
@@ -343,7 +316,6 @@ MM_reloadPage(true);
                             here</a>.</i> </td>
                         </tr>
                       </table>
-					  <div id="PromptMsg" class="ConfirmMsg">&nbsp;</div>
                       <table width="175" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="68"> 
@@ -364,7 +336,7 @@ MM_reloadPage(true);
                       <table width="478" height="186" background="../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td width="50"> 
-                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setChanged()"> 
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left,10)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -393,7 +365,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50"> 
-                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3+50,parseInt(document.getElementById('MovingLayer1').style.left)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setChanged()"> 
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer1').style.left,10)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -422,7 +394,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td width="50"> 
-                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3+50,parseInt(document.getElementById('MovingLayer2').style.left)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setChanged()"> 
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left,10)-3+50,parseInt(document.getElementById('MovingLayer2').style.left,10)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
@@ -451,7 +423,7 @@ MM_reloadPage(true);
                             </div>
                           </td>
                           <td> 
-                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setChanged()"> 
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left,10)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setChanged()"> 
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 

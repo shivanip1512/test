@@ -69,8 +69,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     private PILConnectionServlet connToPIL = null;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
-	// Array of all the energy companies
-	private static LiteStarsEnergyCompany[] energyCompanies = null;
+	// Array of all the energy companies (LiteStarsEnergyCompany)
+	private static ArrayList energyCompanies = null;
     
     // List of web configurations
     private static ArrayList webConfigList = null;
@@ -81,8 +81,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     
     public static void refreshCache() {
     	if (energyCompanies != null) {
-    		for (int i = 0; i < energyCompanies.length; i++)
-    			energyCompanies[i].clear();
+    		for (int i = 0; i < energyCompanies.size(); i++)
+    			((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
     	}
     	energyCompanies = null;
 		webConfigList = null;
@@ -203,13 +203,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	if (instance != null) return;
     	
 		getAllWebConfigurations();
-    	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
-    	if (companies != null) {
-	    	for (int i = 0; i < companies.length; i++) {
-	    		if (companies[i].getLiteID() == DEFAULT_ENERGY_COMPANY_ID
-	    			|| companies[i].getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
-		    		companies[i].init();
-	    	}
+		
+    	ArrayList companies = getAllEnergyCompanies();
+    	for (int i = 0; i < companies.size(); i++) {
+    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+    		if (company.getLiteID() == DEFAULT_ENERGY_COMPANY_ID
+    			|| company.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
+	    		company.init();
     	}
     	
     	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
@@ -257,8 +257,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     /*
      * Start implementation of class functions
      */
-    public static LiteStarsEnergyCompany[] getAllEnergyCompanies() {
+    public static ArrayList getAllEnergyCompanies() {
     	if (energyCompanies == null) {
+    		energyCompanies = new ArrayList();
 	    	java.sql.Connection conn = null;
 	    	
     		try {
@@ -268,9 +269,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		    			com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
 		    	if (companies == null) return null;
 		    	
-		    	energyCompanies = new LiteStarsEnergyCompany[ companies.length ];
-		    	for (int i = 0; i < energyCompanies.length; i++)
-		    		energyCompanies[i] = new LiteStarsEnergyCompany( companies[i] );
+		    	synchronized (energyCompanies) {
+			    	for (int i = 0; i < companies.length; i++)
+			    		energyCompanies.add( new LiteStarsEnergyCompany(companies[i]) );
+			    }
     		}
     		catch (Exception e) {
     			e.printStackTrace();
@@ -312,12 +314,34 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     }
     
     public static LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
-    	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
-    	if (companies != null) {
-    		for (int i = 0; i < companies.length; i++)
-    			if (companies[i].getEnergyCompanyID().intValue() == energyCompanyID)
-    				return companies[i];
-    	}
+    	ArrayList companies = getAllEnergyCompanies();
+		synchronized (companies) {
+    		for (int i = 0; i < companies.size(); i++) {
+	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+    			if (company.getEnergyCompanyID().intValue() == energyCompanyID)
+    				return company;
+    		}
+		}
+    	
+    	return null;
+    }
+    
+    public static void addEnergyCompany(LiteStarsEnergyCompany company) {
+    	ArrayList companies = getAllEnergyCompanies();
+		synchronized (companies) { companies.add(company); }
+    }
+    
+    public static LiteStarsEnergyCompany deleteEnergyCompany(int energyCompanyID) {
+    	ArrayList companies = getAllEnergyCompanies();
+		synchronized (companies) {
+    		for (int i = 0; i < companies.size(); i++) {
+	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+    			if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
+    				companies.remove( i );
+    				return company;
+    			}
+    		}
+		}
     	
     	return null;
     }
@@ -420,11 +444,12 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		LiteStarsCustAccountInformation liteAcctInfo = null;
 		LiteStarsEnergyCompany energyCompany = null;
 		
-		LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
-		for (int i = 0; i < companies.length; i++) {
-			liteAcctInfo = companies[i].getCustAccountInformation( msg.getId(), false );
+		ArrayList companies = getAllEnergyCompanies();
+		for (int i = 0; i < companies.size(); i++) {
+    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			liteAcctInfo = company.getCustAccountInformation( msg.getId(), false );
 			if (liteAcctInfo != null) {
-				energyCompany = companies[i];
+				energyCompany = company;
 				break;
 			}
 		}

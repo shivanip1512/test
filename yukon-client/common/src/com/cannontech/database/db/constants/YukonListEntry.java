@@ -125,12 +125,12 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 		return new Integer(CtiUtilities.NONE_ID);
 	}
 	
-	public static void deleteAllListEntries(Integer listID) {
-		String sql = "DELETE FROM " + TABLE_NAME + " WHERE ListID = " + listID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, CtiUtilities.getDatabaseAlias() );
+	public static void deleteAllListEntries(Integer listID, java.sql.Connection conn) {
+		String sql = "DELETE FROM " + TABLE_NAME + " WHERE ListID = ?";
 		
 		try {
+			java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+			stmt.setInt(1, listID.intValue());
 			stmt.execute();
 		}
 		catch (Exception e) {
