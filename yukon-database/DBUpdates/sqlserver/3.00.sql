@@ -479,6 +479,10 @@ insert into tags values(-1, 'Out Of Service', 1, 'Y', 1, 0);
 insert into tags values(-2, 'Info', 1, 'N', 6, 0);
 
 
+update columntype set name='State' where name='Tags';
+update templatecolumns set title='State' where title='Tags';
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
