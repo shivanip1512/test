@@ -245,6 +245,29 @@ insert into YukonUserRole values(-170,-1,-103,-10304,'false');
 sp_rename 'DeviceDNP', 'DeviceAddress';
 
 
+create table LMDirectNotifGrpList (
+ProgramID            numeric              not null,
+NotificationGrpID    numeric              not null
+);
+go
+alter table LMDirectNotifGrpList
+   add constraint PK_LMDIRECTNOTIFGRPLIST primary key  (ProgramID, NotificationGrpID);
+go
+alter table LMDirectNotifGrpList
+   add constraint FK_LMDi_DNGrpL foreign key (ProgramID)
+      references LMProgramDirect (DeviceID);
+go
+alter table LMDirectNotifGrpList
+   add constraint FK_NtGr_DNGrpL foreign key (NotificationGrpID)
+      references NotificationGroup (NotificationGroupID);
+go
+
+
+
+
+
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

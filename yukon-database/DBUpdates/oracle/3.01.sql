@@ -203,6 +203,28 @@ insert into YukonUserRole values(-170,-1,-103,-10304,'false');
 
 rename DeviceDNP TO DeviceAddress;
 
+
+create table LMDirectNotifGrpList  (
+   ProgramID            NUMBER                           not null,
+   NotificationGrpID    NUMBER                           not null
+);
+alter table LMDirectNotifGrpList
+   add constraint PK_LMDIRECTNOTIFGRPLIST primary key (ProgramID, NotificationGrpID);
+alter table LMDirectNotifGrpList
+   add constraint FK_LMDi_DNGrpL foreign key (ProgramID)
+      references LMProgramDirect (DeviceID);
+alter table LMDirectNotifGrpList
+   add constraint FK_NtGr_DNGrpL foreign key (NotificationGrpID)
+      references NotificationGroup (NotificationGroupID);
+
+
+
+
+
+
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
