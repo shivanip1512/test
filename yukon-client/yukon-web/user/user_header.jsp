@@ -12,11 +12,11 @@
 <%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <cti:checklogin/>
 
 <%
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
+	int liteYukonUserID = liteYukonUser.getLiteID();
 	if( liteYukonUser == null)
 	{
 		response.sendRedirect("/login.jsp"); return;
@@ -27,7 +27,7 @@
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	LiteContact liteContact = YukonUserFuncs.getLiteContact(liteYukonUser.getLiteID());
+	LiteContact liteContact = YukonUserFuncs.getLiteContact(liteYukonUserID);
 	LiteCICustomer liteCICustomer = ContactFuncs.getCICustomer(liteContact.getContactID());
 	
 	int customerID = liteCICustomer.getCustomerID();
