@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/03/11 17:27:44 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/09/20 20:27:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,9 +51,16 @@ using namespace std;
 
 CtiDeviceCCU::CtiDeviceCCU()
 {
-    for( int i = 0; i < (TimeSyncToggles * 2); i++ )
+    int i;
+
+    for( i = 0; i < (TimeSyncToggles * 2); i++ )
     {
         _tsAlgStatus[i] = 0;
+    }
+
+    for( i = 0; i < AlgorithmCount; i++ )
+    {
+        _algorithmCommandTime[i] = 0;
     }
 
     _tsPos = 0;
@@ -80,6 +87,23 @@ CtiDeviceCCU& CtiDeviceCCU::operator=(const CtiDeviceCCU& aRef)
     return *this;
 }
 
+
+//  checks if we've reset this algorithm recently - we can only do so every AlgorithmRepeatInterval seconds
+bool CtiDeviceCCU::checkAlgorithmReset(int alg)
+{
+    bool retval = false;
+
+    if( alg >= 0 && alg < AlgorithmCount )
+    {
+        if( (::time(0) - _algorithmCommandTime[alg]) > AlgorithmRepeatInterval )
+        {
+            retval = true;
+            _algorithmCommandTime[alg] = ::time(0);
+        }
+    }
+
+    return retval;
+}
 
 bool CtiDeviceCCU::checkForTimeSyncLoop(int status)
 {
