@@ -1172,7 +1172,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Control cannot go active because no programs are currently available " << endl;
     }
-
+    
+    setUpdatedFlag(TRUE);
     return expectedLoadReduced;
 }
 
@@ -1250,6 +1251,8 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
         dout << RWTime() << " - " << text << ", " << additional << endl;
     }
     }
+
+    setUpdatedFlag(TRUE);    
     return;
 }
 
