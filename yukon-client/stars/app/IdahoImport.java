@@ -42,7 +42,6 @@ public class IdahoImport {
 		String[] output = new String[ custLines.length ];
 		
 		try {
-			// username = serial #, password = lowercase(first letter of first name + last name)
 			String[][] hwCols = new String[hwLines.length][];
 			for (int i = 0; i < hwLines.length; i++)
 				hwCols[i] = ServerUtils.splitString( hwLines[i], "," );
@@ -55,15 +54,22 @@ public class IdahoImport {
 					output[i] += custCols[j] + ",";
 				
 				// Username = Serial #
-				for (int j = 0; j < hwCols.length; j++) {
-					if (hwCols[j][0].equals( custCols[0] )) {
-						output[i] += hwCols[j][3];
-						break;
+				String username = custCols[custCols.length - 2];
+				if (username.equals("")) {
+					for (int j = 0; j < hwCols.length; j++) {
+						if (hwCols[j][0].equals( custCols[0] )) {
+							username = hwCols[j][3];
+							break;
+						}
 					}
 				}
+				output[i] += username + ",";
 				
 				// Password = Lowercase(first letter of first name + last name)
-				output[i] += "," + custCols[3].substring(0, 1).toLowerCase() + custCols[2].toLowerCase();
+				String password = custCols[custCols.length - 1];
+				if (password.equals(""))
+					password = custCols[3].substring(0, 1) + custCols[2];
+				output[i] += password.toLowerCase();
 			}
 			
 			ServerUtils.writeFile( outputFile, output );
