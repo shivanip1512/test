@@ -185,7 +185,7 @@ function setCommand(cmd)
                         </div>
                       </td>
                       <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue kwh');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="ReadkWhID" name="ReadkWh" align="middle">
+                        <input type="image" onClick="setCommand('getvalue kwh');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readkWhID" name="readkWh" align="middle">
                       </td>
                     </tr>
                     <tr> 
@@ -280,7 +280,7 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                       <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue demand');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="ReadDemandID" name="ReadDemand" align="middle">
+                        <input type="image" onClick="setCommand('getvalue demand');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readDemandID" name="readDemand" align="middle">
                       </td>
                     </tr>
                     <tr> 
@@ -315,7 +315,7 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                       <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue peak');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="ReadPeakID" name="ReadPeak" align="middle">
+                        <input type="image" onClick="setCommand('getvalue peak');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readPeakID" name="readPeak" align="middle">
                       </td>
                     </tr>
                   </table>
@@ -394,7 +394,7 @@ function setCommand(cmd)
                               <%}%>
                             </td>
                             <td width="12%" align="center" rowspan="2" height="35" valign="middle" > 
-                              <input type="image" onClick="setCommand('getvalue voltage');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="ReadVoltageID" name="ReadVoltage" align="middle">
+                              <input type="image" onClick="setCommand('getvalue voltage');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readVoltageID" name="readVoltage" align="middle">
                             </td>
                           </tr>
                           <tr> 
@@ -455,7 +455,7 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                       <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue powerfail & getvalue outage 1');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="ReadOutageID" name="ReadOutage" align="middle">
+                        <input type="image" onClick="setCommand('getvalue powerfail & getvalue outage 1');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readOutageID" name="readOutage" align="middle">
                       </td>
                     </tr>
                     <tr> 
@@ -493,7 +493,7 @@ function setCommand(cmd)
                         <%}%>
                         &nbsp;</td>
                       <td width="12%" align="center" height="35" valign="middle"> 
-                        <input type="image" onClick="setCommand('getvalue outage 3 & getvalue outage 5 & getvalue outage 1');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="ReadOutageHistID" name="ReadOutageHist" align="middle">
+                        <input type="image" onClick="setCommand('getvalue outage 3 & getvalue outage 5 & getvalue outage 1');disableAllButtons()" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readOutageHistID" name="readOutageHist" align="middle">
                       </td>
                     </tr>
                   </table>
@@ -502,7 +502,7 @@ function setCommand(cmd)
             </table>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
               <tr> 
-                <td align="right"><a href='CommandDevice.jsp?deviceID=<%=deviceID%>&manual' name="ManualCommander"  class="Link1">
+                <td align="right"><a href='CommandDevice.jsp?deviceID=<%=deviceID%>&manual' name="manualCommander"  class="Link1">
                   Go To Commander</a></td>
               </tr>
             </table>			
@@ -541,8 +541,8 @@ function setCommand(cmd)
           <td > 
             <div align="center"> 
               <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="10" wrap="VIRTUAL"><%= ycBean.getResultText()%></textarea>
-              <input type="submit" name="ClearText" id="ClearTextID"  value="Clear Results">
-              <input type="reset" name="Refresh" id="RefreshID" value="Refresh" onClick="window.location.reload()">
+              <input type="submit" name="rlearText" id="clearTextID"  value="Clear Results">
+              <input type="reset" name="refresh" id="refreshID" value="Refresh" onClick="window.location.reload()">
             </div>
           </td>
         </tr>
