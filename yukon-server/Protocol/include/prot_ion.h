@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/04/08 00:03:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/04/22 16:35:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,31 +59,39 @@ private:
     struct ion_outmess_struct
     {
         ion_protocol_command_struct cmd_struct;
-        unsigned long event_log_last_position;
+        unsigned long client_eventLogLastPosition;
     };
 
-    unsigned long _eventLogLastPosition,
-                  _eventLogCurrentPosition,  //  really only used on porter-side when requesting logs
+    unsigned long _client_eventLogLastPosition,
+                  _eventLogLastPosition,
+                  _eventLogCurrentPosition,
                   _eventLogDepth;
 
-    vector< unsigned long > _setup_handles;
+    typedef vector< unsigned long >             ion_handle_vector;
+    typedef map< unsigned long, unsigned long > ion_value_register_map;
+
+    ion_handle_vector _setup_handles;
 
     unsigned long _handleManagerPowerMeter,
                   _handleManagerDataRecorder,
-                  _handleManagerDigitalIn;
+                  _handleManagerDigitalIn,
+                  _handleManagerDigitalOut;
 
-    vector< unsigned long >           _dataRecorderModules;
-    vector< vector< unsigned long > > _dataRecorderSources;
+    ion_handle_vector           _dataRecorderModules;
+    vector< ion_handle_vector > _dataRecorderSources;
 
-    typedef map< unsigned long, unsigned long > ion_value_register_map;
 
-    vector< unsigned long > _digitalInModules;
+    ion_handle_vector       _digitalInModules;
     ion_value_register_map  _digitalInValueRegisters;
+
+    ion_handle_vector       _digitalOutModules;
+    ion_value_register_map  _digitalOutValueRegisters;
+
 
     ion_value_register_map  _externalPulseRegisters;
     ion_value_register_map  _externalBooleanRegisters;
 
-    vector< unsigned long > _powerMeterModules;
+    ion_handle_vector       _powerMeterModules;
 
     struct ion_pointdata_struct
     {
@@ -104,8 +112,6 @@ private:
         bool          eventLogsComplete;
     };
 
-    void resetEventLogInfo( void );
-
     bool _configRead;
     bool _eventLogsComplete;
 
@@ -123,6 +129,9 @@ private:
 
     void generateEventLogRead( void );
     void decodeEventLogRead  ( void );
+
+    void generateTimeSync( void );
+    void decodeTimeSync  ( void );
 
     void generateExternalPulseTrigger( void );
     void decodeExternalPulseTrigger  ( void );
@@ -191,14 +200,14 @@ protected:
         Register_PowerMeter1S_PhaseRev    = 0x6000,
         Register_PowerMeter1S_LineFreq    = 0x5827,
 
-        Register_Arimetic01Result1        = 0x5b3c,
-        Register_Arimetic01Result2        = 0x5b44,
-        Register_Arimetic01Result3        = 0x5b4c,
-        Register_Arimetic01Result4        = 0x5b54,
-        Register_Arimetic01Result5        = 0x5b5c,
-        Register_Arimetic01Result6        = 0x5b64,
-        Register_Arimetic01Result7        = 0x5b6c,
-        Register_Arimetic01Result8        = 0x5b74
+        Register_Arithmetic01Result1      = 0x5b3c,
+        Register_Arithmetic01Result2      = 0x5b44,
+        Register_Arithmetic01Result3      = 0x5b4c,
+        Register_Arithmetic01Result4      = 0x5b54,
+        Register_Arithmetic01Result5      = 0x5b5c,
+        Register_Arithmetic01Result6      = 0x5b64,
+        Register_Arithmetic01Result7      = 0x5b6c,
+        Register_Arithmetic01Result8      = 0x5b74
     };
 
     enum IONStates
@@ -217,6 +226,10 @@ protected:
         State_ReceiveDigitalInputModuleHandles,
         State_RequestDigitalInputValueRegisters,
         State_ReceiveDigitalInputValueRegisters,
+        State_RequestDigitalOutputModuleHandles,
+        State_ReceiveDigitalOutputModuleHandles,
+        State_RequestDigitalOutputValueRegisters,
+        State_ReceiveDigitalOutputValueRegisters,
         State_RequestDataRecorderModuleHandles,
         State_ReceiveDataRecorderModuleHandles,
         State_RequestDataRecorderInputModuleHandles,
@@ -225,6 +238,8 @@ protected:
         //  reading statuses
         State_RequestDigitalInputData,
         State_ReceiveDigitalInputData,
+        State_RequestDigitalOutputData,
+        State_ReceiveDigitalOutputData,
 
         //  reading power meter info
         State_RequestPowerMeterData,
@@ -241,6 +256,9 @@ protected:
         State_ReceiveEventLogPosition,
         State_RequestEventLogRecords,
         State_ReceiveEventLogRecords,
+
+        //  sending time sync
+        State_SendTimeSync,
 
         //  sending trigger pulse
         State_SendExternalPulseTrigger,
@@ -367,7 +385,8 @@ public:
         Command_SetAnalogOut,
         Command_SetDigitalOut,
         Command_ExternalPulseTrigger,
-        Command_ExceptionScanPostControl
+        Command_ExceptionScanPostControl,
+        Command_TimeSync
     };
 
     enum IONConstants

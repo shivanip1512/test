@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/04/10 21:30:05 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/04/22 16:35:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,8 +36,12 @@ CtiProtocolION::CtiProtocolION()
 {
     setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
     setConfigRead(false);
-    resetEventLogInfo();
     initializeSets();
+
+    _client_eventLogLastPosition = 0;
+    _eventLogLastPosition        = 0;
+    _eventLogCurrentPosition     = 0;
+    _eventLogDepth               = 0;
 }
 
 
@@ -76,11 +80,17 @@ void CtiProtocolION::initializeSets( void )
 {
     int i;
 
+    //  <INSERT MAGIC NUMBER WARNINGS HERE>
+
     for( i = 0; i < 38; i++ )
     {
-        //  MAGIC NUMBER WARNING
         _digitalInValueRegisters.insert(make_pair(0x280 + i, 0x6001 + i));
     }
+    for( i = 0; i < 30; i++ )
+    {
+        _digitalOutValueRegisters.insert(make_pair(0x300 + i, 0x6027 + i));
+    }
+
 
     for( i = 0; i < 128; i++ )
     {
@@ -127,26 +137,6 @@ void CtiProtocolION::setCommand( IONCommand command, unsigned int unsigned_int_p
     _currentCommand.unsigned_int_parameter  = unsigned_int_parameter;
     _protocolErrors = 0;
     _abortStatus    = NoError;
-}
-
-
-void CtiProtocolION::resetEventLogInfo( void )
-{
-    _eventLogLastPosition = 0;
-    _eventLogCurrentPosition = 0;
-    _eventLogDepth = 0;
-}
-
-
-void CtiProtocolION::setEventLogLastPosition( unsigned long lastPosition )
-{
-    _eventLogLastPosition = lastPosition;
-}
-
-
-unsigned long CtiProtocolION::getEventLogLastPosition( void )
-{
-    return _eventLogLastPosition;
 }
 
 
@@ -197,6 +187,13 @@ int CtiProtocolION::generate( CtiXfer &xfer )
                     break;
                 }
 
+                case Command_TimeSync:
+                {
+                    generateTimeSync();
+
+                    break;
+                }
+
                 case Command_ExternalPulseTrigger:
                 {
                     generateExternalPulseTrigger();
@@ -240,19 +237,6 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
 
         _protocolErrors++;
         _ionState = _retryState;
-
-        if( _protocolErrors > Protocol_ErrorMax )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "_protocolErrors = " << _protocolErrors << endl;
-            }
-
-            _ionState    = State_Abort;
-            _retryState  = State_Abort;
-            _abortStatus = alStatus;
-        }
     }
     //  ACH:  move isInputValid check here - allow for empty appLayer... ?
     else if( _appLayer.isTransactionComplete() )
@@ -288,6 +272,13 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                     break;
                 }
 
+                case Command_TimeSync:
+                {
+                    decodeTimeSync();
+
+                    break;
+                }
+
                 case Command_ExternalPulseTrigger:
                 {
                     decodeExternalPulseTrigger();
@@ -310,6 +301,19 @@ int CtiProtocolION::decode( CtiXfer &xfer, int status )
                 }
             }
         }
+    }
+
+    if( _protocolErrors > Protocol_ErrorMax )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "_protocolErrors = " << _protocolErrors << endl;
+        }
+
+        _ionState    = State_Abort;
+        _retryState  = State_Abort;
+        _abortStatus = alStatus;
     }
 
     _dsIn.clearAndDestroy();
@@ -438,6 +442,32 @@ void CtiProtocolION::generateConfigRead( void )
             break;
         }
 
+        case State_RequestDigitalOutputModuleHandles:
+        {
+            int i;
+
+            _dsOut.clearAndDestroy();
+
+            tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);
+            tmpStatement = CTIDBG_new CtiIONStatement(_handleManagerDigitalOut, tmpMethod);
+            tmpProgram   = CTIDBG_new CtiIONProgram  (tmpStatement);
+
+            _dsOut.push_back(tmpProgram);
+
+            _appLayer.setToOutput(_dsOut);
+
+            _dsOut.clearAndDestroy();
+
+            break;
+        }
+
+        case State_ReceiveDigitalOutputModuleHandles:
+        {
+            _appLayer.setToInput();
+
+            break;
+        }
+
         default:
         {
             {
@@ -528,6 +558,7 @@ void CtiProtocolION::decodeConfigRead( void )
             {
                 _handleManagerDataRecorder = 0;
                 _handleManagerDigitalIn    = 0;
+                _handleManagerDigitalOut   = 0;
                 _handleManagerPowerMeter   = 0;
 
                 if( _dsIn.size() == _setup_handles.size() &&
@@ -553,6 +584,13 @@ void CtiProtocolION::decodeConfigRead( void )
                                 break;
                             }
 
+                            case Class_DigitalOut:
+                            {
+                                _handleManagerDigitalOut = _setup_handles[i];
+
+                                break;
+                            }
+
                             case Class_PowerMeter:
                             {
                                 _handleManagerPowerMeter = _setup_handles[i];
@@ -565,7 +603,7 @@ void CtiProtocolION::decodeConfigRead( void )
 
                 _setup_handles.clear();
 
-                if( _handleManagerPowerMeter && _handleManagerDigitalIn && _handleManagerDataRecorder )
+                if( _handleManagerPowerMeter && _handleManagerDigitalIn && _handleManagerDigitalOut && _handleManagerDataRecorder )
                 {
                     _ionState   = State_RequestPowerMeterModuleHandles;
                     _retryState = _ionState;
@@ -676,7 +714,7 @@ void CtiProtocolION::decodeConfigRead( void )
 
                     _digitalInModules.push_back(tmpHandle->getValue());
 
-                    _ionState = State_Complete;
+                    _ionState = State_RequestDigitalOutputModuleHandles;
                     _retryState = _ionState;
                 }
                 else if( _dsIn.itemIsType(0, CtiIONFixedArray::FixedArray_UnsignedInt) )
@@ -688,6 +726,69 @@ void CtiProtocolION::decodeConfigRead( void )
                         _digitalInModules.push_back(tmpHandleArray->at(i)->getValue());
                     }
 
+                    _ionState   = State_RequestDigitalOutputModuleHandles;
+                    _retryState = _ionState;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Digital input handles not returned, aborting" << endl;
+                    }
+
+                    _ionState   = State_Abort;
+                    _retryState = _ionState;
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                //  ACH:  maybe increment protocol error count and try again...
+                _protocolErrors++;
+                _ionState = _retryState;
+            }
+
+            break;
+        }
+
+        case State_RequestDigitalOutputModuleHandles:
+        {
+            //  ACH:  check for errors before i just switch to listening mode
+
+            _retryState = _ionState;
+            _ionState = State_ReceiveDigitalOutputModuleHandles;
+
+            break;
+        }
+
+        case State_ReceiveDigitalOutputModuleHandles:
+        {
+            if( inputIsValid( _appLayer, _dsIn ) )
+            {
+                if( _dsIn.itemIsType(0, CtiIONValueFixed::Fixed_UnsignedInt) )
+                {
+                    CtiIONUnsignedInt *tmpHandle = (CtiIONUnsignedInt *)_dsIn.at(0);
+
+                    _digitalOutModules.push_back(tmpHandle->getValue());
+
+                    _ionState = State_Init;
+                    _retryState = _ionState;
+                    setConfigRead(true);
+                }
+                else if( _dsIn.itemIsType(0, CtiIONFixedArray::FixedArray_UnsignedInt) )
+                {
+                    CtiIONUnsignedIntArray *tmpHandleArray = (CtiIONUnsignedIntArray *)_dsIn.at(0);
+
+                    for( int i = 0; i < tmpHandleArray->size(); i++ )
+                    {
+                        _digitalOutModules.push_back(tmpHandleArray->at(i)->getValue());
+                    }
+
                     _ionState   = State_Init;
                     _retryState = _ionState;
                     setConfigRead(true);
@@ -697,7 +798,7 @@ void CtiProtocolION::decodeConfigRead( void )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Digital input handles not returned, aborting" << endl;
+                        dout << "Digital output handles not returned, aborting" << endl;
                     }
 
                     _ionState   = State_Abort;
@@ -747,6 +848,9 @@ void CtiProtocolION::generateExceptionScan( void )
         case State_Init:
         case State_RequestDigitalInputData:
         {
+            //  clear this out before ReceiveDigicalInputData and Receive DigitalOutputData fill it up
+            _pointData.clear();
+
             _dsOut.clearAndDestroy();
 
             tmpProgram   = CTIDBG_new CtiIONProgram();
@@ -775,6 +879,42 @@ void CtiProtocolION::generateExceptionScan( void )
         }
 
         case State_ReceiveDigitalInputData:
+        {
+            _appLayer.setToInput();
+
+            break;
+        }
+
+        case State_RequestDigitalOutputData:
+        {
+            _dsOut.clearAndDestroy();
+
+            tmpProgram   = CTIDBG_new CtiIONProgram();
+
+            for( int i = 0; i < _digitalOutModules.size(); i++ )
+            {
+                ion_value_register_map::iterator itr;
+
+                if( (itr = _digitalOutValueRegisters.find(_digitalOutModules[i])) != _digitalOutValueRegisters.end() )
+                {
+                    tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
+                    tmpStatement = CTIDBG_new CtiIONStatement((*itr).second, tmpMethod);
+
+                    tmpProgram->addStatement(tmpStatement);
+                }
+
+            }
+
+            _dsOut.push_back(tmpProgram);
+
+            _appLayer.setToOutput(_dsOut);
+
+            _dsOut.clearAndDestroy();
+
+            break;
+        }
+
+        case State_ReceiveDigitalOutputData:
         {
             _appLayer.setToInput();
 
@@ -823,8 +963,6 @@ void CtiProtocolION::decodeExceptionScan( void )
                 if( _dsIn.size() == _digitalInModules.size() &&
                     _dsIn.itemsAreType(CtiIONValueVariable::Variable_Boolean) )
                 {
-                    _pointData.clear();
-
                     for( int i = 0; i < _dsIn.size(); i++ )
                     {
                         tmpBoolean = (CtiIONBoolean *)(_dsIn[i]);
@@ -841,7 +979,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                         _pointData.push_back(pdata);
                     }
 
-                    _ionState   = State_Complete;
+                    _ionState   = State_RequestDigitalOutputData;
                     _retryState = _ionState;
                 }
                 else
@@ -850,6 +988,71 @@ void CtiProtocolION::decodeExceptionScan( void )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Invalid digital inputs return, aborting" << endl;
+                    }
+
+                    _ionState   = State_Abort;
+                    _retryState = _ionState;
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                //  ACH:  maybe increment protocol error count and try again...
+                _protocolErrors++;
+                _ionState = _retryState;
+            }
+
+            break;
+        }
+
+        case State_RequestDigitalOutputData:
+        {
+            _retryState = _ionState;
+            _ionState   = State_ReceiveDigitalOutputData;
+
+            break;
+        }
+
+        case State_ReceiveDigitalOutputData:
+        {
+            if( inputIsValid(_appLayer, _dsIn) )
+            {
+                CtiIONBoolean        *tmpBoolean;
+                ion_pointdata_struct  pdata;
+                RWTime Now;
+
+                if( _dsIn.size() == _digitalOutModules.size() &&
+                    _dsIn.itemsAreType(CtiIONValueVariable::Variable_Boolean) )
+                {
+                    for( int i = 0; i < _dsIn.size(); i++ )
+                    {
+                        tmpBoolean = (CtiIONBoolean *)(_dsIn[i]);
+
+                        //  MAGIC NUMBER:  1-based offset, +50 offset for seperating digital out from digital ins
+                        pdata.offset = i + 1 + 50;
+                        pdata.time   = Now.seconds();
+                        pdata.type   = StatusPointType;
+                        pdata.value  = tmpBoolean->getValue();
+
+                        _snprintf(pdata.name, 19, "Digital Output %d", pdata.offset);
+                        pdata.name[19] = 0;
+
+                        _pointData.push_back(pdata);
+                    }
+
+                    _ionState   = State_Complete;
+                    _retryState = _ionState;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Invalid digital outputs return, aborting" << endl;
                     }
 
                     _ionState   = State_Abort;
@@ -900,20 +1103,6 @@ void CtiProtocolION::generateIntegrityScan( void )
         case State_RequestPowerMeterData:
         {
             tmpProgram   = CTIDBG_new CtiIONProgram();
-
-            for( int i = 0; i < _digitalInModules.size(); i++ )
-            {
-                ion_value_register_map::iterator itr;
-
-                if( (itr = _digitalInValueRegisters.find(_digitalInModules[i])) != _digitalInValueRegisters.end() )
-                {
-                    tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
-                    tmpStatement = CTIDBG_new CtiIONStatement((*itr).second, tmpMethod);
-
-                    tmpProgram->addStatement(tmpStatement);
-                }
-
-            }
 
             tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
             tmpStatement = CTIDBG_new CtiIONStatement(Register_PowerMeter1S_KWtotal, tmpMethod);
@@ -970,29 +1159,29 @@ void CtiProtocolION::generateIntegrityScan( void )
                 ion_value_register_map::iterator itr;
 
                 tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
-                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result1, tmpMethod);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arithmetic01Result1, tmpMethod);
 
                 tmpProgram->addStatement(tmpStatement);
 
                 tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
-                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result2, tmpMethod);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arithmetic01Result2, tmpMethod);
 
                 tmpProgram->addStatement(tmpStatement);
 
                 tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
-                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result7, tmpMethod);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arithmetic01Result7, tmpMethod);
 
                 tmpProgram->addStatement(tmpStatement);
 
                 tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
-                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arimetic01Result8, tmpMethod);
+                tmpStatement = CTIDBG_new CtiIONStatement(Register_Arithmetic01Result8, tmpMethod);
 
                 tmpProgram->addStatement(tmpStatement);
 
                 if( (itr = _externalBooleanRegisters.find(5)) != _externalBooleanRegisters.end() )
                 {
                     tmpMethod    = CTIDBG_new CtiIONMethod   (CtiIONMethod::ReadRegisterValue);
-                    tmpStatement = CTIDBG_new CtiIONStatement(Register_PowerMeter1S_PFSIGNtotal, tmpMethod);
+                    tmpStatement = CTIDBG_new CtiIONStatement((*itr).second, tmpMethod);
 
                     tmpProgram->addStatement(tmpStatement);
                 }
@@ -1037,28 +1226,12 @@ void CtiProtocolION::decodeIntegrityScan( void )
         {
             if( inputIsValid(_appLayer, _dsIn) )
             {
-                int i;
+                int i = 0;
                 CtiIONBoolean *tmpBoolean;
                 ion_pointdata_struct pdata;
                 RWTime Now;
 
                 _pointData.clear();
-
-                for( i = 0; i < _digitalInModules.size(); i++ )
-                {
-                    tmpBoolean = (CtiIONBoolean *)(_dsIn[i]);
-
-                    //  MAGIC NUMBER:  1-based offset
-                    pdata.offset = i + 1;
-                    pdata.time   = Now.seconds();
-                    pdata.type   = StatusPointType;
-                    pdata.value  = tmpBoolean->getValue();
-
-                    _snprintf(pdata.name, 19, "Digital Input %d", pdata.offset);
-                    pdata.name[19] = 0;
-
-                    _pointData.push_back(pdata);
-                }
 
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW;
                 pdata.time   = Now.seconds();
@@ -1531,68 +1704,95 @@ void CtiProtocolION::decodeEventLogRead( void )
                         CtiIONEvent     *event;
                         CtiIONCharArray *tmpArray;
                         const char      *tmpStr;
+                        unsigned long    currentLogEntry;
 
                         CtiIONStructArray::const_iterator itr;
 
-                        //  output only for debug
-                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        for( itr = tmp->begin(); itr != tmp->end(); itr++ )
                         {
-                            for( itr = tmp->begin(); itr != tmp->end(); itr++ )
+                            record = (CtiIONLogRecord *)(*itr);
+
+                            currentLogEntry = record->getLogPosition()->getValue();
+
+                            if( _eventLogLastPosition < currentLogEntry )
                             {
-                                record = (CtiIONLogRecord *)(*itr);
+                                _eventLogLastPosition = currentLogEntry;
+                            }
 
+                            //  output only for debug
+                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "Log Position: " << record->getLogPosition()->getValue() << endl;
+                                dout << "Timestamp (seconds)     : " << record->getTimestamp()->getSeconds() << endl;
+                                dout << "Timestamp (milliseconds): " << record->getTimestamp()->getMilliseconds() << endl;
+                                dout << "Log Values:" << endl;
+                            }
+
+                            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                            {
+                                if( record->getLogValues()->isStructType(CtiIONStruct::StructType_Event) )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "Log Position: " << record->getLogPosition()->getValue() << endl;
-                                    dout << "Timestamp (seconds)     : " << record->getTimestamp()->getSeconds() << endl;
-                                    dout << "Timestamp (milliseconds): " << record->getTimestamp()->getMilliseconds() << endl;
-                                    dout << "Log Values:" << endl;
+                                event = (CtiIONEvent *)(record->getLogValues());
 
-                                    if( record->getLogValues()->isStructType(CtiIONStruct::StructType_Event) )
                                     {
-                                        event = (CtiIONEvent *)(record->getLogValues());
-
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << "Priority:" << event->getPriority()->getValue() << endl;
                                         dout << "Event State:" << event->getEventState()->getValue() << endl;
                                         dout << "Cause Handle:" << event->getCauseHandle()->getValue() << endl;
+                                    }
 
-                                        if( CtiIONFixedArray::isFixedArrayType( event->getCauseValue(), CtiIONFixedArray::FixedArray_Char ) )
+                                    if( CtiIONFixedArray::isFixedArrayType( event->getCauseValue(), CtiIONFixedArray::FixedArray_Char ) )
+                                    {
+                                        tmpArray = (CtiIONCharArray *)(event->getCauseValue());
+
+                                        tmpStr = tmpArray->toString();
+
                                         {
-                                            tmpArray = (CtiIONCharArray *)(event->getCauseValue());
-
-                                            tmpStr = tmpArray->toString();
-
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << "Cause Value:" << tmpStr << endl;
-                                        }
-                                        else
-                                        {
-                                            dout << "Cause Value is not a char array... ?" << endl;
-                                        }
-
-                                        dout << "Effect Handle:" << event->getEffectHandle()->getValue() << endl;
-
-                                        if( CtiIONFixedArray::isFixedArrayType( event->getEffectValue(), CtiIONFixedArray::FixedArray_Char ) )
-                                        {
-                                            tmpArray = (CtiIONCharArray *)(event->getEffectValue());
-
-                                            tmpStr = tmpArray->toString();
-
-                                            dout << "Effect Value:" << tmpStr << endl;
-                                        }
-                                        else
-                                        {
-                                            dout << "Effect Value is not a char array... ?" << endl;
                                         }
                                     }
                                     else
                                     {
-                                        dout << "Not an event structure...  life is bad." << endl;
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << "Cause Value is not a char array... ?" << endl;
+                                        }
                                     }
 
-                                    dout << endl;
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << "Effect Handle:" << event->getEffectHandle()->getValue() << endl;
+                                    }
+
+                                    if( CtiIONFixedArray::isFixedArrayType( event->getEffectValue(), CtiIONFixedArray::FixedArray_Char ) )
+                                    {
+                                        tmpArray = (CtiIONCharArray *)(event->getEffectValue());
+
+                                        tmpStr = tmpArray->toString();
+
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << "Effect Value:" << tmpStr << endl;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << "Effect Value is not a char array... ?" << endl;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    dout << "Not an event structure...  life is bad." << endl;
                                 }
                             }
+
+                            dout << endl;
                         }
                     }
                 }
@@ -1629,6 +1829,70 @@ void CtiProtocolION::decodeEventLogRead( void )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeEventLogRead" << endl;
+            }
+
+            _ionState = State_Abort;
+            _retryState = _ionState;
+
+            break;
+        }
+    }
+}
+
+
+void CtiProtocolION::generateTimeSync( void )
+{
+    CtiIONMethod    *tmpMethod;
+    CtiIONStatement *tmpStatement;
+    CtiIONProgram   *tmpProgram;
+
+    switch( _ionState )
+    {
+        case State_Init:
+        case State_SendTimeSync:
+        {
+            _appLayer.setToTimeSync();
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unknown state " << _ionState << " in CtiProtocolION::generateExceptionScan" << endl;
+            }
+
+            _ionState = State_Abort;
+            _retryState = _ionState;
+
+            break;
+        }
+    }
+}
+
+
+void CtiProtocolION::decodeTimeSync( void )
+{
+    //  ACH:  ditto of decode()
+    switch( _ionState )
+    {
+        case State_Init:
+        case State_SendTimeSync:
+        {
+            _ionState = State_Complete;
+            _retryState = _ionState;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Unknown state " << _ionState << " in CtiProtocolION::decodeExceptionScan" << endl;
             }
 
             _ionState = State_Abort;
@@ -1783,7 +2047,24 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
 }
 
 
-//  scanner-/PIL-side functions
+//  ****  scanner-/PIL-side functions  ****
+
+
+//  this function will only be called from client-side, after
+//    the device checks its event log point in rawpointhistory.
+void CtiProtocolION::setEventLogLastPosition( unsigned long lastPosition )
+{
+    _client_eventLogLastPosition = lastPosition;
+}
+
+
+//  this function is only called from client-side to check if
+//    we need to query rawpointhistory for the last event log retrieved
+unsigned long CtiProtocolION::getEventLogLastPosition( void )
+{
+    return _client_eventLogLastPosition;
+}
+
 
 int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
 {
@@ -1793,8 +2074,9 @@ int CtiProtocolION::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
 
     if( OutMessage != NULL )
     {
-        tmp_om_struct.cmd_struct              = _currentCommand;
-        tmp_om_struct.event_log_last_position = _eventLogLastPosition;
+        tmp_om_struct.cmd_struct                  = _currentCommand;
+        tmp_om_struct.client_eventLogLastPosition = _client_eventLogLastPosition;  //  send what the client thinks (may be overridden by
+                                                                                   //    porter if there's contention between two clients)
 
         //  ACH:  add support for variable-length control point attachments
         memcpy( OutMessage->Buffer.OutMessage, &tmp_om_struct, sizeof(tmp_om_struct) );
@@ -1913,6 +2195,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         pointList.append(pointdata);
     }
 
+    //  ACH/FIX:  this should be moved to porter-side...  he should be the one sending the event logs, and keeping track of current event log position
     for( e_itr = _eventLogs.begin(); e_itr != _eventLogs.end(); e_itr++ )
     {
         CtiIONLogArray  *tmpArray;
@@ -1965,12 +2248,13 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
     }
 
     //  create a new pointdata msg to update our current event log position, if appropriate
+    //  ACH/FIX:  this should be moved to porter-side...  he should be the one sending the event logs, and keeping track of current event log position
     if( maxEventRecord > 0 )
     {
         //  FIX:  perhaps this should happen in recvCommResult?  odd for this function to be manipulating internal variables
-        if( maxEventRecord > _eventLogLastPosition )
+        if( maxEventRecord > _client_eventLogLastPosition )
         {
-            _eventLogLastPosition = maxEventRecord;
+            _client_eventLogLastPosition = maxEventRecord;
         }
 
         RWCString msg("Event log position: " + CtiNumStr(maxEventRecord));
@@ -2049,13 +2333,13 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "tmpOM.event_log_last_position = " << tmpOM.event_log_last_position << endl;
+        dout << "tmpOM.client_eventLogLastPosition = " << tmpOM.client_eventLogLastPosition << endl;
     }
 
-    if( tmpOM.event_log_last_position >= _eventLogLastPosition )
+    //  make sure that we don't have collisions between clients (i.e., Macs and Scanner)
+    if( tmpOM.client_eventLogLastPosition >= _eventLogLastPosition )
     {
-        //  make sure that we don't have collisions between Macs and Scanner
-        _eventLogLastPosition = tmpOM.event_log_last_position;
+        _eventLogLastPosition = tmpOM.client_eventLogLastPosition;
     }
 
     _ionState   = State_Init;
