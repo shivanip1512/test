@@ -15,7 +15,7 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceCategory extends DBPersistent {
 
     private com.cannontech.database.db.stars.appliance.ApplianceCategory applianceCategory = null;
-    private com.cannontech.database.db.stars.CustomerWebConfiguration webConfiguration = null;
+    private com.cannontech.database.db.web.YukonWebConfiguration webConfiguration = null;
 
     public ApplianceCategory() {
         super();
@@ -64,9 +64,9 @@ public class ApplianceCategory extends DBPersistent {
 	 * Returns the webConfiguration.
 	 * @return com.cannontech.database.db.stars.CustomerListEntry
 	 */
-	public com.cannontech.database.db.stars.CustomerWebConfiguration getWebConfiguration() {
+	public com.cannontech.database.db.web.YukonWebConfiguration getWebConfiguration() {
 		if (webConfiguration == null)
-			webConfiguration = new com.cannontech.database.db.stars.CustomerWebConfiguration();
+			webConfiguration = new com.cannontech.database.db.web.YukonWebConfiguration();
 		return webConfiguration;
 	}
 
@@ -75,7 +75,7 @@ public class ApplianceCategory extends DBPersistent {
 	 * @param webConfiguration The webConfiguration to set
 	 */
 	public void setWebConfiguration(
-		com.cannontech.database.db.stars.CustomerWebConfiguration webConfiguration) {
+		com.cannontech.database.db.web.YukonWebConfiguration webConfiguration) {
 		this.webConfiguration = webConfiguration;
 	}
 

@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteLMProgram extends LiteBase {
 
 	private String programName = null;
-	private int webSettingsID = com.cannontech.database.db.stars.CustomerWebConfiguration.NONE_INT;
+	private int webSettingsID = com.cannontech.database.db.web.YukonWebConfiguration.NONE_INT;
 	private String programCategory = null;
 	private int[] groupIDs = null;
 	

@@ -69,10 +69,14 @@ public class ServletUtils {
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
+	
+	public static final String IMAGE_NAME_SEPARATOR = ",";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
     private static GregorianCalendar veryEarlyDate = new GregorianCalendar(1970, Calendar.JANUARY, 2);
+
+    
 
     public ServletUtils() {
     }
@@ -289,5 +293,16 @@ public class ServletUtils {
         	if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
     			user.removeAttribute(attName);
         }
+    }
+    
+    public static String[] getImageNames(String imageStr) {
+    	StringTokenizer st = new StringTokenizer(imageStr, IMAGE_NAME_SEPARATOR);
+    	ArrayList imgNameList = new ArrayList();
+    	while (st.hasMoreTokens())
+    		imgNameList.add( st.nextToken() );
+    		
+    	String[] imgNames = new String[ imgNameList.size() ];
+    	imgNameList.toArray( imgNames );
+    	return imgNames;
     }
 }

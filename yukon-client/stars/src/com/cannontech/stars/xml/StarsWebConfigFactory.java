@@ -1,6 +1,6 @@
 package com.cannontech.stars.xml;
 
-import com.cannontech.database.db.stars.CustomerWebConfiguration;
+import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
 
 /**
@@ -13,7 +13,7 @@ import com.cannontech.stars.xml.serialize.StarsWebConfig;
  */
 public class StarsWebConfigFactory {
 	
-	public static StarsWebConfig newStarsWebConfig(CustomerWebConfiguration config) {
+	public static StarsWebConfig newStarsWebConfig(YukonWebConfiguration config) {
 		StarsWebConfig starsConfig = new StarsWebConfig();
 		
 		starsConfig.setAlternateDisplayName( config.getAlternateDisplayName() );
@@ -24,7 +24,7 @@ public class StarsWebConfigFactory {
 		return starsConfig;
 	}
 	
-	public static void setWebConfig(CustomerWebConfiguration config, StarsWebConfig starsConfig) {
+	public static void setWebConfig(YukonWebConfiguration config, StarsWebConfig starsConfig) {
 		config.setAlternateDisplayName( starsConfig.getAlternateDisplayName() );
 		config.setDescription( starsConfig.getDescription() );
 		config.setLogoLocation( starsConfig.getLogoLocation() );

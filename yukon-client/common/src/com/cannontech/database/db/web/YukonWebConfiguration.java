@@ -1,4 +1,4 @@
-package com.cannontech.database.db.stars;
+package com.cannontech.database.db.web;
 
 import com.cannontech.database.db.DBPersistent;
 
@@ -10,7 +10,7 @@ import com.cannontech.database.db.DBPersistent;
  * @author yao
  * @version 1.0
  */
-public class CustomerWebConfiguration extends DBPersistent {
+public class YukonWebConfiguration extends DBPersistent {
 
     public static final int NONE_INT = 0;
 
@@ -102,7 +102,7 @@ public class CustomerWebConfiguration extends DBPersistent {
         return new Integer( nextConfigID );
     }
     
-    public static CustomerWebConfiguration[] getAllCustomerWebConfigurations() {
+    public static YukonWebConfiguration[] getAllCustomerWebConfigurations() {
     	String sql = "SELECT * FROM " + TABLE_NAME;
     	
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
@@ -110,11 +110,11 @@ public class CustomerWebConfiguration extends DBPersistent {
     			
     	try {
     		stmt.execute();
-    		CustomerWebConfiguration[] webConfigs = new CustomerWebConfiguration[ stmt.getRowCount() ];
+    		YukonWebConfiguration[] webConfigs = new YukonWebConfiguration[ stmt.getRowCount() ];
     		
     		for (int i = 0; i < stmt.getRowCount(); i++) {
     			Object[] row = stmt.getRow(i);
-    			webConfigs[i] = new CustomerWebConfiguration();
+    			webConfigs[i] = new YukonWebConfiguration();
     			
     			webConfigs[i].setConfigurationID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
     			webConfigs[i].setLogoLocation( (String) row[1] );

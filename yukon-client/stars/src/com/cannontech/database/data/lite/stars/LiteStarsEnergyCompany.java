@@ -1149,6 +1149,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public StarsGetCustSelectionListsResponse getStarsGetCustSelectionListsResponse() {
 		if (starsSelLists == null) {
+			starsSelLists = new StarsGetCustSelectionListsResponse();
             ArrayList selectionLists = getAllSelectionLists();
             for (int i = 0; i < selectionLists.size(); i++) {
             	YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);

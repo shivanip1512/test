@@ -15,7 +15,7 @@ public class LiteApplianceCategory extends LiteBase {
 	
 	private String description = null;
 	private int categoryID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int webConfigurationID = com.cannontech.database.db.stars.CustomerWebConfiguration.NONE_INT;
+	private int webConfigurationID = com.cannontech.database.db.web.YukonWebConfiguration.NONE_INT;
 	
 	// Array of published programs
 	private LiteLMProgram[] publishedPrograms = null;

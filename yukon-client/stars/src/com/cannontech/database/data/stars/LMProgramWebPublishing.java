@@ -15,7 +15,7 @@ import com.cannontech.database.db.DBPersistent;
 public class LMProgramWebPublishing extends DBPersistent {
 	
 	private com.cannontech.database.db.stars.LMProgramWebPublishing lmProgramWebPublishing = null;
-	private com.cannontech.database.db.stars.CustomerWebConfiguration webConfiguration = null;
+	private com.cannontech.database.db.web.YukonWebConfiguration webConfiguration = null;
 	
 	private com.cannontech.database.data.stars.appliance.ApplianceCategory applianceCategory = null;
 	private com.cannontech.database.data.device.lm.LMProgramDirect lmProgram = null;
@@ -143,9 +143,9 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 * Returns the webConfiguration.
 	 * @return com.cannontech.database.db.stars.CustomerWebConfiguration
 	 */
-	public com.cannontech.database.db.stars.CustomerWebConfiguration getWebConfiguration() {
+	public com.cannontech.database.db.web.YukonWebConfiguration getWebConfiguration() {
 		if (webConfiguration == null)
-			webConfiguration = new com.cannontech.database.db.stars.CustomerWebConfiguration();
+			webConfiguration = new com.cannontech.database.db.web.YukonWebConfiguration();
 		return webConfiguration;
 	}
 
@@ -172,7 +172,7 @@ public class LMProgramWebPublishing extends DBPersistent {
 	 * @param webConfiguration The webConfiguration to set
 	 */
 	public void setWebConfiguration(
-		com.cannontech.database.db.stars.CustomerWebConfiguration webConfiguration) {
+		com.cannontech.database.db.web.YukonWebConfiguration webConfiguration) {
 		this.webConfiguration = webConfiguration;
 	}
 
