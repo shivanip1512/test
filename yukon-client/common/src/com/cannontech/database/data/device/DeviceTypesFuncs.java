@@ -78,6 +78,25 @@ public final static boolean hasSlaveAddress(int intType)
 }
 
 /**
+ * All meters that have status input point. Info provided by Matt 20040928
+ */
+public final static boolean hasStatusInput(int intType) 
+{
+
+   switch( intType )
+   {
+		case MCT248:
+		case MCT250:
+		case MCT318:
+		case MCT318L:
+		case MCT360:
+		case MCT370:
+			return true;
+		default:
+			return false;
+   }
+}
+/**
  * All Meters that have a device scan rate.  The meters in this function are take from
  * DeviceEditorPanel.java (//3 - DeviceScanRateEditorPanel)...probably should be updated once in a while.
  * @return boolean
@@ -98,6 +117,26 @@ public final static boolean hasDeviceScanRate(int intType)
         return false;
 }
 
+/**
+ * All meters that can be "looped".  Info provided by Matt 20040928
+ * @return boolean
+ * @param type int
+ */
+public final static boolean isLoopable(int intType) 
+{
+	if( isCCU(intType) ||
+		isTCU(intType) ||
+		isLCU(intType) ||
+		isMCT(intType) ||
+		isRepeater(intType) ||
+		intType == DAVISWEATHER ||
+		intType == RTUILEX ||
+		intType == RTUWELCO	) //||
+//		isRTU(intType) ) //FUTURE
+		return true;
+	else
+		return false;
+}
 /**
  * This method was created in VisualAge.
  * @return int
