@@ -12,7 +12,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
 -I$(PROCLOG)\include \
--I$(FDR)\api\inc \
+-I$(FDR)\telegyr\inc \
 -I$(RW) \
 
 
@@ -63,9 +63,9 @@ fdrtelegyr.dll: fdrtelegyr.obj fdrtelegyr.mak
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                -if exist ..\api\lib\apiclilib.lib copy ..\api\lib\apiclilib.lib $(COMPILEBASE)\lib
-                -if exist ..\api\lib\pllib.lib copy ..\api\lib\pllib.lib $(COMPILEBASE)\lib
-                -if exist ..\api\lib\psapi.lib copy ..\api\lib\psapi.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\apiclilib.lib copy ..\telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
                 $(CC) $(DLLFLAGS) fdrtelegyr.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
@@ -76,9 +76,9 @@ fdrtelegyr.dll: fdrtelegyr.obj fdrtelegyr.mak
 
 apiclilib.lib:
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                -if exist api\lib\apiclilib.lib copy api\lib\apiclilib.lib $(COMPILEBASE)\lib
-                -if exist ..\api\lib\pllib.lib copy ..\api\lib\pllib.lib $(COMPILEBASE)\lib
-                -if exist ..\api\lib\psapi.lib copy ..\api\lib\psapi.lib $(COMPILEBASE)\lib
+                -if exist telegyr\lib\apiclilib.lib copy telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\pllib.lib copy ..\telegyr\lib\pllib.lib $(COMPILEBASE)\lib
+                -if exist ..\telegyr\lib\psapi.lib copy ..\telegyr\lib\psapi.lib $(COMPILEBASE)\lib
 
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
