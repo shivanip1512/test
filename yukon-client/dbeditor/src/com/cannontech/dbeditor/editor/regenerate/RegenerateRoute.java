@@ -122,6 +122,8 @@ public class RegenerateRoute
 	 * This method recalculates the fixed and variable bits for carrier routes.
 	 * If 'all' is true it recalculates for all of the routes.
 	 * If 'newRoute' is not null, then it recalculates just for that new route that is passed in.
+	 * If 'existingRoute is true, it recalculates only for the existing route.  This is used when editing
+	 * an existing route.  The algorithm attempts to use the existing fixed bit.
 	 * Creation date: (5/28/2002 12:57:11 PM)
 	 */
 	public static final Vector resetRptSettings(java.util.Vector routes, boolean all, DBPersistent newRoute, boolean existingRoute)
@@ -129,15 +131,18 @@ public class RegenerateRoute
 		//holds the used fixed bits, is null if no routes are using it, is -1 if two
 		//routes are already using this fixed bit
 		java.util.ArrayList usedFixedBits = new java.util.ArrayList(LARGE_VALID_FIXED + 1);
-		//holds the value of the variable bit of the first CCU route that
-		//uses the fixed bit as the index 
+		
+		//holds the value of the variable bit of the first CCU route that uses the fixed bit
+		//the fixed bit is used as the index 
 		java.util.ArrayList varBits = new java.util.ArrayList(LARGE_VALID_FIXED + 1);
+		
 		DBPersistent rt;
 		Integer CcuFixedBits;
 		Integer CcuVariableBits;
 		String reset;
 		String userLock;
 		Vector changingRoutes = new Vector();
+		
 		//set fixed bits that have not been used to null in the array. Each index in 
 		//the array represents the fixed bit  
 		for (int i = 0; i < LARGE_VALID_FIXED + 1; i++)
@@ -161,7 +166,7 @@ public class RegenerateRoute
 				{
 					if (userLock.equals("Y"))
 					{
-						usedFixedBits.set(CcuFixedBits.intValue(), new Integer(-1));
+						usedFixedBits.set(CcuFixedBits.intValue(), new Integer(-1)); //-1 if user locked to prevent other route from using this fixed bit
 					}
 					else if (usedFixedBits.get(CcuFixedBits.intValue()) == null)
 					{
@@ -180,10 +185,11 @@ public class RegenerateRoute
 				}
 			}
 		}
-		//if we are only setting a new route it will be the only route changed
+		//if we are only setting a new route or an existing route it will be the only route changed
 		if (newRoute != null)
 			changingRoutes.add(newRoute);
-		//now use the next available fixed bit if there is one for each route that needs to be
+		
+		//now use the next available fixed bit for each route that needs to be
 		//recalculated
 		CCURoute ccu;
 		int nextFixedBit = SMALL_VALID_FIXED;
@@ -200,7 +206,7 @@ public class RegenerateRoute
 				numRepeat = ((Integer) usedFixedBits.get(nextFixedBit)).intValue();
 			}
 		}
-		if ((newRoute != null && existingRoute)
+		if ((newRoute != null && existingRoute) // if it's an existing route try to reuse the orginal fixed bit
 			&& repeatVector.size() + numRepeat <= LARGE_VALID_VARIABLE
 			&& nextFixedBit != LARGE_VALID_FIXED
 			&& ((CCURoute) newRoute).getCarrierRoute().getUserLocked().equalsIgnoreCase("N"))
@@ -227,7 +233,7 @@ public class RegenerateRoute
 			}
 			((CCURoute) newRoute).getCarrierRoute().setCcuVariableBits(new Integer(variable1));
 		}
-		else
+		else //if the route is a new route then a new fixed bit is assigned
 		{
 			for (int k = 0; k < changingRoutes.size(); k++)
 			{
@@ -270,7 +276,7 @@ public class RegenerateRoute
 				ccu.getCarrierRoute().setResetRptSettings("N");
 			}
 		}
-		return changingRoutes;
+		return changingRoutes; //returns the routes whose settings have changed
 	}
 	/**
 	 * Insert the method's description here.

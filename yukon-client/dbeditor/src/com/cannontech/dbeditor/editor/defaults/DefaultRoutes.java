@@ -33,7 +33,9 @@ public DefaultRoutes() {
 	super();
 }
 /**
- * Insert the method's description here.
+ * This function calculates the recommended defaults for all of the routes. 
+ * It makes sure that each route is covered but only covered the minimum number of times
+ * All routes other than carrier routes with repeaters are defaulted to 'Y'.  
  * Creation date: (6/27/2002 9:04:37 AM)
  */
 public final static java.util.Vector calculateDefaults()
@@ -42,8 +44,8 @@ public final static java.util.Vector calculateDefaults()
 	DBPersistent rt;
 	java.util.Vector rpts = null;
 	java.util.Vector originalDefaults = new java.util.Vector(); //holds original default values of routes
-	java.util.Hashtable rptRoutes = new java.util.Hashtable(); //each repeater is a key associated with a route that uses that repeater
-	int totalRecDefaults = 0;
+	java.util.Hashtable rptRoutes = new java.util.Hashtable(); //each repeater id is a key in this hashtable with a route that uses that repeater as the value
+	int totalRecDefaults = 0; //keeps track of the total routes that are defaulted both current and recommended.
 	int totalOrigDefaults = 0;
 	
 	for (int i = 0; i < routes.size(); i++)
@@ -59,7 +61,7 @@ public final static java.util.Vector calculateDefaults()
 		if (rt instanceof CCURoute) //all non-CCU routes are defaulted yes
 		{
 			rpts = ((CCURoute) rt).getRepeaterVector();
-			for (int j = 0; j < rpts.size(); j++)
+			for (int j = 0; j < rpts.size(); j++) //checks repeaters to see if a different route is using that same repeater
 			{
 				String rptID = ((RepeaterRoute) rpts.get(j)).getDeviceID().toString();
 				if (rptRoutes.containsKey(rptID))
@@ -87,7 +89,8 @@ public final static java.util.Vector calculateDefaults()
 										setFalse = false;
 								}
 							}
-							if (setFalse)
+							if (setFalse) //change an existing routes default settings to N if it is no longer needed because
+							              //the current route covers the same route
 								existingRoute.setDefaultRoute(CtiUtilities.getFalseCharacter().toString());
 								
 							//end code to check for other repeaters on existing route
@@ -177,7 +180,8 @@ public static final java.util.Vector getAllRoutes()
 	}
 }
 /**
- * Insert the method's description here.
+ * This method returns a 2-dimensional array of route name, current default settings, recommended default settings
+ * and the transmitter for each route 
  * Creation date: (7/1/2002 12:14:41 PM)
  * @return java.util.Vector
  */
