@@ -30,8 +30,9 @@ public class ServletUtil {
 	public static final String ATT_REFERRER2 = "REFERRER2";
 
 
-	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";	
-	
+	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";
+	public static final String ATT_BILLING_BEAN = "BILLING_BEAN";
+	public static final String ATT_YC_BEAN = "YC_BEAN";
 	// Valid periods
 	public static final String ONEDAY = "1 Day";
 	public static final String THREEDAYS = "3 Days";
