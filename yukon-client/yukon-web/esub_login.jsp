@@ -1,7 +1,9 @@
+<%@ page import="com.cannontech.roles.yukon.SystemRole" %>
+<%@ page import="com.cannontech.database.cache.functions.RoleFuncs" %>
 
 <%
-String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_LOGO);
-String email = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_HELP_EMAIL);
+String logo = 
+	RoleFuncs.getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
 %>
 <html>
 <head>
@@ -80,8 +82,8 @@ self.name = "mainWin";
                 <br>
               <br>
               <br>
-                <center>If you need help or have forgotten your password, click 
-                <a href="mailto:<%= email %>">here</a>.</center>
+                If you need help or have forgotten your password, click <a href="<%=request.getContextPath()%>/pwordreq.jsp">here</a>.
+                </center>
             </form>
           </td>
         </tr>

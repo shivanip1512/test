@@ -1,7 +1,12 @@
-
 <%@ page import="com.cannontech.common.version.VersionTools" %>
+<%@ page import="com.cannontech.database.cache.functions.RoleFuncs" %>
+<%@ page import="com.cannontech.roles.yukon.SystemRole" %>
+
+
 <%
-String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_LOGO);
+String logo = 
+	RoleFuncs.getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
+
 boolean starsExists = VersionTools.starsExists();
 %>
 
