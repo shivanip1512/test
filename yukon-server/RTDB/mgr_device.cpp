@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2003/05/15 22:36:40 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2003/06/27 20:12:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@
 #include "dev_grp_expresscom.h"
 #include "dev_grp_ripple.h"
 #include "dev_grp_versacom.h"
+#include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
 #include "yukon.h"
 
@@ -1179,6 +1180,42 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  Ripple Group Devices" << endl;
+                        }
+
+
+                        start = start.now();
+                        {
+                            RWDBConnection conn = getConnection();
+                            RWDBDatabase db = getDatabase();
+
+                            RWDBTable   keyTable;
+
+                            RWDBSelector selector = db.selector();
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Load Group Devices" << endl;
+                            }
+                            CtiDeviceGroupMCT().getSQL( db, keyTable, selector );
+                            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                            RWDBReader rdr = selector.reader(conn);
+                            if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                            }
+                            RefreshDevices(rowFound, rdr, Factory);
+
+                            if(DebugLevel & 0x00020000)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for MCT Load Group Devices" << endl;
+                            }
+                        }
+                        stop = stop.now();
+                        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  MCT Load Group Devices" << endl;
                         }
 
 
