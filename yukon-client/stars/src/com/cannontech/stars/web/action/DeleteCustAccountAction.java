@@ -12,6 +12,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.*;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * @author yao
@@ -82,6 +83,7 @@ public class DeleteCustAccountAction implements ActionBase {
         	}
         	
             SOAPServer.getEnergyCompany( energyCompanyID ).deleteCustAccountInformation( liteAcctInfo );
+            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Customer account deleted successfully" );

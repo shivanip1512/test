@@ -9,7 +9,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
@@ -19,6 +19,7 @@ import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * <p>Title: NewCustAccountAction.java</p>
@@ -211,6 +212,8 @@ public class NewCustAccountAction implements ActionBase {
             	
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
             user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+            
+            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
 
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account created successfully" );

@@ -1000,7 +1000,7 @@ public class StarsLiteFactory {
 			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
 		}
 		
-		if (liteAcctInfo.getThermostatSettings() != null && !isOperator) {
+		if (liteAcctInfo.getThermostatSettings() != null) {
 			StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
 			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings() );
 			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );

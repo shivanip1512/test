@@ -162,9 +162,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				liteAcctInfo.getAccountSite().retrieve();
 				
 				liteAcctInfo.getSiteInformation().retrieve();
+				
+				energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
 				break;
 				
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
+				energyCompany.deleteCustAccountInformation( liteAcctInfo );
+				energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 				break;
 		}
 	}

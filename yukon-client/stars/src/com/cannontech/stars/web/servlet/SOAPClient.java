@@ -97,16 +97,17 @@ public class SOAPClient extends HttpServlet {
     	String referer = req.getHeader( "referer" );
         String action = req.getParameter( "action" );
         if (action == null) action = "";
-        
-		if (action.equalsIgnoreCase("RefreshCache")) {
-			if (isServerLocal()) SOAPServer.refreshCache();
-			resp.sendRedirect( loginURL ); return;
-		}
 
         HttpSession session = req.getSession(false);
         if (session == null && !action.endsWith("Login")) {
         	resp.sendRedirect( loginURL ); return;
         }
+        
+		if (action.equalsIgnoreCase("RefreshCache")) {
+			if (isServerLocal()) SOAPServer.refreshCache();
+        	session.invalidate();
+			resp.sendRedirect( loginURL ); return;
+		}
     	
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;

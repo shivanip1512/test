@@ -130,6 +130,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		thermModeSettings = null;
 		nextCallNo = 0;
 		nextOrderNo = 0;
+		
+		starsCustAcctInfos = null;
 	}
     
     public synchronized ArrayList getAllLMPrograms() {
@@ -635,7 +637,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				LiteCustomerContact liteContact = (LiteCustomerContact) contactList.get(i);
 				if (liteContact.getContactID() == contactID) {
 					contactList.remove(i);
-					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+					//ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 					return liteContact;
 				}
 			}
@@ -676,6 +678,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public void addAddress(LiteAddress liteAddr) {
 		ArrayList addressList = getAllAddresses();
 		synchronized (addressList) { addressList.add( liteAddr ); }
+	}
+	
+	public LiteAddress deleteAddress(int addressID) {
+		ArrayList addressList = getAllAddresses();
+		synchronized (addressList) {
+			for (int i = 0; i < addressList.size(); i++) {
+				LiteAddress liteAddr = (LiteAddress) addressList.get(i);
+				if (liteAddr.getAddressID() == addressID) {
+					addressList.remove(i);
+					return liteAddr;
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	public LiteLMProgram getLMProgram(int programID) {
@@ -993,10 +1010,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public void deleteCustAccountInformation(LiteStarsCustAccountInformation accountInfo) {
+	public void deleteCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+		// Remote all contacts from customerContacts
+		deleteCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+		for (int i = 0; i < contacts.size(); i++)
+			deleteCustomerContact( ((Integer) contacts.get(i)).intValue() );
+		
+		// Remove all addresses from addresses
+		deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
+		deleteAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+		
 		// Remove all LM hardwares from lmHardwares
-		for (int i = 0; i < accountInfo.getInventories().size(); i++) {
-			int invID = ((Integer) accountInfo.getInventories().get(i)).intValue();
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
 			ArrayList lmHarewares = getAllLMHardwares();
 			
 			synchronized (lmHardwares) {
@@ -1011,8 +1038,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Remove all work orders from workOrders
-		for (int i = 0; i < accountInfo.getServiceRequestHistory().size(); i++) {
-			int orderID = ((Integer) accountInfo.getServiceRequestHistory().get(i)).intValue();
+		for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++) {
+			int orderID = ((Integer) liteAcctInfo.getServiceRequestHistory().get(i)).intValue();
 			ArrayList workOrders = getAllWorkOrders();
 			
 			synchronized (workOrders) {
@@ -1027,7 +1054,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Remove the customer account from custAccountInfos
-		getAllCustAccountInformation().remove( accountInfo );
+		getAllCustAccountInformation().remove( liteAcctInfo );
 	}
 	
 	public void updateCustAccountInformation(LiteStarsCustAccountInformation accountInfo) {
@@ -1103,6 +1130,23 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsAcctInfo;
 		}
+	}
+	
+	public void updateStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
+		synchronized (starsCustAcctInfos) {
+			Integer accountID = new Integer(liteAcctInfo.getAccountID());
+			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) starsCustAcctInfos.get( accountID );
+			if (starsAcctInfo != null) {
+				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, getLiteID(), true );
+				starsCustAcctInfos.put( accountID, starsAcctInfo );
+			}
+		}
+	}
+	
+	public void deleteStarsCustAccountInformation(int accountID) {
+		Hashtable starsCustAcctInfos = getStarsCustAcctInfos();
+		synchronized (starsCustAcctInfos) { starsCustAcctInfos.remove( new Integer(accountID) ); }
 	}
 
 }

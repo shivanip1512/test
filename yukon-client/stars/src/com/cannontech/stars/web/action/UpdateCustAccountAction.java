@@ -192,7 +192,7 @@ public class UpdateCustAccountAction implements ActionBase {
             			Transaction.createTransaction( Transaction.UPDATE, primContact ).execute();
             			
 				StarsLiteFactory.setLiteCustomerContact( litePrimContact, primContact );
-				ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+				//ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
             }
 
 			ArrayList contactList = liteCustomer.getAdditionalContacts();
@@ -217,7 +217,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			            			Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
 			            			
 							StarsLiteFactory.setLiteCustomerContact( liteContact, contact );
-							ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+							//ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		        		}
 		        		break;
 		        	}
@@ -307,6 +307,8 @@ public class UpdateCustAccountAction implements ActionBase {
             	
             	StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
             }
+            
+            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
 
 			StarsCustAccountInformation starsAcctInfo = null;
 			if (SOAPServer.isClientLocal()) {

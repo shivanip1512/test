@@ -263,7 +263,16 @@ public class ServerUtils {
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
 		DBChangeMsg msg = null;
 		
-		if (lite.getLiteType() == LiteTypes.YUKON_USER) {
+		if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+				DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+				DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+				typeOfChange
+				);
+		}
+		else if (lite.getLiteType() == LiteTypes.YUKON_USER) {
 	    	msg = new DBChangeMsg(
 	    		lite.getLiteID(),
 	    		DBChangeMsg.CHANGE_YUKON_USER_DB,
