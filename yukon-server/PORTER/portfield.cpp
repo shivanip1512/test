@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.125 $
-* DATE         :  $Date: 2004/12/10 21:58:40 $
+* REVISION     :  $Revision: 1.126 $
+* DATE         :  $Date: 2004/12/14 22:35:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,6 +243,7 @@ VOID PortThread(void *pid)
             if(Device)
             {
                 Device->getOutMessage(OutMessage);
+                Device->incQueueProcessed(1, RWTime());
 
                 /*
                  *  This block is trying to make us go back to normal processing through readQueue.
@@ -867,6 +868,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     //if( (MSGFLG_APPLY_EXCLUSION_LOGIC & OutMessage->MessageFlags) && QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
+        Device->incQueueSubmittal(1, RWTime());
         Port->setDeviceQueued( Device->getID() );
 
         if(gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001)
@@ -3862,6 +3864,11 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
         }
 
         status = CONTINUE_LOOP;
+    }
+
+    if(OutMessage)
+    {
+        Port->incQueueSubmittal(1, RWTime());
     }
 
     return status;
