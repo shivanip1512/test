@@ -1784,7 +1784,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         multiPilMsg->insert( currentLMGroup->createMasterCycleRequestMsg(450, period, defaultLMRefreshPriority) );
                         returnBoolean = TRUE;
                     }
-                    else if( currentLMGroup->getLastControlSent().seconds()+offTime >= secondsFrom1901 )
+                    else if( currentLMGroup->getLastControlSent().seconds()+offTime <= secondsFrom1901 )
                     {//groups not currently shed need to be set back to inactive state
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         if( _LM_DEBUG )
