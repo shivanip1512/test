@@ -183,12 +183,8 @@ function confirmDelete() {
             <td width="25%" class = "MainText">
 <cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
               <div align = "center" style = "border:solid 1px #666999;"> <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
-</cti:checkRole>
-            </td>
-
-            <td width="25%" class = "MainText">
-<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>">
-              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier Direct</a></div>			  
+              <br>
+              <div align = "center" style = "border:solid 1px #666999;"> <a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier Direct</a></div>
 </cti:checkRole>
             </td>
 
