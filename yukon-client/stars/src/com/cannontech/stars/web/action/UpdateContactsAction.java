@@ -216,6 +216,8 @@ public class UpdateContactsAction implements ActionBase {
 						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
             	
             	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+            	
+            	energyCompany.getContactAccountIDMap().remove( new Integer(liteContact.getContactID()) );
             	ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
             

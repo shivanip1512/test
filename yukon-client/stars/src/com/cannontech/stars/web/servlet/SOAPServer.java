@@ -437,8 +437,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						}
 					}
 					
-					if (contOwner == null)
-						contOwner = energyCompany.getActiveAccountByContact( msg.getId() );
+					if (contOwner == null) {
+						Integer accountID = (Integer) energyCompany.getContactAccountIDMap().get( new Integer(msg.getId()) );
+						if (accountID != null)
+							contOwner = energyCompany.getStarsCustAccountInformation( accountID.intValue() );
+					}
 				}
 				
 				if (contOwner != null) {
@@ -513,10 +516,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				if (liteContact != null) {
 					for (int i = 0; i < companies.size(); i++) {
 						LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-						StarsCustAccountInformation starsAcctInfo = energyCompany.getActiveAccountByContact( liteContact.getContactID() );
-						if (starsAcctInfo != null && starsAcctInfo.getStarsUser() != null) {
-							handleYukonUserChange( msg, energyCompany, starsAcctInfo );
-							return;
+						Integer accountID = (Integer) energyCompany.getContactAccountIDMap().get( new Integer(liteContact.getContactID()) );
+						if (accountID != null) {
+							StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( accountID.intValue() );
+							if (starsAcctInfo != null && starsAcctInfo.getStarsUser() != null) {
+								handleYukonUserChange( msg, energyCompany, starsAcctInfo );
+								return;
+							}
 						}
 					}
 				}
@@ -623,6 +629,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 							break;
 						}
 					}
+					
+					energyCompany.getContactAccountIDMap().remove( new Integer(msg.getId()) );
 				}
 				
 				break;

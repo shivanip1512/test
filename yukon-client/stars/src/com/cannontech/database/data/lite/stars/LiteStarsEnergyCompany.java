@@ -2782,18 +2782,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return new ArrayList( getStarsCustAcctInfos().values() );
 	}
 	
-	private synchronized Hashtable getContactAccountIDMap() {
+	public synchronized Hashtable getContactAccountIDMap() {
 		if (contactAccountIDMap == null)
 			contactAccountIDMap = new Hashtable();
 		
 		return contactAccountIDMap;
-	}
-	
-	public StarsCustAccountInformation getActiveAccountByContact(int contactID) {
-		Integer accountID = (Integer) getContactAccountIDMap().get( new Integer(contactID) );
-		if (accountID == null) return null;
-		
-		return getStarsCustAccountInformation( accountID.intValue() );
 	}
 	
 	/**
