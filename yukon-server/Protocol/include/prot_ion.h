@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/30 16:05:09 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/11/04 21:41:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ private:
 
     CtiIONDataStream       _dsBuf;
 
-    unsigned short _masterAddress, _slaveAddress;
+    unsigned short _srcID, _dstID;
 
     struct ion_protocol_command_struct
     {
@@ -85,8 +85,7 @@ public:
 
     CtiProtocolION &operator=(const CtiProtocolION &aRef);
 
-    void setMasterAddress( unsigned short address );
-    void setSlaveAddress ( unsigned short address );
+    void setAddresses( unsigned short masterAddress, unsigned short slaveAddress );
 
     void setCommand( IONCommand command, ion_output_point *points = NULL, int numPoints = 0 );
 

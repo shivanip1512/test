@@ -22,179 +22,150 @@
 
 CtiIONApplicationLayer::CtiIONApplicationLayer( )
 {
-    _valid = false;
-    _alData.IONData = NULL;
+    _appOut.IONData = NULL;
+    _appIn.IONData  = NULL;
 }
 
 
 CtiIONApplicationLayer::~CtiIONApplicationLayer( )
 {
-    freeMemory( );
+    freeOutPacketMemory( );
+    freeInPacketMemory( );
 }
 
 
-bool CtiIONApplicationLayer::isValid( void )
+void CtiIONApplicationLayer::setAddresses( unsigned short srcID, unsigned short dstID )
 {
-    return _valid;
+    _networkLayer.setAddresses(srcID, dstID);
 }
 
 
-bool CtiIONApplicationLayer::isRequest( void )
+void CtiIONApplicationLayer::initOutPacketReserved( void )
 {
-    return _alData.header.service & 0x01;
+    _appOut.header.servicereserved0 = 0;
+    _appOut.header.servicereserved1 = 0;
+    _appOut.header.length.reserved  = 0;
+    _appOut.header.pid      = 0;
+    _appOut.header.freq     = 1;
+    _appOut.header.priority = 0;
 }
 
 
-void CtiIONApplicationLayer::initReserved( void )
+void CtiIONApplicationLayer::initInPacketReserved( void )
 {
-    _alData.header.servicereserved0 = 0;
-    _alData.header.servicereserved1 = 0;
-    _alData.header.length.reserved = 0;
-    _alData.header.pid = 0;
-    _alData.header.freq = 1;
-    _alData.header.priority = 0;
+    _appIn.header.servicereserved0 = 0;
+    _appIn.header.servicereserved1 = 0;
+    _appIn.header.length.reserved  = 0;
+    _appIn.header.pid      = 0;
+    _appIn.header.freq     = 1;
+    _appIn.header.priority = 0;
 }
 
 
-void CtiIONApplicationLayer::init( CtiIONDataStream dataStream )
+void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
 {
-    int            itemNum,
-                   dataOffset,
-                   dataLength;
+    int itemNum, dataOffset, dataLength;
 
+    freeOutPacketMemory( );
+    initOutPacketReserved( );
 
-    freeMemory( );
-
-    _valid = TRUE;
-    initReserved( );
-
-    dataLength = dataStream.getSerializedLength( );
+    dataLength = payload.getSerializedLength( );
 
     //  fill up the header
-    _alData.header.service = 0x0F;  //  start, execute, and end the program in a single request
+    _appOut.header.service = 0x0F;  //  start, execute, and end the program in a single request
     //  _applicationMessage.status = -1;      //  no status byte in requests (which are all we, the master, send via the application layer)
-    _alData.header.pid  = 1;        //  can be set to anything - only one program/PID per request
-    _alData.header.freq = 1;        //  programs can currently only be executed once
-    _alData.header.priority = 0;    //  only support default priority
-    _alData.header.length.byte1 = (dataLength & 0xFF00) >> 8;
-    _alData.header.length.byte0 =  dataLength & 0x00FF;
+    _appOut.header.pid  = 1;        //  can be set to anything - only one program/PID per request
+    _appOut.header.freq = 1;        //  programs can currently only be executed once
+    _appOut.header.priority = 0;    //  only support default priority
+    _appOut.header.length.byte1 = (dataLength & 0xFF00) >> 8;
+    _appOut.header.length.byte0 =  dataLength & 0x00FF;
 
     //  copy in the serialized datastream values
-    _alData.IONData = new unsigned char[dataLength];
+    _appOut.IONData = new unsigned char[dataLength];
 
-    if( _alData.IONData != NULL )
+    if( _appOut.IONData != NULL )
     {
-        dataStream.putSerialized( _alData.IONData );
+        payload.putSerialized(_appOut.IONData);
+
+        _networkLayer.setOutPayload(*this);
     }
     else
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << dataLength << " bytes in CtiIONApplicationLayer ctor;"
                                                                  << "  proceeding with zero-length ION data payload, setting valid = FALSE" << endl;
-        _alData.header.length.byte1 = 0;
-        _alData.header.length.byte0 = 0;
-        _valid = FALSE;
+        _appOut.header.length.byte1 = 0;
+        _appOut.header.length.byte0 = 0;
+        _ioState = Failed;
     }
-}
-
-
-void CtiIONApplicationLayer::init( CtiIONNetworkLayer netLayer )
-{
-    int            alHeaderSize,
-                   tmpSize,
-                   tmpIONDataSize;
-    unsigned char *tmpData,
-                  *headerDataPos;
-
-
-/*    freeMemory( );
-
-    _valid = TRUE;
-    initReserved( );
-
-    alHeaderSize = sizeof( _alData.header );
-    tmpSize = netLayer.getPayloadLength( );
-
-    tmpData = new unsigned char[tmpSize];
-
-    if( tmpData != NULL )
-    {
-        netLayer.putPayload( tmpData );
-
-        //  this is used to keep track of where we're copying the data to in the header
-        headerDataPos = (unsigned char *)&(_alData.header);
-
-
-        //  --------
-        //  copy the header
-        //  --------
-
-        //  copy the service bytes
-        memcpy( headerDataPos, tmpData, 2 );
-        headerDataPos += 2;
-
-        //  if it's a request message, it doesn't have the status byte in the header
-        if( isRequest( ) )
-        {
-            //  reduce the header size to reflect the missing status byte
-            //    (this is used as the amount left to copy)
-            alHeaderSize--;
-            //  and offset past the status byte in the destination
-            headerDataPos += 1;
-        }
-
-        //  copy the rest of the header into the relevant spot in memory
-        memcpy( headerDataPos, tmpData + 2, alHeaderSize - 2 );
-
-
-        //  --------
-        //  copy the data
-        //  --------
-
-        tmpIONDataSize  = _alData.header.length.byte1 << 8;
-        tmpIONDataSize |= _alData.header.length.byte0;
-        _alData.IONData = new unsigned char[tmpIONDataSize];
-        if( _alData.IONData != NULL )
-        {
-            memcpy( _alData.IONData, tmpData + alHeaderSize, tmpIONDataSize );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << tmpSize
-                                      << " bytes in CtiIONApplicationLayer ctor - setting payload to zero, setting valid = FALSE"  << endl;
-            _alData.header.length.byte1 = 0;
-            _alData.header.length.byte0 = 0;
-            _valid = FALSE;
-        }
-
-        delete [] tmpData;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << tmpSize
-                                  << " bytes in CtiIONApplicationLayer ctor for scratch space - not initializing object"  << endl;
-        _valid = FALSE;
-    }
-*/
 }
 
 
 int CtiIONApplicationLayer::generate( CtiXfer &xfer )
 {
-/*    if( _netLayer.isTransactionComplete() )
-    {
-
-    }
-*/
     return _networkLayer.generate( xfer );
 }
 
 
 int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 {
-    return _networkLayer.decode( xfer, status );
+    int retVal;
+    int networkStatus;
+
+    networkStatus = _networkLayer.decode(xfer, status);
+#if 0
+    if( _networkLayer.errorCondition() )
+    {
+        //  ACH:  retries...
+        _ioState = Failed;
+        retVal   = networkStatus;
+    }
+    else if( _networkLayer.isTransactionComplete() )
+    {
+        switch( _ioState )
+        {
+            case Output:
+            {
+                /*if( isReplyExpected() )*/
+                {
+                    _networkLayer.initReply((unsigned char *)&_appIn);
+                    _ioState = Input;
+                }
+                /*else
+                {
+                    _ioState = Complete;
+                }*/
+
+                break;
+            }
+
+            case Input:
+            {
+                if( _networkLayer.getInputSize() >= sizeof( _app_layer_struct._app_layer_header ) )
+                {
+                    _appRspBytesUsed = _networkLayer.getInputSize() - sizeof( _app_layer_struct._app_layer_header );
+                    _ioState = Complete;
+                }
+                else
+                {
+                    _appRspBytesUsed = 0;
+                    _ioState = Failed;
+                    retVal = PORTREAD;  //  timeout reading from port
+                }
+
+                break;
+            }
+
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+#endif
+
+    return networkStatus;
 }
 
 
@@ -210,63 +181,55 @@ bool CtiIONApplicationLayer::errorCondition( void )
 }
 
 
-void CtiIONApplicationLayer::freeMemory( void )
+void CtiIONApplicationLayer::freeInPacketMemory( void )
 {
-    if( _alData.IONData != NULL )
-        delete [] _alData.IONData;
+    if( _appIn.IONData != NULL )
+        delete [] _appIn.IONData;
 
-    _alData.IONData = NULL;
+    _appIn.IONData = NULL;
+}
+
+
+void CtiIONApplicationLayer::freeOutPacketMemory( void )
+{
+    if( _appOut.IONData != NULL )
+        delete [] _appOut.IONData;
+
+    _appOut.IONData = NULL;
 }
 
 
 void CtiIONApplicationLayer::putSerialized( unsigned char *buf )
 {
-    int destALHeaderSize, alDataStreamSize, sourceOffset, destOffset;
+    int appOutDataLen, offset;
 
-    alDataStreamSize  = _alData.header.length.byte1 << 8;
-    alDataStreamSize |= _alData.header.length.byte0;
-    destALHeaderSize = sizeof( _alData.header );
-    sourceOffset = 0;
-    destOffset = 0;
+    appOutDataLen  = _appOut.header.length.byte1 << 8;
+    appOutDataLen |= _appOut.header.length.byte0;
 
-    //  copy the service bytes
-    memcpy( buf, &_alData.header, 2 );
-    sourceOffset += 2;
-    destOffset += 2;
-
-    //  if it's a request message
-    if( isRequest( ) )
-    {
-        //  request messages don't have the status byte in the header - move past it
-        sourceOffset++;
-        //  no status byte makes the resulting header one byte smaller - 1 byte less to copy
-        destALHeaderSize--;
-    }
-
-    //  copy the relevant header data
-    memcpy( buf + destOffset, ((unsigned char *)&_alData.header) + sourceOffset, destALHeaderSize - destOffset );
+    //  copy the header data
+    memcpy( buf, (unsigned char *)&_appOut.header, sizeof(_appOut.header) );
 
     //  copy the payload data
-    memcpy( buf + destALHeaderSize, _alData.IONData, alDataStreamSize );
+    memcpy( buf + sizeof(_appOut.header), _appOut.IONData, appOutDataLen );
 }
 
 
 unsigned int CtiIONApplicationLayer::getSerializedLength( void )
 {
-    int alSize;
+    int appOutSize = 0;
 
     //  add the payload length plus the header length
-    alSize  = _alData.header.length.byte1 << 8;
-    alSize |= _alData.header.length.byte0;
-    alSize += sizeof( _alData.header );
+    appOutSize  = _appOut.header.length.byte1 << 8;
+    appOutSize |= _appOut.header.length.byte0;
+    appOutSize += sizeof( _appOut.header );
 
-    //  if it's a request message, it doesn't have the status byte in the header
-    if( isRequest( ) )
-        alSize--;
-
-    return alSize;
+    return appOutSize;
 }
 
+
+#if 0
+
+//  replace with putOutbound and putInbound or something
 
 void CtiIONApplicationLayer::putPayload( unsigned char *buf )
 {
@@ -283,5 +246,5 @@ int CtiIONApplicationLayer::getPayloadLength( void )
 
     return alSize;
 }
-
+#endif
 

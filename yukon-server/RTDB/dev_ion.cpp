@@ -435,7 +435,6 @@ void CtiDeviceION::DecodeDatabaseReader(RWDBReader &rdr)
        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
-   _ion.setSlaveAddress(_address.getSlaveAddress());
-   _ion.setMasterAddress(_address.getMasterAddress());
+   _ion.setAddresses(_address.getMasterAddress(), _address.getSlaveAddress());
 }
 

@@ -27,7 +27,6 @@
 
 //  predefining for all following classes
 class CtiIONFrame;
-class CtiIONNetworkLayer;
 
 //  necessary to preserve byte alignment;  makes for easy memcpy initialization and serialization
 #pragma pack(push, ion_packing, 1)
@@ -39,7 +38,9 @@ public:
     CtiIONDataLinkLayer( );
     ~CtiIONDataLinkLayer( );
 
-    void setToOutput( CtiIONNetworkLayer &netLayer, int srcID, int dstID );
+    void setAddresses( unsigned short srcID, unsigned short dstID );
+
+    void setToOutput( CtiIONSerializable &payload );
     void setToInput( void );
 
     int generate( CtiXfer &xfer );
@@ -107,11 +108,40 @@ private:
 
 class CtiIONFrame : CtiIONSerializable
 {
+private:
+
+    unsigned int crc16( unsigned char *data, int length );
+
+    void initReserved( void );
+
+    struct _ionFrame
+    {
+        struct _ionFrameHeader
+        {
+            unsigned char sync;
+            unsigned char fmt;
+            unsigned char cntlreserved  : 5;
+            unsigned char cntlframetype : 2;
+            unsigned char cntldirection : 1;
+            unsigned char len;
+            unsigned short srcid        : 15;
+            unsigned short srcreserved  : 1;
+            unsigned short dstid;
+            unsigned char trancounter    : 6;
+            unsigned char tranfirstframe : 1;
+            unsigned char tranreserved   : 1;
+            unsigned char reserved;
+        } header;
+        unsigned char data[240];  //  238 + 2 byte CRC
+    } _frame;
+
+protected:
+
 public:
 
     CtiIONFrame( void );
     CtiIONFrame( unsigned char *rawFrame, int rawFrameLength );
-    ~CtiIONFrame( void ) { };
+    ~CtiIONFrame( void );
 
     void putSerialized( unsigned char *buf );
     unsigned int getSerializedLength( void );
@@ -166,40 +196,6 @@ public:
         PrePayloadCRCOffset  =   8,
         UncountedHeaderBytes =   5
     };
-
-private:
-
-    unsigned int crc16( unsigned char *data, int length );
-
-    void initReserved( void )
-    {
-        _frame.header.cntlreserved = 0;
-        _frame.header.cntldirection = 0;  //  we're the master
-        _frame.header.srcreserved = 0;
-        _frame.header.tranreserved = 0;
-        _frame.header.reserved = 0;
-    };
-
-    struct _ionFrame
-    {
-        struct _ionFrameHeader
-        {
-            unsigned char sync;
-            unsigned char fmt;
-            unsigned char cntlreserved  : 5;
-            unsigned char cntlframetype : 2;
-            unsigned char cntldirection : 1;
-            unsigned char len;
-            unsigned short srcid        : 15;
-            unsigned short srcreserved  : 1;
-            unsigned short dstid;
-            unsigned char trancounter    : 6;
-            unsigned char tranfirstframe : 1;
-            unsigned char tranreserved   : 1;
-            unsigned char reserved;
-        } header;
-        unsigned char data[240];  //  238 + 2 byte CRC
-    } _frame;
 };
 
 #pragma pack(pop, ion_packing)

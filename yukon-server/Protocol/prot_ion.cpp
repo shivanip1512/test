@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/10/30 16:05:09 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/11/04 21:41:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,8 +25,7 @@
 
 CtiProtocolION::CtiProtocolION()
 {
-    setMasterAddress(DefaultYukonIONMasterAddress);
-    setSlaveAddress(DefaultSlaveAddress);
+    setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
 }
 
 
@@ -43,9 +42,9 @@ CtiProtocolION &CtiProtocolION::operator=(const CtiProtocolION &aRef)
 {
     if( this != &aRef )
     {
-        _appLayer      = aRef._appLayer;
-        _masterAddress = aRef._masterAddress;
-        _slaveAddress  = aRef._slaveAddress;
+        _appLayer = aRef._appLayer;
+        _srcID    = aRef._srcID;
+        _dstID    = aRef._dstID;
     }
 
     return *this;
@@ -232,20 +231,6 @@ void CtiDeviceION::resolveNextState( void )
 
 
 
-void CtiDeviceION::resolveNextStateSelectMeter( void )
-{
-    switch( getIONState( ) )
-    {
-//        case IONStateInit:
-//            {
-//                break;
-//            }
-        default:
-            setIONState( IONStateComplete );
-    }
-}
-
-
 void CtiDeviceION::resolveNextStateScanData( void )
 {
     CtiIONStatement *tmpStatement;
@@ -352,15 +337,12 @@ void CtiDeviceION::resolveNextStateLoadProfile( void )
 }
 */
 
-void CtiProtocolION::setMasterAddress( unsigned short address )
+void CtiProtocolION::setAddresses( unsigned short srcID, unsigned short dstID )
 {
-    _masterAddress = address;
-}
+    _srcID = srcID;
+    _dstID = dstID;
 
-
-void CtiProtocolION::setSlaveAddress( unsigned short address )
-{
-    _slaveAddress = address;
+    _appLayer.setAddresses(_srcID, _dstID);
 }
 
 
@@ -495,14 +477,14 @@ int CtiProtocolION::generate( CtiXfer &xfer )
             case IONStateInit:
             case IONStateRequestFeatureManagerInfo:
             {
-                tmpMethod    = new CtiIONMethod   ( CtiIONMethod::ReadModuleSetupHandles );  //  ReadManagedClass
-                tmpStatement = new CtiIONStatement( IONFeatureManagerHandle, tmpMethod );  // ustabeed 132
-                tmpProgram   = new CtiIONProgram  ( tmpStatement );
+                tmpMethod    = new CtiIONMethod   (CtiIONMethod::ReadModuleSetupHandles);   //  ReadManagedClass
+                tmpStatement = new CtiIONStatement(IONFeatureManagerHandle, tmpMethod);     //  ustabeed 132
+                tmpProgram   = new CtiIONProgram  (tmpStatement);
 
                 _dsBuf.clear();
-                _dsBuf.appendItem( tmpProgram );
+                _dsBuf.appendItem(tmpProgram);
 
-                _appLayer.init( _dsBuf );
+                _appLayer.setOutPayload(_dsBuf);
 
                 _ionState = IONStateReceiveFeatureManagerInfo;
 
@@ -527,7 +509,7 @@ int CtiProtocolION::generate( CtiXfer &xfer )
 
 int CtiProtocolION::decode( CtiXfer &xfer, int status )
 {
-    return 0; //_appLayer.decode(xfer, status);
+    return _appLayer.decode(xfer, status);
 }
 
 

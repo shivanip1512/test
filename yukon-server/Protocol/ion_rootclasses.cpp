@@ -19,6 +19,17 @@
 #include "guard.h"
 #include "logger.h"
 
+void CtiIONSerializable::putSerialized( unsigned char *buf ) const
+{
+
+}
+
+unsigned int CtiIONSerializable::getSerializedLength( void ) const
+{
+    return 0;
+}
+
+
 unsigned char *CtiIONSerializable::getSerialized( void )
 {
     unsigned char *retData;

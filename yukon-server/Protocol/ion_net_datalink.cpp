@@ -30,6 +30,14 @@ CtiIONDataLinkLayer::~CtiIONDataLinkLayer( )
     freeMemory( );
 }
 
+
+void CtiIONDataLinkLayer::setAddresses( unsigned short srcID, unsigned short dstID )
+{
+    _src = srcID;
+    _dst = dstID;
+}
+
+
 CtiIONDataLinkLayer::DLLExternalStatus CtiIONDataLinkLayer::getStatus( void )
 {
     return _status;
@@ -41,28 +49,26 @@ bool CtiIONDataLinkLayer::isValid( void )
 }
 
 
-void CtiIONDataLinkLayer::setToOutput( CtiIONNetworkLayer &netLayer, int srcID, int dstID )
+void CtiIONDataLinkLayer::setToOutput( CtiIONSerializable &payload )
 {
     freeMemory( );
 
     _valid = TRUE;
 
     _dataSent = 0;
-    _src = srcID;
-    _dst = dstID;
     _status = OutDataReady;
     _direction = Output;
     _retries = IONRetries;
-/*
-    _dataLength = netLayer.getSerializedLength( );
+
+    _dataLength = payload.getSerializedLength( );
     _data = new unsigned char[_dataLength];
 
     if( _data != NULL )
     {
-        netLayer.putSerialized( _data );
+        payload.putSerialized( _data );
     }
     else
-*/    {
+    {
         dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << _dataLength << " bytes in CtiIONDataLinkLayer ctor;"
                                                                  << "  setting zero data length, valid = FALSE, status = Abort" << endl;
         _dataLength = 0;
@@ -79,11 +85,11 @@ void CtiIONDataLinkLayer::setToInput( void )
     _valid = TRUE;
 
     _dataLength = 0;
-    _data = NULL;
+    _data       = NULL;
     _currentFrame = -1;
-    _status = InDataReady;
+    _status     = InDataReady;
     _direction = Input;
-    _retries = IONRetries;
+    _retries   = IONRetries;
 }
 
 
@@ -393,6 +399,20 @@ CtiIONFrame::CtiIONFrame( unsigned char *rawFrame, int rawFrameLength )
 
     memcpy( &_frame, rawFrame, rawFrameLength );
 }
+
+
+CtiIONFrame::~CtiIONFrame( )    {   }
+
+
+void CtiIONFrame::initReserved( void )
+{
+    _frame.header.cntlreserved  = 0;
+    _frame.header.cntldirection = 0;  //  we're the master
+    _frame.header.srcreserved   = 0;
+    _frame.header.tranreserved  = 0;
+    _frame.header.reserved      = 0;
+}
+
 
 
 void CtiIONFrame::putSerialized( unsigned char *buf )

@@ -20,132 +20,99 @@
 
 CtiIONNetworkLayer::CtiIONNetworkLayer( )
 {
-    _valid = FALSE;
-    _nlData.data = NULL;
+    _netOut.data = NULL;
+    _netIn.data  = NULL;
 }
 
 
-void CtiIONNetworkLayer::initReserved( void )
+CtiIONNetworkLayer::~CtiIONNetworkLayer( )
 {
-    _nlData.header.length.reserved = 0;
-    _nlData.header.desc.reserved   = 0;
-    _nlData.header.src.reserved0_0 = 0;
-    _nlData.header.src.reserved0_1 = 0;
-    _nlData.header.src.reserved1   = 1;
-    _nlData.header.dst.reserved0_0 = 0;
-    _nlData.header.dst.reserved0_1 = 0;
-    _nlData.header.dst.reserved1   = 1;
+    freeOutPacketMemory();
+    freeInPacketMemory();
 }
 
 
-void CtiIONNetworkLayer::init( CtiIONDataLinkLayer &dllLayer )
+void CtiIONNetworkLayer::setAddresses( unsigned short srcID, unsigned short dstID )
 {
-    unsigned char *tmpDLLData;
-    int            tmpDLLDataLength, nlDataLength;
-
-/*
-    freeMemory( );
-
-    _valid = TRUE;
-
-    initReserved( );
-
-    tmpDLLDataLength = dllLayer.getPayloadLength( );
-    tmpDLLData = new unsigned char[tmpDLLDataLength];
-
-    if( tmpDLLData != NULL )
-    {
-        //  grab the data from the data link layer
-        dllLayer.putPayload( tmpDLLData );
-
-        //  copy the header
-        memcpy( &(_nlData.header), tmpDLLData, sizeof(_nlData.header) );
-
-        _srcID  = _nlData.header.src.byte1 << 256;
-        _srcID |= _nlData.header.src.byte0;
-
-        _dstID  = _nlData.header.dst.byte1 << 256;
-        _dstID |= _nlData.header.dst.byte0;
-
-        nlDataLength = tmpDLLDataLength - sizeof(_nlData.header);
-        _nlData.data = new unsigned char[nlDataLength];
-
-        if( _nlData.data != NULL )
-        {
-            //  copy the data
-            memcpy( _nlData.data, tmpDLLData + sizeof( _nlData.header ), tmpDLLDataLength - sizeof( _nlData.header ) );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            if( tmpDLLData == NULL )
-                dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << nlDataLength << " bytes in CtiIONNetworkLayer ctor;"
-                                                                         << "  setting zero-length data payload, valid = FALSE" << endl;
-            _nlData.header.length.byte1 = 0;
-            _nlData.header.length.byte0 = 0;
-            _valid = FALSE;
-        }
-
-        delete [] tmpDLLData;
-    }
-    else
-*/    {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << tmpDLLDataLength << " bytes in CtiIONNetworkLayer ctor;"
-                                                                 << "  setting valid = FALSE" << endl;
-        _valid = FALSE;
-    }
-}
-
-
-void CtiIONNetworkLayer::init( CtiIONApplicationLayer &appLayer, int msgID, int srcID, int dstID )
-{
-    int tmpAppDataSize, netSize;
-
-/*
-    freeMemory( );
-
-    _valid = TRUE;
-    initReserved( );
-
-    tmpAppDataSize = appLayer.getSerializedLength( );
-
-    netSize = tmpAppDataSize + sizeof( _nlData.header );
-    _nlData.header.length.byte1 = (netSize & 0xFF00) >> 8;
-    _nlData.header.length.byte0 =  netSize & 0x00FF;
-
-    _nlData.header.msgid.byte1 = (msgID & 0xFF00) >> 8;
-    _nlData.header.msgid.byte0 =  msgID & 0x00FF;
-
-    _nlData.header.desc.msgtype    = 1;
-    _nlData.header.desc.passwdsize = 0;
-    _nlData.header.desc.timesetmsg = 0;
-
     _srcID = srcID;
-    _nlData.header.src.byte1 = (srcID & 0xFF00) >> 8;
-    _nlData.header.src.byte0 = (srcID & 0x00FF);
-
     _dstID = dstID;
-    _nlData.header.dst.byte1 = (dstID & 0xFF00) >> 8;
-    _nlData.header.dst.byte0 = (dstID & 0x00FF);
 
-    _nlData.header.service = 1;  //  only supported value
+    _datalinkLayer.setAddresses(_srcID, _dstID);
+}
 
-    _nlData.header.msgType = 0;  //  ION message
 
-    _nlData.data = new unsigned char[tmpAppDataSize];
+void CtiIONNetworkLayer::initOutPacketReserved( void )
+{
+    _netOut.header.length.reserved = 0;
+    _netOut.header.desc.reserved   = 0;
+    _netOut.header.src.reserved0_0 = 0;
+    _netOut.header.src.reserved0_1 = 0;
+    _netOut.header.src.reserved1   = 1;
+    _netOut.header.dst.reserved0_0 = 0;
+    _netOut.header.dst.reserved0_1 = 0;
+    _netOut.header.dst.reserved1   = 1;
+}
 
-    if( _nlData.data != NULL )
+
+void CtiIONNetworkLayer::initInPacketReserved( void )
+{
+    _netIn.header.length.reserved = 0;
+    _netIn.header.desc.reserved   = 0;
+    _netIn.header.src.reserved0_0 = 0;
+    _netIn.header.src.reserved0_1 = 0;
+    _netIn.header.src.reserved1   = 1;
+    _netIn.header.dst.reserved0_0 = 0;
+    _netIn.header.dst.reserved0_1 = 0;
+    _netIn.header.dst.reserved1   = 1;
+}
+
+
+void CtiIONNetworkLayer::setOutPayload( CtiIONSerializable &payload )
+{
+    int payloadSize, netSize;
+
+    freeOutPacketMemory( );
+
+    initOutPacketReserved( );
+
+    _msgCount++;
+
+    payloadSize = payload.getSerializedLength( );
+
+    netSize = payloadSize + sizeof( _netOut.header );
+    _netOut.header.length.byte1 = (netSize & 0xFF00) >> 8;
+    _netOut.header.length.byte0 =  netSize & 0x00FF;
+
+    _netOut.header.msgid.byte1 = (_msgCount & 0xFF00) >> 8;
+    _netOut.header.msgid.byte0 =  _msgCount & 0x00FF;
+
+    _netOut.header.desc.msgtype    = 1;
+    _netOut.header.desc.passwdsize = 0;
+    _netOut.header.desc.timesetmsg = 0;
+
+    _netOut.header.src.byte1 = (_srcID & 0xFF00) >> 8;
+    _netOut.header.src.byte0 = (_srcID & 0x00FF);
+
+    _netOut.header.dst.byte1 = (_dstID & 0xFF00) >> 8;
+    _netOut.header.dst.byte0 = (_dstID & 0x00FF);
+
+    _netOut.header.service = 1;  //  only supported value
+
+    _netOut.header.msgType = 0;  //  ION message
+
+    _netOut.data = new unsigned char[payloadSize];
+
+    if( _netOut.data != NULL )
     {
-        appLayer.putSerialized( _nlData.data );
+        payload.putSerialized( _netOut.data );
     }
     else
-*/    {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << tmpAppDataSize << " bytes in CtiIONNetworkLayer ctor;"
+    {
+        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << payloadSize << " bytes in CtiIONNetworkLayer ctor;"
                                                                  << "  setting zero-length data payload, valid = FALSE" << endl;
-        netSize = sizeof( _nlData.header );
-        _nlData.header.length.byte1 = (netSize & 0xFF00) >> 8;
-        _nlData.header.length.byte0 =  netSize & 0x00FF;
-        _valid = FALSE;
+        netSize = sizeof( _netOut.header );
+        _netOut.header.length.byte1 = (netSize & 0xFF00) >> 8;
+        _netOut.header.length.byte0 =  netSize & 0x00FF;
     }
 }
 
@@ -167,21 +134,30 @@ int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 }
 
 
-void CtiIONNetworkLayer::freeMemory( void )
+void CtiIONNetworkLayer::freeOutPacketMemory( void )
 {
-    if( _nlData.data != NULL )
-        delete [] _nlData.data;
+    if( _netOut.data != NULL )
+        delete [] _netOut.data;
 
-    _nlData.data = NULL;
+    _netOut.data = NULL;
+}
+
+
+void CtiIONNetworkLayer::freeInPacketMemory( void )
+{
+    if( _netIn.data != NULL )
+        delete [] _netIn.data;
+
+    _netIn.data = NULL;
 }
 
 
 void CtiIONNetworkLayer::putSerialized( unsigned char *buf )
 {
     //  copy the header
-    memcpy( buf, &(_nlData.header), sizeof(_nlData.header) );
+    memcpy( buf, &(_netOut.header), sizeof(_netOut.header) );
     //  then the data, offset after the header
-    memcpy( buf + sizeof(_nlData.header), _nlData.data, getPayloadLength( ) );
+    memcpy( buf + sizeof(_netOut.header), _netOut.data, getPayloadLength( ) );
 }
 
 
@@ -189,8 +165,8 @@ unsigned int CtiIONNetworkLayer::getSerializedLength( void )
 {
     int tmpLength;
 
-    tmpLength  = _nlData.header.length.byte0;
-    tmpLength |= _nlData.header.length.byte1 << 8;
+    tmpLength  = _netOut.header.length.byte0;
+    tmpLength |= _netOut.header.length.byte1 << 8;
 
     return tmpLength;
 }
@@ -199,13 +175,13 @@ unsigned int CtiIONNetworkLayer::getSerializedLength( void )
 void CtiIONNetworkLayer::putPayload( unsigned char *buf )
 {
     //  copy the payload data
-    memcpy( buf, _nlData.data, getPayloadLength( ) );
+    memcpy( buf, _netIn.data, getPayloadLength( ) );
 }
 
 
 int CtiIONNetworkLayer::getPayloadLength( void )
 {
-    return getSerializedLength( ) - sizeof(_nlData.header);
+    return getSerializedLength( ) - sizeof(_netIn.header);
 }
 
 

@@ -47,8 +47,8 @@ public:
     CtiIONSerializable( )  { };
     ~CtiIONSerializable( )  { };
 
-    virtual void putSerialized( unsigned char *buf )  { };
-    virtual unsigned int getSerializedLength( void )  { return 0; };
+    virtual void putSerialized( unsigned char *buf ) const;
+    virtual unsigned int getSerializedLength( void ) const;
     unsigned char *getSerialized( void );
 };
 

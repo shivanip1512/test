@@ -26,11 +26,6 @@
 #include "ion_valuebasictypes.h"
 #include "ion_net_datalink.h"
 
-//  predefining for all following classes
-class CtiIONApplicationLayer;
-class CtiIONDataLinkLayer;
-class CtiIONFrame;
-
 
 //  necessary to preserve byte alignment;  makes for easy memcpy initialization and serialization
 #pragma pack(push, ion_packing, 1)
@@ -39,10 +34,13 @@ class IM_EX_PROT CtiIONNetworkLayer : public CtiIONSerializable
 {
 private:
 
-    void initReserved( void );
-    void freeMemory( void );
+    void initOutPacketReserved( void );
+    void initInPacketReserved ( void );
 
-    struct _net_networktruct
+    void freeOutPacketMemory( void );
+    void freeInPacketMemory ( void );
+
+    struct _net_layer_struct
     {
         struct _netLayerHeader
         {
@@ -77,32 +75,33 @@ private:
             unsigned char msgType;
         } header;
         unsigned char *data;
-    } _nlData;
+    };
+
+    _net_layer_struct _netOut, _netIn;
 
     CtiIONDataLinkLayer _datalinkLayer;
 
-    int _valid, _srcID, _dstID;
+    int   _valid, _srcID, _dstID;
+    short _msgCount;
 
 protected:
 
 public:
     CtiIONNetworkLayer( );
-    ~CtiIONNetworkLayer( )  {  freeMemory( );  };
+    ~CtiIONNetworkLayer( );
 
-    void init( CtiIONDataLinkLayer &dllLayer );
-    void init( CtiIONApplicationLayer &appLayer, int msgID, int srcID, int dstID );
+    void setAddresses( unsigned short srcID, unsigned short dstID );
+
+    void setOutPayload( CtiIONSerializable &payload );
+
+    void putPayload( unsigned char *buf );
+    int  getPayloadLength( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
     bool isTransactionComplete( void );
     bool errorCondition( void );
-
-    int  getSrcID( void )   {   return _srcID;  };
-    int  getDstID( void )   {   return _dstID;  };
-
-    void putPayload( unsigned char *buf );
-    int  getPayloadLength( void );
 
     void putSerialized( unsigned char *buf );
     unsigned int getSerializedLength( void );
