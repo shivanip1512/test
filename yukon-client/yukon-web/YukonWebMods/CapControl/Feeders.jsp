@@ -11,6 +11,7 @@
 	{
 		subRowID = new Integer(strID);
 		
+		
 		CTILogger.debug(request.getServletPath() + "	SubRowCnt = " + subBusMdl.getRowCount() );
 		
 		if( subRowID.intValue() >= 0 && subRowID.intValue() < subBusMdl.getRowCount() )
@@ -114,9 +115,9 @@
 						<form name="AreaForm" action='AllSubs.jsp' method="POST" >
                     <select name="area" onchange="this.form.submit();" >
 	                  <%
-	                  	for( int i = 0; i < cbcServlet.getAreaNames().size(); i++ )
+	                  	for( int i = 0; i < CapControlWebAnnex.getAreaNames().size(); i++ )
 	                  	{
-	                  		String area = cbcServlet.getAreaNames().get(i).toString();
+	                  		String area = CapControlWebAnnex.getAreaNames().get(i).toString();
 	                  		
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
@@ -213,7 +214,7 @@
 
                         <td width="44" class="TableCell">
                         	<a href= "capcontrols.jsp?rowID=<%= subRowID.intValue() %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
-                        	<font color="<%= cbcServlet.convertColor(subBusMdl.getCellForegroundColor( subRowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
+                        	<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( subRowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
                         	<%= subBusMdl.getValueAt(subRowID.intValue(), SubBusTableModel.CURRENT_STATE_COLUMN) %>
                         </font></a></td>
                         
@@ -278,7 +279,7 @@
                           </a></td>
                         <td width="44" class="TableCell">
                         	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
-                        	<font color="<%= cbcServlet.convertColor(feederMdl.getCellForegroundColor( i, FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
+                        	<font color="<%= CapControlWebAnnex.convertColor(feederMdl.getCellForegroundColor( i, FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
                         	<%= feederMdl.getValueAt(i, FeederTableModel.CURRENT_STATE_COLUMN) %>
                         </font></a></td>
                         
@@ -344,7 +345,7 @@
                         
                         <td width="43" class="TableCell">
                         	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
-                        	<font color="<%= cbcServlet.convertColor(capBankMdl.getCellForegroundColor( i, CapBankTableModel.STATUS_COLUMN ) ) %>">
+                        	<font color="<%= CapControlWebAnnex.convertColor(capBankMdl.getCellForegroundColor( i, CapBankTableModel.STATUS_COLUMN ) ) %>">
                         	<%= capBankMdl.getValueAt(i, CapBankTableModel.STATUS_COLUMN) %>
                         </font></a></td>
                         
