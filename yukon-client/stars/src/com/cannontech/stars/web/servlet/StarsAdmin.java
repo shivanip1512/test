@@ -537,7 +537,7 @@ public class StarsAdmin extends HttpServlet {
 	{
 		com.cannontech.database.db.web.YukonWebConfiguration config =
 				new com.cannontech.database.db.web.YukonWebConfiguration();
-		config.setLogoLocation( "" );
+		config.setLogoLocation( "yukon/Icons/Load.gif" );
 		config.setAlternateDisplayName( appCatName );
 		config.setDescription( "" );
 		config.setURL( "" );

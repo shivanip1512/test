@@ -363,7 +363,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					// If load groups for relays are specified, automatically add appliances through program enrollment
 					ArrayList appCats = energyCompany.getAllApplianceCategories();
 					ArrayList progList = new ArrayList();
-					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
 					
 					for (int i = 0; i < 3; i++) {
 						if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
@@ -372,6 +371,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
 						int progID = 0;
 						int appCatID = 0;
+						int loadNo = i + 1;
 						
 						for (int j = 0; j < appCats.size(); j++) {
 							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
@@ -381,7 +381,6 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 									if (liteProg.getGroupIDs()[l] == groupID) {
 										progID = liteProg.getProgramID();
 										appCatID = liteAppCat.getApplianceCategoryID();
-										progIDs[i] = progID;
 										break;
 									}
 								}
@@ -393,7 +392,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						if (progID == 0)
 							throw new WebClientException( "Cannot find LM program for load group id = " + groupID );
 						
-						progList.add( new int[] {progID, appCatID, groupID} );
+						progList.add( new int[] {progID, appCatID, groupID, loadNo} );
 					}
 					
 					if (progList.size() > 0) {
@@ -402,19 +401,19 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						ImportManager.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
 						
 						int[] appIDs = new int[3];
-						for (int i = 0; i < 3; i++) {
-							if (progIDs[i] == 0) continue;
+						for (int i = 0; i < programs.length; i++) {
+							int loadNo = programs[i][3];
 							
 							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-								if (liteApp.getProgramID() == progIDs[i]) {
-									appIDs[i] = liteApp.getApplianceID();
+								if (liteApp.getProgramID() == programs[i][0]) {
+									appIDs[loadNo - 1] = liteApp.getApplianceID();
 									break;
 								}
 							}
 							
-							if (appIDs[i] == 0)	// shouldn't happen
-								throw new WebClientException("Cannot find appliance with RelayNum = " + (i+1));
+							if (appIDs[loadNo - 1] == 0)	// shouldn't happen
+								throw new WebClientException("Cannot find appliance with RelayNum = " + loadNo);
 						}
 						
 						appIDMap.put( Integer.valueOf(fields[ImportManager.IDX_INV_ID]), appIDs );
