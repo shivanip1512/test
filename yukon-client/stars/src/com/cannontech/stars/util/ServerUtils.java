@@ -189,34 +189,47 @@ public class ServerUtils {
 		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
 	}
 	
+	private static String[] readLines(java.io.Reader reader, boolean returnEmpty) throws IOException {
+		java.io.BufferedReader br = null;
+		try {
+			br = new java.io.BufferedReader( reader );
+			
+			ArrayList lines = new ArrayList();
+			String line = null;
+			
+			while ((line = br.readLine()) != null) {
+				if (!returnEmpty && (line.trim().equals("") || line.charAt(0) == '#'))
+					continue;
+				lines.add(line);
+			}
+			
+			String[] lns = new String[ lines.size() ];
+			lines.toArray( lns );
+			return lns;
+		}
+		finally {
+			if (br != null) br.close();
+		}
+	}
+	
+	public static String[] readInputStream(java.io.InputStream is, boolean returnEmpty) {
+		try {
+			return readLines( new java.io.InputStreamReader(is), returnEmpty );
+		}
+		catch (IOException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		
+		return null;
+	}
+	
 	public static String[] readFile(File file, boolean returnEmpty) {
 		if (file.exists()) {
-			java.io.BufferedReader fr = null;
 			try {
-				fr = new java.io.BufferedReader( new java.io.FileReader(file) );
-				
-				ArrayList lines = new ArrayList();
-				String line = null;
-				
-				while ((line = fr.readLine()) != null) {
-					if (!returnEmpty && (line.trim().equals("") || line.charAt(0) == '#'))
-						continue;
-					lines.add(line);
-				}
-				
-				String[] lns = new String[ lines.size() ];
-				lines.toArray( lns );
-				return lns;
+				return readLines( new java.io.FileReader(file), returnEmpty );
 			}
 			catch (IOException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				CTILogger.error("Failed to read file \"" + file.getPath() + "\"");
-			}
-			finally {
-				try {
-					fr.close();
-				}
-				catch (IOException e) {}
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		else {

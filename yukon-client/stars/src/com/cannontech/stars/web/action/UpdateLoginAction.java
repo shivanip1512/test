@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +9,6 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -183,23 +181,6 @@ public class UpdateLoginAction implements ActionBase {
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	/**
-	 * Check to see if the username already exists
-	 */
-	public static boolean checkLogin(StarsUpdateLogin login) {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized (cache) {
-			Iterator it = cache.getAllYukonUsers().iterator();
-			while (it.hasNext()) {
-				LiteYukonUser lUser = (LiteYukonUser) it.next();
-				if (lUser.getUsername().equalsIgnoreCase( login.getUsername() ))
-					return false;
-			}
-		}
-        
-		return true;
-	}
-	
 	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
@@ -276,7 +257,7 @@ public class UpdateLoginAction implements ActionBase {
 			if (username.length() == 0 || password.length() == 0)
 				throw new WebClientException( "Username and password cannot be empty" );
 		    
-			if (!checkLogin( updateLogin ))
+			if (YukonUserFuncs.getLiteYukonUser(username) != null)
 				throw new WebClientException( "Username '" + username + "' already exists" );
 			
 			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
@@ -291,7 +272,7 @@ public class UpdateLoginAction implements ActionBase {
 		else {
 			// Update customer login
 			LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
-			if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) )
+			if (!liteUser.getUsername().equalsIgnoreCase(username) && YukonUserFuncs.getLiteYukonUser(username) != null)
 				throw new WebClientException( "Username '" + username + "' already exists" );
 			
 			if (password.length() == 0) {

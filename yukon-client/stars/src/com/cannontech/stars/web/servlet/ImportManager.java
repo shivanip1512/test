@@ -22,14 +22,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -119,7 +118,6 @@ import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
@@ -138,7 +136,6 @@ import com.cannontech.stars.xml.serialize.TransferSwitchManufacturer;
 import com.cannontech.stars.xml.serialize.TransferSwitchType;
 import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.stars.xml.serialize.WaterHeater;
-import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 
@@ -839,6 +836,29 @@ public class ImportManager extends HttpServlet {
 	    primContact.setEmail( email );
 	    account.setPrimaryContact( primContact );
 	}
+	
+	private static StarsUpdateLogin createStarsUpdateLogin(String[] fields, LiteStarsEnergyCompany energyCompany) {
+		StarsUpdateLogin login = new StarsUpdateLogin();
+		login.setUsername( fields[IDX_USERNAME] );
+		login.setPassword( fields[IDX_PASSWORD] );
+		
+		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+		if (custGroups != null && custGroups.length > 0) {
+			if (fields[IDX_LOGIN_GROUP].length() > 0) {
+				for (int i = 0; i < custGroups.length; i++) {
+					if (custGroups[i].getGroupName().equalsIgnoreCase( fields[IDX_LOGIN_GROUP] )) {
+						login.setGroupID( custGroups[i].getGroupID() );
+						break;
+					}
+				}
+			}
+			else {
+				login.setGroupID( custGroups[0].getGroupID() );
+			}
+		}
+		
+		return login;
+	}
 
 	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user,
 		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
@@ -850,28 +870,8 @@ public class ImportManager extends HttpServlet {
 		setStarsCustAccount( account, fields, energyCompany, problem );
 		newAccount.setStarsCustomerAccount( account );
 		
-		if (fields[IDX_USERNAME].trim().length() > 0) {
-			StarsUpdateLogin login = new StarsUpdateLogin();
-			login.setUsername( fields[IDX_USERNAME] );
-			login.setPassword( fields[IDX_PASSWORD] );
-			
-			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
-			if (custGroups != null && custGroups.length > 0) {
-				if (fields[IDX_LOGIN_GROUP].length() > 0) {
-					for (int i = 0; i < custGroups.length; i++) {
-						if (custGroups[i].getGroupName().equalsIgnoreCase( fields[IDX_LOGIN_GROUP] )) {
-							login.setGroupID( custGroups[i].getGroupID() );
-							break;
-						}
-					}
-				}
-				else {
-					login.setGroupID( custGroups[0].getGroupID() );
-				}
-			}
-			
-			newAccount.setStarsUpdateLogin( login );
-		}
+		if (fields[IDX_USERNAME].trim().length() > 0)
+			newAccount.setStarsUpdateLogin( createStarsUpdateLogin(fields, energyCompany) );
 		
 		return NewCustAccountAction.newCustomerAccount(newAccount, user, energyCompany, checkConstraint);
 	}
@@ -883,26 +883,15 @@ public class ImportManager extends HttpServlet {
 	    setStarsCustAccount( updateAccount, fields, energyCompany, problem );
 	    
 	    UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
-	}
-
-	public static void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws Exception
-	{
-		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-		if ((liteContact.getLoginID() == UserUtils.USER_ADMIN_ID ||
-			liteContact.getLoginID() == UserUtils.USER_STARS_DEFAULT_ID)
-			&& fields[IDX_USERNAME].trim().length() == 0)
-			return;
+	    
+		int loginID = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() ).getLoginID();
+		if (loginID == UserUtils.USER_STARS_DEFAULT_ID && fields[IDX_USERNAME].trim().length() > 0) {
+			StarsUpdateLogin login = createStarsUpdateLogin( fields, energyCompany );
+			UpdateLoginAction.updateLogin( login, liteAcctInfo, energyCompany );
+		}
 		
-	    StarsUpdateLogin updateLogin = new StarsUpdateLogin();
-	    updateLogin.setUsername( fields[IDX_USERNAME] );
-	    updateLogin.setPassword( fields[IDX_PASSWORD] );
-	    
-	    StarsOperation operation = new StarsOperation();
-	    operation.setStarsUpdateLogin( updateLogin );
-	    SOAPMessage reqMsg = SOAPUtil.buildSOAPMessage( operation );
-	    
-	    UpdateLoginAction.updateLogin( updateLogin, liteAcctInfo, energyCompany );
+		// Delete the stars object from cache, so the user will see a fresh new copy
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 
 	private static int getDeviceTypeID(LiteStarsEnergyCompany energyCompany, String deviceType) {
@@ -1072,7 +1061,10 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		setStarsInventory( createHw, fields, energyCompany, problem );
 	    
-	    return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
+		liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+	    
+		return liteInv;
 	}
 
 	public static LiteInventoryBase updateLMHardware(String[] fields, LiteInventoryBase liteInv,
@@ -1093,6 +1085,8 @@ public class ImportManager extends HttpServlet {
 		setStarsInventory( updateHw, fields, energyCompany, problem );
 		
 		UpdateLMHardwareAction.updateInventory( updateHw, liteInv, energyCompany );
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+		
 		return energyCompany.getInventory( liteInv.getInventoryID(), true );
 	}
 
@@ -1126,6 +1120,7 @@ public class ImportManager extends HttpServlet {
 		}
 		
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
 	/**
@@ -1154,6 +1149,7 @@ public class ImportManager extends HttpServlet {
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
 	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany );
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
 	private static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
@@ -1379,6 +1375,7 @@ public class ImportManager extends HttpServlet {
 		setStarsAppliance( newApp, fields, energyCompany );
 		
 		CreateApplianceAction.createAppliance( newApp, liteAcctInfo, energyCompany );
+		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 
 	public static void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
@@ -1399,6 +1396,7 @@ public class ImportManager extends HttpServlet {
 			setStarsAppliance( updateApp, fields, energyCompany );
 			
 			UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
+			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 		}
 		else
 			newAppliance( fields, liteAcctInfo, energyCompany );
@@ -1563,34 +1561,13 @@ public class ImportManager extends HttpServlet {
 		return null;
 	}
 	
-	private File getUploadFile(List items, String fieldName, LiteStarsEnergyCompany energyCompany)
+	private FileItem getUploadFile(List items, String fieldName, LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
-		final String fs = System.getProperty( "file.separator" );
-		
 		for (int i = 0; i < items.size(); i++) {
 			FileItem item = (FileItem) items.get(i);
-			if (!item.isFormField() && item.getFieldName().equals(fieldName)) {
-				if (item.getName().equals("")) break;
-				
-				Date uploadDate = new Date();
-				String uploadFileName = fieldName + "_" + ServerUtils.starsDateFormat.format(uploadDate) +
-						"_" + ServerUtils.starsTimeFormat.format(uploadDate) + ".csv";
-				
-				File uploadDir = new File(
-						ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + energyCompany.getName());
-				if (!uploadDir.exists()) uploadDir.mkdirs();
-				
-				File uploadFile = new File(uploadDir, uploadFileName);
-				try {
-					item.write( uploadFile );
-				}
-				catch (Exception e) {
-					throw new WebClientException("Failed to upload file '" + item.getName() + "'", e);
-				}
-				
-				return uploadFile;
-			}
+			if (!item.isFormField() && item.getFieldName().equals(fieldName))
+				if (!item.getName().equals("")) return item;
 		}
 		
 		return null;
@@ -1654,8 +1631,11 @@ public class ImportManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			File custFile = getUploadFile( items, "CustFile", energyCompany );
-			File hwFile = getUploadFile( items, "HwFile", energyCompany );
+			FileItem custFile = getUploadFile( items, "CustFile", energyCompany );
+			FileItem hwFile = getUploadFile( items, "HwFile", energyCompany );
+			
+			if (custFile == null && hwFile == null)
+				throw new WebClientException( "No import file is provided" );
 			
 			ImportCustAccountsTask task = new ImportCustAccountsTask( user, custFile, hwFile );
 			long id = ProgressChecker.addTask( task );

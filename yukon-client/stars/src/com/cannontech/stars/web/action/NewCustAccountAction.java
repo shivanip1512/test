@@ -9,6 +9,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -285,7 +286,7 @@ public class NewCustAccountAction implements ActionBase {
 				if (updateLogin.getUsername().trim().length() == 0 || updateLogin.getPassword().trim().length() == 0)
 					throw new WebClientException( "Username and password cannot be empty" );
 	    		
-				if (!UpdateLoginAction.checkLogin( updateLogin ))
+				if (YukonUserFuncs.getLiteYukonUser( updateLogin.getUsername() ) != null)
 					throw new WebClientException( "Username already exists" );
 			}
     		
