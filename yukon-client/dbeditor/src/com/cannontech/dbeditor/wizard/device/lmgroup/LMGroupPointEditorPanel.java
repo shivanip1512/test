@@ -322,9 +322,10 @@ private void initComboBoxes()
 		{
 			liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i);
 
-			//only do RTUs and CAPBANKCONTROLLERS for now!
+			//only do RTUs, MCTs and CAPBANKCONTROLLERS for now!
 			if( com.cannontech.database.data.device.DeviceTypesFuncs.isRTU(liteDevice.getType())
-				 || com.cannontech.database.data.device.DeviceTypesFuncs.isCapBankController(liteDevice) )
+				 || com.cannontech.database.data.device.DeviceTypesFuncs.isCapBankController(liteDevice)
+				 || com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(liteDevice.getType()) )
 			{
 				com.cannontech.database.data.lite.LitePoint[] points = com.cannontech.database.cache.functions.PAOFuncs.getLitePointsForPAObject(
 																		liteDevice.getYukonID() );
