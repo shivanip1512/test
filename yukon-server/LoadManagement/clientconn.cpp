@@ -158,6 +158,12 @@ void CtiLMConnection::write(RWCollectable* msg)
 	}
 	else
 	{
+
+	    if( _LM_DEBUG & LM_DEBUG_CLIENT )	    
+	    {
+		CtiLockGuard<CtiLogger> dout_guard(dout);
+		dout << RWTime() << "Queueing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << msg->classIsA() << endl;
+	    }
 	    _queue.write( (RWCollectable*) msg );
 	}
     }
@@ -187,6 +193,11 @@ void CtiLMConnection::_sendthr()
                 {
                     if( out->isA()!=__RWCOLLECTABLE )
                     {
+			if( _LM_DEBUG & LM_DEBUG_CLIENT )	    
+			{
+			    CtiLockGuard<CtiLogger> dout_guard(dout);
+			    dout << RWTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;	
+			}			
                         *oStream << out;
                         oStream->vflush();
                     }

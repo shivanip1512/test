@@ -3036,8 +3036,10 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         //reset the default for each group if the previous groups was lower
                         cycleCount = currentGearObject->getMethodRateCount();
                         if( !cycleCountDownType.compareTo(CtiLMProgramDirectGear::CountDownMethodOptionType,RWCString::ignoreCase) )
-                        {
-                            if( getManualControlReceivedFlag() )
+                        {   // We only want to reduce the count when we know when control is ending
+			    // this is only true with manual and timed control
+                            if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
+				getProgramState() == CtiLMProgramBase::TimedActiveState )
                             {
                                 if( maxCycleCount > 0 || cycleCount == 0 )
                                 {
@@ -3089,7 +3091,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             }
 
                             LONG estimatedControlTimeInSeconds = (period * (((double)percent)/100.0)) * cycleCount;
-                            if( !getManualControlReceivedFlag() &&
+                            if( !(getProgramState() == CtiLMProgramBase::ManualActiveState ||
+			          getProgramState() == CtiLMProgramBase::TimedActiveState) &&
                                 !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
                             {
                                 LONG controlTimeLeft = calculateGroupControlTimeLeft(currentLMGroup,estimatedControlTimeInSeconds);
@@ -3116,7 +3119,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         {
                             LONG cycleLength = period * cycleCount;
                             LONG estimatedControlTimeInSeconds = cycleLength * (((double)percent)/100.0);
-                            if( getManualControlReceivedFlag() )
+                            if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
+				getProgramState() == CtiLMProgramBase::TimedActiveState )			    
                             {
                                 ULONG secondsAtLastControl = currentLMGroup->getLastControlSent().seconds();
                                 if( (secondsAtLastControl + cycleLength) >= (getDirectStopTime().seconds()-120) )
@@ -3125,13 +3129,15 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 }
                             }
 
-                            if( !getManualControlReceivedFlag() &&
+                            if( !(getProgramState() == CtiLMProgramBase::ManualActiveState ||
+			          getProgramState() == CtiLMProgramBase::TimedActiveState) &&			    
                                 !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
                             {
                                 cycleCount = 0;
                             }
                         }
-                        else if( !getManualControlReceivedFlag() &&
+			else if( !(getProgramState() == CtiLMProgramBase::ManualActiveState ||
+			           getProgramState() == CtiLMProgramBase::TimedActiveState) &&			    				 
                                  !doesGroupHaveAmpleControlTime(currentLMGroup,0) )
                         {
                             cycleCount = 0;
@@ -3165,8 +3171,9 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         }
                         else
                         {
-                            if( !getManualControlReceivedFlag() &&
-                                !doesGroupHaveAmpleControlTime(currentLMGroup,0) &&
+                            if( !(getProgramState() == CtiLMProgramBase::ManualActiveState ||
+			          getProgramState() == CtiLMProgramBase::TimedActiveState) &&			    			    
+                                  !doesGroupHaveAmpleControlTime(currentLMGroup,0) &&
                                 currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState )
                             {//we need to restore the group in the way set in the gear because it went over max control time
                                 returnBoolean = (returnBoolean || stopOverControlledGroup(currentGearObject, currentLMGroup, secondsFrom1901, multiPilMsg, multiDispatchMsg));
@@ -3177,7 +3184,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                     if( !currentLMGroup->getDisableFlag() &&
                         !currentLMGroup->getControlInhibit() &&
                         currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState &&
-                        !getManualControlReceivedFlag() &&
+                         !(getProgramState() == CtiLMProgramBase::ManualActiveState ||
+			   getProgramState() == CtiLMProgramBase::TimedActiveState) &&			    			    			
                         !doesGroupHaveAmpleControlTime(currentLMGroup,0) )
                     {
                         returnBoolean = (returnBoolean || stopOverControlledGroup(currentGearObject, currentLMGroup, secondsFrom1901, multiPilMsg, multiDispatchMsg));

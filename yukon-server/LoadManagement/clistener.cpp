@@ -128,6 +128,13 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
     try
     {
 	//Make a copy of msg for all the clients except the first
+
+	if( _LM_DEBUG & LM_DEBUG_CLIENT )
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " Broadcasting message to " << _connections.entries() << " clients" << endl;
+	}
+	
         for( int i = 1; i < _connections.entries(); i++ )
         {
             // replicate message makes a deep copy
@@ -193,6 +200,12 @@ void CtiLMClientListener::_listen()
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
+			if( _LM_DEBUG & LM_DEBUG_CLIENT )
+			{
+			    CtiLockGuard<CtiLogger> dout_guard(dout);
+			    dout << RWTime() << "New connection, broadcasting control areas" << endl;
+			}
+			
                         CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
                         try
                         {
