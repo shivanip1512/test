@@ -34,7 +34,10 @@ public interface GraphDefines
 	public static DecimalFormat valueFormat = new DecimalFormat();
 	public static DecimalFormat percentFormat = new DecimalFormat(" ##0.0% ");
 	
-	public static Character [] axisChars = new Character[]{new Character('L'), new Character('R')};
+	public final Character [] axisChars = new Character[]{new Character('L'), new Character('R')};
+	public final int PRIMARY_AXIS = 0;		//LEFT yAxis
+	public final int SECONDARY_AXIS = 1;	//RIGHT yAxis
+
 	
 	public static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
 	public static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
