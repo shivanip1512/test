@@ -29,7 +29,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -39,7 +38,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ProgressChecker;
@@ -117,7 +115,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccount;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
-import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettingsResponse;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
@@ -162,54 +160,6 @@ public class ImportManager extends HttpServlet {
 	public static final String PREPROCESSED_DATA = "PREPROCESSED_DATA";
 	public static final String UNASSIGNED_LISTS = "UNASSIGNED_LISTS";
 	
-	// Table of list names, list labels, and old STARS list names
-	public static final String[][] LIST_NAMES = {
-		{"Substation", "Substation", "[Substations]"},
-		{"DeviceType", "Device Type", ""},
-		{"DeviceVoltage", "Device Voltage", "[Device Voltage]"},
-		{"ServiceCompany", "Service Company", "[Contractor List 1]"},
-		{"DeviceStatus", "Device Status", ""},
-		{"LoadGroup", "Load Group", ""},
-		{"LoadType", "Load Type", "[Load Type Description]"},
-		{"Manufacturer", "Manufacturer", "[Manufacturers]"},
-		{"ACTonnage", "AC Tonnage", "[Air Conditioner Tonage]"},
-		{"WHNumberOfGallons", "WH Size", "[Water Heater Size]"},
-		{"WHEnergySource", "WH Energy Source", "[Water Heater Energy Src]"},
-		{"GENTransferSwitchType", "GEN Trans Switch Type", "[Trans Switch Type]"},
-		{"GENTransferSwitchMfg", "GEN Trans Switch Manufacturer", "[Trans Switch Manu]"},
-		{"IrrigationType", "IRR Type", "[Irrigation Type]"},
-		{"IRREnergySource", "IRR Energy Source", "[Irrigation Energy Src]"},
-		{"IRRHorsePower", "IRR Horse Power", "[Irrigation Horsepower]"},
-		{"IRRMeterVoltage", "IRR Meter Voltage", "[Irrigation Meter Voltage]"},
-		{"IRRMeterLocation", "IRR Meter Source", "[Irrigation Meter Src]"},
-		{"IRRSoilType", "IRR Soil Type", "[Irrigation Soil Type]"},
-		{"GrainDryerType", "GDry Type", "[Grain Dryer Type]"},
-		{"GDEnergySource", "GDry Energy Source", "[Grain Dryer Blower Energy Src]"},
-		{"GDHorsePower", "GDry Horse Power", "[Grain Dryer Blower Horsepower]"},
-		{"GDHeatSource", "GDry Heat Source", "[Grain Dryer Blower Heat Src]"},
-		{"GDBinSize", "GDry Bin Size", "[Grain Dryer Bin Size]"},
-		{"HeatPumpType", "HP Type", "[Heat Pump Type]"},
-		{"HeatPumpSize", "HP Size", "[Heat Pump Size]"},
-		{"HPStandbySource", "HP Standby Heat", "[Heat Pump Standby Heat]"},
-		{"StorageHeatType", "SH Type", "[Storage Heat Type]"},
-		{"DFSwitchOverType", "DF Switch Over", ""},
-		{"DFSecondarySource", "DF Secondary Src", "[Dual Fuel Secondary Src]"},
-		{"ServiceStatus", "Service Status", ""},
-		{"ServiceType", "Service Type", "[Work Order Type]"},
-		{"ResidenceType", "Residence Type", "[Home Type]"},
-		{"ConstructionMaterial", "Construction Material", "[Construction Type]"},
-		{"DecadeBuilt", "Decade Built", "[Year Built]"},
-		{"SquareFeet", "Square Feet", "[Square Footage]"},
-		{"InsulationDepth", "Insulation Depth", "[Insulation Value]"},
-		{"GeneralCondition", "General Condition", "[Caulk Condition]"},
-		{"CoolingSystem", "Main Cooling System", "[Main Cooling System]"},
-		{"HeatingSystem", "Main Heating System", "[Main Heating System]"},
-		{"NumberOfOccupants", "Number of Occupants", ""},
-		{"OwnershipType", "Ownership Type", ""},
-		{"FuelType", "Main Fuel Type", "[Fuel Type]"},
-		{"WHLocation", "", "[Water Heater Location]"},
-	};
-	
 	// Customer account fields
 	public static int acct_idx = 0;
 	public static final int IDX_LINE_NUM = acct_idx++;
@@ -239,6 +189,7 @@ public class ImportManager extends HttpServlet {
 	public static final int IDX_POLE = acct_idx++;
 	public static final int IDX_TRFM_SIZE = acct_idx++;
 	public static final int IDX_SERV_VOLT = acct_idx++;
+	public static final int IDX_ACCOUNT_ACTION = acct_idx++;
 	public static final int NUM_ACCOUNT_FIELDS = acct_idx;
 	
 	// Inventory fields
@@ -257,6 +208,7 @@ public class ImportManager extends HttpServlet {
 	public static final int IDX_DEVICE_STATUS = inv_idx++;
 	public static final int IDX_INV_NOTES = inv_idx++;
 	public static final int IDX_DEVICE_NAME = inv_idx++;
+	public static final int IDX_PROGRAM_NAME = inv_idx++;
 	public static final int IDX_ADDR_GROUP = inv_idx++;
 	public static final int IDX_HARDWARE_ACTION = inv_idx++;
 	public static final int IDX_R1_GROUP = inv_idx++;
@@ -348,6 +300,54 @@ public class ImportManager extends HttpServlet {
 	public static final int IDX_MAIN_FUEL_TYPE = res_idx++;
 	public static final int IDX_RES_NOTES = res_idx++;
 	public static final int NUM_RES_FIELDS = res_idx;
+	
+	// Table of list names, list labels, and old STARS list names
+	public static final String[][] LIST_NAMES = {
+		{"Substation", "Substation", "[Substations]"},
+		{"DeviceType", "Device Type", ""},
+		{"DeviceVoltage", "Device Voltage", "[Device Voltage]"},
+		{"ServiceCompany", "Service Company", "[Contractor List 1]"},
+		{"DeviceStatus", "Device Status", ""},
+		{"LoadGroup", "Load Group", ""},
+		{"LoadType", "Load Type", "[Load Type Description]"},
+		{"Manufacturer", "Manufacturer", "[Manufacturers]"},
+		{"ACTonnage", "AC Tonnage", "[Air Conditioner Tonage]"},
+		{"WHNumberOfGallons", "WH Size", "[Water Heater Size]"},
+		{"WHEnergySource", "WH Energy Source", "[Water Heater Energy Src]"},
+		{"GENTransferSwitchType", "GEN Trans Switch Type", "[Trans Switch Type]"},
+		{"GENTransferSwitchMfg", "GEN Trans Switch Manufacturer", "[Trans Switch Manu]"},
+		{"IrrigationType", "IRR Type", "[Irrigation Type]"},
+		{"IRREnergySource", "IRR Energy Source", "[Irrigation Energy Src]"},
+		{"IRRHorsePower", "IRR Horse Power", "[Irrigation Horsepower]"},
+		{"IRRMeterVoltage", "IRR Meter Voltage", "[Irrigation Meter Voltage]"},
+		{"IRRMeterLocation", "IRR Meter Source", "[Irrigation Meter Src]"},
+		{"IRRSoilType", "IRR Soil Type", "[Irrigation Soil Type]"},
+		{"GrainDryerType", "GDry Type", "[Grain Dryer Type]"},
+		{"GDEnergySource", "GDry Energy Source", "[Grain Dryer Blower Energy Src]"},
+		{"GDHorsePower", "GDry Horse Power", "[Grain Dryer Blower Horsepower]"},
+		{"GDHeatSource", "GDry Heat Source", "[Grain Dryer Blower Heat Src]"},
+		{"GDBinSize", "GDry Bin Size", "[Grain Dryer Bin Size]"},
+		{"HeatPumpType", "HP Type", "[Heat Pump Type]"},
+		{"HeatPumpSize", "HP Size", "[Heat Pump Size]"},
+		{"HPStandbySource", "HP Standby Heat", "[Heat Pump Standby Heat]"},
+		{"StorageHeatType", "SH Type", "[Storage Heat Type]"},
+		{"DFSwitchOverType", "DF Switch Over", ""},
+		{"DFSecondarySource", "DF Secondary Src", "[Dual Fuel Secondary Src]"},
+		{"ServiceStatus", "Service Status", ""},
+		{"ServiceType", "Service Type", "[Work Order Type]"},
+		{"ResidenceType", "Residence Type", "[Home Type]"},
+		{"ConstructionMaterial", "Construction Material", "[Construction Type]"},
+		{"DecadeBuilt", "Decade Built", "[Year Built]"},
+		{"SquareFeet", "Square Feet", "[Square Footage]"},
+		{"InsulationDepth", "Insulation Depth", "[Insulation Value]"},
+		{"GeneralCondition", "General Condition", "[Caulk Condition]"},
+		{"CoolingSystem", "Main Cooling System", "[Main Cooling System]"},
+		{"HeatingSystem", "Main Heating System", "[Main Heating System]"},
+		{"NumberOfOccupants", "Number of Occupants", ""},
+		{"OwnershipType", "Ownership Type", ""},
+		{"FuelType", "Main Fuel Type", "[Fuel Type]"},
+		{"WHLocation", "", "[Water Heater Location]"},
+	};
 	
 	// Tables of index of lists(in LIST_NAMES) and index of fields(in corresponding field definition above)
 	public static final int[][] SERVINFO_LIST_FIELDS = {
@@ -455,6 +455,7 @@ public class ImportManager extends HttpServlet {
 		st.wordChars( '0', '9' );
 		st.wordChars( ' ', ' ' );
 		st.wordChars( '-', '-' );
+		st.wordChars( '_', '_' );
 		st.wordChars( '/', '/' );
 		st.wordChars( '.', '.' );
 		st.wordChars( '#', '#' );
@@ -467,19 +468,42 @@ public class ImportManager extends HttpServlet {
 		return st;
 	}
     
-	private static String[] prepareFields(int numFields, StreamTokenizer st, boolean parseLineNo)
-	throws java.io.IOException {
+	public static String[] prepareFields(int numFields) {
 		String[] fields = new String[ numFields ];
 		for (int i = 0; i < numFields; i++)
 			fields[i] = "";
 		
-		if (parseLineNo) {
-			st.nextToken();
-			if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_LINE_NUM] = st.sval;
-			if (st.ttype != ',') st.nextToken();
+		return fields;
+	}
+	
+	public static String[] parseColumns(String line) throws java.io.IOException {
+		StreamTokenizer st = prepareStreamTokenzier( line );
+		ArrayList colList = new ArrayList();
+		
+		String token = null;	// Current token
+		boolean isSeparatorLast = true;	// Whether the last token is a separator (,)
+		
+		while (st.nextToken() != StreamTokenizer.TT_EOF) {
+			if (isSeparatorLast) {
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"') {
+					colList.add( st.sval );
+					isSeparatorLast = false;
+				}
+				else if (st.ttype == ',') {
+					colList.add( "" );
+				}
+			}
+			else {
+				if (st.ttype == ',') isSeparatorLast = true;
+			}
 		}
 		
-		return fields;
+		// If the line ends with a comma, add an empty string to the column list 
+		if (isSeparatorLast) colList.add( "" );
+		
+		String[] columns = new String[ colList.size() ];
+		colList.toArray( columns );
+		return columns;
 	}
     
 	private static final Hashtable parsers = new Hashtable();
@@ -503,7 +527,7 @@ public class ImportManager extends HttpServlet {
 			 */
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype != ',') st.nextToken();
@@ -553,11 +577,11 @@ public class ImportManager extends HttpServlet {
 				fields[NUM_ACCOUNT_FIELDS + IDX_DEVICE_TYPE] = "ExpressStat";
 				
 				if (fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY].equalsIgnoreCase("Western"))
-					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "Western Heating";
+					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "\"Western Heating\"";
 				else if (fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY].equalsIgnoreCase("Ridgeway"))
-					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "Ridgeway Industrial";
+					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "\"Ridgeway Industrial\"";
 				else if (fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY].equalsIgnoreCase("Access"))
-					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "Access Heating";
+					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "\"Access Heating\"";
 				
 				return fields;
 			}
@@ -588,7 +612,7 @@ public class ImportManager extends HttpServlet {
 			 */
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
@@ -680,7 +704,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("San Antonio", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
@@ -765,7 +789,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS Customer", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -845,7 +869,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS ServiceInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -855,8 +879,8 @@ public class ImportManager extends HttpServlet {
 					fields[IDX_PROP_NOTES] += "MeterNumber:" + st.sval + LINE_SEPARATOR;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SUBSTATION] = st.sval;
+				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
+					fields[IDX_SUBSTATION] = "\"" + st.sval + "\"";
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
@@ -907,7 +931,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS Inventory", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_INV_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_INV_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
@@ -980,7 +1004,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS Receiver", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_INV_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_INV_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1045,7 +1069,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS Meter", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_INV_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_INV_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1090,7 +1114,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS LoadInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
@@ -1167,7 +1191,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS WorkOrder", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ORDER_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_ORDER_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ORDER_NO] = st.sval;
@@ -1253,7 +1277,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS ResInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_RES_FIELDS, st, true);
+				String[] fields = prepareFields(NUM_RES_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1354,7 +1378,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS ACInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1400,7 +1424,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS WHInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1451,7 +1475,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS GenInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1502,7 +1526,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS IrrInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1559,7 +1583,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS GDryInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1612,7 +1636,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS HPInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1664,7 +1688,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS SHInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1716,7 +1740,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS DFInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1764,7 +1788,7 @@ public class ImportManager extends HttpServlet {
 		parsers.put("STARS GenlInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
 				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
+				String[] fields = prepareFields(NUM_APP_FIELDS);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1810,16 +1834,25 @@ public class ImportManager extends HttpServlet {
 	    account.setStreetAddress( propAddr );
 	
 		Substation starsSub = new Substation();
+		starsSub.setEntryID( CtiUtilities.NONE_ID );
 		if (fields[IDX_SUBSTATION].length() > 0) {
-			// If importing old STARS data, this field is substation id
-			starsSub.setEntryID( Integer.parseInt(fields[IDX_SUBSTATION]) );
-		}
-		else {
-			YukonSelectionList subList = energyCompany.getYukonSelectionList( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-			if (subList.getYukonListEntries().size() == 0)
-				starsSub.setEntryID( CtiUtilities.NONE_ID );
-			else
-				starsSub.setEntryID( ((YukonListEntry)subList.getYukonListEntries().get(0)).getEntryID() );
+			try {
+				// If importing old STARS data, this field is substation id
+				starsSub.setEntryID( Integer.parseInt(fields[IDX_SUBSTATION]) );
+			}
+			catch (NumberFormatException e) {
+				// Otherwise, this is the substation name inside ""
+				String subName = fields[IDX_SUBSTATION].substring( 1, fields[IDX_SUBSTATION].length()-1 );
+				YukonSelectionList subList = energyCompany.getYukonSelectionList( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+				
+				for (int i = 0; i < subList.getYukonListEntries().size(); i++) {
+					YukonListEntry sub = (YukonListEntry) subList.getYukonListEntries().get(i);
+					if (sub.getEntryText().equalsIgnoreCase( subName )) {
+						starsSub.setEntryID( sub.getEntryID() );
+						break;
+					}
+				}
+			}
 		}
 		
 	    StarsSiteInformation siteInfo = new StarsSiteInformation();
@@ -1831,12 +1864,12 @@ public class ImportManager extends HttpServlet {
 	    account.setStarsSiteInformation( siteInfo );
 	    
 	    BillingAddress billAddr = new BillingAddress();
-	    billAddr.setStreetAddr1( fields[IDX_STREET_ADDR1] );
-	    billAddr.setStreetAddr2( fields[IDX_STREET_ADDR2] );
-	    billAddr.setCity( fields[IDX_CITY] );
-	    billAddr.setState( fields[IDX_STATE] );
-	    billAddr.setZip( fields[IDX_ZIP_CODE] );
-	    billAddr.setCounty( fields[IDX_COUNTY] );
+	    billAddr.setStreetAddr1( "" );
+	    billAddr.setStreetAddr2( "" );
+	    billAddr.setCity( "" );
+	    billAddr.setState( "" );
+	    billAddr.setZip( "" );
+	    billAddr.setCounty( "" );
 	    account.setBillingAddress( billAddr );
 	    
 	    PrimaryContact primContact = new PrimaryContact();
@@ -1846,7 +1879,7 @@ public class ImportManager extends HttpServlet {
 			primContact.setHomePhone( ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]) );
 			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]) + fields[IDX_WORK_PHONE_EXT] );
 	    }
-	    catch (javax.servlet.ServletException se) {}
+	    catch (WebClientException se) {}
 	    
 	    Email email = new Email();
 	    email.setNotification( fields[IDX_EMAIL] );
@@ -1970,28 +2003,28 @@ public class ImportManager extends HttpServlet {
 			inv.setDeviceStatus( null );
 		
 		if (fields[IDX_SERVICE_COMPANY].length() > 0) {
+			InstallationCompany company = new InstallationCompany();
+			company.setEntryID( CtiUtilities.NONE_ID );
+			
 			try {
 				// If importing old STARS data, this field is the service company id
-				int companyID = Integer.parseInt( fields[IDX_SERVICE_COMPANY] );
-				InstallationCompany company = new InstallationCompany();
-				company.setEntryID( companyID );
-				inv.setInstallationCompany( company );
+				company.setEntryID( Integer.parseInt(fields[IDX_SERVICE_COMPANY]) );
 			}
 			catch (NumberFormatException e) {
-				// Otherwise, this field is the service company name
+				// Otherwise, this is the service company name inside ""
+				String companyName = fields[IDX_SERVICE_COMPANY].substring( 1, fields[IDX_SERVICE_COMPANY].length()-1 );
 				ArrayList companies = energyCompany.getAllServiceCompanies();
 				
 				for (int i = 0; i < companies.size(); i++) {
 					LiteServiceCompany entry = (LiteServiceCompany) companies.get(i);
-					
-					if (entry.getCompanyName().equalsIgnoreCase( fields[IDX_SERVICE_COMPANY] )) {
-						InstallationCompany company = new InstallationCompany();
+					if (entry.getCompanyName().equalsIgnoreCase( companyName )) {
 						company.setEntryID( entry.getCompanyID() );
-						inv.setInstallationCompany( company );
 						break;
 					}
 				}
 			}
+			
+			inv.setInstallationCompany( company );
 		}
 		
 		boolean isLMHardware = false;
@@ -2025,7 +2058,7 @@ public class ImportManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws Exception
 	{
 		// Check inventory and build request message
-		int devTypeID = ImportManager.getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
+		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
 		if (devTypeID == -1)
 			throw new WebClientException("Invalid device type \"" + fields[IDX_DEVICE_TYPE] + "\"");
 		
@@ -2065,14 +2098,14 @@ public class ImportManager extends HttpServlet {
 	    return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 	}
 
-	public static void updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
+	public static LiteInventoryBase updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		if (liteAcctInfo.getInventories().size() != 1)
 			throw new WebClientException( "More than one hardware in the account, cannot determine which one to be updated" );
 		
 		// Check inventory and build request message
-		int devTypeID = ImportManager.getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
+		int devTypeID = getDeviceTypeID( energyCompany, fields[IDX_DEVICE_TYPE] );
 		if (devTypeID == -1)
 			throw new WebClientException("Invalid device type '" + fields[IDX_DEVICE_TYPE] + "'");
 		
@@ -2122,10 +2155,11 @@ public class ImportManager extends HttpServlet {
 			}
 	        
 			DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
-			CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
+			return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 		}
 		else {
 			UpdateLMHardwareAction.updateInventory( updateHw, liteHw, energyCompany );
+			return energyCompany.getInventory( liteHw.getInventoryID(), true );
 		}
 	}
 
@@ -2157,19 +2191,24 @@ public class ImportManager extends HttpServlet {
 		
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
 	}
-
-	public static void programSignUp(ArrayList programs, LiteStarsCustAccountInformation liteAcctInfo,
+	
+	/**
+	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID).
+	 * The ApplianceCategoryID and GroupID are optional, set them to -1 if you don't want to privide the value.
+	 * @param invID ID of the hardware the programs are attached to
+	 */
+	public static void programSignUp(int[][] programs, LiteStarsCustAccountInformation liteAcctInfo,
 		Integer invID, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		// Build request message
 		StarsSULMPrograms suPrograms = new StarsSULMPrograms();
-		for (int i = 0; i < programs.size(); i++) {
-			int[] prog = (int[]) programs.get(i);
-			
+		for (int i = 0; i < programs.length; i++) {
 			SULMProgram suProg = new SULMProgram();
-			suProg.setProgramID( prog[0] );
-			suProg.setApplianceCategoryID( prog[1] );
-			suProg.setAddressingGroupID( prog[2] );
+			suProg.setProgramID( programs[i][0] );
+			if (programs[i][1] != -1)
+				suProg.setApplianceCategoryID( programs[i][1] );
+			if (programs[i][2] != -1)
+				suProg.setAddressingGroupID( programs[i][2] );
 			suPrograms.addSULMProgram( suProg );
 		}
 		
@@ -2178,9 +2217,24 @@ public class ImportManager extends HttpServlet {
 	    
 	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, invID, energyCompany );
 	}
+	
+	private static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
+		ArrayList appCats = energyCompany.getAllApplianceCategories();
+		for (int i = 0; i < appCats.size(); i++) {
+			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
+			if (appCat.getDescription().equalsIgnoreCase( appType ))
+				return appCat.getApplianceCategoryID();
+		}
+		
+		return -1;
+	}
 
 	private static void setStarsAppliance(StarsApp app, String[] fields, LiteStarsEnergyCompany energyCompany) {
-		app.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_DESC]) );
+		if (fields[IDX_APP_DESC].length() > 0)	// Importing old STARS data
+			app.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_DESC]) );
+		else
+			app.setApplianceCategoryID( getApplianceCategoryID(energyCompany, fields[IDX_APP_TYPE]) );
+		
 		app.setYearManufactured( fields[IDX_YEAR_MADE] );
 		app.setNotes( fields[IDX_APP_NOTES] );
 		app.setModelNumber( "" );
@@ -2196,7 +2250,10 @@ public class ImportManager extends HttpServlet {
 		app.setLocation( location );
 		
 		Manufacturer mfc = new Manufacturer();
-		mfc.setEntryID( Integer.parseInt(fields[IDX_MANUFACTURER]) );
+		if (fields[IDX_MANUFACTURER].length() > 0)
+			mfc.setEntryID( Integer.parseInt(fields[IDX_MANUFACTURER]) );
+		else
+			mfc.setEntryID( CtiUtilities.NONE_ID );
 		app.setManufacturer( mfc );
 		
 		if (fields[IDX_APP_CAT_DEF_ID].equals("")) return;
@@ -2588,10 +2645,14 @@ public class ImportManager extends HttpServlet {
 		referer = req.getHeader( "referer" );
 		if (redirect == null) redirect = referer;
 		
-		if (action.equalsIgnoreCase("PreprocessImportData"))
-			preprocessImportData( user, items, session );
-		else if (action.equalsIgnoreCase("ImportCustAccounts"))
-			importCustomerAccounts( user, req, session );
+		if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null && !action.equalsIgnoreCase("RestoreContext")) {
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
+			resp.sendRedirect( referer );
+			return;
+		}
+		
+		if (action.equalsIgnoreCase("ImportCustAccounts"))
+			importCustomerAccounts( items, user, req, session );
 		else if (action.equalsIgnoreCase("PreprocessStarsData"))
 			preprocessStarsData( user, req, session );
 		else if (action.equalsIgnoreCase("AssignSelectionList"))
@@ -2602,38 +2663,36 @@ public class ImportManager extends HttpServlet {
 		resp.sendRedirect( redirect );
 	}
 	
-	private void preprocessImportData(StarsYukonUser user, List items, HttpSession session) {
+	private void importCustomerAccounts(List items, StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		try {
-			String importID = ServerUtils.forceNotNone(
-					AuthFuncs.getRolePropertyValue(user.getYukonUser(), ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT) );
+			File custFile = ServerUtils.getUploadFile( items, "CustFile" );
+			File hwFile = ServerUtils.getUploadFile( items, "HwFile" );
 			
-			ImportFileParser parser = (ImportFileParser) parsers.get(importID);
-			if (parser == null)
-				throw new WebClientException("Invalid import ID: " + importID);
+			ImportCustAccountsTask task = new ImportCustAccountsTask( user, custFile, hwFile );
+			long id = ProgressChecker.addTask( task );
 			
-			File uploadFile = ServerUtils.getUploadFile( items, "ImportFile" );
-			if (uploadFile == null)
-				throw new WebClientException("The import file cannot be empty");
-			
-			ArrayList lines = ServerUtils.readFile( uploadFile, true );
-			if (lines == null)
-				throw new WebClientException("Failed to read file '" + uploadFile.getPath() + "'");
-			
-			ArrayList fieldsList = new ArrayList();
-			String line = null;
-			
-			try {
-				for (int i = 0; i < lines.size(); i++) {
-					line = (String) lines.get(i);
-					String[] fields = parser.populateFields( line );
-					fieldsList.add( fields );
+			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+			for (int i = 0; i < 5; i++) {
+				try {
+					Thread.sleep(1000);
+				}
+				catch (InterruptedException e) {}
+				
+				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+					ProgressChecker.removeTask( id );
+					return;
+				}
+				
+				if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+					ProgressChecker.removeTask( id );
+					return;
 				}
 			}
-			catch (Exception e) {
-				throw new WebClientException("Failed to parse the line '" + line + "'");
-			}
 			
-			session.setAttribute(PREPROCESSED_DATA, fieldsList);
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 		}
 		catch (WebClientException e) {
 			e.printStackTrace();
@@ -2642,61 +2701,13 @@ public class ImportManager extends HttpServlet {
 		}
 	}
 	
-	private void importCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		ArrayList fieldsList = (ArrayList) session.getAttribute(PREPROCESSED_DATA);
-		
-		// Process request parameters for program enrollment
-		ArrayList programs = new ArrayList();
-		String[] catIDs = req.getParameterValues( "CatID" );
-		String[] progIDs = req.getParameterValues( "ProgID" );
-		
-		if (progIDs != null) {
-			for (int i = 0; i < progIDs.length; i++) {
-				if (progIDs[i].length() == 0) continue;
-				
-				int[] prog = new int[3];
-				prog[0] = Integer.parseInt(progIDs[i]);
-				prog[1] = Integer.parseInt(catIDs[i]);
-				prog[2] = 0;
-				programs.add( prog );
-			}
-		}
-		
-		ImportCustAccountsTask task = new ImportCustAccountsTask( user, fieldsList, programs );
-		long id = ProgressChecker.addTask( task );
-		
-		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
-		for (int i = 0; i < 5; i++) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {}
-			
-			if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
-				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
-				ProgressChecker.removeTask( id );
-				return;
-			}
-			
-			if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
-				ProgressChecker.removeTask( id );
-				return;
-			}
-		}
-		
-		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
-	}
-	
 	private void importSelectionLists(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
 			File selListFile = new File( req.getParameter("SelListFile") );
 			
-			// Return the empty lines in the import file
-			ArrayList selListLines = ServerUtils.readFile( selListFile, false, true );
+			String[] selListLines = ServerUtils.readFile( selListFile );
 			if (selListLines == null)
 				throw new WebClientException("Unable to read selection list file '" + selListFile.getPath() + "'");
 			
@@ -2705,14 +2716,12 @@ public class ImportManager extends HttpServlet {
 			boolean isInList = false;
 			boolean hasLoadTypes = false;
 			
-			for (int i = 0; i < selListLines.size(); i++) {
-				String line = (String) selListLines.get(i);
-				
+			for (int i = 0; i < selListLines.length; i++) {
 				if (!isInList) {
-					if (!line.startsWith("[")) continue;
+					if (!selListLines[i].startsWith("[")) continue;
 					
 					for (int j = 0; j < LIST_NAMES.length; j++) {
-						if (LIST_NAMES[j][2].equals( line )) {
+						if (LIST_NAMES[j][2].equals( selListLines[i] )) {
 							listName = LIST_NAMES[j][0];
 							listEntries = new ArrayList();
 							isInList = true;
@@ -2721,7 +2730,7 @@ public class ImportManager extends HttpServlet {
 					}
 				}
 				else {
-					if (line.equals("")) {
+					if (selListLines[i].trim().equals("")) {
 						if (isInList && listEntries.size() > 0) {
 							// Find the end of a list, update the list entries
 							if (listName.equals("ServiceCompany")) {
@@ -2760,9 +2769,9 @@ public class ImportManager extends HttpServlet {
 						isInList = false;
 					}
 					else {
-						if (line.endsWith("="))
-							line = line.substring(0, line.length() - 1);
-						listEntries.add( line );
+						if (selListLines[i].endsWith("="))
+							selListLines[i] = selListLines[i].substring(0, selListLines[i].length() - 1);
+						listEntries.add( selListLines[i] );
 					}
 				}
 			}
@@ -2846,23 +2855,23 @@ public class ImportManager extends HttpServlet {
 			File workOrderFile = new File( req.getParameter("WorkOrderFile") );
 			File resInfoFile = new File( req.getParameter("ResInfoFile") );
 			
-			ArrayList custLines = ServerUtils.readFile( custFile, true );
-			ArrayList servInfoLines = ServerUtils.readFile( servInfoFile );
-			ArrayList invLines = ServerUtils.readFile( invFile, true );
-			ArrayList recvrLines = ServerUtils.readFile( recvrFile );
-			ArrayList meterLines = ServerUtils.readFile( meterFile );
-			ArrayList loadInfoLines = ServerUtils.readFile( loadInfoFile, true );
-			ArrayList acInfoLines = ServerUtils.readFile( acInfoFile );
-			ArrayList whInfoLines = ServerUtils.readFile( whInfoFile );
-			ArrayList genInfoLines = ServerUtils.readFile( genInfoFile );
-			ArrayList irrInfoLines = ServerUtils.readFile( irrInfoFile );
-			ArrayList gdryInfoLines = ServerUtils.readFile( gdryInfoFile );
-			ArrayList hpInfoLines = ServerUtils.readFile( hpInfoFile );
-			ArrayList shInfoLines = ServerUtils.readFile( shInfoFile );
-			ArrayList dfInfoLines = ServerUtils.readFile( dfInfoFile );
-			ArrayList genlInfoLines = ServerUtils.readFile( genlInfoFile );
-			ArrayList workOrderLines = ServerUtils.readFile( workOrderFile, true );
-			ArrayList resInfoLines = ServerUtils.readFile( resInfoFile, true );
+			String[] custLines = ServerUtils.readFile( custFile );
+			String[] servInfoLines = ServerUtils.readFile( servInfoFile, false );
+			String[] invLines = ServerUtils.readFile( invFile );
+			String[] recvrLines = ServerUtils.readFile( recvrFile, false );
+			String[] meterLines = ServerUtils.readFile( meterFile, false );
+			String[] loadInfoLines = ServerUtils.readFile( loadInfoFile );
+			String[] acInfoLines = ServerUtils.readFile( acInfoFile, false );
+			String[] whInfoLines = ServerUtils.readFile( whInfoFile, false );
+			String[] genInfoLines = ServerUtils.readFile( genInfoFile, false );
+			String[] irrInfoLines = ServerUtils.readFile( irrInfoFile, false );
+			String[] gdryInfoLines = ServerUtils.readFile( gdryInfoFile, false );
+			String[] hpInfoLines = ServerUtils.readFile( hpInfoFile, false );
+			String[] shInfoLines = ServerUtils.readFile( shInfoFile, false );
+			String[] dfInfoLines = ServerUtils.readFile( dfInfoFile, false );
+			String[] genlInfoLines = ServerUtils.readFile( genlInfoFile, false );
+			String[] workOrderLines = ServerUtils.readFile( workOrderFile );
+			String[] resInfoLines = ServerUtils.readFile( resInfoFile );
 			
 			Hashtable preprocessedData = (Hashtable) session.getAttribute(PREPROCESSED_DATA);
 			if (preprocessedData != null) {
@@ -2923,11 +2932,11 @@ public class ImportManager extends HttpServlet {
 					// Notice: the parsed lines have line# inserted at the beginning
 					Hashtable acctIDMap = new Hashtable();
 					
-					for (int i = 0; i < custLines.size(); i++) {
-						String[] fields = ((String) custLines.get(i)).split(",");
-						if (fields.length != 3)
+					for (int i = 0; i < custLines.length; i++) {
+						String[] fields = custLines[i].split(",");
+						if (fields.length != 2)
 							throw new WebClientException("Invalid format of file '" + custFile.getPath() + "'");
-						acctIDMap.put( Integer.valueOf(fields[1]), Integer.valueOf(fields[2]) );
+						acctIDMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
 					}
 					
 					preprocessedData.put("CustomerAccountMap", acctIDMap);
@@ -2935,8 +2944,12 @@ public class ImportManager extends HttpServlet {
 				else {
 					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Customer");
 					
-					for (int i = 0; i < custLines.size(); i++) {
-						String[] fields = parser.populateFields( (String)custLines.get(i) );
+					for (int i = 0; i < custLines.length; i++) {
+						if (custLines[i].trim().equals("") || custLines[i].charAt(0) == '#')
+							continue;
+						
+						String[] fields = parser.populateFields( custLines[i] );
+						fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 						acctFieldsList.add( fields );
 						acctIDFields.put( fields[IDX_ACCOUNT_ID], fields );
 					}
@@ -2952,8 +2965,8 @@ public class ImportManager extends HttpServlet {
 			if (servInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ServiceInfo");
 				
-				for (int i = 0; i < servInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)servInfoLines.get(i) );
+				for (int i = 0; i < servInfoLines.length; i++) {
+					String[] fields = parser.populateFields( servInfoLines[i] );
 					String[] custFields = (String[]) acctIDFields.get( fields[IDX_ACCOUNT_ID] );
 					
 					if (custFields != null) {
@@ -2975,8 +2988,13 @@ public class ImportManager extends HttpServlet {
 			if (invLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Inventory");
 				
-				for (int i = 0; i < invLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)invLines.get(i) );
+				for (int i = 0; i < invLines.length; i++) {
+					if (invLines[i].trim().equals("") || invLines[i].charAt(0) == '#')
+						continue;
+					
+					String[] fields = parser.populateFields( invLines[i] );
+					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
+					
 					if (fields[IDX_DEVICE_TYPE].equals("") || fields[IDX_DEVICE_TYPE].equals("-1"))
 						continue;
 					
@@ -2999,8 +3017,8 @@ public class ImportManager extends HttpServlet {
 					// hwconfig.map file format: import_inv_id,relay1_db_app_id,relay2_db_app_id,relay3_db_app_id
 					Hashtable appIDMap = new Hashtable();
 					
-					for (int i = 0; i < recvrLines.size(); i++) {
-						String[] fields = ((String) recvrLines.get(i)).split(",");
+					for (int i = 0; i < recvrLines.length; i++) {
+						String[] fields = recvrLines[i].split(",");
 						if (fields.length != 4)
 							throw new WebClientException("Invalid format of file '" + recvrFile.getPath() + "'");
 						
@@ -3017,8 +3035,8 @@ public class ImportManager extends HttpServlet {
 				else {
 					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Receiver");
 					
-					for (int i = 0; i < recvrLines.size(); i++) {
-						String[] fields = parser.populateFields( (String)recvrLines.get(i) );
+					for (int i = 0; i < recvrLines.length; i++) {
+						String[] fields = parser.populateFields( recvrLines[i] );
 						String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 						
 						if (invFields != null) {
@@ -3047,8 +3065,8 @@ public class ImportManager extends HttpServlet {
 			if (meterLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Meter");
 				
-				for (int i = 0; i < meterLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)meterLines.get(i) );
+				for (int i = 0; i < meterLines.length; i++) {
+					String[] fields = parser.populateFields( meterLines[i] );
 					String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 					
 					if (invFields != null) {
@@ -3070,8 +3088,12 @@ public class ImportManager extends HttpServlet {
 				
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS LoadInfo");
 				
-				for (int i = 0; i < loadInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)loadInfoLines.get(i) );
+				for (int i = 0; i < loadInfoLines.length; i++) {
+					if (loadInfoLines[i].trim().equals("") || loadInfoLines[i].charAt(0) == '#')
+						continue;
+					
+					String[] fields = parser.populateFields( loadInfoLines[i] );
+					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					appFieldsList.add( fields );
 					appIDFields.put( fields[IDX_APP_ID], fields );
 					
@@ -3089,8 +3111,8 @@ public class ImportManager extends HttpServlet {
 			if (acInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ACInfo");
 				
-				for (int i = 0; i < acInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)acInfoLines.get(i) );
+				for (int i = 0; i < acInfoLines.length; i++) {
+					String[] fields = parser.populateFields( acInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3121,8 +3143,8 @@ public class ImportManager extends HttpServlet {
 			if (whInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS WHInfo");
 				
-				for (int i = 0; i < whInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)whInfoLines.get(i) );
+				for (int i = 0; i < whInfoLines.length; i++) {
+					String[] fields = parser.populateFields( whInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3152,8 +3174,8 @@ public class ImportManager extends HttpServlet {
 			if (genInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GenInfo");
 				
-				for (int i = 0; i < genInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)genInfoLines.get(i) );
+				for (int i = 0; i < genInfoLines.length; i++) {
+					String[] fields = parser.populateFields( genInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3183,8 +3205,8 @@ public class ImportManager extends HttpServlet {
 			if (irrInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS IrrInfo");
 				
-				for (int i = 0; i < irrInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)irrInfoLines.get(i) );
+				for (int i = 0; i < irrInfoLines.length; i++) {
+					String[] fields = parser.populateFields( irrInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3214,8 +3236,8 @@ public class ImportManager extends HttpServlet {
 			if (gdryInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GDryInfo");
 				
-				for (int i = 0; i < gdryInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)gdryInfoLines.get(i) );
+				for (int i = 0; i < gdryInfoLines.length; i++) {
+					String[] fields = parser.populateFields( gdryInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3245,8 +3267,8 @@ public class ImportManager extends HttpServlet {
 			if (hpInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS HPInfo");
 				
-				for (int i = 0; i < hpInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)hpInfoLines.get(i) );
+				for (int i = 0; i < hpInfoLines.length; i++) {
+					String[] fields = parser.populateFields( hpInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3276,8 +3298,8 @@ public class ImportManager extends HttpServlet {
 			if (shInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS SHInfo");
 				
-				for (int i = 0; i < shInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)shInfoLines.get(i) );
+				for (int i = 0; i < shInfoLines.length; i++) {
+					String[] fields = parser.populateFields( shInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3307,8 +3329,8 @@ public class ImportManager extends HttpServlet {
 			if (dfInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS DFInfo");
 				
-				for (int i = 0; i < dfInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)dfInfoLines.get(i) );
+				for (int i = 0; i < dfInfoLines.length; i++) {
+					String[] fields = parser.populateFields( dfInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3338,8 +3360,8 @@ public class ImportManager extends HttpServlet {
 			if (genlInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GenlInfo");
 				
-				for (int i = 0; i < genlInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)genlInfoLines.get(i) );
+				for (int i = 0; i < genlInfoLines.length; i++) {
+					String[] fields = parser.populateFields( genlInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3360,8 +3382,12 @@ public class ImportManager extends HttpServlet {
 			if (workOrderLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS WorkOrder");
 				
-				for (int i = 0; i < workOrderLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)workOrderLines.get(i) );
+				for (int i = 0; i < workOrderLines.length; i++) {
+					if (workOrderLines[i].trim().equals("") || workOrderLines[i].charAt(0) == '#')
+						continue;
+					
+					String[] fields = parser.populateFields( workOrderLines[i] );
+					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					orderFieldsList.add( fields );
 					
 					for (int j = 0; j < ORDER_LIST_FIELDS.length; j++) {
@@ -3378,8 +3404,12 @@ public class ImportManager extends HttpServlet {
 			if (resInfoLines != null) {
 				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ResInfo");
 				
-				for (int i = 0; i < resInfoLines.size(); i++) {
-					String[] fields = parser.populateFields( (String)resInfoLines.get(i) );
+				for (int i = 0; i < resInfoLines.length; i++) {
+					if (resInfoLines[i].trim().equals("") || resInfoLines[i].charAt(0) == '#')
+						continue;
+					
+					String[] fields = parser.populateFields( resInfoLines[i] );
+					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					resFieldsList.add( fields );
 					
 					for (int j = 0; j < RES_LIST_FIELDS.length; j++) {
@@ -3428,8 +3458,8 @@ public class ImportManager extends HttpServlet {
 	private void assignSelectionList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		StarsGetEnergyCompanySettingsResponse ecSettings =
-				(StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+		StarsEnergyCompanySettings ecSettings =
+				(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 		Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 		
 		String listName = req.getParameter("ListName");
