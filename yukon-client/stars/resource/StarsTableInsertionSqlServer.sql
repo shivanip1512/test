@@ -236,7 +236,6 @@ insert into YukonListEntry values (1334,1054,0,'Last Name',3304);
 insert into YukonListEntry values (1335,1054,0,'Serial #',3305);
 insert into YukonListEntry values (1341,1055,0,'Order #',3401);
 insert into YukonListEntry values (1342,1055,0,'Date/Time',3402);
-//insert into YukonListEntry values (1351,1056,0,'Status',3501);
 insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
 insert into YukonListEntry values (1353,1056,0,'Service Company',3503);
 
@@ -573,4 +572,3 @@ INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1049,75600,72);
 INSERT INTO LMCustomerEventBase VALUES (-1,1064,1066,'01-JAN-70','','');
 INSERT INTO LMThermostatManualEvent VALUES (-1,-1,72,'N',1054,1058);
 INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1);
-z`
