@@ -18,4 +18,8 @@ public interface GraphDefines
 	public static final int TABULAR_PANE = 1;
 	public static final int SUMMARY_PANE = 2;
 
+	public static final String GRAPH_PANE_STRING = "graph";
+	public static final String TABULAR_PANE_STRING = "tab";
+	public static final String SUMMARY_PANE_STRING = "summary";
+
 }
