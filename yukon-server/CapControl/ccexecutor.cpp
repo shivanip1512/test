@@ -93,8 +93,10 @@ void CtiCCCommandExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::EnableSubstationBus()
 {
-    ULONG subID = _command->getId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    ULONG subID = _command->getId();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -119,8 +121,10 @@ void CtiCCCommandExecutor::EnableSubstationBus()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DisableSubstationBus()
 {
-    ULONG subID = _command->getId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    ULONG subID = _command->getId();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -145,9 +149,11 @@ void CtiCCCommandExecutor::DisableSubstationBus()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::EnableFeeder()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG feederID = _command->getId();
     BOOL found = FALSE;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -181,9 +187,11 @@ void CtiCCCommandExecutor::EnableFeeder()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DisableFeeder()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG feederID = _command->getId();
     BOOL found = FALSE;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -217,9 +225,11 @@ void CtiCCCommandExecutor::DisableFeeder()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::EnableCapBank()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG capBankID = _command->getId();
     BOOL found = FALSE;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -271,9 +281,11 @@ void CtiCCCommandExecutor::EnableCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::DisableCapBank()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG capBankID = _command->getId();
     BOOL found = FALSE;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -325,6 +337,9 @@ void CtiCCCommandExecutor::DisableCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::OpenCapBank()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -334,7 +349,6 @@ void CtiCCCommandExecutor::OpenCapBank()
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -359,6 +373,8 @@ void CtiCCCommandExecutor::OpenCapBank()
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
                     currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPosition(j);
                     currentSubstationBus->setLastOperationTime(RWDBDateTime());
                     currentFeeder->setLastOperationTime(RWDBDateTime());
                     currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
@@ -495,6 +511,9 @@ void CtiCCCommandExecutor::OpenCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::CloseCapBank()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -504,7 +523,6 @@ void CtiCCCommandExecutor::CloseCapBank()
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -529,6 +547,8 @@ void CtiCCCommandExecutor::CloseCapBank()
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
                     currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPosition(j);
                     currentSubstationBus->setLastOperationTime(RWDBDateTime());
                     currentFeeder->setLastOperationTime(RWDBDateTime());
                     currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
@@ -666,6 +686,9 @@ void CtiCCCommandExecutor::CloseCapBank()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::ConfirmOpen()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -675,7 +698,6 @@ void CtiCCCommandExecutor::ConfirmOpen()
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -701,6 +723,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
                     currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPosition(j);
                     currentSubstationBus->setLastOperationTime(RWDBDateTime());
                     currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                     currentSubstationBus->figureEstimatedVarLoadPointValue();
@@ -742,7 +766,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime()) )
+                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -751,7 +775,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime()) )
+                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -835,6 +859,9 @@ void CtiCCCommandExecutor::ConfirmOpen()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::ConfirmClose()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     ULONG controlID = 0;
     ULONG bankID = _command->getId();
     BOOL found = FALSE;
@@ -844,7 +871,6 @@ void CtiCCCommandExecutor::ConfirmClose()
     RWDBDateTime savedFeederLastOperationTime = RWDBDateTime(1990,1,1,0,0,0,0);
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
@@ -870,6 +896,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                     currentFeeder->setRecentlyControlledFlag(FALSE);
                     controlID = currentCapBank->getControlDeviceId();
                     currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                    currentSubstationBus->setLastFeederControlledPosition(j);
                     currentSubstationBus->setLastOperationTime(RWDBDateTime());
                     currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                     currentSubstationBus->figureEstimatedVarLoadPointValue();
@@ -913,7 +941,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                     if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                     {
                         if( savedFeederRecentlyControlledFlag ||
-                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime()) )
+                            ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -922,7 +950,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                              currentSubstationBus->getControlMethod() == CtiCCSubstationBus::BusOptimizedFeederControlMethod )
                     {
                         if( savedBusRecentlyControlledFlag ||
-                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime()) )
+                            ((savedBusLastOperationTime.seconds()+2) >= currentSubstationBus->getLastOperationTime().seconds()) )
                         {
                             confirmImmediately = TRUE;
                         }
@@ -1006,8 +1034,10 @@ void CtiCCCommandExecutor::ConfirmClose()
 ---------------------------------------------------------------------------*/    
 void CtiCCCommandExecutor::SendAllSubstationBuses()
 {
-    CtiCCExecutorFactory f;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds()))));
     executor->Execute();
     delete executor;
@@ -1070,6 +1100,9 @@ void CtiCCForwardMsgToDispatchExecutor::Execute()
 ---------------------------------------------------------------------------*/    
 void CtiCCPointDataMsgExecutor::Execute()
 {
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
     long pointID = _pointDataMsg->getId();
     double value = _pointDataMsg->getValue();
     unsigned tags = _pointDataMsg->getTags();
@@ -1096,7 +1129,6 @@ void CtiCCPointDataMsgExecutor::Execute()
 	}
 
     BOOL found = FALSE;
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
