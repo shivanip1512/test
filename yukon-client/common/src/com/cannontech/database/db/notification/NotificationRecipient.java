@@ -11,7 +11,7 @@ public class NotificationRecipient extends com.cannontech.database.db.DBPersiste
 	public static final int DUMMY_LOCATIONID = -999;
 	public static final String NONE_STRING = "None";
 
-	public static final int NONE_RECIPIENT_ID = -1;
+	public static final int NONE_RECIPIENT_ID = 0;
 
 	//possible values for recipientType
 	public static final String TYPE_EMAIL = "EMAIL";
