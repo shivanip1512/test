@@ -911,64 +911,67 @@ protected void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObj
 	{
 		if( getJComboCurrentDisplay().getSelectedItem() != null )
 			getCurrentDisplay().setName( getJComboCurrentDisplay().getSelectedItem().toString() );
-		
-		return;
+
 	}
-
-	Cursor original = setCursorToWait();
-	try
+	else
 	{
-		if( getJComboCurrentDisplay().getItemCount() > 0 && 
-			 getJComboCurrentDisplay().getSelectedIndex() >= 0 )
+		Cursor original = setCursorToWait();
+		try
 		{
-			String selectedDisplayName = getJComboCurrentDisplay().getSelectedItem().toString();
-
-
-			// set the current display to the one selected
-			if( getDisplayIndexByName(selectedDisplayName) >= 0 )
-				setCurrentDisplay( getAllDisplays()[ getDisplayIndexByName(selectedDisplayName) ] );
-			
-			// set our last display to the last one we were looking at
-			if( getCurrentDisplay() != null )
-				setLastDisplays( Display.getDisplayTypeIndexByType(getCurrentDisplay().getType()), getCurrentDisplay() );
-	
-			// check if we are a client display
-			if( isClientDisplay() )
+			if( getJComboCurrentDisplay().getItemCount() > 0 && 
+				 getJComboCurrentDisplay().getSelectedIndex() >= 0 )
 			{
-				// FOR NOW, DO NOTHING, LATER WE WILL WANT THIS
-				// TO DO A LITTLE MORE SINCE WE COULD HAVE DIFFERENT DISPLAYS FOR
-				// EACH CLIENT DISPLAY!!!				
-			}
-			else
-			{  	
-				// we must have a CORE or a USER CREATED display
-				setUpTable();
-
-				if( this.isDisplayable() )
-					checkForMissingPoints();
-					
-				if( isCoreDisplay() ) 
-					initSystemDisplays();
-			}
+				String selectedDisplayName = getJComboCurrentDisplay().getSelectedItem().toString();
+	
+	
+				// set the current display to the one selected
+				if( getDisplayIndexByName(selectedDisplayName) >= 0 )
+					setCurrentDisplay( getAllDisplays()[ getDisplayIndexByName(selectedDisplayName) ] );
 				
-			resetPagingProperties();
-
-			//set our display with the last format
-			updateDisplayColumnFormat();
-			
-			// tell the MAIN FRAME we just changed displays
-			if ( fieldTDCMainPanelListenerEventMulticaster != null)
-				fieldTDCMainPanelListenerEventMulticaster.JComboCurrentDisplayAction_actionPerformed(newEvent);
-
+				// set our last display to the last one we were looking at
+				if( getCurrentDisplay() != null )
+					setLastDisplays( Display.getDisplayTypeIndexByType(getCurrentDisplay().getType()), getCurrentDisplay() );
+		
+				// check if we are a client display
+				if( isClientDisplay() )
+				{
+					// FOR NOW, DO NOTHING, LATER WE WILL WANT THIS
+					// TO DO A LITTLE MORE SINCE WE COULD HAVE DIFFERENT DISPLAYS FOR
+					// EACH CLIENT DISPLAY!!!				
+				}
+				else
+				{  	
+					// we must have a CORE or a USER CREATED display
+					setUpTable();
+	
+					if( this.isDisplayable() )
+						checkForMissingPoints();
+						
+					if( isCoreDisplay() ) 
+						initSystemDisplays();
+				}
+					
+				resetPagingProperties();
+	
+				//set our display with the last format
+				updateDisplayColumnFormat();
+			}
+		}
+		finally
+		{
+			com.cannontech.common.util.CtiUtilities.getParentFrame(this).setCursor( original );
 		}
 	}
-	finally
-	{
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this).setCursor( original );
-	}
 	
+	
+	// tell the MAIN FRAME we just changed displays
+	if ( fieldTDCMainPanelListenerEventMulticaster != null)
+		fieldTDCMainPanelListenerEventMulticaster.JComboCurrentDisplayAction_actionPerformed(newEvent);
+		
 	return;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (4/27/00 3:06:28 PM)
