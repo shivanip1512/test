@@ -35,8 +35,6 @@ public class TrendModel implements com.cannontech.graph.GraphDataFormats
 
 public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef, int optionsMask)
 {
-	setOptionsMask(optionsMask);
-	
 	// Inititialize chart properties
 	setStartDate(newGraphDef.getGraphDefinition().getStartDate());
 	setStopDate(newGraphDef.getGraphDefinition().getStopDate());
@@ -62,10 +60,10 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		serie.setLabel(gds.getLabel().toString());
 		serie.setType(gds.getType().toString());
 		serie.setTypeMask(gds.getTypeMask());
-		if( ((getOptionsMaskSettings() & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER))
-		{
+//		if( ((getOptionsMaskSettings() & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER))
+//		{
 			serie.setMultiplier(gds.getMultiplier());
-		}
+//		}
 		dsVector.add(serie);
 	}
 
@@ -80,6 +78,7 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 	{
 		com.cannontech.clientutils.CTILogger.info(" GraphDefinition contains NO graphDataSeries Items");
 	}
+	setOptionsMask(optionsMask);	
 }
 
 public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, String newChartName, Point [] newPoints)
@@ -236,10 +235,40 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 	if( (getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK ||
 		(getOptionsMaskSettings() & TrendModelType.LEGEND_MIN_MAX_MASK ) == TrendModelType.LEGEND_MIN_MAX_MASK)
 	{
+		int cnt = 0;
 		stats = new java.util.Vector(dataset.getSeriesCount());
-		for( int i = 0; i < dataset.getSeriesCount(); i++)
+		for( int i = 0; i < trendSeries.length; i++)
 		{
-			String stat = "";
+			String stat = "";					
+			if(( trendSeries[i].getTypeMask() & GraphDataSeries.VALID_INTERVAL_MASK) == trendSeries[i].getTypeMask())
+			{
+				if ((getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
+				{
+					stat += "Load Factor: " + LF_FORMAT.format(trendSeries[i].getLoadFactor());
+				}
+
+				if( (getOptionsMaskSettings() & TrendModelType.LEGEND_MIN_MAX_MASK) == TrendModelType.LEGEND_MIN_MAX_MASK)
+				{
+					if( dataset.getMinValue(cnt).doubleValue() == Double.MAX_VALUE)
+						stat += "    Min:  n/a";
+					else
+						stat += "    Min: " + MIN_MAX_FORMAT.format(dataset.getMinValue(cnt));
+						
+					if( dataset.getMaxValue(cnt).doubleValue() == Double.MIN_VALUE)
+						stat += "    Max:  n/a";
+					else
+						stat += "    Max: " + MIN_MAX_FORMAT.format(dataset.getMaxValue(cnt));
+					cnt++;
+				}
+				
+				stats.add(stat);
+			}
+//YOU ARE HERE TRYING TO FIX THE LEGEND WHEN THERE IS A USAGE (NON VALID) INTERVAL GDS
+		}
+		
+/*		for( int i = 0; i < dataset.getSeriesCount(); i++)
+		{
+//			String stat = "";
 			if ((getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
 			{
 				stat += "Load Factor: " + LF_FORMAT.format(trendSeries[i].getLoadFactor());
@@ -258,6 +287,7 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 			}
 			stats.add(stat);
 		}
+		*/
 	}
 
 	if( stats != null)
@@ -518,6 +548,17 @@ protected void setStartDate(java.util.Date newStartDate)
 public void setOptionsMask(int newOptionsMask)
 {
 	optionsMaskSettings = newOptionsMask;
+
+	for (int i = 0; i < trendSeries.length; i++)
+	{
+		if(( optionsMaskSettings & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER)
+		{
+			trendSeries[i].useMultiplier = true;
+		}
+		else
+			trendSeries[i].useMultiplier = false;
+	}
+			
 }
 /**
  * Insert the method's description here.
