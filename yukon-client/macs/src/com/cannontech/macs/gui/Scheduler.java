@@ -17,7 +17,7 @@ public class Scheduler implements java.awt.event.ActionListener, com.cannontech.
 	private javax.swing.JComboBox comboBox = null;
 	public static final String MACS_NAME = "MACS Scheduler";
 	public static final String MACS_VERSION = 
-			com.cannontech.common.version.VersionTools.getYUKON_VERSION() + ".2.13";
+			com.cannontech.common.version.VersionTools.getYUKON_VERSION();
 
 	private SchedulerMainPanel mainPanel = null;
 	private com.cannontech.macs.MACSClientConnection connection = null;
