@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/05/24 13:48:10 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/05/24 17:04:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,72 +108,82 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
     INT      status = NORMAL;
     ULONG    BytesWritten;
 
-    if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
+    try
     {
-        if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+        if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
         {
-            // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-            OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
+            if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != DEVICEINHIBITED)
+            {
+                // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
+                OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
 
-            enablePrefix(false);        // Most protocols will not want this on.
+                enablePrefix(false);        // Most protocols will not want this on.
 
-            if(parse.getiValue("type") == ProtocolExpresscomType)
-            {
-                enablePrefix(true);
-                status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(parse.getiValue("type") == ProtocolSA305Type)
-            {
-                status = assembleSA305Request(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(parse.getiValue("type") == ProtocolSA205Type)
-            {
-                status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(parse.getiValue("type") == ProtocolSA105Type)
-            {
-                status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(parse.getiValue("type") == ProtocolSADigitalType)
-            {
-                status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(parse.getiValue("type") == ProtocolGolayType)
-            {
-                status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(OutMessage->EventCode & VERSACOM)
-            {
-                enablePrefix(true);
-                status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(OutMessage->EventCode & FISHERPIERCE)
-            {
-                status = assembleFisherPierceRequest(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else if(OutMessage->EventCode & RIPPLE)
-            {
-                status = assembleRippleRequest(pReq, parse, OutMessage, vgList, retList, outList);
-            }
-            else
-            {
-                status = BADROUTE;
+                if(parse.getiValue("type") == ProtocolExpresscomType)
+                {
+                    enablePrefix(true);
+                    status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(parse.getiValue("type") == ProtocolSA305Type)
+                {
+                    status = assembleSA305Request(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(parse.getiValue("type") == ProtocolSA205Type)
+                {
+                    status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(parse.getiValue("type") == ProtocolSA105Type)
+                {
+                    status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(parse.getiValue("type") == ProtocolSADigitalType)
+                {
+                    status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(parse.getiValue("type") == ProtocolGolayType)
+                {
+                    status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(OutMessage->EventCode & VERSACOM)
+                {
+                    enablePrefix(true);
+                    status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(OutMessage->EventCode & FISHERPIERCE)
+                {
+                    status = assembleFisherPierceRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else if(OutMessage->EventCode & RIPPLE)
+                {
+                    status = assembleRippleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                }
+                else
+                {
+                    status = BADROUTE;
+                }
             }
         }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
+            }
+            status = -1;
+        }
+
+        if(OutMessage != NULL)
+        {
+            delete OutMessage;
+            OutMessage = NULL;
+        }
     }
-    else
+    catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        status = -1;
-    }
-
-    if(OutMessage != NULL)
-    {
-        delete OutMessage;
-        OutMessage = NULL;
     }
 
     return status;

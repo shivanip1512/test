@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2004/05/05 15:31:45 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2004/05/24 17:04:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -979,7 +979,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 {
                     RWTime NowTime;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
                     dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
                 }

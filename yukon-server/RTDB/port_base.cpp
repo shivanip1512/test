@@ -37,74 +37,84 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
 
     RWCString msg;
 
-    if(Xfer.doTrace(ErrorCode) &&  !(Xfer.getInCountActual() == 0 && !ErrorCode) )
+    try
     {
-        if(!isTAP() || (Dev && !Dev->isTAP()))
+        if(Xfer.doTrace(ErrorCode) &&  !(Xfer.getInCountActual() == 0 && !ErrorCode) )
         {
+            if(!isTAP() || (Dev && !Dev->isTAP()))
             {
-                CtiTraceMsg trace;
-
-                //  set bright yellow for the time message
-                trace.setBrightYellow();
-                trace.setTrace( RWTime().asString() );
-                trace.setEnd(false);
-                traceList.insert(trace.replicateMessage());
-
-                //  set bright cyan for the info message
-                trace.setBrightCyan();
-                msg = "  P: " + CtiNumStr(getPortID()).spad(3) + " / " + getName();
-                trace.setTrace(msg);
-                trace.setEnd(false);
-                traceList.insert(trace.replicateMessage());
-
-                if(Dev)
                 {
+                    CtiTraceMsg trace;
+
+                    //  set bright yellow for the time message
+                    trace.setBrightYellow();
+                    trace.setTrace( RWTime().asString() );
+                    trace.setEnd(false);
+                    traceList.insert(trace.replicateMessage());
+
+                    //  set bright cyan for the info message
                     trace.setBrightCyan();
-                    msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
+                    msg = "  P: " + CtiNumStr(getPortID()).spad(3) + " / " + getName();
                     trace.setTrace(msg);
                     trace.setEnd(false);
                     traceList.insert(trace.replicateMessage());
-                }
 
-                if(ErrorCode)
-                {
-                    if( ErrorCode == ErrPortSimulated )
+                    if(Dev)
                     {
-                        trace.setBrightWhite();
-                        msg = " IN: (simulated, no bytes returned)";
+                        trace.setBrightCyan();
+                        msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
+                        trace.setTrace(msg);
+                        trace.setEnd(false);
+                        traceList.insert(trace.replicateMessage());
+                    }
+
+                    if(ErrorCode)
+                    {
+                        if( ErrorCode == ErrPortSimulated )
+                        {
+                            trace.setBrightWhite();
+                            msg = " IN: (simulated, no bytes returned)";
+                        }
+                        else
+                        {
+                            trace.setBrightRed();
+                            msg = " IN: " + CtiNumStr(ErrorCode).spad(3);
+                        }
                     }
                     else
                     {
-                        trace.setBrightRed();
-                        msg = " IN: " + CtiNumStr(ErrorCode).spad(3);
+                        trace.setBrightWhite();
+                        msg = " IN:";
                     }
-                }
-                else
-                {
-                    trace.setBrightWhite();
-                    msg = " IN:";
-                }
-                trace.setTrace(msg);
-                trace.setEnd(true);
-                traceList.insert(trace.replicateMessage());
-
-
-                //  then print the formatted hex trace
-                if(Xfer.getInCountActual() > 0)
-                {
-                    trace.setBrightMagenta();
-                    traceBytes(Xfer.getInBuffer(), Xfer.getInCountActual(), trace, traceList);
-                }
-
-                if(ErrorCode && ErrorCode != ErrPortSimulated)
-                {
-                    trace.setBrightRed();
-                    trace.setTrace( FormatError(ErrorCode) );
+                    trace.setTrace(msg);
                     trace.setEnd(true);
                     traceList.insert(trace.replicateMessage());
-                    trace.setNormal();
+
+
+                    //  then print the formatted hex trace
+                    if(Xfer.getInCountActual() > 0)
+                    {
+                        trace.setBrightMagenta();
+                        traceBytes(Xfer.getInBuffer(), Xfer.getInCountActual(), trace, traceList);
+                    }
+
+                    if(ErrorCode && ErrorCode != ErrPortSimulated)
+                    {
+                        trace.setBrightRed();
+                        trace.setTrace( FormatError(ErrorCode) );
+                        trace.setEnd(true);
+                        traceList.insert(trace.replicateMessage());
+                        trace.setNormal();
+                    }
                 }
             }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -132,58 +142,68 @@ INT CtiPort::traceXfer(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiD
     return status;
 }
 
-INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
+INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDeviceSPtr Dev, INT ErrorCode) const
 {
     INT status = NORMAL;
     RWCString msg;
 
-    if(!isTAP() || (Dev && !Dev->isTAP()))
+    try
     {
-        if(Xfer.doTrace(ErrorCode))
+        if(!isTAP() || (Dev && !Dev->isTAP()))
         {
+            if(Xfer.doTrace(ErrorCode))
             {
-                CtiTraceMsg trace;
-
-                //  set bright yellow for the time message
-                trace.setBrightYellow();
-                trace.setTrace( RWTime().asString() );
-                trace.setEnd(false);
-                traceList.insert(trace.replicateMessage());
-
-                //  set bright cyan for the info message
-                trace.setBrightCyan();
-                msg = "  P: " + CtiNumStr(getPortID()).spad(3) + " / " + getName();
-                trace.setTrace(msg);
-                trace.setEnd(false);
-                traceList.insert(trace.replicateMessage());
-
-                if(Dev)
                 {
+                    CtiTraceMsg trace;
+
+                    //  set bright yellow for the time message
+                    trace.setBrightYellow();
+                    trace.setTrace( RWTime().asString() );
+                    trace.setEnd(false);
+                    traceList.insert(trace.replicateMessage());
+
+                    //  set bright cyan for the info message
                     trace.setBrightCyan();
-                    msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
+                    msg = "  P: " + CtiNumStr(getPortID()).spad(3) + " / " + getName();
                     trace.setTrace(msg);
                     trace.setEnd(false);
                     traceList.insert(trace.replicateMessage());
-                }
 
-                if(ErrorCode)
-                {
-                    trace.setBrightRed();
-                    msg = " OUT: " + CtiNumStr((short)ErrorCode).spad(3);
-                }
-                else
-                {
-                    trace.setBrightWhite();
-                    msg = " OUT:";
-                }
-                trace.setTrace(msg);
-                trace.setEnd(true);
-                traceList.insert(trace.replicateMessage());
+                    if(Dev)
+                    {
+                        trace.setBrightCyan();
+                        msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
+                        trace.setTrace(msg);
+                        trace.setEnd(false);
+                        traceList.insert(trace.replicateMessage());
+                    }
 
-                //  then print the formatted hex trace
-                trace.setBrightGreen();
-                traceBytes(Xfer.getOutBuffer(), Xfer.getOutCount(), trace, traceList);
+                    if(ErrorCode)
+                    {
+                        trace.setBrightRed();
+                        msg = " OUT: " + CtiNumStr((short)ErrorCode).spad(3);
+                    }
+                    else
+                    {
+                        trace.setBrightWhite();
+                        msg = " OUT:";
+                    }
+                    trace.setTrace(msg);
+                    trace.setEnd(true);
+                    traceList.insert(trace.replicateMessage());
+
+                    //  then print the formatted hex trace
+                    trace.setBrightGreen();
+                    traceBytes(Xfer.getOutBuffer(), Xfer.getOutCount(), trace, traceList);
+                }
             }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
