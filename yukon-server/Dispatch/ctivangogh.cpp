@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2004/12/31 14:07:57 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2005/01/18 19:10:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1746,11 +1746,9 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
             }
         case MSG_LMCONTROLHISTORY:
             {
-                processControlMessage((CtiLMControlHistoryMsg*)pMsg);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                // Cannot call this here because it alters dynamic point info.  That must be done before any point data messages arrive.
+                // See the checkDataStateQuality call.
+                // processControlMessage((CtiLMControlHistoryMsg*)pMsg);
                 break;
             }
         case MSG_COMMERRORHISTORY:
@@ -3011,6 +3009,12 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
             // Process instances for removal requests.
             _tagManager.verifyTagMsg(*((CtiTagMsg*)pMsg));
 
+            break;
+        }
+    case MSG_LMCONTROLHISTORY:
+        {
+            // Pick this up here so that the dyn Tags may be modified....
+            processControlMessage((CtiLMControlHistoryMsg*)pMsg);
             break;
         }
     default:
@@ -5149,7 +5153,7 @@ void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " An unprocessed message in the queue indicates a non-viable connection." << endl;
+            dout << RWTime() << " Msg on MainQueue found which refers to a connection which no longer exists. Removing reference, msg will be processed." << endl;
         }
         Msg->setConnectionHandle(NULL);
     }
@@ -6967,7 +6971,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
         {
             pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );               // We got to the desired state, no longer pending.. we are now controlling!
 
-            if(0 && gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
             {
                 if(pDyn->getValue() == pData->getValue())                       // Not changing, must be a control refresh
                 {
