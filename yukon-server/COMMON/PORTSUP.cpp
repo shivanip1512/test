@@ -59,7 +59,7 @@ using namespace std;
 BOOL ValidModemResponse (PCHAR Response);
 
 /* Routine to set the line characteristics on a port */
-SetLineMode (HFILE PortHandle, INT bits, INT parity, INT stopbits )
+SetLineMode (HANDLE PortHandle, INT bits, INT parity, INT stopbits )
 {
    DCB  dcb;
    BOOL fSuccess;
@@ -86,14 +86,14 @@ SetLineMode (HFILE PortHandle, INT bits, INT parity, INT stopbits )
 }
 
 
-SetLineModeE71 (HFILE PortHandle)
+SetLineModeE71 (HANDLE PortHandle)
 {
    return(SetLineMode(PortHandle, 7, EVENPARITY, ONESTOPBIT));
 }
 
 
 /* set the Line mode stuff for TAP Terminals, 7E1, XON, XOFF */
-SetLineModeTAPTerm (HFILE PortHandle)
+SetLineModeTAPTerm (HANDLE PortHandle)
 {
    ULONG i;
 
@@ -107,7 +107,7 @@ SetLineModeTAPTerm (HFILE PortHandle)
 
 
 /* Routine to set the baud rate for a port */
-SetBaudRate (HFILE PortHandle, USHORT BaudRate)
+SetBaudRate (HANDLE PortHandle, USHORT BaudRate)
 {
    DCB  dcb;
    BOOL fSuccess;
@@ -130,7 +130,7 @@ SetBaudRate (HFILE PortHandle, USHORT BaudRate)
 
 
 /* Routine to set the default DCB Info for a port */
-SetDefaultDCB (HFILE PortHandle)
+SetDefaultDCB (HANDLE PortHandle)
 {
    DCB  dcb;
    BOOL fSuccess;
@@ -160,7 +160,7 @@ SetDefaultDCB (HFILE PortHandle)
 
 
 /* Routine to set the default DCB Info for a port */
-SetXONXOFFDCB (HFILE PortHandle)
+SetXONXOFFDCB (HANDLE PortHandle)
 {
    DCB  dcb;
    BOOL fSuccess;
@@ -186,7 +186,7 @@ SetXONXOFFDCB (HFILE PortHandle)
 
 
 /* Routine to set the read timeout for a port */
-SetReadTimeOut (HFILE PortHandle, USHORT TimeOut)
+SetReadTimeOut (HANDLE PortHandle, USHORT TimeOut)
 {
    COMMTIMEOUTS  cto;
 
@@ -203,7 +203,7 @@ SetReadTimeOut (HFILE PortHandle, USHORT TimeOut)
 
 
 /* Routine to set the write timeout for a port */
-SetWriteTimeOut (HFILE PortHandle, USHORT TimeOut)
+SetWriteTimeOut (HANDLE PortHandle, USHORT TimeOut)
 {
    COMMTIMEOUTS  cto;
 
@@ -220,7 +220,7 @@ SetWriteTimeOut (HFILE PortHandle, USHORT TimeOut)
 
 
 /* Routine to raise RTS on a port */
-RaiseModemRTS (HFILE PortHandle)
+RaiseModemRTS (HANDLE PortHandle)
 {
    BOOL fSuccess;
 
@@ -236,7 +236,7 @@ RaiseModemRTS (HFILE PortHandle)
 
 
 /* Routine to lower RTS on a port */
-LowerModemRTS (HFILE PortHandle)
+LowerModemRTS (HANDLE PortHandle)
 {
    BOOL fSuccess;
 
@@ -252,7 +252,7 @@ LowerModemRTS (HFILE PortHandle)
 
 
 /* Routine to raise DTR on a port */
-RaiseModemDTR (HFILE PortHandle)
+RaiseModemDTR (HANDLE PortHandle)
 {
    BOOL fSuccess;
 
@@ -268,7 +268,7 @@ RaiseModemDTR (HFILE PortHandle)
 
 
 /* Routine to lower DTR on a port */
-LowerModemDTR (HFILE PortHandle)
+LowerModemDTR (HANDLE PortHandle)
 {
    BOOL fSuccess;
    fSuccess = EscapeCommFunction(PortHandle, CLRDTR);
@@ -283,7 +283,7 @@ LowerModemDTR (HFILE PortHandle)
 
 
 /* Routine to clear the receive buffer on a port */
-PortInputFlush (HFILE PortHandle)
+PortInputFlush (HANDLE PortHandle)
 {
    if(!PurgeComm(PortHandle, PURGE_RXCLEAR))
    {
@@ -296,7 +296,7 @@ PortInputFlush (HFILE PortHandle)
 
 
 /* Routine to clear the receive buffer on a port */
-GetPortInputQueueCount (HFILE PortHandle)
+GetPortInputQueueCount (HANDLE PortHandle)
 {
    DWORD   Err;
    COMSTAT Stat;
@@ -311,7 +311,7 @@ GetPortInputQueueCount (HFILE PortHandle)
 
 
 /* Routine to clear the transmit buffer on a port */
-PortOutputFlush (HFILE PortHandle)
+PortOutputFlush (HANDLE PortHandle)
 {
    if(!PurgeComm(PortHandle, PURGE_TXCLEAR))
    {
@@ -322,7 +322,7 @@ PortOutputFlush (HFILE PortHandle)
 }
 
 
-ULONG GetPortOutputQueueCount (HFILE PortHandle)
+ULONG GetPortOutputQueueCount (HANDLE PortHandle)
 {
    DWORD   Err;
    COMSTAT Stat;
@@ -335,7 +335,7 @@ ULONG GetPortOutputQueueCount (HFILE PortHandle)
    return 0;
 }
 
-USHORT GetPortBaudRate (HFILE PortHandle)
+USHORT GetPortBaudRate (HANDLE PortHandle)
 {
    DCB  dcb;
    BOOL fSuccess;
@@ -352,7 +352,7 @@ USHORT GetPortBaudRate (HFILE PortHandle)
 
 
 
-USHORT GetPortCommEvent (HFILE PortHandle)
+USHORT GetPortCommEvent (HANDLE PortHandle)
 {
    CtiLockGuard<CtiLogger> doubt_guard(dout);
    dout << __FILE__ << " (" << __LINE__ << "): Function has not been implemented" << endl;
@@ -361,7 +361,7 @@ USHORT GetPortCommEvent (HFILE PortHandle)
 
 
 
-INT GetPortCommError (HFILE PortHandle)
+INT GetPortCommError (HANDLE PortHandle)
 {
    DWORD   Errors;
 
@@ -396,7 +396,7 @@ ULONG MilliTime (PULONG MilliSeconds)
 
 
 /* Routine to force the reset of modem */
-ModemReset (HFILE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
+ModemReset (HANDLE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
 {
    CHAR Response[100];
    ULONG ResponseSize;
@@ -562,7 +562,7 @@ ModemReset (HFILE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
 
 
 /* Routine to send setup string(s) to the modem */
-ModemSetup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcdTest)
+ModemSetup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcdTest)
 {
    ULONG BytesWritten;
    CHAR MyMessage[100];
@@ -647,7 +647,7 @@ ModemSetup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcd
 }
 
 /* Routine to establish modem connection */
-ModemConnect (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcdTest)
+ModemConnect (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcdTest)
 {
    ULONG BytesWritten, i;
    CHAR MyMessage[100];
@@ -768,7 +768,7 @@ ModemConnect (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
 
 
 /* Routine to wait for a response or a timeout */
-WaitForResponse (HFILE PortHandle, PULONG ResponseSize, PCHAR Response, ULONG Timeout)
+WaitForResponse (HANDLE PortHandle, PULONG ResponseSize, PCHAR Response, ULONG Timeout)
 {
    ULONG i, j;
    ULONG BytesRead;
@@ -818,7 +818,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize, PCHAR Response, ULONG Ti
 
 
 /* Routine to check DCD on a Port */
-ModemDCD (HFILE PortHandle)
+ModemDCD (HANDLE PortHandle)
 {
    DWORD   eMask = 0;
 
@@ -829,7 +829,7 @@ ModemDCD (HFILE PortHandle)
 
 
 /* Routine to check DSR on a port */
-ModemDSR (HFILE PortHandle)
+ModemDSR (HANDLE PortHandle)
 {
    DWORD   eMask = 0;
 
@@ -840,7 +840,7 @@ ModemDSR (HFILE PortHandle)
 
 
 /* Routine to check CTS on a port */
-ModemCTS (HFILE PortHandle)
+ModemCTS (HANDLE PortHandle)
 {
    DWORD   eMask = 0;
 
@@ -1194,7 +1194,7 @@ BOOL ValidModemResponse (PCHAR Response)
 }
 
 /* Routine to wait for a response or a timeout */
-WaitForResponse (HFILE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+WaitForResponse (HANDLE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
 
    ULONG   i , j;
@@ -1204,7 +1204,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG T
    i = 0;        // i represents the count of bytes in response.
    j = 0;
 
-   if(PortHandle == (HFILE)NULL)
+   if(PortHandle == (HANDLE)NULL)
    {
       return(NOTNORMAL);
    }
@@ -1295,7 +1295,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG T
 
 
 
-ModemHangup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcdTest)
+ModemHangup (HANDLE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dcdTest)
 {
    INT status = NORMAL;
    CHAR Response[100];

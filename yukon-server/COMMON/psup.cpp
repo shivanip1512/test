@@ -1293,7 +1293,7 @@ IM_EX_CTIBASE INT SavePointHistory (CTIPOINT *PointRecord)
     LSFILETYPE ArchiveRecord;
     CHAR FileName[100], TempFileName[33];
     ULONG Result;
-    HFILE hf;
+    HANDLE hf;
     ULONG Action, BytesRead;
     ULONG fileptr;
     struct timeb TimeBStruct;
@@ -1379,7 +1379,7 @@ INT SaveLSHistory (CTIPOINT  *PointRecord,
     LSFILETYPE     ArchiveRecord;
     CHAR           FileName[100], TempFileName[33];
     ULONG          Result;
-    HFILE          hf;
+    HANDLE          hf;
     ULONG          Action, BytesRead;
     ULONG          fileptr;
 

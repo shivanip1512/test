@@ -397,7 +397,7 @@ IM_EX_CTIBASE INT Holiday (struct timeb *TimeB)
 {
     ULONG BytesRead, Action;
     USHORT Month, Day, Year;
-    HFILE MyHandle;
+    HANDLE MyHandle;
     FILESTATUS FileStatus;
     CHAR *MyPtr;
     struct tm Time;
@@ -901,7 +901,7 @@ int IM_EX_CTIBASE getCurrentSeason (void)
     static DSM2_SEASON SummerSeason = {-2,0,0,0};
     SHORT TempStartMonth;
     ULONG BytesRead, Action;
-    HFILE MyHandle;
+    HANDLE MyHandle;
     FILESTATUS FileStatus;
     CHAR *MyBuffer;
     struct tm Time;

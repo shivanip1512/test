@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/16 13:49:10 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/19 15:54:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@ int GetString (FILE *, PCHAR, ULONG);
 VOID VConfigThread (VOID *Arg)
 {
    ULONG i;
-   HFILE HFile;
+   HANDLE HFile;
    FILE *File;
    ULONG Action;
    CHAR Route[100];

@@ -307,7 +307,7 @@ DWORD      IM_EX_CTIBASE CurrentPID()
 }
 
 
-APIRET IM_EX_CTIBASE CTIClose(HFILE &hFile)
+APIRET IM_EX_CTIBASE CTIClose(HANDLE &hFile)
 {
 #if __OS2__
    return(DosClose(hFile));
@@ -320,13 +320,13 @@ APIRET IM_EX_CTIBASE CTIClose(HFILE &hFile)
       status = !NORMAL;
    }
 
-   hFile = (HFILE)NULL;
+   hFile = (HANDLE)NULL;
 
    return(status);        // Win32 returns positive if successfull.
 #endif
 }
 
-APIRET IM_EX_CTIBASE CTIRead   (   HFILE    &hFile,
+APIRET IM_EX_CTIBASE CTIRead   (   HANDLE    &hFile,
                                    PVOID    pBuf,
                                    ULONG    BufLen,
                                    PULONG   pBytesRead
@@ -345,7 +345,7 @@ APIRET IM_EX_CTIBASE CTIRead   (   HFILE    &hFile,
 #endif
 }
 
-APIRET IM_EX_CTIBASE CTIWrite         (   HFILE    &hFile,
+APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
                                           PVOID    pBuf,
                                           ULONG    BufLen,
                                           PULONG   pBytesWritten
@@ -469,7 +469,7 @@ typedef struct _SYSTEMTIME {  // st
 #endif
 }
 
-APIRET IM_EX_CTIBASE CTISetFilePtr        (HFILE &hFile, LONG lDistance, ULONG ulMode, PULONG pNewPtr)
+APIRET IM_EX_CTIBASE CTISetFilePtr        (HANDLE &hFile, LONG lDistance, ULONG ulMode, PULONG pNewPtr)
 {
 #if __OS2__
 

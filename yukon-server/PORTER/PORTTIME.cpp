@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/09/16 21:50:51 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/19 15:54:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -266,10 +266,6 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                     /* Walk down the routes for this ccu and pick out time routes */
                     try
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
                         CtiRouteManager::LockGuard guard(RouteManager.getMux());
                         CtiRouteManager::spiterator rte_itr;
                         for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr))
@@ -631,7 +627,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 /* Routine to generate the basic time sync messages... time filled in at port */
 VOID TimeSyncThread (PVOID Arg)
 {
-    HFILE WWVPortHandle = (HFILE) NULL;
+    HANDLE WWVPortHandle = (HANDLE) NULL;
     struct timeb TimeB;
     ULONG EventWait;
     DWORD dwWait = 0;
@@ -722,7 +718,7 @@ VOID TimeSyncThread (PVOID Arg)
         **  synchronization between Receiver and computer.
         */
 
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             WWVClockSync (WWVPortHandle);
         }
@@ -966,7 +962,7 @@ LoadSES92TimeMessage (BYTE *Message,
 
 
 /* Routine to setup a port for a WWV Receivering device */
-int WWVReceiversetup (HFILE *WWVPortHandle)
+int WWVReceiversetup (HANDLE *WWVPortHandle)
 {
     PSZ Environment;
     extern USHORT WWVModel;
@@ -1029,10 +1025,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
     {
         printf ("Error Opening WWV Receiver Port\n");
         SendTextToLogger ("Inf", "WWV Receiver Port   Error");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (*WWVPortHandle);
-            *WWVPortHandle = (HFILE) NULL;
+            *WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1041,10 +1037,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
     if((i = SetBaudRate (*WWVPortHandle, Baud)) != NORMAL)
     {
         printf ("Error setting WWV Receiver Baud Rate.\n");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (*WWVPortHandle);
-            *WWVPortHandle = (HFILE) NULL;
+            *WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1055,10 +1051,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
         if((i = SetLineMode (*WWVPortHandle)) != NORMAL)
         {
             printf ("Error setting WWV Receiver Line Characteristics.\n");
-            if(WWVPortHandle != (HFILE) NULL)
+            if(WWVPortHandle != (HANDLE) NULL)
             {
                 CTIClose (*WWVPortHandle);
-                *WWVPortHandle = (HFILE) NULL;
+                *WWVPortHandle = (HANDLE) NULL;
             }
             return(i);
         }
@@ -1069,10 +1065,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
         if((i = SetLineModeE71 (*WWVPortHandle)) != NORMAL)
         {
             printf ("Error setting WWV Receiver Line Characteristics.\n");
-            if(WWVPortHandle != (HFILE) NULL)
+            if(WWVPortHandle != (HANDLE) NULL)
             {
                 CTIClose (*WWVPortHandle);
-                *WWVPortHandle = (HFILE) NULL;
+                *WWVPortHandle = (HANDLE) NULL;
             }
             return(i);
         }
@@ -1083,10 +1079,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
     if((i = SetDefaultDCB (*WWVPortHandle)) != NORMAL)
     {
         printf ("Error setting WWV Receiver DCB Info.\n");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (*WWVPortHandle);
-            *WWVPortHandle = (HFILE) NULL;
+            *WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1095,10 +1091,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
     if((i = SetReadTimeOut (*WWVPortHandle, TIMEOUT)) != NORMAL)
     {
         printf ("Error setting WWV Receiver read timeout.\n");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (*WWVPortHandle);
-            *WWVPortHandle = (HFILE) NULL;
+            *WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1107,10 +1103,10 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
     if((i = SetWriteTimeOut (*WWVPortHandle, TIMEOUT)) != NORMAL)
     {
         printf ("Error setting WWV Receiver write timeout.\n");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (*WWVPortHandle);
-            *WWVPortHandle = (HFILE) NULL;
+            *WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1119,7 +1115,7 @@ int WWVReceiversetup (HFILE *WWVPortHandle)
 }
 
 /* Routine to synchronize the computer's clock with a WWV Receiver */
-int WWVClockSync (HFILE WWVPortHandle)
+int WWVClockSync (HANDLE WWVPortHandle)
 {
     struct tm WWVTimeStruct;
     struct timeb  WWVTime;
@@ -1308,7 +1304,7 @@ int WWVClockSync (HFILE WWVPortHandle)
 }
 
 /* This function reads input from the WWV Receiver device */
-int WWVBufferRead (HFILE WWVPortHandle, CHAR *InputBuffer)
+int WWVBufferRead (HANDLE WWVPortHandle, CHAR *InputBuffer)
 {
     ULONG BytesRead;
     USHORT ReadBufferLength;
@@ -1345,10 +1341,10 @@ int WWVBufferRead (HFILE WWVPortHandle, CHAR *InputBuffer)
     {
         printf ("Error Reading WWV Receiver Port.\n");
         SendTextToLogger ("Inf", "Not synchronizing   with WWV Receiver.");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (WWVPortHandle);
-            WWVPortHandle = (HFILE) NULL;
+            WWVPortHandle = (HANDLE) NULL;
         }
         return(!NORMAL);
     }
@@ -1359,7 +1355,7 @@ int WWVBufferRead (HFILE WWVPortHandle, CHAR *InputBuffer)
 }
 
 /* This function writes WWV Receiver commands to the WWV Receiver port */
-int WWVBufferWrite (HFILE WWVPortHandle, CHAR *QueryCommand)
+int WWVBufferWrite (HANDLE WWVPortHandle, CHAR *QueryCommand)
 {
     ULONG i, BytesWritten;
 
@@ -1368,10 +1364,10 @@ int WWVBufferWrite (HFILE WWVPortHandle, CHAR *QueryCommand)
     {
         printf ("Error Flushing WWV Receiver Port.\n");
         SendTextToLogger ("Inf", "Not synchronizing   with WWV Receiver.");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (WWVPortHandle);
-            WWVPortHandle = (HFILE) NULL;
+            WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1379,10 +1375,10 @@ int WWVBufferWrite (HFILE WWVPortHandle, CHAR *QueryCommand)
     {
         printf ("Error Flushing WWV Receiver Port.\n");
         SendTextToLogger ("Inf", "Not synchronizing   with WWV Receiver.");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (WWVPortHandle);
-            WWVPortHandle = (HFILE) NULL;
+            WWVPortHandle = (HANDLE) NULL;
         }
         return(i);
     }
@@ -1395,10 +1391,10 @@ int WWVBufferWrite (HFILE WWVPortHandle, CHAR *QueryCommand)
     {
         printf ("Error writing to WWV Receiver Port!\n\n");
         SendTextToLogger ("Inf", "Not synchronizing   with WWV Receiver.");
-        if(WWVPortHandle != (HFILE) NULL)
+        if(WWVPortHandle != (HANDLE) NULL)
         {
             CTIClose (WWVPortHandle);
-            WWVPortHandle = (HFILE) NULL;
+            WWVPortHandle = (HANDLE) NULL;
         }
 
         return(!NORMAL);

@@ -202,10 +202,10 @@ APIRET   IM_EX_CTIBASE CTIRequestMutexSem    (HMTX hmtx, ULONG time);
 APIRET   IM_EX_CTIBASE CTIReleaseMutexSem    (HMTX hmtx);
 APIRET   IM_EX_CTIBASE CTIMove               (PSZ oldname, PSZ newname);
 APIRET   IM_EX_CTIBASE CTIDelete             (PSZ oldname);
-APIRET   IM_EX_CTIBASE CTIClose              (HFILE &hFile);
-APIRET   IM_EX_CTIBASE CTIRead               (HFILE &hFile, PVOID pBuf, ULONG BufLen, PULONG pBytesRead);
-APIRET   IM_EX_CTIBASE CTIWrite              (HFILE &hFile, PVOID pBuf, ULONG BufLen, PULONG pBytesRead);
-APIRET   IM_EX_CTIBASE CTISetFilePtr         (HFILE &hFile, LONG lDistance, ULONG ulMode, PULONG pNewPtr);
+APIRET   IM_EX_CTIBASE CTIClose              (HANDLE &hFile);
+APIRET   IM_EX_CTIBASE CTIRead               (HANDLE &hFile, PVOID pBuf, ULONG BufLen, PULONG pBytesRead);
+APIRET   IM_EX_CTIBASE CTIWrite              (HANDLE &hFile, PVOID pBuf, ULONG BufLen, PULONG pBytesWritten);
+APIRET   IM_EX_CTIBASE CTISetFilePtr         (HANDLE &hFile, LONG lDistance, ULONG ulMode, PULONG pNewPtr);
 
 APIRET   IM_EX_CTIBASE CTIGetDateTime        (PDATETIME dt);
 APIRET   IM_EX_CTIBASE CTISetDateTime        (PDATETIME dt);

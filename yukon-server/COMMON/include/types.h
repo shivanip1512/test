@@ -44,7 +44,7 @@ typedef void * PVOID;
 #define  APIRET   DWORD
 #define  BOOL32   ULONG
 #define  HEV      HANDLE            // Event Handle
-#define  HFILE    HANDLE            // File handle
+// #define  HANDLE    HANDLE            // File handle
 #define  HMTX     HANDLE            // Mutex Handle
 #define  HPIPE    HANDLE            // Pipe handle
 #define  HQUEUE   HANDLE            // QUEUE handle
