@@ -38,7 +38,9 @@ function confirmDelete() {
         </tr>
         <tr>
           <td align="right">
-<% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
+<% if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
+	|| liteEC.getParent() == null) {
+%>
             <span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a></span>
 <% } else { %>
 			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Back to <%= liteEC.getParent().getName() %></a></span>
