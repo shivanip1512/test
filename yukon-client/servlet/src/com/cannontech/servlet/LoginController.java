@@ -1,24 +1,24 @@
 package com.cannontech.servlet;
 
 /**
- * LoginController authenticates and redirects a user based on the follong parameters
- * Required parameters:
- * USERNAME -
- * PASSWORD -
-*
-* TODO: Pull out contstant strings HOME_URL and YUKON_USER 
-* 
+ * See com.cannontech.common.constants.LoginController for a list of parameters and usage info
+ * TODO: Pull out contstant strings HOME_URL and YUKON_USER 
+ * 
  * Creation date: (12/7/99 9:46:12 AM)
  * @author:	Aaron Lauinger 
  */
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.database.Transaction;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 
@@ -29,15 +29,16 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String INVALID_URI = "/login.jsp?failed=true";
 	private static final String LOG_OUT_URI = "/login.jsp";
 		
-	private static final String ACTION = "ACTION";
+	private static final String ACTION = com.cannontech.common.constants.LoginController.ACTION;
 
-	private static final String LOGIN = "LOGIN";
-	private static final String LOGOUT = "LOGOUT";
+	private static final String LOGIN = com.cannontech.common.constants.LoginController.LOGIN;
+	private static final String CLIENT_LOGIN = com.cannontech.common.constants.LoginController.CLIENT_LOGIN;
+	private static final String LOGOUT = com.cannontech.common.constants.LoginController.LOGOUT;
 	
-	private static final String USERNAME = "USERNAME";
-	private static final String PASSWORD = "PASSWORD";
+	private static final String USERNAME = com.cannontech.common.constants.LoginController.USERNAME;
+	private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
 	
-	private static final String REDIRECT = "REDIRECT";
+	private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
 		
 /**
  * Handles login authentication, logout.
@@ -53,7 +54,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	String action = req.getParameter(ACTION).toString();
 	String nextURI = req.getParameter(REDIRECT);
 		
-	if(action.equalsIgnoreCase(LOGIN)) {
+	if(LOGIN.equalsIgnoreCase(action)) {
 		String username = req.getParameter(USERNAME);
 		String password = req.getParameter(PASSWORD);	
 		LiteYukonUser user = AuthFuncs.login(username,password);
@@ -78,7 +79,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		}		
 	}
 	else 
-	if(action.equalsIgnoreCase(LOGOUT))  {
+	if(LOGOUT.equalsIgnoreCase(action)) {
 		HttpSession session = req.getSession();
 		if(session != null) session.invalidate();
 
@@ -86,10 +87,31 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			nextURI = req.getContextPath() + LOG_OUT_URI;
 		resp.sendRedirect(nextURI);
 	} 
+	else 
+	if(CLIENT_LOGIN.equalsIgnoreCase(action)){
+		String username = req.getParameter(USERNAME);
+		String password = req.getParameter(PASSWORD);	
+		LiteYukonUser user = AuthFuncs.login(username,password);
+		
+		if(user != null) {
+			HttpSession session = req.getSession(true);
+			try {						
+				initSession(user, session);
+			} catch(TransactionException e) {
+				session.invalidate();
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+		}
+		else{
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+		}
+		
+	}
 	else {
 		resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}	
 }
+
 
 private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException  {
 
@@ -102,9 +124,9 @@ private void initSession(LiteYukonUser user, HttpSession session) throws Transac
 	//update user stats
 	dbUser.setLoginCount(new Integer(dbUser.getLoginCount().intValue()+1));
 	dbUser.setLastLogin(new java.util.Date());
-		
+		 
 	trans = Transaction.createTransaction(Transaction.UPDATE,dbUser);
 	*/
-	session.setAttribute("YUKON_USER", user);
+	session.setAttribute(com.cannontech.common.constants.LoginController.YUKON_USER, user);
 }
 }
