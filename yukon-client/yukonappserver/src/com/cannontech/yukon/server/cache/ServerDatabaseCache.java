@@ -875,18 +875,20 @@ public synchronized java.util.List getAllYukonPAObjects()
 				LiteYukonUser user = (LiteYukonUser) iter.next();
 				HashMap roleMap = new HashMap();
 				
-				List roles = (List) userRoles.get(user);
-				addRolesToMap(roles, roleMap);
-				
+				// first groups roles then user roles
+				// to maintain correct precedence
 				List groups = (List) userGroups.get(user);
 				if(groups != null) {
 					Iterator groupIter = groups.iterator();
 					while(groupIter.hasNext()) {
 						LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
-						roles = (List) groupRoles.get(group);
+						List roles = (List) groupRoles.get(group);
 						addRolesToMap(roles, roleMap);
 					}				
 				}
+				
+				List roles = (List) userRoles.get(user);
+				addRolesToMap(roles, roleMap);
 				
 				allYukonUserLookupRoles.put(user, roleMap);						
 			}	
