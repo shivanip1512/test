@@ -9,5 +9,13 @@ public interface GraphDefines
 {
 	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath() + "Yukon Trending Help.chm";
 	public static final String VERSION = "2.1.15";
-	
+
+	public static final int GRAPH_MASK = 0x01;
+	public static final int PEAK_MASK = 0x02;
+	public static final int USAGE_MASK = 0x04;
+
+	public static final int GRAPH_PANE = 0;
+	public static final int TABULAR_PANE = 1;
+	public static final int SUMMARY_PANE = 2;
+
 }
