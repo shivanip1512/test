@@ -17,10 +17,15 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2002/08/28 16:10:38 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2002/09/06 18:58:55 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.7  2002/09/06 18:58:55  dsutton
+      Added new functions for connecting and registering with dispatch.  Changed
+      the logic in the places I try to read and write to dispatch to check the
+      connection validity before and reconnect if there are problems
+
       Revision 1.6  2002/08/28 16:10:38  cplender
       setBlockingWrites is no more!.
 
@@ -486,17 +491,9 @@ void CtiFDRInterface::setUpdatePCTimeFlag(const BOOL aChangeFlag)
 */
 BOOL CtiFDRInterface::run( void )
 {
-    CtiMessage *    pMsg;
-    RWCString       regStr("FDR" + iInterfaceName);
-
-    if (iDispatchConn == 0)
     {
-        iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
-        /*******************
-        * we won't lose info this way
-        *******************
-        */
-        // 082702 CGP iDispatchConn->setBlockingWrites(TRUE);
+        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+        connectWithDispatch();
     }
 
     // start our dispatch distibution thread
@@ -504,12 +501,7 @@ BOOL CtiFDRInterface::run( void )
     iThreadToDispatch.start();
     iThreadDbChange.start();
 
-    // register who we are
-    pMsg = new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE);
-    sendMessageToDispatch( pMsg );
-
-    sendPointRegistration();
-
+    registerWithDispatch();
     return TRUE;
 }
 
@@ -562,6 +554,32 @@ BOOL CtiFDRInterface::stop( void )
     // FIXFIXFIX  - may need to add exception handling here
     //
 
+    return TRUE;
+}
+
+BOOL CtiFDRInterface::connectWithDispatch()
+{
+    if (iDispatchConn == 0)
+    {
+        iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
+        /*******************
+        * we won't lose info this way
+        *******************
+        */
+//        iDispatchConn->setBlockingWrites(TRUE);
+    }
+    return TRUE;
+}
+
+BOOL CtiFDRInterface::registerWithDispatch()
+{
+    CtiMessage *    pMsg;
+    RWCString       regStr("FDR" + iInterfaceName);
+
+    // register who we are
+    pMsg = new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE);
+    sendMessageToDispatch( pMsg );
+    sendPointRegistration();
     return TRUE;
 }
 
@@ -782,7 +800,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     CtiMessage      *incomingMsg;
-    int x;
+    int x,cnt=0;
 
     try
     {
@@ -800,7 +818,25 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             do
             {
                 pSelf.serviceCancellation( );
-                incomingMsg = iDispatchConn->ReadConnQue( 1000 );
+
+                if ( (iDispatchConn->verifyConnection()) == NORMAL )
+                {
+                    incomingMsg = iDispatchConn->ReadConnQue( 1000 );
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
+                    }
+                    pSelf.sleep(2000);
+
+                    CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                    delete iDispatchConn;
+                    iDispatchConn=0;
+                    connectWithDispatch();
+                    registerWithDispatch();
+                }   
 
             } while ( incomingMsg == NULL );
 
@@ -1142,7 +1178,42 @@ bool CtiFDRInterface::logEvent( RWCString &aDesc, RWCString &aAction, bool aSend
 */
 bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
 {
-    return iDispatchConn->WriteConnQue( aMessage );
+    bool retVal=false;
+    static int cnt=0;
+
+    if ( (iDispatchConn->verifyConnection()) == NORMAL )
+    {
+        cnt++;
+        if (cnt > 1500)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
+            }
+            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+            delete iDispatchConn;
+            iDispatchConn=0;
+            connectWithDispatch();
+            registerWithDispatch();
+            cnt=0;
+        }
+
+        retVal = iDispatchConn->WriteConnQue( aMessage );
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
+        }
+        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+        delete iDispatchConn;
+        iDispatchConn=0;
+        connectWithDispatch();
+        registerWithDispatch();
+
+    }
+    return retVal;
 }
 
 /************************************************************************
