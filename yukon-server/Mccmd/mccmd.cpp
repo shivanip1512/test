@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2002/09/24 18:18:00 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2002/09/24 18:18:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1384,14 +1384,6 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
     return (interrupted ? 
                 TCL_ERROR : TCL_OK);
-    /*if( interrupted )
-    {
-        return TCL_ERROR;
-    }
-    else
-    {
-        return TCL_OK;
-    } */
 }
 
 /***
