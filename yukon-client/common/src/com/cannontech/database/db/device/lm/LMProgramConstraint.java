@@ -1,6 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 
 /**
  * @author jdayton
@@ -109,6 +110,27 @@ public final static Integer getNextConstraintID(String databaseAlias) throws jav
 	}
 }
 
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static boolean inUseByProgram(int constrID, String databaseAlias) throws java.sql.SQLException 
+{
+	SqlStatement stmt =	new SqlStatement(
+		"SELECT * FROM " + LMProgram.TABLE_NAME +
+		" WHERE ConstraintID = " + constrID,
+		databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
+}
 
 public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 {
