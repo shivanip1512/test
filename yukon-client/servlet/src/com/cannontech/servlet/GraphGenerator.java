@@ -70,10 +70,10 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			if( param != null) 								
 				localBean.setStart(param);
 			
-			param = req.getParameter("tab");
+/*			param = req.getParameter("tab");
 			if( param != null)
 				localBean.setTab(param);
-				
+*/				
 			param = req.getParameter("period");
 			if( param != null)
 				localBean.setPeriod(param);
@@ -96,6 +96,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 				localBean.setSize(Integer.parseInt(param),Integer.parseInt(param2));
 			}
 		}
+		//This call to setUpdateTrend(true) forces updates to occur all the time.  This needs to go!
 		localBean.getGraph().setUpdateTrend(true);
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;

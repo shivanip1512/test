@@ -53,21 +53,21 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			out = resp.getOutputStream();
 			com.cannontech.graph.Graph graph = localBean.getGraph();
 			
-			
+			int viewType = localBean.getViewType();
 			//Extra code that needs to be done somewhere else.  Done here for craps sake now...
-			int tab = 0;
-			if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.GRAPH_PANE_STRING))
-				tab = com.cannontech.graph.GraphDefines.GRAPH_PANE;
-			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.TABULAR_PANE_STRING))
-				tab = com.cannontech.graph.GraphDefines.TABULAR_PANE;
-			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.SUMMARY_PANE_STRING))
-				tab = com.cannontech.graph.GraphDefines.SUMMARY_PANE;
+//			int tab = 0;
+//			if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.GRAPH_PANE_STRING))
+//				tab = com.cannontech.graph.GraphDefines.GRAPH_PANE;
+//			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.TABULAR_PANE_STRING))
+//				tab = com.cannontech.graph.GraphDefines.TABULAR_PANE;
+//			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.SUMMARY_PANE_STRING))
+//				tab = com.cannontech.graph.GraphDefines.SUMMARY_PANE;
 			
 			if (extension.equalsIgnoreCase("csv"))
 			{
 				resp.setContentType("text/comma-separated-values");
 				ExportDataFile eDataFile = new ExportDataFile(
-				tab,
+				viewType,
 				graph.getFreeChart(), 
 				graph.getTrendModel().getChartName(), 
 				graph.getTrendModel());
