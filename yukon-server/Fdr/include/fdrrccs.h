@@ -35,11 +35,12 @@
 #define RCCSPOINTMASTER   "MASTER              "
 #define RCCSPOINTSBACKUP  "BACKUP              "
 
-// I hate to hard code things but this is a one of a kind
+// I hate to hard code things but this is a one of a kind (not so much DLS 7 Nov 02)
 #define RCCS_PAIR_ONE "RCCS PAIR ONE"
 #define RCCS_PAIR_TWO "RCCS PAIR TWO"
 #define RCCS_PAIR_THREE "RCCS PAIR THREE"
 #define RCCS_PAIR_FOUR "RCCS PAIR FOUR"
+#define RCCS_STANDALONE "STANDALONE"
 
 class RWTime;
 
@@ -64,6 +65,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         static const CHAR * KEY_SOURCE_NAME;
         static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_BATCH_MARKER_NAME;
+        static const CHAR * KEY_STANDALONE;
 
         bool isAMaster(int aID);
         CtiFDR_Rccs& setAuthorizationFlag(int aID,bool aFlag);
@@ -80,6 +82,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
     private:
         int                         iAuthorizationFlags;
         RWCString                   iBatchMarkerName;
+        bool                        iStandalone;
 };                              
 
 #endif

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2002/08/16 19:57:51 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2002/11/13 19:39:25 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.7  2002/11/13 19:39:25  dsutton
+      Added a new cparm to handle the exchange on a standalone system
+
+      Revision 1.6.18.1  2002/11/13 19:32:52  dsutton
+      Added a new cparm to handle the exchange on a standalone system
+
       Revision 1.6  2002/08/16 19:57:51  dsutton
       debug output using strings without NULL terminators, may be causing problems
 
@@ -134,11 +140,13 @@ const CHAR * CtiFDR_Rccs::KEY_DB_RELOAD_RATE = "FDR_RCCS_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Rccs::KEY_SOURCE_NAME = "FDR_RCCS_SOURCE_NAME";
 const CHAR * CtiFDR_Rccs::KEY_DEBUG_MODE = "FDR_RCCS_DEBUG_MODE";
 const CHAR * CtiFDR_Rccs::KEY_BATCH_MARKER_NAME = "FDR_RCCS_BATCH_MARKER_NAME";
+const CHAR * CtiFDR_Rccs::KEY_STANDALONE = "FDR_RCCS_STANDALONE";
 
 // Constructors, Destructor, and Operators
 CtiFDR_Rccs::CtiFDR_Rccs()
 : CtiFDR_Inet("RCCS")
 {   
+    iStandalone = false;
 }
 
 
@@ -153,56 +161,65 @@ bool CtiFDR_Rccs::isAMaster (int aID)
     bool retVal = false;
 	bool standbyFailFlag = false;
 
-	switch (aID)
-	{
-		case 1:
-		case 3:
-		case 5:
-		case 7:
-		case 9:
-			// check for authorization for this process
-			if (iAuthorizationFlags & (1 << (aID - 1)))
-			{
-				// since this is an odd number and a master, check the standby's status
-				if (iAuthorizationFlags & (1 << aID))
-				{
-					standbyFailFlag = true;
-					retVal = false;
-				}
-				else
-					retVal=true;
-			}
-			else
-				retVal = false;
-			break;
-		case 2:
-		case 4:
-		case 6:
-		case 8:
-		case 10:
-			// check for authorization for this process
-			if (iAuthorizationFlags & (1 << (aID - 1)))
-				retVal=true;
-			else
-				retVal=false;
-			break;
-	}
+    // this is ugly but who would have thought someone wouldn't buy failover
+    if (iStandalone)
+    {
+        // standalone is always the master
+        retVal = true;
+    }
+    else
+    {
+        switch (aID)
+        {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 9:
+                // check for authorization for this process
+                if (iAuthorizationFlags & (1 << (aID - 1)))
+                {
+                    // since this is an odd number and a master, check the standby's status
+                    if (iAuthorizationFlags & (1 << aID))
+                    {
+                        standbyFailFlag = true;
+                        retVal = false;
+                    }
+                    else
+                        retVal=true;
+                }
+                else
+                    retVal = false;
+                break;
+            case 2:
+            case 4:
+            case 6:
+            case 8:
+            case 10:
+                // check for authorization for this process
+                if (iAuthorizationFlags & (1 << (aID - 1)))
+                    retVal=true;
+                else
+                    retVal=false;
+                break;
+        }
 
-	// log file printouts
-	if (!retVal)
-	{
-		// if standby failed, log appropriately
-		if (standbyFailFlag)
-		{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS" << aID <<" has been failed by its standby, command rejected" <<endl;
-		}
-		else
-		{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " RCCS" << aID <<" is not an authorized master, command rejected" <<endl;
-		}
-	}
+        // log file printouts
+        if (!retVal)
+        {
+            // if standby failed, log appropriately
+            if (standbyFailFlag)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " RCCS" << aID <<" has been failed by its standby, command rejected" <<endl;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " RCCS" << aID <<" is not an authorized master, command rejected" <<endl;
+            }
+        }
+    }
     return retVal;
 }
 
@@ -265,6 +282,9 @@ int CtiFDR_Rccs::resolvePairNumber(RWCString &aPair)
         retVal = 3;
     else if (!(aPair.compareTo(RWCString (RCCS_PAIR_FOUR),RWCString::ignoreCase)))
         retVal = 4;
+    else if (!(aPair.compareTo(RWCString (RCCS_STANDALONE),RWCString::ignoreCase)))
+        retVal = 1;
+
 
     return retVal;
 }
@@ -423,6 +443,12 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                     }
                 }
 
+                // again ugly but it should be effective
+                if (iStandalone)
+                {
+                    // we are a standalone master, there are no other clients
+                    break;
+                }
             }
         }
     }
@@ -448,7 +474,13 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
 
     for (int x=0; x < destEntries; x++)
     {
-        // always two entries for each pair (makes sense)
+        /********************************
+        * we now must support a standalone system so there will not 
+        * always be two entries for each pair
+        * since this is a hack anyway, I'm just going to break out at
+        * the bottom of the loop early
+        *********************************
+        */
         for (int y=1; y < 3; y++)
         {
             // we know the naming convetions will be pair 1=RCCS1,RCCS2, pair 2=RCCS3,RCCS4, etc
@@ -514,6 +546,12 @@ bool  CtiFDR_Rccs::findAndInitializeClients( void )
                     retVal = false;
                 }
             }
+            // yuck don't ever do this in real code
+            if (iStandalone)
+            {
+                // one client 
+                break;
+            }
         }
     }
     return retVal;
@@ -560,6 +598,13 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
                                             NormalQuality, 
                                             StatusPointType);
                 sendMessageToDispatch (pData);
+            }
+
+            // yuck don't ever do this in real code
+            if (iStandalone)
+            {
+                // one client 
+                break;
             }
         }
     }
@@ -634,22 +679,54 @@ int CtiFDR_Rccs::readConfig( void )
         iBatchMarkerName = RWCString ("RCCSSTART");
     }
 
+    tempStr = getCparmValueAsString(KEY_STANDALONE);
+    if (tempStr.length() > 0)
+    {
+        iStandalone = true;
+    }
+    else
+    {
+        iStandalone = false;
+    }
+
+
     // default only, data from rccs is all controls so they don't get queued
     setQueueFlushRate (1);
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " RCCS port number " << getPortNumber() << endl;
-        dout << RWTime() << " RCCS timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << RWTime() << " RCCS db reload rate " << getReloadRate() << endl;
-        dout << RWTime() << " RCCS source name " << getSourceName() << endl;
-        dout << RWTime() << " RCCS batch marker name " << iBatchMarkerName << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " RCCS port number " << getPortNumber() << endl;
+            dout << RWTime() << " RCCS timestamp window " << getTimestampReasonabilityWindow() << endl;
+            dout << RWTime() << " RCCS db reload rate " << getReloadRate() << endl;
+            dout << RWTime() << " RCCS source name " << getSourceName() << endl;
+            dout << RWTime() << " RCCS batch marker name " << iBatchMarkerName << endl;
+        }
+
 
         if (isInterfaceInDebugMode())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " RCCS running in debug mode " << endl;
+        }
         else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " RCCS running in normal mode "<< endl;
+        }
+
+        if (iStandalone)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " RCCS running in standalone mode " << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " RCCS running in failover mode "<< endl;
+        }
+
 
     }
 
@@ -678,8 +755,12 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Shutdown message received from " << clientName << endl;
                 }
-                RWCString temp (data->SourceName[4]);
-                setAuthorizationFlag (atoi(temp.data()), FALSE);
+                // nothing to do if we're standalone
+                if (!iStandalone)
+                {
+                    RWCString temp (data->SourceName[4]);
+                    setAuthorizationFlag (atoi(temp.data()), FALSE);
+                }
                 break;
             }
         case INETTYPENULL:
