@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/02/04 17:25:07 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/02/07 15:04:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1260,6 +1260,7 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
 {
     INT   status = NORMAL;
 
+    if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Issuing a continue message! " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1547,7 +1548,6 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                     /* Check if we need to ship it */
                     if(ByteCount >= 250 || Position == (AnalogLast + 1))
                     {
-                        /* Load the sectn to scan the stati */
                         MyOutMessage->Buffer.OutMessage[4]     = 0x08;     // 16 bit message...
                         MyOutMessage->Buffer.OutMessage[5]     = IDLC_DEADBANDS | 0x80;
                         MyOutMessage->Buffer.OutMessage[6]     = (UCHAR)(ByteCount + 2);
@@ -1556,7 +1556,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                         MyOutMessage->DeviceID                 = getID();
                         MyOutMessage->Port                     = getPortID();
                         MyOutMessage->Remote                   = getAddress();
-                        EstablishOutMessagePriority( MyOutMessage, Priority );
+                        OverrideOutMessagePriority( MyOutMessage, Priority );
                         MyOutMessage->TimeOut                  = 2;
                         MyOutMessage->OutLength                = ByteCount + 2;
                         MyOutMessage->InLength                 = -1;
@@ -1567,7 +1567,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                         outList.insert(MyOutMessage);
                         MyOutMessage = NULL;                // Out of our hands now...
 
-                        if(ByteCount >= 250 && Position != (AnalogLast + 1))
+                        if(Position != (AnalogLast + 1))
                         {
                             MyOutMessage = CTIDBG_new OUTMESS( *OutMessage );
 
@@ -1576,9 +1576,12 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                                 status = MEMORY;
                                 break;
                             }
-                        }
 
-                        ByteCount = 0;
+                            MyOutMessage->Buffer.OutMessage[7] = LOBYTE (Position+1);
+                            MyOutMessage->Buffer.OutMessage[8] = HIBYTE (Position+1);
+
+                            ByteCount = 0;
+                        }
                     }
                 }
             }
