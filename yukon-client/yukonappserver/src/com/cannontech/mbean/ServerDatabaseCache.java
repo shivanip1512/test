@@ -1091,7 +1091,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allYukonGroupUsers;				
 	}
 
-	private synchronized void loadUsersAndGroups() 
+	private void loadUsersAndGroups() 
 	{
 		allYukonUserGroups = new HashMap();
 		allYukonGroupUsers = new HashMap();
@@ -1616,7 +1616,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			retLBase = handleYukonUserChange( dbType, id );
 		
 		// This seems heavy handed!
-		//allYukonGroups = null;
+		allYukonGroups = null;
 		allYukonRoles = null;
 		allYukonUserRoleProperties = null;
 		allYukonGroupRoleProperties = null;
