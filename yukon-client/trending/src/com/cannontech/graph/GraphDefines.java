@@ -7,7 +7,7 @@ package com.cannontech.graph;
  */
 public interface GraphDefines 
 {
-	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath() + "Yukon Database Editor Help.chm";
-	public static final String VERSION = "2.1.14.2";
+	public static final String HELP_FILE = com.cannontech.common.util.CtiUtilities.getHelpDirPath() + "Yukon Trending Help.chm";
+	public static final String VERSION = "2.1.15";
 	
 }
