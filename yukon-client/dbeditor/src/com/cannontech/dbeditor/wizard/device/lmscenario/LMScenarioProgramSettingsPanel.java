@@ -635,11 +635,70 @@ private void initConnections() throws java.lang.Exception {
 			}
 		}
 	};
-
+	
+	final AbstractAction searchActionJList = new AbstractAction()
+	{
+		public void actionPerformed(java.awt.event.ActionEvent e)
+		{
+			if( !dialog.isShowing() )
+			{
+				dialog.setSize(250, 120);
+				dialog.setLocationRelativeTo( LMScenarioProgramSettingsPanel.this );
+				dialog.show();
+		
+				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				{
+					Object value = FND_PANEL.getValue(null);
+					boolean found = false;
+							
+					if( value != null )
+					{
+						int numberOfRows = getAvailableList().getModel().getSize();
+						for(int j = 0; j < numberOfRows; j++)
+						{
+							String programName = ((LiteBase)getAvailableList().getModel().getElementAt(j)).toString();
+							if(programName.compareTo(value.toString()) == 0)
+							{
+								getAvailableList().setSelectedIndex(j);
+								getAvailableList().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getAvailableList().getHeight() * (j+1) - getAvailableList().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+							//in case they don't know the full name and just entered a partial
+							if(programName.indexOf(value.toString()) > -1 && programName.indexOf(value.toString()) < 2)
+							{
+								getAvailableList().setSelectedIndex(j);
+								getAvailableList().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getAvailableList().getHeight() * (j+1) - getAvailableList().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+						}
+							
+						if( !found )
+							javax.swing.JOptionPane.showMessageDialog(
+								LMScenarioProgramSettingsPanel.this, "Unable to find your selected item", "Item Not Found",
+								javax.swing.JOptionPane.INFORMATION_MESSAGE );
+					}
+				}
+				dialog.setVisible(false);
+			}
+		}
+	};
+	
 	//do the secret magic key combo: ALT + S
 	KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK, true);
 	getProgramsTable().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
 	getProgramsTable().getActionMap().put("FindAction", searchAction);
+	getAvailableList().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
+	getAvailableList().getActionMap().put("FindAction", searchActionJList);
 	
 	// user code end
 	getProgramsTable().addMouseListener(ivjEventHandler);
