@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/03/10 19:28:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,8 +221,9 @@ protected:
    RWTime _lpTime;
 
 
-
    CtiProtocolSixnet *_protocol;
+
+   CtiProtocolSixnet& getSixnetProtocol();
 
 private:
 
@@ -286,7 +287,6 @@ public:
    // record numbers that wrap back to 0. isRecLT() does this..
    // Answer: Is a less than b?
    bool isRecLT(uint32 a, uint32 b) const { return(int32)(a - b) < 0;}
-   CtiProtocolSixnet& getProtocol();
    UCHAR* getTxBuffer();
    UCHAR* getRxBuffer();
 
