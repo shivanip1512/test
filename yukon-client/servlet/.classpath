@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/loadcontrol"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
@@ -25,5 +25,7 @@
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="src" path="/billing"/>
+    <classpathentry kind="src" path="/cbc"/>
+    <classpathentry kind="src" path="/tdc"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
