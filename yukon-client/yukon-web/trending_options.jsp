@@ -5,27 +5,28 @@
       <div>
         <table width="375" border="0" cellspacing="2" cellpadding="0">
           <tr>
-            <form method="GET" action="<%=pageName%>" name="MForm">
+            <form id=MForm method="GET" action="<%=pageName%>" name="MForm">
               <INPUT TYPE="hidden" NAME="gdefid" VALUE="<%=graphBean.getGdefid()%>">
               <INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
               <INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >
               <td width="163" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Start Date:</font>
-                <input type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
-                <A HREF="javascript:show_calendar('MForm.start')"
-                  onMouseOver="window.status='Pop Calendar';return true;"
-                  onMouseOut="window.status='';return true;"><IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
-                </A>
+			    <input id="cal" type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
+                  <A HREF="javascript:openCalendar(document.getElementById('MForm').cal)"
+                    onMouseOver="window.status='Start Date Calendar';return true;"
+                    onMouseOut="window.status='';return true;">
+                    <IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
+                  </A>
               </td>
               <td width="154" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Time Period:</font>
                 <select name="period">
-                <% /* Fill in the period drop down and attempt to match the current period with one of the options */                           
-                for( int j = 0; j < com.cannontech.util.ServletUtil.historicalPeriods.length; j++ )
-                {
-                  if( com.cannontech.util.ServletUtil.historicalPeriods[j].equals(graphBean.getPeriod()) )
-                    out.println("<OPTION SELECTED>" + graphBean.getPeriod());
-                  else
-                    out.println("<OPTION>" + com.cannontech.util.ServletUtil.historicalPeriods[j]);
-                }%>
+                  <% /* Fill in the period drop down and attempt to match the current period with one of the options */                           
+                    for( int j = 0; j < com.cannontech.util.ServletUtil.historicalPeriods.length; j++ )
+                    {
+                      if( com.cannontech.util.ServletUtil.historicalPeriods[j].equals(graphBean.getPeriod()) )
+                        out.println("<OPTION SELECTED>" + graphBean.getPeriod());
+                      else
+                        out.println("<OPTION>" + com.cannontech.util.ServletUtil.historicalPeriods[j]);
+                    }%>
                 </select>
               </td>
               <td width="75">
@@ -38,7 +39,7 @@
         </table>
       </div>
     </td>
-    <td width="200" valign = "top" align= "center">
+    <td width="200" valign = "top" align= "center"> 
       <table width="200" border="0" class = "Main" cellspacing = "4" height="16">
         <tr>
           <td width = "40%"> 
@@ -49,7 +50,7 @@
           </td>
           <td width="12%">
             <div align="right">
-              <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>
+			  <a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('<%=request.getContextPath()%>/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
             </div>
           </td>
         </tr>
@@ -72,19 +73,19 @@
         <div id = "LDID" onmouseover = "changeOptionStyle(this)" style = "width:120px" class = "optmenu1" onclick = "changeLD()">&nbsp;&nbsp;&nbsp;Load Duration</div>
       </div>
       <form name="exportForm">
-        <div id="trendMenu" class = "bgmenu" style = "width:75px" align = "left"> 
-        <%if (graphBean.getViewType() == TrendModelType.TABULAR_VIEW || graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
-        {%>
-          <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
-        <%}
-        else
-        {%>
-          <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('csv')">&nbsp;&nbsp;&nbsp;Export .csv</div>
-          <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('png')">&nbsp;&nbsp;&nbsp;Export .png</div>
-          <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('pdf')">&nbsp;&nbsp;&nbsp;Export .pdf</div>
-          <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('jpeg')">&nbsp;&nbsp;&nbsp;Export .jpeg</div>
-        <%}%>
-          <div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='<%=request.getContextPath()%>/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+	    <div id="trendMenu" class = "bgmenu" style = "width:75px" align = "left"> 
+          <%if (graphBean.getViewType() == TrendModelType.TABULAR_VIEW || graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
+          {%>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
+          <%}
+          else
+          {%>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('csv')">&nbsp;&nbsp;&nbsp;Export .csv</div>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('png')">&nbsp;&nbsp;&nbsp;Export .png</div>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('pdf')">&nbsp;&nbsp;&nbsp;Export .pdf</div>
+            <div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('jpeg')">&nbsp;&nbsp;&nbsp;Export .jpeg</div>
+          <%}%>
+            <div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='<%=request.getContextPath()%>/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
         </div>
       </form>
     </td>
