@@ -10,6 +10,7 @@ import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.database.data.point.PointTypes;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -34,6 +35,9 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
    public static final int POWER_FACTOR_COLUMN		= 6;
   	public static final int ESTIMATED_VARS_COLUMN	= 7;
   	public static final int DAILY_OPERATIONS_COLUMN	= 8;
+
+
+   public static final String DASH_LINE = "  ----";
 
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
@@ -315,23 +319,36 @@ public Object getValueAt(int row, int col)
 				return feeder.getCurrentDailyOperations();
 				
 			case CURRENT_VAR_LOAD_COLUMN:
-				return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+         {
+            if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
+               return DASH_LINE;
+            else
+					return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 							feeder.getCurrentVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
+         }
 				
 			case ESTIMATED_VARS_COLUMN:
-				return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+         {
+            if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
+               return DASH_LINE;
+            else
+					return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 							feeder.getEstimatedVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
-
+         }
+         
 			case WATTS_COLUMN:
 	      {
-	         return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+            if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
+               return DASH_LINE;
+            else
+		         return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 	                  feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );
 	      }
 
 			case TIME_STAMP_COLUMN:
 				if( feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
 						com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return "  ----";
+					return DASH_LINE;
 				else
 					return new com.cannontech.clientutils.commonutils.ModifiedDate( feeder.getLastCurrentVarPointUpdateTime().getTime() );
 	
