@@ -152,26 +152,49 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 	        }
 
-			if (ServletUtils.isWeekday( day )) {
-				if (updateSched.getInventoryID() < 0 || hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
-					// This is a one-way thermostat or the default thermostat
+			if (updateSched.getInventoryID() < 0 || hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+				// This is a one-way thermostat or the default thermostat
+				if (ServletUtils.isWeekday( day )) {
 					String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
 					if (applyToWeekendStr != null) {	// Checkbox "ApplyToWeekend" is checked
 						schedule.setDay( StarsThermoDaySettings.ALL );
-						user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "checked" );
+						//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "checked" );
 					}
-					else
-						user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "" );
+					else {
+						//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "" );
+					}
+				}
+			}
+			else {
+				// This is a two-way thermostat
+				String applyToWeekdaysStr = req.getParameter( "ApplyToWeekdays" );
+				String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
+				if (applyToWeekdaysStr != null && applyToWeekendStr != null) {
+					schedule.setDay( StarsThermoDaySettings.ALL );
+					//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "checked" );
+				}
+				else if (applyToWeekdaysStr != null) {
+					if (ServletUtils.isWeekday( day )) {
+						schedule.setDay( StarsThermoDaySettings.WEEKDAY );
+					}
+					else {
+						StarsThermostatSchedule schedule2 = StarsFactory.newStarsThermostatSchedule( schedule );
+						schedule2.setDay( StarsThermoDaySettings.WEEKDAY );
+						season.addStarsThermostatSchedule( schedule2 );
+					}
+				}
+				else if (applyToWeekendStr != null) {
+					if (!ServletUtils.isWeekday( day )) {
+						schedule.setDay( StarsThermoDaySettings.WEEKEND );
+					}
+					else {
+						StarsThermostatSchedule schedule2 = StarsFactory.newStarsThermostatSchedule( schedule );
+						schedule2.setDay( StarsThermoDaySettings.WEEKEND );
+						season.addStarsThermostatSchedule( schedule2 );
+					}
 				}
 				else {
-					// This is a two-way thermostat
-					String applyToWeekdaysStr = req.getParameter( "ApplyToWeekdays" );
-					if (applyToWeekdaysStr != null) {	// Checkbox "ApplyToWeekdays" is checked
-						schedule.setDay( StarsThermoDaySettings.WEEKDAY );
-						user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "checked" );
-					}
-					else
-						user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "" );
+					//user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "" );
 				}
 			}
             
@@ -605,6 +628,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY ).getEntryID(),
 							energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY ).getEntryID(),
 							energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY ).getEntryID(),
+						};
+					}
+					else if (starsSched.getDay().getType() == StarsThermoDaySettings.WEEKEND_TYPE) {
+						// Add season entries for saturday and sunday
+						towIDs = new int[] {
+							energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID(),
+							energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY ).getEntryID(),
 						};
 					}
 					else {
