@@ -264,11 +264,16 @@ public synchronized java.util.List getAllCICustomers()
 {
 	if( allCICustomers == null )
 	{
-		allCICustomers = new java.util.ArrayList();
-		CICustomerLoader ciCstLoader = new CICustomerLoader(allCICustomers, databaseAlias);
-		ciCstLoader.run();
-	}
+		allCICustomers = new java.util.ArrayList( getAllCustomers().size());
 
+		for( int i = 0; i < getAllCustomers().size(); i++ )
+		{
+			if( getAllCustomers().get(i) instanceof LiteCICustomer )
+				allCICustomers.add((LiteCICustomer)getAllCustomers().get(i));
+		}
+		allCICustomers.trimToSize();
+	}
+	
 	return allCICustomers;
 }
 /**
@@ -1211,45 +1216,6 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allCustomers;
 	}
 	
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getCustomer(int)
-	 */
-	public LiteCustomer getCustomer(int customerID) {
-		List customers = getAllCustomers();
-		for (int i = 0; i < customers.size(); i++) {
-			LiteCustomer liteCustomer = (LiteCustomer) customers.get(i);
-			if (liteCustomer.getCustomerID() == customerID)
-				return liteCustomer;
-		}
-		
-		List ciCustomers = getAllCICustomers();
-		for (int i = 0; i < ciCustomers.size(); i++) {
-			LiteCICustomer liteCICust = (LiteCICustomer) ciCustomers.get(i);
-			if (liteCICust.getCustomerID() == customerID) {
-				if (!liteCICust.isExtended())
-					liteCICust.retrieve( CtiUtilities.getDatabaseAlias() );
-				return liteCICust;
-			}
-		}
-		
-		LiteCustomer liteCustomer = new LiteCustomer( customerID );
-		liteCustomer.retrieve( CtiUtilities.getDatabaseAlias() );
-		customers.add( liteCustomer );
-		
-		return liteCustomer;
-	}
-	
-	public void deleteCustomer(int customerID) {
-		Iterator it = getAllCustomers().iterator();
-		while (it.hasNext()) {
-			LiteCustomer liteCustomer = (LiteCustomer) it.next();
-			if (liteCustomer.getCustomerID() == customerID) {
-				it.remove();
-				return;
-			}
-		}
-	}
-	
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 2:01:01 PM)
@@ -1608,21 +1574,21 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleLMProgramConstraintChange( dbType, id );
 	}
-	
-	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
-	{
-		retLBase = handleCustomerChange( dbType, id );
-	}	
-	else if( database == DBChangeMsg.CHANGE_CI_CUSTOMER_DB
-				|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
+	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
+			|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
 		allEnergyCompanies = null;
 		allUserEnergyCompanies = null;
 
 		//only let the Customer DBChange go into here
-		if( database == DBChangeMsg.CHANGE_CI_CUSTOMER_DB )
-			retLBase = handleCICustomerChange( dbType, id );
-
+		if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
+		{
+			retLBase = handleCustomerChange( dbType, id, dbCategory );
+			
+			//TODO Find a better way to update the cicustomers, this sweep is begining to hurt my knees.
+			if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER))
+				allCICustomers = null;
+		}			
 	}	
 	else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
@@ -2316,69 +2282,7 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleCICustomerChange( int changeType, int id )
-{
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
-
-	// if the storage is not already loaded, we must not care about it
-	if( allCICustomers == null )
-		return lBase;
-
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allCICustomers.size();i++)
-				{
-					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allCICustomers.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteCICustomer lcst = new LiteCICustomer(id);
-					lcst.retrieve(databaseAlias);
-					allCICustomers.add(lcst);
-					lBase = lcst;
-				}
-				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allCICustomers.size();i++)
-				{
-					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
-					{
-						((LiteCICustomer)allCICustomers.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allCICustomers.get(i);
-						break;
-					}
-				}
-				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allCICustomers.size();i++)
-				{
-					if( ((LiteCICustomer)allCICustomers.get(i)).getCustomerID() == id )
-					{
-						lBase = (LiteBase)allCICustomers.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllCICustomers();
-				break;
-	}
-
-	return lBase;
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (12/7/00 12:34:05 PM)
- */
-private synchronized LiteBase handleCustomerChange( int changeType, int id )
+private synchronized LiteBase handleCustomerChange( int changeType, int id, String dbCategory)
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -2390,44 +2294,41 @@ private synchronized LiteBase handleCustomerChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allCustomers.size();i++)
-				{
-					if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allCustomers.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteCustomer lcst = new LiteCustomer(id);
-					lcst.retrieve(databaseAlias);
-					allCustomers.add(lcst);
-					lBase = lcst;
-				}
-				break;
+
+			lBase = (LiteBase)allCustomersMap.get( new Integer(id));
+			if( lBase == null)
+			{
+				LiteCustomer lc;
+				if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER ))
+					lc = new LiteCICustomer(id);
+				else 
+					lc = new LiteCustomer(id);
+				lc.retrieve(databaseAlias);
+				allCustomers.add(lc);
+				allCustomersMap.put( new Integer(lc.getCustomerID()), lc);
+				
+				lBase = lc;
+			}
+			break;
+			
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allCustomers.size();i++)
-				{
-					if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
-					{
-						((LiteCustomer)allCustomers.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allCustomers.get(i);
-						break;
-					}
-				}
-				break;
+			
+			LiteCustomer lc = (LiteCustomer)allCustomersMap.get(new Integer(id));
+			lc.retrieve(databaseAlias);
+			lBase = lc;
+			break;
+			
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allCustomers.size();i++)
+			for(int i=0;i<allCustomers.size();i++)
+			{
+				if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
 				{
-					if( ((LiteCustomer)allCustomers.get(i)).getCustomerID() == id )
-					{
-						lBase = (LiteBase)allCustomers.remove(i);
-						break;
-					}
+					allCustomersMap.remove( new Integer(id));
+					lBase = (LiteBase)allCustomers.remove(i);
+					break;
 				}
-				break;
+			}
+			break;
 		default:
 				releaseAllCustomers();
 				break;
@@ -2655,8 +2556,8 @@ public synchronized void releaseAllCache()
 	allDeviceMeterGroups = null;
 	allPointsUnits = null;
 	allPointLimits = null;
-   allYukonImages = null;
-	allCICustomers = null;
+	allYukonImages = null;
+	allCICustomers = null;	//CUSTOMER
 	allCustomers = null;
 	allCustomersMap = null;
 	
@@ -2771,11 +2672,6 @@ public synchronized void releaseAllNotificationGroups()
 public synchronized void releaseAllContactNotifications()
 {
 	allContactNotifications = null;
-}
-
-public synchronized void releaseAllCICustomers()
-{
-	allCICustomers = null;
 }
 
 public synchronized void releaseAllCustomers()

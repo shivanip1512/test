@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
-
 import com.cannontech.yukon.concrete.ResourceFactory;
 
 /**
@@ -382,19 +380,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllPAOsMap();
 	}
 	
-	/**
-	 * @ejb:interface-method
-	 * tview-type="remote"
-	 */
-/*	public synchronized LiteCustomer getCustomer(int customerID) {
-		return getDBCache().getCustomer( customerID );
-	}
-	
-	public synchronized void deleteCustomer(int customerID) {
-		getDBCache().deleteCustomer( customerID );
-	}
-*/
-
 //   /**
 //    * @ejb:interface-method
 //    * tview-type="remote" 
@@ -449,15 +434,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
       getDBCache().releaseAllContacts();
    }
 
-	/**
-	 * @ejb:interface-method
-	 * tview-type="remote" 
-	**/
-	public synchronized void releaseAllCICustomers()
-	{
-	   getDBCache().releaseAllCICustomers();
-	}
-	
 	/**
 	 * @ejb:interface-method
 	 * tview-type="remote" 

@@ -121,8 +121,6 @@ public interface DatabaseCache
 
    public void releaseAllContacts(  ) throws java.rmi.RemoteException;
    
-   public void releaseAllCICustomers(  ) throws java.rmi.RemoteException;
-   
    public void releaseAllCustomers(  ) throws java.rmi.RemoteException;
 
    public void releaseAllDeviceMeterGroups(  ) throws java.rmi.RemoteException;

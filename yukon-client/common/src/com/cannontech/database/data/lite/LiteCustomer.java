@@ -1,7 +1,9 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
 /**
@@ -26,7 +28,6 @@ public class LiteCustomer extends LiteBase {
 	private java.util.Vector accountIDs = null;
 	private int energyCompanyID = -1;
 	private boolean extended = false;
-	
 	public LiteCustomer() {
 		super();
 		setLiteType( LiteTypes.CUSTOMER );
@@ -88,7 +89,7 @@ public class LiteCustomer extends LiteBase {
 					ContactFuncs.getContact(((java.math.BigDecimal) stat.getRow(i)[0]).intValue()) );
 
 			}
-			
+
 			if (VersionTools.starsExists()) {
 				stat = new com.cannontech.database.SqlStatement(
 						"SELECT acct.AccountID, map.EnergyCompanyID " +
@@ -213,6 +214,22 @@ public class LiteCustomer extends LiteBase {
 	 */
 	public boolean isExtended() {
 		return extended;
+	}
+
+	/**
+	 * @param vector
+	 */
+	public void setAccountIDs(java.util.Vector vector)
+	{
+		accountIDs = vector;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setEnergyCompanyID(int i)
+	{
+		energyCompanyID = i;
 	}
 
 }

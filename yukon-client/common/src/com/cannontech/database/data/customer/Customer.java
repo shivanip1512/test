@@ -262,12 +262,16 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 							? 1  //at least have room to put the Global Change into the array
 							: getCustomerContactIDs().length)  ];
 */
+		String categoryType = DBChangeMsg.CAT_CUSTOMER;
+		if( getCustomer().getCustomerTypeID().intValue() == CustomerTypes.CUSTOMER_CI)
+			categoryType= DBChangeMsg.CAT_CI_CUSTOMER;
+			
 		DBChangeMsg[] msgs = new DBChangeMsg[ 1 ];
 		msgs[0] = new DBChangeMsg(
 						getCustomerID().intValue(),
 						DBChangeMsg.CHANGE_CUSTOMER_DB,
-						DBChangeMsg.CAT_CUSTOMER,
-						DBChangeMsg.CAT_CUSTOMER,
+						categoryType,
+						categoryType,
 						typeOfChange);
 
 /*

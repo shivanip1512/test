@@ -25,9 +25,6 @@ public interface IDatabaseCache
    public java.util.List getAllCustomers();
    //	Map<Integer(custID), LiteCustomer>
    public java.util.Map getAllCustomersMap();
-// public LiteCustomer getCustomer(int customerID);
-// public void deleteCustomer(int customerID);
-   
 	   
    public java.util.List getAllDeviceMeterGroups();
    public java.util.List getAllDevices();
@@ -118,7 +115,6 @@ public interface IDatabaseCache
    public void releaseAllCache();
    public void releaseAllAlarmCategories();
    public void releaseAllContacts();
-   public void releaseAllCICustomers();
    public void releaseAllCustomers();
    public void releaseAllDeviceMeterGroups();
    public void releaseAllYukonImages();

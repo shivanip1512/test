@@ -3,8 +3,8 @@ package com.cannontech.ejb;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
+import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import com.cannontech.database.cache.DBChangeListener;
@@ -204,7 +204,7 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	**/
 	 public synchronized java.util.List getAllCustomers()
 	 {
-		 return getCache().getAllCICustomers();
+		 return getCache().getAllCustomers();
 	 }
 	/**
 	 * @ejb:interface-method
@@ -503,15 +503,6 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllContacts()
    {
       getCache().releaseAllContacts();
-   }
-
-   /**
-	* @ejb:interface-method
-	* tview-type="remote" 
-   **/
-   public synchronized void releaseAllCICustomers()
-   {
-	  getCache().releaseAllCICustomers();
    }
    /**
 	* @ejb:interface-method

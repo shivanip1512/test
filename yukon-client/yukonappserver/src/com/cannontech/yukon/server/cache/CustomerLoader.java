@@ -3,8 +3,12 @@ package com.cannontech.yukon.server.cache;
 import java.util.Map;
 import java.util.Vector;
 
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
 /**
@@ -43,7 +47,7 @@ public class CustomerLoader implements Runnable
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	
+	//TODO EFFICIENCY!!!
 		//get all the customer contacts that are assigned to a customer
 		String sqlString = 
          "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID " +
@@ -65,7 +69,11 @@ public class CustomerLoader implements Runnable
 				String timeZone = rset.getString(3).trim();
 				int custTypeID = rset.getInt(4);				
 				
-				LiteCustomer lc = new LiteCustomer( cstID );
+				LiteCustomer lc;
+				if( custTypeID == CustomerTypes.CUSTOMER_CI)
+					lc = new LiteCICustomer(cstID);
+				else
+					lc = new LiteCustomer( cstID );
 				lc.setPrimaryContactID(contactID);
 				lc.setTimeZone(timeZone);
 				lc.setCustomerTypeID(custTypeID);
@@ -112,6 +120,43 @@ public class CustomerLoader implements Runnable
 				allCustsMap.put( new Integer(lc.getCustomerID()), lc);
 			}
 			
+			if (VersionTools.starsExists()) {
+				sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
+						"FROM CustomerAccount acct, ECToAccountMapping map " +
+						"WHERE acct.AccountID = map.AccountID " +
+						"order by acct.customerID";
+				
+				rset = stmt.executeQuery(sqlString);
+				while( rset.next())
+				{	//TODO we are updating this everytime, and it should really only be updated after the acctIDs are all collected.
+					int acctID = rset.getInt(1);
+					int ecID = rset.getInt(2);
+					int cstID = rset.getInt(3);
+					((LiteCustomer)allCustsMap.get(new Integer(cstID))).setEnergyCompanyID(ecID);
+					((LiteCustomer)allCustsMap.get(new Integer(cstID))).getAccountIDs().add(new Integer(acctID));
+				}
+			}
+
+			//TODO incorporate EnergyCompanyCustomerList to get the energycompany value.
+			sqlString = 
+				"select CustomerID, MainAddressID, CompanyName, " +
+				"CustomerDemandLevel, CurtailAmount " +
+				"from " + CICustomerBase.TABLE_NAME;
+				
+			rset = stmt.executeQuery(sqlString);
+
+			while( rset.next() )
+			{
+				int cstID = rset.getInt(1);
+				int addressID = rset.getInt(2);
+				String name = rset.getString(3).trim();
+				double dmdLevel = rset.getDouble(4);
+				double curtAmount = rset.getDouble(5);
+				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setMainAddressID(addressID);
+				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCompanyName(name);
+				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setDemandLevel(dmdLevel);
+				((LiteCICustomer)allCustsMap.get(new Integer(cstID))).setCurtailAmount(curtAmount);
+			}
 		}
 		catch( java.sql.SQLException e )
 		{
