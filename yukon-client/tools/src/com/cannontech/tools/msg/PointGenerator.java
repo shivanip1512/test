@@ -6,6 +6,9 @@ package com.cannontech.tools.msg;
  * @author: 
  */
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.PointRegistration;
 import com.cannontech.message.util.MessageEvent;
@@ -23,10 +26,12 @@ public static void main(String[] args)
 {
 	if( args.length < 5 )
 	{
-		CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay pointcount { pointID } { pointType }");
+		CTILogger.info("Usage:  PointChangeSource vangoghmachine port numberofchanges delay [-t|-l] pointcount { pointID } { pointType }");
 		CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
 		CTILogger.info("note that port 1510 has been the default");
-		CTILogger.info("PointTypes : 0=Status  1=Analog  2=PulsAccum  3=DmdAccum  4=Calculated");		
+		CTILogger.info("  Options    : -t get point data from FDRTranslation table");
+		CTILogger.info("               -l get point data from command line");
+		CTILogger.info("  PointTypes : 0=Status  1=Analog  2=PulsAccum  3=DmdAccum  4=Calculated");		
 		System.exit(0);
 	}
 	
@@ -35,26 +40,57 @@ public static void main(String[] args)
 	int port = (Integer.decode(args[1])).intValue();
 	int numChanges = (Integer.decode(args[2])).intValue();
 	int delay = (Integer.decode(args[3])).intValue();
-	int pointCount = (Integer.decode(args[4])).intValue();
+	String options = args[4];
 	
-	int[] id = new int[ pointCount ];
-	int[] type = new int[ pointCount ];
-
-	for( int i = 0; i < id.length; i++ )
+	int pointCount = 0;		
+	int[] id = null;
+	int[] type = null;
+	
+		
+	if( options.equals("-t") )
 	{
-		id[i] = (Integer.decode( args[5+i] )).intValue();
+		SqlStatement stat = new SqlStatement(
+				"select f.pointid, p.pointtype from fdrtranslation f, point p where f.pointid = p.pointid",
+				CtiUtilities.getDatabaseAlias() );
+
+		try { 
+			stat.execute();
+		} catch( Exception e ) {
+			CTILogger.error( e.getMessage(), e );
+			return; 
+		}
+		
+		id = new int[ stat.getRowCount() ];
+		type = new int[ stat.getRowCount() ];
+		for( int i = 0; i < stat.getRowCount(); i++ )
+		{			
+			id[i] = Integer.parseInt(stat.getRow(i)[0].toString());
+			type[i] = PointTypes.getType(stat.getRow(i)[1].toString());			
+		}
+		
+		
+	}
+	else
+	{
+		pointCount = (Integer.decode(args[5])).intValue();
+		
+		id = new int[ pointCount ];
+		type = new int[ pointCount ];
+	
+		for( int i = 0; i < id.length; i++ )
+		{
+			id[i] = (Integer.decode( args[6+i] )).intValue();
+		}
+	
+		for( int i = 0; i < type.length; i++ )
+		{
+			type[i] = (Integer.decode( args[6+pointCount+i] )).intValue();
+		}
 	}
 
-	for( int i = 0; i < type.length; i++ )
-	{
-		type[i] = (Integer.decode( args[5+pointCount+i] )).intValue();
-	}
-	
-	boolean forever = false;
 
-	if( numChanges == -1 )
-	 	forever = true;
-	
+
+	boolean forever = ( numChanges == -1);
 	ClientConnection conn = new ClientConnection();
 	PointRegistration pr = new PointRegistration();
 	pr.setRegFlags( PointRegistration.REG_ALL_PTS_MASK );
@@ -134,7 +170,8 @@ public static void main(String[] args)
 		conn.write( outMsg );
 		numSent++;
 		
-		CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent);
+		CTILogger.info((new java.util.Date()).toString() + " - Sent change #" + numSent + 
+				" (Points Sent: " + id.length + ")");
 		try
 		{
 			Thread.sleep(delay);
@@ -152,10 +189,6 @@ public static void main(String[] args)
 public void messageReceived(MessageEvent e)
 {
 	cnt++;
-	if( (cnt % 20) == 0 )
-		CTILogger.info( "   MEM1= " + Runtime.getRuntime().freeMemory() + " / " 
-			+ Runtime.getRuntime().totalMemory() );
-
 }
 
 }
