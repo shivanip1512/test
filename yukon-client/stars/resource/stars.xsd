@@ -1002,6 +1002,7 @@
 				<xs:element name="StartDateTime" type="xs:dateTime" minOccurs="0"/>
 				<xs:element name="Period" type="xs:int"/>
 			</xs:sequence>
+			<xs:attribute name="inventoryID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ProgramOptOutResponse">
@@ -1015,9 +1016,7 @@
 	</xs:element>
 	<xs:element name="stars-ProgramReenable">
 		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:string"/>
-			</xs:simpleContent>
+			<xs:attribute name="inventoryID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ProgramReenableResponse">

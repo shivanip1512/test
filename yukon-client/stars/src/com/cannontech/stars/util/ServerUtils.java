@@ -2,9 +2,7 @@ package com.cannontech.stars.util;
 
 import java.util.ArrayList;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.Date;
@@ -56,39 +54,13 @@ public class ServerUtils {
 	public static final String OPTOUT_EVENT_FILE = "optout_events.txt";
 	public static final String UPLOAD_DIR = "upload";
 	
-	public static void sendCommand(String command)
+	public static void sendSerialCommand(String command, int routeID)
 	{
-		com.cannontech.message.porter.ClientConnection conn = SOAPServer.getInstance().getPILConnection();
-		if (conn == null) {
-			CTILogger.error( "Cannot get PIL client connection" );
-			return;
-		}
-		
-		com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
-			new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
-		conn.write( req );
-        
-		CTILogger.debug( "Sent command to PIL: " + command );
-	}
-    
-	public static void saveCommands(String fileName, String[] commands) throws IOException {
-		if (fileName == null) return;
-    	
-		File f = new File( fileName );
-		if (!f.exists()) {
-			File dir = new File( f.getParent() );
-			if (!dir.exists()) dir.mkdirs();
-			f.createNewFile();
-		}
-		
-		PrintWriter fw = null;
-		try {
-			fw = new PrintWriter( new FileWriter(f, true) );
-			for (int i = 0; i < commands.length; i++)
-				fw.println( commands[i] );
-		}
-		finally {
-			if (fw != null) fw.close();
+		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		synchronized (yc) {
+			yc.setRouteID( routeID );
+			yc.setCommand( command );
+			yc.handleSerialNumber();
 		}
 	}
 	

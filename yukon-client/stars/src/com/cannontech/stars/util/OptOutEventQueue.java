@@ -9,13 +9,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.TreeMap;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
  * @author yao
@@ -40,7 +36,7 @@ public class OptOutEventQueue {
 		private long startDateTime = 0;
 		private int period = 0;
 		private int accountID = 0;
-		private String command = null;
+		private int inventoryID = 0;
 		
 		/**
 		 * Returns the accountID.
@@ -48,15 +44,6 @@ public class OptOutEventQueue {
 		 */
 		public int getAccountID() {
 			return accountID;
-		}
-
-		/**
-		 * Returns the command.
-		 * @return String
-		 */
-		public String getCommand() {
-			if (command == null) command = "";
-			return command;
 		}
 
 		/**
@@ -81,14 +68,6 @@ public class OptOutEventQueue {
 		 */
 		public void setAccountID(int accountID) {
 			this.accountID = accountID;
-		}
-
-		/**
-		 * Sets the command.
-		 * @param command The command to set
-		 */
-		public void setCommand(String command) {
-			this.command = command;
 		}
 
 		/**
@@ -123,21 +102,34 @@ public class OptOutEventQueue {
 			this.energyCompanyID = energyCompanyID;
 		}
 
+		/**
+		 * @return
+		 */
+		public int getInventoryID() {
+			return inventoryID;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setInventoryID(int i) {
+			inventoryID = i;
+		}
+
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		public String toString() {
 			StringBuffer line = new StringBuffer();
 			line.append( getEnergyCompanyID() )
-				.append( " " )
+				.append( "," )
 				.append( getStartDateTime() )
-				.append( " " )
+				.append( "," )
 				.append( getPeriod() )
-				.append( " " )
+				.append( "," )
 				.append( getAccountID() )
-				.append( " \"" )
-				.append( getCommand() )
-				.append( "\"" );
+				.append( "," )
+				.append( getInventoryID() );
 			
 			return line.toString();
 		}
@@ -167,22 +159,53 @@ public class OptOutEventQueue {
 		diskFile = file;
 	}
 	
-	public OptOutEvent findOptOutEvent(int accountID) {
+	public OptOutEvent[] findOptOutEvents(int accountID) {
+		ArrayList eventList = new ArrayList();
+		
 		for (int i = 0; i < optOutEvents.size(); i++) {
 			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
 			if (e.getAccountID() == accountID && e.getPeriod() >= 0)
+				eventList.add( e );
+		}
+		
+		OptOutEvent[] events = new OptOutEvent[ eventList.size() ];
+		eventList.toArray( events );
+		return events;
+	}
+	
+	public OptOutEvent findOptOutEvent(int inventoryID) {
+		for (int i = 0; i < optOutEvents.size(); i++) {
+			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
+			if (e.getInventoryID() == inventoryID && e.getPeriod() >= 0)
 				return e;
 		}
+		
 		return null;
 	}
 	
-	public OptOutEvent findReenableEvent(int accountID) {
+	public OptOutEvent[] findReenableEvents(int accountID) {
+		ArrayList eventList = new ArrayList();
+		
 		for (int i = 0; i < optOutEvents.size(); i++) {
 			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
 			if (e.getAccountID() == accountID
 				&& (e.getPeriod() == PERIOD_REENABLE || e.getPeriod() == PERIOD_REENABLE2))
+				eventList.add( e );
+		}
+		
+		OptOutEvent[] events = new OptOutEvent[ eventList.size() ];
+		eventList.toArray( events );
+		return events;
+	}
+	
+	public OptOutEvent findReenableEvent(int inventoryID) {
+		for (int i = 0; i < optOutEvents.size(); i++) {
+			OptOutEvent e = (OptOutEvent) optOutEvents.get(i);
+			if (e.getInventoryID() == inventoryID
+				&& (e.getPeriod() == PERIOD_REENABLE || e.getPeriod() == PERIOD_REENABLE2))
 				return e;
 		}
+		
 		return null;
 	}
 	
@@ -219,15 +242,15 @@ public class OptOutEventQueue {
 	
 	/**
 	 * Add an opt out or reenable event to the event queue. There can be at most one
-	 * scheduled opt out event and one reenable event in the queue at the same time,
-	 * the new event will replace the old one if necessary.
+	 * scheduled opt out event and one reenable event in the queue for a hardware
+	 * at the same time, the new event will replace the old one if necessary.
 	 * 
 	 * @param event The opt out event to add to the queue
 	 * @param writeThrough Controls whether to write to the disk file immediately
 	 * 
-	 * To increase efficiency, this functions can be called in series with writeThrough
-	 * set to false, followed by a call with writeThrough set to true, and event set
-	 * to null.
+	 * To increase efficiency, this functions can be called consecutively with
+	 * writeThrough set to false, followed by a call with writeThrough set to true,
+	 * and event set to null.
 	 */
 	public synchronized void addEvent(OptOutEvent event, boolean writeThrough) {
 		if (event == null) {
@@ -235,8 +258,8 @@ public class OptOutEventQueue {
 			return;
 		}
 		
-		OptOutEvent e1 = findOptOutEvent( event.getAccountID() );
-		OptOutEvent e2 = findReenableEvent( event.getAccountID() );
+		OptOutEvent e1 = findOptOutEvent( event.getInventoryID() );
+		OptOutEvent e2 = findReenableEvent( event.getInventoryID() );
 		
 		if (event.getPeriod() >= 0) {	// This is an opt out event
 			if (e1 != null) {
@@ -268,7 +291,7 @@ public class OptOutEventQueue {
 				cal.setTime( new Date(e1.getStartDateTime()) );
 				cal.add( Calendar.DATE, e1.getPeriod() );
 				
-				if (cal.getTime().getTime() < event.getStartDateTime() + OVERLAP_INTERVAL) {
+				if (cal.getTimeInMillis() < event.getStartDateTime() + OVERLAP_INTERVAL) {
 					/* If the extension of the opt out event is shorter than this reenable event, remove it */
 					optOutEvents.remove( e1 );
 					reCreateFile = true;
@@ -287,6 +310,11 @@ public class OptOutEventQueue {
 	
 	public synchronized void addEvent(OptOutEvent event) {
 		addEvent( event, true );
+	}
+	
+	public synchronized void removeEvent(OptOutEvent event) {
+		reCreateFile = optOutEvents.remove( event );
+		if (reCreateFile) syncToFile();
 	}
 	
 	public synchronized void removeEvents(int accountID) {
@@ -338,14 +366,15 @@ public class OptOutEventQueue {
 			fr = new BufferedReader( new FileReader(diskFile) );
 			String line = null;
 			while ((line = fr.readLine()) != null) {
-				String[] fields = ServerUtils.splitString( line, " " );
+				String[] fields = ServerUtils.splitString( line, "," );
 				
 				OptOutEvent event = new OptOutEvent();
 				event.setEnergyCompanyID( Integer.parseInt(fields[0]) );
 				event.setStartDateTime( Long.parseLong(fields[1]) );
 				event.setPeriod( Integer.parseInt(fields[2]) );
 				event.setAccountID( Integer.parseInt(fields[3]) );
-				event.setCommand( fields[4] );
+				event.setInventoryID( Integer.parseInt(fields[4]) );
+				
 				optOutEvents.add( event );
 			}
 		}
@@ -358,46 +387,6 @@ public class OptOutEventQueue {
 			}
 			catch (IOException e) {
 				CTILogger.error( e.getMessage(), e );
-			}
-		}
-	}
-	
-	/**
-	 * The opt out event command string is in the form of "command1,route1,command2,route2,..."
-	 */	
-	public static String getOptOutEventCommand(Hashtable commands) {
-		StringBuffer command = new StringBuffer();
-		Iterator it = commands.keySet().iterator();
-		
-		if (it.hasNext()) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) it.next();
-			String cmd = (String) commands.get( liteHw );
-			command.append(cmd).append(",").append(liteHw.getRouteID());
-			while (it.hasNext()) {
-				liteHw = (LiteStarsLMHardware) it.next();
-				cmd = (String) commands.get( liteHw );
-				command.append(",").append(cmd).append(",").append(liteHw.getRouteID());
-			}
-		}
-		
-		return command.toString();
-	}
-	
-	/**
-	 * Send out the commands represented by the opt out event command string
-	 */
-	public static void sendOptOutCommands(String command, int dftRouteID) {
-		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-		synchronized (yc) {
-			String[] fields = command.split(",");
-			for (int i = 0; i < fields.length / 2; i++) {
-				String cmd = fields[i*2];
-				int routeID = Integer.parseInt( fields[i*2+1] );
-				if (routeID == 0) routeID = dftRouteID;
-				
-				yc.setRouteID( routeID );
-				yc.setCommand( cmd );
-				yc.handleSerialNumber();
 			}
 		}
 	}

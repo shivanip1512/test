@@ -375,8 +375,8 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						
 						for (int j = 0; j < appCats.size(); j++) {
 							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
-							for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
-								LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
+							for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
+								LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(k);
 								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
 									if (liteProg.getGroupIDs()[l] == groupID) {
 										progID = liteProg.getProgramID();

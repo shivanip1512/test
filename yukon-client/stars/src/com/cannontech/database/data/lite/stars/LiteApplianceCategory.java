@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
@@ -19,7 +21,7 @@ public class LiteApplianceCategory extends LiteBase {
 	private int webConfigurationID = CtiUtilities.NONE_ID;
 	
 	// Array of published programs
-	private LiteLMProgram[] publishedPrograms = null;
+	private ArrayList publishedPrograms = null;
 	
 	public LiteApplianceCategory() {
 		super();
@@ -98,9 +100,11 @@ public class LiteApplianceCategory extends LiteBase {
 
 	/**
 	 * Returns the publishedPrograms.
-	 * @return LiteLMProgram[]
+	 * @return ArrayList
 	 */
-	public LiteLMProgram[] getPublishedPrograms() {
+	public ArrayList getPublishedPrograms() {
+		if (publishedPrograms == null)
+			publishedPrograms = new ArrayList();
 		return publishedPrograms;
 	}
 
@@ -108,7 +112,7 @@ public class LiteApplianceCategory extends LiteBase {
 	 * Sets the publishedPrograms.
 	 * @param publishedPrograms The publishedPrograms to set
 	 */
-	public void setPublishedPrograms(LiteLMProgram[] publishedPrograms) {
+	public void setPublishedPrograms(ArrayList publishedPrograms) {
 		this.publishedPrograms = publishedPrograms;
 	}
 

@@ -3,18 +3,17 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
-import com.cannontech.stars.xml.serialize.StarsProgramReenable;
 
 /**
  * @author yao
@@ -77,39 +76,43 @@ public class HourlyTimerTask extends StarsTimerTask {
 				// If the opt out event has already expired, then do nothing
 				if (dueEvents[j].getPeriod() >= 0) {
 					Calendar cal = Calendar.getInstance();
-					cal.add( Calendar.DATE, dueEvents[j].getPeriod() );
+					cal.add( Calendar.HOUR_OF_DAY, dueEvents[j].getPeriod() );
 					if (cal.getTime().getTime() - now.getTime() < TIME_LIMIT) continue;
 				}
 				
 				LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation( dueEvents[j].getAccountID(), true );
 				if (liteAcctInfo == null) continue;
 				
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) company.getInventory( dueEvents[j].getInventoryID(), true );
+				if (liteHw == null) continue;
+				
+				int routeID = liteHw.getRouteID();
+				if (routeID == 0) routeID = company.getDefaultRouteID();
+				
 				try {
-					// Send out "opt out"/"reenable" command
-					OptOutEventQueue.sendOptOutCommands( dueEvents[j].getCommand(), company.getDefaultRouteID() );
-					
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
-						StarsProgramReenable reEnable = new StarsProgramReenable();
-						ProgramReenableAction.updateCustAccountInfo( liteAcctInfo, company );
+						String cmd = ProgramReenableAction.getReenableCommand( liteHw, company );
+						ServerUtils.sendSerialCommand( cmd, routeID );
+						
+						ProgramReenableAction.handleReenableEvent( dueEvents[j], company );
 					}
 					else {	// This is a "opt out" event
-						StarsProgramOptOut optOut = new StarsProgramOptOut();
-						optOut.setStartDateTime( new Date(dueEvents[j].getStartDateTime()) );
-						optOut.setPeriod( dueEvents[j].getPeriod() );
-						ProgramOptOutAction.updateCustAccountInfo( liteAcctInfo, company, optOut );
+						String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
+						ServerUtils.sendSerialCommand( cmd, routeID );
+						
+						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company );
 						
 						// Insert a corresponding "reenable" event back into the queue
+						Calendar reenableTime = Calendar.getInstance();
+						reenableTime.setTime( new Date(dueEvents[j].getStartDateTime()) );
+						reenableTime.add( Calendar.HOUR_OF_DAY, dueEvents[j].getPeriod() );
+						
 						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
 						e.setEnergyCompanyID( company.getLiteID() );
-						Calendar cal = Calendar.getInstance();
-						cal.setTime( new Date(dueEvents[j].getStartDateTime()) );
-						cal.add( Calendar.DATE, dueEvents[j].getPeriod() );
-						e.setStartDateTime( cal.getTime().getTime() );
+						e.setStartDateTime( reenableTime.getTimeInMillis() );
 						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
 						e.setAccountID( dueEvents[j].getAccountID() );
-		            	
-						Hashtable commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, company );
-						e.setCommand( OptOutEventQueue.getOptOutEventCommand(commands) );
+						e.setInventoryID( dueEvents[j].getInventoryID() );
 						company.getOptOutEventQueue().addEvent( e, false );
 					}
 				}

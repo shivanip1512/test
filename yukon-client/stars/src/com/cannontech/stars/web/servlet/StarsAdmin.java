@@ -617,13 +617,7 @@ public class StarsAdmin extends HttpServlet {
 				energyCompany.updateStarsWebConfig( liteConfig.getConfigID() );
 			}
 			
-			Integer applianceCategoryID = appCat.getApplianceCategory().getApplianceCategoryID();
-			
-			ArrayList pubProgList = new ArrayList();
-			if (liteAppCat.getPublishedPrograms() != null) {
-				for (int i = 0; i < liteAppCat.getPublishedPrograms().length; i++)
-					pubProgList.add( liteAppCat.getPublishedPrograms()[i] );
-			}
+			ArrayList pubProgList = new ArrayList( liteAppCat.getPublishedPrograms() );
 			
 			String[] progIDs = req.getParameterValues( "ProgIDs" );
 			String[] progDispNames = req.getParameterValues( "ProgDispNames" );
@@ -634,15 +628,15 @@ public class StarsAdmin extends HttpServlet {
 			String[] progIconNames = req.getParameterValues( "ProgIconNames" );
 			
 			if (progIDs != null) {
-				LiteLMProgram[] pubPrograms = new LiteLMProgram[ progIDs.length ];
 				for (int i = 0; i < progIDs.length; i++) {
 					int progID = Integer.parseInt( progIDs[i] );
+					LiteLMProgram liteProg = null;
 					
 					for (int j = 0; j < pubProgList.size(); j++) {
-						LiteLMProgram liteProg = (LiteLMProgram) pubProgList.get(j);
-						if (liteProg.getProgramID() == progID) {
+						LiteLMProgram lProg = (LiteLMProgram) pubProgList.get(j);
+						if (lProg.getProgramID() == progID) {
 							pubProgList.remove(j);
-							pubPrograms[i] = liteProg;
+							liteProg = lProg;
 							break;
 						}
 					}
@@ -650,7 +644,7 @@ public class StarsAdmin extends HttpServlet {
 					com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
 							new com.cannontech.database.data.stars.LMProgramWebPublishing();
 					com.cannontech.database.db.stars.LMProgramWebPublishing pubProgDB = pubProg.getLMProgramWebPublishing();
-					pubProgDB.setApplianceCategoryID( applianceCategoryID );
+					pubProgDB.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
 					pubProgDB.setLMProgramID( new Integer(progID) );
 					pubProgDB.setChanceOfControlID( Integer.valueOf(progCtrlOdds[i]) );
 					pubProgDB.setProgramOrder( new Integer(i+1) );
@@ -668,23 +662,22 @@ public class StarsAdmin extends HttpServlet {
 					cfg.setURL( progDescFiles[i] );
 					pubProg.setWebConfiguration( cfg );
 					
-					if (pubPrograms[i] != null) {
-						pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(pubPrograms[i].getWebSettingsID()) );
-						
+					if (liteProg != null) {
+						pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
 						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
 								Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
 						
-						pubPrograms[i].setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
+						liteProg.setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
 						
 						// If program display name changed, we need to update all the accounts with this program
-						LiteWebConfiguration liteCfg = SOAPServer.getWebConfiguration( pubPrograms[i].getWebSettingsID() );
+						LiteWebConfiguration liteCfg = SOAPServer.getWebConfiguration( liteProg.getWebSettingsID() );
 						
 						String[] fields = ServerUtils.forceNotNull( liteCfg.getAlternateDisplayName() ).split(",");
 						String oldDispName = (fields.length > 0)? fields[0] : "";
-						if (oldDispName.length() == 0) oldDispName = pubPrograms[i].getProgramName();
+						if (oldDispName.length() == 0) oldDispName = liteProg.getProgramName();
 						
 						String newDispName = progDispNames[i];
-						if (newDispName.length() == 0) newDispName = pubPrograms[i].getProgramName();
+						if (newDispName.length() == 0) newDispName = liteProg.getProgramName();
 						
 						StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
 						energyCompany.updateStarsWebConfig( liteCfg.getConfigID() );
@@ -710,18 +703,14 @@ public class StarsAdmin extends HttpServlet {
 					else {
 						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
 								Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
-						pubPrograms[i] = (LiteLMProgram) StarsLiteFactory.createLite( pubProg.getLMProgramWebPublishing() );
-						energyCompany.addLMProgram( pubPrograms[i] );
+						liteProg = (LiteLMProgram) StarsLiteFactory.createLite( pubProg.getLMProgramWebPublishing() );
+						energyCompany.addLMProgram( liteProg, liteAppCat );
 						
 						LiteWebConfiguration liteCfg = (LiteWebConfiguration) StarsLiteFactory.createLite( pubProg.getWebConfiguration() );
 						SOAPServer.addWebConfiguration( liteCfg );
 					}
 				}
-				
-				liteAppCat.setPublishedPrograms( pubPrograms );
 			}
-			else
-				liteAppCat.setPublishedPrograms( new LiteLMProgram[0] );
 			
 			// Delete the rest of published programs
 			for (int i = 0; i < pubProgList.size(); i++) {
@@ -775,7 +764,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
 						new com.cannontech.database.data.stars.LMProgramWebPublishing();
-				pubProg.setApplianceCategoryID( applianceCategoryID );
+				pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
 				pubProg.setLMProgramID( programID );
 				pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
 				
@@ -828,32 +817,26 @@ public class StarsAdmin extends HttpServlet {
 				
 				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( appCatID );
 				
-				LiteLMProgram[] programs = liteAppCat.getPublishedPrograms();
-				int[] programIDs = null;
+				int[] programIDs = new int[ liteAppCat.getPublishedPrograms().size() ];
 				
-				if (programs != null) {
-					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
-						int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
-						com.cannontech.database.db.web.YukonWebConfiguration cfg =
-								new com.cannontech.database.db.web.YukonWebConfiguration();
-						cfg.setConfigurationID( new Integer(configID) );
-						
-						Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
-						
-						SOAPServer.deleteWebConfiguration( configID );
-						energyCompany.deleteStarsWebConfig( configID );
-					}
+				for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
+					LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(j);
+					programIDs[j] = liteProg.getProgramID();
 					
-					programIDs = new int[ programs.length ];
-					for (int j = 0; j < programs.length; j++) {
-						programIDs[j] = programs[j].getProgramID();
-						
-						// Delete all program events
-						com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-								energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]) );
-					}
-					Arrays.sort( programIDs );
+					com.cannontech.database.db.web.YukonWebConfiguration cfg =
+							new com.cannontech.database.db.web.YukonWebConfiguration();
+					cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
+					Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
+					
+					SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
+					energyCompany.deleteStarsWebConfig( liteProg.getWebSettingsID() );
+					
+					// Delete all program events
+					com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+							energyCompany.getEnergyCompanyID(), new Integer(liteProg.getProgramID()) );
 				}
+				
+				Arrays.sort( programIDs );
 				
 				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithCategory( appCatID );
 				int[] applianceIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllApplianceIDsWithCategory( appCatID );
@@ -893,13 +876,11 @@ public class StarsAdmin extends HttpServlet {
 						}
 					}
 					
-					if (programIDs != null) {
-						Iterator it = liteAcctInfo.getProgramHistory().iterator();
-						while (it.hasNext()) {
-							int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
-							if (Arrays.binarySearch(programIDs, progID) >= 0)
-								it.remove();
-						}
+					Iterator it = liteAcctInfo.getProgramHistory().iterator();
+					while (it.hasNext()) {
+						int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
+						if (Arrays.binarySearch(programIDs, progID) >= 0)
+							it.remove();
 					}
 					
 					energyCompany.updateStarsCustAccountInformation( liteAcctInfo );

@@ -32,10 +32,12 @@ public class StarsProgramReenable implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
+    private int _inventoryID;
+
     /**
-     * internal content storage
+     * keeps track of state for field: _inventoryID
     **/
-    private java.lang.String _content = "";
+    private boolean _has_inventoryID;
 
 
       //----------------/
@@ -44,7 +46,6 @@ public class StarsProgramReenable implements java.io.Serializable {
 
     public StarsProgramReenable() {
         super();
-        setContent("");
     } //-- com.cannontech.stars.xml.serialize.StarsProgramReenable()
 
 
@@ -53,15 +54,28 @@ public class StarsProgramReenable implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
-     * 
-     * @return the value of field 'content'.
     **/
-    public java.lang.String getContent()
+    public void deleteInventoryID()
     {
-        return this._content;
-    } //-- java.lang.String getContent() 
+        this._has_inventoryID= false;
+    } //-- void deleteInventoryID() 
+
+    /**
+     * Returns the value of field 'inventoryID'.
+     * 
+     * @return the value of field 'inventoryID'.
+    **/
+    public int getInventoryID()
+    {
+        return this._inventoryID;
+    } //-- int getInventoryID() 
+
+    /**
+    **/
+    public boolean hasInventoryID()
+    {
+        return this._has_inventoryID;
+    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -101,15 +115,15 @@ public class StarsProgramReenable implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
+     * Sets the value of field 'inventoryID'.
      * 
-     * @param content the value of field 'content'.
+     * @param inventoryID the value of field 'inventoryID'.
     **/
-    public void setContent(java.lang.String content)
+    public void setInventoryID(int inventoryID)
     {
-        this._content = content;
-    } //-- void setContent(java.lang.String) 
+        this._inventoryID = inventoryID;
+        this._has_inventoryID = true;
+    } //-- void setInventoryID(int) 
 
     /**
      * 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLoginStatus.java,v 1.11 2004/06/07 16:45:43 zyao Exp $
+ * $Id: StarsLoginStatus.java,v 1.12 2004/06/11 18:25:59 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.*;
 /**
  * 
  * 
- * @version $Revision: 1.11 $ $Date: 2004/06/07 16:45:43 $
+ * @version $Revision: 1.12 $ $Date: 2004/06/11 18:25:59 $
 **/
 public class StarsLoginStatus implements java.io.Serializable {
 

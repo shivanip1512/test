@@ -1274,7 +1274,7 @@ public class StarsLiteFactory {
 			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, energyCompany) );
 		}
 		
-		starsProgs.setStarsLMProgramHistory( createStarsLMProgramHistory(liteAcctInfo.getProgramHistory()) );
+		starsProgs.setStarsLMProgramHistory( createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
 		
 		return starsProgs;
 	}
@@ -1358,15 +1358,6 @@ public class StarsLiteFactory {
 		
 		StarsLMPrograms starsProgs = createStarsLMPrograms( liteAcctInfo, energyCompany );
 		starsAcctInfo.setStarsLMPrograms( starsProgs );
-		
-		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
-		if (queue != null) {
-			OptOutEventQueue.OptOutEvent event = queue.findOptOutEvent( liteAcctInfo.getAccountID() );
-			if (event != null) {
-				StarsLMProgramEvent starsEvent = createStarsOptOutEvent( event, liteAcctInfo.getLmPrograms(), energyCompany );
-				starsProgs.getStarsLMProgramHistory().addStarsLMProgramEvent( starsEvent );
-			}
-		}
 		
 		ArrayList liteInvs = liteAcctInfo.getInventories();
 		StarsInventories starsInvs = new StarsInventories();
@@ -1764,11 +1755,9 @@ public class StarsLiteFactory {
 		ArrayList appCats = energyCompany.getAllApplianceCategories();
 		for (int i = 0; i < appCats.size(); i++) {
 			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
-			for (int j = 0; j < appCat.getPublishedPrograms().length; j++) {
-				if (appCat.getPublishedPrograms()[j].getProgramID() == liteProg.getLmProgram().getProgramID()) {
-					starsProg.setApplianceCategoryID( appCat.getApplianceCategoryID() );
-					break;
-				}
+			if (appCat.getPublishedPrograms().contains( liteProg.getLmProgram() )) {
+				starsProg.setApplianceCategoryID( appCat.getApplianceCategoryID() );
+				break;
 			}
 		}
 		
@@ -1792,9 +1781,11 @@ public class StarsLiteFactory {
 		return starsProg;
 	}
 	
-	public static StarsLMProgramHistory createStarsLMProgramHistory(ArrayList liteProgHist) {
+	public static StarsLMProgramHistory createStarsLMProgramHistory(
+		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	{
 		StarsLMProgramHistory starsProgHist = new StarsLMProgramHistory();
-		ArrayList liteProgHist2 = new ArrayList( liteProgHist );
+		ArrayList liteProgHist2 = new ArrayList( liteAcctInfo.getProgramHistory() );
 		TreeMap progHistMap = new TreeMap();
 		
 		for (int i = 0; i < liteProgHist2.size(); i++) {
@@ -1862,6 +1853,15 @@ public class StarsLiteFactory {
 		progHistMap.values().toArray( starsEvents );
 		starsProgHist.setStarsLMProgramEvent( starsEvents );
 		
+		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+		if (queue != null) {
+			OptOutEventQueue.OptOutEvent[] events = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
+			for (int i = 0; i < events.length; i++) {
+				StarsLMProgramEvent starsEvent = createStarsOptOutEvent( events[i], energyCompany );
+				starsProgHist.addStarsLMProgramEvent( starsEvent );
+			}
+		}
+		
 		return starsProgHist;
 	}
 	
@@ -1882,30 +1882,28 @@ public class StarsLiteFactory {
 		starsAppCat.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
 		starsAppCat.setStarsWebConfig( energyCompany.getStarsWebConfig(liteAppCat.getWebConfigurationID()) );
 		
-		if (liteAppCat.getPublishedPrograms() != null) {
-			for (int i = 0; i < liteAppCat.getPublishedPrograms().length; i++) {
-				LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[i];
-				
-				StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
-				starsProg.setProgramID( liteProg.getProgramID() );
-				starsProg.setProgramName( liteProg.getProgramName() );
-				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
-				
-				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-					String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
-					AddressingGroup group = new AddressingGroup();
-					group.setEntryID( liteProg.getGroupIDs()[j] );
-					group.setContent( groupName );
-					starsProg.addAddressingGroup( group );
-				}
-				
-				if (liteProg.getChanceOfControlID() != 0) {
-					starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-							YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
-				}
-				
-				starsAppCat.addStarsEnrLMProgram( starsProg );
+		for (int i = 0; i < liteAppCat.getPublishedPrograms().size(); i++) {
+			LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(i);
+			
+			StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
+			starsProg.setProgramID( liteProg.getProgramID() );
+			starsProg.setProgramName( liteProg.getProgramName() );
+			starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
+			
+			for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
+				AddressingGroup group = new AddressingGroup();
+				group.setEntryID( liteProg.getGroupIDs()[j] );
+				group.setContent( groupName );
+				starsProg.addAddressingGroup( group );
 			}
+			
+			if (liteProg.getChanceOfControlID() != 0) {
+				starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
+						YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
+			}
+			
+			starsAppCat.addStarsEnrLMProgram( starsProg );
 		}
 		
 		return starsAppCat;
@@ -2283,7 +2281,7 @@ public class StarsLiteFactory {
 		return starsCustFAQs;
 	}
 	
-	public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, ArrayList liteProgs, LiteStarsEnergyCompany energyCompany) {
+	public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {
 		StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
 		
 		YukonListEntry optOutEntry = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION );
@@ -2293,8 +2291,12 @@ public class StarsLiteFactory {
 		starsEvent.setDuration( event.getPeriod() * 24 );
 		starsEvent.setNotes( "" );
 		
-		for (int i = 0; i < liteProgs.size(); i++)
-			starsEvent.addProgramID( ((LiteStarsLMProgram)liteProgs.get(i)).getLmProgram().getProgramID() );
+		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
+		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getLmProgramID() > 0)
+				starsEvent.addProgramID( liteApp.getLmProgramID() );
+		}
 		
 		return starsEvent;
 	}

@@ -12,10 +12,11 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
-import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
+import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -35,6 +36,7 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
+import com.cannontech.stars.xml.serialize.StarsProgramReenable;
 import com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -109,7 +111,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsCustAccountInformation  liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation  liteAcctInfo =
+					(LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
 			int energyCompanyID = user.getEnergyCompanyID();
 			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
@@ -204,53 +207,42 @@ public class SendOptOutNotificationAction implements ActionBase {
 		return text.toString();
 	}
 	
-	private static String getProgramInformation(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo) {
+	private static String getProgramInformation(LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo, ArrayList hardwares) {
 		StringBuffer text = new StringBuffer();
-		text.append("Program/Group/Serial #:").append(LINE_SEPARATOR);
-        
-		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-			LiteStarsLMProgram program = (LiteStarsLMProgram)liteAcctInfo.getLmPrograms().get(i);
-			text.append("    ").append(program.getLmProgram().getProgramName()).append(" / ");
-        	
-			String groupName = "(none)";
-			com.cannontech.database.data.lite.LiteYukonPAObject device =
-					com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( program.getGroupID() );
-			if (device != null)
-				groupName = device.getPaoName();
-			text.append(groupName).append(" / ");
-        	
-			String serialNo = "(none)";
+		
+		for (int i = 0; i < hardwares.size(); i++) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+			text.append("Serial #: ").append(liteHw.getManufacturerSerialNumber());
+			
+			boolean hasAssignedProg = false;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-				LiteStarsAppliance app = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-        		
-				if (app.getLmProgramID() == program.getLmProgram().getProgramID()) {
-					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-						int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
-        				
-						if (invID == app.getInventoryID()) {
-							LiteStarsLMHardware hw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
-							serialNo = hw.getManufacturerSerialNumber();
-							break;
-						}
-					}
-        			
-					break;
+				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getLmProgramID() > 0) {
+					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+					text.append("    Program: ").append(liteProg.getLmProgram().getProgramName());
+					
+					String groupName = "(none)";
+					if (liteApp.getAddressingGroupID() > 0)
+						groupName = PAOFuncs.getYukonPAOName( liteApp.getAddressingGroupID() );
+					text.append(", Group: ").append(groupName).append(LINE_SEPARATOR);
+					
+					hasAssignedProg = true;
 				}
 			}
-			text.append(serialNo).append(LINE_SEPARATOR);
+			
+			if (!hasAssignedProg)
+				text.append("    (No Assigned Program)").append(LINE_SEPARATOR);
 		}
         
 		return text.toString();
 	}
 	
-	private static LiteLMProgramEvent findLastOptOutEvent(ArrayList custEventHist, int programID, LiteStarsEnergyCompany energyCompany) {
+	private static LiteLMHardwareEvent findLastOptOutEvent(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		int tempTermID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
 		
 		try {
-			for (int i = custEventHist.size() - 1; i >= 0; i--) {
-				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) custEventHist.get(i);
-				if (liteEvent.getProgramID() != programID) continue;
-				
+			for (int i = liteHw.getInventoryHistory().size() - 1; i >= 0; i--) {
+				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) liteHw.getInventoryHistory().get(i);
 				if (liteEvent.getActionID() == tempTermID)
 					return liteEvent;
 			}
@@ -277,7 +269,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		if (optout.getPeriod() > 0) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime( optOutDate );
-			cal.add( Calendar.DATE, optout.getPeriod() );
+			cal.add( Calendar.HOUR_OF_DAY, optout.getPeriod() );
 			reenableDate = cal.getTime();
 		}
 		else if (optout.getPeriod() == ProgramOptOutAction.OPTOUT_TODAY)
@@ -290,18 +282,26 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
+		
+		ArrayList hardwares = null;
+		if (optout.hasInventoryID()) {
+			hardwares = new ArrayList();
+			hardwares.add( energyCompany.getInventory(optout.getInventoryID(), true) );
+		}
+		else
+			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
         
 		text.append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
 			.append(" Time: ").append(ServerUtils.formatDate( optOutDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
 			.append(" Time: ").append(ServerUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
-		text.append( getProgramInformation(energyCompany, liteAcctInfo) );
+		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
-
+		
 		int exitQType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
 		LiteInterviewQuestion[] liteQuestions = energyCompany.getInterviewQuestions( exitQType );
         
@@ -324,7 +324,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		
 		String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
 		if (toStr == null)
-			throw new Exception( "Property \"optout_notification_recipients\" not found, opt out notification email isn't sent" );
+			throw new Exception( "Property \"optout_notification_recipients\" not found" );
 		
 		StringTokenizer st = new StringTokenizer( toStr, "," );
 		ArrayList toList = new ArrayList();
@@ -354,6 +354,8 @@ public class SendOptOutNotificationAction implements ActionBase {
 			LiteStarsCustAccountInformation liteAcctInfo,
 			StarsOperation operation) throws Exception
 	{
+		StarsProgramReenable reenable = operation.getStarsProgramReenable();
+		
 		StringBuffer text = new StringBuffer();
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
@@ -361,42 +363,62 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
+		
+		ArrayList hardwares = null;
+		if (reenable.hasInventoryID()) {
+			hardwares = new ArrayList();
+			hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
+		}
+		else
+			hardwares = ProgramReenableAction.getAffectedHardwares( liteAcctInfo, energyCompany );
         
 		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
-		OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
-		OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+		ArrayList events = new ArrayList();
+		for (int i = 0; i < hardwares.size(); i++) {
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+			OptOutEventQueue.OptOutEvent e = queue.findOptOutEvent( liteHw.getInventoryID() );
+			if (e != null) events.add(e);
+		}
 		
-		if (e1 != null)
+		if (events.size() == 1) {
+			// e.g. "Scheduled Opt Out Time: 04/25/03	(Canceled)"
+			OptOutEventQueue.OptOutEvent e = (OptOutEventQueue.OptOutEvent) events.get(0);
 			text.append("Scheduled ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-				.append(" Time: ").append(ServerUtils.formatDate( new Date(e1.getStartDateTime()), energyCompany.getDefaultTimeZone() )).append("\t(Canceled)").append(LINE_SEPARATOR);
-
+				.append(" Time: ").append(ServerUtils.formatDate( new Date(e.getStartDateTime()), energyCompany.getDefaultTimeZone() ))
+				.append("\t(Canceled)").append(LINE_SEPARATOR);
+		}
+		else if (events.size() > 1){
+			text.append(events.size()).append(" Scheduled ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+				.append(" Events Canceled").append(LINE_SEPARATOR);
+		}
+		
 		boolean foundLastOptOutEvent = false;
-		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-			LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-			LiteLMProgramEvent event = findLastOptOutEvent(
-					liteAcctInfo.getProgramHistory(), program.getLmProgram().getProgramID(), energyCompany );
+		if (hardwares.size() > 0) {
+			LiteLMHardwareEvent event = findLastOptOutEvent( (LiteStarsLMHardware)hardwares.get(0), energyCompany );
 			
 			if (event != null) {
 				text.append("Last ").append(ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
-					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
+					.append(" Time: ").append(ServerUtils.formatDate( new Date(event.getEventDateTime()), energyCompany.getDefaultTimeZone() ))
+					.append(LINE_SEPARATOR);
 				foundLastOptOutEvent = true;
-				break;
 			}
 		}
 		
-		if (!foundLastOptOutEvent)
-			text.append("Last ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) )).append(" Time: (none)").append(LINE_SEPARATOR);
+		if (!foundLastOptOutEvent) {
+			text.append("Last ").append(ServletUtils.capitalize2( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) ))
+				.append(" Time: (none)").append(LINE_SEPARATOR);
+		}
 		
 		text.append(ServletUtils.capitalize( energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE) ))
 			.append(" Time: ").append(ServerUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
-		text.append( getProgramInformation(energyCompany, liteAcctInfo) );
+		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		
 		String toStr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
 		if (toStr == null)
-			throw new Exception( "Property \"optout_notification_recipients\" not found, opt out notification email isn't sent" );
+			throw new Exception( "Property \"optout_notification_recipients\" not found" );
 		
 		StringTokenizer st = new StringTokenizer( toStr, "," );
 		ArrayList toList = new ArrayList();

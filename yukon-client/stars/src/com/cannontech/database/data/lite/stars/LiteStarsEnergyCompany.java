@@ -578,17 +578,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
     			
 				com.cannontech.database.db.stars.LMProgramWebPublishing[] pubProgs =
 						com.cannontech.database.db.stars.LMProgramWebPublishing.getAllLMProgramWebPublishing( appCats[i].getApplianceCategoryID() );
-				ArrayList pubProgList = new ArrayList();
     			
 				for (int j = 0; j < pubProgs.length; j++) {
 					LiteLMProgram program = (LiteLMProgram) StarsLiteFactory.createLite(pubProgs[j]);
 					lmPrograms.add( program );
-					pubProgList.add( program );
+					appCat.getPublishedPrograms().add( program );;
 				}
-    			
-				LiteLMProgram[] pubPrograms = new LiteLMProgram[ pubProgList.size() ];
-				pubProgList.toArray( pubPrograms );
-				appCat.setPublishedPrograms( pubPrograms );
     			
 				appCategories.add( appCat );
 			}
@@ -1289,16 +1284,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteApplianceCategory deleteApplianceCategory(int applianceCategoryID) {
 		ArrayList appCats = getAllApplianceCategories();
+		ArrayList programs = getAllLMPrograms();
+		
 		synchronized (appCats) {
-			for (int i = 0; i < appCats.size(); i++) {
-				LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
-				if (appCat.getApplianceCategoryID() == applianceCategoryID) {
-					if (appCat.getPublishedPrograms() != null) {
-						for (int j = 0; j < appCat.getPublishedPrograms().length; j++)
-							deleteLMProgram( appCat.getPublishedPrograms()[j].getProgramID() );
+			synchronized (programs) {
+				for (int i = 0; i < appCats.size(); i++) {
+					LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
+					if (appCat.getApplianceCategoryID() == applianceCategoryID) {
+						for (int j = 0; j < appCat.getPublishedPrograms().size(); j++)
+							programs.remove( appCat.getPublishedPrograms().get(j) );
+						appCats.remove( i );
+						return appCat;
 					}
-					appCats.remove( i );
-					return appCat;
 				}
 			}
 		}
@@ -1453,19 +1450,32 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public void addLMProgram(LiteLMProgram liteProg) {
-		ArrayList lmProgramList = getAllLMPrograms();
-		synchronized (lmProgramList) { lmProgramList.add(liteProg); }
+	public void addLMProgram(LiteLMProgram liteProg, LiteApplianceCategory liteAppCat) {
+		ArrayList programs = getAllLMPrograms();
+		synchronized (programs) { programs.add(liteProg); }
+		
+		liteAppCat.getPublishedPrograms().add( liteProg );
 	}
 	
 	public LiteLMProgram deleteLMProgram(int programID) {
-		ArrayList lmProgramList = getAllLMPrograms();
-		synchronized (lmProgramList) {
-			for (int i = 0; i < lmProgramList.size(); i++) {
-				LiteLMProgram liteProg = (LiteLMProgram) lmProgramList.get(i);
-				if (liteProg.getProgramID() == programID) {
-					lmProgramList.remove(i);
-					return liteProg;
+		ArrayList programs = getAllLMPrograms();
+		ArrayList appCats = getAllApplianceCategories();
+		
+		synchronized (programs) {
+			synchronized (appCats) {
+				for (int i = 0; i < programs.size(); i++) {
+					LiteLMProgram liteProg = (LiteLMProgram) programs.get(i);
+					if (liteProg.getProgramID() == programID) {
+						programs.remove(i);
+						
+						for (int j = 0; j < appCats.size(); j++) {
+							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+							if (liteAppCat.getPublishedPrograms().remove( liteProg ))
+								break;
+						}
+						
+						return liteProg;
+					}
 				}
 			}
 		}

@@ -53,22 +53,30 @@ public class StarsProgramReenableDescriptor extends org.exolab.castor.xml.util.X
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        //-- _content
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
-        desc.setImmutable(true);
+        //-- initialize attribute descriptors
+        
+        //-- _inventoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsProgramReenable target = (StarsProgramReenable) object;
-                return target.getContent();
+                if(!target.hasInventoryID())
+                    return null;
+                return new Integer(target.getInventoryID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsProgramReenable target = (StarsProgramReenable) object;
-                    target.setContent( (java.lang.String) value);
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteInventoryID();
+                        return;
+                    }
+                    target.setInventoryID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -81,16 +89,13 @@ public class StarsProgramReenableDescriptor extends org.exolab.castor.xml.util.X
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _content
+        //-- validation code for: _inventoryID
         fieldValidator = new FieldValidator();
         { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
-        
-        //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         

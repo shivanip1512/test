@@ -100,7 +100,7 @@ public class ServletUtils {
 		return str;
 	}
 
-	public static String getDurationString(int sec) {
+	public static String getDurationFromSeconds(int sec) {
 		String durationStr = null;
 
 		if (sec >= 3600)
@@ -108,6 +108,22 @@ public class ServletUtils {
 		else
 			durationStr = String.valueOf(sec / 60) + " Minutes";
 
+		return durationStr;
+	}
+	
+	public static String getDurationFromHours(int hour) {
+		String durationStr = null;
+		
+		if (hour >= 24) {
+			int numDays = (int) (hour / 24.0 + 0.5);
+			durationStr = String.valueOf(numDays) + " Day";
+			if (numDays > 1) durationStr += "s";
+		}
+		else {
+			durationStr = String.valueOf(hour) + " Hour";
+			if (hour > 1) durationStr += "s";
+		}
+		
 		return durationStr;
 	}
     

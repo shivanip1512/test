@@ -125,8 +125,8 @@ public class SendOddsForControlAction implements ActionBase {
             		
 					for (int j = 0; j < appCatList.size(); j++) {
 						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
-						for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
-							LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
+						for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
+							LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(k);
 							if (liteProg.getProgramID() == enrProg.getProgramID()) {
 								liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
 								enrProgFound = true;

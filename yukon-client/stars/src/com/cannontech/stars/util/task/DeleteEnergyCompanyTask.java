@@ -19,6 +19,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
+import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -265,11 +266,11 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing(
 							new Integer(liteAppCat.getApplianceCategoryID()) );
 					
-					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
-						int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
+					for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
+						LiteLMProgram liteProg = (LiteLMProgram) liteAppCat.getPublishedPrograms().get(j);
 						com.cannontech.database.db.web.YukonWebConfiguration cfg =
 								new com.cannontech.database.db.web.YukonWebConfiguration();
-						cfg.setConfigurationID( new Integer(configID) );
+						cfg.setConfigurationID( new Integer(liteProg.getWebSettingsID()) );
 						
 						Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
 					}
