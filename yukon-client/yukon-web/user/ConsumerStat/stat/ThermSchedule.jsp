@@ -286,13 +286,9 @@ MM_reloadPage(true);
                             <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sunday</span> 
                             <% } %>
                           <td class = "Background" align = "right" width="46%"> 
-<%
-	String visibleStr = dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() ) ? "visible" : "hidden";
-	String checkStr = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
-	if (checkStr == null) checkStr = "";
-%>
+<%	String visibleStr = (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() ))? "visible" : "hidden"; %>
                             <span style="visibility:<%= visibleStr %>"> 
-                            <input type="checkbox" name="ApplyToWeekend" value="true" <%= checkStr %>>
+                            <input type="checkbox" name="ApplyToWeekend" value="true">
                             <span class="TableCell1">Apply settings to Saturday 
                             and Sunday </span></span> 
                         </tr>
