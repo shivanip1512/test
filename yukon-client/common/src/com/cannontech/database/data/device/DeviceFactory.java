@@ -86,6 +86,12 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.QUANTUM:
 			returnDevice = new Schlumberger();
 			break;
+		case PAOGroups.KV:
+			returnDevice = new KV();
+			break;
+		case PAOGroups.KVII:
+			returnDevice = new KV();
+			break;
 		case PAOGroups.LANDISGYRS4:
 			returnDevice = new LandisGyrS4();
 			break;

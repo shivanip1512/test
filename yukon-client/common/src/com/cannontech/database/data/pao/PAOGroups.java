@@ -138,6 +138,10 @@ public final static int getDeviceType(String typeString)
 	  return FULCRUM;
    else if (isStringDevice(compareString, STRING_VECTRON))
 	  return VECTRON;
+   else if (isStringDevice(compareString, STRING_KV))
+	  return KV;
+   else if (isStringDevice(compareString, STRING_KVII))
+	  return KVII;
    else if (isStringDevice(compareString, STRING_LANDISGYR_RS4))
 	  return LANDISGYRS4;
    else if (isStringDevice(compareString, STRING_QUANTUM))
@@ -470,6 +474,11 @@ public final static String getPAOTypeString(int type)
 		  return STRING_REPEATER_800[0];
 	  case SIXNET:
 		  return STRING_SIXNET[0];
+		  
+	  case KV:
+	  	  return STRING_KV[0];
+	  case KVII:
+	  	  return STRING_KVII[0];
  	  
  	  default:
 		  return STRING_INVALID;

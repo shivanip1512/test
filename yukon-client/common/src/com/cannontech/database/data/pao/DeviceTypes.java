@@ -87,6 +87,9 @@ public interface DeviceTypes extends TypeBase
 	
 	//not actually a device, but useful to throw it in here
 	public final static int LM_SCENARIO				= DEVICE_OFFSET + 73;
+	
+	public final static int KV 						= DEVICE_OFFSET + 74;
+	public final static int KVII					= DEVICE_OFFSET + 75;
 
 
 	//all the possible text representation of each device type.
@@ -105,6 +108,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_FULCRUM = {"FULCRUM"}; //replaced Schlumberger
 	public static final String[] STRING_VECTRON = {"VECTRON"}; //replaced Schlumberger
 	public static final String[] STRING_QUANTUM = {"QUANTUM"}; //replaced Schlumberger
+	public static final String[] STRING_KV = {"KV"};
+	public static final String[] STRING_KVII = {"KVII"};
 	public static final String[] STRING_LANDISGYR_RS4 = {"LANDIS-GYR S4", "LANDISGYRS4", "LANDIS GYR S4"};
 	public static final String[] STRING_DR_87 = {"DR-87", "DR87"};
 	public static final String[] STRING_DAVIS_WEATHER = {"DAVIS WEATHER", "DAVISWEATHER"};
