@@ -15,14 +15,14 @@
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
 %>
 
-<jsp:useBean id="ycBean" class="com.cannontech.yc.gui.YC" scope="session">
-	<jsp:setProperty name="ycBean" property="*"/>
+<jsp:useBean id="YC_BEAN" class="com.cannontech.yc.gui.YC" scope="session">
+	<jsp:setProperty name="YC_BEAN" property="*"/>
 </jsp:useBean>
-<jsp:setProperty name="ycBean" property="*"/>
-<jsp:setProperty name="ycBean" property="deviceID" value="<%=deviceID%>"/>
+<jsp:setProperty name="YC_BEAN" property="*"/>
+<jsp:setProperty name="YC_BEAN" property="deviceID" value="<%=deviceID%>"/>
 
 <% if( request.getParameter("execute") != null){%>
-	<jsp:setProperty name="ycBean" property="*"/>
+	<jsp:setProperty name="YC_BEAN" property="*"/>
 	<jsp:forward page="&lt%= request.getContextPath() %&gt/servlet/CommanderServlet?InvNo=<%=invNo%>"/>
 	<%return;
 	}%>
@@ -112,7 +112,7 @@ function disableButton(x)
 
  			  <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
    			    <input type="hidden" name="deviceID" value="<%=deviceID%>">
-   			    <input type="hidden" name="waitTime" value="3000">
+   			    <input type="hidden" name="timeOut" value="8000">
 
 				<input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
@@ -121,7 +121,7 @@ function disableButton(x)
                   <td width="70%"> 
                     <select name="command">
                     <%
-                      String tempCommand = ycBean.getCommandString().replaceAll("noqueue", "").trim();
+                      String tempCommand = YC_BEAN.getCommandString().replaceAll("noqueue", "").trim();
                       com.cannontech.common.util.KeysAndValues keysAndVals = 
 						new com.cannontech.common.util.KeysAndValues(defaultKeys, defaultValues);
                       if( DeviceTypesFuncs.isDisconnectMCT(liteYukonPao.getType()))
@@ -148,9 +148,9 @@ function disableButton(x)
                 <tr> 
                   <td colspan="2"> 
                     <div align="center">
-                      <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="20" wrap="VIRTUAL"><%= ycBean.getResultText()%></textarea>
+                      <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="20" wrap="VIRTUAL"><%= YC_BEAN.getResultText()%></textarea>
                       <input type="submit" name="clearText" value="Clear Results">
-                      <input type="reset" name="refresh" value="Refresh"">
+                      <input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
                     </div>
                   </td>
                 </tr>
