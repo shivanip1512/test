@@ -238,9 +238,19 @@ public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEv
 	if( getSubBus() == null || getSubBus().getCcDisableFlag().booleanValue() )
 		return;
 
-	com.cannontech.message.dispatch.message.Multi multi = 
+   int confirm = javax.swing.JOptionPane.showConfirmDialog( this, 
+         "Are you sure you want to send a Confirm " +
+         "command to '" + getSubBus().getCcName() +"' ?",
+         "Confirm Confirmation", 
+         javax.swing.JOptionPane.YES_OPTION);
+   
+   if (confirm != javax.swing.JOptionPane.YES_OPTION)
+      return;
+	
+   com.cannontech.message.dispatch.message.Multi multi = 
 			new com.cannontech.message.dispatch.message.Multi();
 	
+      
 	for( int i = 0; i < getSubBus().getCcFeeders().size(); i++ )
 	{
 		com.cannontech.cbc.data.Feeder feeder = 
