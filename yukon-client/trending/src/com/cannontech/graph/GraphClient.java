@@ -1088,7 +1088,7 @@ private javax.swing.JRadioButton getHistoricalRadioButton() {
  *  Calls the peaks html code and the usage code
  * Creation date: (11/15/00 4:11:14 PM)
  */
-private StringBuffer getHTMLBuffer( String seriesType)
+private String getHTMLBuffer( String seriesType)
 {
 	HTMLBuffer htmlData = null;
 	StringBuffer buf = null;
@@ -1139,7 +1139,7 @@ private StringBuffer getHTMLBuffer( String seriesType)
 	{
 		t.printStackTrace();
 	}
-	return buf;
+	return buf.toString();
 }
 /**
  * Insert the method's description here.
