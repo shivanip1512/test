@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:35:38 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/06/02 18:14:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -199,6 +199,7 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
         _ioState = Failed;
         retVal   = datalinkStatus;
 
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
