@@ -17,6 +17,7 @@ import com.cannontech.analysis.report.ProgramDetailReport;
 import com.cannontech.analysis.report.RouteMacroReport;
 import com.cannontech.analysis.report.StatisticReport;
 import com.cannontech.analysis.report.SystemLogReport;
+import com.cannontech.analysis.report.WorkOrder;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.DatabaseModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
@@ -83,7 +84,10 @@ public class ReportFuncs
 					return new ECActivityDetailReport();
 					
 				case ReportTypes.PROGRAM_DETAIL_DATA:
-					return new ProgramDetailReport();				
+					return new ProgramDetailReport();
+				
+				case ReportTypes.EC_WORK_ORDER_DATA:
+					return new WorkOrder();
 				
 				default:
 					return null;

@@ -11,9 +11,14 @@ package com.cannontech.servlet;
  * page		- the page number (0 based) of the report to view/return (PNG)
  * fileName - the name of the file to download to
  * ACTION 	- the action to perform - DownloadReport | PagedReport
+ * NoCache	- no cache will be stored in the session when this attribute exists
  * REDIRECT - 
  * REFERRER - 
  * 
+ * Type specific parameters: 
+ * EC_WORK_ORDER_DATA - 
+ *  	OrderID (the workOrderID <Integer>), AccountID (the accountID <Integer>), ServiceStatus (status of work orders to search for)
+ * 		SearchColumn (the column/field to search by, valid values in WorkOrderModel class <int>)
  * @author: Stacey Nebben
  */
 
@@ -40,6 +45,7 @@ import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
@@ -97,7 +103,9 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			
 			//Add ECId to the reportkey.
 			reportKey += String.valueOf(energyCompanyID);
-		
+			
+			boolean noCache = req.getParameter("NoCache") != null;
+
 			String param;	//holder for the requested parameter
 			int type=ReportTypes.SYSTEM_LOG_DATA;
 			String ext = "pdf", action="";
@@ -135,17 +143,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			else
 				isKeyIncomplete = true;	
 
-			if( !isKeyIncomplete ) //last "key" added to reportKey, through the current one it into the session
-			{
-				System.out.println("KEY " + reportKey);
-				session.setAttribute("ReportKey", reportKey);
-			}
-			else
-			{
-				if(session.getAttribute("ReportKey") != null)
-					reportKey = (String)session.getAttribute("ReportKey");
-			}
-
 			//The extension for the report, the format it is to be generated in
 			param = req.getParameter("ext");
 			if( param != null)
@@ -180,21 +177,75 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			cal.add(java.util.Calendar.DATE, -90);
 			long start = cal.getTimeInMillis();
 */
+			
+			// Work order model specific parameters
+			Integer orderID = null;
+			Integer accountID = null;
+			Integer serviceStatus = null;
+			int searchColumn = WorkOrderModel.SEARCH_COL_NONE;
+			
+			if (type == ReportTypes.EC_WORK_ORDER_DATA) {
+				param = req.getParameter("OrderID");
+				if (param != null) {
+					orderID = Integer.valueOf(param);
+					reportKey += " OrdID" + orderID;
+				}
+				param = req.getParameter("AccountID");
+				if (param != null) {
+					accountID = Integer.valueOf(param);
+					reportKey += " AcctID" + accountID;
+				}
+				param = req.getParameter("ServiceStatus");
+				if (param != null) {
+					serviceStatus = Integer.valueOf(param);
+					if (serviceStatus.intValue() == 0) serviceStatus = null;
+					reportKey += " SerStat" + serviceStatus;
+				}
+				param = req.getParameter("SearchColumn");
+				if (param != null) {
+					searchColumn = Integer.parseInt(param);
+					reportKey += " SeaCol" + String.valueOf(searchColumn);
+				}
+			}
+			
+			if (!noCache) {
+				if( !isKeyIncomplete ) //last "key" added to reportKey, through the current one it into the session
+				{
+					CTILogger.info("KEY " + reportKey);
+					session.setAttribute("ReportKey", reportKey);
+				}
+				else
+				{
+					if(session.getAttribute("ReportKey") != null)
+						reportKey = (String)session.getAttribute("ReportKey");
+				}
+			}
+			
 			//Create the report
 			JFreeReport report = (JFreeReport)session.getAttribute(reportKey + "Report");
-			if( report == null )
-			{
+			if( noCache || report == null )
+			{			
+				//Initialize the report data and populate the TableModel (collectData).
 				YukonReportBase rpt = ReportFuncs.createYukonReport(type);
 				rpt.getModel().setECIDs(new Integer(energyCompanyID));
 				rpt.getModel().setStartTime(startDate.getTime());
 				rpt.getModel().setStopTime(stopDate.getTime());
-			
-				//Initialize the report data and populate the TableModel (collectData).
+				
+				/** Set Model specific parameters */
+				if( type == ReportTypes.EC_WORK_ORDER_DATA) {
+					((WorkOrderModel)rpt.getModel()).setOrderID( orderID );
+					((WorkOrderModel)rpt.getModel()).setAccountID( accountID );
+					((WorkOrderModel)rpt.getModel()).setServiceStatus( serviceStatus );
+					((WorkOrderModel)rpt.getModel()).setSearchColumn( searchColumn );
+				}
+				
 				rpt.getModel().collectData();
 				
 				report = rpt.createReport();
 				report.setData(rpt.getModel());
-				session.setAttribute(reportKey + "Report", report);
+				
+				if( !noCache )
+					session.setAttribute(reportKey + "Report", report);
 			}
 
 			java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
@@ -263,10 +314,11 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				processor.setOutputTarget(target);
 
 				Object statelist = session.getAttribute(reportKey + "StateList");
-				if( statelist == null)
+				if( noCache || statelist == null)
 				{			
 					statelist = processor.repaginate();
-					session.setAttribute(reportKey + "StateList", statelist);
+					if( !noCache )
+						session.setAttribute(reportKey + "StateList", statelist);
 				}
 				else
 				{

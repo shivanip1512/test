@@ -19,6 +19,7 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
+import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.report.cbc.CapBankListModel;
 
 /**
@@ -52,9 +53,11 @@ public class ReportTypes
 	public static final int LOAD_PROFILE_DATA = 15;
 	public static final int EC_ACTIVITY_DETAIL_DATA = 16;
 	public static final int PROGRAM_DETAIL_DATA = 17;
+	
+	public static final int EC_WORK_ORDER_DATA = 18;
 
 	/** Cap Bank Reports */
-	public static final int CBC_BANK_DATA = 18;
+	public static final int CBC_BANK_DATA = 19;
 
 	
 	/** String names for report types */
@@ -80,6 +83,8 @@ public class ReportTypes
 	public static final String LOAD_PROFILE_DATA_STRING = "Load Profile Data";
 	public static final String EC_ACTIVITY_DETAIL_DATA_STRING = "Activity Log - Detail";
 	public static final String PROGRAM_DETAIL_DATA_STRING = "Program Status Detail";
+
+	public static final String EC_WORK_ORDER_DATA_STRING = "Work Order";
 	
 	public static final String CAPBANK_DATA_STRING = "CapBank Details";
 
@@ -107,6 +112,8 @@ public class ReportTypes
 		LOAD_PROFILE_DATA_STRING,
 		EC_ACTIVITY_DETAIL_DATA_STRING,
 		PROGRAM_DETAIL_DATA_STRING,
+		
+		EC_WORK_ORDER_DATA_STRING,
 		
 		//Capcontrol
 		CAPBANK_DATA_STRING
@@ -153,7 +160,7 @@ public class ReportTypes
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA},		//lm reports
 		{CBC_BANK_DATA}, //cap control reports
 		{CARRIER_DATA}, //database reports
-		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA},	//stars reports
+		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA},	//stars reports
 		{CARRIER_ROUTE_MACRO_DATA}	//other reports
 	};
 
@@ -198,6 +205,8 @@ public class ReportTypes
 				return new ActivityDetailModel();
 			case ReportTypes.PROGRAM_DETAIL_DATA:
 				return new ProgramDetailModel();				
+			case ReportTypes.EC_WORK_ORDER_DATA:
+				return new WorkOrderModel();
 			case ReportTypes.CBC_BANK_DATA:
 				return new CapBankListModel();				
 
