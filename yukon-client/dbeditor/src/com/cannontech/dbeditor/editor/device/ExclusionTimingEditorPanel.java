@@ -244,6 +244,7 @@ private javax.swing.JTextField getCycleTimeJTextField() {
 			ivjCycleTimeJTextField.setText("");
 			ivjCycleTimeJTextField.setMinimumSize(new java.awt.Dimension(71, 20));
 			// user code begin {1}
+			ivjCycleTimeJTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -437,6 +438,7 @@ private javax.swing.JTextField getJTextFieldOffset() {
 			ivjJTextFieldOffset.setText("");
 			ivjJTextFieldOffset.setMinimumSize(new java.awt.Dimension(71, 20));
 			// user code begin {1}
+			ivjJTextFieldOffset.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -461,6 +463,7 @@ private javax.swing.JTextField getJTextFieldTransmitTime() {
 			ivjJTextFieldTransmitTime.setText("");
 			ivjJTextFieldTransmitTime.setMinimumSize(new java.awt.Dimension(71, 20));
 			// user code begin {1}
+			ivjJTextFieldTransmitTime.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
