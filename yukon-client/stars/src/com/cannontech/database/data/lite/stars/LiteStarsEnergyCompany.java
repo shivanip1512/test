@@ -1693,7 +1693,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		for (int i = 0; i < inventory.size(); i++) {
 			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
 			if (liteInv.getDeviceID() > 0 && liteInv.getCategoryID() == categoryID
-				&& PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
+				&& PAOFuncs.getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
 			{
 				return new Pair(liteInv, this);
 			}
@@ -1702,7 +1702,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (!isInventoryLoaded())
 		{
 			com.cannontech.database.db.stars.hardware.InventoryBase[] invList =
-				com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName, getLiteID() );
+				com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName + "%", getLiteID() );
 			if (invList == null) return null;
 			
 			for (int i = 0; i < invList.length; i++) {
@@ -1740,10 +1740,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search for device with the specified category and device name.
-	 * If this energy company is a part of an energy company hierarchy,
-	 * and the device belongs to another company in the hierarchy,
-	 * the ObjectInOtherEnergyCompanyException is thrown. 
+	 * Search for device with the specified category and device name (based on partial match).
+	 * If this energy company is a part of an energy company hierarchy, and the device belongs to
+	 * another company in the hierarchy, the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
 		throws ObjectInOtherEnergyCompanyException
@@ -1759,7 +1758,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				for (int i = 0; i < mctList.size(); i++) {
 					LiteYukonPAObject litePao = (LiteYukonPAObject) mctList.get(i);
 					
-					if (litePao.getPaoName().equalsIgnoreCase( deviceName )) {
+					if (litePao.getPaoName().toUpperCase().startsWith( deviceName.toUpperCase() )) {
 						// Create a temporary LiteInventoryBase object
 						LiteInventoryBase liteInv = new LiteInventoryBase();
 						liteInv.setInventoryID( -1 );
@@ -1907,9 +1906,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search the inventory by device name. If searchMembers is true,
-	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-	 * otherwise it returns a list of LiteInventoryBase.
+	 * Search the inventory by device name (based on partial match). The return value is
+	 * a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany) if searchMembers is true,
+	 * a list of LiteInventoryBase otherwise.
 	 */
 	public ArrayList searchInventoryByDeviceName(String deviceName, boolean searchMembers) {
 		ArrayList devList = new ArrayList();
@@ -1919,7 +1918,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			for (int i = 0; i < inventory.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				if (liteInv.getDeviceID() > 0 && PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName )) {
+				if (liteInv.getDeviceID() > 0
+					&& PAOFuncs.getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
+				{
 					if (searchMembers)
 						devList.add( new Pair(liteInv, this) );
 					else
@@ -1929,7 +1930,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		else {
 			com.cannontech.database.db.stars.hardware.InventoryBase[] invList =
-				com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName, getLiteID() );
+				com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName + "%", getLiteID() );
 			if (invList == null) return null;
 			
 			for (int i = 0; i < invList.length; i++) {
@@ -2518,7 +2519,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		else {
-			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByMapNumber( mapNo, getLiteID() );
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByMapNumber( mapNo + "%", getLiteID() );
 			if (accountIDs != null) {
 				for (int i = 0; i < accountIDs.length; i++) {
 					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
