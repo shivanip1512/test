@@ -5,12 +5,15 @@ package com.cannontech.yc.gui;
  * Creation date: (2/25/2002 3:24:43 PM)
  * @author: 
  */
+import java.sql.SQLException;
 import com.cannontech.database.model.ModelFactory;
+
 public class YC
 {
 	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
 	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
 	public final String DEFAULT_FILENAME = "default";	//serial number file name
+	public final String COLLECTION_GROUP_FILENAME = "CollectionGroup";	//serial number file name
 	private String commandFile = "commandFile";	//current command file, init only to NOT have null value
 	
 	private String command;	//holds the current Command to execute
@@ -44,7 +47,9 @@ public class YC
 public YC() 
 {
 	super();
+	getConnToPorter();
 	ycDefaults = new YCDefaults();
+	
 }
 /**
  * Insert the method's description here.
@@ -183,19 +188,43 @@ public int getCommandPriority()
  * The name of the command file is the name of the class that is selected -
  *	the short name, not fully qualified
  */
-public com.cannontech.message.util.ConfigParmsFile getConfigFile(Object item)
+public com.cannontech.common.util.KeysAndValuesFile getConfigFile(Object item)
 {
 	String className = null;
-	
+
 	if (item.toString() == SERIALNUMBER_FILENAME  ||item.toString() == ALT_SERIALNUMBER_FILENAME)	//get serial number class name (constant var)
 		className = (String) item;
 	else if (item.toString() == DEFAULT_FILENAME )
 		className = (String) item;
 	else
-		className = item.getClass().getName() ;	//use the class name as the file name (.txt)
-		
+//		className = item.getClass().getName() ;	//use the class name as the file name (.txt)
+
+	if( item instanceof com.cannontech.database.data.device.DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+	{
+		className = ((com.cannontech.database.data.device.DeviceBase)item).getPAOType();
+	}
+	else if(item instanceof com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)//		ModelFactory.DEVICE_METERNUMBER,		
+	{
+		int devID = ((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)item).getDeviceMeterGroup().getDeviceID().intValue();
+		com.cannontech.database.data.lite.LiteYukonPAObject litePao = com.cannontech.database.cache.functions.DeviceFuncs.getLiteDevice(devID);
+		className = com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(litePao.getType());
+	}		
+//	else if(item instanceof com.cannontech.database.data.customer.Customer)//		ModelFactory.CICUSTOMER (CONTACT),
+//	{
+//		System.out.println(" Instance of CUSTOMER " + item.getClass());
+//		className = "Customer";
+//	}		
+	else 
+	{
+		System.out.println(" Instance of ??? " + item.getClass());
+		System.out.println(" THIS IS REALLY A BAD CATCH ALL HUH");
+	}
+//		ModelFactory.COLLECTIONGROUP,
+//		ModelFactory.TESTCOLLECTIONGROUP,
+//		ModelFactory.EDITABLELCRSERIAL,
+	
 	className = className.substring( className.lastIndexOf('.') + 1) + ".txt";
-	return new com.cannontech.message.util.ConfigParmsFile(getCommandFileDirectory() + className);	
+	return new com.cannontech.common.util.KeysAndValuesFile(getCommandFileDirectory(), className);	
 }
 /**
  * Insert the method's description here.
@@ -204,8 +233,42 @@ public com.cannontech.message.util.ConfigParmsFile getConfigFile(Object item)
  */
 public com.cannontech.message.porter.ClientConnection getConnToPorter()
 {
-	return connToPorter;
-}
+	if( connToPorter == null )
+	{
+		String host = "127.0.0.1";
+		int port = 1510;
+		try
+		{
+         host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+                  com.cannontech.common.util.CtiProperties.KEY_PORTER_MACHINE, 
+                  "127.0.0.1");
+            
+			port = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+                  com.cannontech.common.util.CtiProperties.KEY_PORTER_PORT, 
+                  "1510"))).intValue();
+		}
+		catch( Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+
+		connToPorter = new com.cannontech.message.porter.ClientConnection();
+		connToPorter.setHost(host);
+		connToPorter.setPort(port);
+		connToPorter.setAutoReconnect(true);
+		
+		try 
+		{
+			connToPorter.connectWithoutWait();
+		}
+		catch( Exception e ) 
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+	}
+
+	return connToPorter;	
+}	
 /**
  * Insert the method's description here.
  * Creation date: (2/27/2002 4:42:57 PM)
@@ -671,16 +734,12 @@ public void stop()
 }
 /**
  * This method attempts to substitute a command for the typed in command
- * based on the type of device/point selected
- * -----------------------------------------------------------------------------------------
- * ?? I don't know why this method is applicable, the command files will only contain some of the
- *  possible commands that could be used, there fore any typed command is valid and doesn't need
- *  to be verified (checked that it exists).??  SN sometime in April 2001
- * ----------------------------------------------------------------------------------------- 
+ * based on the type of device/point selected.
+ * Applicable when the user may actually type in the command KEY value instead of the actual VALUE.
  */
 public String substituteCommand(String command)
 {
-	com.cannontech.message.util.ConfigParmsFile cpf = null;
+	com.cannontech.common.util.KeysAndValuesFile kavFile = null;
 
 	//if (getTreeItem() == null)
 		//return null;
@@ -692,43 +751,43 @@ public String substituteCommand(String command)
 		
 		if (dbp == null)
 			return null;
-			
-		cpf = getConfigFile(dbp);
+	
+		kavFile = getConfigFile(dbp);
 	}
 	// Else if serial number, use the serial number file string constant.
 	else if (getModelType() == ModelFactory.EDITABLELCRSERIAL)
 	{
-		cpf = getConfigFile( SERIALNUMBER_FILENAME );
-		if (cpf.getKeysAndValues() ==null)
-			cpf = getConfigFile(ALT_SERIALNUMBER_FILENAME);
+		kavFile = getConfigFile( SERIALNUMBER_FILENAME );
+		if (kavFile.getKeysAndValues() == null)
+			kavFile = getConfigFile(ALT_SERIALNUMBER_FILENAME);
 	}
 	else if (getModelType() == ModelFactory.COLLECTIONGROUP ||
 			getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
 	{
-		cpf = getConfigFile( DEFAULT_FILENAME );
+		kavFile = getConfigFile( COLLECTION_GROUP_FILENAME);
 	}
 	else
 		return null;
 
 
-	String[][] keysAndValues = cpf.getKeysAndValues();
+	com.cannontech.common.util.KeysAndValues keysAndValues = kavFile.getKeysAndValues();
 	String lowerCommand = command.toLowerCase().trim();
 
 	//try to match the command to a key in cpf
-	for (int i = 0; i < keysAndValues[0].length; i++)
+	for (int i = 0; i < keysAndValues.getKeys().length; i++)
 	{
-		String lowerKey = keysAndValues[0][i].toLowerCase().trim();
+		String lowerKey = keysAndValues.getKeys()[i].toLowerCase().trim();
 
 		if (lowerKey.equals(lowerCommand))
-			return keysAndValues[1][i];
+			return keysAndValues.getValues()[i];
 	}
 
-	for (int i = 0; i < keysAndValues[1].length; i++)
+	for (int i = 0; i < keysAndValues.getValues().length; i++)
 	{
-		String lowerKey = keysAndValues[1][i].toLowerCase().trim();
+		String lowerKey = keysAndValues.getValues()[i].toLowerCase().trim();
 
 		if (lowerKey.equals(lowerCommand))
-			return keysAndValues[1][i];
+			return keysAndValues.getValues()[i];
 	}
 
 	return command; //default, return whatever they typed in on the command line

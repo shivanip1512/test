@@ -7,7 +7,7 @@ package com.cannontech.yc.gui;
  */
 public class YCDefaults
 {
-	public static final String YC_DEFAULTS_FILENAME = "\\YCOptions.DAT";
+	public static final String YC_DEFAULTS_FILENAME = "/YCOptions.DAT";
 	public static final String YC_DEFAULTS_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 
 	private final int NUMBER_OF_PARAMETERS = 5;
