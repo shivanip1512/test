@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/29 19:58:50 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/19 14:55:56 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.2  2004/05/19 14:55:56  cplender
+* Supportting new dsm2.h struct CtiSAData
+*
 * Revision 1.1  2004/04/29 19:58:50  cplender
 * Initial sa protocol/load group support
 *
@@ -32,36 +35,15 @@
 #include "prot_base.h"
 #include "protocol_sa.h"        // Telvent provided sa library.
 
-#define MAX_SA_MSG_SIZE 256
 #define MAX_SAERR_MSG_SIZE 256
 
 class IM_EX_PROT CtiProtocolSA3rdParty : public CtiProtocolBase
 {
 protected:
 
-    BYTE _lbt;
-    BYTE _delayToTx;                    // Time in seconds before transmitting codes.
-    BYTE _maxTxTime;                    // Maximum Time in seconds to transmit codes.
-
-    int _transmitterAddress;            // The address of the RTC, or RTU.
-    int _groupType;                     // This must be one of the supported DCU types in the lib.. ie. SA205, GOLAY...
-
-    bool _shed;                         // NON DCU205 groups use this bool to determine shed or restore.
-    int _function;                      // This is the function to execute on the DCU....  Should be directly applied in the switch.
-
-    int _code205;                       // This is the code to transmit iff this is an SA205 DCU type group.
-    CHAR _codeSimple[7];                // This is the code to transmit iff this is NOT an SA205 DCU type group.
-
-    CHAR _serial205[33];                // This is a 205 serial number.
-
-    // The parameters below are assigned typically by the parse object
-    int _swTimeout;                     // Switch OFF time in seconds.
-    int _cycleTime;                     // Switch on + off time in seconds.
-    int _repeats;                       // Number of _cycleTimes to repeat the operation (DCU205)
+    CtiSAData _sa;
 
     bool _messageReady;
-    BYTE _buffer[MAX_SA_MSG_SIZE];
-    int _bufferLen;                     // This is the valid size of the prepared _buffer
 
     CHAR _errorBuf[MAX_SAERR_MSG_SIZE];
     int _errorLen;
@@ -90,6 +72,7 @@ private:
 public:
 
     CtiProtocolSA3rdParty();
+    CtiProtocolSA3rdParty(const CtiSAData sa);
     CtiProtocolSA3rdParty(const CtiProtocolSA3rdParty& aRef);
 
     virtual ~CtiProtocolSA3rdParty();
@@ -117,6 +100,15 @@ public:
 
     void getBuffer(BYTE *dest, ULONG &len) const;
     void appendVariableLengthTimeSlot(BYTE *dest, ULONG &len) const;
+
+    INT getSABufferLen() const;
+    CtiSAData getSAData() const;
+    CtiProtocolSA3rdParty& setSAData(const CtiSAData &sa);
+
+    RWCString asString() const;
+    RWCString decomposeMessage(BYTE *buf) const;
+    RWCString strategyAsString() const;
+    RWCString functionAsString() const;
 
 };
 

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/29 19:58:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/05/19 14:55:55 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.2  2004/05/19 14:55:55  cplender
+* Supportting new dsm2.h struct CtiSAData
+*
 * Revision 1.1  2004/04/29 19:58:49  cplender
 * Initial sa protocol/load group support
 *
@@ -30,20 +33,29 @@
 
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
-_delayToTx(0x00),
-_maxTxTime(0x3f),
-_lbt(0x00),
-_transmitterAddress(0),
-_groupType(0),
-_shed(false),
-_function(0),
-_code205(0),
-_swTimeout(0),
-_cycleTime(0),
-_repeats(0),
-_messageReady(false),
-_bufferLen(0)
+_messageReady(false)
 {
+    _sa._commandType = 0;
+    _sa._lbt = (0x00);
+    _sa._delayToTx = (0x00);
+    _sa._maxTxTime = (0x3f);
+    _sa._transmitterAddress = (0);
+    _sa._groupType = (0);
+    _sa._shed = (false);
+    _sa._function = (0);
+    _sa._code205 = (0);
+    _sa._swTimeout = (0);
+    _sa._cycleTime = (0);
+    _sa._repeats = (0);
+    _sa._bufferLen = (0);
+
+    memset(_sa._buffer, 0, MAX_SA_MSG_SIZE);
+}
+
+CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa)
+{
+    _sa = sa;
+    _messageReady = true;
 }
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiProtocolSA3rdParty& aRef)
@@ -68,35 +80,37 @@ CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::operator=(const CtiProtocolSA3rdPa
 }
 
 
+
 INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage)
 {
     INT status = NORMAL;
 
+    _sa._commandType = parse.getCommand();
 
     switch(parse.getiValue("type"))
     {
     case ProtocolGolayType:
         {
-            _groupType = GOLAY;
-            strncpy(_codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            _sa._groupType = GOLAY;
+            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
             break;
         }
     case ProtocolSADigitalType:
         {
-            _groupType = SADIG;
-            strncpy(_codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            _sa._groupType = SADIG;
+            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
             break;
         }
     case ProtocolSA105Type:
         {
-            _groupType = SA105;
-            strncpy(_codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            _sa._groupType = SA105;
+            strncpy(_sa._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
             break;
         }
     case ProtocolSA205Type:
         {
-            _groupType = SA205;
-            _code205 = parse.getiValue("sa_opaddress",0);                           // Comes from somewhere else please!
+            _sa._groupType = SA205;
+            _sa._code205 = parse.getiValue("sa_opaddress",0);                           // Comes from somewhere else please!
             break;
         }
     default:
@@ -110,13 +124,19 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         }
     }
 
+    _sa._function = parse.getiValue("sa_function");
+    solveStrategy(parse);
 
-    switch(parse.getCommand())
+
+    switch(_sa._commandType)
     {
     case ControlRequest:
         {
-            assembleControl( parse, OutMessage );
-            _messageReady = true;
+            if( NORMAL == (status = assembleControl( parse, OutMessage )) )
+            {
+                loadControl();
+                _messageReady = true;
+            }
             break;
         }
     case PutConfigRequest:
@@ -147,10 +167,6 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     INT  status = NORMAL;
     UINT CtlReq = CMD_FLAG_CTL_ALIASMASK & parse.getFlags();
 
-
-    _function = parse.getiValue("sa_function");
-    solveStrategy(parse);
-
     if(CtlReq == CMD_FLAG_CTL_SHED)
     {
         int shed_seconds = parse.getiValue("shed");
@@ -159,9 +175,10 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
             // Add these two items to the list for control accounting!
             parse.setValue("control_interval", parse.getiValue("shed"));
             parse.setValue("control_reduction", 100 );
-
-            loadControl();
         }
+        else
+            status = BADPARAM;
+
     }
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
@@ -171,8 +188,6 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * repeat);
-
-        loadControl();
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
@@ -180,18 +195,16 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-
-        loadControl();
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
-        loadControl();
     }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Unsupported command.  Command = " << parse.getCommand() << endl;
+        status = NoMethod;
     }
 
     return status;
@@ -219,34 +232,34 @@ INT CtiProtocolSA3rdParty::loadControl()
     _errorBuf[0] = '\0';
     _errorLen = MAX_SAERR_MSG_SIZE;
 
-    if(_groupType == SA205 || _groupType == SA105)
+    if(_sa._groupType == SA205 || _sa._groupType == SA105)
     {
-        RWCString strcode = CtiNumStr(_code205);
+        RWCString strcode = CtiNumStr(_sa._code205);
         strncpy(scode.code, strcode.data(), 7);
 
-        scode.function = _function;
-        scode.type = _groupType;
-        scode.repeats = _repeats;
+        scode.function = _sa._function;
+        scode.type = _sa._groupType;
+        scode.repeats = _sa._repeats;
     }
     else
     {
-        strncpy(scode.code, _codeSimple, 7);
+        strncpy(scode.code, _sa._codeSimple, 7);
     }
 
-    scode.swTime = _swTimeout;
-    scode.cycleTime = _cycleTime;
-    _buffer[0] = '/0';
-    _bufferLen = MAX_SA_MSG_SIZE;
+    scode.swTime = _sa._swTimeout;
+    scode.cycleTime = _sa._cycleTime;
+    _sa._buffer[0] = '/0';
+    _sa._bufferLen = MAX_SA_MSG_SIZE;
 
 
-    switch(_groupType)
+    switch(_sa._groupType)
     {
     case SA105:
     case SA205:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = control105_205(_buffer, &_bufferLen, &scode, _transmitterAddress);
+                retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress);
             }
             break;
         }
@@ -254,7 +267,7 @@ INT CtiProtocolSA3rdParty::loadControl()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = controlGolay(_buffer, &_bufferLen, _codeSimple, _function, _transmitterAddress);
+                retCode = controlGolay(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._function, _sa._transmitterAddress);
             }
             break;
         }
@@ -262,7 +275,7 @@ INT CtiProtocolSA3rdParty::loadControl()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = controlSADigital(_buffer, &_bufferLen, _codeSimple, _transmitterAddress,
+                retCode = controlSADigital(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._transmitterAddress,
                                            gConfigParms.getValueAsInt("SADIGITIAL_MARK_INDEX",3),
                                            gConfigParms.getValueAsInt("SADIGITIAL_SPARE_INDEX",10));
             }
@@ -301,9 +314,9 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        _repeats = parse.getiValue("sa_reps", 1);
-        _swTimeout = 450;
-        _cycleTime = 450;
+        _sa._repeats = parse.getiValue("sa_reps", 1);
+        _sa._swTimeout = 450;
+        _sa._cycleTime = 450;
     }
     else
     {
@@ -322,10 +335,10 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 
             if(cycle_period <= 8)
             {
-                _cycleTime = 450;
+                _sa._cycleTime = 450;
                 if(cycle_percent <= 100)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else
                 {
@@ -338,27 +351,27 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
             }
             else if(cycle_period <= 15)
             {
-                _cycleTime = 900;
+                _sa._cycleTime = 900;
 
                 if(cycle_percent <= 50)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 67)
                 {
-                    _swTimeout = 600;
+                    _sa._swTimeout = 600;
                 }
                 else if(cycle_percent <= 73)
                 {
-                    _swTimeout = 660;
+                    _sa._swTimeout = 660;
                 }
                 else if(cycle_percent <= 80)
                 {
-                    _swTimeout = 720;
+                    _sa._swTimeout = 720;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else
                 {
@@ -372,19 +385,19 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 #ifdef SA_PROTOCOL_COMPLETE
             else if(cycle_period <= 23)
             {
-                _cycleTime = 1350;
+                _sa._cycleTime = 1350;
 
                 if(cycle_percent <= 33)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 67)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 1350;
+                    _sa._swTimeout = 1350;
                 }
                 else
                 {
@@ -398,27 +411,27 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 #endif
             else if(cycle_period <= 30)
             {
-                _cycleTime = 1800;
+                _sa._cycleTime = 1800;
 
                 if(cycle_percent <= 25)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 33)
                 {
-                    _swTimeout = 600;
+                    _sa._swTimeout = 600;
                 }
                 else if(cycle_percent <= 50)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else if(cycle_percent <= 75)
                 {
-                    _swTimeout = 1350;
+                    _sa._swTimeout = 1350;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 1800;
+                    _sa._swTimeout = 1800;
                 }
                 else
                 {
@@ -432,27 +445,27 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 #ifdef SA_PROTOCOL_COMPLETE
             else if(cycle_period <= 38)
             {
-                _cycleTime = 2250;
+                _sa._cycleTime = 2250;
 
                 if(cycle_percent <= 20)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 40)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else if(cycle_percent <= 60)
                 {
-                    _swTimeout = 1350;
+                    _sa._swTimeout = 1350;
                 }
                 else if(cycle_percent <= 80)
                 {
-                    _swTimeout = 1800;
+                    _sa._swTimeout = 1800;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 2250;
+                    _sa._swTimeout = 2250;
                 }
                 else
                 {
@@ -465,31 +478,31 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
             }
             else if(cycle_period <= 45)
             {
-                _cycleTime = 2700;
+                _sa._cycleTime = 2700;
 
                 if(cycle_percent <= 17)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 33)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else if(cycle_percent <= 50)
                 {
-                    _swTimeout = 1350;
+                    _sa._swTimeout = 1350;
                 }
                 else if(cycle_percent <= 67)
                 {
-                    _swTimeout = 1800;
+                    _sa._swTimeout = 1800;
                 }
                 else if(cycle_percent <= 83)
                 {
-                    _swTimeout = 2250;
+                    _sa._swTimeout = 2250;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 2700;
+                    _sa._swTimeout = 2700;
                 }
                 else
                 {
@@ -502,35 +515,35 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
             }
             else if(cycle_period <= 53)
             {
-                _cycleTime = 3150;
+                _sa._cycleTime = 3150;
 
                 if(cycle_percent <= 14)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 29)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else if(cycle_percent <= 43)
                 {
-                    _swTimeout = 1350;
+                    _sa._swTimeout = 1350;
                 }
                 else if(cycle_percent <= 57)
                 {
-                    _swTimeout = 1800;
+                    _sa._swTimeout = 1800;
                 }
                 else if(cycle_percent <= 71)
                 {
-                    _swTimeout = 2250;
+                    _sa._swTimeout = 2250;
                 }
                 else if(cycle_percent <= 86)
                 {
-                    _swTimeout = 2700;
+                    _sa._swTimeout = 2700;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 3150;
+                    _sa._swTimeout = 3150;
                 }
                 else
                 {
@@ -544,47 +557,47 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 #endif
             else
             {
-                _cycleTime = 3600;
+                _sa._cycleTime = 3600;
 
                 if(cycle_percent <= 13)
                 {
-                    _swTimeout = 450;
+                    _sa._swTimeout = 450;
                 }
                 else if(cycle_percent <= 25)
                 {
-                    _swTimeout = 900;
+                    _sa._swTimeout = 900;
                 }
                 else if(cycle_percent <= 33)
                 {
-                    _swTimeout = 1200;
+                    _sa._swTimeout = 1200;
                 }
                 else if(cycle_percent <= 38)
                 {
-                    _swTimeout = 1350;
+                    _sa._swTimeout = 1350;
                 }
                 else if(cycle_percent <= 50)
                 {
-                    _swTimeout = 1800;
+                    _sa._swTimeout = 1800;
                 }
                 else if(cycle_percent <= 63)
                 {
-                    _swTimeout = 2250;
+                    _sa._swTimeout = 2250;
                 }
                 else if(cycle_percent <= 67)
                 {
-                    _swTimeout = 2400;
+                    _sa._swTimeout = 2400;
                 }
                 else if(cycle_percent <= 75)
                 {
-                    _swTimeout = 2700;
+                    _sa._swTimeout = 2700;
                 }
                 else if(cycle_percent <= 88)
                 {
-                    _swTimeout = 3150;
+                    _sa._swTimeout = 3150;
                 }
                 else if(cycle_percent <= 100)
                 {
-                    _swTimeout = 3600;
+                    _sa._swTimeout = 3600;
                 }
                 else
                 {
@@ -596,7 +609,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 }
             }
 
-            _repeats = cycle_count;
+            _sa._repeats = cycle_count;
         }
         else
         {
@@ -612,10 +625,10 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " switch timeout: " << _swTimeout << endl;
-        dout << " cycle time    : " << _cycleTime << endl;
-        dout << " period        : " << _cycleTime << endl;
-        dout << " repetitions   : " << _repeats << endl;
+        dout << " switch timeout: " << _sa._swTimeout << endl;
+        dout << " cycle time    : " << _sa._cycleTime << endl;
+        dout << " period        : " << _sa._cycleTime << endl;
+        dout << " repetitions   : " << _sa._repeats << endl;
     }
 
     return status;
@@ -629,62 +642,62 @@ bool CtiProtocolSA3rdParty::messageReady() const
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setTransmitterAddress( int val )
 {
-    _transmitterAddress = val;
+    _sa._transmitterAddress = val;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setGroupType( int val )
 {
-    _groupType = val;
+    _sa._groupType = val;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setShed( bool val )
 {
-    _shed = val;
+    _sa._shed = val;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setFunction( int val )
 {
-    _function = val;
+    _sa._function = val;
     return *this;
 }
 
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCode205( int val )
 {
-    _code205 = val;
+    _sa._code205 = val;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCodeGolay( RWCString val )
 {
-    strncpy(_codeSimple, val.data(), 6);
+    strncpy(_sa._codeSimple, val.data(), 6);
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCodeSADigital( RWCString val )
 {
-    strncpy(_codeSimple, val.data(), 6);
+    strncpy(_sa._codeSimple, val.data(), 6);
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setSwitchTimeout( int val )
 {
-    _swTimeout = val;
+    _sa._swTimeout = val;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setCycleTime( int val )
 {
-    _cycleTime = val;
+    _sa._cycleTime = val;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setRepeats( int val )
 {
-    _repeats = val;
+    _sa._repeats = val;
     return *this;
 }
 
@@ -707,9 +720,9 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
     {
         if(!(shed_time % ctimes[i]) && (ctimes[i] * 8 >= shed_time))  // This one divides evenly and is large enough to meet the goal! (A perfect match)
         {
-            _cycleTime = ctimes[i];
-            _swTimeout = ctimes[i];
-            _repeats = shed_time / ctimes[i];
+            _sa._cycleTime = ctimes[i];
+            _sa._swTimeout = ctimes[i];
+            _sa._repeats = shed_time / ctimes[i];
             break;
         }
         else
@@ -720,9 +733,9 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
 
             if(delta < currentbestdelta)
             {
-                _cycleTime = ctimes[i];
-                _swTimeout = ctimes[i];
-                _repeats = rep;
+                _sa._cycleTime = ctimes[i];
+                _sa._swTimeout = ctimes[i];
+                _sa._repeats = rep;
             }
         }
     }
@@ -736,7 +749,7 @@ void CtiProtocolSA3rdParty::processResult(INT retCode)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "retcode " << retCode << " buflen: " << _bufferLen << endl;
+        dout << "retcode " << retCode << " buflen: " << _sa._bufferLen << endl;
 
         if((retCode != PROTSA_SUCCESS) && (retCode !=PROTSA_SUCCESS_MODIFIED_PARAM)  )
         {
@@ -746,8 +759,8 @@ void CtiProtocolSA3rdParty::processResult(INT retCode)
         }
         else
         {
-            for(i = 0; i<_bufferLen; i++)
-                dout << CtiNumStr(_buffer[i]).hex().zpad(2) << " ";
+            for(i = 0; i<_sa._bufferLen; i++)
+                dout << CtiNumStr(_sa._buffer[i]).hex().zpad(2) << " ";
             dout << endl;
         }
     }
@@ -759,10 +772,10 @@ void CtiProtocolSA3rdParty::copyMessage(RWCString &str) const
     INT i;
 
     str = RWCString();
-    if(_bufferLen>0)
+    if(_sa._bufferLen>0)
     {
-        for(i = 0; i<_bufferLen; i++)
-            str += CtiNumStr(_buffer[i]).hex().zpad(2) + " ";
+        for(i = 0; i<_sa._bufferLen; i++)
+            str += CtiNumStr(_sa._buffer[i]).hex().zpad(2) + " ";
     }
 
     return;
@@ -772,9 +785,9 @@ void CtiProtocolSA3rdParty::getBuffer(BYTE *dest, ULONG &len) const
 {
     int i = len;
 
-    for(i = 0; i<_bufferLen + len; i++)
+    for(i = 0; i<_sa._bufferLen + len; i++)
     {
-        dest[i] = _buffer[i];
+        dest[i] = _sa._buffer[i];
     }
 
     len = i;
@@ -789,12 +802,12 @@ void CtiProtocolSA3rdParty::getBuffer(BYTE *dest, ULONG &len) const
  */
 void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(BYTE *dest, ULONG &len) const
 {
-    int i = len + 1;
+    int i = len;
     BYTE crc = 0;
 
     BYTE maxTx = 0x3f;
 
-    dest[i] = 0xa0 | (_transmitterAddress & 0x0f);
+    dest[i] = 0xa0 | (_sa._transmitterAddress & 0x0f);
     crc ^= dest[i++];                                     // Compute CRC and advance i.
     dest[i] = 0x29;                                       // Fixed identifier.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
@@ -802,11 +815,11 @@ void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(BYTE *dest, ULONG &len)
     crc ^= dest[i++];                                     // Compute CRC and advance i.
     dest[i] = 0x03;                                       // Fixed identifier.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
-    dest[i] = _delayToTx;                                 // 6 bits seconds offset before TX.
+    dest[i] = _sa._delayToTx;                             // 6 bits seconds offset before TX.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
-    dest[i] = (_maxTxTime & 0x3f);                        // 6 bits seconds max of transmission time.
+    dest[i] = (_sa._maxTxTime & 0x3f);                    // 6 bits seconds max of transmission time.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
-    dest[i] = (0x07 & _lbt);                              // LBT Mode.
+    dest[i] = (0x07 & _sa._lbt);                          // LBT Mode.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
 
     dest[i++] = crc;
@@ -818,20 +831,176 @@ void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(BYTE *dest, ULONG &len)
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setLBTMode( int val )
 {
-    _lbt = (BYTE)val & 0x07;
+    _sa._lbt = (BYTE)val & 0x07;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setDelayTxTime( int val )
 {
-    _delayToTx = (BYTE)val & 0x3f;
+    _sa._delayToTx = (BYTE)val & 0x3f;
     return *this;
 }
 
 CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setMaxTxTime( int val )
 {
-    _maxTxTime = (BYTE)val & 0x3f;
+    _sa._maxTxTime = (BYTE)val & 0x3f;
     return *this;
 }
 
+INT CtiProtocolSA3rdParty::getSABufferLen() const
+{
+    return _sa._bufferLen;
+}
+
+CtiSAData CtiProtocolSA3rdParty::getSAData() const
+{
+    return _sa;
+}
+
+CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setSAData(const CtiSAData &sa)
+{
+    _sa = sa;
+    return *this;
+}
+
+
+RWCString CtiProtocolSA3rdParty::decomposeMessage(BYTE *buf) const
+{
+    RWCString rstr;
+
+    return rstr;
+}
+
+RWCString CtiProtocolSA3rdParty::asString() const
+{
+    RWCString rstr;
+
+    //_sa._transmitterAddress
+
+    switch(_sa._groupType)
+    {
+    case SA105:
+        {
+            rstr += "SA 105 - " + strategyAsString();
+            break;
+        }
+    case SA205:
+        {
+            rstr += "SA 205 - " + strategyAsString();
+            break;
+        }
+    case GOLAY:
+        {
+            rstr += "GOLAY  - " + RWCString(_sa._codeSimple) + " Function " + CtiNumStr(_sa._function);
+            break;
+        }
+    case SADIG:
+        {
+            rstr += "SA DIG - " + RWCString(_sa._codeSimple);
+            break;
+        }
+    }
+
+
+
+    return rstr;
+}
+
+
+RWCString CtiProtocolSA3rdParty::strategyAsString() const
+{
+    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds. " + CtiNumStr(_sa._repeats) + " repeats");
+    return rstr;
+}
+
+RWCString CtiProtocolSA3rdParty::functionAsString() const
+{
+    RWCString rstr;
+
+    switch(_sa._function)
+    {
+    case 1:
+        {
+            rstr += RWCString("Shed: Load 3.");
+            break;
+        }
+    case 2:
+        {
+            rstr += RWCString("Test Off.");
+            break;
+        }
+    case 3:
+        {
+            rstr += RWCString("Shed: Load 4.");
+            break;
+        }
+    case 4:
+        {
+            rstr += RWCString("Restore: Load 4.");
+            break;
+        }
+    case 5:
+        {
+            rstr += RWCString("Shed: Load 1,2,3.");
+            break;
+        }
+    case 6:
+        {
+            rstr += RWCString("Restore: Load 1,2,3.");
+            break;
+        }
+    case 7:
+        {
+            rstr += RWCString("Test On.");
+            break;
+        }
+    case 8:
+        {
+            rstr += RWCString("Shed: Load 1.");
+            break;
+        }
+    case 9:
+        {
+            rstr += RWCString("Restore: Load 1.");
+            break;
+        }
+    case 10:
+        {
+            rstr += RWCString("Shed: Load 2.");
+            break;
+        }
+    case 11:
+        {
+            rstr += RWCString("Restore: Load 2.");
+            break;
+        }
+    case 12:
+        {
+            rstr += RWCString("Shed: Load 1,2,3,4.");
+            break;
+        }
+    case 13:
+        {
+            rstr += RWCString("Restore: Load 1,2,3,4.");
+            break;
+        }
+    case 14:
+        {
+            rstr += RWCString("Shed: Load 1,2.");
+            break;
+        }
+    case 15:
+        {
+            rstr += RWCString("Restore: Load 1,2.");
+            break;
+        }
+    default:
+        {
+            rstr += RWCString("Unknown Function.");
+            break;
+        }
+    }
+
+    return rstr;
+}
 
