@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/09 19:24:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/10/18 20:23:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,8 +23,8 @@
 CtiDNPTransport::CtiDNPTransport()
 {
     _ioState     = Uninitialized;
-    _outAppLayer = NULL;
-    _inAppLayer  = NULL;
+    _outPayload = NULL;
+    _inPayload  = NULL;
 }
 
 CtiDNPTransport::CtiDNPTransport(const CtiDNPTransport &aRef)
@@ -59,9 +59,9 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short d
 
     if( len > 0 )
     {
-        _outAppLayer     = buf;
-        _outAppLayerLen  = len;
-        _outAppLayerSent = 0;
+        _outPayload     = buf;
+        _outPayloadLen  = len;
+        _outPayloadSent = 0;
 
         _seq = 0;
 
@@ -69,8 +69,8 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short d
     }
     else
     {
-        _outAppLayer    = NULL;
-        _outAppLayerLen = 0;
+        _outPayload    = NULL;
+        _outPayloadLen = 0;
         _ioState = Uninitialized;
 
         //  maybe set error return... ?
@@ -90,9 +90,9 @@ int CtiDNPTransport::initForInput(unsigned char *buf)
 {
     int retVal = NoError;
 
-    _inAppLayer     = buf;
-    _inAppLayerLen  = 0;
-    _inAppLayerRecv = 0;
+    _inPayload     = buf;
+    _inPayloadLen  = 0;
+    _inPayloadRecv = 0;
 
     _ioState = Input;
 
@@ -113,9 +113,9 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
             {
                 //  prepare transport layer buf dude here man like and stuff for y'all
 
-                first = !(_outAppLayerSent > 0);
+                first = !(_outPayloadSent > 0);
 
-                dataLen = _outAppLayerLen - _outAppLayerSent;
+                dataLen = _outPayloadLen - _outPayloadSent;
 
                 if( dataLen > 254 )
                 {
@@ -136,7 +136,7 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 _outPacket.header.seq   = _seq;
 
                 //  copy the app layer chunk into the outbound packet
-                memcpy( (void *)_outPacket.data, (void *)&(_outAppLayer[_outAppLayerSent]), dataLen );
+                memcpy( (void *)_outPacket.data, (void *)&(_outPayload[_outPayloadSent]), dataLen );
 
                 _datalink.setToOutput((unsigned char *)&_outPacket, packetLen, _dstAddr, _srcAddr);
 
@@ -192,13 +192,13 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
                 transportPayloadLen = _datalink.getOutPayloadLength() - TransportHeaderLen;
 
                 _seq++;
-                _outAppLayerSent += transportPayloadLen;
+                _outPayloadSent += transportPayloadLen;
 
-                if( _outAppLayerLen <= _outAppLayerSent )
+                if( _outPayloadLen <= _outPayloadSent )
                 {
                     _ioState = Complete;
 
-                    if( _outAppLayerLen < _outAppLayerSent )
+                    if( _outPayloadLen < _outPayloadSent )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -215,18 +215,26 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
                 int dataLen;
 
                 //  copy out the data
-                dataLen = _datalink.getInPayloadLength();
-                _datalink.getInPayload((unsigned char *)&_inPacket);
-
-                memcpy(&_inAppLayer[_inAppLayerRecv], _inPacket.data, dataLen);
-
-                _inAppLayerRecv += dataLen;
-
-                //  ACH: verify incoming sequence numbers
-
-                if( _inPacket.header.final )
+                if( _datalink.getInPayloadLength() >= TransportHeaderLen )
                 {
-                    _ioState = Complete;
+                    dataLen = _datalink.getInPayloadLength() - TransportHeaderLen;
+                    _datalink.getInPayload((unsigned char *)&_inPacket);
+
+                    memcpy(&_inPayload[_inPayloadRecv], _inPacket.data, dataLen);
+
+                    _inPayloadRecv += dataLen;
+
+                    //  ACH: verify incoming sequence numbers
+
+                    if( _inPacket.header.final )
+                    {
+                        _ioState = Complete;
+                    }
+                }
+                else
+                {
+                    _ioState = Failed;
+                    retVal = PORTREAD;  //  didn't get the header, life is bad
                 }
 
                 break;
@@ -258,6 +266,6 @@ bool CtiDNPTransport::errorCondition( void )
 
 int CtiDNPTransport::getInputSize( void )
 {
-    return _inAppLayerRecv;
+    return _inPayloadRecv;
 }
 
