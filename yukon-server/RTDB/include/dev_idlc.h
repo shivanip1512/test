@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/24 14:59:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/28 14:56:00 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_remote.h"
+#include "logger.h"
 #include "tbl_dv_idlcremote.h"
 #include "trx_info.h"
 #include "trx_711.h"
@@ -34,8 +35,8 @@ class CtiDeviceIDLC : public CtiDeviceRemote
 protected:
 
    CtiTableDeviceIDLC   _idlc;
+   mutable CtiTransmitterInfo   *_trxInfo;
 
-   CtiTransmitterInfo   *_trxInfo;
 private:
 
    public:
@@ -69,15 +70,21 @@ private:
       {
          _idlc = aRef.getIDLC();
 
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         }
+
          if(_trxInfo != NULL)
          {
             delete _trxInfo;
             _trxInfo = NULL;
          }
 
-         if( aRef.getTrxInfo() != NULL )
+         if( aRef.ownsTrxInfo() != NULL )
          {
-            *initTrxInfo() = *(aRef.getTrxInfo()); // Do an init + assignment
+            initTrxInfo();
+            *_trxInfo = *(aRef._trxInfo); // Do an init + assignment
          }
       }
       return *this;
@@ -118,8 +125,17 @@ private:
       _idlc.DecodeDatabaseReader(rdr);
    }
 
-   virtual CtiTransmitterInfo* getTrxInfo() const // Porter side info to retrieve transmitter device bookkeeping!
+   bool ownsTrxInfo() const // Porter side info to retrieve transmitter device bookkeeping!
    {
+      return (_trxInfo != 0);
+   }
+
+   virtual CtiTransmitterInfo* getTrxInfo() // Porter side info to retrieve transmitter device bookkeeping!
+   {
+      if(!_trxInfo)
+      {
+          initTrxInfo();
+      }
       return _trxInfo;
    }
    virtual bool hasTrxInfo() const    // This device type does indeed have a TrxInfo!
