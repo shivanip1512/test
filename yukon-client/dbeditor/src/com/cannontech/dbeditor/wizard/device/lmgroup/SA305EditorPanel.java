@@ -1041,7 +1041,7 @@ private javax.swing.JTextField getJTextFieldIndividualAddress() {
 			ivjJTextFieldIndividualAddress.setEditable(true);
 			// user code begin {1}
 			ivjJTextFieldIndividualAddress.setEnabled(false);
-			ivjJTextDivisionAddress.setDocument( new StringRangeDocument(15) );
+			ivjJTextFieldIndividualAddress.setDocument( new StringRangeDocument(15) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
