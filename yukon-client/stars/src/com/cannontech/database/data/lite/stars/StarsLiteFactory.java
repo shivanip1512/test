@@ -1010,7 +1010,8 @@ public class StarsLiteFactory {
                 else if (lmCtrlHist.getActiveRestore().equals("C")) {
                 	// If this is the last record, and the time stamp is close to now, then we're being controlled right now
                 	if (i == liteCtrlHist.getLmControlHistory().size() - 1) {
-                		long ctrlPeriod = (hist == null) ? lmCtrlHist.getControlDuration() : lmCtrlHist.getControlDuration() - hist.getControlDuration();
+                		//long ctrlPeriod = (hist == null) ? lmCtrlHist.getControlDuration() : lmCtrlHist.getControlDuration() - hist.getControlDuration();
+                		long ctrlPeriod = 30 * 60 * 1000;
                 		if ((new Date().getTime() - lmCtrlHist.getStartDateTime()) * 0.001 - lmCtrlHist.getControlDuration() < 2 * ctrlPeriod)
                 			starsCtrlHist.setBeingControlled( true );
                 	}
