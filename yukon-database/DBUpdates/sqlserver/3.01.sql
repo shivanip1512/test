@@ -873,6 +873,10 @@ update YukonRoleProperty set description = 'Total number alarms that are display
 update YukonRoleProperty set description = 'How many decimal places to show for real values' where rolepropertyid = -10108;
 update YukonRoleProperty set description = 'How many decimal places to show for real values for PowerFactor' where rolepropertyid = -10109;
 
+update dateofseason set seasonstartmonth = seasonstartmonth + 1;
+update dateofseason set seasonendmonth = seasonendmonth + 1;
+update dateofholiday set holidaymonth = holidaymonth + 1;
+update dateofholiday set holidayyear = 0 where holidayyear = -1;
 
 
 
