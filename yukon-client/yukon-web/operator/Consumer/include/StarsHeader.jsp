@@ -90,6 +90,12 @@
 		if (user == null || user.getYukonUser() != lYukonUser) {
 			// This is logged in using the normal LoginController, not the StarsLoginController
 			user = SOAPServer.getStarsYukonUser( lYukonUser );
+			if (user == null) {
+				// Something wrong happened when instantiating the StarsYukonUser
+				response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+				return;
+			}
+			
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 			
 			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
