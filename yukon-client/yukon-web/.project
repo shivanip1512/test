@@ -3,6 +3,7 @@
 	<name>yukon-web</name>
 	<comment></comment>
 	<projects>
+		<project>cbc</project>
 		<project>common</project>
 		<project>esub</project>
 		<project>loadcontrol</project>
