@@ -209,6 +209,26 @@ public class AuthFuncs {
 	}
 	
 	/**
+	 * Return a particular lite yukon group given the group name
+	 * @param groupName
+	 * @return LiteYukonGroup
+	 */
+	public static LiteYukonGroup getGroup(String groupName) {
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        
+        synchronized (cache) {
+        	java.util.Iterator it = cache.getAllYukonGroups().iterator();
+        	while (it.hasNext()) {
+        		LiteYukonGroup group = (LiteYukonGroup) it.next();
+        		if (group.getGroupName().equalsIgnoreCase( groupName ))
+        			return group;
+        	}
+        }
+        
+        return null;
+	}
+	
+	/**
 	 * Dont let anyone instantiate me
 	 * @see java.lang.Object#Object()
 	 */
