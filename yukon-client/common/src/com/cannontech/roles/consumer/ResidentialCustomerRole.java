@@ -29,24 +29,24 @@ public interface ResidentialCustomerRole {
 	public static final int CUSTOMIZED_FAQ_LINK= ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 32;
 	public static final int CUSTOMIZED_UTIL_EMAIL_LINK = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 33;
 	
-	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
-	public static final int WEB_LINK_UTIL_EMAIL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
-	public static final int WEB_TEXT_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
-	public static final int WEB_TEXT_CONTROLLED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
-	public static final int WEB_TEXT_CONTROLLING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
-	public static final int WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
-	public static final int WEB_TEXT_GENERAL_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
-	public static final int WEB_TEXT_CONTROL_HISTORY_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
-	public static final int WEB_TEXT_PROGRAM_CTRL_HIST_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 58;
-	public static final int WEB_TEXT_PROGRAM_CTRL_SUM_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 59;
-	public static final int WEB_TEXT_ENROLLMENT_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 60;
-	public static final int WEB_TEXT_OPT_OUT_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 61;
-	public static final int WEB_TEXT_UTILITY_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 62;
-	public static final int WEB_TEXT_CHANGE_LOGIN_TITLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 63;
-	public static final int WEB_TEXT_CONTROL_HISTORY_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 64;
-	public static final int WEB_TEXT_ENROLLMENT_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 65;
-	public static final int WEB_TEXT_OPT_OUT_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 66;
-	public static final int WEB_TEXT_GENERAL_DESC = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 67;
-	public static final int WEB_TEXT_OPT_OUT_DESC = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 68;
+	public static final int WEB_LINK_FAQ = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 50;
+	public static final int WEB_LINK_UTIL_EMAIL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 51;
+	public static final int WEB_TEXT_CONTROL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 52;
+	public static final int WEB_TEXT_CONTROLLED = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 53;
+	public static final int WEB_TEXT_CONTROLLING = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 54;
+	public static final int WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 55;
+	public static final int WEB_TEXT_GENERAL_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 56;
+	public static final int WEB_TEXT_CONTROL_HISTORY_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 57;
+	public static final int WEB_TEXT_PROGRAM_CTRL_HIST_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 58;
+	public static final int WEB_TEXT_PROGRAM_CTRL_SUM_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 59;
+	public static final int WEB_TEXT_ENROLLMENT_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 60;
+	public static final int WEB_TEXT_OPT_OUT_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 61;
+	public static final int WEB_TEXT_UTILITY_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 62;
+	public static final int WEB_TEXT_CHANGE_LOGIN_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 63;
+	public static final int WEB_TEXT_CONTROL_HISTORY_LABEL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 64;
+	public static final int WEB_TEXT_ENROLLMENT_LABEL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 65;
+	public static final int WEB_TEXT_OPT_OUT_LABEL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 66;
+	public static final int WEB_TEXT_GENERAL_DESC = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 67;
+	public static final int WEB_TEXT_OPT_OUT_DESC = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 68;
 
 }
