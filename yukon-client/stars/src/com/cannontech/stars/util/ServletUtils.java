@@ -431,19 +431,15 @@ public class ServletUtils {
     	
 		StringBuffer sBuf = new StringBuffer();
 		if (starsAddr.getStreetAddr1().trim().length() > 0)
-			sBuf.append( starsAddr.getStreetAddr1() );
-		if (starsAddr.getStreetAddr2().trim().length() > 0) {
-			if (sBuf.length() > 0) sBuf.append( ", " );
-			sBuf.append( starsAddr.getStreetAddr2() );
-		}
-		if (starsAddr.getCity().trim().length() > 0) {
-			if (sBuf.length() > 0) sBuf.append( ", " );
-			sBuf.append( starsAddr.getCity() );
-		}
-		if (starsAddr.getState().trim().length() > 0) {
-			if (sBuf.length() > 0) sBuf.append( ", " );
-			sBuf.append( starsAddr.getState() ).append( " " ).append( starsAddr.getZip() );
-		}
+			sBuf.append( starsAddr.getStreetAddr1() ).append(", ");
+		if (starsAddr.getStreetAddr2().trim().length() > 0)
+			sBuf.append( starsAddr.getStreetAddr2() ).append(", ");
+		if (starsAddr.getCity().trim().length() > 0)
+			sBuf.append( starsAddr.getCity() ).append(", ");
+		if (starsAddr.getState().trim().length() > 0)
+			sBuf.append( starsAddr.getState() ).append(" ");
+		if (starsAddr.getZip().trim().length() > 0)
+			sBuf.append( starsAddr.getZip() );
     	
 		return sBuf.toString();
 	}
