@@ -120,6 +120,7 @@ $(COMPILEBASE)\lib\ctimsg.lib
 
 
 CTIPROGS=\
+saprotocol.dll \
 ctiprot.dll
 
 
@@ -139,6 +140,17 @@ ctiprot.dll:   $(OBJS) Makefile
                 @echo Done building Target $@
                 @echo:
                 @%cd $(CWD)
+
+
+                
+saprotocol.dll:
+                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+                -if exist 3rdparty\saprotocol.lib copy 3rdparty\saprotocol.lib $(COMPILEBASE)\lib
+                -if exist 3rdparty\saprotocol.dll copy 3rdparty\saprotocol.dll bin
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -if exist $@ copy $@ $(YUKONOUTPUT)
+                @%cd $(CWD)
+
 
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
