@@ -73,8 +73,19 @@ public class Cttp {
 		cttpDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
+	private static ThreadLocal cttpHolder = new ThreadLocal();
 	
-	public Cttp() {
+	//return a threadlocal instance
+	public static Cttp getInstance() {
+		Cttp cttp = (Cttp) cttpHolder.get();
+		if(cttp == null) {
+			cttp = new Cttp();
+			cttpHolder.set(cttp);
+		}
+		return cttp;
+	}
+	
+	private Cttp() {
 	}
 	
 	/**

@@ -24,10 +24,8 @@ public class CttpServlet extends HttpServlet {
 		throws ServletException, IOException {
 		
 		resp.setContentType("text/xml");
-		
-		
-		
-		Cttp cttp = new Cttp();
+				
+		Cttp cttp = Cttp.getInstance();
 		try {		
 			cttp.handleMessage(req.getInputStream(), resp.getOutputStream());
 		}
