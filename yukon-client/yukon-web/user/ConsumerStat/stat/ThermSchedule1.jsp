@@ -61,7 +61,7 @@
 		  <% String pageName = "ThermSchedule1.jsp?" + thermNoStr; %>
           <%@ include file="include/Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
@@ -83,7 +83,7 @@
             </div>
 			
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

@@ -99,7 +99,7 @@ function dispStatusMsg(msgStr) { //v1.0
               <table width="635" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td align="center" colspan=2>
-				  <img src="Images/databaseProps.jpg" align="center"></td>
+				  <img src="WebConfig/yukon/databaseProps.jpg" align="center"></td>
 				</tr>
 
                 <tr> 
@@ -168,7 +168,7 @@ function dispStatusMsg(msgStr) { //v1.0
 			  
                 <tr> 
                   <td align="center" colspan=2>
-				  <img src="Images/serverProps.jpg" align="center"></td>
+				  <img src="WebConfig/yukon/serverProps.jpg" align="center"></td>
 				</tr>
 			  
 <%

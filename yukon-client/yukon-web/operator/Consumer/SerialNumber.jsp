@@ -118,7 +118,7 @@ function confirmCancel() {
 			<%@ include file="include/Nav.jsp" %>
 <% } %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
               <% String header = "INVENTORY CHECKING"; %>
@@ -227,7 +227,7 @@ function confirmCancel() {
             </div>
           
            </td>
-          <td width="1" bgcolor="#000000"><img src=""../Images/Icons/VerticalRule.gif"" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
         </tr>
       </table>
     </td>

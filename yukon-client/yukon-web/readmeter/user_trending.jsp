@@ -83,7 +83,7 @@
                       graphBean.updateCurrentPane();
                       out.println(graphBean.getHtmlString());
                     }
-                    else if( graphBean.getViewType() == GraphRenderers.TABULAR)
+                    else if( graphBean.getViewType() == GraphRenderers.TABULAR )
                     {%>
                       <%@ include file="../include/trending_tabular.jsp" %>
                       <%graphBean.updateCurrentPane();
@@ -91,7 +91,7 @@
                     }
                     else // "graph" is default
                     {%>
-                      <img id = "theGraph" src="/servlet/GraphGenerator?action=EncodeGraph" > 
+                      <img id = "theGraph" src="/servlet/GraphGenerator?" > 
                     <%}
                   %>
                   <br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>

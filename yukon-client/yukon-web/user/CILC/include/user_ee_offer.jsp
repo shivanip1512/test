@@ -114,7 +114,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -133,7 +133,7 @@
             <% String pageName = "user_ee.jsp"; %>
             <%@ include file="nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
             <center>
             <p><br>
@@ -233,7 +233,7 @@
             <p class="SubtitleHeader"><a href="user_ee.jsp" class="Link1">Back</a></p><p>&nbsp;</p>
             </center>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

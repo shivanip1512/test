@@ -27,7 +27,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101">&nbsp; </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "PROGRAMS - " + AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL, "ODDS FOR CONTROL"); %>
@@ -65,7 +65,7 @@
                     <td width="200" class="TableCell" align="center" style="border-right:none"> 
                       <table width="200" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td width="64"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
+                          <td width="64"><img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"></td>
                           <td width="136"> 
                             <table width="136" border="0" cellspacing="0" cellpadding="3">
                               <%
@@ -121,7 +121,7 @@
               <p align="center" class="Subtext"><br>
             </div>
             </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

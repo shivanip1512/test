@@ -27,6 +27,6 @@
 	    </tr>
 	  </table>
     </td>
-    <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+    <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
   </tr>
 </table>

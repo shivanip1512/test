@@ -232,7 +232,7 @@ function MM_popupMsg(msg) { //v1.0
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -251,7 +251,7 @@ function MM_popupMsg(msg) { //v1.0
             <% String pageName = "user_lm_control.jsp"; %>
             <%@ include file="include/nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="600" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <p><br>
@@ -301,8 +301,8 @@ function MM_popupMsg(msg) { //v1.0
                                             <input id = "temperature" type="text" value="75" size="3" onchange = "(navigator.appName == 'Netscape')?moveTempPtrNS():moveTempPtrIE()" >
                                             &nbsp;<sup>&deg</sup> </b></div>
                                         </td>
-                                        <td height="295" width="72" background = "../../Images/Parts/ThermometerBG.jpg"> 
-                                          <img name = "arrow" id= "arrow" onmousedown = "(navigator.appName == 'Netscape')?beginDrag(event,-120,160,0,0,'showTempNS()','vertical',''):beginDrag(event,-120,80,0,0,'showTempIE()','vertical','');" src="../../Images/Parts/ThermSlider.gif"  onload = "setPixTemp()" style = "position:relative; top:0px; left:8px; cursor:pointer"> 
+                                        <td height="295" width="72" background = "../../WebConfig/yukon/Parts/ThermometerBG.jpg"> 
+                                          <img name = "arrow" id= "arrow" onmousedown = "(navigator.appName == 'Netscape')?beginDrag(event,-120,160,0,0,'showTempNS()','vertical',''):beginDrag(event,-120,80,0,0,'showTempIE()','vertical','');" src="../../WebConfig/yukon/Parts/ThermSlider.gif"  onload = "setPixTemp()" style = "position:relative; top:0px; left:8px; cursor:pointer"> 
                                         </td>
                                       </tr>
                                     </table>
@@ -354,7 +354,7 @@ function MM_popupMsg(msg) { //v1.0
                            
                             <table width="218" border="0" cellspacing="0" height="267">
                               <tr> 
-                                <td background="../../Images/Parts/GraphBG.gif" height="281"> 
+                                <td background="../../WebConfig/yukon/Parts/GraphBG.gif" height="281"> 
                                   <table width="100%" border="0" height="223">
                                     <tr> 
                                       <td valign = "top"> 
@@ -364,10 +364,10 @@ function MM_popupMsg(msg) { //v1.0
                                       </td>
                                     </tr>
                                     <tr> 
-                                      <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.rooftop.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../Images/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                      <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.rooftop.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../WebConfig/yukon/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
                                     </tr>
                                     <tr> 
-                                      <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.rooftop.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../Images/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                      <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.rooftop.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../WebConfig/yukon/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
                                     </tr>
                                     <tr> 
                                       <td valign = "bottom"> 
@@ -461,7 +461,7 @@ function MM_popupMsg(msg) { //v1.0
             </table>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

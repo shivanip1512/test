@@ -103,7 +103,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -122,7 +122,7 @@
 		  <% String pageName = "user_curtail.jsp"; %>
           <%@ include file="include/nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
             <table width="609" border="0" cellspacing="0" cellpadding="0">
               <tr> 
@@ -253,7 +253,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

@@ -31,7 +31,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -75,7 +75,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p align="center" class="TitleHeader"><br>NOTIFICATION - HISTORY</p>
             <p align="center" class="MainText">Click on a program name to view the program details.</p>
@@ -123,7 +123,7 @@
         </table> 
         <p>&nbsp;
             </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

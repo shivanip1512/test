@@ -178,7 +178,7 @@ if (request.getParameter("Submit") != null)
             <% String pageName = "ConfigMeter.jsp?InvNo=" + invNo;%>
             <%@ include file="include/Nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "METER - CONFIGURATION"; %>
@@ -272,7 +272,7 @@ if (request.getParameter("Submit") != null)
               </form>
             </div>
             </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

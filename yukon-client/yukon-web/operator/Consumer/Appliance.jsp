@@ -96,7 +96,7 @@ function deleteAppliance(form) {
             <% String pageName = "Appliance.jsp?AppNo=" + appNo; %>
             <%@ include file="include/Nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="include/InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
@@ -820,7 +820,7 @@ function deleteAppliance(form) {
                           <td width="109" bgcolor="#FFFFFF"> 
                             <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
-							  <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+							  <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
 <% } %>
 							  <span class="TableCell"><%= program.getProgramName() %></span>
 							</div>
@@ -912,7 +912,7 @@ function deleteAppliance(form) {
               <p>&nbsp;</p>
               </div>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

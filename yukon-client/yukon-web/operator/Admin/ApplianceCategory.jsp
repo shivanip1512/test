@@ -66,16 +66,16 @@
 <script language="JavaScript">
 function changeIcon(form) {
 	form.CategoryIcon.style.display = (form.IconName.value == "") ? "none" : "";
-	form.CategoryIcon.src = "../../Images/Icons/" + form.IconName.value;
+	form.CategoryIcon.src = "../../WebConfig/" + form.IconName.value;
 }
 
 function changeProgramIcons(form) {
 	form.IconSavings.style.visibility = (form.IconNameSavings.value == "") ? "hidden" : "visible";
-	form.IconSavings.src = "../../Images/Icons/" + form.IconNameSavings.value;
+	form.IconSavings.src = "../../WebConfig/yukon/Icons/" + form.IconNameSavings.value;
 	form.IconControl.style.visibility = (form.IconNameControl.value == "") ? "hidden" : "visible";
-	form.IconControl.src = "../../Images/Icons/" + form.IconNameControl.value;
+	form.IconControl.src = "../../WebConfig/yukon/Icons/" + form.IconNameControl.value;
 	form.IconEnvrn.style.visibility = (form.IconNameEnvrn.value == "") ? "hidden" : "visible";
-	form.IconEnvrn.src = "../../Images/Icons/" + form.IconNameEnvrn.value;
+	form.IconEnvrn.src = "../../WebConfig/yukon/Icons/" + form.IconNameEnvrn.value;
 }
 
 function addProgram(form) {
@@ -340,7 +340,7 @@ function prepareSubmit(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">&nbsp;</td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
               <span class="TitleHeader">ADMINISTRATION - APPLIANCE CATEGORY</span><br>
@@ -557,13 +557,13 @@ function prepareSubmit(form) {
                                     <td width="20%"> 
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                         <tr> 
-                                          <td height="25"><img id="IconSavings" src="../../../Images/Icons/$$Sm.gif" style="visibility:hidden"></td>
+                                          <td height="25"><img id="IconSavings" src="../../../WebConfig/yukon/Icons/$$Sm.gif" style="visibility:hidden"></td>
                                         </tr>
                                         <tr> 
-                                          <td height="25"><img id="IconControl" src="../../../Images/Icons/HalfSm.gif" style="visibility:hidden"></td>
+                                          <td height="25"><img id="IconControl" src="../../../WebConfig/yukon/Icons/HalfSm.gif" style="visibility:hidden"></td>
                                         </tr>
                                         <tr> 
-                                          <td height="25"><img id="IconEnvrn" src="../../../Images/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
+                                          <td height="25"><img id="IconEnvrn" src="../../../WebConfig/yukon/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
                                         </tr>
                                       </table>
                                     </td>
@@ -593,7 +593,7 @@ function prepareSubmit(form) {
               </table>
             </form>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

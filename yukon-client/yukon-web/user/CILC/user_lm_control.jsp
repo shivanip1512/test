@@ -201,7 +201,7 @@ function Today() {
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -220,7 +220,7 @@ function Today() {
             <% String pageName = "user_lm_control.jsp"; %>
             <%@ include file="include/nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="600" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
             <p><br>
@@ -258,7 +258,7 @@ function Today() {
                         <form name="form1" method="post" action="">
                         <table width="299" border="0" cellspacing="1" cellpadding="5" class="TableCell" align="center">
                           <tr>
-                            <td background="../../Images/Parts/MeterBG.jpg" height="269">
+                            <td background="../../WebConfig/yukon/Parts/MeterBG.jpg" height="269">
                               <table width="150" border="0" cellspacing="0" height="117" align="center">
                                 <tr>
                                   <td valign="top" height="65">
@@ -267,10 +267,10 @@ function Today() {
                                         <td>
                                           <table width="20" border="0" cellspacing="0">
                                             <tr>
-                                              <td><img src="../../Images/Parts/UpArrow.gif" width="19" height="17" onclick="incLoad()"></td>
+                                              <td><img src="../../WebConfig/yukon/Parts/UpArrow.gif" width="19" height="17" onclick="incLoad()"></td>
                                             </tr>
                                             <tr>
-                                              <td><img src="../../Images/Parts/DownArrow.gif" width="19" height="17" onclick="decLoad()"></td>
+                                              <td><img src="../../WebConfig/yukon/Parts/DownArrow.gif" width="19" height="17" onclick="decLoad()"></td>
                                             </tr>
                                           </table>
                                         </td>
@@ -329,7 +329,7 @@ function Today() {
                         <form name = "timeForm">
                         <table width="218" border="0" cellspacing="0" height="267">
                           <tr>
-                            <td background="../../Images/Parts/GraphBG.gif" height="281">
+                            <td background="../../WebConfig/yukon/Parts/GraphBG.gif" height="281">
                               <table width="100%" border="0" height="223">
                                 <tr>
                                   <td valign = "top">
@@ -339,10 +339,10 @@ function Today() {
                                   </td>
                                 </tr>
                                 <tr>
-                                  <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../Images/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                  <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../WebConfig/yukon/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
                                 </tr>
                                 <tr>
-                                  <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.timeForm.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../Images/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                  <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.timeForm.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../WebConfig/yukon/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
                                 </tr>
                                 <tr>
                                   <td valign = "bottom"> 
@@ -433,7 +433,7 @@ function Today() {
             </table>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

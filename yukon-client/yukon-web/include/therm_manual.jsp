@@ -59,21 +59,21 @@ function decTemp() {
 
 function holdTemp() {
 	if (document.MForm.holdSetting.value == "off") {
-		document.MForm.hold.src = "<%= request.getContextPath() %>/Images/ThermImages/HoldGray.gif";
+		document.MForm.hold.src = "<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/HoldGray.gif";
 		document.MForm.holdSetting.value = "on";
 		document.MForm.resetSetting.value = "on";
-		document.MForm.rst.src = "<%= request.getContextPath() %>/Images/ThermImages/ResetBk.gif";
-		document.MForm.msg.src = "<%= request.getContextPath() %>/Images/ThermImages/HoldMsg.gif";
+		document.MForm.rst.src = "<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ResetBk.gif";
+		document.MForm.msg.src = "<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/HoldMsg.gif";
 	}
 }
 
 function resetTemp() {
 	if ( document.MForm.resetSetting.value == "on") {
-		document.MForm.hold.src = "<%= request.getContextPath() %>/Images/ThermImages/HoldBk.gif";
+		document.MForm.hold.src = "<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/HoldBk.gif";
 		document.MForm.holdSetting.value = "off";
 		document.MForm.resetSetting.value = "off";
-		document.MForm.rst.src = "<%= request.getContextPath() %>/Images/ThermImages/ResetGray.gif";
-		document.MForm.msg.src = "<%= request.getContextPath() %>/Images/ThermImages/SchedMsg.gif";
+		document.MForm.rst.src = "<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ResetGray.gif";
+		document.MForm.msg.src = "<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/SchedMsg.gif";
 	}
 }
 
@@ -175,7 +175,7 @@ function validateTemp(e) {
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">
                 <div align = "left">
-				  <table width="93%" border="0" background="<%= request.getContextPath() %>/Images/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
+				  <table width="93%" border="0" background="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
                     <tr> 
                       <td width="73%" height="40" > 
                         <table width="91%" border="0" height="100">
@@ -190,10 +190,10 @@ function validateTemp(e) {
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
                                       <tr> 
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
                                       </tr>
                                       <tr> 
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
                                       </tr>
                                     </table>
                                   </td>
@@ -203,7 +203,7 @@ function validateTemp(e) {
                                 <tr> 
                                   <td>
                                     <input type="checkbox" name="hold" value="true">
-                                    <img src="<%= request.getContextPath() %>/Images/ThermImages/Hold.gif" width="34" height="9"></td>
+                                    <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Hold.gif" width="34" height="9"></td>
                                 </tr>
                               </table>
                             </td>
@@ -235,35 +235,35 @@ function validateTemp(e) {
                         <table width="91%" border="0" height="100">
                           <tr> 
                             <td width="31"></td>
-                            <td width="133" valign="bottom"><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/Run.gif" onClick="document.MForm.RunProgram.value='true';submitIt()"></td>
+                            <td width="133" valign="bottom"><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Run.gif" onClick="document.MForm.RunProgram.value='true';submitIt()"></td>
                             <td width="124"> 
                               <table width="100%" border="0" height="56" cellspacing = "0" cellpadding = "0">
                                 <tr> 
                                   <td width="60%"  height="59" valign = "bottom"> 
                                     <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="<%= request.getContextPath() %>/Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/Cool.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Cool.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="<%= request.getContextPath() %>/Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/Heat.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Heat.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="<%= request.getContextPath() %>/Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/Off.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Off.gif"></td>
                                       </tr>
                                     </table>
                                   </td>
                                   <td width="40%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"> 
-                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="<%= request.getContextPath() %>/Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/Auto.gif"></td>
+                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Auto.gif"></td>
                                       </tr>
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="<%= request.getContextPath() %>/Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/On.gif"></td>
+                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/On.gif"></td>
                                       </tr>
                                       <tr> 
                                         <td height="14"></td>
@@ -278,7 +278,7 @@ function validateTemp(e) {
                               <div align="left"></div>
                               <table width="84%" border="0" height="45">
                                 <tr> 
-                                  <td><img class="Clickable" src="<%= request.getContextPath() %>/Images/ThermImages/Submit.gif" onClick = "submitIt()"></td>
+                                  <td><img class="Clickable" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/Submit.gif" onClick = "submitIt()"></td>
                                 </tr>
                               </table>
                             </td>

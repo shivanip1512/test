@@ -173,7 +173,7 @@ function confirmCancel() {
                         <td width="90%"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td width="15%" valign="top"> <img src="<%= request.getContextPath() %>/Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"
+                              <td width="15%" valign="top"> <img src="<%= request.getContextPath() %>/WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"
 								<% if (category.getStarsWebConfig().getLogoLocation().equals("")) { %>style="display:none"<% } %>> 
                               </td>
                               <td width="3%" valign="top"> 
@@ -217,7 +217,7 @@ function confirmCancel() {
 				/* Each row is a program in this category */
 %>
                                   <tr> 
-                                    <td colspan="4" background="<%= request.getContextPath() %>/Images/Icons/dot.gif" height="8"></td>
+                                    <td colspan="4" background="<%= request.getContextPath() %>/WebConfig/yukon/Icons/dot.gif" height="8"></td>
                                   </tr>
                                   <tr> 
                                     <td width="3%" valign="top"> 
@@ -232,17 +232,17 @@ function confirmCancel() {
 <% if (!progIcons[0].equals("")) {
 	savingsIconExists = true;
 %>
-                                            <img src="<%= request.getContextPath() %>/Images/Icons/<%= progIcons[0] %>"> 
+                                            <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/<%= progIcons[0] %>"> 
 <% } %>
 <% if (!progIcons[1].equals("")) {
 	controlIconExists = true;
 %>
-                                            <img src="<%= request.getContextPath() %>/Images/Icons/<%= progIcons[1] %>"> 
+                                            <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/<%= progIcons[1] %>"> 
 <% } %>
 <% if (!progIcons[2].equals("")) {
 	envrnmtIconExists = true;
 %>
-                                            <img src="<%= request.getContextPath() %>/Images/Icons/<%= progIcons[2] %>"> 
+                                            <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/<%= progIcons[2] %>"> 
 <% } %>
                                           </td>
                                         </tr>
@@ -340,20 +340,20 @@ function confirmCancel() {
                         <table width="100%" border="0" cellpadding="0">
 <% if (savingsIconExists) { %>
                           <tr> 
-                            <td width="10%"><img src="<%= request.getContextPath() %>/Images/Icons/$$Sm.gif" ></td>
+                            <td width="10%"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/$$Sm.gif" ></td>
                             <td width="90%" class="TableCell">Savings: More dollar 
                               signs means more savings!</td>
                           </tr>
 <% } %>
 <% if (controlIconExists) { %>
                           <tr> 
-                            <td width="10%"><img src="<%= request.getContextPath() %>/Images/Icons/ThirdSm.gif"></td>
+                            <td width="10%"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/ThirdSm.gif"></td>
                             <td width="90%" class="TableCell">Percent of Control</td>
                           </tr>
 <% } %>
 <% if (envrnmtIconExists) { %>
                           <tr> 
-                            <td width="10%"><img src="<%= request.getContextPath() %>/Images/Icons/Tree2Sm.gif"></td>
+                            <td width="10%"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/Tree2Sm.gif"></td>
                             <td width="90%" class="TableCell">Environment: More 
                               trees means a healthier environment.</td>
                           </tr>

@@ -126,7 +126,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -170,7 +170,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center">
               <p class="TitleHeader"><br>
@@ -241,7 +241,7 @@
             <p align="center" class="SubtitleHeader">TOTAL: <%= numberFormat.format(totalCommitted) %> kWh</p>
             <p align="center" class="SubtitleHeader"><a href="<%= referrer %>" class="Link1">Back</a><br><br>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

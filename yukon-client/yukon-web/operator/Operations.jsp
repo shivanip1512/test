@@ -49,14 +49,14 @@ function confirmDelete() {
         </tr>
       </table>
     </td>
-    <td width="1" bgcolor="#000000"><img src="../Images/Icons/VerticalRule.gif"></td>
+    <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
   </tr>
 </table>
 <table width="658" border="0" cellspacing="0" cellpadding="0" align="left">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   
 <cti:checkRole roleid="<%= ConsumerInfoRole.ROLEID %>">
@@ -110,21 +110,21 @@ function confirmDelete() {
               &nbsp; 
               <input type="text" name="SearchValue" size="15">
               &nbsp; </td>
-            <td class = "MainText" width="7%" valign = "top"><img class="Clickable" src="../Images/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
+            <td class = "MainText" width="7%" valign = "top"><img class="Clickable" src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.custSearchForm.submit();"> 
             </td>
           </form>
         </tr>
       </table>
     </td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
 
 <cti:checkRole roleid="<%= CommercialMeteringRole.ROLEID %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/MeterImage.jpg">&nbsp;</td>
@@ -152,15 +152,15 @@ function confirmDelete() {
         </tr>
       </table>
     </td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
 
 <cti:checkMultiRole roleid="<%= Integer.toString(DirectLoadcontrolRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID) + ',' + Integer.toString(EnergyBuybackRole.ROLEID) %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/LoadImage.jpg">&nbsp;</td>
@@ -210,15 +210,15 @@ function confirmDelete() {
         </tr>
       </table>
     </td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkMultiRole>
 
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/InventoryImage.jpg">&nbsp;</td>
@@ -254,21 +254,21 @@ function confirmDelete() {
 			  &nbsp; 
               <input type="text" name="SearchValue" size="15">
               &nbsp; </td>
-            <td valign = "top" class="MainText" width="7%"> <img src="../Images/Buttons/GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
+            <td valign = "top" class="MainText" width="7%"> <img src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onclick = "Javascript:document.invSearchForm.submit();" > 
             </td>
           </form>
         </tr>
       </table>
     </td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole>
 
 <cti:checkRole roleid="<%= WorkOrderRole.ROLEID %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr> 
     <td width="102" height="102" background="../WebConfig/yukon/WorkImage.jpg">&nbsp;</td>
@@ -305,20 +305,20 @@ function confirmDelete() {
             &nbsp; 
             <input type="text" name="SearchValue" size="15">
             &nbsp; </td>
-            <td width="7%" valign="top" class="MainText"><img src="../Images/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
+            <td width="7%" valign="top" class="MainText"><img src="../WebConfig/yukon/Buttons/GoButton.gif" width="23" height="20" onClick = "Javascript:document.soSearchForm.submit();" ></td>
 		  </form>
         </tr>
       </table>
     </td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="102"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole> 
 
 <cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr> 
-    <td width="102" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
+    <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="1"></td>
   </tr>
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="../WebConfig/yukon/AdminImage.jpg">&nbsp;</td>
@@ -353,7 +353,7 @@ function confirmDelete() {
         </tr>
       </table>
     </td>
-    <td width="1" background="../Images/Icons/VerticalRule.gif" height="16"></td>
+    <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
   </tr>
 </cti:checkRole>
   </table>

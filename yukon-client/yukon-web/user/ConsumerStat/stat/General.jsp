@@ -28,7 +28,7 @@
 		  <% String pageName = "General.jsp"; %>
           <%@ include file="include/Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <table width="235" border="1" cellspacing="0" cellpadding="3" align="center">
@@ -58,7 +58,7 @@
                                   Enrolled Programs</div>
                                 <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
-                                    <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
+                                    <td colspan="3" background="../../../WebConfig/yukon/Icons/dot.gif" height="8"></td>
                                   </tr>
 <% if (programs.getStarsLMProgramCount() == 0) { %>
 								  <tr>
@@ -92,11 +92,11 @@
                                     <td width="64"> 
                                       <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
-                                        <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+                                        <img src="../../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
 <% } %>
                                         </div>
                                     </td>
-                                    <td width="8" background="../../../Images/Icons/dot.gif"> 
+                                    <td width="8" background="../../../WebConfig/yukon/Icons/dot.gif"> 
                                     </td>
                                     <td width="328" class="MainText"> 
                                       <table width="328" border="0" cellspacing="0" cellpadding="3" class="TableCell">
@@ -154,7 +154,7 @@
                                     </td>
                                   </tr>
                                   <tr> 
-                                    <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
+                                    <td colspan="3" background="../../../WebConfig/yukon/Icons/dot.gif" height="8"></td>
                                   </tr>
 <%
 	}
@@ -232,7 +232,7 @@
             </div>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

@@ -37,7 +37,7 @@ function setRedirect(form) {
 		  <% String pageName = "ProgramHist.jsp"; %>
           <%@ include file="include/Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_CONTROL_HISTORY, "PROGRAMS - CONTROL HISTORY"); %>
@@ -80,7 +80,7 @@ function setRedirect(form) {
                   <td width="150"> 
                     <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
-					  <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+					  <img src="../../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
                       <% } %>
                       <span class="TableCell"><%= program.getProgramName() %></span><br>
                     </div>
@@ -184,7 +184,7 @@ function setRedirect(form) {
             </div>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

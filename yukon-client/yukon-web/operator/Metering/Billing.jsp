@@ -53,7 +53,7 @@ function updateDemandDate()
 						</tr>
 					</table>
 				</td>
-				<td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+				<td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 			</tr>
 		</table>
 	</td>
@@ -116,7 +116,7 @@ function updateDemandDate()
 											                  <A HREF="javascript:openCalendar(document.getElementById('MForm').cal, 74, 0)"
 											                    onMouseOver="window.status='End Date Calendar';return true;"
 											                    onMouseOut="window.status='';return true;">
-											                    <IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
+											                    <IMG SRC="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
 											                  </A>
 														</td>
 													</tr>

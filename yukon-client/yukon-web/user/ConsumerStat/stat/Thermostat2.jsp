@@ -75,7 +75,7 @@
 		  <% String pageName = "Thermostat2.jsp?" + thermNoStr; %>
           <%@ include file="include/Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
             <div align="center"><br>
@@ -97,7 +97,7 @@
               <p align="center" class="MainText">&nbsp; </p>
             </div>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

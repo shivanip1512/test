@@ -96,7 +96,7 @@ function validForm(form)
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -124,7 +124,7 @@ function validForm(form)
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <FORM name="switchform" METHOD="POST" ACTION="<%=request.getContextPath()%>/servlet/SwitchCommand" onSubmit="return validForm(this)">
           <td width="609" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
@@ -400,7 +400,7 @@ document.switchform.serialNumberField.value=availablesn[document.switchform.sele
           <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/CILC/switch_commands.jsp">
           
           </form>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     <%

@@ -155,7 +155,7 @@ function removeAllMembers(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">&nbsp;</td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
               <span class="TitleHeader">ADMINISTRATION</span><br>
@@ -235,7 +235,7 @@ function removeAllMembers(form) {
                                   <tr> 
                                     <td width="15%" class="TableCell" align="center">
 <%		if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
-									  <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>">
+									  <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>">
 <%		} %>
 									</td>
                                     <td width="60%" class="TableCell" valign="top"><%= category.getDescription() %> 
@@ -706,7 +706,7 @@ function removeAllMembers(form) {
             </table>
             <p>&nbsp;</p>
             </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

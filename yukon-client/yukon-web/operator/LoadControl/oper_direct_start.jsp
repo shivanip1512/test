@@ -231,7 +231,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -257,7 +257,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
 		   <table width="600" border="0" cellspacing="0" cellpadding="0">
 <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_direct_start.jsp" onSubmit="return validForm(this)"> 
@@ -358,7 +358,7 @@
 <INPUT NAME="URL" TYPE="hidden" VALUE="<%=request.getContextPath()%>/operator/LoadControl/oper_direct.jsp?pending=true">
 </struts:form>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

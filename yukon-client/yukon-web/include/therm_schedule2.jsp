@@ -398,7 +398,7 @@ function init() {
                         <tr>
                           <td width="68"> 
                             <div align="right"><span class="TableCell"><font color="#003366">Cooling</font> 
-                              <img src="<%= request.getContextPath() %>/Images/ThermImages/BlueArrow.gif"> 
+                              <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif"> 
                               </span> </div>
                           </td>
                           <td width="31"><span class="TableCell"> 
@@ -407,11 +407,11 @@ function init() {
 						  <td width="20"> 
                             <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>')"<% } %>>
                           </td>
-                          <td width="56"><img src="<%= request.getContextPath() %>/Images/ThermImages/RedArrow.gif"> 
+                          <td width="56"><img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif"> 
                             <span class="TableCell"><font color="FF0000">Heating</font></span></td>
                         </tr>
                       </table>
-                      <table width="478" height="186" background="../../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
+                      <table width="478" height="186" background="../../../WebConfig/yukon/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="50">
                             <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top:5px; display:none" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');setChanged();">
@@ -422,20 +422,20 @@ function init() {
                                   </td>
                                 </tr>
                                 <tr> 
-                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/Images/ThermImages/ThermW.gif" width="16"> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermW.gif" width="16"> 
                                   </td>
                                 </tr>
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1C" src="<%= request.getContextPath() %>/Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow1C_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow1C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow1C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1H" src="<%= request.getContextPath() %>/Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow1H_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow1H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(1)','vertical','div1H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow1H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
                                 </tr>
@@ -451,20 +451,20 @@ function init() {
                                   </td>
                                 </tr>
                                 <tr> 
-                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/Images/ThermImages/ThermL.gif" width="16"> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermL.gif" width="16"> 
                                   </td>
                                 </tr>
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div2C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2C" src="<%= request.getContextPath() %>/Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow2C_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow2C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow2C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2H" src="<%= request.getContextPath() %>/Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow2H_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow2H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(2)','vertical','div2H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow2H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
                                 </tr>
@@ -480,20 +480,20 @@ function init() {
                                   </td>
                                 </tr>
                                 <tr> 
-                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/Images/ThermImages/ThermR.gif" width="16" height="131"> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermR.gif" width="16" height="131"> 
                                   </td>
                                 </tr>
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3C" src="<%= request.getContextPath() %>/Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow3C_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow3C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow3C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3H" src="<%= request.getContextPath() %>/Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow3H_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow3H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(3)','vertical','div3H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow3H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
                                 </tr>
@@ -509,20 +509,20 @@ function init() {
                                   </td>
                                 </tr>
                                 <tr> 
-                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/Images/ThermImages/ThermS.gif" width="16" height="131"> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermS.gif" width="16" height="131"> 
                                   </td>
                                 </tr>
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4C" src="<%= request.getContextPath() %>/Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow4C_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow4C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4C');setChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow4C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4H" src="<%= request.getContextPath() %>/Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow4H_Gray" src="<%= request.getContextPath() %>/Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow4H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp(4)','vertical','div4H');setChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow4H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
                                     </div>
                                   </td>
                                 </tr>

@@ -70,7 +70,7 @@
         					 <a href="javascript:show_calendar('MForm.start')"
 									onMouseOver="window.status='Pop Calendar';return true;"
                                     onMouseOut="window.status='';return true;">
-                    		  <IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" BORDER="0">
+                    		  <IMG SRC="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" BORDER="0">
                   			</a>
                   		</td>
         				<td>
