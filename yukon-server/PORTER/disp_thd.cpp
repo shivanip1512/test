@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/10/03 16:15:52 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/10/15 17:41:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << TimeNow << " Porter has received a DBCHANGE message from Dispatch." << endl;
+                        dout << TimeNow << " Porter has received a " << ((CtiDBChangeMsg*)MsgPtr)->getCategory() << " DBCHANGE message from Dispatch." << endl;
                     }
 
                     if(pChg)
