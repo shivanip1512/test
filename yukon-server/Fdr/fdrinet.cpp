@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2003/10/31 21:15:41 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2003/12/12 21:58:32 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,7 +23,19 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
-      Revision 1.8  2003/10/31 21:15:41  dsutton
+      Revision 1.9  2003/12/12 21:58:32  dsutton
+      Sending of status points was following Yukon values 0,1 instead of DSM2
+      values of 1,2 for open and close.   Caused things to fail for powerlink
+      application used to talking to DSM2.  Intercepted the status points now and
+      correct the value accordingly
+
+      Revision 1.6.12.2  2003/12/05 03:30:34  dsutton
+      Sending of status points was following Yukon values 0,1 instead of DSM2
+      values of 1,2 for open and close.   Caused things to fail for powerlink
+      application used to talking to DSM2.  Intercepted the status points now and
+      correct the value accordingly
+
+      Revision 1.6.12.1  2003/10/31 18:31:53  dsutton
       Updated to allow us to send and receive accumlator points to other systems.
       Oversite from the original implementation
 
@@ -845,8 +857,18 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                 {
                     ptr->msgUnion.value.Quality |= DSTACTIVE;
                 }
-
-                ptr->msgUnion.value.Value = aPoint.getValue();
+                 // need to intercept sending a status point to make it DSM2 like
+                switch (aPoint.getPointType())
+                {
+                    case StatusPointType:
+                        {
+                            ptr->msgUnion.value.Value = aPoint.getValue()+1;
+                            break;
+                        }
+                    default:
+                        ptr->msgUnion.value.Value = aPoint.getValue();
+                        break;
+                }
                 ptr->msgUnion.value.AlarmState = NORMAL;
 
                 /**************************
