@@ -15,8 +15,10 @@
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER2);
 %>
 
-<jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
-<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+<jsp:useBean id="selectInvBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
+	<%-- this body is executed only if the bean is created --%>
+	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+</jsp:useBean>
 
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
@@ -27,11 +29,19 @@
 	<jsp:setProperty name="selectInvBean" property="page" value="1"/>
 	<jsp:setProperty name="selectInvBean" property="referer" value="<%= referer %>"/>
 <% } %>
+<% if (request.getParameter("SearchBy") == null) { %>
+	<jsp:setProperty name="selectInvBean" property="searchBy" value="0"/>
+	<jsp:setProperty name="selectInvBean" property="searchValue" value=""/>
+<% } %>
 
 <%-- Grab the search criteria --%>
+<jsp:setProperty name="selectInvBean" property="sortBy" param="SortBy"/>
 <jsp:setProperty name="selectInvBean" property="filterBy" param="FilterBy"/>
 <jsp:setProperty name="selectInvBean" property="location" param="Location"/>
+<jsp:setProperty name="selectInvBean" property="htmlStyle" param="HtmlStyle"/>
 <jsp:setProperty name="selectInvBean" property="page" param="page"/>
+<jsp:setProperty name="selectInvBean" property="searchBy" param="SearchBy"/>
+<jsp:setProperty name="selectInvBean" property="searchValue" param="SearchValue"/>
 
 <html>
 <head>
@@ -40,9 +50,20 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
-function submitIt(filterBy) {
-	document.MForm.FilterBy.value = filterBy;
-	document.MForm.submit();
+function showAll(form) {
+	form.SortBy.value = <%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>;
+	form.FilterBy.value = 0;
+	form.Location.value = 0;
+	form.HtmlStyle.value = <%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>;
+	form.submit();
+}
+
+function showWarehouse(form) {
+	form.SortBy.value = <%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>;
+	form.FilterBy.value = <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>;
+	form.Location.value = <%= InventoryBean.INV_LOCATION_WAREHOUSE %>;
+	form.HtmlStyle.value = <%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>;
+	form.submit();
 }
 </script>
 </head>
@@ -69,15 +90,13 @@ function submitIt(filterBy) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "SELECT INVENTORY"; %>
-<% if (!inWizard) { %>
-              <%@ include file="include/InfoSearchBar.jsp" %>
-<% } else { %>
-              <%@ include file="include/InfoSearchBar2.jsp" %>
-<% } %>
+              <%@ include file="../Hardware/include/SearchBar2.jsp" %>
 
 			  <form name="MForm" method="post" action="">
+			    <input type="hidden" name="SortBy" value="<%= selectInvBean.getSortBy() %>">
 			    <input type="hidden" name="FilterBy" value="<%= selectInvBean.getFilterBy() %>">
-				<input type="hidden" name="Location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>">
+				<input type="hidden" name="Location" value="<%= selectInvBean.getLocation() %>">
+				<input type="hidden" name="HtmlStyle" value="<%= selectInvBean.getHtmlStyle() %>">
 				<input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="1">
                   <tr> 
@@ -86,10 +105,10 @@ function submitIt(filterBy) {
                   </tr>
                   <tr> 
                     <td class="MainText" align="center"> 
-                      <input type="button" name="ShowAll" value="Show All" onclick="submitIt(0)"
-                      <% if (selectInvBean.getFilterBy() == 0) { %>disabled<% } %>>
-                      <input type="button" name="ShowWarehouse" value="Show Warehouse" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)"
-                      <% if (selectInvBean.getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION && selectInvBean.getLocation() == InventoryBean.INV_LOCATION_WAREHOUSE) { %>disabled<% } %>>
+                      <input type="button" name="ShowAll" value="Show All" onclick="showAll(this.form)"
+                      <% if (selectInvBean.getFilterBy() == 0 && (selectInvBean.getHtmlStyle() & InventoryBean.HTML_STYLE_INVENTORY_SET) == 0) { %>disabled<% } %>>
+                      <input type="button" name="ShowWarehouse" value="Show Warehouse" onclick="showWarehouse(this.form)"
+                      <% if (selectInvBean.getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION && selectInvBean.getLocation() == InventoryBean.INV_LOCATION_WAREHOUSE && (selectInvBean.getHtmlStyle() & InventoryBean.HTML_STYLE_INVENTORY_SET) == 0) { %>disabled<% } %>>
                     </td>
                   </tr>
                 </table>

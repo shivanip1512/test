@@ -2,6 +2,8 @@ package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +27,7 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.StreetAddress;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -42,9 +45,10 @@ public class InventoryBean {
 	public static final int INV_LOCATION_WAREHOUSE = 0;
 	public static final int INV_LOCATION_RESIDENCE = 1;
 	
-	public static final int HTML_STYLE_LIST_INVENTORY = 0;
-	public static final int HTML_STYLE_SELECT_INVENTORY = 1;
-	public static final int HTML_STYLE_INVENTORY_SET = 2;
+	public static final int HTML_STYLE_LIST_INVENTORY = 1;
+	public static final int HTML_STYLE_SELECT_INVENTORY = 2;
+	public static final int HTML_STYLE_SELECT_LM_HARDWARE = 4;
+	public static final int HTML_STYLE_INVENTORY_SET = 8;
 	
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
@@ -165,6 +169,8 @@ public class InventoryBean {
 	private String referer = null;
 	private ArrayList inventorySet = null;
 	private int member = -1;
+	private int searchBy = CtiUtilities.NONE_ID;
+	private String searchValue = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
 	private ArrayList inventoryList = null;
@@ -182,13 +188,51 @@ public class InventoryBean {
 		if (inventoryList != null) return inventoryList;
 		
 		ArrayList hardwares = null;
-		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
+		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
 			hardwares = inventorySet;
 		}
-		else if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+		else if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+		{
 			hardwares = getEnergyCompany().loadAllInventory();
+			
+			if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
+				Iterator it = hardwares.iterator();
+				while (it.hasNext()) {
+					if (!(it.next() instanceof LiteStarsLMHardware))
+						it.remove();
+				}
+			}
+			
+			if (getSearchBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO) {
+				inventorySet = new ArrayList();
+				for (int i = 0; i < hardwares.size(); i++) {
+					if (hardwares.get(i) instanceof LiteStarsLMHardware) {
+						if (((LiteStarsLMHardware)hardwares.get(i)).getManufacturerSerialNumber().startsWith( getSearchValue() ))
+							inventorySet.add( hardwares.get(i) );
+					}
+				}
+				
+				hardwares = inventorySet;
+				setSortBy( YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO );
+			}
+			else if (getSearchBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE) {
+				Date instDate = ServletUtil.parseDateStringLiberally( getSearchValue(), getEnergyCompany().getDefaultTimeZone() );
+				
+				inventorySet = new ArrayList();
+				if (instDate != null) {
+					for (int i = 0; i < hardwares.size(); i++) {
+						LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+						if (liteInv.getInstallDate() > instDate.getTime())
+							inventorySet.add( liteInv );
+					}
+				}
+				
+				hardwares = inventorySet;
+				setSortBy( YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE );
+			}
 		}
-		else {
+		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
 			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
 				LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( getMember() );
 				ArrayList inventory = member.loadAllInventory();
@@ -332,10 +376,10 @@ public class InventoryBean {
 	public String getHTML(HttpServletRequest req) {
 		boolean showEnergyCompany = false;
 		if (getEnergyCompany().getChildren().size() > 0) {
-			if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY) {
+			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
 				showEnergyCompany = true;
 			}
-			else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
+			else if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) {
 				if (inventorySet != null && inventorySet.size() > 0 && inventorySet.get(0) instanceof Pair)
 					showEnergyCompany = true;
 			}
@@ -346,7 +390,7 @@ public class InventoryBean {
 		
 		if (hwList == null || hwList.size() == 0) {
 			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append(LINE_SEPARATOR);
-			if (getHtmlStyle() != HTML_STYLE_LIST_INVENTORY) {
+			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) == 0) {
 				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);
 				htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 				htmlBuf.append("    <td align='center'>");
@@ -365,12 +409,17 @@ public class InventoryBean {
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
 		String srcStr = "";
-		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+		{
 			srcStr = "&src=SelectInv";
-		else if (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY)
+		}
+		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
 			srcStr = "&src=Inventory";
-		else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET)
+		}
+		else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
 			srcStr = "&src=ResultSet";
+		}
 		
 		if (page < 1) page = 1;
 		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / pageSize);
@@ -407,9 +456,12 @@ public class InventoryBean {
 		else
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page=").append(maxPageNo).append("'>Last</a>");
 		
-		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+		{
 			htmlBuf.append("<form name='InventoryBeanForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
 			htmlBuf.append("<input type='hidden' name='action' value='SelectInventory'>").append(LINE_SEPARATOR);
+			htmlBuf.append("<input type='hidden' name='style' value='").append(getHtmlStyle()).append("'>").append(LINE_SEPARATOR);
 		}
 		
 		htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);
@@ -431,7 +483,9 @@ public class InventoryBean {
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
-		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+		{
 			htmlBuf.append("          <td class='HeaderCell' width='1%'>&nbsp;</td>").append(LINE_SEPARATOR);
 		}
 		htmlBuf.append("          <td class='HeaderCell' width='17%'>Serial # / Device Name</td>").append(LINE_SEPARATOR);
@@ -472,13 +526,15 @@ public class InventoryBean {
 					deviceName = liteInv.getDeviceLabel();
 			}
         	
-			java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
+			Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
 			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
 			String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
 			
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
-			if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+			if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+				|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+			{
 				htmlBuf.append("          <td class='TableCell' width='1%'>");
 				htmlBuf.append("<input type='radio' name='InvID' value='").append(liteInv.getInventoryID()).append("'>");
 				htmlBuf.append("</td>").append(LINE_SEPARATOR);
@@ -541,7 +597,9 @@ public class InventoryBean {
 		htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
-		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+		{
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
@@ -841,6 +899,38 @@ public class InventoryBean {
 	 */
 	public void setMember(int i) {
 		member = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getSearchBy() {
+		return searchBy;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getSearchValue() {
+		return searchValue;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setSearchBy(int i) {
+		searchBy = i;
+		inventoryList = null;
+		inventorySet = null;
+		filterBy = CtiUtilities.NONE_ID;
+		htmlStyle |= HTML_STYLE_INVENTORY_SET;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setSearchValue(String string) {
+		searchValue = string;
 	}
 
 }
