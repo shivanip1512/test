@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:35:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/03/24 22:22:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,6 +125,10 @@ INT CtiProtocolEmetcon::buildMessages(CtiCommandParser  &parse, const OUTMESS &a
 
    if(curOutMessage->EventCode & AWORD)
    {
+      // Add these two items to the list for control accounting!
+      parse.setValue("control_interval", parse.getiValue("shed", 0));
+      parse.setValue("control_reduction", 100 );
+
       curOutMessage->EventCode &= ~BWORD;  //  maybe we just shouldn't set it above in assembleCommand... ?
       status = buildAWordMessages(parse, aOutTemplate);
    }

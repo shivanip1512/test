@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/24 22:22:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,6 +150,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                 // Get a control request done maybe?
                 if( !(nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
                 {
+                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction"), vgList, getLastCommand() );
                     pRet->setStatus(NORMAL);
                 }
                 else     // An error occured in the processing/communication
