@@ -24,7 +24,7 @@ public class IONEventLogRecord implements RecordBase
 	private String userName = "yukon";		//Static value
 	private String remark = null;			//UNKNOWN
 	
-	private final java.text.SimpleDateFormat DATE_TIME_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	private final java.text.SimpleDateFormat DATE_TIME_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * Constructor for IONEventLogRecord.
