@@ -9,6 +9,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -22,14 +23,17 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteTag;
-import com.cannontech.database.data.point.PointQualities;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.TagMsg;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialogListener, ListSelectionListener
+public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialogListener, ListSelectionListener, MessageListener
 {
 
 	/**
@@ -345,7 +349,7 @@ public String getPanelTitle()
 {
 	return
 		getEditorData().getDeviceName() + " / " +
-		getEditorData().getPointName() + " Tag Wizard";
+		getEditorData().getPointName() + " Tag Editor";
 }
 
 
@@ -465,6 +469,7 @@ private void initialize() {
 		getJTableTags().getSelectionModel().setLeadSelectionIndex(
 				((Integer)getStartingValue()).intValue() );				
 	
+
 	// user code end
 }
 
@@ -486,6 +491,24 @@ public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent)
 public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent) 
 {
 }
+
+public void messageReceived(MessageEvent e)
+{
+	if( e.getMessage() instanceof Multi )
+	{
+		Vector v = ((Multi)e.getMessage()).getVector();
+		for( int i = 0; i < v.size(); i++ )
+			messageReceived( new MessageEvent( e.getSource(), (Message)v.get(i) ) );
+	}
+
+
+	if( e.getMessage() instanceof TagMsg )
+	{
+		initTagTableData();
+	}
+
+}
+
 
 public void valueChanged(ListSelectionEvent e) 
 {
