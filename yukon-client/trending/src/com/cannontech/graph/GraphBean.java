@@ -19,7 +19,7 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphBean implements GraphDataFormats, GraphDefines
 {
-	private static Graph graphClass = null;
+	private Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 //	private String directory = null;
 
@@ -1022,7 +1022,19 @@ private com.cannontech.database.data.graph.GraphDefinition updateGraphDefinition
 	getTreeViewPanel().refresh();
 	
 	return gDef;
+	
 }*/
+public void encode(java.io.OutputStream out) throws IOException
+{
+	if( getFormat().equalsIgnoreCase("gif") )								
+		getGraph().encodeGif(out);
+	else if( getFormat().equalsIgnoreCase("png") )
+		getGraph().encodePng(out);
+	else if( getFormat().equalsIgnoreCase("jpg") )
+		;//getGraph().encodeJPG(out);
+	else if( getFormat().equalsIgnoreCase("svg") )
+		getGraph().encodeSVG(out);
+}
 public void saySomething(String firstPart, String secondPart)
 {
 	//Debug function!!!
