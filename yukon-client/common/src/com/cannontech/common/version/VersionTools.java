@@ -1,5 +1,8 @@
 package com.cannontech.common.version;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/26/2001 2:42:37 PM)
@@ -21,7 +24,7 @@ private VersionTools() {
 public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVersion() 
 {
 	com.cannontech.database.db.version.CTIDatabase db = new com.cannontech.database.db.version.CTIDatabase();
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+	java.sql.Connection conn = PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 	java.sql.PreparedStatement stat = null;
 	
 	try
@@ -62,6 +65,50 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 		
 	return db;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (6/25/2001 9:18:30 AM)
+ * @return java.lang.String
+ */
+public final static boolean tableExists( String tableName_ )
+{
+	java.sql.Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	java.sql.PreparedStatement stat = null;
+	boolean retVal = false;
+	
+	try
+	{
+/*      
+		ResultSet rs = getDbConnection().getMetaData().getColumns(
+								null, 
+								null, 
+								tableName.toUpperCase(), 
+								"%" );
+*/
+		java.sql.ResultSet rs = conn.getMetaData().getTables( 
+							null, null, tableName_, null );
+
+		if( rs.next() )
+			retVal = true;
+	}
+	catch( java.sql.SQLException e )
+	{}
+	finally
+	{
+		try
+		{
+			if( stat != null ) stat.close();				
+			if( conn != null ) conn.close();
+		}
+		catch( java.sql.SQLException e )
+		{}
+	}
+
+	return retVal;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (6/26/2001 2:43:28 PM)
