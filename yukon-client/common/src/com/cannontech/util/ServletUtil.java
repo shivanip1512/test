@@ -36,6 +36,7 @@ public class ServletUtil {
 
 
 	public static final String ATT_GRAPH_BEAN = "GRAPH_BEAN";
+	public static final String ATT_REPORT_BEAN = "REPORT_BEAN";
 	public static final String ATT_BILLING_BEAN = "BILLING_BEAN";
 	public static final String ATT_YC_BEAN = "YC_BEAN";
 	// Valid periods
@@ -117,6 +118,7 @@ public class ServletUtil {
 	private static final SimpleDateFormat[] dateFormat =
 	{
 		new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
+		new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"),
 		new SimpleDateFormat("MM/dd/yy"),
 		new SimpleDateFormat("MM-dd-yy"),
 		new SimpleDateFormat("MM.dd.yy"),
