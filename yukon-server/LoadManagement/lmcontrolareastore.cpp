@@ -11,7 +11,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include <map>
 
@@ -128,9 +128,9 @@ RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
     findProgram
 
     Returns true if program exists with the given programID, false otherwise.
-    
+
     If program isn't NULL it is set to point to the program with programID.
-    
+
     If controlArea isn't NULL it is set to point to the control area that
     the program with programID is in.
 ---------------------------------------------------------------------------*/
@@ -171,7 +171,7 @@ bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** progr
   Returns 0 if no group is found.
   This member exists mostly for efficiency in updating groups when point
   data shows up.
-----------------------------------------------------------------------------*/  
+----------------------------------------------------------------------------*/
 CtiLMGroupPtr CtiLMControlAreaStore::findGroupByPointID(long point_id)
 {
     map< long, CtiLMGroupPtr >::iterator iter = _point_group_map.find(point_id);
@@ -286,7 +286,7 @@ void CtiLMControlAreaStore::reset()
         RWOrdered temp_control_areas;
         map<long, CtiLMGroupPtr > temp_all_group_map;
         map<long, CtiLMGroupPtr > temp_point_group_map;
-        
+
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
         {
@@ -300,20 +300,20 @@ void CtiLMControlAreaStore::reset()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Starting Database Reload..." << endl;
         }
-        
+
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
             {
                 if( conn.isValid() )
                 {
-                {   
+                {
                     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                     if( _controlAreas->entries() > 0 )
                     {   //Save off current data to database so that if can be loaded by new objects on reload
                         dumpAllDynamicData();
                         saveAnyProjectionData();
-                        saveAnyControlStringData(); 
+                        saveAnyControlStringData();
                     }
                 }
                     RWDBDateTime currentDateTime;
@@ -351,11 +351,11 @@ void CtiLMControlAreaStore::reset()
 
                     RWTimer allGroupTimer;
                     allGroupTimer.start();
-                    
+
                     /* First load all the groups, and put them into a map by group id */
                     map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
                     map< long, vector<CtiLMGroupPtr> > all_program_group_map;
-                    
+
                 {
                     RWDBTable paObjectTable = db.table("yukonpaobject");
                     RWDBTable deviceTable = db.table("device");
@@ -380,8 +380,8 @@ void CtiLMControlAreaStore::reset()
                     selector.where( paObjectTable["paobjectid"] == lmGroupTable["deviceid"] &&
                                     paObjectTable["paobjectid"] == deviceTable["deviceid"] &&
                                     paObjectTable["paobjectid"] > 0 ); // Stars gives meaning to an lmgroup with an id of 0, we don't care about it though
-                
-                        
+
+
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -437,9 +437,9 @@ void CtiLMControlAreaStore::reset()
                         CtiLockGuard<CtiLogger> dout_guard(dout);
                         dout << RWTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
                     }
-                } 
+                }
             }// end loading group point specific info
-                    
+
             { /* Start loading ripple group specific info */
                 RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
                 RWDBSelector selector = db.selector();
@@ -448,7 +448,7 @@ void CtiLMControlAreaStore::reset()
                          << lmGroupRippleTable["shedtime"];
 
                 selector.from(lmGroupRippleTable);
-                
+
                 RWDBReader rdr = selector.reader(conn);
                 while(rdr())
                 {
@@ -476,7 +476,7 @@ void CtiLMControlAreaStore::reset()
             /* We would load the nominal timeout here, I don't think it is used yet,
                so add it if necessary */
         } // end loading sa dumb group specific info */
-                
+
             /* Attach any points necessary to groups */
             {
                 temp_point_group_map.clear();
@@ -492,9 +492,9 @@ void CtiLMControlAreaStore::reset()
 
                 selector.from(pointTable);
                 selector.from(lmGroupTable);
-                    
+
                 selector.where( pointTable["paobjectid"] == lmGroupTable["deviceid"] );
-                    
+
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -519,10 +519,10 @@ void CtiLMControlAreaStore::reset()
                     {
                         continue;
                     }
-                    
+
                     map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     CtiLMGroupPtr lm_group = iter->second;
-                    
+
                     switch(resolvePointType(point_type.data()))
                     {
                     case AnalogPointType:
@@ -545,11 +545,11 @@ void CtiLMControlAreaStore::reset()
                             temp_point_group_map.insert(make_pair(point_id,lm_group));
                             break;
                         default:
-                        {
+                        /*{
                             CtiLockGuard<CtiLogger> dout_guard(dout);
                             dout << RWTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
                                  << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                        }
+                        }*/
                         break;
                         }
                         break;
@@ -619,7 +619,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["controlcompletetime"] >> control_complete_time;
                     rdr["nextcontroltime"] >> next_control_time;
                     rdr["internalstate"] >> internal_state;
-                    
+
                     CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
                     lm_group->setGroupControlState(group_control_state);
                     lm_group->setCurrentHoursDaily(cur_hours_daily);
@@ -682,7 +682,7 @@ void CtiLMControlAreaStore::reset()
                     }
                 }
             }
-                      
+
             /* now lets load info about how groups attach to programs */
             {
                 RWDBTable lmProgramDirectGroupTable = db.table("lmprogramdirectgroup");
@@ -692,7 +692,7 @@ void CtiLMControlAreaStore::reset()
                          << rwdbName("groupid", lmProgramDirectGroupTable["lmgroupdeviceid"]);
 
                 selector.from(lmProgramDirectGroupTable);
-                selector.orderBy(lmProgramDirectGroupTable["deviceid"]);
+                selector.orderBy(lmProgramDirectGroupTable["grouporder"]);
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
@@ -742,7 +742,7 @@ void CtiLMControlAreaStore::reset()
                     else
                     {
                         CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
-                        
+
                         map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
                         if(macro_iter != group_macro_map.end())
                         { //must be a macro group
@@ -766,8 +766,8 @@ void CtiLMControlAreaStore::reset()
 
                     }
                 }
-            }                   
-            
+            }
+
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -853,7 +853,7 @@ void CtiLMControlAreaStore::reset()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << selector.asString().data() << endl;
                         }
- 
+
                         CtiLMProgramDirect* currentLMProgramDirect = NULL;
                         RWDBReader rdr = selector.reader(conn);
                         RWDBNullIndicator isNull;
@@ -868,7 +868,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 currentLMProgramDirect = new CtiLMProgramDirect(rdr);
                                 CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
-                                
+
                                 //Inserting this program's groups
                                 CtiLMGroupVec group_vec = all_program_group_map.find(tempProgramId)->second;
                                 for(CtiLMGroupIter iter = group_vec.begin();
@@ -910,7 +910,7 @@ void CtiLMControlAreaStore::reset()
 
                     RWTimer masterSubordinateTimer;
                     masterSubordinateTimer.start();
-                    
+
                 { // loading master - subordinate direct program relationships
                     RWDBTable paoExclusionTable = db.table("paoexclusion");
                     RWDBSelector selector = db.selector();
@@ -932,10 +932,10 @@ void CtiLMControlAreaStore::reset()
                         long subordinate_program_id;
                         rdr["paoid"] >> master_program_id;
                         rdr["excludedpaoid"] >> subordinate_program_id;
-                        
+
                         CtiLMProgramBase* master_program = 0;
                         CtiLMProgramBase* subordinate_program = 0;
-                        
+
                         if(directProgramHashMap.findValue(master_program_id, master_program) &&
                            directProgramHashMap.findValue(subordinate_program_id, subordinate_program))
                         {
@@ -950,7 +950,7 @@ void CtiLMControlAreaStore::reset()
                                 " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
                                 __FILE__ << "(" << __LINE__ << ")" << endl;
                         }
-                        
+
                     }
                 }
 
@@ -960,7 +960,7 @@ void CtiLMControlAreaStore::reset()
                     dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
                     dirProgsTimer.reset();
                 }
-                    
+
                 RWTimer gearsTimer;
                     gearsTimer.start();
                     {//loading direct gears start
@@ -1052,7 +1052,7 @@ void CtiLMControlAreaStore::reset()
 
                     RWTimer notificationGroupTimer;
                     notificationGroupTimer.start();
-                    
+
                 { //loading notification groups start
                     RWDBTable lmProgramDirectNotifGrpListTable = db.table("lmdirectnotifgrplist");
                     RWDBSelector selector = db.selector();
@@ -1095,7 +1095,7 @@ void CtiLMControlAreaStore::reset()
                     dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
                     notificationGroupTimer.reset();
                 }
-                
+
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
 
                     RWTimer curtailProgsTimer;
@@ -1754,14 +1754,14 @@ void CtiLMControlAreaStore::reset()
                                     else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
-                                        currentLMProgramBase->setStopPriority(stop_priority);                                        
+                                        currentLMProgramBase->setStopPriority(stop_priority);
                                         lmControlAreaProgramList.insert(currentLMProgramBase);
                                         curtailmentProgramHashMap.remove(tempProgramId);
                                     }
                                     else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
-                                        currentLMProgramBase->setStopPriority(stop_priority);                                        
+                                        currentLMProgramBase->setStopPriority(stop_priority);
                                         lmControlAreaProgramList.insert(currentLMProgramBase);
                                         energyExchangeProgramHashMap.remove(tempProgramId);
                                     }
@@ -1797,8 +1797,8 @@ void CtiLMControlAreaStore::reset()
                         directProgramHashMap.apply(lmprogram_delete, 0);
                         curtailmentProgramHashMap.apply(lmprogram_delete, 0);
                         energyExchangeProgramHashMap.apply(lmprogram_delete, 0);
-                        
-                        
+
+
                     }//loading control areas end
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
@@ -1880,7 +1880,7 @@ void CtiLMControlAreaStore::reset()
                         //Make sure holidays and season schedules are refreshed
                     CtiHolidayManager::getInstance().refresh();
                     CtiSeasonManager::getInstance().refresh();
-        
+
                 }
                 else
                 {
@@ -1894,7 +1894,7 @@ void CtiLMControlAreaStore::reset()
 
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-                            
+
         // Clear out our old working objects
         _controlAreas->clearAndDestroy(); //89
         _all_group_map.clear();
@@ -1905,14 +1905,14 @@ void CtiLMControlAreaStore::reset()
         *_controlAreas = temp_control_areas;
         _all_group_map = temp_all_group_map;
         _point_group_map = temp_point_group_map;
-        
+
         _isvalid = TRUE;
 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Control areas reset" << endl;
     }
-                       
+
     if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1984,7 +1984,7 @@ void CtiLMControlAreaStore::doResetThr()
     {
         //defaults
         int refreshrate = 3600;
-        
+
         RWCString str;
         char var[128];
 
@@ -2013,7 +2013,7 @@ void CtiLMControlAreaStore::doResetThr()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
- 
+
         RWDBDateTime lastPeriodicDatabaseRefresh = RWDBDateTime();
 
         while(TRUE)

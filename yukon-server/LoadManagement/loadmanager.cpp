@@ -12,7 +12,7 @@
 
   COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
   -----------------------------------------------------------------------------*/
-#include "yukon.h"
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -32,6 +32,7 @@
 #include "lmcontrolareatrigger.h"
 #include "executor.h"
 #include "ctibase.h"
+#include "yukon.h"
 #include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
@@ -205,7 +206,7 @@ void CtiLoadManager::controlLoop()
     {
     long main_wait = control_loop_delay;
     bool received_message = false;
-
+    
         while( (msg = _main_queue.getQueue(main_wait)) != NULL )
         {
             CtiLMExecutor* executor = executorFactory.createExecutor(msg);
@@ -223,7 +224,6 @@ void CtiLoadManager::controlLoop()
         main_wait = control_loop_inmsg_delay;
         received_message = true;
         }
-
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
@@ -287,10 +287,10 @@ void CtiLoadManager::controlLoop()
                     }
 
 //                    if( !currentControlArea->getDisableFlag() ) // how about control area windows?
-                    {
-                        currentControlArea->updateTimedPrograms(secondsFromBeginningOfDay);
-                        currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg);
-                    }
+		{
+		    currentControlArea->updateTimedPrograms(secondsFromBeginningOfDay);
+		    currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg);
+		}
 
                     if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(secondsFromBeginningOfDay) )
                     {
@@ -355,14 +355,14 @@ void CtiLoadManager::controlLoop()
                             currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
                         {
 //                            if( currentControlArea->isControlStillNeeded() )
-                            {
-                                //CtiLockGuard<CtiLogger> logger_guard(dout);
-                                //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,examinedControlAreaForControlNeededFlag) )
-                                {
-                                    currentControlArea->setUpdatedFlag(TRUE);
-                                }
-                            }
+			{
+			    //CtiLockGuard<CtiLogger> logger_guard(dout);
+			    //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
+			    if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,examinedControlAreaForControlNeededFlag) )
+			    {
+				currentControlArea->setUpdatedFlag(TRUE);
+			    }
+			}
 
                         }
 
@@ -390,22 +390,6 @@ void CtiLoadManager::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-#ifdef _CHANGED_HOW_CA_GET_SENT
-                try
-                {
-               if( currentControlArea->getUpdatedFlag() )
-                    {
-                        currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
-                        controlAreaChanges.insert(currentControlArea);
-                        currentControlArea->setUpdatedFlag(FALSE);
-            }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-#endif
             }
         }
 
@@ -413,11 +397,6 @@ void CtiLoadManager::controlLoop()
         {
             if( multiDispatchMsg->getCount() > 0 )
             {
-                /*{
-                  CtiLockGuard<CtiLogger> logger_guard(dout);
-                  dout << RWTime() << " - Sending multi message to Dispatch." << endl;
-                  }*/
-
                 multiDispatchMsg->resetTime();                              // CGP 5/21/04 Update its time to current time.
                 getDispatchConnection()->WriteConnQue(multiDispatchMsg);
                 multiDispatchMsg = new CtiMultiMsg();
@@ -447,64 +426,50 @@ void CtiLoadManager::controlLoop()
 
         try
         {
-        // Only send control area changes so often to avoid overwhelming the system
-        // if we just received a client message then do it anyways however for good response
-        time_t now = time(NULL);
-        if(received_message || now > (last_ca_msg_sent + control_loop_outmsg_delay))
-        {
-        for(LONG i=0;i<controlAreas.entries();i++)
-        {
-            CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+	    // Only send control area changes so often to avoid overwhelming the system
+	    // if we just received a client message then do it anyways however for good response
+	    time_t now = time(NULL);
+	    if(received_message || now > (last_ca_msg_sent + control_loop_outmsg_delay))
+	    {
+		for(LONG i=0;i<controlAreas.entries();i++)
+		{
+		    CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
+        
+		    if( currentControlArea->getUpdatedFlag() )
+		    {
+			currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
+			controlAreaChanges.insert(currentControlArea);
+			currentControlArea->setUpdatedFlag(FALSE);
+		    }
+		}
 
-            if( currentControlArea->getUpdatedFlag() )
-                    {
-                        currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
-                        controlAreaChanges.insert(currentControlArea);
-                        currentControlArea->setUpdatedFlag(FALSE);
-            }
-        }
+		if( _LM_DEBUG & LM_DEBUG_CLIENT )
+		{
+		    CtiLockGuard<CtiLogger> dout_guard(dout);
+		    dout << RWTime() << "Found " << controlAreaChanges.entries() << " dirty control areas to send to clients" << endl;
+		}
+	
+		if(controlAreaChanges.entries() > 0)
+		{
+		    CtiLMExecutorFactory f;
+		    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
 
-        CtiLMExecutorFactory f;
-                CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
-
-                try
-                {
-                    executor->Execute();
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-                delete executor;
-
-        store->dumpAllDynamicData();
-        last_ca_msg_sent = now;
-                controlAreaChanges.clear();
-        }
-
-#ifdef _BUNG__
-            if( controlAreaChanges.entries() > 0 )
-            {
-                store->dumpAllDynamicData();
-                CtiLMExecutorFactory f;
-                CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(controlAreaChanges));
-
-                try
-                {
-                    executor->Execute();
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-                delete executor;
-
-                controlAreaChanges.clear();
-                    }
-#endif
-
+		    try
+		    {
+			executor->Execute();
+		    }
+		    catch(...)
+		    {
+			CtiLockGuard<CtiLogger> logger_guard(dout);
+			dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+		    }
+		    delete executor;
+                
+		    store->dumpAllDynamicData();
+		    last_ca_msg_sent = now;
+		    controlAreaChanges.clear();
+		}
+	    }
         }
         catch(...)
         {
@@ -1086,7 +1051,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                     currentTrigger->setLastPeakPointValueTimestamp(timestamp);
                     currentTrigger->setPeakPointValue(value);
         }
-
+        
         if( currentTrigger->getThresholdKickPercent() > 0 )
         {
             DOUBLE oldThreshold = currentTrigger->getThreshold();

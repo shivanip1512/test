@@ -81,12 +81,15 @@ public:
     virtual void Execute();
 
 private:
-    void StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea);
-    void StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea);
-    void StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea);
-    void StopDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea);
-    void StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea);
-    void StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea);
+    void StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea, const RWDBDateTime& start, const RWDBDateTime& stop);
+    void StopProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea, const RWDBDateTime& stop);
+    void StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea, const RWDBDateTime& start, const RWDBDateTime& stop);
+    void StopDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea, const RWDBDateTime& stop);
+    void StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea, const RWDBDateTime& start, const RWDBDateTime& stop);
+    void StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea, const RWDBDateTime& stop);
+
+    void CoerceStartStopTime(CtiLMProgramBase* program, RWDBDateTime& start, RWDBDateTime& stop);
+    void CoerceStopTime(CtiLMProgramBase* program, RWDBDateTime& stop);
     
     CtiServerRequestMsg* _request;
     CtiLMManualControlRequest* _controlMsg;

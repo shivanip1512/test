@@ -1,4 +1,3 @@
-#include "yukon.h"
 #include "lmconstraint.h"
 
 #include <algorithm>
@@ -417,10 +416,13 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
         return true;
     }
 
-    RWTime today(RWDate());
+    // We want the seconds at the beginning of the day in which the program is to start
+    RWTime startTime(proposed_start_from_1901);
+    RWDate startDate(startTime);
+    startTime = RWTime(startDate);
 
-    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(proposed_start_from_1901 - today.seconds());
-    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(proposed_stop_from_1901 - today.seconds());
+    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(proposed_start_from_1901 - startTime.seconds());
+    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(proposed_stop_from_1901 - startTime.seconds());
       
     if(start_ctrl_window != 0 && stop_ctrl_window != 0)
     {
@@ -452,24 +454,24 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
         string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
         result += RWTime(proposed_stop_from_1901).asString();
         result += " is outside the control window that runs from ";
-        result += RWTime(start_ctrl_window->getAvailableStartTime() + today.seconds()).asString();
+        result += RWTime(start_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
         result += " to ";
-        result += RWTime(start_ctrl_window->getAvailableStopTime() + today.seconds()).asString();
+        result += RWTime(start_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
         if(results != 0)
         {
             results->push_back(result);
         }
         return false;
-    }
+    } 
 
     if(start_ctrl_window == 0 && stop_ctrl_window != 0)
     {
         string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
         result += RWTime(proposed_start_from_1901).asString();
         result += " is outside the control window that runs from ";
-        result += RWTime(stop_ctrl_window->getAvailableStartTime() + today.seconds()).asString();
+        result += RWTime(stop_ctrl_window->getAvailableStartTime() + startTime.seconds()).asString();
         result += " to ";
-        result += RWTime(stop_ctrl_window->getAvailableStopTime() + today.seconds()).asString();
+        result += RWTime(stop_ctrl_window->getAvailableStopTime() + startTime.seconds()).asString();
         if(results != 0)
         {
             results->push_back(result);

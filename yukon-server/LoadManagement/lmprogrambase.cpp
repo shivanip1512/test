@@ -11,7 +11,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "dbaccess.h"
 #include "lmid.h"
@@ -1172,7 +1172,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
 }
 
 CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBeginningOfDay)
-{
+{    
     //Control Windows can span midnight, in which case getAvailableStopTime will represent more than 24 hours worth of seconds
     //So add 24 hours worth of seconds and do an additional test
     LONG secondsFromBeginningOfYesterday = secondsFromBeginningOfDay + 24 * 60 * 60;

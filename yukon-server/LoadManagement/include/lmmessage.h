@@ -135,6 +135,7 @@ public:
     LONG getStartPriority() const;
     const RWCString& getAdditionalInfo() const;
     BOOL getOverrideConstraints() const;
+    BOOL getCoerceStartStopTime() const;
     
     virtual CtiMessage* replicateMessage() const;
 	
@@ -153,6 +154,7 @@ private:
     LONG _startpriority;
     RWCString _additionalinfo;
     BOOL _override_constraints;
+    BOOL _coerce_start_stop_time;
 };
 
 class CtiLMManualControlResponse : public CtiLMMessage

@@ -12,7 +12,7 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
-#include "yukon.h"
+#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 #include "dbaccess.h"
 #include "lmcontrolarea.h"
@@ -686,6 +686,7 @@ BOOL CtiLMControlArea::isControlTime(LONG secondsFromBeginningOfDay)
         tempCurrentDailyStopTime = 86400;
     }
 
+
     if( tempCurrentDailyStartTime <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= tempCurrentDailyStopTime )
     {
         return TRUE;
@@ -1079,6 +1080,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                     }
                                 }
                                 setCurrentStartPriority(lmProgramDirect->getStartPriority());
+
                             }
                             else
                             {
@@ -1091,6 +1093,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 
                         expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         newlyActivePrograms++;
+
                         if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
                             getControlAreaState() != CtiLMControlArea::ActiveState )
                         {
@@ -1251,8 +1254,7 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
         dout << RWTime() << " - " << text << ", " << additional << endl;
     }
     }
-
-    setUpdatedFlag(TRUE);    
+    setUpdatedFlag(TRUE);
     return;
 }
 

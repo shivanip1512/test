@@ -9,8 +9,6 @@
     
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
-
 #include "lmmessage.h"
 #include "lmid.h"
 #include "rwutil.h"
@@ -317,6 +315,11 @@ BOOL CtiLMManualControlRequest::getOverrideConstraints() const
     return _override_constraints;
 }
 
+BOOL CtiLMManualControlRequest::getCoerceStartStopTime() const
+{
+    return _coerce_start_stop_time;
+}
+
 /*---------------------------------------------------------------------------
     replicateMessage
 ---------------------------------------------------------------------------*/
@@ -345,7 +348,8 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
          >> _startgear
          >> _startpriority
          >> _additionalinfo
-         >> _override_constraints;
+         >> _override_constraints
+	 >> _coerce_start_stop_time;
 
     _notifytime = RWDBDateTime(tempTime1);
     _starttime = RWDBDateTime(tempTime2);
@@ -370,7 +374,8 @@ void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
          << _startgear
          << _startpriority
          << _additionalinfo
-	 << _override_constraints;
+	 << _override_constraints
+	 << _coerce_start_stop_time;
 
     return;
 }
