@@ -52,6 +52,12 @@
 		<description>Dynamically generates graphs in gif format</description>
 		<servlet-class>com.cannontech.servlet.GraphGenerator</servlet-class>
 	</servlet>
+		<servlet>
+		<servlet-name>ReportGenerator</servlet-name>
+		<display-name>ReportGenerator</display-name>
+		<description>Dynamically generates reports in specific formats</description>
+		<servlet-class>com.cannontech.servlet.ReportGenerator</servlet-class>
+	</servlet>
 	<servlet>
 		<servlet-name>PILConnectionServlet</servlet-name>
 		<display-name>PILConnectionServlet</display-name>
