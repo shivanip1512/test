@@ -77,6 +77,12 @@ public void delete() throws java.sql.SQLException
 	delete( "EnergyCompanyCustomerList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
 	delete( "EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyID() );
 	getEnergyCompany().delete();
+	
+	com.cannontech.database.data.customer.Contact contact =
+			new com.cannontech.database.data.customer.Contact();
+	contact.setContactID( getEnergyCompany().getPrimaryContactID() );
+	contact.setDbConnection( getDbConnection() );
+	contact.delete();
 }
 /**
  * Insert the method's description here.
