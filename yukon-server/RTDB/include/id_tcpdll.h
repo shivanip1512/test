@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_tcpdll.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/04/25 19:40:03 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/05/02 22:03:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
 #define PROJECT   "CTI TCPSup DLL "
 
 #define MAJORREVISION   2
-#define MINORREVISION   17
-#define BUILDNUMBER     2
+#define MINORREVISION   18
+#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
