@@ -174,7 +174,7 @@ MM_reloadPage(true);
                         <img id = "theGraph" src="/servlet/GraphGenerator?" > 
                         <%}
 				%>
-                        <font size="-1"><cti:text roleid="<%= RoleTypes.TRENDING_DISCLAIMER_TEXT %>"/></font>
+                    <br><font size="-1"><cti:text roleid="<%= RoleTypes.TRENDING_DISCLAIMER_TEXT %>"/></font>
                     </center>
                   </td>
                 </tr>
