@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_devdll.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/06/07 22:39:05 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/06/14 14:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
 #define PROJECT   "CTI Device RTDB DLL "
 
 #define MAJORREVISION   2
-#define MINORREVISION   23
-#define BUILDNUMBER     1
+#define MINORREVISION   24
+#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
