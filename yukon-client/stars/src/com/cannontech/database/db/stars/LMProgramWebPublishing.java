@@ -146,15 +146,22 @@ public class LMProgramWebPublishing extends DBPersistent {
     }
 
     public static void deleteAllLMProgramWebPublishing(Integer appCatID, java.sql.Connection conn) {
+		java.sql.PreparedStatement stmt = null;
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = ?";
         
         try {
-	        java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+	        stmt = conn.prepareStatement( sql );
 	        stmt.setInt( 1, appCatID.intValue() );
         	stmt.execute();
         }
         catch (java.sql.SQLException e) {
         	e.printStackTrace();
+        }
+        finally {
+        	try {
+        		if (stmt != null) stmt.close();
+        	}
+        	catch (java.sql.SQLException e) {}
         }
     }
 

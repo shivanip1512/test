@@ -131,37 +131,51 @@ public class WorkOrderBase extends DBPersistent {
 	throws java.sql.SQLException {
 		String sql = "SELECT OrderID FROM " + TABLE_NAME + " wo, ECToWorkOrderMapping map " +
 				"WHERE UPPER(OrderNumber) = UPPER(?) AND wo.OrderID = map.WorkOrderID AND map.EnergyCompanyID = ?";
-		java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
-		stmt.setString(1, orderNo);
-		stmt.setInt(2, energyCompanyID);
-		java.sql.ResultSet rset = stmt.executeQuery();
-    	
-		java.util.ArrayList orderIDList = new java.util.ArrayList();
-		while (rset.next())
-			orderIDList.add( new Integer(rset.getInt(1)) );
-    	
-		int[] orderIDs = new int[orderIDList.size()];
-		for (int i = 0; i < orderIDList.size(); i++)
-			orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
-    	
-		return orderIDs;
+		java.sql.PreparedStatement stmt = null;
+		
+		try {
+			stmt = conn.prepareStatement( sql );
+			stmt.setString(1, orderNo);
+			stmt.setInt(2, energyCompanyID);
+			java.sql.ResultSet rset = stmt.executeQuery();
+	    	
+			java.util.ArrayList orderIDList = new java.util.ArrayList();
+			while (rset.next())
+				orderIDList.add( new Integer(rset.getInt(1)) );
+	    	
+			int[] orderIDs = new int[orderIDList.size()];
+			for (int i = 0; i < orderIDList.size(); i++)
+				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+	    	
+			return orderIDs;
+		}
+		finally {
+			if (stmt != null) stmt.close();
+		}
 	}
     
     public static int[] searchByAccountID(int accountID, java.sql.Connection conn) throws java.sql.SQLException {
     	String sql = "SELECT OrderID FROM " + TABLE_NAME + " WHERE AccountID = ? ORDER BY DateReported DESC";
-    	java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
-    	stmt.setInt(1, accountID);
-    	java.sql.ResultSet rset = stmt.executeQuery();
+    	java.sql.PreparedStatement stmt = null;
     	
-    	java.util.ArrayList orderIDList = new java.util.ArrayList();
-    	while (rset.next())
-    		orderIDList.add( new Integer(rset.getInt(1)) );
-    	
-    	int[] orderIDs = new int[orderIDList.size()];
-    	for (int i = 0; i < orderIDList.size(); i++)
-    		orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
-    	
-    	return orderIDs;
+    	try {
+			stmt = conn.prepareStatement( sql );
+			stmt.setInt(1, accountID);
+			java.sql.ResultSet rset = stmt.executeQuery();
+	    	
+			java.util.ArrayList orderIDList = new java.util.ArrayList();
+			while (rset.next())
+				orderIDList.add( new Integer(rset.getInt(1)) );
+	    	
+			int[] orderIDs = new int[orderIDList.size()];
+			for (int i = 0; i < orderIDList.size(); i++)
+				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+	    	
+			return orderIDs;
+    	}
+    	finally {
+    		if (stmt != null) stmt.close();
+    	}
     }
 
 	/**

@@ -291,6 +291,9 @@ public class ContactNotification extends NestedDBPersistent
 	 */
 	public static final void deleteAllContactNotifications( java.sql.Connection conn, int contactID_ ) throws java.sql.SQLException 
 	{
+		java.sql.PreparedStatement pstmt1 = null;
+		java.sql.PreparedStatement pstmt2 = null;
+		
 		String sql1 = 
 			"DELETE FROM " + NotificationDestination.TABLE_NAME + " " + 
 			"WHERE RecipientID in (select ContactNotifID " +
@@ -309,15 +312,26 @@ public class ContactNotification extends NestedDBPersistent
 			}
 			else
 			{
-				conn.prepareStatement(sql1.toString()).executeUpdate();
+				pstmt1 = conn.prepareStatement(sql1.toString());
+				pstmt1.executeUpdate();
 				
-				conn.prepareStatement(sql2.toString()).executeUpdate();
+				pstmt2 = conn.prepareStatement(sql2.toString());
+				pstmt2.executeUpdate();
 			}		
 		}
 		catch( java.sql.SQLException e )
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}	
+		}
+		finally
+		{
+			try
+			{
+				if (pstmt1 != null) pstmt1.close();
+				if (pstmt2 != null) pstmt2.close();
+			}
+			catch (java.sql.SQLException e) {}
+		}
 	}
 	
 	/**
