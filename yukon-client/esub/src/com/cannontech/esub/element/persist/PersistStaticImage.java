@@ -37,11 +37,9 @@ public class PersistStaticImage extends BasePersistElement {
 				
 				case 1: {
 					int imgID = LxSaveUtils.readInt(in);
-        			LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(imgID);
-					if(img != null) {
-	        			elem.setYukonImage(img);
-					}
-        			elem.setLinkTo(LxSaveUtils.readString(in));
+					LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(imgID);
+					elem.setYukonImage(img);
+					elem.setLinkTo(LxSaveUtils.readString(in));
 				}
 				break;
 				
