@@ -8,7 +8,9 @@ package com.cannontech.stars.util.task;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -134,6 +136,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	String email = null;
 	boolean preScan = false;
 	
+	PrintWriter importLog = null;
 	String position = null;
 	
 	int numAcctTotal = 0;
@@ -166,37 +169,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				if (position != null) msg += ": " + position;
 				return msg;
 			}
-			else {
-				String msg = "";
-				if (status == STATUS_FINISHED) {
-					if (custFile != null)
-						msg += numAcctImported + " customer accounts imported successfully" +
-							" (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
-					if (hwFile != null) {
-						if (msg.length() > 0) msg += LINE_SEPARATOR;
-						msg += numHwImported + " hardware imported successfully" +
-							" (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
-					}
-				}
-				else {
-					if (custFile != null) {
-						if (numAcctTotal == 0)
-							msg += numAcctImported + " customer accounts imported";
-						else
-							msg += numAcctImported + " of " + numAcctTotal + " customer accounts imported";
-						msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
-					}
-					if (hwFile != null) {
-						if (msg.length() > 0) msg += LINE_SEPARATOR;
-						if (numHwTotal == 0)
-							msg += numHwImported + " hardware imported successfully";
-						else
-							msg += numHwImported + " of " + numHwTotal + " hardware imported";
-						msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
-					}
-				}
-				return msg;
-			}
+			else
+				return getImportProgress();
 		}
 		
 		return null;
@@ -212,13 +186,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			return;
 		}
         
-		status = STATUS_RUNNING;
+        File logFile = null;
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		ArrayList custFieldsList = null;
 		ArrayList hwFieldsList = null;
 		ArrayList appFieldsList = null;
-		ArrayList warnings = new ArrayList();
 		
 		int[] custColIdx = new int[ CUST_COLUMNS.length ];
 		int[] hwColIdx = new int [ HW_COLUMNS.length ];
@@ -230,14 +203,27 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		for (int i = 0; i < HW_COLUMNS.length; i++)
 			hwColIdx[i] = -1;
 		
-		long startTime = System.currentTimeMillis();
-		
 		// Pre-scan the import file(s). If customer and hardware information is in the same file,
 		// no optimization will be preformed.
 		Hashtable custFieldsMap = new Hashtable();	// Map from account # (String) to customer fields (String[])
 		Hashtable hwFieldsMap = new Hashtable();	// Map from serial # (String) to account # (String)
 		
+		status = STATUS_RUNNING;
+		
 		try {
+			final String fs = System.getProperty( "file.separator" );
+			File uploadDir = new File(
+					ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + energyCompany.getName());
+			if (!uploadDir.exists()) uploadDir.mkdirs();
+			
+			Date now = new Date();
+			String logFileName = StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
+			logFile = new File(uploadDir, logFileName);
+			
+			importLog = new PrintWriter(new FileWriter(logFile), true);
+			importLog.println("Start time: " + StarsUtils.formatDate( now, energyCompany.getDefaultTimeZone() ));
+			importLog.println();
+			
 			if (custFile != null) {
 				custFieldsList = new ArrayList();
 				ArrayList addedUsernames = new ArrayList();
@@ -326,7 +312,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							if (prevFields != null) {
 								if (prevFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
 									// If a "REMOVE" record already exists in the list, do nothing but report a warning
-									warnings.add( "WARNING at " + position + ": account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " already removed earlier, record ignored" );
+									importLog.println( "WARNING at " + position + ": account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " already removed earlier, record ignored" );
 									continue;
 								}
 								else {
@@ -361,7 +347,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								}
 								else {
 									// Account not found in the database, do nothing but report a warning
-									warnings.add( "WARNING at " + position + ": account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist, record ignored" );
+									importLog.println( "WARNING at " + position + ": account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist, record ignored" );
 									continue;
 								}
 							}
@@ -444,7 +430,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
 					LiteStarsCustAccountInformation liteAcctInfo = null;
 					if (!preScan)
-						liteAcctInfo = importAccount( custFields, energyCompany, warnings );
+						liteAcctInfo = importAccount( custFields, energyCompany );
 					
 					if (hwInfoContained) {
 						if (preScan) {
@@ -484,7 +470,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
 							// Remove a hardware from an account, if hardware doesn't exist in the account, report a warning
 							if (acctNo == null || !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )) {
-								warnings.add( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account" );
+								importLog.println( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account" );
 								if (preScan) {
 									hwFieldsList.add( null );
 									if (appFieldsList != null) appFieldsList.add( null );
@@ -521,7 +507,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 						
 						if (!preScan) {
-							LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, warnings );
+							LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 							
 							if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 								&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
@@ -608,7 +594,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (custFields != null) {
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equals("REMOVE")) {
 							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-								warnings.add( "WARNING at " + position + ": account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " is removed by the import program, record ignored" );
+								importLog.println( "WARNING at " + position + ": account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " is removed by the import program, record ignored" );
 								continue;
 							}
 							else {
@@ -620,7 +606,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						liteAcctInfo = energyCompany.searchAccountByAccountNo( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
 						if (liteAcctInfo == null) {
 							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-								warnings.add( "WARNING at " + position + ": account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist, record ignored" );
+								importLog.println( "WARNING at " + position + ": account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist, record ignored" );
 								continue;
 							}
 							else {
@@ -643,7 +629,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
 					if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
 						if (acctNo == null || !acctNo.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] )) {
-							warnings.add( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account, record ignored" );
+							importLog.println( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account, record ignored" );
 							continue;
 						}
 						
@@ -678,7 +664,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 					
 					if (!preScan) {
-						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, warnings );
+						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 						
 						if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 							&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
@@ -698,33 +684,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				numHwTotal = hwFieldsList.size();
 			}
 			
-			if (!preScan) status = STATUS_FINISHED;
-		}
-		catch (Exception e) {
-			if (status == STATUS_CANCELED) {
-				errorMsg = "Operation is canceled by user";
-				if (position != null)
-					errorMsg += " after " + position + " is processed";
-			}
-			else {
-				CTILogger.error( e.getMessage(), e );
-				status = STATUS_ERROR;
+			if (preScan) {
+				// The data has been pre-scaned, now actually import the data
+				// set the preScan flag to false so the import log will be sent later
+				preScan = false;
 				
-				if (position != null)
-					errorMsg = "Error at " + position;
-				else
-					errorMsg = "Import failed";
-				if (e instanceof WebClientException)
-					errorMsg += ": " + e.getMessage();
-			}
-			if (preScan) return;
-		}
-		
-		if (preScan) {
-			// The data has been pre-scaned, now actually import the data
-			preScan = false;
-			
-			try {
 				if (custFile != null) {
 					for (int i = 0; i < numAcctTotal; i++) {
 						String[] custFields = (String[]) custFieldsList.get(i);
@@ -733,14 +697,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						
 						position = "customer file line #" + custFields[ImportManagerUtil.IDX_LINE_NUM];
 						
-						LiteStarsCustAccountInformation liteAcctInfo = importAccount(custFields, energyCompany, warnings);
+						LiteStarsCustAccountInformation liteAcctInfo = importAccount(custFields, energyCompany);
 						
 						if (hwFile == null && hwFieldsList != null) {
 							hwFields = (String[]) hwFieldsList.get(i);
 							if (appFieldsList != null) appFields = (String[]) appFieldsList.get(i);
 							
 							if (hwFields != null) {
-								LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, warnings );
+								LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 								
 								if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 									&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
@@ -771,7 +735,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (liteAcctInfo == null)
 							throw new WebClientException( "Account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist" );
 						
-						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, warnings );
+						LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 						
 						if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 							&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
@@ -787,115 +751,83 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 					}
 				}
+			}
+			
+			status = STATUS_FINISHED;
+		}
+		catch (Exception e) {
+			if (status == STATUS_CANCELED) {
+				errorMsg = "Operation is canceled by user";
+				if (position != null)
+					errorMsg += " after " + position + " is processed";
+			}
+			else {
+				CTILogger.error( e.getMessage(), e );
+				status = STATUS_ERROR;
 				
-				status = STATUS_FINISHED;
+				if (position != null)
+					errorMsg = "An error occured at " + position;
+				else
+					errorMsg = "The Import process failed";
+				if (e instanceof WebClientException)
+					errorMsg += ": " + e.getMessage();
 			}
-			catch (Exception e) {
-				if (status == STATUS_CANCELED) {
-					errorMsg = "Operation is canceled by user";
-					if (position != null)
-						errorMsg += " after " + position + " is processed";
+		}
+		finally {
+			if (importLog != null) {
+				importLog.println();
+				importLog.println("Stop time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
+				importLog.println();
+				if (errorMsg != null) importLog.println( errorMsg );
+				importLog.println(getImportProgress());
+				importLog.close();
+				
+				try {
+					if (email != null && email.trim().length() > 0 && !preScan)
+						sendImportLog( logFile, email, energyCompany );
 				}
-				else {
-					CTILogger.error( e.getMessage(), e );
+				catch (Exception e) {
 					status = STATUS_ERROR;
-					
-					if (position != null)
-						errorMsg = "Error at " + position;
+					if (errorMsg != null)
+						errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
 					else
-						errorMsg = "Import failed";
-					if (e instanceof WebClientException)
-						errorMsg += ": " + e.getMessage();
+						errorMsg = "Failed to send the import log by email";
 				}
 			}
 		}
 		
-		long stopTime = System.currentTimeMillis();
-		
-		if (numAcctImported > 0 || numHwImported > 0) {
-			int minutes = (int) ((stopTime - startTime) * 0.001 / 60 + 0.5);
-			int hourTaken = minutes / 60;
-			int minTaken = minutes % 60;
-			String timeTaken = "";
-			if (hourTaken > 1)
-				timeTaken += hourTaken + " hours ";
-			else if (hourTaken == 1)
-				timeTaken += hourTaken + " hour ";
-			if (minTaken > 1)
-				timeTaken += minTaken + " minutes";
-			else
-				timeTaken += minTaken + " minute";
-			
-			ArrayList logMsg = new ArrayList();
-			logMsg.add("Start Time: " + StarsUtils.formatDate( new java.util.Date(startTime), java.util.TimeZone.getDefault() ));
-			logMsg.add("Time Taken: " + timeTaken);
-			logMsg.add("");
-			
-			if (errorMsg != null) {
-				logMsg.add(errorMsg);
-				logMsg.add("");
-			}
-			
-			if (numAcctTotal > 0) {
-				String msg = null;
-				if (numAcctImported == numAcctTotal)
-					msg = numAcctImported + " customer accounts imported successfully";
-				else
-					msg = numAcctImported + " of " + numAcctTotal + " customer accounts imported";
-				msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)" + LINE_SEPARATOR;
-				logMsg.add( msg );
-			}
-			if (numHwTotal > 0) {
-				String msg = null;
-				if (numHwImported == numHwTotal)
-					msg = numHwImported + " hardwares imported successfully";
-				else
-					msg = numHwImported + " of " + numHwTotal + " hardwares imported";
-				msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
-				logMsg.add( msg );
-			}
-			
-			if (warnings.size() > 0) {
-				logMsg.add("");
-				logMsg.addAll( warnings );
-			}
-			
-			final String fs = System.getProperty( "file.separator" );
-			File uploadDir = new File(
-					ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + energyCompany.getName());
-			if (!uploadDir.exists()) uploadDir.mkdirs();
-			
-			Date uploadDate = new Date();
-			String uploadFileName = StarsUtils.starsDateFormat.format(uploadDate) +
-					"_" + StarsUtils.starsTimeFormat.format(uploadDate);
-			
-			File logFile = new File( uploadDir, uploadFileName + ".log" );
-			try {
-				String[] log = new String[ logMsg.size() ];
-				logMsg.toArray( log );
-				StarsUtils.writeFile( logFile, log );
-			}
-			catch (java.io.IOException e) {
-				logFile = null;
-				status = STATUS_ERROR;
-				if (errorMsg != null)
-					errorMsg += LINE_SEPARATOR + "Failed to write log file";
-				else
-					errorMsg = "Failed to write log file";
-			}
-			
-			try {
-				if (logFile != null && email != null && email.trim().length() > 0)
-					sendImportLog( logFile, email, energyCompany );
-			}
-			catch (Exception e) {
-				status = STATUS_ERROR;
-				if (errorMsg != null)
-					errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
-				else
-					errorMsg = "Failed to send the import log by email";
+	}
+	
+	private String getImportProgress() {
+		String msg = "";
+		if (status == STATUS_FINISHED) {
+			if (custFile != null)
+				msg += numAcctImported + " customer accounts imported successfully" +
+					" (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
+			if (hwFile != null) {
+				if (msg.length() > 0) msg += LINE_SEPARATOR;
+				msg += numHwImported + " hardware imported successfully" +
+					" (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
 			}
 		}
+		else {
+			if (custFile != null) {
+				if (numAcctTotal == 0)
+					msg += numAcctImported + " customer accounts imported";
+				else
+					msg += numAcctImported + " of " + numAcctTotal + " customer accounts imported";
+				msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
+			}
+			if (hwFile != null) {
+				if (msg.length() > 0) msg += LINE_SEPARATOR;
+				if (numHwTotal == 0)
+					msg += numHwImported + " hardware imported successfully";
+				else
+					msg += numHwImported + " of " + numHwTotal + " hardware imported";
+				msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
+			}
+		}
+		return msg;
 	}
 	
 	private void setCustomerFields(String[] fields, String[] columns, int[] colIdx) {
@@ -1010,7 +942,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		throw new WebClientException( "Program '" + fields[ImportManagerUtil.IDX_PROGRAM_NAME] + "' is not found in the published programs" );
 	}
 	
-	private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, ArrayList warnings)
+	private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 		LiteInventoryBase liteInv = null;
@@ -1046,13 +978,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			throw new WebClientException( "Unrecognized action type '" + action + "'" );
 		
 		if (problem.getProblem() != null)
-			warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+			importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
 		
 		numHwImported++;
 		return liteInv;
 	}
 	
-	private LiteStarsCustAccountInformation importAccount(String[] custFields, LiteStarsEnergyCompany energyCompany, ArrayList warnings)
+	private LiteStarsCustAccountInformation importAccount(String[] custFields, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 		LiteStarsCustAccountInformation liteAcctInfo = null;
@@ -1081,7 +1013,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			throw new WebClientException( "Unrecognized action type '" + action + "'" );
 		
 		if (problem.getProblem() != null)
-			warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+			importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
 		
 		numAcctImported++;
 		return liteAcctInfo;
