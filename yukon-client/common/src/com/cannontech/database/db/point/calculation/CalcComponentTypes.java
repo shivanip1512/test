@@ -21,10 +21,14 @@ public class CalcComponentTypes
 	
 	
 	/*** START OF CALC FUNCTIONS  ***/
-	public static final String ADDITION_FUNCTION = "Add";
-	public static final String SUBTRACTION_FUNCTION = "Subtract";
-	public static final String MULTIPLICATION_FUNCTION = "Multiply";
-	public static final String DIVISION_FUNCTION = "Divide";
+	public static final String ADDITION_FUNCTION = "Addition";
+	public static final String SUBTRACTION_FUNCTION = "Subtraction";
+	public static final String MULTIPLICATION_FUNCTION = "Multiplication";
+	public static final String DIVISION_FUNCTION = "Division";
+	public static final String AND_FUNCTION = "Logical AND";
+	public static final String OR_FUNCTION = "Logical OR";
+	public static final String NOT_FUNCTION = "Logical NOT";
+	public static final String XOR_FUNCTION = "Logical XOR";
 	
 	public static final String MIN_FUNCTION= "Min";
 	public static final String MAX_FUNCTION = "Max";
@@ -58,6 +62,10 @@ public class CalcComponentTypes
 		DIVISION_FUNCTION,
 		MIN_FUNCTION,
 		MAX_FUNCTION,
+		AND_FUNCTION,
+		OR_FUNCTION,
+		NOT_FUNCTION,
+		XOR_FUNCTION,
 		ARCTAN_FUNCTION,
 		BASELINE_FUNCTION,
 		BASELINE_PERCENT_FUNCTION,
