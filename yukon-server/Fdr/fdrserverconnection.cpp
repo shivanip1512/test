@@ -122,6 +122,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                 // if the connection is failed, don't bother trying
                 if (getConnectionStatus() ==  CtiFDRSocketConnection::Ok)
                 {
+                    memset (&data, '\0',2048);
                     // attempt to find out what type of message we're dealing with
                     retVal = readSocket((CHAR*)&data, 4, bytesRead);
 
@@ -258,7 +259,7 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
 INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead)
 {
     ULONG    bytesAvailable  = 0;
-    ULONG    bytesReceived  = 0;
+    LONG    bytesReceived  = 0;
     INT      retVal             = NORMAL;
     CHAR     *bPtr           = aBuffer;
     ULONG    totalByteCnt    = 0;
@@ -295,16 +296,26 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
                                            length-totalByteCnt,
                                            0)) <= 0)
                 {
-                    // problem with the receive
-                    retVal = SOCKET_ERROR;
-                    break;
+                    if (WSAGetLastError() == WSAEWOULDBLOCK)
+                    {
+                        Sleep (50L);
+                        continue;
+                    }
+                    else
+                    {
+                        // problem with the receive
+                        retVal = SOCKET_ERROR;
+                        break;
+                    }
                 }
 
                 // add to our total count
                 totalByteCnt += bytesReceived;
                 aBytesRead =  totalByteCnt;
+
             } while (totalByteCnt < length);
         }
+
     }
     catch (...)
     {
