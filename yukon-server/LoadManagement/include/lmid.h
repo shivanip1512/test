@@ -38,6 +38,7 @@
 #define CTILMENERGYEXCHANGEACCEPTMSG_ID         623
 #define CTILMGROUPRIPPLE_ID                     624
 #define CTILMGROUPPOINT_ID                      625
+#define CTILMGROUPEXPRESSCOMM_ID                626
 
 /*
 #define CTILM_ID                        62
