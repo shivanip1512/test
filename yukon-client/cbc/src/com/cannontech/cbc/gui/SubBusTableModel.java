@@ -14,6 +14,7 @@ import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.clientutils.CommonUtils;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -320,10 +321,11 @@ public Object getValueAt(int row, int col)
                return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
             }
             else
-				  return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
-   						 " to " + 
-   						 (sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue()) + 
-   						 " Pk";
+				  return
+				  	CommonUtils.formatDecimalPlaces(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
+   				" to " + 
+   				CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue(), 0) + 
+   				" Pk";
 			}
 			else
 			{
@@ -332,10 +334,11 @@ public Object getValueAt(int row, int col)
                return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
             }
             else
-   				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
-   						 " to " + 
-   						 (sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue()) + 
-   						 " OffPk";
+   				return
+   				 CommonUtils.formatDecimalPlaces(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
+   				 " to " + 
+   				 CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue(), 0) + 
+   				 " OffPk";
 			}
 
 		}
@@ -351,7 +354,7 @@ public Object getValueAt(int row, int col)
          if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
             return DASH_LINE;
          else               
-				return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+				return new Double( CommonUtils.formatDecimalPlaces( 
                sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
       }
       	
@@ -360,7 +363,7 @@ public Object getValueAt(int row, int col)
          if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
             return DASH_LINE;
          else               
-				return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+				return new Double( CommonUtils.formatDecimalPlaces( 
 					sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
       }
       
@@ -376,7 +379,7 @@ public Object getValueAt(int row, int col)
          if( sub.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
             return DASH_LINE;
          else               
-	         return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+	         return new Double( CommonUtils.formatDecimalPlaces( 
                   sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
       }
       	
@@ -396,11 +399,23 @@ public Object getValueAt(int row, int col)
 
 private String getPowerFactorText( double value, boolean compute )
 {   
+   int decPlaces = 1;
+   try
+   {
+      decPlaces = 
+         Integer.parseInt(
+            com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+               com.cannontech.common.util.CtiProperties.KEY_PFACTOR_FORMAT, 
+               "1") );
+   }
+   catch( Exception e)
+   {}
+	
    if( value <= CapControlConst.PF_INVALID_VALUE )
       return "  NA";
    else
-      return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            value * (compute ? 100 : 1), 3 ) + "%"; //get percent   
+      return CommonUtils.formatDecimalPlaces(
+            value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   
 }
 
 /**

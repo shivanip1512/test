@@ -11,6 +11,7 @@ import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.clientutils.CommonUtils;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
@@ -287,10 +288,11 @@ public Object getValueAt(int row, int col)
                   return getPowerFactorText(feeder.getPeakSetPoint().doubleValue()) + " Pk";
                }
                else
-   					return (feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
-   							 " to " + 
-   							 (feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue()) + 
-   							 " Pk";
+   					return
+   					 CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
+   					 " to " + 
+   					 CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
+   					 " Pk";
 				}
 				else
 				{
@@ -299,10 +301,11 @@ public Object getValueAt(int row, int col)
                   return getPowerFactorText(feeder.getPeakSetPoint().doubleValue()) + " OffPk";
                }
                else
-   					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
-   							 " to " + 
-   							 (feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue()) + 
-   							 " OffPk";
+   					return
+   					 CommonUtils.formatDecimalPlaces(feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
+   					 " to " + 
+   					 CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue(), 0) + 
+   					 " OffPk";
 				}
 
 			}
@@ -364,11 +367,23 @@ public Object getValueAt(int row, int col)
 
 private String getPowerFactorText( double value )
 {
+   int decPlaces = 1;
+   try
+   {
+      decPlaces = 
+         Integer.parseInt(
+            com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+               com.cannontech.common.util.CtiProperties.KEY_PFACTOR_FORMAT, 
+               "1") );
+   }
+   catch( Exception e)
+   {}
+	
    if( value <= CapControlConst.PF_INVALID_VALUE )
       return "  NA";
    else   
       return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-            value * 100, 3 ) + "%"; //get percent   
+            value * 100, decPlaces ) + "%"; //get percent   
 }
 
 /**

@@ -75,6 +75,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
    
    public static final String KEY_LOGIN_PAGE_LOGO = "login_page_logo";
    public static final String KEY_LOGIN_PAGE_HELP_EMAIL = "login_page_help_email";
+   public static final String KEY_PFACTOR_FORMAT = "pfactor_decimal_places";   
+   
    
 	public static final String[] ALL_CONFIG_KEYS =
 	{
@@ -115,7 +117,9 @@ public class CtiProperties extends java.util.Properties implements ClientRights
       KEY_MODE,
       
       KEY_LOGIN_PAGE_LOGO,
-      KEY_LOGIN_PAGE_HELP_EMAIL
+      KEY_LOGIN_PAGE_HELP_EMAIL,
+   	KEY_PFACTOR_FORMAT   
+      
 	};
 
 
