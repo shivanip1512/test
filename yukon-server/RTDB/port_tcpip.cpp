@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/09/19 15:57:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/23 20:26:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@ using namespace std;
 #include "logger.h"
 #include "port_tcpip.h"
 #include "portsup.h"
+#include "utility.h"
 #include "yukon.h"
 
 CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialout *dial) :
@@ -112,11 +113,18 @@ INT CtiPortTCPIPDirect::init()
 
    LockGuard grd( monitor() );
 
+#if 0
+   if(isViable())
+   {
+       close(FALSE);
+   }
+#endif
+
    if(isInhibited())
    {
       status = PORTINHIBITED;
    }
-   else if(_socket == INVALID_SOCKET)
+   else if(!isViable())
    {
       ULONG    i, j;
 
@@ -167,7 +175,7 @@ INT CtiPortTCPIPDirect::init()
          _baud        = getTablePortSettings().getBaudRate();
       }
 
-      if(_dialout)
+      if(_dialout && isViable())
       {
           _dialout->init();   // If we are a dialout port, init the dialout aspects!
       }
@@ -214,11 +222,6 @@ INT CtiPortTCPIPDirect::inClear() const
 
           free (Buffer);
       }
-   }
-
-   if(_dialout)
-   {
-       _dialout->disconnect(NULL, false);
    }
 
    return status;
@@ -754,38 +757,40 @@ void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 
 INT CtiPortTCPIPDirect::setPortReadTimeOut(USHORT timeout)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
     return NORMAL;
 }
 
 INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
+    INT status = BADPORT;
+
+    if(_dialout)
+    {
+        status = _dialout->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
+    }
+    else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return NORMAL;
+
+    return status;
 }
 
 INT CtiPortTCPIPDirect::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return NORMAL;
+    return sendData( (PBYTE)pBuf, BufLen, pBytesWritten );
 }
 
 INT CtiPortTCPIPDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return NORMAL;
+    LONG rl = 0;
+
+    INT status = receiveData( (PBYTE)pBuf, BufLen, timeout, &rl );
+
+    *pBytesRead = rl;
+
+    return status;
 }
 
 bool CtiPortTCPIPDirect::isViable() const
@@ -881,5 +886,23 @@ CtiPort& CtiPortTCPIPDirect::setShouldDisconnect(BOOL b)
     }
 
     return *this;
+}
+
+
+RWCString& CtiPortTCPIPDirect::traceASCII(RWCString &str, BYTE *Message, ULONG Length)
+{
+    INT status = NORMAL;
+    ULONG i;
+    ULONG offset = 0;
+
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    /* loop through all of the characters */
+    for(i = 0; i < Length; i++)
+    {
+        dout << (char)(Message[i]) << " ";
+    }
+    dout << " (done) " << __LINE__ << endl;
+
+    return str;
 }
 

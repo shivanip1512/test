@@ -1,4 +1,5 @@
 
+
 #pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
@@ -10,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/19 15:55:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/09/23 20:26:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -370,7 +371,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         /* Flush the input buffer */
         _superPort->inClear();
 
-        if(_superPort->writePort((char*)getModemInit().data(), strlen((char*)getModemInit().data()), 1, &BytesWritten) || BytesWritten != strlen ((char*)getModemInit().data()))
+        if(_superPort->writePort((PVOID)(getModemInit().data()), strlen((char*)getModemInit().data()), 1, &BytesWritten) || BytesWritten != strlen ((char*)getModemInit().data()))
         {
             return(!NORMAL);
         }
@@ -799,6 +800,130 @@ BOOL CtiPortDialout::shouldDisconnect() const
 void CtiPortDialout::setShouldDisconnect(BOOL b)
 {
     _shouldDisconnect = b;
+}
+
+
+/* Routine to wait for a response or a timeout */
+INT CtiPortDialout::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
+{
+    ULONG   i , j;
+    ULONG   BytesRead;
+    INT     status = READTIMEOUT;
+
+    i = 0;        // i represents the count of bytes in response.
+    j = 0;
+
+    if(!_superPort->isViable())
+    {
+        return(NOTNORMAL);
+    }
+
+    /* Set the timeout on read to 1 second */
+    // 012201 CGP This clears the buffer on WIN32.//  SetReadTimeOut (PortHandle, 1);
+
+    while(j <= Timeout)
+    {
+        if(_superPort->readPort(&Response[i], 1, 1, &BytesRead) || BytesRead == 0) // Reads one byte into the buffer
+        {
+            j++;        // Fails once per second if no bytes read
+            continue;
+        }
+
+        if(i == 0)                                            // Special case for the zeroeth byte
+        {
+            if(Response[i] == 0x0a || Response[i] == 0x0d || Response[i] == 0x00)    // Make sure it is not a CR or LF or null
+            {
+                continue;
+            }
+        }
+
+        /* Check what this is */
+        if(Response[i] == '\r')
+        {
+            // null out any CR LF
+            Response[i] = '\0';
+
+            // handle non-verbal OK
+            if(!(strcmp(ExpectedResponse, "OK")) && !(strcmp(Response, "0")))
+            {
+                // 0 is the same as OK for none verbal
+                strcpy(Response,"OK");
+            }
+
+            // check for expected return
+            if(ExpectedResponse == NULL || strstr(Response, ExpectedResponse) != NULL)
+            {
+                // it was the command we wanted or we did not want a specific response
+                *ResponseSize = i;
+                status = NORMAL;
+                break; // the while
+            }
+            else if(validModemResponse(Response))
+            {
+                // this is valid (unexpected response), or we did not specify.
+                *ResponseSize = strlen(Response);
+                status = NORMAL;
+                break; // the while
+            }
+
+            // look for new message
+            Response[0] = '\0';
+            i = 0;
+        }
+        else
+        {
+            i++;
+
+            if(i + 2 > *ResponseSize)     // are we still within the size limit.
+            {
+                status = NOTNORMAL;
+                break; // the while
+            }
+        }
+    }
+
+    return status;
+}
+
+// known valid modem returns -- Note 0 is the same as OK when not in verbal mode
+/* returns TRUE if a valid modem return is found */
+BOOL CtiPortDialout::validModemResponse (PCHAR Response)
+{
+    static PCHAR responseText[] = {
+        "OK",
+        "ERROR",
+        "BUSY",
+        "NO CARRIER",
+        "NO DIALTONE",
+        "NO ANSWER",
+        "NO DIAL TONE",
+        NULL};
+
+   BOOL isValid = FALSE;
+   int count;
+
+   for(count = 0; responseText[count] != NULL; count++)
+   {
+      if( strstr(Response, responseText[count]) != NULL )
+      {
+         // Valid modem return
+         strcpy(Response, responseText[count]);
+         isValid = TRUE;
+         break;
+      }
+   }
+
+   if( isValid != TRUE )
+   {
+      if(!strcmp(Response, "0"))      // Zero is a special case of OK
+      {
+         // Valid modem return
+         strcpy(Response, "OK");
+         isValid = TRUE;
+      }
+   }
+
+   return(isValid);
 }
 
 

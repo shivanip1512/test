@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/19 15:57:59 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/23 20:26:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,6 +100,7 @@ public:
    INT queryBytesAvailable();
    INT receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength);
    INT sendData(PBYTE Message, ULONG Length, PULONG Written);
+   RWCString& traceASCII(RWCString &str, BYTE *Message, ULONG Length);
 
 
 };

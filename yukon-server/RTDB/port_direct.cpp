@@ -45,7 +45,7 @@ INT CtiPortDirect::init()
     INT      status = NORMAL;
     ULONG    Result, i;
 
-    if( getHandle() != NULL )
+    if( isViable() )
     {
         close(FALSE);
     }
@@ -135,7 +135,7 @@ INT CtiPortDirect::init()
         /* Raise DTR */
         raiseDTR();
 
-        if(_dialout)
+        if(_dialout && isViable())
         {
             _dialout->init();   // If we are a dialout port, init the dialout aspects!
         }
@@ -757,7 +757,19 @@ INT CtiPortDirect::setPortReadTimeOut(USHORT timeout)
 }
 INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
-    return WaitForResponse(getHandle(),ResponseSize,Response,Timeout,ExpectedResponse);
+    INT status = BADPORT;
+
+    if(_dialout)
+    {
+        status = _dialout->waitForResponse(ResponseSize,Response,Timeout,ExpectedResponse);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return status;
 }
 
 INT CtiPortDirect::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)

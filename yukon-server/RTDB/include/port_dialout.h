@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/19 15:55:16 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/09/23 20:26:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,6 +85,10 @@ public:
     INT reset(INT trace);
     INT setup(INT trace);
     INT close(INT trace);
+
+    INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse);
+    static BOOL validModemResponse(PCHAR Response);
+
 
 };
 #endif // #ifndef __PORT_DIALOUT_H__
