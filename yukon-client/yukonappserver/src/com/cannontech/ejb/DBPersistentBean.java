@@ -708,18 +708,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
 		String printSQLfile =
 			CTILogManager.ALL_NAMES[CTILogManager.PRINT_SQL_INSERTS_FILE][1]; 
 
-		try
-		{
-			//#File that logs SQL inserts into the database
-			//if( CtiUtilities.STRING_NONE.equalsIgnoreCase(printSQLfile) )
-			//	sqlFileName =  null;
-			//else
-				sqlFileName = printSQLfile;
-		}
-		catch (Exception e)
-		{}
-   	
-      return (sqlFileName != null);
+		return (sqlFileName != null);
    }
    
    private void printSQLToFile(String line, Object[] columnValues, SQLException exception )
