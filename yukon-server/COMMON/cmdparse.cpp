@@ -4491,12 +4491,12 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = CmdStr.match(" p[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" [pr][ =]*[0-9]+")).isNull())
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 0);
                 _cmd["sa_package"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG PACKAGE = %d", _num);
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG RATE PACKAGE = %d", _num);
                 _actionItems.insert(tbuf);
             }
             else
