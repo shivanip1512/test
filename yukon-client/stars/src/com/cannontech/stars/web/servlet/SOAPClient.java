@@ -362,13 +362,13 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateLMHardware")) {
 			clientAction = new UpdateLMHardwareAction();
-			destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+			session.setAttribute(ServletUtils.ATT_REDIRECT, req.getParameter(ServletUtils.ATT_REDIRECT));
 			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
 		else if (action.equalsIgnoreCase("DeleteLMHardware")) {
 			clientAction = new DeleteLMHardwareAction();
 			destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
-			errorURL = req.getHeader( "referer" );
+			errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
 		}
 		else if (action.equalsIgnoreCase("UpdateLogin")) {
 			clientAction = new UpdateLoginAction();

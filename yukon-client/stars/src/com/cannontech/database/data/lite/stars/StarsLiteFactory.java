@@ -1411,6 +1411,9 @@ public class StarsLiteFactory {
 		hwType.setContent( YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getEntryText() );
 		starsHw.setLMDeviceType( hwType );
 		starsHw.setInstallationNotes( "" );
+		
+		starsHw.setDeviceStatus( (DeviceStatus)	StarsFactory.newStarsCustListEntry(
+				energyCompany.getYukonListEntry( liteHw.getDeviceStatus() ), DeviceStatus.class) );
 	}
 		
 	
@@ -1443,9 +1446,6 @@ public class StarsLiteFactory {
 	public static StarsLMHardware createStarsLMHardware(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
 		StarsLMHardware starsHw = new StarsLMHardware();
 		setStarsLMHardware(starsHw, liteHw, energyCompany);
-		
-		starsHw.setDeviceStatus( (DeviceStatus)	StarsFactory.newStarsCustListEntry(
-				energyCompany.getYukonListEntry( liteHw.getDeviceStatus() ), DeviceStatus.class) );
 		
 		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 		for (int i = 0; i < liteHw.getLmHardwareHistory().size(); i++) {
