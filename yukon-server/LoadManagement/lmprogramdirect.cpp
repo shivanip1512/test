@@ -4476,7 +4476,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 	    RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
 
 	    vector<string> cons_results;
-	    if(!con_checker.checkConstraints(*this, getCurrentGearObject()->getGearNumber(), startTime.seconds(), endTime.seconds(), cons_results))
+	    if(!con_checker.checkConstraints(*this, getCurrentGearNumber(), startTime.seconds(), endTime.seconds(), cons_results))
 	    {
 		if(!_announced_constraint_violation)
 		{
