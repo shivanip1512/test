@@ -10,6 +10,10 @@ import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.roles.application.CommanderRole;
+import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.roles.application.TDCRole;
+import com.cannontech.roles.application.TrendingRole;
 
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -427,6 +431,9 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		if( menuItemDBEditor == null )
 		{
 			menuItemDBEditor = new SysTrayMenuItem("DBEditor", "dbeditor");
+            
+            menuItemDBEditor.setEnabled(
+                    ClientSession.getInstance().checkRole(DBEditorRole.ROLEID) );            
 		}
 		
 		return menuItemDBEditor;
@@ -437,6 +444,9 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		if( menuItemTrending == null )
 		{
 			menuItemTrending = new SysTrayMenuItem("Trending", "trending");
+
+            menuItemTrending.setEnabled(
+                    ClientSession.getInstance().checkRole(TrendingRole.ROLEID) );            
 		}
 		
 		return menuItemTrending;
@@ -447,6 +457,9 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		if( menuItemTDC == null )
 		{
 			menuItemTDC = new SysTrayMenuItem("TDC", "TDC");
+
+            menuItemTDC.setEnabled(
+                    ClientSession.getInstance().checkRole(TDCRole.ROLEID) );
 		}
 		
 		return menuItemTDC;
@@ -457,7 +470,10 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		if( menuItemCommander == null )
 		{
 			menuItemCommander = new SysTrayMenuItem("Commander", "commander");
-		}
+
+            menuItemCommander.setEnabled(
+                    ClientSession.getInstance().checkRole(CommanderRole.ROLEID) );            
+        }
 		
 		return menuItemCommander;
 	}
