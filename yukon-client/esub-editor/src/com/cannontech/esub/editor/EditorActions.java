@@ -662,7 +662,8 @@ class EditorActions {
 			true) {
 
 		public void processAction(java.awt.event.ActionEvent e) {
-
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+			
 			com.cannontech.esub.element.StaticImage image =
 				new com.cannontech.esub.element.StaticImage();
 
@@ -684,7 +685,8 @@ class EditorActions {
 			true) {
 
 		public void processAction(java.awt.event.ActionEvent e) {
-
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+			
 			com.cannontech.esub.element.DynamicText text =
 				new com.cannontech.esub.element.DynamicText();
 
@@ -722,7 +724,8 @@ class EditorActions {
 			true) {
 
 		public void processAction(java.awt.event.ActionEvent e) {
-
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+			
 			com.cannontech.esub.element.StateImage si =
 				new com.cannontech.esub.element.StateImage();
 
@@ -745,7 +748,8 @@ class EditorActions {
 			true) {
 
 		public void processAction(java.awt.event.ActionEvent e) {
-
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+			
 			com.cannontech.esub.element.StaticText text =
 				new com.cannontech.esub.element.StaticText();
 
@@ -768,6 +772,8 @@ class EditorActions {
 			true) {
 			
 		public void processAction(ActionEvent e ) {
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+						
 			DynamicGraphElement graph = 
 				new DynamicGraphElement();
 				
@@ -787,17 +793,20 @@ class EditorActions {
 			"Alarm Table",
 			"TableAlarm.gif",
 			true) {
-		public void processAction(ActionEvent e) {				
-				CurrentAlarmsTable table = new com.cannontech.esub.element.CurrentAlarmsTable();
+		public void processAction(ActionEvent e) {	
+
+			editor.getDrawing().getLxView().stopInteractiveCreation();
+									
+			CurrentAlarmsTable table = new com.cannontech.esub.element.CurrentAlarmsTable();
 				
-				editor.setBehavior(table);
-				editor.elementPlacer.setElement(table);
-				editor.elementPlacer.setIsPlacing(true);
+			editor.setBehavior(table);
+			editor.elementPlacer.setElement(table);
+			editor.elementPlacer.setIsPlacing(true);
+			
+			editor.getDrawing().getLxView().setCursor(
+			new Cursor(Cursor.CROSSHAIR_CURSOR) );
 				
-				editor.getDrawing().getLxView().setCursor(
-				new Cursor(Cursor.CROSSHAIR_CURSOR) );
-				
-			}
+		}
 	};
 	
 	private final LxAbstractAction alarmTextElementAction =
@@ -808,6 +817,8 @@ class EditorActions {
 			"TextAlarm.gif",
 			true) {
 				public void processAction(ActionEvent e) {
+					editor.getDrawing().getLxView().stopInteractiveCreation();
+										
 					AlarmTextElement elem = new AlarmTextElement();
 					
 					editor.setBehavior(elem);
