@@ -11,11 +11,11 @@ package com.cannontech.graph.model;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jfree.data.AbstractDataset;
-import org.jfree.data.DefaultCategoryDataset;
-import org.jfree.data.SeriesException;
-import org.jfree.data.XYSeries;
-import org.jfree.data.XYSeriesCollection;
+import org.jfree.data.general.AbstractDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.SeriesException;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;

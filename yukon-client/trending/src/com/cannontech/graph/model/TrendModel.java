@@ -17,8 +17,6 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberAxis3D;
-import org.jfree.chart.axis.SegmentedTimeline;
-import org.jfree.chart.axis.Timeline;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardCategoryLabelGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
@@ -30,25 +28,25 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
-import org.jfree.chart.renderer.BarRenderer;
-import org.jfree.chart.renderer.BarRenderer3D;
-import org.jfree.chart.renderer.CategoryItemRenderer;
-import org.jfree.chart.renderer.XYAreaRenderer;
-import org.jfree.chart.renderer.XYItemRenderer;
-import org.jfree.chart.renderer.XYStepAreaRenderer;
-import org.jfree.chart.renderer.XYStepRenderer;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.BarRenderer3D;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.xy.XYAreaRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYStepAreaRenderer;
+import org.jfree.chart.renderer.xy.XYStepRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.chart.urls.TimeSeriesURLGenerator;
-import org.jfree.data.AbstractDataset;
-import org.jfree.data.Dataset;
-import org.jfree.data.DefaultCategoryDataset;
-import org.jfree.data.XYDataset;
-import org.jfree.data.XYSeriesCollection;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.AbstractDataset;
+import org.jfree.data.general.Dataset;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.Layer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
@@ -57,6 +55,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.graph.GDSTypes;
@@ -64,10 +63,11 @@ import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.database.db.point.PeakPointHistory;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.jfreechart.chart.Dataset_MinMaxValues;
 import com.cannontech.jfreechart.chart.HorizontalSkipLabelsCategoryAxis;
 import com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax;
+import com.cannontech.jfreechart.chart.XYAreaRenderer_MinMax;
+import com.cannontech.jfreechart.chart.XYStepAreaRenderer_MinMax;
 import com.cannontech.jfreechart.chart.XYStepRenderer_MinMax;
 import com.cannontech.jfreechart.chart.YukonStandardLegend;
 
@@ -392,13 +392,14 @@ private Axis getDomainAxis()
 		}
 	}
 }	
-private StringBuffer getSQLQueryString(int seriesTypeMask)
+private StringBuffer getSQLQueryString(int seriesTypeMask, int pointid)
 {
 	String beginTSCompare = ">";
 	// include the midnight reading for usage, PER DAVID!!!
 	if(GDSTypesFuncs.isUsageType(seriesTypeMask))
-		beginTSCompare = ">=";
-		
+		beginTSCompare += "=";
+	
+	/*DEPRECATED CODE
 	java.util.Vector validIDs = new java.util.Vector(trendSeries.length);	//guess on max capacity
 	for (int i = 0; i < trendSeries.length; i++)
 	{
@@ -408,15 +409,18 @@ private StringBuffer getSQLQueryString(int seriesTypeMask)
 
 	if( validIDs.isEmpty())
 		return null;
-			
+	*/		
 	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE "
 	+ "FROM RAWPOINTHISTORY WHERE POINTID IN (");
+	sql.append( pointid);
 
+	/* DEPRECATED CODE
 	sql.append( (Integer)validIDs.get(0));
 	for ( int i = 1; i <validIDs.size(); i ++)
 	{
 		sql.append(", " + ( (Integer)validIDs.get(i)));
 	}
+	*/
 	sql.append(")  AND ((TIMESTAMP "+beginTSCompare+" ? AND TIMESTAMP <= ? ) ");
 	sql.append(" ) ORDER BY POINTID, TIMESTAMP");
 	return sql;	
@@ -434,10 +438,10 @@ private Integer getPrimaryGDSPointId()
 	}
 	return primaryGDSPointID;
 }			
-private YukonStandardLegend getLegend(JFreeChart fChart)
+private YukonStandardLegend getLegend()
 {
 	//Legend setup
-	YukonStandardLegend legend = new YukonStandardLegend(fChart);
+	YukonStandardLegend legend = new YukonStandardLegend();
 	legend.setAnchor(Legend.SOUTH);
 	legend.setItemFont(new java.awt.Font("dialog", java.awt.Font.BOLD, 10));
 /*
@@ -578,213 +582,208 @@ private void hitDatabase_Basic(int seriesTypeMask)
 	if( trendSeries == null)
 		return;
 
-	StringBuffer sql = getSQLQueryString(seriesTypeMask);
-	if( sql == null)
-		return;
+
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
+
+	conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	if( conn == null )
+	{
+		CTILogger.info(":  Error getting database connection.");
+		return;
+	}
+
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-		if( conn == null )
+		for (int s = 0; s < trendSeries.length; s++)
 		{
-			CTILogger.info(":  Error getting database connection.");
-			return;
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			int day = 0;			
-			long startTS = 0;
-			long stopTS = 0;
-
-			if (GDSTypesFuncs.isYesterdayType(seriesTypeMask))
+			if( (trendSeries[s].getTypeMask() & seriesTypeMask) == seriesTypeMask)
 			{
-				//Decrement start/end dates by one, to yesterday date periods
-				day = -1;
-				tempCal = new GregorianCalendar();
-				tempCal.setTime((Date)getStartDate().clone());
-				tempCal.add(Calendar.DATE, day);
-				startTS = tempCal.getTimeInMillis();
+				StringBuffer sql = getSQLQueryString(seriesTypeMask, trendSeries[s].getPointId().intValue());
+				pstmt = conn.prepareStatement(sql.toString());
+				
+				int day = 0;			
+				long startTS = 0;
+				long stopTS = 0;
 	
-				tempCal.setTime((Date)getStopDate().clone());
-				tempCal.add(Calendar.DATE, day);
-				stopTS = tempCal.getTimeInMillis();
-				
-				for (int i = 0; i < trendSeries.length; i++)
+				if (GDSTypesFuncs.isYesterdayType(seriesTypeMask))
 				{
-					if (GDSTypesFuncs.isYesterdayType(trendSeries[i].getTypeMask()))
+					day = -1;
+					tempCal = new GregorianCalendar();
+					tempCal.setTime((Date)getStartDate().clone());
+					tempCal.add(Calendar.DATE, day);
+					startTS = tempCal.getTimeInMillis();
+		
+					tempCal.setTime((Date)getStopDate().clone());
+					tempCal.add(Calendar.DATE, day);
+					stopTS = tempCal.getTimeInMillis();
+					for (int i = 0; i < trendSeries.length; i++)
 					{
-						trendSeries[i].setLabel(trendSeries[i].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
-					}
-				}
-				CTILogger.info("START DATE > " + new Timestamp(startTS) + "  -  STOP DATE <= " + new Timestamp(stopTS));
-			}
-			else if (GDSTypesFuncs.isUsageType(seriesTypeMask))
-			{
-				//Changed the start date to be only the startDate specified, not the whole previous day.
-				// The getSQL... query generation is changed to be inclusive of the start date rather than only greater than.
-				tempCal = new GregorianCalendar();
-				tempCal.setTime((Date)getStartDate().clone());
-				startTS = tempCal.getTimeInMillis();
-				
-				tempCal.setTime((Date)getStopDate().clone());
-				tempCal.add(Calendar.DATE, 1);
-				stopTS = tempCal.getTimeInMillis();
-				CTILogger.info("START DATE >= " + new Timestamp(startTS) + "  -  STOP DATE <= " + new Timestamp(stopTS));
-				day = 0;				
-			}
-			else
-			{
-				startTS = getStartDate().getTime();
-				stopTS = getStopDate().getTime();
-				CTILogger.info("START DATE > " + new Timestamp(startTS) + "  -  STOP DATE <= " + new Timestamp(stopTS));				
-			}
-				
-			pstmt.setTimestamp(1, new Timestamp( startTS ));
-			pstmt.setTimestamp(2, new Timestamp( stopTS ));
-
-			rset = pstmt.executeQuery();
-			
-			TimeSeriesDataItem dataItem = null;
-			//contains org.jfree.data.time.TimeSeriesDataItem values.
-			TreeMap dataItemsMap = new TreeMap();			
-			int lastPointId = -1;
-
-			boolean addNext = true;
-			boolean firstOne = true;
-			
-			java.util.Date start = getStartDate();
-			
-			tempCal = new GregorianCalendar();
-			tempCal.setTime((Date)getStartDate().clone());
-			tempCal.add(Calendar.DATE, 1);
-			java.util.Date stop = tempCal.getTime();
-
-			while( rset.next() )
-			{
-				int pointID = rset.getInt(1);
-
-				if( pointID != lastPointId)
-				{
-					if( lastPointId != -1)	//not the first one!
-					{
-						//Save the data you've collected into the array of models (chartmodelsArray).
-						for (int i = 0; i < getTrendSeries().length; i++)
+						if (GDSTypesFuncs.isYesterdayType(trendSeries[i].getTypeMask()))
 						{
-							if( trendSeries[i].getPointId().intValue() == lastPointId 
-								&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
-								trendSeries[i].setDataItemsMap((TreeMap)dataItemsMap.clone());
+							trendSeries[i].setLabel(trendSeries[i].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
 						}
-						dataItemsMap.clear();
 					}
-					lastPointId = pointID;
+					CTILogger.info("START DATE > " + new java.sql.Timestamp(startTS) + "  -  STOP DATE <= " + new java.sql.Timestamp(stopTS));
+				}
+				else if (GDSTypesFuncs.isUsageType(seriesTypeMask))
+				{
+					//Changed the start date to be only the startDate specified, not the whole previous day.
+					// The getSQL... query generation is changed to be inclusive of the start date rather than only greater than.
+					tempCal = new GregorianCalendar();
+					tempCal.setTime((Date)getStartDate().clone());
+					startTS = tempCal.getTimeInMillis();
 					
-					if( GDSTypesFuncs.isUsageType(seriesTypeMask))
-					{
-						addNext = true;
-						firstOne = true;
-						start = getStartDate();
-						
-						tempCal = new GregorianCalendar();
-						tempCal.setTime((Date)getStartDate().clone());
-						tempCal.add(Calendar.DATE, 1);
-						stop = new java.util.Date (tempCal.getTimeInMillis());
-					}
-				}
-				
-				//new pointid in rset.
-				//init everything, a new freechartmodel will be created with the change of pointid.
-				Timestamp ts = rset.getTimestamp(2);
-				//increment the tp by one for yesterday values, this way the results will overlay nicely.
-				tempCal = new GregorianCalendar();
-				tempCal.setTimeInMillis(ts.getTime());
-				tempCal.add(Calendar.DATE, Math.abs(day));	//map timestamps to current start/stop range.
-//				RegularTimePeriod tp = new Second((Date)tempCal.getTime().clone());
-				RegularTimePeriod tp = new Minute((Date)tempCal.getTime().clone());
-				Long timeKey = new Long(tp.getStart().getTime());
-				double val = rset.getDouble(3);
-			
-				if( GDSTypesFuncs.isUsageType(seriesTypeMask))
-				{
-					java.util.Date tsDate = new java.util.Date(ts.getTime());
-
-					if(tsDate.compareTo(start) < 0)
-					{	
-						dataItem = new TimeSeriesDataItem(tp, val);
-					}
-					else if(tsDate.compareTo(start) == 0)
-					{	
-						dataItem = new TimeSeriesDataItem(tp, val);
-						dataItemsMap.put( timeKey, dataItem);
-						firstOne = false;
-					}
-					else if( tsDate.compareTo(stop) >= 0)
-					{
-						if(firstOne)
-						{
-							if(dataItem == null)
-							{
-								dataItem = new TimeSeriesDataItem(tp, val);						
-							}
-							dataItemsMap.put(timeKey, dataItem);
-							firstOne = false;
-						}
-						if( addNext )
-						{
-							dataItem = new TimeSeriesDataItem(tp, val);
-							dataItemsMap.put(timeKey, dataItem);
-							addNext = false;							
-						}
-
-						if(stop.getTime() < getStopDate().getTime())
-						{
-							start = stop;
-							tempCal = new GregorianCalendar();
-							tempCal.setTime((Date)start.clone());
-							tempCal.add(Calendar.DATE, 1);
-							stop = new java.util.Date(tempCal.getTimeInMillis());
-							addNext = true;
-						}
-
-					}
-					else
-					{
-						if( firstOne)
-						{
-							if(dataItem == null)
-							{
-								dataItem = new TimeSeriesDataItem(tp, val);						
-							}
-							dataItemsMap.put(timeKey, dataItem);
-							firstOne = false;
-						}
-					}
+					tempCal.setTime((Date)getStopDate().clone());
+					tempCal.add(Calendar.DATE, 1);
+					stopTS = tempCal.getTimeInMillis();
+					CTILogger.info("START DATE >= " + new java.sql.Timestamp(startTS) + "  -  STOP DATE <= " + new java.sql.Timestamp(stopTS));
+					day = 0;
 				}
 				else
 				{
-					dataItem = new TimeSeriesDataItem(tp, val);
-					dataItemsMap.put(timeKey, dataItem);
+					startTS = getStartDate().getTime();
+					stopTS = getStopDate().getTime();
+					CTILogger.info("START DATE > " + new java.sql.Timestamp(startTS) + "  -  STOP DATE <= " + new java.sql.Timestamp(stopTS));
 				}
-			}	//END WHILE
-			
-			if( !dataItemsMap.isEmpty())
-			{
-				for (int i = 0; i < getTrendSeries().length; i++)
+	
+				pstmt.setTimestamp(1, new java.sql.Timestamp( startTS ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( stopTS ));
+	
+				rset = pstmt.executeQuery();
+				
+				TimeSeriesDataItem dataItem = null;
+				//contains org.jfree.data.time.TimeSeriesDataItem values.
+				TreeMap dataItemsMap = new TreeMap();			
+				int lastPointId = -1;
+	
+				boolean addNext = true;
+				boolean firstOne = true;
+				
+				java.util.Date start = getStartDate();
+				
+				tempCal = new GregorianCalendar();
+				tempCal.setTime((Date)getStartDate().clone());
+				tempCal.add(Calendar.DATE, 1);
+				java.util.Date stop = tempCal.getTime();
+	
+				while( rset.next() )
 				{
-					if( trendSeries[i].getPointId().intValue() == lastPointId
-						&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
-						trendSeries[i].setDataItemsMap((TreeMap)dataItemsMap.clone());
-
+					int pointID = rset.getInt(1);
+	
+					if( pointID != lastPointId)
+					{
+						if( lastPointId != -1)	//not the first one!
+						{
+							//Save the data you've collected into the array of models (chartmodelsArray).
+							for (int i = 0; i < getTrendSeries().length; i++)
+							{
+								if( trendSeries[i].getPointId().intValue() == lastPointId 
+									&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
+									trendSeries[i].setDataItemsMap((TreeMap)dataItemsMap.clone());
+							}
+							dataItemsMap.clear();
+						}
+						lastPointId = pointID;
+						
+						if( GDSTypesFuncs.isUsageType(seriesTypeMask))
+						{
+							addNext = true;
+							firstOne = true;
+							start = getStartDate();
+							
+							tempCal = new GregorianCalendar();
+							tempCal.setTime((Date)getStartDate().clone());
+							tempCal.add(Calendar.DATE, 1);
+							stop = new java.util.Date (tempCal.getTimeInMillis());
+						}
+					}
+					
+					//new pointid in rset.
+					//init everything, a new freechartmodel will be created with the change of pointid.
+					java.sql.Timestamp ts = rset.getTimestamp(2);
+					tempCal = new GregorianCalendar();
+					tempCal.setTimeInMillis(ts.getTime());
+					tempCal.add(Calendar.DATE, Math.abs(day));	//map timestamps to current start/stop range.
+					RegularTimePeriod tp = new Minute((Date)tempCal.getTime().clone());
+					Long timeKey = new Long(tp.getStart().getTime());
+					double val = rset.getDouble(3);
+				
+					if( GDSTypesFuncs.isUsageType(seriesTypeMask))
+					{
+						java.util.Date tsDate = new java.util.Date(ts.getTime());
+	
+						if(tsDate.compareTo(start) < 0)
+						{	
+							dataItem = new TimeSeriesDataItem(tp, val);
+						}
+						else if(tsDate.compareTo(start) == 0)
+						{	
+							dataItem = new TimeSeriesDataItem(tp, val);
+							dataItemsMap.put( timeKey, dataItem);
+							firstOne = false;
+						}
+						else if( tsDate.compareTo(stop) >= 0)
+						{
+							if(firstOne)
+							{
+								if(dataItem == null)
+								{
+									dataItem = new TimeSeriesDataItem(tp, val);						
+								}
+								dataItemsMap.put(timeKey, dataItem);
+								firstOne = false;
+							}
+							if( addNext )
+							{
+								dataItem = new TimeSeriesDataItem(tp, val);
+								dataItemsMap.put(timeKey, dataItem);
+								addNext = false;							
+							}
+	
+							if(stop.getTime() < getStopDate().getTime())
+							{
+								start = stop;
+								tempCal = new GregorianCalendar();
+								tempCal.setTime((Date)start.clone());
+								tempCal.add(Calendar.DATE, 1);
+								stop = new java.util.Date(tempCal.getTimeInMillis());
+								addNext = true;
+							}
+	
+						}
+						else
+						{
+							if( firstOne)
+							{
+								if(dataItem == null)
+								{
+									dataItem = new TimeSeriesDataItem(tp, val);						
+								}
+								dataItemsMap.put(timeKey, dataItem);
+								firstOne = false;
+							}
+						}
+					}
+					else
+					{
+						dataItem = new TimeSeriesDataItem(tp, val);
+						dataItemsMap.put(timeKey, dataItem);
+					}
+				}	//END WHILE
+				
+				if( !dataItemsMap.isEmpty())
+				{
+					for (int i = 0; i < getTrendSeries().length; i++)
+					{
+						if( trendSeries[i].getPointId().intValue() == lastPointId
+							&& (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
+							trendSeries[i].setDataItemsMap((TreeMap)dataItemsMap.clone());
+	
+					}
+					dataItemsMap.clear();
 				}
-				dataItemsMap.clear();
-			}
-			else 
-			{
-				return;
 			}
 		}
 	}
@@ -1199,7 +1198,7 @@ public JFreeChart refresh()
 	Plot plot = null;
 	
 	dataset = YukonDataSetFactory.createDataset( getTrendSeries(), getOptionsMaskSettings(), getViewType());
-
+	int datasetCount = 0;
 	if( getViewType() == GraphRenderers.LINE|| getViewType() == GraphRenderers.LINE_SHAPES || getViewType()== GraphRenderers.LINE_AREA || getViewType()== GraphRenderers.LINE_AREA_SHAPES| 
 		getViewType() == GraphRenderers.STEP || getViewType()== GraphRenderers.STEP_SHAPES || getViewType()== GraphRenderers.STEP_AREA || getViewType()== GraphRenderers.STEP_AREA_SHAPES)
 	{
@@ -1216,47 +1215,51 @@ public JFreeChart refresh()
 			plot.setForegroundAlpha(0.75f);
 			
 		///Currently we create (at most 2 renderers), one for each axis (L or R) 
-		for (int a = 0; a < 2; a++)
+		for (int d = 0; d < 2; d++)
 		{
-			//Add the range axis, even if we aren't necessarily using it, this helps when adding Markers (thresholds)
-			((XYPlot)plot).setRangeAxis(a, getRangeAxis(a));
-			if( a == PRIMARY_AXIS)
-				((XYPlot)plot).setRangeAxisLocation( a, AxisLocation.BOTTOM_OR_LEFT);
-			else if (a == SECONDARY_AXIS)
-				((XYPlot)plot).setRangeAxisLocation( a, AxisLocation.TOP_OR_RIGHT);
-			
-			rend = (XYItemRenderer)getRenderer(a);
-			if( rend != null)
-			{
-				//TODO find out what urlGenerator does again.
-				TimeSeriesURLGenerator urlg = new TimeSeriesURLGenerator(dateFormat, "user_trending.jsp", "gdefid", "startdate");
-				rend.setURLGenerator(urlg);
-				rend.setBaseLabelGenerator(new StandardXYLabelGenerator("", extendedTimeFormat, valueFormat));
-				rend.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
+		    if( getDataset(d) != null)
+		    {
+				//Add the range axis, even if we aren't necessarily using it, this helps when adding Markers (thresholds)
+				((XYPlot)plot).setRangeAxis(datasetCount, getRangeAxis(d));
+				if( d == PRIMARY_AXIS)
+					((XYPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.BOTTOM_OR_LEFT);
+				else if (d == SECONDARY_AXIS)
+					((XYPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.TOP_OR_RIGHT);
 				
-				for(int i = 0, index = 0; i < getTrendSeries().length; i++)
+				rend = (XYItemRenderer)getRenderer(d);
+				if( rend != null)
 				{
-					TrendSerie serie = getTrendSeries()[i];
-					if( serie.getAxis().equals(axisChars[a]))
-					{					
-						if( serie != null && (GDSTypesFuncs.isGraphType(serie.getTypeMask())))
-						{
-								rend.setSeriesPaint(index++, serie.getColor());
+					//TODO find out what urlGenerator does again.
+					TimeSeriesURLGenerator urlg = new TimeSeriesURLGenerator(dateFormat, "user_trending.jsp", "gdefid", "startdate");
+					rend.setURLGenerator(urlg);
+					rend.setBaseLabelGenerator(new StandardXYLabelGenerator("", extendedTimeFormat, valueFormat));
+					rend.setBaseToolTipGenerator(StandardXYToolTipGenerator.getTimeSeriesInstance());
+					
+					for(int i = 0, index = 0; i < getTrendSeries().length; i++)
+					{
+						TrendSerie serie = getTrendSeries()[i];
+						if( serie.getAxis().equals(axisChars[d]))
+						{					
+							if( serie != null && (GDSTypesFuncs.isGraphType(serie.getTypeMask())))
+							{
+									rend.setSeriesPaint(index++, serie.getColor());
+							}
 						}
 					}
+					((XYPlot)plot).setRenderer(datasetCount, rend);
+					
+					if( getDataset(d) != null)
+					{
+						((XYPlot)plot).setDataset(datasetCount, (XYDataset)getDataset(d));
+						((XYPlot)plot).mapDatasetToRangeAxis(datasetCount, datasetCount);
+					}
+					else
+					{
+						((XYPlot)plot).getRangeAxis(datasetCount).setVisible(false);
+					}
+					datasetCount++;
 				}
-				((XYPlot)plot).setRenderer(a, rend);
-				
-				if( getDataset(a) != null)
-				{
-					((XYPlot)plot).setDataset(a, (XYDataset)getDataset(a));
-					((XYPlot)plot).mapDatasetToRangeAxis(a, a);
-				}
-				else
-				{
-					((XYPlot)plot).getRangeAxis(a).setVisible(false);
-				}
-			}
+		    }
 		}
 	}
 	else if( getViewType()  == GraphRenderers.BAR || getViewType() == GraphRenderers.BAR_3D)
@@ -1322,7 +1325,7 @@ public JFreeChart refresh()
 
 	JFreeChart fChart = null;
 	fChart = new JFreeChart(plot);
-	fChart.setLegend( getLegend(fChart) );
+	fChart.setLegend( getLegend() );
 	fChart.setTitle(getTitle());
 	fChart.setSubtitles(getSubtitles());
 	fChart.setBackgroundPaint(java.awt.Color.white);    
@@ -1357,6 +1360,7 @@ public JFreeChart refresh()
 				{
 					//TODO set tooltip generator.
 					rend = new StandardXYItemRenderer_MinMax(XYAreaRenderer.SHAPES_AND_LINES);
+					((StandardXYItemRenderer_MinMax)rend).setShapesFilled(false);
 					((StandardXYItemRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
 				}
 				else
@@ -1369,8 +1373,8 @@ public JFreeChart refresh()
 				if( (getOptionsMaskSettings()  & GraphRenderers.PLOT_MIN_MAX_MASK) == GraphRenderers.PLOT_MIN_MAX_MASK)
 				{
 					//TODO set tooltip generator.
-					rend = new StandardXYItemRenderer_MinMax(XYAreaRenderer.AREA);
-					((StandardXYItemRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
+					rend = new XYAreaRenderer_MinMax(XYAreaRenderer.AREA);
+					((XYAreaRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
 				}
 				else
 					rend = new XYAreaRenderer(XYAreaRenderer.AREA);
@@ -1381,8 +1385,8 @@ public JFreeChart refresh()
 				if( (getOptionsMaskSettings()  & GraphRenderers.PLOT_MIN_MAX_MASK) == GraphRenderers.PLOT_MIN_MAX_MASK)
 				{
 					//TODO set tooltip generator.
-					rend = new StandardXYItemRenderer_MinMax(XYAreaRenderer.AREA_AND_SHAPES);
-					((StandardXYItemRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
+					rend = new XYAreaRenderer_MinMax(XYAreaRenderer.AREA_AND_SHAPES);
+					((XYAreaRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
 				}
 				else
 					rend = new XYAreaRenderer(XYAreaRenderer.AREA_AND_SHAPES);
@@ -1392,7 +1396,7 @@ public JFreeChart refresh()
 			{
 				if( (getOptionsMaskSettings()  & GraphRenderers.PLOT_MIN_MAX_MASK) == GraphRenderers.PLOT_MIN_MAX_MASK)
 				{
-					rend = new XYStepRenderer_MinMax(true);
+					rend = new XYStepRenderer_MinMax(XYStepRenderer_MinMax.MIN_MAX);
 					((XYStepRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
 				}
 				else
@@ -1400,12 +1404,32 @@ public JFreeChart refresh()
 				break;			
 			}
 			case GraphRenderers.STEP_SHAPES:
-				return new XYStepAreaRenderer(XYStepAreaRenderer.SHAPES);
+				if( (getOptionsMaskSettings()  & GraphRenderers.PLOT_MIN_MAX_MASK) == GraphRenderers.PLOT_MIN_MAX_MASK)
+				{
+					rend = new XYStepRenderer_MinMax(XYStepRenderer_MinMax.MIN_MAX_WITH_SHAPES);
+					((XYStepRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
+				}
+				else
+					rend = new XYStepRenderer_MinMax(XYStepRenderer_MinMax.SHAPES);
+				break;
 			case GraphRenderers.STEP_AREA:
-				return new XYStepAreaRenderer(XYStepAreaRenderer.AREA);
+				if( (getOptionsMaskSettings()  & GraphRenderers.PLOT_MIN_MAX_MASK) == GraphRenderers.PLOT_MIN_MAX_MASK)
+				{
+					rend = new XYStepAreaRenderer_MinMax(XYStepAreaRenderer.AREA);
+					((XYStepAreaRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
+				}
+				else
+					rend = new XYStepAreaRenderer(XYStepAreaRenderer.AREA);
+				break;			    
 			case GraphRenderers.STEP_AREA_SHAPES:
-				return new XYStepAreaRenderer(XYStepAreaRenderer.AREA_AND_SHAPES);
-
+				if( (getOptionsMaskSettings()  & GraphRenderers.PLOT_MIN_MAX_MASK) == GraphRenderers.PLOT_MIN_MAX_MASK)
+				{
+					rend = new XYStepAreaRenderer_MinMax(XYStepAreaRenderer.AREA_AND_SHAPES);
+					((XYStepAreaRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues(axisIndex);
+				}
+				else
+					rend = new XYStepAreaRenderer(XYStepAreaRenderer.AREA_AND_SHAPES);
+				break;
 			case GraphRenderers.BAR:
 				return new BarRenderer();
 			case GraphRenderers.BAR_3D:

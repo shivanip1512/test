@@ -233,7 +233,7 @@ public class TrendSerie
 	{
 		if( maximumTSDataItem == null)
 		{
-			double max = Double.MIN_VALUE;
+			double max = -1;
 			if( getDataItemsMap() != null)
 			{
 				Iterator iter = getDataItemsMap().entrySet().iterator();

@@ -20,8 +20,6 @@ import org.jfree.chart.axis.CategoryLabelPosition;
 import org.jfree.chart.axis.CategoryLabelWidthType;
 import org.jfree.chart.axis.CategoryTick;
 import org.jfree.chart.axis.Tick;
-import org.jfree.chart.entity.EntityCollection;
-import org.jfree.chart.entity.TickLabelEntity;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
@@ -29,7 +27,7 @@ import org.jfree.text.TextBlock;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.Size2D;
-import org.jfree.util.ShapeUtils;
+import org.jfree.util.ShapeUtilities;
 
 /**
  * @author snebben
@@ -241,7 +239,7 @@ public class HorizontalSkipLabelsCategoryAxis extends CategoryAxis
 		Insets insets = getTickLabelInsets();
 		Size2D size = block.calculateDimensions(g2);
 		Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(), size.getHeight());
-		Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(), 0.0f, 0.0f);
+		Shape rotatedBox = ShapeUtilities.rotateShape(box, position.getAngle(), 0.0f, 0.0f);
 		double h = rotatedBox.getBounds2D().getHeight() + insets.top + insets.bottom;
 		return h;
         

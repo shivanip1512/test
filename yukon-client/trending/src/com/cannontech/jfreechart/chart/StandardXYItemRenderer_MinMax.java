@@ -13,15 +13,16 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CrosshairState;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.urls.XYURLGenerator;
-import org.jfree.data.XYDataset;
-import org.jfree.ui.RectangleEdge;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.util.ShapeUtilities;
 
 /**
  * Shapes rendered for MIN/MAX valuse on a Standard item renderer for an XYPlot.
@@ -42,7 +43,7 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
      * @param The type.
      */
     public StandardXYItemRenderer_MinMax(int type) {
-		super(type, new StandardXYToolTipGenerator());
+		this(type, null);
     }
 
     /**
@@ -55,7 +56,7 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
      * @param toolTipGenerator The tooltip generator.
      */
 	public StandardXYItemRenderer_MinMax(int type, XYToolTipGenerator toolTipGenerator) {    
-        super(type, toolTipGenerator, null);
+        this(type, toolTipGenerator, null);
     }
 
     /**
@@ -89,7 +90,7 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
      * @param crosshairInfo Information about crosshairs on a plot.
      */
 	public void drawItem(Graphics2D g2,
-						 org.jfree.chart.renderer.XYItemRendererState state,
+						 XYItemRendererState state,
                          Rectangle2D dataArea,
                          PlotRenderingInfo info,
                          XYPlot plot,
@@ -102,26 +103,41 @@ public class StandardXYItemRenderer_MinMax extends StandardXYItemRenderer
                          int pass)
 	{
 		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState, pass);
-		// get the data point...
-		Number x1n = dataset.getXValue(series, item);
-		Number y1n = dataset.getYValue(series, item);
-		if (y1n != null)
-		{
-			final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
-			final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
+		if (!getItemVisible(series, item)) {
+			return;   
+		}
 
-		    double x1 = x1n.doubleValue();
-		    double y1 = y1n.doubleValue();
-		    double transX1 = domainAxis.java2DToValue(x1, dataArea, xAxisLocation);
-		    double transY1 = rangeAxis.java2DToValue(y1, dataArea, yAxisLocation);
-	
-			if( this.plotMinMaxValues)
-			{  
-				if (minMaxValues != null && (y1 == minMaxValues[series].getMaximumValue() || y1 == minMaxValues[series].getMinimumValue()))
-				{
-					Shape shape = getItemShape(pass, series);
-					shape = createTransformedShape(shape, transX1, transY1);
-					g2.fill(shape);
+		PlotOrientation orientation = plot.getOrientation();
+
+		// get the data point...
+		double x1 = dataset.getXValue(series, item);
+		double y1 = dataset.getYValue(series, item);
+		if (Double.isNaN(x1) || Double.isNaN(y1)) {
+			return;
+		}
+
+		double transX1 = domainAxis.valueToJava2D(x1, dataArea, plot.getDomainAxisEdge());
+		double transY1 = rangeAxis.valueToJava2D(y1, dataArea, plot.getRangeAxisEdge());
+
+		if( this.plotMinMaxValues)
+		{  
+			if (minMaxValues != null && (y1 == minMaxValues[series].getMaximumValue() || y1 == minMaxValues[series].getMinimumValue()))
+			{
+				Shape shape = getItemShape(series, item);
+				if (orientation == PlotOrientation.HORIZONTAL) {
+					shape = ShapeUtilities.createTranslatedShape(shape, transY1, transX1);
+				}
+				else if (orientation == PlotOrientation.VERTICAL) {
+					shape = ShapeUtilities.createTranslatedShape(shape, transX1, transY1);
+				}
+				if (shape.intersects(dataArea)) {
+					//don't fill shape if other shapes are being plotted, so we can see a difference
+					if (getPlotShapes() && getItemShapeFilled(series, item)) {
+						g2.draw(shape);
+					}
+					else {
+						g2.fill(shape);
+					}
 				}
 			}
 		}
