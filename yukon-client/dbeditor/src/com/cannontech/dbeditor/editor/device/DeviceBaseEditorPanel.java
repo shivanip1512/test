@@ -815,6 +815,7 @@ private javax.swing.JPanel getIdentificationPanel() {
 			constraintsControlInhibitCheckBox.insets = new java.awt.Insets(2, 2, 9, 118);
 			getIdentificationPanel().add(getControlInhibitCheckBox(), constraintsControlInhibitCheckBox);
 			// user code begin {1}
+			getControlInhibitCheckBox().setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
