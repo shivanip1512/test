@@ -552,6 +552,8 @@ void CtiCCSubstationBusStore::reset()
                                          << dynamicCCCapBankTable["laststatuschangetime"]
                                          << dynamicCCCapBankTable["tagscontrolstatus"]
                                          << dynamicCCCapBankTable["ctitimestamp"]
+                                         << dynamicCCCapBankTable["originalfeederid"]
+                                         << dynamicCCCapBankTable["originalswitchingorder"]
                                          << pointTable["pointid"]
                                          << pointTable["pointoffset"]
                                          << pointTable["pointtype"];
