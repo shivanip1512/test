@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/02/25 21:57:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,7 +158,7 @@ bool CtiDeviceMCT24X::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT_Function_LPInt, 0 );
+    cs._funcLen = make_pair( (int)MCT_Command_LPInt, 0 );
     _commandStore.insert( cs );
 
 
@@ -208,7 +208,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
     unsigned long midnightOffset;
     int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
+    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
     //  make sure to completely recalculate this every time
     _nextLPScanTime = YUKONEOT;
@@ -543,7 +543,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
             if( point != NULL )
             {
