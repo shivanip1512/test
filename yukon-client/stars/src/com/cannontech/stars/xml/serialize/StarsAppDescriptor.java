@@ -228,44 +228,6 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         
         //-- initialize element descriptors
         
-        //-- _description
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "Description", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsApp target = (StarsApp) object;
-                return target.getDescription();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsApp target = (StarsApp) object;
-                    target.setDescription( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _description
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- _yearManufactured
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_yearManufactured", "YearManufactured", NodeType.Element);
         desc.setImmutable(true);

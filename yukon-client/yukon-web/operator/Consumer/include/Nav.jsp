@@ -189,15 +189,15 @@
         StarsAppliance app = appliances.getStarsAppliance(i);
 		
 		String linkUrl = "Appliance.jsp?AppNo=" + i;
-		String linkLabel = app.getDescription();
-		if (app.getApplianceCategoryID() != lastItemType) {
+		String linkLabel = ServletUtils.getApplianceDescription(categories, app);
+/*		if (app.getApplianceCategoryID() != lastItemType) {
 			lastItemType = app.getApplianceCategoryID();
 			itemNo = 1;
 		}
 		else {
 			itemNo++;
 			linkLabel = linkLabel + " (" + Integer.toString(itemNo) + ")";
-		}
+		}*/
 		
 		String linkImg = null;
 		String linkHtml = null;

@@ -155,7 +155,6 @@
 	</xs:complexType>
 	<xs:complexType name="stars-App">
 		<xs:sequence>
-			<xs:element name="Description" type="xs:string" minOccurs="0"/>
 			<xs:element name="YearManufactured" type="xs:string"/>
 			<xs:element name="Manufacturer" type="stars-CustListEntry"/>
 			<xs:element name="Location" type="stars-CustListEntry"/>

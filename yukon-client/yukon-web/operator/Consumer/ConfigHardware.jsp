@@ -233,7 +233,7 @@ function changeProgSelection(chkBox) {
 		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= appliance.getDescription() %></td>
+                  <td width="104" class="TableCell"><%= ServletUtils.getApplianceDescription(categories, appliance) %></td>
                   <td width="100" class="TableCell"><%= program.getStatus() %></td>
                   <td width="120"> 
                     <div align="center">

@@ -9,10 +9,13 @@ import java.util.TimeZone;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
+import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
@@ -369,6 +372,16 @@ public class ServletUtils {
 		if (dispNames[1].length() == 0)
 			dispNames[1] = dispNames[0];
 		return dispNames;
+	}
+	
+	public static String getApplianceDescription(StarsEnrollmentPrograms categories, StarsAppliance appliance) {
+		for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+			StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+			if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID())
+				return category.getDescription();
+		}
+		
+		return "(none)";
 	}
     
 	public static String capitalize(String word) {

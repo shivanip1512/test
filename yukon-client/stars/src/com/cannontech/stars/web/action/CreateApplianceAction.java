@@ -63,6 +63,8 @@ import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateApplianceResponse;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StorageHeat;
@@ -271,12 +273,12 @@ public class CreateApplianceAction implements ActionBase {
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsCreateAppliance( newApp );
 			
-            return SOAPUtil.buildSOAPMessage( operation );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
 		return null;
 	}
@@ -285,44 +287,44 @@ public class CreateApplianceAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsCreateAppliance newApp = reqOper.getStarsCreateAppliance();
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-        			user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
+					user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
-            LiteStarsAppliance liteApp = createAppliance( newApp, liteAcctInfo, energyCompany );
+			LiteStarsAppliance liteApp = createAppliance( newApp, liteAcctInfo, energyCompany );
             
-            StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
-            resp.setStarsAppliance( StarsLiteFactory.createStarsAppliance(liteApp, energyCompany) );
-            respOper.setStarsCreateApplianceResponse( resp );
+			StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
+			resp.setStarsAppliance( StarsLiteFactory.createStarsAppliance(liteApp, energyCompany) );
+			respOper.setStarsCreateApplianceResponse( resp );
             
-            SOAPMessage respMsg = SOAPUtil.buildSOAPMessage( respOper );
-            return respMsg;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			SOAPMessage respMsg = SOAPUtil.buildSOAPMessage( respOper );
+			return respMsg;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the appliance") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create the appliance") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
 
 		return null;
 	}
@@ -331,8 +333,8 @@ public class CreateApplianceAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -346,26 +348,31 @@ public class CreateApplianceAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
 					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            if (accountInfo == null)
-            	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
             
-            StarsAppliances starsApps = accountInfo.getStarsAppliances();
-            int i = -1;
-            for (i = starsApps.getStarsApplianceCount() - 1; i >= 0; i--) {
-            	StarsAppliance starsApp = starsApps.getStarsAppliance(i);
-            	if (starsApp.getDescription().compareTo( app.getDescription() ) <= 0)
-            		break;
-            }
-			starsApps.addStarsAppliance( i+1, app );
-			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Appliance.jsp?AppNo=" + String.valueOf(i+1) );
+			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
+					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
+            
+			StarsAppliances starsApps = accountInfo.getStarsAppliances();
+			String appDesc = ServletUtils.getApplianceDescription( categories, app );
+			int idx = -1;
+            
+			for (idx = starsApps.getStarsApplianceCount() - 1; idx >= 0; idx--) {
+				String desc = ServletUtils.getApplianceDescription( categories, starsApps.getStarsAppliance(idx) );
+				if (desc.compareTo( appDesc ) <= 0)
+					break;
+			}
+            
+			starsApps.addStarsAppliance( idx+1, app );
+			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Appliance.jsp?AppNo=" + String.valueOf(idx+1) );
 			
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	public static LiteStarsAppliance createAppliance(StarsCreateAppliance newApp, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)

@@ -113,7 +113,7 @@ function deleteAppliance(form) {
                             <div align="right">Description: </div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="Category" maxlength="40" size="24" value="<%= appliance.getDescription() %>">
+                            <input type="text" name="Category" maxlength="40" size="24" value="<%= ServletUtils.getApplianceDescription(categories, appliance) %>">
                           </td>
                         </tr>
                         <tr> 
@@ -843,15 +843,6 @@ function deleteAppliance(form) {
                             </table>
                           </td>
                         </tr>
-                      </table>
-                      <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
-                        <tr> 
-                          <td class="TableCell"> 
-                            <div align="center">Controllable kW:&nbsp; 
-                              <input type="text" name="textfield2233" maxlength="2" size="10">
-                            </div>
-                          </td>
-                          </tr>
                       </table>
                      </form>
 <%

@@ -1218,10 +1218,11 @@ public class StarsLiteFactory {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
 			StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompany);
 			
-			ArrayList list = (ArrayList) appMap.get( starsApp.getDescription() );
+			String description = energyCompany.getApplianceCategory( starsApp.getApplianceCategoryID() ).getDescription();
+			ArrayList list = (ArrayList) appMap.get( description );
 			if (list == null) {
 				list = new ArrayList();
-				appMap.put( starsApp.getDescription(), list );
+				appMap.put( description, list );
 			}
 			list.add( starsApp );
 		}
@@ -1956,12 +1957,6 @@ public class StarsLiteFactory {
 		starsApp.setLocation( loc );
         
 		starsApp.setServiceCompany( new ServiceCompany() );
-        
-		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( liteApp.getApplianceCategoryID() );
-		if (liteAppCat != null)
-			starsApp.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
-		else
-			starsApp.setDescription( "(Unknown)" );
 	    
 		if (liteApp instanceof LiteStarsAppAirConditioner) {
 			AirConditioner ac = new AirConditioner();
