@@ -1,8 +1,1512 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/30/2004 10:25:06 AM                        */
+/* Created on:     10/26/2004 4:40:44 PM                        */
 /*==============================================================*/
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DISPLAY2WAYDATA_VIEW')
+            and   type = 'V')
+   drop view DISPLAY2WAYDATA_VIEW
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ExpressComAddress_View')
+            and   type = 'V')
+   drop view ExpressComAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FeederAddress_View')
+            and   type = 'V')
+   drop view FeederAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FullEventLog_View')
+            and   type = 'V')
+   drop view FullEventLog_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FullPointHistory_View')
+            and   type = 'V')
+   drop view FullPointHistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GeoAddress_View')
+            and   type = 'V')
+   drop view GeoAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCurtailCustomerActivity_View')
+            and   type = 'V')
+   drop view LMCurtailCustomerActivity_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupMacroExpander_View')
+            and   type = 'V')
+   drop view LMGroupMacroExpander_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgram_View')
+            and   type = 'V')
+   drop view LMProgram_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Peakpointhistory_View')
+            and   type = 'V')
+   drop view Peakpointhistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PointEventLog_View')
+            and   type = 'V')
+   drop view PointEventLog_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PointHistory_View')
+            and   type = 'V')
+   drop view PointHistory_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ProgramAddress_View')
+            and   type = 'V')
+   drop view ProgramAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ServiceAddress_View')
+            and   type = 'V')
+   drop view ServiceAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SubstationAddress_View')
+            and   type = 'V')
+   drop view SubstationAddress_View
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ActivityLog')
+            and   type = 'U')
+   drop table ActivityLog
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Address')
+            and   type = 'U')
+   drop table Address
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('AlarmCategory')
+            and   type = 'U')
+   drop table AlarmCategory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('BaseLine')
+            and   type = 'U')
+   drop table BaseLine
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('BillingFileFormats')
+            and   type = 'U')
+   drop table BillingFileFormats
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CALCBASE')
+            and   type = 'U')
+   drop table CALCBASE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CALCCOMPONENT')
+            and   type = 'U')
+   drop table CALCCOMPONENT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CAPBANK')
+            and   type = 'U')
+   drop table CAPBANK
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CAPCONTROLSUBSTATIONBUS')
+            and   type = 'U')
+   drop table CAPCONTROLSUBSTATIONBUS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCFeederBankList')
+            and   type = 'U')
+   drop table CCFeederBankList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCFeederSubAssignment')
+            and   type = 'U')
+   drop table CCFeederSubAssignment
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CICustomerBase')
+            and   type = 'U')
+   drop table CICustomerBase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('COLUMNTYPE')
+            and   type = 'U')
+   drop table COLUMNTYPE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CTIDatabase')
+            and   type = 'U')
+   drop table CTIDatabase
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CalcPointBaseline')
+            and   type = 'U')
+   drop table CalcPointBaseline
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CapControlFeeder')
+            and   type = 'U')
+   drop table CapControlFeeder
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CarrierRoute')
+            and   type = 'U')
+   drop table CarrierRoute
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CommErrorHistory')
+            and   type = 'U')
+   drop table CommErrorHistory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CommPort')
+            and   type = 'U')
+   drop table CommPort
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Command')
+            and   type = 'U')
+   drop table Command
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Contact')
+            and   type = 'U')
+   drop table Contact
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ContactNotification')
+            and   type = 'U')
+   drop table ContactNotification
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Customer')
+            and   type = 'U')
+   drop table Customer
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerAdditionalContact')
+            and   type = 'U')
+   drop table CustomerAdditionalContact
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerBaseLinePoint')
+            and   type = 'U')
+   drop table CustomerBaseLinePoint
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CustomerLoginSerialGroup')
+            and   type = 'U')
+   drop table CustomerLoginSerialGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICE')
+            and   type = 'U')
+   drop table DEVICE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICE2WAYFLAGS')
+            and   type = 'U')
+   drop table DEVICE2WAYFLAGS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICECARRIERSETTINGS')
+            and   type = 'U')
+   drop table DEVICECARRIERSETTINGS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEDIALUPSETTINGS')
+            and   type = 'U')
+   drop table DEVICEDIALUPSETTINGS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEIDLCREMOTE')
+            and   type = 'U')
+   drop table DEVICEIDLCREMOTE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEIED')
+            and   type = 'U')
+   drop table DEVICEIED
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICELOADPROFILE')
+            and   type = 'U')
+   drop table DEVICELOADPROFILE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEMCTIEDPORT')
+            and   type = 'U')
+   drop table DEVICEMCTIEDPORT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEMETERGROUP')
+            and   type = 'U')
+   drop table DEVICEMETERGROUP
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICESCANRATE')
+            and   type = 'U')
+   drop table DEVICESCANRATE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICETAPPAGINGSETTINGS')
+            and   type = 'U')
+   drop table DEVICETAPPAGINGSETTINGS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DISPLAY')
+            and   type = 'U')
+   drop table DISPLAY
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DISPLAY2WAYDATA')
+            and   type = 'U')
+   drop table DISPLAY2WAYDATA
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DISPLAYCOLUMNS')
+            and   type = 'U')
+   drop table DISPLAYCOLUMNS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICACCUMULATOR')
+            and   type = 'U')
+   drop table DYNAMICACCUMULATOR
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICDEVICESCANDATA')
+            and   type = 'U')
+   drop table DYNAMICDEVICESCANDATA
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICPOINTDISPATCH')
+            and   type = 'U')
+   drop table DYNAMICPOINTDISPATCH
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DateOfHoliday')
+            and   type = 'U')
+   drop table DateOfHoliday
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DateOfSeason')
+            and   type = 'U')
+   drop table DateOfSeason
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceAddress')
+            and   type = 'U')
+   drop table DeviceAddress
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceCBC')
+            and   type = 'U')
+   drop table DeviceCBC
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceCustomerList')
+            and   type = 'U')
+   drop table DeviceCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceDirectCommSettings')
+            and   type = 'U')
+   drop table DeviceDirectCommSettings
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceRTC')
+            and   type = 'U')
+   drop table DeviceRTC
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceRoutes')
+            and   type = 'U')
+   drop table DeviceRoutes
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceSeries5RTU')
+            and   type = 'U')
+   drop table DeviceSeries5RTU
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceTypeCommand')
+            and   type = 'U')
+   drop table DeviceTypeCommand
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceVerification')
+            and   type = 'U')
+   drop table DeviceVerification
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceWindow')
+            and   type = 'U')
+   drop table DeviceWindow
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCCCapBank')
+            and   type = 'U')
+   drop table DynamicCCCapBank
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCCFeeder')
+            and   type = 'U')
+   drop table DynamicCCFeeder
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCCSubstationBus')
+            and   type = 'U')
+   drop table DynamicCCSubstationBus
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicCalcHistorical')
+            and   type = 'U')
+   drop table DynamicCalcHistorical
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicLMControlArea')
+            and   type = 'U')
+   drop table DynamicLMControlArea
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicLMControlAreaTrigger')
+            and   type = 'U')
+   drop table DynamicLMControlAreaTrigger
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicLMControlHistory')
+            and   type = 'U')
+   drop table DynamicLMControlHistory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicLMGroup')
+            and   type = 'U')
+   drop table DynamicLMGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicLMProgram')
+            and   type = 'U')
+   drop table DynamicLMProgram
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicLMProgramDirect')
+            and   type = 'U')
+   drop table DynamicLMProgramDirect
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicPAOStatistics')
+            and   type = 'U')
+   drop table DynamicPAOStatistics
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicPointAlarming')
+            and   type = 'U')
+   drop table DynamicPointAlarming
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicTags')
+            and   type = 'U')
+   drop table DynamicTags
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicVerification')
+            and   type = 'U')
+   drop table DynamicVerification
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EnergyCompany')
+            and   type = 'U')
+   drop table EnergyCompany
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EnergyCompanyCustomerList')
+            and   type = 'U')
+   drop table EnergyCompanyCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('EnergyCompanyOperatorLoginList')
+            and   type = 'U')
+   drop table EnergyCompanyOperatorLoginList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FDRInterface')
+            and   type = 'U')
+   drop table FDRInterface
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FDRInterfaceOption')
+            and   type = 'U')
+   drop table FDRInterfaceOption
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('FDRTRANSLATION')
+            and   type = 'U')
+   drop table FDRTRANSLATION
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GRAPHDATASERIES')
+            and   type = 'U')
+   drop table GRAPHDATASERIES
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GRAPHDEFINITION')
+            and   type = 'U')
+   drop table GRAPHDEFINITION
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GatewayEndDevice')
+            and   type = 'U')
+   drop table GatewayEndDevice
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GenericMacro')
+            and   type = 'U')
+   drop table GenericMacro
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('GraphCustomerList')
+            and   type = 'U')
+   drop table GraphCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('HolidaySchedule')
+            and   type = 'U')
+   drop table HolidaySchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCONTROLAREAPROGRAM')
+            and   type = 'U')
+   drop table LMCONTROLAREAPROGRAM
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCONTROLAREATRIGGER')
+            and   type = 'U')
+   drop table LMCONTROLAREATRIGGER
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMControlArea')
+            and   type = 'U')
+   drop table LMControlArea
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMControlHistory')
+            and   type = 'U')
+   drop table LMControlHistory
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMControlScenarioProgram')
+            and   type = 'U')
+   drop table LMControlScenarioProgram
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCurtailCustomerActivity')
+            and   type = 'U')
+   drop table LMCurtailCustomerActivity
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMCurtailProgramActivity')
+            and   type = 'U')
+   drop table LMCurtailProgramActivity
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMDirectCustomerList')
+            and   type = 'U')
+   drop table LMDirectCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMDirectNotifGrpList')
+            and   type = 'U')
+   drop table LMDirectNotifGrpList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMEnergyExchangeCustomerList')
+            and   type = 'U')
+   drop table LMEnergyExchangeCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMEnergyExchangeCustomerReply')
+            and   type = 'U')
+   drop table LMEnergyExchangeCustomerReply
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMEnergyExchangeHourlyCustomer')
+            and   type = 'U')
+   drop table LMEnergyExchangeHourlyCustomer
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMEnergyExchangeHourlyOffer')
+            and   type = 'U')
+   drop table LMEnergyExchangeHourlyOffer
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMEnergyExchangeOfferRevision')
+            and   type = 'U')
+   drop table LMEnergyExchangeOfferRevision
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMEnergyExchangeProgramOffer')
+            and   type = 'U')
+   drop table LMEnergyExchangeProgramOffer
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroup')
+            and   type = 'U')
+   drop table LMGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupEmetcon')
+            and   type = 'U')
+   drop table LMGroupEmetcon
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupExpressCom')
+            and   type = 'U')
+   drop table LMGroupExpressCom
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupExpressComAddress')
+            and   type = 'U')
+   drop table LMGroupExpressComAddress
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupMCT')
+            and   type = 'U')
+   drop table LMGroupMCT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupPoint')
+            and   type = 'U')
+   drop table LMGroupPoint
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupRipple')
+            and   type = 'U')
+   drop table LMGroupRipple
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupSA205105')
+            and   type = 'U')
+   drop table LMGroupSA205105
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupSA305')
+            and   type = 'U')
+   drop table LMGroupSA305
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupSASimple')
+            and   type = 'U')
+   drop table LMGroupSASimple
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupVersacom')
+            and   type = 'U')
+   drop table LMGroupVersacom
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMMacsScheduleCustomerList')
+            and   type = 'U')
+   drop table LMMacsScheduleCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMPROGRAM')
+            and   type = 'U')
+   drop table LMPROGRAM
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramConstraints')
+            and   type = 'U')
+   drop table LMProgramConstraints
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramControlWindow')
+            and   type = 'U')
+   drop table LMProgramControlWindow
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramCurtailCustomerList')
+            and   type = 'U')
+   drop table LMProgramCurtailCustomerList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramCurtailment')
+            and   type = 'U')
+   drop table LMProgramCurtailment
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramDirect')
+            and   type = 'U')
+   drop table LMProgramDirect
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramDirectGear')
+            and   type = 'U')
+   drop table LMProgramDirectGear
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramDirectGroup')
+            and   type = 'U')
+   drop table LMProgramDirectGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramEnergyExchange')
+            and   type = 'U')
+   drop table LMProgramEnergyExchange
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMThermoStatGear')
+            and   type = 'U')
+   drop table LMThermoStatGear
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LOGIC')
+            and   type = 'U')
+   drop table LOGIC
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MACROROUTE')
+            and   type = 'U')
+   drop table MACROROUTE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MACSchedule')
+            and   type = 'U')
+   drop table MACSchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MACSimpleSchedule')
+            and   type = 'U')
+   drop table MACSimpleSchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MCTBroadCastMapping')
+            and   type = 'U')
+   drop table MCTBroadCastMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MCTConfig')
+            and   type = 'U')
+   drop table MCTConfig
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MCTConfigMapping')
+            and   type = 'U')
+   drop table MCTConfigMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('NotificationDestination')
+            and   type = 'U')
+   drop table NotificationDestination
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('NotificationGroup')
+            and   type = 'U')
+   drop table NotificationGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('OperatorLoginGraphList')
+            and   type = 'U')
+   drop table OperatorLoginGraphList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PAOExclusion')
+            and   type = 'U')
+   drop table PAOExclusion
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PAOowner')
+            and   type = 'U')
+   drop table PAOowner
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINT')
+            and   type = 'U')
+   drop table POINT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINTACCUMULATOR')
+            and   type = 'U')
+   drop table POINTACCUMULATOR
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINTANALOG')
+            and   type = 'U')
+   drop table POINTANALOG
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINTLIMITS')
+            and   type = 'U')
+   drop table POINTLIMITS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINTSTATUS')
+            and   type = 'U')
+   drop table POINTSTATUS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('POINTUNIT')
+            and   type = 'U')
+   drop table POINTUNIT
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PORTDIALUPMODEM')
+            and   type = 'U')
+   drop table PORTDIALUPMODEM
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PORTLOCALSERIAL')
+            and   type = 'U')
+   drop table PORTLOCALSERIAL
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PORTRADIOSETTINGS')
+            and   type = 'U')
+   drop table PORTRADIOSETTINGS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PORTSETTINGS')
+            and   type = 'U')
+   drop table PORTSETTINGS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PORTTERMINALSERVER')
+            and   type = 'U')
+   drop table PORTTERMINALSERVER
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PointAlarming')
+            and   type = 'U')
+   drop table PointAlarming
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PortTiming')
+            and   type = 'U')
+   drop table PortTiming
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('RAWPOINTHISTORY')
+            and   type = 'U')
+   drop table RAWPOINTHISTORY
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('RepeaterRoute')
+            and   type = 'U')
+   drop table RepeaterRoute
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Route')
+            and   type = 'U')
+   drop table Route
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('STATE')
+            and   type = 'U')
+   drop table STATE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('STATEGROUP')
+            and   type = 'U')
+   drop table STATEGROUP
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SYSTEMLOG')
+            and   type = 'U')
+   drop table SYSTEMLOG
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('SeasonSchedule')
+            and   type = 'U')
+   drop table SeasonSchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TEMPLATE')
+            and   type = 'U')
+   drop table TEMPLATE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TEMPLATECOLUMNS')
+            and   type = 'U')
+   drop table TEMPLATECOLUMNS
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TOUDeviceMapping')
+            and   type = 'U')
+   drop table TOUDeviceMapping
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TOURateOffset')
+            and   type = 'U')
+   drop table TOURateOffset
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TOUSchedule')
+            and   type = 'U')
+   drop table TOUSchedule
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TagLog')
+            and   type = 'U')
+   drop table TagLog
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Tags')
+            and   type = 'U')
+   drop table Tags
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('UNITMEASURE')
+            and   type = 'U')
+   drop table UNITMEASURE
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('UserPAOowner')
+            and   type = 'U')
+   drop table UserPAOowner
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('VersacomRoute')
+            and   type = 'U')
+   drop table VersacomRoute
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonGroup')
+            and   type = 'U')
+   drop table YukonGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonGroupRole')
+            and   type = 'U')
+   drop table YukonGroupRole
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonImage')
+            and   type = 'U')
+   drop table YukonImage
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonListEntry')
+            and   type = 'U')
+   drop table YukonListEntry
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonPAObject')
+            and   type = 'U')
+   drop table YukonPAObject
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonRole')
+            and   type = 'U')
+   drop table YukonRole
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonRoleProperty')
+            and   type = 'U')
+   drop table YukonRoleProperty
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonSelectionList')
+            and   type = 'U')
+   drop table YukonSelectionList
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonServices')
+            and   type = 'U')
+   drop table YukonServices
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonUser')
+            and   type = 'U')
+   drop table YukonUser
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonUserGroup')
+            and   type = 'U')
+   drop table YukonUserGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonUserRole')
+            and   type = 'U')
+   drop table YukonUserRole
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonWebConfiguration')
+            and   type = 'U')
+   drop table YukonWebConfiguration
+go
 
 
 /*==============================================================*/
@@ -486,8 +1990,8 @@ go
 /*==============================================================*/
 create table Command (
 CommandID            numeric              not null,
-Command              varchar(128)         not null,
-Label                varchar(64)          not null,
+Command              varchar(256)         not null,
+Label                varchar(256)         not null,
 Category             char(32)             not null
 )
 go
@@ -515,6 +2019,15 @@ insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 
 alter table Contact
    add constraint PK_CONTACT primary key  (ContactID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_ContLstName                                      */
+/*==============================================================*/
+create   index Indx_ContLstName on Contact (
+ContLastName
+)
 go
 
 
@@ -1552,6 +3065,32 @@ go
 
 
 /*==============================================================*/
+/* Table : DynamicLMControlHistory                              */
+/*==============================================================*/
+create table DynamicLMControlHistory (
+PAObjectID           numeric              not null,
+LMCtrlHistID         numeric              not null,
+StartDateTime        datetime             not null,
+SOE_Tag              numeric              not null,
+ControlDuration      numeric              not null,
+ControlType          varchar(32)          not null,
+CurrentDailyTime     numeric              not null,
+CurrentMonthlyTime   numeric              not null,
+CurrentSeasonalTime  numeric              not null,
+CurrentAnnualTime    numeric              not null,
+ActiveRestore        char(1)              not null,
+ReductionValue       float                not null,
+StopDateTime         datetime             not null
+)
+go
+
+
+alter table DynamicLMControlHistory
+   add constraint PK_DYNLMCONTROLHISTORY primary key  (PAObjectID)
+go
+
+
+/*==============================================================*/
 /* Table : DynamicLMGroup                                       */
 /*==============================================================*/
 create table DynamicLMGroup (
@@ -1707,6 +3246,15 @@ go
 
 alter table DynamicVerification
    add constraint PK_DYNAMICVERIFICATION primary key  (LogID)
+go
+
+
+/*==============================================================*/
+/* Index: Index_DYNVER_CS                                       */
+/*==============================================================*/
+create   index Index_DYNVER_CS on DynamicVerification (
+CodeSequence
+)
 go
 
 
@@ -2249,21 +3797,6 @@ go
 
 
 /*==============================================================*/
-/* Table : LMDirectOperatorList                                 */
-/*==============================================================*/
-create table LMDirectOperatorList (
-ProgramID            numeric              not null,
-OperatorLoginID      numeric              not null
-)
-go
-
-
-alter table LMDirectOperatorList
-   add constraint PK_LMDIRECTOPERATORLIST primary key  (ProgramID, OperatorLoginID)
-go
-
-
-/*==============================================================*/
 /* Table : LMEnergyExchangeCustomerList                         */
 /*==============================================================*/
 create table LMEnergyExchangeCustomerList (
@@ -2382,6 +3915,8 @@ KWCapacity           float                not null
 )
 go
 
+
+insert into lmgroup values( 0, 0 );
 
 alter table LMGroup
    add constraint PK_LMGROUP primary key  (DeviceID)
@@ -2586,21 +4121,6 @@ go
 
 alter table LMGroupVersacom
    add constraint PK_LMGROUPVERSACOM primary key  (DEVICEID)
-go
-
-
-/*==============================================================*/
-/* Table : LMMACSScheduleOperatorList                           */
-/*==============================================================*/
-create table LMMACSScheduleOperatorList (
-ScheduleID           numeric              not null,
-OperatorLoginID      numeric              not null
-)
-go
-
-
-alter table LMMACSScheduleOperatorList
-   add constraint PK_LMMACSSCHEDULEOPERATORLIST primary key  (ScheduleID, OperatorLoginID)
 go
 
 
@@ -3039,21 +4559,6 @@ go
 
 alter table OperatorLoginGraphList
    add constraint PK_OPERATORLOGINGRAPHLIST primary key  (OperatorLoginID, GraphDefinitionID)
-go
-
-
-/*==============================================================*/
-/* Table : OperatorSerialGroup                                  */
-/*==============================================================*/
-create table OperatorSerialGroup (
-LoginID              numeric              not null,
-LMGroupID            numeric              not null
-)
-go
-
-
-alter table OperatorSerialGroup
-   add constraint PK_OpSerGrp primary key  (LoginID)
 go
 
 
@@ -3668,6 +5173,52 @@ go
 
 
 /*==============================================================*/
+/* Table : TOUDeviceMapping                                     */
+/*==============================================================*/
+create table TOUDeviceMapping (
+TOUScheduleID        numeric              not null,
+DeviceID             numeric              not null
+)
+go
+
+
+alter table TOUDeviceMapping
+   add constraint PK_TOUDEVICEMAPPING primary key  (TOUScheduleID, DeviceID)
+go
+
+
+/*==============================================================*/
+/* Table : TOURateOffset                                        */
+/*==============================================================*/
+create table TOURateOffset (
+TOUScheduleID        numeric              not null,
+SwitchRate           varchar(4)           not null,
+SwitchOffset         numeric              not null
+)
+go
+
+
+alter table TOURateOffset
+   add constraint PK_TOURATEOFFSET primary key  (TOUScheduleID, SwitchOffset)
+go
+
+
+/*==============================================================*/
+/* Table : TOUSchedule                                          */
+/*==============================================================*/
+create table TOUSchedule (
+TOUScheduleID        numeric              not null,
+TOUScheduleName      varchar(32)          not null
+)
+go
+
+
+alter table TOUSchedule
+   add constraint PK_TOUSCHEDULE primary key  (TOUScheduleID)
+go
+
+
+/*==============================================================*/
 /* Table : TagLog                                               */
 /*==============================================================*/
 create table TagLog (
@@ -4190,7 +5741,7 @@ insert into YukonGroupRole values(-1005,-2,-100,-10005,'(none)');
 insert into YukonGroupRole values(-1007,-2,-100,-10007,'(none)');
 insert into YukonGroupRole values(-1008,-2,-100,-10008,'(none)');
 insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
-
+insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
 
 insert into YukonGroupRole values(-1020,-2,-101,-10100,'(none)');
 insert into YukonGroupRole values(-1021,-2,-101,-10101,'(none)');
@@ -4598,17 +6149,19 @@ insert into YukonListEntry values (1032,1003,0,'TwoWayReceiver',1202);
 insert into YukonListEntry values (1033,1003,0,'MCT',1203);
 insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
-insert into YukonListEntry values (1051,1005,0,'LCR-5000(Xcom)',1302);
-insert into YukonListEntry values (1052,1005,0,'LCR-4000',1305);
+
+insert into YukonListEntry values (1051,1005,0,'LCR-5000(EXPRESSCOM)',1302);
+insert into YukonListEntry values (1052,1005,-1,'LCR-4000',1305);
 insert into YukonListEntry values (1053,1005,0,'LCR-3000',1306);
-insert into YukonListEntry values (1054,1005,0,'LCR-2000',1307);
+insert into YukonListEntry values (1054,1005,-1,'LCR-2000',1307);
+insert into YukonListEntry values (1055,1005,-1,'LCR-1000',1308);
 insert into YukonListEntry values (1056,1005,-1,'ExpressStat',1301);
 insert into YukonListEntry values (1057,1005,-1,'EnergyPro',3100);
 insert into YukonListEntry values (1058,1005,-1,'MCT',1303);
 insert into YukonListEntry values (1059,1005,-1,'Commercial ExpressStat',1304);
 insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
 insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
-insert into YukonListEntry values (1062,1005,0,'LCR-5000(Vcom)',1311);
+insert into YukonListEntry values (1062,1005,-1,'LCR-5000(VERSACOM)',1311);
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);
 insert into YukonListEntry values (1073,1006,0,'Unavailable',1703);
@@ -5090,6 +6643,14 @@ insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or 
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 
+/* Energy Company Role Properties */
+insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','(none)','Recipients of the opt out notification email');
+insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
+insert into YukonRoleProperty values(-1105,-2,'customer_group_ids','-300','Group IDs of all the residential customer logins');
+insert into YukonRoleProperty values(-1106,-2,'operator_group_ids','-301','Group IDs of all the web client operator logins');
+insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
+insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
+
 insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
 insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting port.');
@@ -5112,15 +6673,7 @@ insert into YukonRoleProperty values(-10005,-100,'utility_id_range','1-254','<de
 insert into YukonRoleProperty values(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
 insert into YukonRoleProperty values(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
 insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
-
-
-/* Energy Company Role Properties */
-insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','override@cannontech.com','Recipients of the opt out notification email');
-insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
-insert into YukonRoleProperty values(-1105,-2,'customer_group_ids','-300','Group IDs of all the residential customer logins');
-insert into YukonRoleProperty values(-1106,-2,'operator_group_ids','-301','Group IDs of all the web client operator logins');
-insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
-insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
+insert into YukonRoleProperty values(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -6491,6 +8044,12 @@ alter table CustomerAdditionalContact
 go
 
 
+alter table DynamicLMControlHistory
+   add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
+go
+
+
 alter table DateOfSeason
    add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
@@ -6719,12 +8278,6 @@ alter table LMDirectNotifGrpList
 go
 
 
-alter table LMDirectOperatorList
-   add constraint FK_LMDirOpLs_LMPrD foreign key (ProgramID)
-      references LMProgramDirect (DeviceID)
-go
-
-
 alter table LMGroupMCT
    add constraint FK_LMGrMC_Grp foreign key (DeviceID)
       references LMGroup (DeviceID)
@@ -6821,12 +8374,6 @@ alter table YukonListEntry
 go
 
 
-alter table LMMACSScheduleOperatorList
-   add constraint FK_MCSchLMMcSchOpLs foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
-go
-
-
 alter table MCTBroadCastMapping
    add constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
       references DEVICE (DEVICEID)
@@ -6863,32 +8410,8 @@ alter table EnergyCompanyOperatorLoginList
 go
 
 
-alter table LMMACSScheduleOperatorList
-   add constraint FK_OpLgLMMcSchOpLs foreign key (OperatorLoginID)
-      references YukonUser (UserID)
-go
-
-
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
-      references YukonUser (UserID)
-go
-
-
-alter table LMDirectOperatorList
-   add constraint FK_OpLg_LMDOpLs foreign key (OperatorLoginID)
-      references YukonUser (UserID)
-go
-
-
-alter table OperatorSerialGroup
-   add constraint FK_OpSGrp_LmGrp foreign key (LMGroupID)
-      references LMGroup (DeviceID)
-go
-
-
-alter table OperatorSerialGroup
-   add constraint FK_OpSGrp_OpLg foreign key (LoginID)
       references YukonUser (UserID)
 go
 
@@ -6968,6 +8491,24 @@ go
 alter table LMProgramConstraints
    add constraint FK_SesSch_LmPrC foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
+go
+
+
+alter table TOUDeviceMapping
+   add constraint FK_TOU_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+
+alter table TOUDeviceMapping
+   add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
+go
+
+
+alter table TOURateOffset
+   add constraint FK_TOUr_TOUSc foreign key (TOUScheduleID)
+      references TOUSchedule (TOUScheduleID)
 go
 
 

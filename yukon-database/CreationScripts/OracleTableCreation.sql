@@ -1,8 +1,760 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/30/2004 4:03:28 PM                         */
+/* Created on:     10/26/2004 4:40:13 PM                        */
 /*==============================================================*/
+
+
+drop view DISPLAY2WAYDATA_VIEW
+/
+
+
+drop view ExpressComAddress_View
+/
+
+
+drop view FeederAddress_View
+/
+
+
+drop view FullEventLog_View
+/
+
+
+drop view FullPointHistory_View
+/
+
+
+drop view GeoAddress_View
+/
+
+
+drop view LMCurtailCustomerActivity_View
+/
+
+
+drop view LMGroupMacroExpander_View
+/
+
+
+drop view LMProgram_View
+/
+
+
+drop view Peakpointhistory_View
+/
+
+
+drop view PointEventLog_View
+/
+
+
+drop view PointHistory_View
+/
+
+
+drop view ProgramAddress_View
+/
+
+
+drop view ServiceAddress_View
+/
+
+
+drop view SubstationAddress_View
+/
+
+
+drop table ActivityLog cascade constraints
+/
+
+
+drop table Address cascade constraints
+/
+
+
+drop table AlarmCategory cascade constraints
+/
+
+
+drop table BaseLine cascade constraints
+/
+
+
+drop table BillingFileFormats cascade constraints
+/
+
+
+drop table CALCBASE cascade constraints
+/
+
+
+drop table CALCCOMPONENT cascade constraints
+/
+
+
+drop table CAPBANK cascade constraints
+/
+
+
+drop table CAPCONTROLSUBSTATIONBUS cascade constraints
+/
+
+
+drop table CCFeederBankList cascade constraints
+/
+
+
+drop table CCFeederSubAssignment cascade constraints
+/
+
+
+drop table CICustomerBase cascade constraints
+/
+
+
+drop table COLUMNTYPE cascade constraints
+/
+
+
+drop table CTIDatabase cascade constraints
+/
+
+
+drop table CalcPointBaseline cascade constraints
+/
+
+
+drop table CapControlFeeder cascade constraints
+/
+
+
+drop table CarrierRoute cascade constraints
+/
+
+
+drop table CommErrorHistory cascade constraints
+/
+
+
+drop table CommPort cascade constraints
+/
+
+
+drop table Command cascade constraints
+/
+
+
+drop table Contact cascade constraints
+/
+
+
+drop table ContactNotification cascade constraints
+/
+
+
+drop table Customer cascade constraints
+/
+
+
+drop table CustomerAdditionalContact cascade constraints
+/
+
+
+drop table CustomerBaseLinePoint cascade constraints
+/
+
+
+drop table CustomerLoginSerialGroup cascade constraints
+/
+
+
+drop table DEVICE cascade constraints
+/
+
+
+drop table DEVICE2WAYFLAGS cascade constraints
+/
+
+
+drop table DEVICECARRIERSETTINGS cascade constraints
+/
+
+
+drop table DEVICEDIALUPSETTINGS cascade constraints
+/
+
+
+drop table DEVICEIDLCREMOTE cascade constraints
+/
+
+
+drop table DEVICEIED cascade constraints
+/
+
+
+drop table DEVICELOADPROFILE cascade constraints
+/
+
+
+drop table DEVICEMCTIEDPORT cascade constraints
+/
+
+
+drop table DEVICEMETERGROUP cascade constraints
+/
+
+
+drop table DEVICESCANRATE cascade constraints
+/
+
+
+drop table DEVICETAPPAGINGSETTINGS cascade constraints
+/
+
+
+drop table DISPLAY cascade constraints
+/
+
+
+drop table DISPLAY2WAYDATA cascade constraints
+/
+
+
+drop table DISPLAYCOLUMNS cascade constraints
+/
+
+
+drop table DYNAMICACCUMULATOR cascade constraints
+/
+
+
+drop table DYNAMICDEVICESCANDATA cascade constraints
+/
+
+
+drop table DYNAMICPOINTDISPATCH cascade constraints
+/
+
+
+drop table DateOfHoliday cascade constraints
+/
+
+
+drop table DateOfSeason cascade constraints
+/
+
+
+drop table DeviceAddress cascade constraints
+/
+
+
+drop table DeviceCBC cascade constraints
+/
+
+
+drop table DeviceCustomerList cascade constraints
+/
+
+
+drop table DeviceDirectCommSettings cascade constraints
+/
+
+
+drop table DeviceRTC cascade constraints
+/
+
+
+drop table DeviceRoutes cascade constraints
+/
+
+
+drop table DeviceSeries5RTU cascade constraints
+/
+
+
+drop table DeviceTypeCommand cascade constraints
+/
+
+
+drop table DeviceVerification cascade constraints
+/
+
+
+drop table DeviceWindow cascade constraints
+/
+
+
+drop table DynamicCCCapBank cascade constraints
+/
+
+
+drop table DynamicCCFeeder cascade constraints
+/
+
+
+drop table DynamicCCSubstationBus cascade constraints
+/
+
+
+drop table DynamicCalcHistorical cascade constraints
+/
+
+
+drop table DynamicLMControlArea cascade constraints
+/
+
+
+drop table DynamicLMControlAreaTrigger cascade constraints
+/
+
+
+drop table DynamicLMControlHistory cascade constraints
+/
+
+
+drop table DynamicLMGroup cascade constraints
+/
+
+
+drop table DynamicLMProgram cascade constraints
+/
+
+
+drop table DynamicLMProgramDirect cascade constraints
+/
+
+
+drop table DynamicPAOStatistics cascade constraints
+/
+
+
+drop table DynamicPointAlarming cascade constraints
+/
+
+
+drop table DynamicTags cascade constraints
+/
+
+
+drop table DynamicVerification cascade constraints
+/
+
+
+drop table EnergyCompany cascade constraints
+/
+
+
+drop table EnergyCompanyCustomerList cascade constraints
+/
+
+
+drop table EnergyCompanyOperatorLoginList cascade constraints
+/
+
+
+drop table FDRInterface cascade constraints
+/
+
+
+drop table FDRInterfaceOption cascade constraints
+/
+
+
+drop table FDRTRANSLATION cascade constraints
+/
+
+
+drop table GRAPHDATASERIES cascade constraints
+/
+
+
+drop table GRAPHDEFINITION cascade constraints
+/
+
+
+drop table GatewayEndDevice cascade constraints
+/
+
+
+drop table GenericMacro cascade constraints
+/
+
+
+drop table GraphCustomerList cascade constraints
+/
+
+
+drop table HolidaySchedule cascade constraints
+/
+
+
+drop table LMCONTROLAREAPROGRAM cascade constraints
+/
+
+
+drop table LMCONTROLAREATRIGGER cascade constraints
+/
+
+
+drop table LMControlArea cascade constraints
+/
+
+
+drop table LMControlHistory cascade constraints
+/
+
+
+drop table LMControlScenarioProgram cascade constraints
+/
+
+
+drop table LMCurtailCustomerActivity cascade constraints
+/
+
+
+drop table LMCurtailProgramActivity cascade constraints
+/
+
+
+drop table LMDirectCustomerList cascade constraints
+/
+
+
+drop table LMDirectNotifGrpList cascade constraints
+/
+
+
+drop table LMEnergyExchangeCustomerList cascade constraints
+/
+
+
+drop table LMEnergyExchangeCustomerReply cascade constraints
+/
+
+
+drop table LMEnergyExchangeHourlyCustomer cascade constraints
+/
+
+
+drop table LMEnergyExchangeHourlyOffer cascade constraints
+/
+
+
+drop table LMEnergyExchangeOfferRevision cascade constraints
+/
+
+
+drop table LMEnergyExchangeProgramOffer cascade constraints
+/
+
+
+drop table LMGroup cascade constraints
+/
+
+
+drop table LMGroupEmetcon cascade constraints
+/
+
+
+drop table LMGroupExpressCom cascade constraints
+/
+
+
+drop table LMGroupExpressComAddress cascade constraints
+/
+
+
+drop table LMGroupMCT cascade constraints
+/
+
+
+drop table LMGroupPoint cascade constraints
+/
+
+
+drop table LMGroupRipple cascade constraints
+/
+
+
+drop table LMGroupSA205105 cascade constraints
+/
+
+
+drop table LMGroupSA305 cascade constraints
+/
+
+
+drop table LMGroupSASimple cascade constraints
+/
+
+
+drop table LMGroupVersacom cascade constraints
+/
+
+
+drop table LMMacsScheduleCustomerList cascade constraints
+/
+
+
+drop table LMPROGRAM cascade constraints
+/
+
+
+drop table LMProgramConstraints cascade constraints
+/
+
+
+drop table LMProgramControlWindow cascade constraints
+/
+
+
+drop table LMProgramCurtailCustomerList cascade constraints
+/
+
+
+drop table LMProgramCurtailment cascade constraints
+/
+
+
+drop table LMProgramDirect cascade constraints
+/
+
+
+drop table LMProgramDirectGear cascade constraints
+/
+
+
+drop table LMProgramDirectGroup cascade constraints
+/
+
+
+drop table LMProgramEnergyExchange cascade constraints
+/
+
+
+drop table LMThermoStatGear cascade constraints
+/
+
+
+drop table LOGIC cascade constraints
+/
+
+
+drop table MACROROUTE cascade constraints
+/
+
+
+drop table MACSchedule cascade constraints
+/
+
+
+drop table MACSimpleSchedule cascade constraints
+/
+
+
+drop table MCTBroadCastMapping cascade constraints
+/
+
+
+drop table MCTConfig cascade constraints
+/
+
+
+drop table MCTConfigMapping cascade constraints
+/
+
+
+drop table NotificationDestination cascade constraints
+/
+
+
+drop table NotificationGroup cascade constraints
+/
+
+
+drop table OperatorLoginGraphList cascade constraints
+/
+
+
+drop table PAOExclusion cascade constraints
+/
+
+
+drop table PAOowner cascade constraints
+/
+
+
+drop table POINT cascade constraints
+/
+
+
+drop table POINTACCUMULATOR cascade constraints
+/
+
+
+drop table POINTANALOG cascade constraints
+/
+
+
+drop table POINTLIMITS cascade constraints
+/
+
+
+drop table POINTSTATUS cascade constraints
+/
+
+
+drop table POINTUNIT cascade constraints
+/
+
+
+drop table PORTDIALUPMODEM cascade constraints
+/
+
+
+drop table PORTLOCALSERIAL cascade constraints
+/
+
+
+drop table PORTRADIOSETTINGS cascade constraints
+/
+
+
+drop table PORTSETTINGS cascade constraints
+/
+
+
+drop table PORTTERMINALSERVER cascade constraints
+/
+
+
+drop table PointAlarming cascade constraints
+/
+
+
+drop table PortTiming cascade constraints
+/
+
+
+drop table RAWPOINTHISTORY cascade constraints
+/
+
+
+drop table RepeaterRoute cascade constraints
+/
+
+
+drop table Route cascade constraints
+/
+
+
+drop table STATE cascade constraints
+/
+
+
+drop table STATEGROUP cascade constraints
+/
+
+
+drop table SYSTEMLOG cascade constraints
+/
+
+
+drop table SeasonSchedule cascade constraints
+/
+
+
+drop table TEMPLATE cascade constraints
+/
+
+
+drop table TEMPLATECOLUMNS cascade constraints
+/
+
+
+drop table TOUDeviceMapping cascade constraints
+/
+
+
+drop table TOURateOffset cascade constraints
+/
+
+
+drop table TOUSchedule cascade constraints
+/
+
+
+drop table TagLog cascade constraints
+/
+
+
+drop table Tags cascade constraints
+/
+
+
+drop table UNITMEASURE cascade constraints
+/
+
+
+drop table UserPAOowner cascade constraints
+/
+
+
+drop table VersacomRoute cascade constraints
+/
+
+
+drop table YukonGroup cascade constraints
+/
+
+
+drop table YukonGroupRole cascade constraints
+/
+
+
+drop table YukonImage cascade constraints
+/
+
+
+drop table YukonListEntry cascade constraints
+/
+
+
+drop table YukonPAObject cascade constraints
+/
+
+
+drop table YukonRole cascade constraints
+/
+
+
+drop table YukonRoleProperty cascade constraints
+/
+
+
+drop table YukonSelectionList cascade constraints
+/
+
+
+drop table YukonServices cascade constraints
+/
+
+
+drop table YukonUser cascade constraints
+/
+
+
+drop table YukonUserGroup cascade constraints
+/
+
+
+drop table YukonUserRole cascade constraints
+/
+
+
+drop table YukonWebConfiguration cascade constraints
+/
 
 
 /*==============================================================*/
@@ -526,8 +1278,8 @@ alter table CommPort
 
 create table Command  (
    CommandID            NUMBER                           not null,
-   Command              VARCHAR2(128)                    not null,
-   Label                VARCHAR2(64)                     not null,
+   Command              VARCHAR2(256)                    not null,
+   Label                VARCHAR2(256)                    not null,
    Category             CHAR(32)                         not null
 )
 /
@@ -557,6 +1309,15 @@ insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 
 alter table Contact
    add constraint PK_CONTACT primary key (ContactID)
+/
+
+
+/*==============================================================*/
+/* Index: Indx_ContLstName                                      */
+/*==============================================================*/
+create index Indx_ContLstName on Contact (
+   ContLastName ASC
+)
 /
 
 
@@ -1674,6 +2435,34 @@ alter table DynamicLMControlAreaTrigger
 
 
 /*==============================================================*/
+/* Table : DynamicLMControlHistory                              */
+/*==============================================================*/
+
+
+create table DynamicLMControlHistory  (
+   PAObjectID           NUMBER                           not null,
+   LMCtrlHistID         NUMBER                           not null,
+   StartDateTime        DATE                             not null,
+   SOE_Tag              NUMBER                           not null,
+   ControlDuration      NUMBER                           not null,
+   ControlType          VARCHAR2(32)                     not null,
+   CurrentDailyTime     NUMBER                           not null,
+   CurrentMonthlyTime   NUMBER                           not null,
+   CurrentSeasonalTime  NUMBER                           not null,
+   CurrentAnnualTime    NUMBER                           not null,
+   ActiveRestore        CHAR(1)                          not null,
+   ReductionValue       FLOAT                            not null,
+   StopDateTime         DATE                             not null
+)
+/
+
+
+alter table DynamicLMControlHistory
+   add constraint PK_DYNLMCONTROLHISTORY primary key (PAObjectID)
+/
+
+
+/*==============================================================*/
 /* Table : DynamicLMGroup                                       */
 /*==============================================================*/
 
@@ -1843,6 +2632,15 @@ create table DynamicVerification  (
 
 alter table DynamicVerification
    add constraint PK_DYNAMICVERIFICATION primary key (LogID)
+/
+
+
+/*==============================================================*/
+/* Index: Index_DYNVER_CS                                       */
+/*==============================================================*/
+create index Index_DYNVER_CS on DynamicVerification (
+   CodeSequence ASC
+)
 /
 
 
@@ -2427,23 +3225,6 @@ alter table LMDirectNotifGrpList
 
 
 /*==============================================================*/
-/* Table : LMDirectOperatorList                                 */
-/*==============================================================*/
-
-
-create table LMDirectOperatorList  (
-   ProgramID            NUMBER                           not null,
-   OperatorLoginID      NUMBER                           not null
-)
-/
-
-
-alter table LMDirectOperatorList
-   add constraint PK_LMDIRECTOPERATORLIST primary key (ProgramID, OperatorLoginID)
-/
-
-
-/*==============================================================*/
 /* Table : LMEnergyExchangeCustomerList                         */
 /*==============================================================*/
 
@@ -2576,6 +3357,8 @@ create table LMGroup  (
 )
 /
 
+
+insert into lmgroup values( 0, 0 );
 
 alter table LMGroup
    add constraint PK_LMGROUP primary key (DeviceID)
@@ -2800,23 +3583,6 @@ create table LMGroupVersacom  (
 
 alter table LMGroupVersacom
    add constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
-/
-
-
-/*==============================================================*/
-/* Table : LMMACSScheduleOperatorList                           */
-/*==============================================================*/
-
-
-create table LMMACSScheduleOperatorList  (
-   ScheduleID           NUMBER                           not null,
-   OperatorLoginID      NUMBER                           not null
-)
-/
-
-
-alter table LMMACSScheduleOperatorList
-   add constraint PK_LMMACSSCHEDULEOPERATORLIST primary key (ScheduleID, OperatorLoginID)
 /
 
 
@@ -3297,23 +4063,6 @@ create table OperatorLoginGraphList  (
 
 alter table OperatorLoginGraphList
    add constraint PK_OPERATORLOGINGRAPHLIST primary key (OperatorLoginID, GraphDefinitionID)
-/
-
-
-/*==============================================================*/
-/* Table : OperatorSerialGroup                                  */
-/*==============================================================*/
-
-
-create table OperatorSerialGroup  (
-   LoginID              NUMBER                           not null,
-   LMGroupID            NUMBER                           not null
-)
-/
-
-
-alter table OperatorSerialGroup
-   add constraint PK_OpSerGrp primary key (LoginID)
 /
 
 
@@ -3981,8 +4730,8 @@ alter table TEMPLATECOLUMNS
 
 
 create table TOUDeviceMapping  (
-   TOUScheduleID        numeric                          not null,
-   DeviceID             numeric                          not null
+   TOUScheduleID        NUMBER                           not null,
+   DeviceID             NUMBER                           not null
 )
 /
 
@@ -3998,9 +4747,9 @@ alter table TOUDeviceMapping
 
 
 create table TOURateOffset  (
-   TOUScheduleID        numeric                          not null,
-   SwitchRate           varchar(4)                       not null,
-   SwitchOffset         numeric                          not null
+   TOUScheduleID        NUMBER                           not null,
+   SwitchRate           VARCHAR2(4)                      not null,
+   SwitchOffset         NUMBER                           not null
 )
 /
 
@@ -4016,8 +4765,8 @@ alter table TOURateOffset
 
 
 create table TOUSchedule  (
-   TOUScheduleID        numeric                          not null,
-   TOUScheduleName      varchar(32)                      not null
+   TOUScheduleID        NUMBER                           not null,
+   TOUScheduleName      VARCHAR2(32)                     not null
 )
 /
 
@@ -4564,7 +5313,7 @@ insert into YukonGroupRole values(-1005,-2,-100,-10005,'(none)');
 insert into YukonGroupRole values(-1007,-2,-100,-10007,'(none)');
 insert into YukonGroupRole values(-1008,-2,-100,-10008,'(none)');
 insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
-
+insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
 
 insert into YukonGroupRole values(-1020,-2,-101,-10100,'(none)');
 insert into YukonGroupRole values(-1021,-2,-101,-10101,'(none)');
@@ -4976,17 +5725,19 @@ insert into YukonListEntry values (1032,1003,0,'TwoWayReceiver',1202);
 insert into YukonListEntry values (1033,1003,0,'MCT',1203);
 insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
-insert into YukonListEntry values (1051,1005,0,'LCR-5000(Xcom)',1302);
-insert into YukonListEntry values (1052,1005,0,'LCR-4000',1305);
+
+insert into YukonListEntry values (1051,1005,0,'LCR-5000(EXPRESSCOM)',1302);
+insert into YukonListEntry values (1052,1005,-1,'LCR-4000',1305);
 insert into YukonListEntry values (1053,1005,0,'LCR-3000',1306);
-insert into YukonListEntry values (1054,1005,0,'LCR-2000',1307);
+insert into YukonListEntry values (1054,1005,-1,'LCR-2000',1307);
+insert into YukonListEntry values (1055,1005,-1,'LCR-1000',1308);
 insert into YukonListEntry values (1056,1005,-1,'ExpressStat',1301);
 insert into YukonListEntry values (1057,1005,-1,'EnergyPro',3100);
 insert into YukonListEntry values (1058,1005,-1,'MCT',1303);
 insert into YukonListEntry values (1059,1005,-1,'Commercial ExpressStat',1304);
 insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
 insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
-insert into YukonListEntry values (1062,1005,0,'LCR-5000(Vcom)',1311);
+insert into YukonListEntry values (1062,1005,-1,'LCR-5000(VERSACOM)',1311);
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);
 insert into YukonListEntry values (1073,1006,0,'Unavailable',1703);
@@ -5474,6 +6225,14 @@ insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or 
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 
+/* Energy Company Role Properties */
+insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','(none)','Recipients of the opt out notification email');
+insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
+insert into YukonRoleProperty values(-1105,-2,'customer_group_ids','-300','Group IDs of all the residential customer logins');
+insert into YukonRoleProperty values(-1106,-2,'operator_group_ids','-301','Group IDs of all the web client operator logins');
+insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
+insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
+
 insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
 insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting port.');
@@ -5496,15 +6255,7 @@ insert into YukonRoleProperty values(-10005,-100,'utility_id_range','1-254','<de
 insert into YukonRoleProperty values(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
 insert into YukonRoleProperty values(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
 insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
-
-
-/* Energy Company Role Properties */
-insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','override@cannontech.com','Recipients of the opt out notification email');
-insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
-insert into YukonRoleProperty values(-1105,-2,'customer_group_ids','-300','Group IDs of all the residential customer logins');
-insert into YukonRoleProperty values(-1106,-2,'operator_group_ids','-301','Group IDs of all the web client operator logins');
-insert into YukonRoleProperty values(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
-insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
+insert into YukonRoleProperty values(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -6875,6 +7626,12 @@ alter table CustomerAdditionalContact
 /
 
 
+alter table DynamicLMControlHistory
+   add constraint FK_DYNLMCNT_PAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
+/
+
+
 alter table DateOfSeason
    add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
@@ -7103,12 +7860,6 @@ alter table LMDirectNotifGrpList
 /
 
 
-alter table LMDirectOperatorList
-   add constraint FK_LMDirOpLs_LMPrD foreign key (ProgramID)
-      references LMProgramDirect (DeviceID)
-/
-
-
 alter table LMGroupMCT
    add constraint FK_LMGrMC_Grp foreign key (DeviceID)
       references LMGroup (DeviceID)
@@ -7205,12 +7956,6 @@ alter table YukonListEntry
 /
 
 
-alter table LMMACSScheduleOperatorList
-   add constraint FK_MCSchLMMcSchOpLs foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
-/
-
-
 alter table MCTBroadCastMapping
    add constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
       references DEVICE (DEVICEID)
@@ -7247,32 +7992,8 @@ alter table EnergyCompanyOperatorLoginList
 /
 
 
-alter table LMMACSScheduleOperatorList
-   add constraint FK_OpLgLMMcSchOpLs foreign key (OperatorLoginID)
-      references YukonUser (UserID)
-/
-
-
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
-      references YukonUser (UserID)
-/
-
-
-alter table LMDirectOperatorList
-   add constraint FK_OpLg_LMDOpLs foreign key (OperatorLoginID)
-      references YukonUser (UserID)
-/
-
-
-alter table OperatorSerialGroup
-   add constraint FK_OpSGrp_LmGrp foreign key (LMGroupID)
-      references LMGroup (DeviceID)
-/
-
-
-alter table OperatorSerialGroup
-   add constraint FK_OpSGrp_OpLg foreign key (LoginID)
       references YukonUser (UserID)
 /
 
