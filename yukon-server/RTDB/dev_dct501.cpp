@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/02/25 21:44:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 
         for( int i = 0; i < DCT_LPChannels; i++ )
         {
-            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
+            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  safe default
             _nextLPTime[i] = YUKONEOT;
@@ -638,7 +638,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                 max_blocks = 8;
             }
 
-            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( retrieved_channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( retrieved_channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
             if( point != NULL )
             {
