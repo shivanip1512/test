@@ -2193,6 +2193,14 @@ public void setValue(Object val)
 		getPhysicalAddressTextField().setVisible(false);
 	}
 
+	//CCU's cannot have addresses larger than 128
+	if(com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(getDeviceType()))
+	{
+		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0L, 128L) );
+	}
+	else
+		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
+
 
 	if( d.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_GROUP) )
 		getDisableFlagCheckBox().setVisible(false);
