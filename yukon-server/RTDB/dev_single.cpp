@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/09/06 19:03:41 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/09/18 21:34:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -664,12 +664,16 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
     INT   status = 0;
     bool  bLastFail = false;
 
+    CtiPointDataMsg *commStatus;
+    CtiPointBase    *commPoint;
+
+
     if( !nRet )
     {
         nRet = ResultDecode(InMessage, TimeNow, vgList, retList, outList);
     }
 
-    if(nRet)
+    if( nRet )
     {
         RWCString errStr;
         RWCString CmdStr("Unknown");
@@ -701,7 +705,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             {
                 RWCString msg;
-                CtiReturnMsg *Ret = new CtiReturnMsg(  getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+                CtiReturnMsg *Ret = new CtiReturnMsg( getID(), CmdStr, RWCString("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + RWCString(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
@@ -728,6 +732,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             delete pReq;
+
             if(OutTemplate != NULL)
             {
                 delete OutTemplate;
@@ -740,6 +745,33 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
         if(bLastFail)
         {
+            //  This comm status wasn't handled by portfield (didn't talk directly to this device),
+            //    so we have to send it here
+            if( InMessage->DeviceID != InMessage->TargetID )
+            {
+                CtiReturnMsg *retMsg = new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+
+                //  Log the communication success on this route.
+                if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
+                {
+                    if( retMsg != NULL )
+                    {
+                        commStatus = new CtiPointDataMsg(commPoint->getPointID(), 1.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
+
+                        if( commStatus != NULL )
+                        {
+                            retMsg->PointData().insert(commStatus);
+                            commStatus = NULL;
+                        }
+
+                        //RWCString resultString = getName() + " / operation failed";
+                        //retMsg->setResultString(resultString);
+
+                        vgList.append(retMsg);
+                    }
+                }
+            }
+
             /* something went wrong so start by printing error */
             GetErrorString (nRet, ErrStr);
 
@@ -827,6 +859,35 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             {
                 resetScanResetting();
                 setScanResetFailed();
+            }
+        }
+    }
+    else
+    {
+        //  This comm status wasn't handled by portfield (didn't talk directly to this device),
+        //    so we have to send it here
+        if( InMessage->DeviceID != InMessage->TargetID )
+        {
+            CtiReturnMsg *retMsg = new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+
+            //  Log the communication success on this route.
+            if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
+            {
+                if( retMsg != NULL )
+                {
+                    commStatus = new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
+
+                    if( commStatus != NULL )
+                    {
+                        retMsg->PointData().insert(commStatus);
+                        commStatus = NULL;
+                    }
+
+                    //RWCString resultString = getName() + " / operation succeeded";
+                    //retMsg->setResultString(resultString);
+
+                    vgList.append(retMsg);
+                }
             }
         }
     }
