@@ -263,7 +263,7 @@ public class WorkOrderManager extends HttpServlet {
 			((WorkOrderModel)rpt.getModel()).setOrderID( new Integer(orderID) );
 			
 			rpt.getModel().collectData();
-					
+			
 			JFreeReport report = rpt.createReport();
 			report.setData(rpt.getModel());
 			
