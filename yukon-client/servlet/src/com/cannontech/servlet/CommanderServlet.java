@@ -34,9 +34,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yc.bean.YCBean;;
+import com.cannontech.yc.bean.YCBean;
+;
 
 public class CommanderServlet extends javax.servlet.http.HttpServlet 
 {
@@ -55,13 +58,13 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		}
 		
-
 		/**Debug print of all parameter names.*/
-		java.util.Enumeration enum1 = req.getParameterNames();
+/*		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
 		  	String ele = enum1.nextElement().toString();
-			 System.out.println(" --" + ele + "  " + req.getParameter(ele));
+			 CTILogger.debug(" --" + ele + "  " + req.getParameter(ele));
 		}
+*/
 		 
 		String redirectURL = req.getParameter("REDIRECT");
 		
@@ -70,10 +73,14 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		String deviceID = req.getParameter("deviceID");
 		if( deviceID != null )
 			localBean.setDeviceID(Integer.parseInt(deviceID));
+		else
+		    localBean.setDeviceID(PAOGroups.INVALID);
 		
 		String serialNumber = req.getParameter("serialNumber");
 		if( serialNumber != null)
 			localBean.setSerialNumber(serialNumber);
+		else
+		    localBean.setSerialNumber(PAOGroups.STRING_INVALID);
 		
 
 		/** Specific route to send on, only used in the case of loops or serial number is used
@@ -88,6 +95,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 
 		//Flag to write to the database
 		String updateDB = req.getParameter("updateDB");
+		if( updateDB != null )
+		    localBean.setUpdateToDB(true);
+		
 		if (clear != null)
 			localBean.clearResultText();
 		else if( action!= null && action.equalsIgnoreCase("SelectDevice"))
@@ -101,10 +111,20 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			String function = req.getParameter("function");	//user friendly command string
 			String command = req.getParameter("command");	//system command string
 			/** Time to wait for return to calling jsp
-			 * Wait is used to <hope to> assure there is some resultText to display when we do go back. */ 
+			 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
 			String timeOut = req.getParameter("timeOut");
 			if( timeOut == null)
 				timeOut = "8000";	// 8 secs default
+			if( timeOut != null && command != null)	//adjust the timeout for multiple command strings, separated by '&'
+			{
+			    int commandCount = 1;
+			    for (int i = 0; i < command.length(); i++)
+			    {
+			        if( command.charAt(i) == '&')
+			            commandCount++;
+			    }
+			    timeOut = String.valueOf(commandCount * Integer.valueOf(timeOut).intValue());
+			}
 	
 			localBean.setTimeOut(new Integer(timeOut).intValue());
 			
@@ -120,24 +140,12 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					//WE HAVE NO COMMAND?
 					command = "";
 			}
-			//append 'update' to the command
-			if( updateDB != null)
-				command += " update";
-			
 			localBean.setCommandString(command);
-			
-			//Send the command out on deviceID/serialNumber
-			if( deviceID != null )
-			{	
-				localBean.handleDevice();
-			}
-			else if( serialNumber != null)
-			{
-				localBean.handleSerialNumber();
-			}
+			localBean.executeCommand();
 
 			/** Don't return to the jsp until we have the message or we've timed out.*/
-			while( localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning())
+			while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
+			        //localBean.getExecuteCmdsVector().size() > 0)
 			{
 				try
 				{
@@ -149,6 +157,8 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					e.printStackTrace();
 				}
 			}
+			System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
+			        " |VectorSize " + localBean.getExecuteCmdsVector().size());
 			
 		}
 		
