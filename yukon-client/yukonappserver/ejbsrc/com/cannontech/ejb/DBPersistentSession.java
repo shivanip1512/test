@@ -10,11 +10,13 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import com.cannontech.yukon.IDBPersistent;
 import java.sql.SQLException;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 
 /**
  * Session layer for DBPersistent.
- * @xdoclet-generated at Oct 2, 2002 4:14:22 PM
+ * @xdoclet-generated at Nov 4, 2002 4:47:09 PM
  */
 public class DBPersistentSession
    extends com.cannontech.ejb.DBPersistentBean

@@ -20,4 +20,12 @@
       </reference-descriptor>
       <jndi-name>jndi/DBPersistentBean</jndi-name>
    </weblogic-enterprise-bean>
+   <weblogic-enterprise-bean>
+      <ejb-name>SqlStatement</ejb-name>
+      <stateless-session-descriptor>
+      </stateless-session-descriptor>
+      <reference-descriptor>
+      </reference-descriptor>
+      <jndi-name>jndi/SqlStatementBean</jndi-name>
+   </weblogic-enterprise-bean>
 </weblogic-ejb-jar>

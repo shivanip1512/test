@@ -6,4 +6,7 @@
     <type>Session</type></bean>
   <bean>
     <beanClass>com.cannontech.ejb.DBPersistentBean</beanClass>
+    <type>Session</type></bean>
+  <bean>
+    <beanClass>com.cannontech.ejb.SqlStatementBean</beanClass>
     <type>Session</type></bean></beangroup>

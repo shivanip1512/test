@@ -35,6 +35,19 @@
 
       </session>
 
+      <session >
+         <description><![CDATA[No Description.]]></description>
+
+         <ejb-name>SqlStatement</ejb-name>
+
+         <home>com.cannontech.ejb.SqlStatementHome</home>
+         <remote>com.cannontech.ejb.SqlStatement</remote>
+         <ejb-class>com.cannontech.ejb.SqlStatementSession</ejb-class>
+         <session-type>Stateless</session-type>
+         <transaction-type>Container</transaction-type>
+
+      </session>
+
      <!--
        To add session beans that you have deployment descriptor info for, add
        a file to your merge directory called session-beans.xml that contains
@@ -62,6 +75,8 @@
 
    <!-- Assembly Descriptor -->
    <assembly-descriptor >
+
+   <!-- finder permissions -->
 
    <!-- finder permissions -->
 

@@ -5,6 +5,7 @@ package com.cannontech.ejb;
 
 import java.lang.*;
 import com.cannontech.database.TransactionException;
+import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
@@ -18,7 +19,7 @@ import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
 /**
  * Remote interface for DatabaseCache.
- * @xdoclet-generated at Oct 2, 2002 4:14:22 PM
+ * @xdoclet-generated at Nov 4, 2002 4:47:09 PM
  */
 public interface DatabaseCache
    extends javax.ejb.EJBObject
@@ -54,13 +55,13 @@ public interface DatabaseCache
 
    public java.util.List getAllNotificationRecipients(  ) throws java.rmi.RemoteException;
 
+   public java.util.List getAllPointLimits(  ) throws java.rmi.RemoteException;
+
    public java.util.HashMap getAllPointidMultiplierHashMap(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllPoints(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllPointsUnits(  ) throws java.rmi.RemoteException;
-   
-   public java.util.List getAllPointLimits(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllPorts(  ) throws java.rmi.RemoteException;
 

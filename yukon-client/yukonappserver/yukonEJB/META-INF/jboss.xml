@@ -13,6 +13,10 @@
          <ejb-name>DBPersistent</ejb-name>
          <jndi-name>jndi/DBPersistentBean</jndi-name>
       </session>
+      <session>
+         <ejb-name>SqlStatement</ejb-name>
+         <jndi-name>jndi/SqlStatementBean</jndi-name>
+      </session>
 
    </enterprise-beans>
 

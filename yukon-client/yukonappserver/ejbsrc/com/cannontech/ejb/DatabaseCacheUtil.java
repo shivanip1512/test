@@ -5,6 +5,7 @@ package com.cannontech.ejb;
 
 import java.lang.*;
 import com.cannontech.database.TransactionException;
+import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
@@ -24,7 +25,7 @@ import java.util.Hashtable;
 
 /**
  * Utility class for DatabaseCache.
- * @xdoclet-generated at Oct 2, 2002 4:14:23 PM
+ * @xdoclet-generated at Nov 4, 2002 4:47:10 PM
  */
 public class DatabaseCacheUtil
 {
