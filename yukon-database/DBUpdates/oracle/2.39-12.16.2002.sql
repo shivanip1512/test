@@ -299,3 +299,30 @@ and gds1.type != 2);
 
 /* Remove the duplicate gds entries (all old peak types) */
 delete graphdataseries where type = 2;
+
+
+
+/**** Add some constraints onto the YukonUser tables ****/
+alter table Contact
+   add constraint FK_RefCstLg_CustCont foreign key (LogInID)
+      references YukonUser (UserID);
+alter table CustomerLoginSerialGroup
+   add constraint FK_CsLgSG_CsL foreign key (LoginID)
+      references YukonUser (UserID);
+
+
+alter table EnergyCompanyOperatorLoginList
+   add constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
+      references YukonUser (UserID);
+alter table LMDirectOperatorList
+   add constraint FK_OpLg_LMDOpLs foreign key (OperatorLoginID)
+      references YukonUser (UserID);
+alter table OperatorSerialGroup
+   add constraint FK_OpSGrp_OpLg foreign key (LoginID)
+      references YukonUser (UserID);
+alter table LMMACSScheduleOperatorList
+   add constraint FK_OpLgLMMcSchOpLs foreign key (OperatorLoginID)
+      references YukonUser (UserID);
+alter table OperatorLoginGraphList
+   add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
+      references YukonUser (UserID);
