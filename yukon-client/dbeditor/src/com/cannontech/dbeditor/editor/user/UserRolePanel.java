@@ -2,8 +2,6 @@ package com.cannontech.dbeditor.editor.user;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -12,8 +10,8 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
-import javax.swing.JWindow;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -284,33 +282,43 @@ private javax.swing.JTable getJTableProperties() {
 			javax.swing.JComboBox combo = new javax.swing.JComboBox();
 			combo.setEditable( true );
 //			combo.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(1, 99999) );
-			
 			//try to center our editor text when editing
 			if( combo.getEditor().getEditorComponent() instanceof JTextField )
 			{
 				JTextField txtEditor = (JTextField)combo.getEditor().getEditorComponent();
 				txtEditor.setHorizontalAlignment( JTextField.CENTER );
 				
+/*          
 				txtEditor.addFocusListener( new FocusListener()
 				{
-					public void focusGained(FocusEvent e) {}
+					public void focusGained(FocusEvent e) 
+                    {
+                        CTILogger.info("FOC GAINED");
+                    }
+
 					public void focusLost(FocusEvent e)
 					{
 						//if a button on the screen was pressed, save the edited cell
 						if( getJTableProperties().isEditing()
 							 && !(e.getOppositeComponent() instanceof JWindow) )
-							getJTableProperties().getCellEditor().stopCellEditing();
+                        {
+                            CTILogger.info("val= " + getJTableProperties().getCellEditor().getCellEditorValue() );
+                            CTILogger.info(" row= " + getJTableProperties().getSelectedRow() );
+							getJTableProperties().getCellEditor().stopCellEditing();                            
+                        }
 					}
 
-				});						
+				});
+*/
+
 			}
-			
-			javax.swing.DefaultCellEditor ed = new javax.swing.DefaultCellEditor(combo);
+
+			DefaultCellEditor ed = new DefaultCellEditor(combo);
 			ed.setClickCountToStart(1);
 
 
-			ivjJTableProperties.setDefaultEditor( Object.class, ed );
-			
+			ivjJTableProperties.setDefaultEditor( Object.class, ed );                  
+            
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
