@@ -1,6 +1,9 @@
 package com.cannontech.esub.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.table.AbstractTableModel;
@@ -85,6 +88,8 @@ public class PointAlarmTableModel extends AbstractTableModel {
 				}
 			}
 		}
+		
+		sortRows();
 	}	
 	
 	/**
@@ -107,6 +112,17 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		rows.add(row);			
 	}
 	
+	private void sortRows() {
+		Collections.sort(rows, new Comparator() {
+			public int compare(Object a, Object b) {
+				ArrayList rowA = (ArrayList) a;
+				ArrayList rowB = (ArrayList) b;
+				int timeDiff = ((Date) rowA.get(0)).compareTo((Date) rowB.get(0)) * -1;
+				return (timeDiff != 0 ? timeDiff : ((String) rowA.get(2)).compareTo((String) rowB.get(2))*-1);
+			}
+		}
+		);
+	}
 
 	/**
 	 * Returns the deviceID.
