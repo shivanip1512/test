@@ -1656,7 +1656,7 @@ alter table LMThermostatSchedule
 
 
 alter table LMThermostatSchedule
-   add constraint FK_LMThSc_InvB foreign key (InventoryID)
+   add constraint FK_LMThSc_InvB foreign key (ScheduleID)
       references InventoryBase (InventoryID)
 /
 
