@@ -284,7 +284,7 @@ function init() {
 <%
 	String instrLink = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS) :
 			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_THERM_INSTRUCTIONS);
-	if (ServerUtils.forceNotNone(instrLink).length() == 0) {
+	if (StarsUtils.forceNotNone(instrLink).length() == 0) {
 %>
                               <a class="Link1" href="Instructions.jsp" onclick="return warnUnsavedChanges()">Click 
                               for hints and details</a>.

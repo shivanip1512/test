@@ -254,7 +254,7 @@
                     <%= homePhoneNo %></span><br>
                     <br>
 <%
-	String genlImgName = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_IMG_GENERAL));
+	String genlImgName = StarsUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_IMG_GENERAL));
 	if (genlImgName.length() > 0) {
 %>
                     <img src="../../../WebConfig/<%= genlImgName %>"> 

@@ -86,7 +86,7 @@ function submitIt(filter) {
                 <table width="80%" border="0" cellspacing="0" cellpadding="1">
                   <tr> 
                     <td class="MainText" align="center">Device Name: 
-                      <input type="text" name="SearchDeviceName" value="<%= ServerUtils.forceNotNull(mctBean.getDeviceName()) %>">
+                      <input type="text" name="SearchDeviceName" value="<%= StarsUtils.forceNotNull(mctBean.getDeviceName()) %>">
                       &nbsp;&nbsp;&nbsp;&nbsp; 
                       <input type="submit" name="Search" value="Search">
                     </td>

@@ -73,6 +73,7 @@ function confirmSubmit(form) {
 			    <input type="hidden" name="action" value="DeleteSNRange">
 			    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?failed">
+			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
                     <td align = "left" class = "MainText" bgcolor="#CCCCCC"><b>Delete 
@@ -105,9 +106,9 @@ function confirmSubmit(form) {
                             <div align="right">Range:</div>
                           </td>
                           <td width="75%"> 
-                            <input type="text" name="From" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("From")) %>">
+                            <input type="text" name="From" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
                             &nbsp;to&nbsp; 
-                            <input type="text" name="To" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("To")) %>">
+                            <input type="text" name="To" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
                           </td>
                         </tr>
                         <tr> 

@@ -176,7 +176,7 @@
                     <td width="230" class="HeaderCell">Address</td>
                   </tr>
                   <tr> 
-                    <td width="100" class="TableCell"><%= ServerUtils.forceNotNull(liteAcctInfo.getCustomerAccount().getAccountNumber()) %></td>
+                    <td width="100" class="TableCell"><%= StarsUtils.forceNotNull(liteAcctInfo.getCustomerAccount().getAccountNumber()) %></td>
                     <td width="120" class="TableCell"><%= name %></td>
                     <td width="230" class="TableCell"><%= address %></td>
                   </tr>

@@ -275,7 +275,7 @@ function removeAllMembers(form) {
                                         <%
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
-			String[] dispNames = ServerUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
+			String[] dispNames = StarsUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
 			
 			String progName = program.getYukonName();
 			if (progName == null) progName = "&lt;Virtual Program&gt;";
@@ -420,7 +420,7 @@ function removeAllMembers(form) {
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <%
 		String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ);
-		boolean customizedFAQ = ServerUtils.forceNotNone(faqLink).length() > 0;
+		boolean customizedFAQ = StarsUtils.forceNotNone(faqLink).length() > 0;
 %>
                                   <td class="TableCell" width="15%"> 
                                     <%

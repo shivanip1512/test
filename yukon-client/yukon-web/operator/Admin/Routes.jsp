@@ -58,7 +58,7 @@ function selectionChanged(form) {
 
 function addRoutes(form) {
 	var insertIdx = 0;
-	if (form.RoutesAssigned.options[0].value == 0)
+	if (form.RoutesAssigned.length > 0 && form.RoutesAssigned.options[0].value == 0)
 		insertIdx = 1;
 	
 	for (i = form.RoutesAvailable.length - 1; i >= 0; i--) {
@@ -83,7 +83,7 @@ function addRoutes(form) {
 
 function removeRoutes(form) {
 	var insertIdx = 0;
-	if (form.RoutesAvailable.options[0].value == 0)
+	if (form.RoutesAvailable.length > 0 && form.RoutesAvailable.options[0].value == 0)
 		insertIdx = 1;
 	
 	if (defaultRouteSelected && !removeWarned) {

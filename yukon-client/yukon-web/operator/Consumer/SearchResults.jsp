@@ -132,7 +132,7 @@ function selectMemberAccount(accountID, memberID) {
 <%
 				if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) {
 %>
-                    <%= ServerUtils.forceNotNull(liteAcctInfo.getAccountSite().getSiteNumber()) %>
+                    <%= StarsUtils.forceNotNull(liteAcctInfo.getAccountSite().getSiteNumber()) %>
 <%
 				}
 				else {

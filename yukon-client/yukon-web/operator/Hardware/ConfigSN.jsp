@@ -187,6 +187,7 @@ function removeAllConfig(form) {
 			    <input type="hidden" name="action" value="ConfigSNRange">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+				<input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
                 <table width="64%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                   <tr>
                     <td align="center"> 
@@ -199,9 +200,9 @@ function removeAllConfig(form) {
                                   <div align="right">Range:</div>
                                 </td>
                                 <td width="75%"> 
-                                  <input type="text" name="From" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("From")) %>">
+                                  <input type="text" name="From" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("From")) %>">
                                   &nbsp;to&nbsp; 
-                                  <input type="text" name="To" size="10" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("To")) %>">
+                                  <input type="text" name="To" size="10" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("To")) %>">
                                 </td>
                               </tr>
                               <tr> 

@@ -377,7 +377,7 @@ function validate(form) {
 		String name = ECUtils.formatName(liteContact);
 		String homePhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
 		String workPhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
-		String mapNo = ServerUtils.forceNotNone(liteAcctSite.getSiteNumber());
+		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();
 		StarsLiteFactory.setStarsCustomerAddress(starsAddr, liteAddr);

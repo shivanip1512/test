@@ -216,7 +216,7 @@
 		  <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ %>"> 
 <%
 	String faqLink = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_FAQ);
-	if (ServerUtils.forceNotNone(faqLink).length() > 0) {
+	if (StarsUtils.forceNotNone(faqLink).length() > 0) {
 %>
           <tr> 
             <td width="10">&nbsp;</td>

@@ -131,7 +131,7 @@ function newFAQSubject(form) {
                             <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
                               <input type="hidden" name="action" value="UpdateFAQLink">
 <%
-	String faqLink = ServerUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ));
+	String faqLink = StarsUtils.forceNotNone(AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_FAQ));
 	boolean customizedFAQ = faqLink.length() > 0;
 	String checkedStr = (customizedFAQ) ? "checked" : "";
 	String disabledStr = (customizedFAQ) ? "" : "disabled";

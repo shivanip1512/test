@@ -297,7 +297,7 @@ function confirmCancel() {
                                 <tr> 
                                   <td width="100" align="right" class="SubtitleHeader">*Serial #: </td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("SerialNo")) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("SerialNo")) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
 							</table>
@@ -307,7 +307,7 @@ function confirmCancel() {
                                 <tr> 
                                   <td width="100" align="right" class="SubtitleHeader">*Device Name: </td>
                                   <td width="200"> 
-                                    <input type="text" name="DeviceName" maxlength="30" size="24" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("DeviceName")) %>" onchange="setContentChanged(true)">
+                                    <input type="text" name="DeviceName" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("DeviceName")) %>" onchange="setContentChanged(true)">
                                   </td>
                                 </tr>
                                 <tr>
@@ -345,13 +345,13 @@ function confirmCancel() {
                                 <tr> 
                                   <td width="100" align="right" class="SubtitleHeader">*Physical Addr: </td>
                                   <td width="200"> 
-                                    <input type="text" name="PhysicalAddr" maxlength="30" size="24" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("PhysicalAddr")) %>" onblur="setDefaultMeterNumber(this.form)" onchange="setContentChanged(true)">
+                                    <input type="text" name="PhysicalAddr" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("PhysicalAddr")) %>" onblur="setDefaultMeterNumber(this.form)" onchange="setContentChanged(true)">
                                   </td>
                                 </tr>
                                 <tr> 
                                   <td width="100" align="right" class="SubtitleHeader">*Meter Number: </td>
                                   <td width="200"> 
-                                    <input type="text" name="MeterNumber" maxlength="30" size="24" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("MeterNumber")) %>" onchange="setContentChanged(true)">
+                                    <input type="text" name="MeterNumber" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("MeterNumber")) %>" onchange="setContentChanged(true)">
                                   </td>
                                 </tr>
                                 <tr> 

@@ -109,7 +109,7 @@ var iconNameEnvrn = new Array();
 		String progName = "(none)";
 		if (program.getDeviceID() > 0) progName = PAOFuncs.getYukonPAOName(program.getDeviceID());
 		StarsWebConfig cfg = program.getStarsWebConfig();
-		String[] dispNames = ServerUtils.splitString(cfg.getAlternateDisplayName(), ",");
+		String[] dispNames = StarsUtils.splitString(cfg.getAlternateDisplayName(), ",");
 		String[] imgNames = ServletUtils.getImageNames( cfg.getLogoLocation() );
 %>
 	progID[<%= i %>] = <%= program.getProgramID() %>;
@@ -142,7 +142,7 @@ var yukonDescription = new Array();
 	yukonProgID[<%= i+1 %>] = -1;
 	yukonDeviceID[<%= i+1 %>] = <%= program.getYukonID() %>;
 	yukonProgName[<%= i+1 %>] = "<%= program.getYukonName() %>";
-	yukonDescription[<%= i+1 %>] = "<%= ServerUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
+	yukonDescription[<%= i+1 %>] = "<%= StarsUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
 <%	} %>
 
 var nextProgIdx = <%= category.getStarsEnrLMProgramCount() %>;

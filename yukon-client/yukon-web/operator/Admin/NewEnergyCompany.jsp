@@ -127,7 +127,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Company Name:</td>
                               <td width="75%"> 
-                                <input type="text" name="CompanyName" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CompanyName")) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="CompanyName" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("CompanyName")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
 <% if (!ECUtils.isDefaultEnergyCompany(liteEC)) { %>
@@ -141,7 +141,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Email:</td>
                               <td width="75%"> 
-                                <input type="text" name="Email" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Email")) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="Email" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Email")) %>" onchange="setContentChanged(true)">
                                 <font color="#FF0000">(Required for password request)</font> 
                               </td>
                             </tr>
@@ -158,7 +158,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Operator Groups:</td>
                               <td width="75%"> 
-                                <input type="text" name="OperatorGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("OperatorGroup")) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="OperatorGroup" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("OperatorGroup")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span></td>
                             </tr>
                             <tr> 
@@ -180,7 +180,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Res. Customer Groups:</td>
                               <td width="75%"> 
-                                <input type="text" name="CustomerGroup" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("CustomerGroup")) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="CustomerGroup" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("CustomerGroup")) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 
@@ -213,7 +213,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username")) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="Username" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
@@ -241,7 +241,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username2" size="30" value="<%= ServerUtils.forceNotNull(savedReq.getProperty("Username2")) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="Username2" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username2")) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 
