@@ -28,7 +28,7 @@ public abstract class ClientBase extends java.util.Observable implements Runnabl
 	public static String HOST = "127.0.0.1";
 	public static int PORT = 1510;
 
-	private int sleepTime = 2000; // 2 seconds default
+	private int sleepTime = 200; // .2 seconds default
 	
 /**
  * ClientBase constructor comment.
