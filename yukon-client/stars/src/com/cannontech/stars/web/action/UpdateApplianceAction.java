@@ -495,7 +495,7 @@ public class UpdateApplianceAction implements ActionBase {
 		
 		if (updateApp.getAirConditioner() != null) {
 			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
-			StarsLiteFactory.setApplianceAirConditioner( appAC, liteApp );
+			appAC.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appAC.setTonnageID( new Integer(updateApp.getAirConditioner().getTonnage().getEntryID()) );
 			appAC.setTypeID( new Integer(updateApp.getAirConditioner().getACType().getEntryID()) );
 			
@@ -511,7 +511,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getWaterHeater() != null) {
 			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
-			StarsLiteFactory.setApplianceWaterHeater( appWH, liteApp );
+			appWH.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appWH.setNumberOfGallonsID( new Integer(updateApp.getWaterHeater().getNumberOfGallons().getEntryID()) );
 			appWH.setEnergySourceID( new Integer(updateApp.getWaterHeater().getEnergySource().getEntryID()) );
 			if (updateApp.getWaterHeater().hasNumberOfElements())
@@ -531,7 +531,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getDualFuel() != null) {
 			ApplianceDualFuel appDF = new ApplianceDualFuel();
-			StarsLiteFactory.setApplianceDualFuel( appDF, liteApp );
+			appDF.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appDF.setSwitchOverTypeID( new Integer(updateApp.getDualFuel().getSwitchOverType().getEntryID()) );
 			appDF.setSecondaryEnergySourceID( new Integer(updateApp.getDualFuel().getSecondaryEnergySource().getEntryID()) );
 			if (updateApp.getDualFuel().hasSecondaryKWCapacity())
@@ -551,7 +551,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getGenerator() != null) {
 			ApplianceGenerator appGen = new ApplianceGenerator();
-			StarsLiteFactory.setApplianceGenerator( appGen, liteApp );
+			appGen.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appGen.setTransferSwitchTypeID( new Integer(updateApp.getGenerator().getTransferSwitchType().getEntryID()) );
 			appGen.setTransferSwitchMfgID( new Integer(updateApp.getGenerator().getTransferSwitchManufacturer().getEntryID()) );
 			if (updateApp.getGenerator().hasPeakKWCapacity())
@@ -579,7 +579,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getGrainDryer() != null) {
 			ApplianceGrainDryer appGD = new ApplianceGrainDryer();
-			StarsLiteFactory.setApplianceGrainDryer( appGD, liteApp );
+			appGD.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appGD.setDryerTypeID( new Integer(updateApp.getGrainDryer().getDryerType().getEntryID()) );
 			appGD.setBinSizeID( new Integer(updateApp.getGrainDryer().getBinSize().getEntryID()) );
 			appGD.setBlowerEnergySourceID( new Integer(updateApp.getGrainDryer().getBlowerEnergySource().getEntryID()) );
@@ -598,7 +598,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getStorageHeat() != null) {
 			ApplianceStorageHeat appSH = new ApplianceStorageHeat();
-			StarsLiteFactory.setApplianceStorageHeat( appSH, liteApp );
+			appSH.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appSH.setStorageTypeID( new Integer(updateApp.getStorageHeat().getStorageType().getEntryID()) );
 			if (updateApp.getStorageHeat().hasPeakKWCapacity())
 				appSH.setPeakKWCapacity( new Integer(updateApp.getStorageHeat().getPeakKWCapacity()) );
@@ -621,7 +621,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getHeatPump() != null) {
 			ApplianceHeatPump appHP = new ApplianceHeatPump();
-			StarsLiteFactory.setApplianceHeatPump( appHP, liteApp );
+			appHP.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appHP.setPumpTypeID( new Integer(updateApp.getHeatPump().getPumpType().getEntryID()) );
 			appHP.setPumpSizeID( new Integer(updateApp.getHeatPump().getPumpSize().getEntryID()) );
 			appHP.setStandbySourceID( new Integer(updateApp.getHeatPump().getStandbySource().getEntryID()) );
@@ -642,7 +642,7 @@ public class UpdateApplianceAction implements ActionBase {
 		}
 		else if (updateApp.getIrrigation() != null) {
 			ApplianceIrrigation appIrr = new ApplianceIrrigation();
-			StarsLiteFactory.setApplianceIrrigation( appIrr, liteApp );
+			appIrr.setApplianceID( new Integer(liteApp.getApplianceID()) );
 			appIrr.setIrrigationTypeID( new Integer(updateApp.getIrrigation().getIrrigationType().getEntryID()) );
 			appIrr.setHorsePowerID( new Integer(updateApp.getIrrigation().getHorsePower().getEntryID()) );
 			appIrr.setEnergySourceID( new Integer(updateApp.getIrrigation().getEnergySource().getEntryID()) );
