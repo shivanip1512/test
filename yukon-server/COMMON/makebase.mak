@@ -9,6 +9,7 @@ DLLBUILDNAME = -DCTIBASE
 INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
+-I$(BOOST) \
 -I$(RW) \
 
 
@@ -18,6 +19,7 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(CPARMS)\include \
+;$(BOOST) \
 ;$(RW) \
 
 

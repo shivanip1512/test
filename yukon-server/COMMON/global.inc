@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.4 $                               #
-#       $Date: 2002/06/05 16:38:22 $                  #
+#       $Revision: 1.5 $                               #
+#       $Date: 2002/07/18 16:56:27 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -85,6 +85,7 @@ R_RTDB           = $(REFPATH)\rtdb
 
 LOADMANAGEMENT  = $(COMPILEBASE)\loadmanagement
 FDR             = $(COMPILEBASE)\fdr
+BOOST           = $(COMPILEBASE)\boost_1_28_0
 CALC            = $(COMPILEBASE)\calc
 CAPCONTROL      = $(COMPILEBASE)\capcontrol
 COMMON          = $(COMPILEBASE)\common
@@ -104,7 +105,7 @@ SERVICE         = $(COMPILEBASE)\service
 SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
 TCLINC          = $(COMPILEBASE)\tcl\include
-XERCESINC		= $(COMPILEBASE)\xerces\include
+XERCESINC       = $(COMPILEBASE)\xerces\include
 
 
 !IFDEF DEBUG
