@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:36:08 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/04/22 15:27:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,8 +128,7 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
             }
             else
             {
-                cout << "Finish some code here " << __FILE__ << " (" << __LINE__ << ")"  << endl;
-                status = ~NORMAL;
+                status = BADROUTE;
             }
         }
     }
