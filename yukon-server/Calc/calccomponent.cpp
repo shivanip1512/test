@@ -170,7 +170,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUp
         }
         else if( (calcsUpdateType == periodicPlusUpdate) )
         {
-            if( componentPointPtr->getPointTime() > calcsLastUpdateTime)
+            if( componentPointPtr->getPointTime() >= calcsLastUpdateTime)
                 return TRUE;
             else
                 return FALSE;
@@ -609,8 +609,18 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         {
             DOUBLE q = _parent->pop();
             DOUBLE p = _parent->pop();
+            if(q != 0)
+            {
             DOUBLE temp = p/q;
             retVal = cos(temp);
+        }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
         else if( !functionName.compareTo("ArcTan",RWCString::ignoreCase) )
         {

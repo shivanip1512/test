@@ -26,10 +26,15 @@ protected:
 
     bool readCalcPoints( CtiCalculateThread *calcThread );
     BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
+    void dropDispatchConnection( );
 
 private:
+
+    RWThreadFunction _inputFunc;
+    RWThreadFunction _outputFunc;
+
     RWTime _dispatchPingedFailed;
-    bool _ok, _dbChange;
+    bool _ok, _restart;
     RWCString _dispatchMachine;
     INT _dispatchPort;
     CtiCalculateThread *calcThread;
