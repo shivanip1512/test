@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/11 18:31:26 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/06/02 20:59:54 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,7 +220,7 @@ private:
     struct seriesv_pointdata
     {
         unsigned short offset;
-        unsigned short value;
+        long           value;
         unsigned long  time;
         CtiPointType_t type;
     };

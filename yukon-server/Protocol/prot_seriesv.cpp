@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 17:48:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/06/02 20:59:54 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,6 +228,8 @@ int CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
         _collected_points.pop();
     }
 
+    InMessage->InLength = sizeof(seriesv_inmess_struct) + (sizeof(seriesv_pointdata) * response.num_points);
+
     return 0;
 }
 
@@ -278,6 +280,7 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
                     case State_Init:
                     case State_RequestAccumulators:
                     {
+                        _state = State_RequestAccumulators;
                         opcode = Opcode_ScanAccumulator;
 
                         setRange( _rtu_info.accum_count, _accum_min, _accum_max, param1, param2 );
@@ -291,6 +294,7 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
                     }
                     case State_RequestAnalogs:
                     {
+                        _state = State_RequestAnalogs;
                         opcode = Opcode_ScanAnalog;
 
                         setRange( _rtu_info.analog_count, _analog_min, _analog_max, param1, param2 );
@@ -302,11 +306,12 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
                         }
                         //  else fall through, we're skipping this state!
                     }
-                    case State_RequestAnalogOutputs:
+/*                    case State_RequestAnalogOutputs:
                     {
+                        _state = State_RequestAnalogOutputs;
                         opcode = Opcode_AnalogSetpointScan;
 
-                        setRange( NumAnalogSetpoints, _setpt_min, _setpt_max, param1, param2 );
+                        setRange( 1, _setpt_min, _setpt_max, param1, param2 );
                         points_requested = param2;
 
                         if( points_requested )
@@ -314,9 +319,10 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
                             break;
                         }
                         //  else fall through, we're skipping this state!
-                    }
+                    }*/
                     case State_RequestStatuses:
                     {
+                        _state = State_RequestStatuses;
                         opcode = Opcode_ScanStatus;
 
                         setRange( _rtu_info.status_count, _status_min, _status_max, param1, param2 );
@@ -638,7 +644,7 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
                                 {
                                     for( int i = 0; i < _outbound.payload[1]; i++ )
                                     {
-                                        pd.offset = i + _outbound.payload[0];
+                                        pd.offset  = i + _outbound.payload[0];
                                         pd.time    = Now.seconds();
                                         pd.type    = PulseAccumulatorPointType;
                                         pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
@@ -654,19 +660,21 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
                                 {
                                     for( int i = 0; i < _outbound.payload[1]; i++ )
                                     {
-                                        pd.offset = i + _outbound.payload[0];
+                                        pd.offset  = i + _outbound.payload[0];
                                         pd.time    = Now.seconds();
                                         pd.type    = AnalogPointType;
-                                        pd.value   = (packet.data[i*2] << 8) | packet.data[i*2+1];
+
+                                        //  these analogs are 16-bit signed - make sure that it's cast properly
+                                        pd.value  = (short)((packet.data[i*2] << 8) | packet.data[i*2+1]);
 
                                         _collected_points.push(pd);
                                     }
 
-                                    _state = State_RequestAnalogOutputs;
+                                    _state = State_RequestStatuses;
 
                                     break;
                                 }
-                                case State_RequestAnalogOutputs:
+/*                                case State_RequestAnalogOutputs:
                                 {
                                     for( int i = 0; i < _outbound.payload[1]; i++ )
                                     {
@@ -681,12 +689,12 @@ int CtiProtocolSeriesV::decode( CtiXfer &xfer, int status )
                                     _state = State_RequestStatuses;
 
                                     break;
-                                }
+                                }*/
                                 case State_RequestStatuses:
                                 {
                                     for( int i = 0; i < _outbound.payload[1]; i++ )
                                     {
-                                        pd.offset = i + _outbound.payload[0];
+                                        pd.offset  = i + _outbound.payload[0];
                                         pd.time    = Now.seconds();
                                         pd.type    = StatusPointType;
                                         pd.value   = (packet.data[i/8] >> (i % 8)) & 0x01;
