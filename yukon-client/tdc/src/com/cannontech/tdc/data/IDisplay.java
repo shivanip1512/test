@@ -21,7 +21,7 @@ public interface IDisplay
 	public static final int HISTORY_EVENT_VIEWER_DISPLAY_NUMBER = 2;
 	public static final int RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER = 3;
 	public static final int GLOBAL_ALARM_DISPLAY = 4;
-	public static final int LAST_ALARM_DISPLAY = 14;
+	public static final int LAST_ALARM_DISPLAY = 35;
 	public static final int VIEWABLE_ALARM_COUNT = 11;  // ALL_ALARM display plus alarmStateIds 2 - 11 displays
 
 

@@ -38,7 +38,7 @@ public class Signal extends com.cannontech.message.util.Message
 	public static final int ALARM_SIGNAL = 255; // 1-255 are alarms
 	public static final int EVENT_SIGNAL = 1;
 	public static final int SIGNAL_COND = -1;
-	public static final int MAX_DISPLAYABLE_ALARM_SIGNAL = 11;
+	public static final int MAX_DISPLAYABLE_ALARM_SIGNAL = 32;
 
 	// TAGS to be read from Dispatch
 	// taken from pointdefs.h
