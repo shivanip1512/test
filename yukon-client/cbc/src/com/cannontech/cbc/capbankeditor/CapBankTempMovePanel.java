@@ -438,7 +438,7 @@ private javax.swing.JTextField getJTextFieldCapBankOrder() {
 				feeder.getLiteID(),
 				getCapBankDevice().getCcId().intValue(),
 				order,
-				true );
+				false );
 
 			if( getConnectionWrapper() != null )
 			{
