@@ -20,11 +20,18 @@ void usage()
 {
     cout << endl;
     cout << "Arg 1: cvs log file -l filename" << endl;
-    cout << "  Output from (cvs log projfile > projfile.log)?" << endl << endl;
-    cout << "Arg 2: output type                " << endl;
+    cout << "  Output from (cvs rlog projfile > projfile.log)?" << endl << endl;
+    cout << "                    -B report BRANCHES only" << endl;
+    cout << "                    -T report TAGS only" << endl;
+    cout << "increment type                " << endl;
     cout << "                    -M (Major Rev)" << endl;
     cout << "                    -m (Minor Rev)" << endl;
     cout << "                    -b (Build Rev)" << endl << endl;
+    cout << "output type (program exit code)" << endl;
+    cout << "                    -R (Major Rev)" << endl;
+    cout << "                    -r (Minor Rev)" << endl;
+    cout << "                    -v (Build Rev)" << endl << endl;
+    cout << endl << "e.g.  cvs rlog -r yukon-server\\Makefile > c:\\temp\\tags.log & nextrev -l c:\\temp\\tags.log -M -b" << endl;
 }
 
 int main(int argc, char **argv)
@@ -37,10 +44,15 @@ int main(int argc, char **argv)
     INT minorRevisionVal = 0;
     INT buildRevisionVal = 0;
 
+    bool verbose = false;
     bool incrementMajor = false;
     bool incrementMinor = false;
-    bool incrementBuild = true;
-    bool reportOnly = false;
+    bool incrementBuild = false;
+    bool reportBranchesOnly = false;
+    bool reportTagsOnly = false;
+    bool returnMajor = false;
+    bool returnMinor = false;
+    bool returnBuild = false;
 
     FILE *fp;
 
@@ -61,26 +73,55 @@ int main(int argc, char **argv)
                     i++; // Hop over two positions here!
                     break;
                 }
-            case 'r':
+            case 'B':
                 {
-                    reportOnly = true;
+                    reportBranchesOnly = true;
+                    break;
+                }
+            case 'T':
+                {
+                    reportTagsOnly = true;
                     break;
                 }
             case 'M':
                 {
                     incrementMajor = true;
-                    incrementBuild = false;
                     break;
                 }
             case 'm':
                 {
                     incrementMinor = true;
-                    incrementBuild = false;
                     break;
                 }
             case 'b':
                 {
                     incrementBuild = true;
+                    break;
+                }
+            case 'R':
+                {
+                    returnMajor = true;
+                    returnMinor = false;
+                    returnBuild = false;
+                    break;
+                }
+            case 'r':
+                {
+                    returnMinor = true;
+                    returnMajor = false;
+                    returnBuild = false;
+                    break;
+                }
+            case 'v':
+                {
+                    returnBuild = true;
+                    returnMajor = false;
+                    returnMinor = false;
+                    break;
+                }
+            case 'V':
+                {
+                    verbose = true;
                     break;
                 }
             default:
@@ -93,12 +134,14 @@ int main(int argc, char **argv)
         }
     }
 
+    if(!filename.isNull())
     {
         // cout << endl << "Opening " << filename << " for processing" << endl << endl;
         fp = fopen(filename.data(), "rt");
 
         if(fp != NULL)
         {
+            if(reportTagsOnly || reportBranchesOnly) cout << endl;
             while( fgets(temp, 127, fp))
             {
                 temp[ strlen(temp) - 1 ] = '\0';
@@ -108,14 +151,20 @@ int main(int argc, char **argv)
                 str = str.strip( RWCString::both, ' ' );
                 str = str.strip( RWCString::both, '\t' );
 
-                if(!str.match("BR").isNull())
+                if(reportTagsOnly && !str.match("TG").isNull())
+                {
+                    RWCTokenizer next(str);
+                    RWCString token = next(":");
+                    cout << "    " << token << endl;
+                }
+                else if(!str.match("BR").isNull())
                 {
                     RWCTokenizer next(str);
                     RWCString token = next(":");
 
-                    if(reportOnly)
+                    if(reportBranchesOnly)
                     {
-                        cout << str << endl;
+                        cout << "    " << str << endl;
                     }
 
                     if(!(str = token.match("_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
@@ -162,21 +211,51 @@ int main(int argc, char **argv)
             cout << " Couldn't find the file " << filename << endl;
         }
     }
+    else
+    {
+        usage();
+    }
 
-    if(incrementMajor)
-    {
-        errorCode = ++majorRevisionVal;
-    }
-    else if(incrementMinor)
-    {
-        errorCode = ++minorRevisionVal;
-    }
-    else if(incrementBuild)
+    if(incrementBuild)
     {
         errorCode = ++buildRevisionVal;
     }
 
-    // cout << " NEXT REVISION    " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
+    if(incrementMinor)
+    {
+        errorCode = ++minorRevisionVal;
+        buildRevisionVal = 0;
+    }
+
+    if(incrementMajor)
+    {
+        errorCode = ++majorRevisionVal;
+        minorRevisionVal = 0;
+        buildRevisionVal = 0;
+    }
+
+    if(returnBuild)
+    {
+        errorCode = buildRevisionVal;
+    }
+    else if(returnMinor)
+    {
+        errorCode = minorRevisionVal;
+    }
+
+    else if(returnMajor)
+    {
+        errorCode = majorRevisionVal;
+    }
+
+    if(verbose)
+    {
+        cout << endl;
+        cout << endl << "NEXT REVISION " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
+        cout << "MAJORREVISION:   " << majorRevisionVal << endl;
+        cout << "MINORREVISION:   " << minorRevisionVal << endl;
+        cout << "BUILDLEVEL:      " << buildRevisionVal << endl;
+    }
 
     return errorCode;
 }
