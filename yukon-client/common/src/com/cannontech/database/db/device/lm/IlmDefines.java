@@ -68,6 +68,8 @@ public interface IlmDefines
 	//all possible values for the MethodOptionType in DirectGears
 	public static final String OPTION_FIXED_COUNT = "FixedCount";
 	public static final String OPTION_COUNT_DOWN = "CountDown";
+	public static final String OPTION_FIXED_SHED = "FixedShedTime";
+	public static final String OPTION_DYNAMIC_SHED = "DynamicShedTime";
 	public static final String OPTION_LIMITED_COUNT_DOWN = "LimitedCountDown";
 
 
