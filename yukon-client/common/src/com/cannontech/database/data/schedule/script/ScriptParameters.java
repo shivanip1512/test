@@ -68,5 +68,6 @@ public interface ScriptParameters
     public static final String READ_FROZEN_PARAM = "ReadFrozen";    
 
     //VERY CUSTOM, string command to Read Frozen 
-    public static final String READ_FROZEN_COMMAND_STRING = "putconfig emetcon ied class 72 02";
+    public static final String READ_FROZEN_ALPHA_COMMAND_STRING = "putconfig emetcon ied class 72 02";
+	public static final String READ_FROZEN_S4_COMMAND_STRING = "putconfig emetcon ied class 0 1";
 }

@@ -126,7 +126,7 @@ public class ScriptTemplate implements ScriptParameters
 			paramToDescMap.put(IED_FLAG_PARAM, "When true (and respective parameters exist), the meters read are IED type meters.");
 			paramToDescMap.put(TOU_RATE_PARAM, "The Alpha/S4/KV TOU Rate to use."); 
 			paramToDescMap.put(RESET_COUNT_PARAM, "The number of times to resend the demand reset command.");
-			paramToDescMap.put(READ_FROZEN_PARAM, "MCTs with Alpha will move to read frozen register.");
+			paramToDescMap.put(READ_FROZEN_PARAM, "MCTs with Alpha or S4 will move to read frozen register.");
         }
         return paramToDescMap;
     }
@@ -149,7 +149,7 @@ public class ScriptTemplate implements ScriptParameters
 	        code += "    set " + RESET_COUNT_PARAM + " [expr $"+ RESET_COUNT_PARAM + " - 1]" + ENDLINE + ENDLINE;
 	        code += "    " + COMMENT + "Reset the Demand" + ENDLINE;
 	        code += "    putvalue reset ied" + ENDLINE + ENDLINE;
-	        code += "    " + COMMENT + "Move MCT with Alpha to read the frozen register" + ENDLINE;
+	        code += "    " + COMMENT + "Move MCT to read the frozen register" + ENDLINE;
 	        code += "    eval $" + READ_FROZEN_PARAM + ENDLINE + ENDLINE;
 	        code += "    " + COMMENT + "Wait 2 minutes and send the Reset again" + ENDLINE;
 	        code += "    dout \"Wait 120 after Demand Reset\"" + ENDLINE;
