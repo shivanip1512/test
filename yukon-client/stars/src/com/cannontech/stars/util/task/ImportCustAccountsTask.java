@@ -16,7 +16,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -740,9 +739,9 @@ public class ImportCustAccountsTask implements TimeConsumingTask {
 	private void programSignUp(int[][] programs, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-		for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
-			if (liteProg.getLmProgram().getProgramID() == programs[0][0])
+		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
+			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			if (liteApp.getLmProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID())
 				return;
 		}
 		
