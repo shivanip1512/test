@@ -98,7 +98,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
 			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
-			PAOGroups.SERIES_5_LMI
+			PAOGroups.SERIES_5_LMI, PAOGroups.RTC
 			
 		},
 		{	//11 - LMIExclusionEditorPanel
