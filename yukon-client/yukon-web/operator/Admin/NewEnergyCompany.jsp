@@ -191,7 +191,9 @@ function checkPassword(form) {
                             <li>Log off and re-login with the operator login you 
                               just created. Click the &quot;Config Energy Company&quot; 
                               button under &quot;Administration&quot;, and edit 
-                              the energy company settings.</li>
+                              the energy company settings. The email address of 
+                              the energy company must be set in order for password 
+                              request to work.</li>
                           </ol>
                         </td>
                       </tr>
