@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import com.cannontech.alarms.gui.AlarmHandler;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 
 import java.util.Vector;
@@ -21,18 +22,37 @@ public class YukonSysTray implements SysTrayMenuListener
 	
 
 	private final SysTrayMenu yukonSysTray = 
-			new SysTrayMenu( ALL_ICONS[0], "Starting Yukon Monitor..." );
+			new SysTrayMenu( ALL_ICONS[ICO_DISCON], ISystrayDefines.MSG_STARTING );
 
 	// create icons
+	// the extension can be omitted for icons
 	static final SysTrayMenuIcon[] ALL_ICONS = 
 	{
-		// the extension can be omitted
+		//default state
 		new SysTrayMenuIcon( 
-			ClassLoader.getSystemResource("duke" + SysTrayMenuIcon.getExtension()) ),
+			ClassLoader.getSystemResource("YukonNoAlarm" + SysTrayMenuIcon.getExtension()) ),
+
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonDiscon" + SysTrayMenuIcon.getExtension()) ),
+
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonNoLog" + SysTrayMenuIcon.getExtension()) ),
+
+
+		//all animated icons go below here
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("YukonAlarm1" + SysTrayMenuIcon.getExtension()) ),
 
 		new SysTrayMenuIcon(
-			ClassLoader.getSystemResource("duke_up" + SysTrayMenuIcon.getExtension()) ),
+			ClassLoader.getSystemResource("YukonAlarm2" + SysTrayMenuIcon.getExtension()) ),
 	};
+
+	
+	//indexes to the icons array that have meaning
+	public static final int ICO_NO_ALRM = 0;
+	public static final int ICO_DISCON = 1;
+	public static final int ICO_NO_LOG = 2;
+	public static final int ICO_ANIME_START = 3;
 
 
 
@@ -75,7 +95,7 @@ public class YukonSysTray implements SysTrayMenuListener
 					{
 						while( true )
 						{
-							for( int i = 0; i < ALL_ICONS.length; i++ )
+							for( int i = ICO_ANIME_START; i < ALL_ICONS.length; i++ )
 							{
 								yukonSysTray.setIcon( ALL_ICONS[i] );
 								
@@ -87,7 +107,7 @@ public class YukonSysTray implements SysTrayMenuListener
 					catch( Exception e ) {}
 					finally
 					{
-						yukonSysTray.setIcon( ALL_ICONS[0] );
+						yukonSysTray.setIcon( ALL_ICONS[ICO_NO_ALRM] );
 						iconCyclerThrd = null;
 					}
 
@@ -101,9 +121,36 @@ public class YukonSysTray implements SysTrayMenuListener
 		}
 	}
 
-	public void setTrayText( String str_ )
+	/** 
+	 * This method sets the tooltip flyover text AND it sets the corresponding
+	 * icon to use.
+	 * 
+	 * @param str_
+	 */
+	public synchronized void setTrayText( String str_ )
 	{
-		yukonSysTray.setToolTip( str_ );		
+		yukonSysTray.setToolTip( str_ );
+		
+		//do not let this guy in my house!
+		if( str_ == null )
+			return;
+
+		if( ISystrayDefines.MSG_NOT_CONN.equalsIgnoreCase(str_) 
+			 || ISystrayDefines.MSG_STARTING.equalsIgnoreCase(str_) )
+		{
+			stopCycleImages();
+			yukonSysTray.setIcon( ALL_ICONS[ICO_DISCON] );
+		}
+		else if( ISystrayDefines.MSG_STARTING.equalsIgnoreCase(str_) )
+		{
+			stopCycleImages();
+			yukonSysTray.setIcon( ALL_ICONS[ICO_DISCON] );
+		}
+		else if( str_.indexOf(ISystrayDefines.MSG_ALRM_TOTALS) >=0 )
+		{
+			yukonSysTray.setIcon( ALL_ICONS[ICO_NO_ALRM] );
+		}
+
 	}
 
 
@@ -122,7 +169,17 @@ public class YukonSysTray implements SysTrayMenuListener
 		catch (Exception e)
 		{}
 
-		new YukonSysTray();
+
+		System.setProperty("cti.app.name", "Yukon Systray");
+
+		ClientSession session = ClientSession.establishSession();					
+		if( session != null) 
+		{
+			//System.exit(-1);
+			new YukonSysTray();
+		}
+		//exits gracefully if we are not logged in!
+
 	}
 
 	public AlarmHandler getAlarmHandler()
@@ -212,7 +269,7 @@ public class YukonSysTray implements SysTrayMenuListener
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( cntrlSubMenu );
 		yukonSysTray.addItem( appSubMenu );		
-		yukonSysTray.addItem( getMenuItemLogin() ); //top component
+		//yukonSysTray.addItem( getMenuItemLogin() ); //top component
 		
 		
 		initConnections();

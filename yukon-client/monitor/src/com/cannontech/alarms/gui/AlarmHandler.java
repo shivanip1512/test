@@ -7,6 +7,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.systray.ISystrayDefines;
 import com.cannontech.systray.YukonSysTray;
 
 /**
@@ -102,7 +103,7 @@ public class AlarmHandler implements Observer
 
 
 		//update the text
-		yukonSysTray.setTrayText( "Alarm Totals : " + getSignalVector().size() );
+		yukonSysTray.setTrayText( ISystrayDefines.MSG_ALRM_TOTALS + getSignalVector().size() );
 	}
 	
 	
@@ -111,10 +112,11 @@ public class AlarmHandler implements Observer
 		if( val instanceof ClientConnection )
 		{
 			if( !getAlarmClient().connected() )
-				yukonSysTray.setTrayText( "Not Connected to Server" );
+				yukonSysTray.setTrayText( ISystrayDefines.MSG_NOT_CONN );
 			else
 				//alarmMenu.setToolTip( "Connected to Server" );
-				yukonSysTray.setTrayText( "Alarm Totals : " +  getSignalVector().size() );
+				yukonSysTray.setTrayText( ISystrayDefines.MSG_ALRM_TOTALS +  
+							getSignalVector().size() );
 		}
 		
 		if( val instanceof Signal )
