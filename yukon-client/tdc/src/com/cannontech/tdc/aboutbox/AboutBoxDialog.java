@@ -249,8 +249,8 @@ public java.util.Vector getListData()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -320,7 +320,7 @@ private void setAnySpecialDisplayInfo()
 				Class theClass = Class.forName( results[i][0].toString() );
 				child = (SpecialTDCChild)theClass.newInstance();
 
-				getListData().addElement("      " + child.getName() + "   Version : " + child.getVersion() );
+				getListData().addElement("      " + child.getName() );
 			}
 			catch( Exception exc )
 			{ // no big deal, we could ignore it

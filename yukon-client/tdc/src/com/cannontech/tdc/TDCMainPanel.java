@@ -1998,7 +1998,7 @@ public boolean initComboCurrentDisplay()
 		getJComboCurrentDisplay().removeActionListener(this);
 		if( getJComboCurrentDisplay().getItemCount() > 0 )
 			getJComboCurrentDisplay().removeAllItems();
-		
+		      
 		// add all the displays in the database
 		int alarmIndex = 0;
 		for( int i = 0; i < values.length; i++ )
@@ -2030,6 +2030,7 @@ public boolean initComboCurrentDisplay()
 				addClientRadioButtons( getAllDisplays()[i].getTitle(), i, enabled );
 
 			}
+         
 
 			if( getCurrentDisplay() != null )
 			{
