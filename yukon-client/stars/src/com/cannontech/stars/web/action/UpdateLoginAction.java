@@ -12,9 +12,11 @@ import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
+import com.cannontech.database.data.lite.stars.LiteCustomerContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -89,10 +91,8 @@ public class UpdateLoginAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-	        int userID = liteAcctInfo.getCustomerAccount().getLoginID();
-	        LiteYukonUser liteUser = null;
-	        if (userID != com.cannontech.user.UserUtils.USER_YUKON_ID)
-	        	liteUser = YukonUserFuncs.getLiteYukonUser( userID );
+            LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+	        int userID = liteContact.getLoginID();
 	        
             StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
             String username = updateLogin.getUsername();
@@ -112,7 +112,7 @@ public class UpdateLoginAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 		        }
 		        
-            	createLogin( liteAcctInfo.getCustomerAccount(), energyCompany, updateLogin );
+            	LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
             }
             else if (username.trim().length() == 0) {
             	// Remove customer login
@@ -122,10 +122,11 @@ public class UpdateLoginAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 		        }
 		        
-		        deleteLogin( liteAcctInfo.getCustomerAccount(), userID );
+		        deleteLogin( userID, liteContact );
             }
             else {
             	// Update customer login
+	        	LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( userID );
 		        if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) ) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Username already exists, please enter a different one") );
@@ -225,7 +226,7 @@ public class UpdateLoginAction implements ActionBase {
         return true;
 	}
 	
-	public static void createLogin(LiteCustomerAccount liteAccount, LiteStarsEnergyCompany energyCompany, StarsUpdateLogin login) throws Exception {
+	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteCustomerContact liteContact, LiteStarsEnergyCompany energyCompany) throws Exception {
         com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
         com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
@@ -248,18 +249,24 @@ public class UpdateLoginAction implements ActionBase {
         		);
         ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         
-        liteAccount.setLoginID( dbUser.getUserID().intValue() );
-        com.cannontech.database.db.stars.customer.CustomerAccount account =
-        		(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
-        Transaction.createTransaction(Transaction.UPDATE, account).execute();
+		if (liteContact != null) {
+	        liteContact.setLoginID( liteUser.getUserID() );
+	        com.cannontech.database.data.customer.Contact contact =
+	        		(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+	        Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
+	        ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+		}
+        
+        return liteUser;
 	}
 	
-	public static void deleteLogin(LiteCustomerAccount liteAccount, int userID) throws Exception {
-		if (liteAccount != null) {
-	        liteAccount.setLoginID( com.cannontech.user.UserUtils.USER_YUKON_ID );
-	        com.cannontech.database.db.stars.customer.CustomerAccount account =
-	        		(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
-	        Transaction.createTransaction(Transaction.UPDATE, account).execute();
+	public static void deleteLogin(int userID, LiteCustomerContact liteContact) throws Exception {
+		if (liteContact != null) {
+	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_YUKON_ID );
+	        com.cannontech.database.data.customer.Contact contact =
+	        		(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+	        Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
+	        ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
         
 		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
@@ -267,10 +274,7 @@ public class UpdateLoginAction implements ActionBase {
 		Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
 		
 		SOAPServer.deleteStarsYukonUser( userID );
-		ServerUtils.handleDBChange(
-				YukonUserFuncs.getLiteYukonUser( userID ),
-				com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE
-				);
+		ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 
 }

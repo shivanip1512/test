@@ -170,6 +170,7 @@ public class ProgramOptOutAction implements ActionBase {
             if (optOut.getStartDateTime() != null) {
             	// Store the opt out commands in memory for execution later
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
+            	event.setEnergyCompanyID( energyCompanyID );
             	event.setStartDateTime( optOut.getStartDateTime().getTime() );
             	event.setPeriod( optOut.getPeriod() );
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
@@ -193,6 +194,7 @@ public class ProgramOptOutAction implements ActionBase {
             		ServerUtils.sendCommand( commands[i] );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
+            	event.setEnergyCompanyID( energyCompanyID );
             	event.setStartDateTime( ServletUtil.getTomorrow(tz).getTime() );
             	event.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
@@ -227,6 +229,7 @@ public class ProgramOptOutAction implements ActionBase {
             		ServerUtils.sendCommand( commands[i] );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
+            	event.setEnergyCompanyID( energyCompanyID );
 				Calendar cal = Calendar.getInstance();
 				cal.add( Calendar.DATE, optOut.getPeriod() );
             	event.setStartDateTime( cal.getTime().getTime() );

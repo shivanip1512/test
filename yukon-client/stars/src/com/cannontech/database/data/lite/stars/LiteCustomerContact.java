@@ -48,6 +48,7 @@ public class LiteCustomerContact extends LiteBase {
 
 	private String lastName = null;
 	private String firstName = null;
+	private int loginID = com.cannontech.user.UserUtils.USER_YUKON_ID;
 	private int addressID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private String homePhone = null;
 	private String workPhone = null;
@@ -178,6 +179,22 @@ public class LiteCustomerContact extends LiteBase {
 	 */
 	public void setAddressID(int addressID) {
 		this.addressID = addressID;
+	}
+
+	/**
+	 * Returns the loginID.
+	 * @return int
+	 */
+	public int getLoginID() {
+		return loginID;
+	}
+
+	/**
+	 * Sets the loginID.
+	 * @param loginID The loginID to set
+	 */
+	public void setLoginID(int loginID) {
+		this.loginID = loginID;
 	}
 
 }

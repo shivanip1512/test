@@ -193,6 +193,8 @@ public class CreateLMHardwareAction implements ActionBase {
 			
             for (int i = 0; i < createHw.getStarsLMHardwareConfigCount(); i++) {
             	StarsLMHardwareConfig starsConfig = createHw.getStarsLMHardwareConfig(i);
+            	if (starsConfig.getGroupID() == 0) continue;
+            	
             	com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
             			new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
             	config.setInventoryID( invID );

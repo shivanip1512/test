@@ -20,7 +20,7 @@ public class LiteCustomerAccount extends LiteBase {
 	private int customerID = 0;
 	private int billingAddressID = 0;
 	private String accountNotes = null;
-	private int loginID = 0;
+	//private int loginID = 0;
 	
 	public LiteCustomerAccount() {
 		super();
@@ -131,22 +131,6 @@ public class LiteCustomerAccount extends LiteBase {
 	 */
 	public void setCustomerID(int customerID) {
 		this.customerID = customerID;
-	}
-
-	/**
-	 * Returns the loginID.
-	 * @return int
-	 */
-	public int getLoginID() {
-		return loginID;
-	}
-
-	/**
-	 * Sets the loginID.
-	 * @param loginID The loginID to set
-	 */
-	public void setLoginID(int loginID) {
-		this.loginID = loginID;
 	}
 
 }

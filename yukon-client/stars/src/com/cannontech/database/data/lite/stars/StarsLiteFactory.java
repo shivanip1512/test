@@ -133,6 +133,10 @@ public class StarsLiteFactory {
 			lite = new LiteWebConfiguration();
 			setLiteWebConfiguration( (LiteWebConfiguration) lite, (com.cannontech.database.db.web.YukonWebConfiguration) db );
 		}
+		else if (db instanceof com.cannontech.database.db.stars.LMProgramWebPublishing) {
+			lite = new LiteLMProgram();
+			setLiteLMProgram( (LiteLMProgram) lite, (com.cannontech.database.db.stars.LMProgramWebPublishing) db );
+		}
 		
 		return lite;
 	}
@@ -141,6 +145,7 @@ public class StarsLiteFactory {
 		liteContact.setContactID( contact.getContact().getContactID().intValue() );
 		liteContact.setLastName( contact.getContact().getContLastName() );
 		liteContact.setFirstName( contact.getContact().getContFirstName() );
+		liteContact.setLoginID( contact.getContact().getLogInID().intValue() );
 		liteContact.setAddressID( contact.getContact().getAddressID().intValue() );
 		
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
@@ -231,7 +236,7 @@ public class StarsLiteFactory {
 		liteAccount.setCustomerID( account.getCustomerID().intValue() );
 		liteAccount.setBillingAddressID( account.getBillingAddressID().intValue() );
 		liteAccount.setAccountNotes( account.getAccountNotes() );
-		liteAccount.setLoginID( account.getLoginID().intValue() );
+		//liteAccount.setLoginID( account.getLoginID().intValue() );
 	}
 	
 	public static void setLiteCustomer(LiteCustomer liteCustomer, com.cannontech.database.data.customer.Customer customer) {
@@ -434,6 +439,30 @@ public class StarsLiteFactory {
 		liteConfig.setUrl( config.getURL() );
 	}
 	
+	public static void setLiteLMProgram(LiteLMProgram liteProg, com.cannontech.database.db.stars.LMProgramWebPublishing pubProg) {
+		liteProg.setProgramID( pubProg.getLMProgramID().intValue() );
+		liteProg.setWebSettingsID( pubProg.getWebSettingsID().intValue() );
+		liteProg.setChanceOfControlID( pubProg.getChanceOfControlID().intValue() );
+		liteProg.setProgramCategory( "LMPrograms" );
+		
+		com.cannontech.database.data.lite.LiteYukonPAObject progPao =
+				com.cannontech.database.cache.functions.PAOFuncs.getLiteYukonPAO( pubProg.getLMProgramID().intValue() );
+		if (progPao != null)
+			liteProg.setProgramName( progPao.getPaoName() );
+		
+		try {
+			com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
+					com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( pubProg.getLMProgramID() );
+			int[] groupIDs = new int[ groups.length ];
+			for (int k = 0; k < groups.length; k++)
+				groupIDs[k] = groups[k].getLmGroupDeviceID().intValue();
+			liteProg.setGroupIDs( groupIDs );
+		}
+		catch (java.sql.SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public static DBPersistent createDBPersistent(LiteBase lite) {
 		DBPersistent db = null;
@@ -520,6 +549,7 @@ public class StarsLiteFactory {
 		contact.getContact().setContactID( new Integer(liteContact.getContactID()) );
 		contact.getContact().setContLastName( liteContact.getLastName() );
 		contact.getContact().setContFirstName( liteContact.getFirstName() );
+		contact.getContact().setLogInID( new Integer(liteContact.getLoginID()) );
 		contact.getContact().setAddressID( new Integer(liteContact.getAddressID()) );
 		
 		if (liteContact.getHomePhone() != null && liteContact.getHomePhone().length() > 0) {
@@ -573,7 +603,7 @@ public class StarsLiteFactory {
 		account.setCustomerID( new Integer(liteAccount.getCustomerID()) );
 		account.setBillingAddressID( new Integer(liteAccount.getBillingAddressID()) );
 		account.setAccountNotes( liteAccount.getAccountNotes() );
-		account.setLoginID( new Integer(liteAccount.getLoginID()) );
+		//account.setLoginID( new Integer(liteAccount.getLoginID()) );
 	}
 	
 	public static void setCustomer(com.cannontech.database.db.customer.Customer customer, LiteCustomer liteCustomer) {
@@ -1032,6 +1062,7 @@ public class StarsLiteFactory {
 		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
+		LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		
 		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
 		starsAccount.setAccountID( liteAccount.getAccountID() );
@@ -1056,7 +1087,7 @@ public class StarsLiteFactory {
 		starsAccount.setBillingAddress( billAddr );
 		
 		PrimaryContact primContact = new PrimaryContact();
-		setStarsCustomerContact( primContact, energyCompany.getCustomerContact(liteCustomer.getPrimaryContactID()) );
+		setStarsCustomerContact( primContact, liteContact );
 		starsAccount.setPrimaryContact( primContact );
 		
 		for (int i = 0; i < liteCustomer.getAdditionalContacts().size(); i++) {
@@ -1122,8 +1153,8 @@ public class StarsLiteFactory {
 				starsInvs.addStarsLMHardware( (StarsLMHardware) list.get(i) );
 		}
 		
-        if (liteAccount.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
-	        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteAccount.getLoginID() );
+        if (liteContact.getLoginID() > com.cannontech.user.UserUtils.USER_YUKON_ID) {
+	        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
 			starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
         }
 		
@@ -1463,28 +1494,30 @@ public class StarsLiteFactory {
 		starsAppCat.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
 		starsAppCat.setStarsWebConfig( energyCompany.getStarsWebConfig(liteAppCat.getWebConfigurationID()) );
 		
-		for (int i = 0; i < liteAppCat.getPublishedPrograms().length; i++) {
-			LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[i];
-			
-			StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
-			starsProg.setProgramID( liteProg.getProgramID() );
-			starsProg.setProgramName( liteProg.getProgramName() );
-			starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
-			
-			for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-    			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
-    			AddressingGroup group = new AddressingGroup();
-    			group.setEntryID( liteProg.getGroupIDs()[j] );
-    			group.setContent( groupName );
-    			starsProg.addAddressingGroup( group );
+		if (liteAppCat.getPublishedPrograms() != null) {
+			for (int i = 0; i < liteAppCat.getPublishedPrograms().length; i++) {
+				LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[i];
+				
+				StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
+				starsProg.setProgramID( liteProg.getProgramID() );
+				starsProg.setProgramName( liteProg.getProgramName() );
+				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
+				
+				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+	    			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
+	    			AddressingGroup group = new AddressingGroup();
+	    			group.setEntryID( liteProg.getGroupIDs()[j] );
+	    			group.setContent( groupName );
+	    			starsProg.addAddressingGroup( group );
+				}
+				
+				if (liteProg.getChanceOfControlID() != 0) {
+					starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
+							YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
+				}
+				
+				starsAppCat.addStarsEnrLMProgram( starsProg );
 			}
-			
-			if (liteProg.getChanceOfControlID() != 0) {
-				starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-						YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
-			}
-			
-			starsAppCat.addStarsEnrLMProgram( starsProg );
 		}
 		
 		return starsAppCat;

@@ -22,8 +22,9 @@ import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.servlet.LCConnectionServlet;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -84,11 +85,14 @@ public class StarsAdmin extends HttpServlet {
         
         SOAPClient.initSOAPServer( req );
         
-        StarsYukonUser user = (StarsYukonUser)
-        		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        if (user == null) {
+        LiteYukonUser liteUser = (LiteYukonUser)
+        		session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        if (liteUser == null) {
         	resp.sendRedirect( loginURL ); return;
         }
+        
+        StarsYukonUser user = (StarsYukonUser)
+        		session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
     	String referer = req.getHeader( "referer" );
     	String redirect = req.getParameter( "REDIRECT" );
@@ -126,6 +130,8 @@ public class StarsAdmin extends HttpServlet {
 			updateCustomerSelectionList( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateThermostatSchedule"))
 			updateThermostatSchedule( user, req, session );
+		else if (action.equalsIgnoreCase("NewEnergyCompany"))
+			createEnergyCompany( user, req, session );
         
         if (redirect != null)
         	resp.sendRedirect( redirect );
@@ -364,11 +370,14 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void updateLogin(String[] fields, StarsYukonUser user, HttpSession session)
 		throws Exception {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
     	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 		if (liteAcctInfo == null)
 			throw new Exception( "Cannot find customer account information!" );
 		
-		if (liteAcctInfo.getCustomerAccount().getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID
+		LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		if (liteContact.getLoginID() == com.cannontech.user.UserUtils.USER_YUKON_ID
 			&& fields[IDX_USERNAME].trim().length() == 0)
 			return;
 			
@@ -556,33 +565,8 @@ public class StarsAdmin extends HttpServlet {
 			if (accounts != null) {
 				for (int i = 0; i < accounts.length; i++) {
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
-							accounts[i].getAccountID().intValue(), false );
-							
-					if (liteAcctInfo != null) {
-			        	com.cannontech.database.data.stars.customer.CustomerAccount account =
-			        			StarsLiteFactory.createCustomerAccount(liteAcctInfo, user.getEnergyCompanyID());
-			        	Transaction.createTransaction(Transaction.DELETE, account).execute();
-			        	
-			        	int userID = liteAcctInfo.getCustomerAccount().getLoginID();
-			        	if (userID > com.cannontech.user.UserUtils.USER_YUKON_ID)
-			        		UpdateLoginAction.deleteLogin( null, userID );
-			        	
-			            energyCompany.deleteCustAccountInformation( liteAcctInfo );
-			            energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-			            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
-					}
-					else {
-			        	com.cannontech.database.data.stars.customer.CustomerAccount account =
-			        			new com.cannontech.database.data.stars.customer.CustomerAccount();
-			        	account.setAccountID( accounts[i].getAccountID() );
-			        	account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-			        			Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
-			        	Transaction.createTransaction(Transaction.DELETE, account).execute();
-			        	
-			        	int userID = account.getCustomerAccount().getLoginID().intValue();
-			        	if (userID > com.cannontech.user.UserUtils.USER_YUKON_ID)
-			        		UpdateLoginAction.deleteLogin( null, userID );
-					}
+							accounts[i].getAccountID().intValue(), true );
+					DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 				}
 				
 				if (accounts.length > 1)
@@ -877,8 +861,11 @@ public class StarsAdmin extends HttpServlet {
 			com.cannontech.database.db.web.YukonWebConfiguration config =
 					new com.cannontech.database.db.web.YukonWebConfiguration();
 			config.setLogoLocation( req.getParameter("IconName") );
-			config.setAlternateDisplayName( req.getParameter("DispName") );
-			config.setDescription( req.getParameter("Description") );
+			if (Boolean.valueOf( req.getParameter("SameAsName") ).booleanValue())
+				config.setAlternateDisplayName( req.getParameter("Name") );
+			else
+				config.setAlternateDisplayName( req.getParameter("DispName") );
+			config.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
 			config.setURL( "" );
 			
 			com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
@@ -913,20 +900,10 @@ public class StarsAdmin extends HttpServlet {
 			
 			Integer applianceCategoryID = appCat.getApplianceCategory().getApplianceCategoryID();
 			
-			// Delete all the existing published programs, then add the new ones
+			ArrayList pubProgList = new ArrayList();
 			if (liteAppCat.getPublishedPrograms() != null) {
-				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( applianceCategoryID );
-				
-				for (int i = 0 ;i < liteAppCat.getPublishedPrograms().length; i++) {
-					int configID = liteAppCat.getPublishedPrograms()[i].getWebSettingsID();
-					com.cannontech.database.db.web.YukonWebConfiguration cfg =
-							new com.cannontech.database.db.web.YukonWebConfiguration();
-					cfg.setConfigurationID( new Integer(configID) );
-					Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
-					
-					SOAPServer.deleteWebConfiguration( configID );
-					energyCompany.deleteStarsWebConfig( configID );
-				}
+				for (int i = 0; i < liteAppCat.getPublishedPrograms().length; i++)
+					pubProgList.add( liteAppCat.getPublishedPrograms()[i] );
 			}
 			
 			String[] progIDs = req.getParameterValues( "ProgIDs" );
@@ -937,13 +914,18 @@ public class StarsAdmin extends HttpServlet {
 			String[] progIconNames = req.getParameterValues( "ProgIconNames" );
 			
 			if (progIDs != null) {
-				LCConnectionServlet cs = (LCConnectionServlet) getServletContext().getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
-				LoadcontrolCache cache = cs.getCache();
-				LMProgramDirect[] allPrograms = cache.getDirectPrograms();
-				
 				LiteLMProgram[] pubPrograms = new LiteLMProgram[ progIDs.length ];
 				for (int i = 0; i < progIDs.length; i++) {
 					int progID = Integer.parseInt( progIDs[i] );
+					
+					for (int j = 0; j < pubProgList.size(); j++) {
+						LiteLMProgram liteProg = (LiteLMProgram) pubProgList.get(j);
+						if (liteProg.getProgramID() == progID) {
+							pubProgList.remove(j);
+							pubPrograms[i] = liteProg;
+							break;
+						}
+					}
 					
 					com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
 							new com.cannontech.database.data.stars.LMProgramWebPublishing();
@@ -956,47 +938,77 @@ public class StarsAdmin extends HttpServlet {
 							new com.cannontech.database.db.web.YukonWebConfiguration();
 					cfg.setLogoLocation( config.getLogoLocation() + "," + progIconNames[i] );
 					cfg.setAlternateDisplayName( progShortNames[i] );
-					cfg.setDescription( progDescriptions[i] );
+					cfg.setDescription( progDescriptions[i].replaceAll("\r\n", "<br>") );
 					cfg.setURL( progDispNames[i] );
 					pubProg.setWebConfiguration( cfg );
 					
-					pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
-							Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
-					
-					pubPrograms[i] = new LiteLMProgram();
-					pubPrograms[i].setProgramID( progID );
-					pubPrograms[i].setWebSettingsID( pubProg.getLMProgramWebPublishing().getWebSettingsID().intValue() );
-					pubPrograms[i].setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
-					pubPrograms[i].setProgramCategory( "LMPrograms" );
-					
-					for (int j = 0; j < allPrograms.length; j++) {
-						if (allPrograms[j].getYukonID().intValue() == progID) {
-							pubPrograms[i].setProgramName( allPrograms[j].getYukonName() );
-							
-							Vector groups = allPrograms[j].getLoadControlGroupVector();
-							ArrayList groupIDList = new ArrayList();
-							for (int k = 0; k < groups.size(); k++) {
-								if (groups.get(k) instanceof LMGroupBase) {
-									LMGroupBase group = (LMGroupBase) groups.get(k);
-									groupIDList.add( group.getYukonID() );
-								}
-							}
-							
-							int[] groupIDs = new int[ groupIDList.size() ];
-							for (int k = 0; k < groupIDList.size(); k++)
-								groupIDs[k] = ((Integer) groupIDList.get(k)).intValue();
-							pubPrograms[i].setGroupIDs( groupIDs );
-						}
+					if (pubPrograms[i] != null) {
+						pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(pubPrograms[i].getWebSettingsID()) );
+						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
+								Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
+								
+						pubPrograms[i].setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
 					}
-					
-					LiteWebConfiguration liteCfg = (LiteWebConfiguration) StarsLiteFactory.createLite( pubProg.getWebConfiguration() );
-					SOAPServer.addWebConfiguration( liteCfg );
+					else {
+						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
+								Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
+						
+						pubPrograms[i] = (LiteLMProgram) StarsLiteFactory.createLite( pubProg.getLMProgramWebPublishing() );
+						energyCompany.addLMProgram( pubPrograms[i] );
+						
+						LiteWebConfiguration liteCfg = (LiteWebConfiguration) StarsLiteFactory.createLite( pubProg.getWebConfiguration() );
+						SOAPServer.addWebConfiguration( liteCfg );
+					}
 				}
 				
 				liteAppCat.setPublishedPrograms( pubPrograms );
 			}
 			else
 				liteAppCat.setPublishedPrograms( new LiteLMProgram[0] );
+			
+			// Delete the rest of published programs
+			for (int i = 0; i < pubProgList.size(); i++) {
+				LiteLMProgram liteProg = (LiteLMProgram) pubProgList.get(i);
+				Integer programID = new Integer( liteProg.getProgramID() );
+				
+				// Unenroll the program from all customers currently enrolled in it
+				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(programID, energyCompany.getEnergyCompanyID());
+				com.cannontech.database.data.stars.appliance.ApplianceBase app =
+						new com.cannontech.database.data.stars.appliance.ApplianceBase();
+				com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
+				
+				for (int j = 0; j < accountIDs.length; j++) {
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], true );
+					for (int k = 0; k < liteAcctInfo.getAppliances().size(); k++) {
+						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(k);
+						if (liteApp.getLmProgramID() != liteProg.getProgramID()) continue;
+						
+						StarsLiteFactory.setApplianceBase( app, liteApp );
+						appDB.setLMProgramID( new Integer(CtiUtilities.NONE_ID) );
+						Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
+						liteApp.setLmProgramID( CtiUtilities.NONE_ID );
+					}
+					
+					ArrayList programs = liteAcctInfo.getLmPrograms();
+					for (int k = 0; k < programs.size(); k++) {
+						if (((LiteStarsLMProgram) programs.get(k)).getLmProgram().getProgramID() == liteProg.getProgramID()) {
+							programs.remove(k);
+							break;
+						}
+					}
+				}
+				
+				com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
+						new com.cannontech.database.data.stars.LMProgramWebPublishing();
+				pubProg.setApplianceCategoryID( applianceCategoryID );
+				pubProg.setLMProgramID( programID );
+				pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+				Transaction.createTransaction(Transaction.DELETE, pubProg).execute();
+			
+				energyCompany.deleteLMProgram( liteProg.getProgramID() );
+				SOAPServer.deleteWebConfiguration( liteProg.getWebSettingsID() );
+				energyCompany.deleteStarsWebConfig( liteProg.getWebSettingsID() );
+			}
 			
 			if (!newAppCat) {
 				for (int i = 0; i < starsAppCats.getStarsApplianceCategoryCount(); i++) {
@@ -1068,9 +1080,10 @@ public class StarsAdmin extends HttpServlet {
 				for (int j = 0; j < accountIDs.length; j++) {
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], false );
 					if (liteAcctInfo != null) energyCompany.deleteCustAccountInformation( liteAcctInfo );
+					energyCompany.deleteStarsCustAccountInformation( accountIDs[j] );
 				}
-				energyCompany.deleteApplianceCategory( appCatID.intValue() );
 				
+				energyCompany.deleteApplianceCategory( appCatID.intValue() );
 				starsAppCats.removeStarsApplianceCategory( i );
 			}
 			
@@ -1601,24 +1614,55 @@ public class StarsAdmin extends HttpServlet {
         LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
         try {
-			int listID = Integer.parseInt( req.getParameter("ListID") );
+			String listName = req.getParameter("ListName");
 			String ordering = req.getParameter("Ordering");
 			String label = req.getParameter("Label");
 			String whereIsList = req.getParameter("WhereIsList");
 			String[] entryTexts = req.getParameterValues("EntryTexts");
 			String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
 			
-			YukonSelectionList cList = YukonListFuncs.getYukonSelectionList( listID );
+			YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
+			Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+			
+			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS)) {
+				boolean sameAsOp = Boolean.valueOf( req.getParameter("SameAsOp") ).booleanValue();
+				if (sameAsOp && cList == null) return;
+				
+				if (sameAsOp && cList != null) {
+					// Remove the OptOutPeriodCustomer list
+					for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
+						YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(i);
+						YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
+					}
+					energyCompany.deleteYukonSelectionList( cList.getListID() );
+					YukonListFuncs.getYukonSelectionLists().remove( new Integer(cList.getListID()) );
+					
+					com.cannontech.database.data.constants.YukonSelectionList list =
+							new com.cannontech.database.data.constants.YukonSelectionList();
+					list.setListID( new Integer(cList.getListID()) );
+					Transaction.createTransaction(Transaction.DELETE, list).execute();
+					
+					selectionListTable.remove( cList.getListName() );
+					
+		        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
+		        	return;
+				}
+				
+				if (!sameAsOp && cList == null) {
+					// Add a new list of OptOutPeriodCustomer
+					YukonSelectionList opList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
+					cList = energyCompany.addYukonSelectionList( listName, opList, false );
+				}
+			}
+			
 			Iterator it = cList.getYukonListEntries().iterator();
 			while (it.hasNext()) {
 				YukonListEntry cEntry = (YukonListEntry) it.next();
-				com.cannontech.database.db.constants.YukonListEntry entry =
-						StarsLiteFactory.createYukonListEntry( cEntry );
-				Transaction.createTransaction(Transaction.DELETE, entry).execute();
-				
 				it.remove();
-				YukonListFuncs.getYukonListEntries().remove( entry.getEntryID() );
+				YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
 			}
+			com.cannontech.database.db.constants.YukonListEntry
+					.deleteAllListEntries( new Integer(cList.getListID()) );
 			
 			com.cannontech.database.db.constants.YukonSelectionList list =
 					StarsLiteFactory.createYukonSelectionList( cList );
@@ -1652,7 +1696,6 @@ public class StarsAdmin extends HttpServlet {
 				}
 			}
 			
-			Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 			selectionListTable.put( starsList.getListName(), starsList );
 
@@ -1684,6 +1727,102 @@ public class StarsAdmin extends HttpServlet {
 			e.printStackTrace();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update default thermostat schedule");
         }
+	}
+	
+	private void createEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		try {
+			String warning = null;
+			
+			String operGroupName = req.getParameter("OperatorGroup");
+			LiteYukonGroup operGroup = AuthFuncs.getGroup( operGroupName );
+			if (operGroup == null) {
+				if (warning == null) warning = "Warning: ";
+				warning += "group '" + operGroupName + "' doesn't exist";
+			}
+			
+			String custGroupName = req.getParameter("CustomerGroup");
+			LiteYukonGroup custGroup = AuthFuncs.getGroup( custGroupName );
+			if (custGroup == null) {
+				if (warning == null) warning = "Warning: ";
+				else warning += ", ";
+				warning += "group '" + custGroupName + "' doesn't exist";
+			}
+				
+			com.cannontech.database.data.user.YukonUser yukonUser =
+					new com.cannontech.database.data.user.YukonUser();
+			yukonUser.getYukonUser().setUsername( req.getParameter("Username") );
+			yukonUser.getYukonUser().setPassword( req.getParameter("Password") );
+			yukonUser.getYukonUser().setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
+			
+			// Assign the operator group to login
+			if (operGroup != null) {
+				com.cannontech.database.db.user.YukonGroup group =
+						new com.cannontech.database.db.user.YukonGroup();
+				group.setGroupID( new Integer(operGroup.getGroupID()) );
+				yukonUser.getYukonGroups().add( group );
+			}
+			
+			// Assign the EnergyCompany role to login
+			LiteYukonRoleProperty[] roleProps = RoleFuncs.getRoleProperties( EnergyCompanyRole.ROLEID );
+			for (int i = 0; i < roleProps.length; i++) {
+				com.cannontech.database.db.user.YukonUserRole userRole =
+						new com.cannontech.database.db.user.YukonUserRole();
+				userRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
+				userRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
+				if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_NAME && custGroup != null)
+					userRole.setValue( custGroupName );
+				else
+					userRole.setValue( CtiUtilities.STRING_NONE );
+				yukonUser.getYukonUserRoles().add( userRole );
+			}
+			
+			// Assign the Administrator role to login, and allow configuring energy company
+			roleProps = RoleFuncs.getRoleProperties( AdministratorRole.ROLEID );
+			for (int i = 0; i < roleProps.length; i++) {
+				com.cannontech.database.db.user.YukonUserRole userRole =
+						new com.cannontech.database.db.user.YukonUserRole();
+				userRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
+				userRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
+				userRole.setValue( CtiUtilities.TRUE_STRING );
+				if (roleProps[i].getRolePropertyID() == AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+					yukonUser.getYukonUserRoles().add( userRole );
+				else
+					userRole.setValue( CtiUtilities.STRING_NONE );
+			}
+			
+			yukonUser = (com.cannontech.database.data.user.YukonUser)
+					Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
+			com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
+			
+			com.cannontech.database.db.company.EnergyCompany company =
+					new com.cannontech.database.db.company.EnergyCompany();
+			company.setName( req.getParameter("CompanyName") );
+			company.setPrimaryContactID( new Integer(CtiUtilities.NONE_ID) );
+			company.setUserID( userDB.getUserID() );
+			company = (com.cannontech.database.db.company.EnergyCompany)
+					Transaction.createTransaction(Transaction.INSERT, company).execute();
+			
+			String sql = "INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
+					company.getEnergyCompanyID() + ", " + userDB.getUserID() + ")";
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					sql, CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			LiteYukonUser liteUser = new LiteYukonUser(
+					userDB.getUserID().intValue(),
+					userDB.getUsername(),
+					userDB.getPassword(),
+					userDB.getStatus()
+					);
+			ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
+			
+        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
+        	if (warning != null) session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, warning);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the energy company");
+		}
 	}
 	
 }

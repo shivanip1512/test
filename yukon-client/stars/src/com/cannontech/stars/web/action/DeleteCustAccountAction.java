@@ -79,35 +79,8 @@ public class DeleteCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
-            int energyCompanyID = user.getEnergyCompanyID();
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-            
-        	com.cannontech.database.data.stars.customer.CustomerAccount account =
-        			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompanyID);
-        	Transaction.createTransaction(Transaction.DELETE, account).execute();
-        	
-        	// Delete contacts from database
-        	LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-        	com.cannontech.database.data.customer.Contact contact =
-        			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-        	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-        	
-        	java.util.ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
-        	for (int i = 0; i < contactIDs.size(); i++) {
-        		liteContact = energyCompany.getCustomerContact( ((Integer) contactIDs.get(i)).intValue() );
-        		contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-        		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-        	}
-        	
-        	// Delete login
-        	int userID = liteAcctInfo.getCustomerAccount().getLoginID();
-        	if (userID > com.cannontech.user.UserUtils.USER_YUKON_ID)
-        		UpdateLoginAction.deleteLogin( null, userID );
-        	
-        	// Delete lite and stars objects
-            energyCompany.deleteCustAccountInformation( liteAcctInfo );
-            energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-            ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+            deleteCustomerAccount( liteAcctInfo, energyCompany );
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Customer account deleted successfully" );
@@ -157,6 +130,37 @@ public class DeleteCustAccountAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		throws Exception
+	{
+    	com.cannontech.database.data.stars.customer.CustomerAccount account =
+    			StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany.getEnergyCompanyID().intValue());
+    	Transaction.createTransaction(Transaction.DELETE, account).execute();
+    	
+    	// Delete contacts from database
+    	LiteCustomerContact liteContact = energyCompany.getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+    	com.cannontech.database.data.customer.Contact contact =
+    			(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+    	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+    	
+    	java.util.ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
+    	for (int i = 0; i < contactIDs.size(); i++) {
+    		liteContact = energyCompany.getCustomerContact( ((Integer) contactIDs.get(i)).intValue() );
+    		contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+    		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
+    	}
+    	
+    	// Delete login
+    	int userID = liteContact.getLoginID();
+    	if (userID > com.cannontech.user.UserUtils.USER_YUKON_ID)
+    		UpdateLoginAction.deleteLogin( userID, null );
+    	
+    	// Delete lite and stars objects
+        energyCompany.deleteCustAccountInformation( liteAcctInfo );
+        energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+        ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 
 }

@@ -4,6 +4,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServerUtils;
 
@@ -79,9 +81,11 @@ public class StarsYukonUser {
 			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() ).getLiteID();
 		}
 		else if (ServerUtils.isResidentialCustomer(this)) {
-			String sql = "SELECT map.EnergyCompanyID, acct.AccountID "
-					   + "FROM CustomerAccount acct, ECToAccountMapping map "
-					   + "WHERE acct.LoginID = " + getYukonUser().getUserID() + " AND acct.AccountID = map.AccountID";
+			LiteContact liteContact = YukonUserFuncs.getLiteContact( getUserID() );
+			String sql = "SELECT map.EnergyCompanyID, acct.AccountID " +
+					"FROM CustomerAccount acct, ECToAccountMapping map, Customer cust " +
+					"WHERE cust.PrimaryContactID = " + liteContact.getContactID() +
+					" AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 					

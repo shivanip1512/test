@@ -160,6 +160,50 @@ public class ApplianceBase extends DBPersistent {
         return new Integer( nextApplianceID );
     }
     
+    public static int[] getAllAccountIDsWithProgram(Integer programID, Integer energyCompanyID) {
+    	String sql = "SELECT DISTINCT app.AccountID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
+    			"WHERE LMProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		
+    		int[] accountIDs = new int[ stmt.getRowCount() ];
+    		for (int i = 0; i < stmt.getRowCount(); i++)
+    			accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+    		
+    		return accountIDs;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
+    
+    public static int[] getAllApplianceIDsWithProgram(Integer programID, Integer energyCompanyID) {
+    	String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " app, ECToAccountMapping map " +
+    			"WHERE LMProgramID = " + programID + " AND app.AccountID = map.AccountID AND map.EnergyCompanyID = " + energyCompanyID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		
+    		int[] appIDs = new int[ stmt.getRowCount() ];
+    		for (int i = 0; i < stmt.getRowCount(); i++)
+    			appIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+    		
+    		return appIDs;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
+    
     public static int[] getAllAccountIDsWithCategory(Integer appCatID) {
     	String sql = "SELECT DISTINCT AccountID FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + appCatID;
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(

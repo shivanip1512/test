@@ -107,6 +107,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			
             for (int i = 0; i < updateHwConfig.getStarsLMHardwareConfigCount(); i++) {
             	StarsLMHardwareConfig starsConfig = updateHwConfig.getStarsLMHardwareConfig(i);
+            	if (starsConfig.getGroupID() == 0) continue;
             	
             	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
             		LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);

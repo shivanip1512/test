@@ -53,7 +53,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 		
 		LiteStarsEnergyCompany[] companies = SOAPServer.getAllEnergyCompanies();
 		
-		// Update LMControlHistory
+		// Update from LMControlHistory
 		for (int i = 0; i < companies.length; i++) {
 			if (companies[i].getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
 			
@@ -65,7 +65,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 			}
 		}
 		
-		// Update GatewayEndDevice
+		// Update from GatewayEndDevice
 		long now = System.currentTimeMillis();
 		for (int i = 0; i < companies.length; i++) {
 			if (companies[i].getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;

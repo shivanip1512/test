@@ -215,10 +215,16 @@ public class NewCustAccountAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 		        }
     		}
+    		
+    		/* Create yukon user */
+    		int userID = com.cannontech.user.UserUtils.USER_YUKON_ID;
+    		if (updateLogin != null)
+	        	userID = UpdateLoginAction.createLogin( updateLogin, null, energyCompany ).getUserID();
             
             /* Create contacts */
             com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
             StarsFactory.setCustomerContact( primContact, starsAccount.getPrimaryContact() );
+            primContact.getContact().setLogInID( new Integer(userID) );
             primContact = (com.cannontech.database.data.customer.Contact)
 		            Transaction.createTransaction(Transaction.INSERT, primContact).execute();
             
@@ -307,10 +313,6 @@ public class NewCustAccountAction implements ActionBase {
             
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
             user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-    		
-    		/* Create yukon user */
-    		if (updateLogin != null)
-	        	UpdateLoginAction.createLogin( liteAcctInfo.getCustomerAccount(), energyCompany, updateLogin );
             
             ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
             

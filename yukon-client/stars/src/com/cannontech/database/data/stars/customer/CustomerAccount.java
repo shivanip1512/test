@@ -19,7 +19,6 @@ public class CustomerAccount extends DBPersistent {
 
     private com.cannontech.database.db.stars.customer.CustomerAccount customerAccount = null;
     private com.cannontech.database.db.customer.Address billingAddress = null;
-    private com.cannontech.database.db.customer.CustomerLogin customerLogin = null;		// Put it here temporarily
 
     private com.cannontech.database.data.stars.customer.AccountSite accountSite = null;
     private com.cannontech.database.data.customer.Customer customer = null;
@@ -223,24 +222,6 @@ public class CustomerAccount extends DBPersistent {
     public void setInventoryVector(Vector newInventoryVector) {
         inventoryVector = newInventoryVector;
     }
-	/**
-	 * Returns the customerLogin.
-	 * @return com.cannontech.database.db.customer.CustomerLogin
-	 */
-	public com.cannontech.database.db.customer.CustomerLogin getCustomerLogin() {
-		if (customerLogin == null)
-			customerLogin = new com.cannontech.database.db.customer.CustomerLogin();
-		return customerLogin;
-	}
-
-	/**
-	 * Sets the customerLogin.
-	 * @param customerLogin The customerLogin to set
-	 */
-	public void setCustomerLogin(
-		com.cannontech.database.db.customer.CustomerLogin customerLogin) {
-		this.customerLogin = customerLogin;
-	}
 
 	/**
 	 * Returns the energyCompanyID.

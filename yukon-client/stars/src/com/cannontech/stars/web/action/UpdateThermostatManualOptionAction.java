@@ -174,8 +174,12 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			
 			StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
 			resp.setStarsThermostatManualEvent( starsEvent );
-			
 			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
+            
+			Thread.sleep(3 * 1000);		// Wait a while
+			energyCompany.updateThermostatSettings( liteAcctInfo );
+            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+			
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -228,8 +232,6 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             		break;
             	}
             }
-            
-            Thread.sleep(5 * 1000);		// Wait 5 seconds
             
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
             return 0;

@@ -19,6 +19,7 @@ public class OptOutEventQueue {
 	private static final long OVERLAP_INTERVAL = 1000 * 60 * 30;	// 30 minutes: if two events are apart for less than this interval, we consider they are overlapping
 	
 	public static class OptOutEvent {
+		private int energyCompanyID = 0;
 		private long startDateTime = 0;
 		private int period = 0;
 		private int accountID = 0;
@@ -88,6 +89,23 @@ public class OptOutEventQueue {
 		public void setStartDateTime(long startDateTime) {
 			this.startDateTime = startDateTime;
 		}
+		
+		/**
+		 * Returns the energyCompanyID.
+		 * @return int
+		 */
+		public int getEnergyCompanyID() {
+			return energyCompanyID;
+		}
+
+		/**
+		 * Sets the energyCompanyID.
+		 * @param energyCompanyID The energyCompanyID to set
+		 */
+		public void setEnergyCompanyID(int energyCompanyID) {
+			this.energyCompanyID = energyCompanyID;
+		}
+
 	}
 	
 	private File diskFile = null;
@@ -132,7 +150,9 @@ public class OptOutEventQueue {
 				for (int i = 0; i < optOutEvents.size(); i++) {
 					OptOutEvent event = (OptOutEvent) optOutEvents.get(i);
 					StringBuffer line = new StringBuffer();
-					line.append( event.getStartDateTime() )
+					line.append( event.getEnergyCompanyID() )
+						.append( " " )
+						.append( event.getStartDateTime() )
 						.append( " " )
 						.append( event.getPeriod() )
 						.append( " " )
@@ -148,7 +168,9 @@ public class OptOutEventQueue {
 				for (int i = 0; i < newEvents.size(); i++) {
 					OptOutEvent event = (OptOutEvent) newEvents.get(i);
 					StringBuffer line = new StringBuffer();
-					line.append( event.getStartDateTime() )
+					line.append( event.getEnergyCompanyID() )
+						.append( " " )
+						.append( event.getStartDateTime() )
 						.append( " " )
 						.append( event.getPeriod() )
 						.append( " " )
@@ -258,13 +280,15 @@ public class OptOutEventQueue {
 	 * their start time. An event is said due if it's earlier than a given
 	 * period of time from now.
 	 */
-	public synchronized OptOutEvent[] getDueEvents(long timeLimit) {
+	public synchronized OptOutEvent[] getDueEvents(int energyCompanyID, long timeLimit) {
 		TreeMap eventTree = new TreeMap();
 		long now = new Date().getTime();
 		
 		for (int i = optOutEvents.size() - 1; i >= 0; i--) {
 			OptOutEvent event = (OptOutEvent) optOutEvents.get(i);
-			if (event.getStartDateTime() - now <= timeLimit) {
+			if (event.getEnergyCompanyID() == energyCompanyID &&
+				event.getStartDateTime() - now <= timeLimit)
+			{
 				if (event.getPeriod() != PERIOD_REENABLE2)
 					eventTree.put( new Long(event.getStartDateTime()), event );
 				optOutEvents.remove( i );
@@ -291,6 +315,7 @@ public class OptOutEventQueue {
 			while ((line = fr.readLine()) != null) {
 				StringTokenizer st = new StringTokenizer( line );
 				OptOutEvent event = new OptOutEvent();
+				event.setEnergyCompanyID( Integer.parseInt(st.nextToken()) );
 				event.setStartDateTime( Long.parseLong(st.nextToken()) );
 				event.setPeriod( Integer.parseInt(st.nextToken()) );
 				event.setAccountID( Integer.parseInt(st.nextToken()) );

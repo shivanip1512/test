@@ -71,7 +71,8 @@ public class HourlyTimerTask extends StarsTimerTask {
 		Date now = new Date();
 		for (int i = 0; i < companies.length; i++) {
 			if (companies[i].getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
-			OptOutEventQueue.OptOutEvent[] dueEvents = companies[i].getOptOutEventQueue().getDueEvents(TIME_LIMIT);
+			OptOutEventQueue.OptOutEvent[] dueEvents =
+					companies[i].getOptOutEventQueue().getDueEvents(companies[i].getLiteID(), TIME_LIMIT);
 			
 			for (int j = 0; j < dueEvents.length; j++) {
 				// If the opt out event has already expired, then do nothing
@@ -102,6 +103,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 						
 						// Insert a corresponding "reenable" event back into the queue
 						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
+						e.setEnergyCompanyID( companies[i].getLiteID() );
 						Calendar cal = Calendar.getInstance();
 						cal.setTime( new Date(dueEvents[j].getStartDateTime()) );
 						cal.add( Calendar.DATE, dueEvents[j].getPeriod() );

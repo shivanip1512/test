@@ -337,17 +337,17 @@ public class ProgramSignUpAction implements ActionBase {
 	        		appDB.setManufacturerID( dftManufacturerID );
 	        		
 	        		if (dftInvID != null) {
-	        			int groupID = 0;
-	        			if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0)
-	        				groupID = liteProg.getGroupIDs()[0];
-	        			liteStarsProg.setGroupID( groupID );
-	        				
-	        			LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
-	        			hwConfig.setInventoryID( dftInvID );
-	        			hwConfig.setAddressingGroupID( new Integer(groupID) );
-	        			app.setLMHardwareConfig( hwConfig );
-	        			
-	        			if (!hwIDsToConfig.contains( dftInvID )) hwIDsToConfig.add( dftInvID );
+	        			if (liteProg.getGroupIDs() != null && liteProg.getGroupIDs().length > 0) {
+	        				int groupID = liteProg.getGroupIDs()[0];
+		        			liteStarsProg.setGroupID( groupID );
+		        				
+		        			LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
+		        			hwConfig.setInventoryID( dftInvID );
+		        			hwConfig.setAddressingGroupID( new Integer(groupID) );
+		        			app.setLMHardwareConfig( hwConfig );
+		        			
+		        			if (!hwIDsToConfig.contains( dftInvID )) hwIDsToConfig.add( dftInvID );
+	        			}
 	        		}
 	        		app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
 	        				Transaction.createTransaction(Transaction.INSERT, app).execute();

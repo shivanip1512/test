@@ -292,8 +292,12 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
     		StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
     		resp.setStarsLMHardwareEvent( starsEvent );
-			
 			respOper.setStarsUpdateThermostatScheduleResponse( resp );
+			
+			Thread.sleep(3 * 1000);		// Wait a while
+			energyCompany.updateThermostatSettings( liteAcctInfo );
+            Thread.sleep(2 * 1000);		// Wait a while for the update to finish
+			
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -342,14 +346,10 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 	            		hardware.getStarsLMHardwareHistory().addStarsLMHardwareEvent( resp.getStarsLMHardwareEvent() );
 	            	
 	            	StarsThermostatSettings settings = hardware.getStarsThermostatSettings();
-		            if (settings.getStarsThermostatDynamicData() == null) {
+		            if (settings.getStarsThermostatDynamicData() == null)
 		            	parseResponse( resp, settings );
-		            }
-		            else {
+		            else
 		            	confirmMsg += " Changes may take a few minutes to get to the thermostat.";
-			            Thread.sleep(5 * 1000);		// Wait 5 seconds.
-		            }
-		            
 		            break;
             	}
             }
