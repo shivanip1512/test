@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     12/15/2003 1:31:55 PM                        */
+/* Created on:     12/29/2003 11:13:56 AM                       */
 /*==============================================================*/
 
 
@@ -908,7 +908,8 @@ create table CAPBANK  (
    BANKSIZE             NUMBER                           not null,
    TypeOfSwitch         VARCHAR2(20)                     not null,
    SwitchManufacture    VARCHAR2(20)                     not null,
-   MapLocationID        NUMBER                           not null
+   MapLocationID        NUMBER                           not null,
+   RecloseDelay         NUMBER                           not null
 )
 /
 
@@ -942,7 +943,9 @@ create table CAPCONTROLSUBSTATIONBUS  (
    DAYSOFWEEK           CHAR(8)                          not null,
    MapLocationID        NUMBER                           not null,
    LowerBandwidth       FLOAT                            not null,
-   ControlUnits         VARCHAR2(20)                     not null
+   ControlUnits         VARCHAR2(20)                     not null,
+   ControlDelayTime     NUMBER                           not null,
+   ControlSendRetries   NUMBER                           not null
 )
 /
 
@@ -1813,7 +1816,8 @@ create table DYNAMICPOINTDISPATCH  (
          constraint SYS_C0013329 check ("NEXTARCHIVE" IS NOT NULL),
    STALECOUNT           NUMBER                           not null
          constraint SYS_C0013330 check ("STALECOUNT" IS NOT NULL),
-   LastAlarmLogID       NUMBER                           not null
+   LastAlarmLogID       NUMBER                           not null,
+   millis               SMALLINT                         not null
 )
 /
 
@@ -1998,7 +2002,8 @@ create table DynamicCCFeeder  (
    PowerFactorValue     FLOAT                            not null,
    KvarSolution         FLOAT                            not null,
    EstimatedPFValue     FLOAT                            not null,
-   CurrentVarPointQuality NUMBER                           not null
+   CurrentVarPointQuality NUMBER                           not null,
+   WaiveControlFlag     CHAR(1)                          not null
 )
 /
 
@@ -2033,7 +2038,8 @@ create table DynamicCCSubstationBus  (
    PowerFactorValue     FLOAT                            not null,
    KvarSolution         FLOAT                            not null,
    EstimatedPFValue     FLOAT                            not null,
-   CurrentVarPointQuality NUMBER                           not null
+   CurrentVarPointQuality NUMBER                           not null,
+   WaiveControlFlag     CHAR(1)                          not null
 )
 /
 
@@ -4530,23 +4536,42 @@ insert into YukonGroupRole values(7,-1,-1,-1006,'(none)');
 insert into YukonGroupRole values(8,-1,-1,-1007,'(none)');
 insert into YukonGroupRole values(9,-1,-1,-1008,'(none)');
 insert into YukonGroupRole values(10,-1,-1,-1009,'(none)');
+insert into YukonGroupRole values(11,-1,-1,-1010,'(none)');
+insert into YukonGroupRole values(12,-1,-1,-1011,'(none)');
+insert into YukonGroupRole values(13,-1,-1,-1012,'(none)');
+
+/* Logging default Yukon group */
+insert into YukonGroupRole values(50,-1,-3,-1200,'(none)');
+insert into YukonGroupRole values(51,-1,-3,-1201,'(none)');
+insert into YukonGroupRole values(52,-1,-3,-1202,'(none)');
+insert into YukonGroupRole values(53,-1,-3,-1203,'(none)');
+insert into YukonGroupRole values(54,-1,-3,-1204,'(none)');
+insert into YukonGroupRole values(55,-1,-3,-1205,'(none)');
+insert into YukonGroupRole values(56,-1,-3,-1206,'(none)');
+insert into YukonGroupRole values(57,-1,-3,-1207,'(none)');
+insert into YukonGroupRole values(58,-1,-3,-1208,'(none)');
+insert into YukonGroupRole values(59,-1,-3,-1209,'(none)');
+insert into YukonGroupRole values(60,-1,-3,-1210,'(none)');
+insert into YukonGroupRole values(61,-1,-3,-1211,'(none)');
+insert into YukonGroupRole values(62,-1,-3,-1212,'(none)');
+insert into YukonGroupRole values(63,-1,-3,-1213,'(none)');
+insert into YukonGroupRole values(64,-1,-3,-1214,'(none)');
+insert into YukonGroupRole values(65,-1,-3,-1215,'(none)');
+insert into YukonGroupRole values(66,-1,-3,-1216,'(none)');
+
 
 /* Calc Historical for Yukon Gorup */
 insert into YukonGroupRole values(190,-1,-104,-10400,'(none)');
 insert into YukonGroupRole values(191,-1,-104,-10401,'(none)');
 insert into YukonGroupRole values(192,-1,-104,-10402,'(none)');
-insert into YukonGroupRole values(193,-1,-104,-10403,'(none)');
 
 /* Web Graph for Yukon Gorup */
 insert into YukonGroupRole values(210,-1,-105,-10500,'(none)');
 insert into YukonGroupRole values(211,-1,-105,-10501,'(none)');
-insert into YukonGroupRole values(212,-1,-105,-10502,'(none)');
 
 /* Billing for Yukon Gorup */
 insert into YukonGroupRole values(230,-1,-106,-10600,'(none)');
 insert into YukonGroupRole values(231,-1,-106,-10601,'(none)');
-insert into YukonGroupRole values(232,-1,-106,-10602,'(none)');
-
 
 /* Assign roles to the default operator group to allow them to use all the main rich Yukon applications */
 /* Database Editor */
@@ -4556,7 +4581,6 @@ insert into YukonGroupRole values(102,-100,-100,-10002,'(none)');
 insert into YukonGroupRole values(103,-100,-100,-10003,'(none)');
 insert into YukonGroupRole values(104,-100,-100,-10004,'(none)');
 insert into YukonGroupRole values(105,-100,-100,-10005,'(none)');
-insert into YukonGroupRole values(106,-100,-100,-10006,'(none)');
 insert into YukonGroupRole values(107,-100,-100,-10007,'(none)');
 
 /* TDC */
@@ -4570,11 +4594,9 @@ insert into YukonGroupRole values(126,-100,-101,-10106,'(none)');
 insert into YukonGroupRole values(127,-100,-101,-10107,'(none)');
 insert into YukonGroupRole values(128,-100,-101,-10108,'(none)');
 insert into YukonGroupRole values(129,-100,-101,-10109,'(none)');
-insert into YukonGroupRole values(130,-100,-101,-10110,'(none)');
 
 /* Trending */
 insert into YukonGroupRole values(150,-100,-102,-10200,'(none)');
-insert into YukonGroupRole values(151,-100,-102,-10201,'(none)');
 
 /* Commander */
 insert into YukonGroupRole values(170,-100,-103,-10300,'(none)');
@@ -4594,7 +4616,6 @@ insert into YukonGroupRole values(352,-201,-206,-20602,'false');
 
 /* Web Client Customers Web Client role */
 insert into yukongrouprole values (400, -302, -108, -10800, '/user/CILC/user_trending.jsp');
-insert into yukongrouprole values (401, -302, -108, -10801, '(none)');
 insert into yukongrouprole values (402, -302, -108, -10802, '(none)');
 insert into yukongrouprole values (403, -302, -108, -10803, '(none)');
 insert into yukongrouprole values (404, -302, -108, -10804, '(none)');
@@ -4729,6 +4750,13 @@ insert into yukongrouprole values (856,-301,-201,-20856,'(none)');
 insert into yukongrouprole values (870,-301,-201,-20870,'(none)');
 
 
+/*Add the user-control properties to the Web Client Customers group */
+insert into yukongrouprole values ( 985, -302, -306, -30600, '(none)');
+insert into yukongrouprole values ( 986, -302, -306, -30601, 'true)');
+insert into yukongrouprole values ( 987, -302, -306, -30602, 'true');
+insert into yukongrouprole values ( 988, -302, -306, -30603, 'true');
+
+
 alter table YukonGroupRole
    add constraint PK_YUKONGRPROLE primary key (GroupRoleID)
 /
@@ -4845,6 +4873,7 @@ create table YukonRole  (
 
 /* Default role for all users - yukon category */
 insert into YukonRole values(-1,'Yukon','Yukon','Default Yukon role. Edit this role from the Yukon SetUp page.');
+insert into YukonRole values(-3,'Logging','Yukon','Settings for how Yukon logs output. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-104,'Calc Historical','Yukon','Calc Historical. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-105,'Web Graph','Yukon','Web Graph. Edit this role from the Yukon SetUp page.');
 insert into YukonRole values(-106,'Billing','Yukon','Billing. Edit this role from the Yukon SetUp page.');
@@ -4880,6 +4909,8 @@ insert into YukonRole values(-301,'Curtailment','CICustomer','Customer access to
 insert into YukonRole values(-302,'Energy Buyback','CICustomer','Customer access to commercial/industrial customer energy buyback');
 insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
 insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privilages.');
+insert into yukonrole values (-306, 'User Control', 'CICustomer', 'Customer access to user control operations.');
+
 
 /* Consumer roles */
 insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
@@ -4924,6 +4955,10 @@ insert into YukonRoleProperty values(-1006,-1,'cap_control_machine','127.0.0.1',
 insert into YukonRoleProperty values(-1007,-1,'cap_control_port','1910','TCP/IP port of the Yukon Capacitor Control Service');
 insert into YukonRoleProperty values(-1008,-1,'loadcontrol_machine','127.0.0.1','Name or IP Address of the Yukon Load Management Service');
 insert into YukonRoleProperty values(-1009,-1,'loadcontrol_port','1920','TCP/IP port of the Yukon Load Management Service');
+insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
+insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
+insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
+
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','true','Controls whether point ids can be edited');
@@ -4932,7 +4967,6 @@ insert into YukonRoleProperty values(-10002,-100,'dbeditor_lm','true','Controls 
 insert into YukonRoleProperty values(-10003,-100,'dbeditor_cap_control','true','Controls whether the Cap Control menu item in the View menu is displayed');
 insert into YukonRoleProperty values(-10004,-100,'dbeditor_system','true','Controls whether the System menu item in the View menu is displayed');
 insert into YukonRoleProperty values(-10005,-100,'utility_id_range','1-254','<description>');
-insert into YukonRoleProperty values(-10006,-100,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 insert into YukonRoleProperty values(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
 
 /* Energy Company Role Properties */
@@ -4943,6 +4977,26 @@ insert into YukonRoleProperty values(-1103,-2,'switch_command_file','c:/yukon/sw
 insert into YukonRoleProperty values(-1104,-2,'optout_command_file','c:/yukon/switch_command/default_optout.txt','Location of the file to temporarily store the opt out commands');
 insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Residential Customers','Group name of all the residential customer logins');
 insert into YukonRoleProperty values(-1106,-2,'operator_group_name','WebClient Operators','Group name of all the web client operator logins');
+
+/* Yukon Logging Role Properties */
+insert into YukonRoleProperty values(-1200,-3,'dbeditor_log_level','INFO','Logging level for DBEditor functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1201,-3,'database_log_level','INFO','Logging level for the Database. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1202,-3,'tdc_log_level','INFO','Logging level for TDC functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1203,-3,'commander_log_level','INFO','Logging level for Yukon Commander functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1204,-3,'billing_log_level','INFO','Logging level for Billing functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1205,-3,'calchist_log_level','INFO','Logging level for Calc Historical functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1206,-3,'cap_control_log_level','INFO','Logging level for Cap Control functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1207,-3,'esub_log_level','INFO','Logging level for Esubstation functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1208,-3,'export_log_level','INFO','Logging level for Export functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1209,-3,'load_control_log_level','INFO','Logging level for Load Control functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1210,-3,'macs_log_level','INFO','Logging level for MACS functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1211,-3,'notification_log_level','INFO','Logging level for Notification functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1212,-3,'reporting_log_level','INFO','Logging level for Reporting functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1213,-3,'trending_log_level','INFO','Logging level for Trending functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1214,-3,'stars_log_level','INFO','Logging level for STARS functionality. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1215,-3,'general_log_level','INFO','Logging level for all functionality that is not otherwise defined. Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-1216,-3,'log_to_file','false','Tells all logging that it needs to go to a file');
+
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','<description>');
@@ -4955,37 +5009,31 @@ insert into YukonRoleProperty values(-10106,-101,'cbc_creation_name','CBC %PAONa
 insert into YukonRoleProperty values(-10107,-101,'tdc_alarm_count','3','<description>');
 insert into YukonRoleProperty values(-10108,-101,'decimal_places','2','<description>');
 insert into YukonRoleProperty values(-10109,-101,'pfactor_decimal_places','1','<description>');
-insert into YukonRoleProperty values(-10110,-101,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 
 /* Trending Role */
 insert into YukonRoleProperty values(-10200,-102,'graph_edit_graphdefinition','true','<description>');
-insert into YukonRoleProperty values(-10201,-102,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 
 /* Commander Role Properties */ 
-insert into YukonRoleProperty values(-10300,-103,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-10300,-103,'msg_priority','14','Tells commander what the outbound priority of messages are (low)1 - 14(high)');
 
 /* Calc Historical Role Properties */
 insert into YukonRoleProperty values(-10400,-104,'interval','900','<description>');
 insert into YukonRoleProperty values(-10401,-104,'baseline_calctime','4','<description>');
 insert into YukonRoleProperty values(-10402,-104,'daysprevioustocollect','30','<description>');
-insert into YukonRoleProperty values(-10403,-104,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 
 /* Web Graph Role Properties */
 insert into YukonRoleProperty values(-10500,-105,'home_directory','c:\yukon\client\webgraphs','<description>');
 insert into YukonRoleProperty values(-10501,-105,'run_interval','900','<description>');
-insert into YukonRoleProperty values(-10502,-105,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 
 /* Billing Role Properties */
 insert into YukonRoleProperty values(-10600,-106,'wiz_activate','false','<description>');
 insert into YukonRoleProperty values(-10601,-106,'input_file','c:\yukon\client\bin\BillingIn.txt','<description>');
-insert into YukonRoleProperty values(-10602,-106,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 
 /* Esubstation Editor Role Properties */
-insert into YukonRoleProperty values(-10700,-107,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
+insert into YukonRoleProperty values(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
 insert into YukonRoleProperty values(-10800,-108,'home_url','/default.jsp','The url to take the user immediately after logging into the Yukon web applicatoin');
-insert into YukonRoleProperty values(-10801,-108,'client_log_level','INFO','Sets the logging level for the application.  Possible values are OFF, FATAL, ERROR, WARN, INFO, DEBUG, or ALL');
 insert into yukonroleproperty values (-10802, -108,'style_sheet','CannonStyle.css','The web client cascading style sheet.');
 insert into yukonroleproperty values (-10803, -108,'nav_bullet_selected','Bullet.gif','The bullet used when an item in the nav is selected.');
 insert into YukonRoleProperty values (-10804,-108,'nav_bullet_expand','BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
@@ -5090,6 +5138,12 @@ insert into yukonroleproperty values(-30401, -304, 'Trending Get Data Now Button
 
 /* CICustomer Administrator Role */
 insert into yukonroleproperty values(-30500, -305, 'Contact Information Editable', 'false', 'Contact information is editable by the customer');
+
+/*Add the CICustomer user-control properties */
+insert into yukonroleproperty values(-30600, -306, 'User Control Label', 'User-Control', 'The customer specific name for user control');
+insert into yukonroleproperty values(-30601, -306, 'Auto Control', 'true', 'Controls access to auto control.');
+insert into yukonroleproperty values(-30602, -306, 'Time Based Control', 'true', 'Controls access to time based control');
+insert into yukonroleproperty values(-30603, -306, 'Switch Command Control', 'true', 'Controls acces to switch commands');
 
 /* Residential Customer Role Properties */
 insert into YukonRoleProperty values(-40000,-400,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
@@ -5268,7 +5322,6 @@ insert into YukonUserRole values(102,-1,-100,-10002,'(none)');
 insert into YukonUserRole values(103,-1,-100,-10003,'(none)');
 insert into YukonUserRole values(104,-1,-100,-10004,'(none)');
 insert into YukonUserRole values(105,-1,-100,-10005,'(none)');
-insert into YukonUserRole values(106,-1,-100,-10006,'(none)');
 insert into YukonUserRole values(107,-1,-100,-10007,'(none)');
 
 /* TDC */
@@ -5282,15 +5335,12 @@ insert into YukonUserRole values(126,-1,-101,-10106,'(none)');
 insert into YukonUserRole values(127,-1,-101,-10107,'(none)');
 insert into YukonUserRole values(128,-1,-101,-10108,'(none)');
 insert into YukonUserRole values(129,-1,-101,-10109,'(none)');
-insert into YukonUserRole values(130,-1,-101,-10110,'(none)');
 
 /* Trending */
 insert into YukonUserRole values(150,-1,-102,-10200,'(none)');
-insert into YukonUserRole values(151,-1,-102,-10201,'(none)');
 
 /* Commander */
 insert into YukonUserRole values(170,-1,-103,-10300,'(none)');
-
 
 /* Esubstation Editor */
 insert into YukonUserRole values(250,-1,-107,-10700,'(none)');
@@ -5305,7 +5355,6 @@ insert into YukonUserRole values(352,-1,-206,-20602,'false');
 
 /* Web Client Customers Web Client role */
 insert into YukonUserRole values (400, -1, -108, -10800, '/user/CILC/user_trending.jsp');
-insert into YukonUserRole values (401, -1, -108, -10801, '(none)');
 insert into YukonUserRole values (402, -1, -108, -10802, '(none)');
 insert into YukonUserRole values (403, -1, -108, -10803, '(none)');
 insert into YukonUserRole values (404, -1, -108, -10804, '(none)');
@@ -5332,12 +5381,12 @@ insert into YukonUserRole values (414, -1, -304, -30401, 'true');
 insert into YukonUserRole values (415, -1, -305, -30500, 'true');
 
 insert into YukonUserRole values (500,-1,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
-insert into YukonUserRole values (501,-1,-108,-10801,'(none)');
 insert into YukonUserRole values (502,-1,-108,-10802,'(none)');
 insert into YukonUserRole values (503,-1,-108,-10803,'(none)');
 insert into YukonUserRole values (504,-1,-108,-10804,'(none)');
 insert into YukonUserRole values (505,-1,-108,-10805,'DemoHeaderCES.gif');
 insert into YukonUserRole values (506,-1,-108,-10806,'(none)');
+
 insert into YukonUserRole values (520,-1,-400,-40000,'true');
 insert into YukonUserRole values (521,-1,-400,-40001,'true');
 insert into YukonUserRole values (522,-1,-400,-40002,'false');
@@ -5384,12 +5433,12 @@ insert into YukonUserRole values (680,-1,-400,-40180,'(none)');
 insert into YukonUserRole values (681,-1,-400,-40181,'(none)');
 
 insert into YukonUserRole values (700,-1,-108,-10800,'/operator/Operations.jsp');
-insert into YukonUserRole values (701,-1,-108,-10801,'(none)');
 insert into YukonUserRole values (702,-1,-108,-10802,'(none)');
 insert into YukonUserRole values (703,-1,-108,-10803,'(none)');
 insert into YukonUserRole values (704,-1,-108,-10804,'(none)');
 insert into YukonUserRole values (705,-1,-108,-10805,'(none)');
 insert into YukonUserRole values (706,-1,-108,-10806,'(none)');
+
 insert into YukonUserRole values (720,-1,-201,-20100,'true');
 insert into YukonUserRole values (721,-1,-201,-20101,'true');
 insert into YukonUserRole values (722,-1,-201,-20102,'true');
@@ -5411,6 +5460,7 @@ insert into YukonUserRole values (737,-1,-201,-20117,'true');
 insert into YukonUserRole values (750,-1,-201,-20150,'true');
 insert into YukonUserRole values (751,-1,-201,-20151,'true');
 insert into YukonUserRole values (752,-1,-201,-20152,'false');
+
 insert into YukonUserRole values (770,-1,-202,-20200,'(none)');
 insert into YukonUserRole values (775,-1,-203,-20300,'(none)');
 insert into YukonUserRole values (776,-1,-203,-20301,'(none)');

@@ -360,6 +360,43 @@ insert into yukongrouprole values ( 987, -302, -306, -30602, 'true');
 insert into yukongrouprole values ( 988, -302, -306, -30603, 'true');
 
 
+/* Start CapControl Changes */
+alter table capbank add RecloseDelay numeric;
+go
+update capbank set RecloseDelay = 0;
+go
+alter table capbank alter column RecloseDelay numeric not null;
+go
+
+alter table dynamicccsubstationbus add WaiveControlFlag char(1);
+go
+update dynamicccsubstationbus set WaiveControlFlag = 'N';
+go
+alter table dynamicccsubstationbus alter column WaiveControlFlag char(1) not null;
+go
+
+alter table dynamicccfeeder add WaiveControlFlag char(1);
+go
+update dynamicccfeeder set WaiveControlFlag = 'N';
+go
+alter table dynamicccfeeder alter column WaiveControlFlag char(1) not null;
+go
+
+alter table capcontrolsubstationbus add ControlDelayTime numeric;
+go
+update capcontrolsubstationbus set ControlDelayTime = 0;
+go
+alter table capcontrolsubstationbus alter column ControlDelayTime numeric not null;
+go
+
+alter table capcontrolsubstationbus add ControlSendRetries numeric;
+go
+update capcontrolsubstationbus set ControlSendRetries = 0;
+go
+alter table capcontrolsubstationbus alter column ControlSendRetries numeric not null;
+go
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
