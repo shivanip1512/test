@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList;
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -25,7 +26,7 @@ public void add() throws java.sql.SQLException
 	getEnergyExchangeProgram().add();
 
 	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )
-		((com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).add();
+		((LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).add();
 }
 /**
  * This method was created in VisualAge.
@@ -33,8 +34,8 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException {
 	//delete all of our energy exchange customers first
 	delete(
-		com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList.TABLE_NAME,
-		"DeviceID",
+		LMEnergyExchangeCustomerList.TABLE_NAME,
+		LMEnergyExchangeCustomerList.CONSTRAINT_COLUMNS[0],
 		getPAObjectID() );
 
 	//must obtain all offer ids from database because certain tables must be deleted
@@ -83,7 +84,7 @@ public void retrieve() throws java.sql.SQLException
 	super.retrieve();
 	getEnergyExchangeProgram().retrieve();
 
-	com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList[] customers = com.cannontech.database.db.device.lm.LMProgramEnergyExchange.getAllCustomerList( 
+	LMEnergyExchangeCustomerList[] customers = com.cannontech.database.db.device.lm.LMProgramEnergyExchange.getAllCustomerList( 
 			getPAObjectID(), getDbConnection() );
 
 	for( int i = 0; i < customers.length; i++ )
@@ -100,7 +101,7 @@ public void setDbConnection(java.sql.Connection conn)
 	getEnergyExchangeProgram().setDbConnection(conn);
 
 	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )
-		((com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setDbConnection(conn);
+		((LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setDbConnection(conn);
 }
 /**
  * Insert the method's description here.
@@ -120,7 +121,7 @@ public void setPAObjectID(Integer paoID)
 	getEnergyExchangeProgram().setDeviceID(paoID);
 
 	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )
-		((com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setDeviceID(paoID);
+		((LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setDeviceID(paoID);
 }
 /**
  * This method was created in VisualAge.
@@ -131,16 +132,16 @@ public void update() throws java.sql.SQLException
 	getEnergyExchangeProgram().update();
 
 	//delete all of our energy exchange customers first
-	delete( com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList.TABLE_NAME, 
-		"DeviceID",
+	delete( 
+		LMEnergyExchangeCustomerList.TABLE_NAME, 
+		LMEnergyExchangeCustomerList.CONSTRAINT_COLUMNS[0],
 		getPAObjectID() );
 
 	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )
 	{
-		((com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setDeviceID( getEnergyExchangeProgram().getDeviceID() );
-		((com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setCustomerOrder( new Integer(i+1) );
-		((com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).add();
+		((LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setDeviceID( getEnergyExchangeProgram().getDeviceID() );
+		((LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).setCustomerOrder( new Integer(i+1) );
+		((LMEnergyExchangeCustomerList)getLmProgramStorageVector().elementAt(i)).add();
 	}
-
 }
 }

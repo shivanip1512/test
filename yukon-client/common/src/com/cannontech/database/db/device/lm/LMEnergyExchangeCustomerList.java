@@ -15,7 +15,7 @@ public class LMEnergyExchangeCustomerList extends com.cannontech.database.db.DBP
 	};
 
 
-	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "ProgramID" };
 
 	public static final String TABLE_NAME = "LMEnergyExchangeCustomerList";
 /**
@@ -39,7 +39,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLE_NAME, "DeviceID", getDeviceID() );
+	delete( TABLE_NAME, "ProgramID", getDeviceID() );
 }
 /**
  * Insert the method's description here.
