@@ -13,7 +13,7 @@ public abstract class DBPersistent implements java.io.Serializable
 //   public static boolean printSQL = false;
 //   public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DBeditorSQL.sql";
    
-   private com.cannontech.yukon.IDBPersistent db = null;
+   private transient com.cannontech.yukon.IDBPersistent db = null;
    
 /**
  * DBPersistent constructor comment.
