@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/09/24 14:36:52 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/09/27 17:12:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "pointtypes.h"
 #include "msg_notif_email.h"
 #include "msg_notif_email_attachment.h"
-#include "thread_monitor.h"
+#include "thread_register_data.h"
 
 BOOL bQuit = FALSE;
 
@@ -84,17 +84,6 @@ class EThread : public CtiThread
 public:
 
    EThread();
-   EThread( CtiThreadRegData::fooptr alt, 
-            CtiThreadRegData::Behaviours behave, 
-            string name, 
-            CtiThreadRegData::fooptr killBill, 
-            ULONG freq );
-   EThread( CtiThreadRegData::fooptr alt,
-            void* altArg,
-            CtiThreadRegData::Behaviours behave, 
-            string name, 
-            CtiThreadRegData::fooptr killBill, 
-            ULONG freq );
    ~EThread();
    CtiThreadRegData getData( void );
    void setQuit( bool in );
@@ -113,7 +102,6 @@ private:
    bool              _tickle;
    bool              _added;
    bool              _quit;
-   CtiThreadRegData  _data;
 };
 
 EThread::EThread() :
@@ -122,47 +110,6 @@ EThread::EThread() :
    _tickle( false ),
    _heart_beat( 0 )
 {
-//   _data = 0;
-}
-
-EThread::EThread( CtiThreadRegData::fooptr alt, 
-                  CtiThreadRegData::Behaviours behave, 
-                  string name, 
-                  CtiThreadRegData::fooptr killBill, 
-                  ULONG freq ) :
-   _quit( false ),
-   _added( false ),
-   _tickle( false ),
-   _heart_beat( 0 )
-{
-//   _data = new CtiThreadRegData;
-
-   _data.setAlternateFunc( alt );
-   _data.setBehaviour( behave );
-   _data.setName( name );
-   _data.setShutdownFunc( killBill );
-   _data.setTickleFreq( freq );
-}
-
-EThread::EThread( CtiThreadRegData::fooptr alt,
-                  void* altArgs,
-                  CtiThreadRegData::Behaviours behave, 
-                  string name, 
-                  CtiThreadRegData::fooptr killBill, 
-                  ULONG freq ) :
-   _quit( false ),
-   _added( false ),
-   _tickle( false ),
-   _heart_beat( 0 )
-{
-//   _data = new CtiThreadRegData;
-
-   _data.setAlternateFunc( alt );
-   _data.setAlternateArgs( altArgs );
-   _data.setBehaviour( behave );
-   _data.setName( name );
-   _data.setShutdownFunc( killBill );
-   _data.setTickleFreq( freq );
 }
 
 EThread::~EThread()
@@ -177,11 +124,6 @@ void EThread::setQuit( bool in )
 bool EThread::inserted( void )
 {
    return _added;
-}
-
-CtiThreadRegData EThread::getData( void )
-{
-   return _data;
 }
 
 void EThread::setInserted( bool in )
@@ -202,25 +144,15 @@ void EThread::reset( void )
 void EThread::run( void )
 {
    int index = 0;
-   bool reged = false;
-
-   {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << _data.getName() << " starting up" << endl;
-   }
 
    while( !_quit )
    {
-      Sleep( 500 );
+      Sleep( 1000 );
 
-      if( _heart_beat > _data.getTickleFreq() - 5 )
+      if( index++ == 25 )
       {
-         _heart_beat = 0;
-         _tickle = true;
-      }
-      else
-      {
-         _heart_beat++;
+//         tickleMonitor( getID(), "bob", CtiThreadRegData::Restart, 25, ha );
+         index=0;
       }
    }
 }
@@ -230,137 +162,16 @@ void EThread::run( void )
 
 void testThreads( int argc, char **argv )
 {
-   CtiThreadMonitor  *monitor = new CtiThreadMonitor;
-   EThread           *bob = new EThread( ha, CtiThreadRegData::None, "Bob", booya, 30 );
-   /*   
-   EThread           *sam = new EThread( ha, CtiThreadRegData::None, "Sam", booya, 45 );
-   EThread           *joe = new EThread( ha, CtiThreadRegData::KillApp, "Joe", booya, 90 );
-   EThread           *sarah = new EThread( ha, CtiThreadRegData::Restart, "Saraita", booya, 32 );
-   */
+   EThread           *bob = new EThread();
    int               index = 0;
 
-   monitor->start();
+   ThreadMonitor.start();
 
    bob->start();
-   /*   
-   joe->start();
-   sarah->start();
-  */
-   for( ;; )
-   {
-      Sleep( 1000 );
-
-      if( bob->isRunning() )
-      {
-         if( !bob->inserted() )
-         {
-            bob->getData().setId( bob->getID() );
-            bob->setInserted( true );
-            monitor->insertThread( bob->getData() );
-         }
-
-         if( bob->timeToTickle() )
-         {
-            monitor->insertThread( bob->getData() );
-            bob->reset();
-            monitor->dump();
-         }
-      }
-    /*
-      if( sam->isRunning() )
-      {
-         if( !sam->inserted() )
-         {
-            sam->getData()->setId( sam->getID() );
-            sam->setInserted( true );
-            monitor->insertThread( sam->getData() );
-         }
-
-         if( sam->timeToTickle() )
-         {
-            monitor->insertThread( sam->getData() );
-            sam->reset();
-         }
-      }
-
-      if( joe->isRunning() )
-      {
-         if( !joe->inserted() )
-         {
-            joe->getData()->setId( joe->getID() );
-            joe->setInserted( true );
-            monitor->insertThread( joe->getData() );
-         }
-
-         if( joe->timeToTickle() )
-         {
-            monitor->insertThread( joe->getData() );
-            joe->reset();
-         }
-      }
-
-      if( sarah->isRunning() )
-      {
-         if( !sarah->inserted() )
-         {
-            sarah->getData()->setId( sarah->getID() );
-            sarah->setInserted( true );
-            monitor->insertThread( sarah->getData() );
-         }
-
-         if( sarah->timeToTickle() )
-         {
-            monitor->insertThread( sarah->getData() );
-            sarah->reset();
-         }
-      }
-         
-      if( index == 150 )
-      {
-         monitor->dump();
-//         monitor->terminate();
-      }
-
-      if( !sam->isRunning() )
-      {
-         if( index == 100 )
-         {
-            sam->start();
-         }
-      }
-
-      if( index == 21 )
-      {
-         monitor->dump();
-         bob->setQuit( true );
-         monitor->dump();
-      }
-          /*
-      if( index == 30 )
-      {
-         monitor->dump();
-         monitor->removeThread( sarah->getID() );
-         sarah->setQuit( true );
-         monitor->dump();
-      }
-            
-      if( index == 400 )
-      {
-         sarah->start();
-      }
-            
-      if( index == 1000 )
-      {
-         monitor->interrupt( CtiThreadMonitor::SHUTDOWN );
-      }
-
-      if( index == 1100 )
-      {
-         monitor->start();
-      }
-      index++;*/
-   }
 }
+
+//===========================================================================================================
+//===========================================================================================================
 
 void ha( void *la )
 {
@@ -376,6 +187,10 @@ void ha( void *la )
    }
 }
 
+//===========================================================================================================
+//===========================================================================================================
+
+
 void booya( void *haha )
 {
    {
@@ -384,6 +199,8 @@ void booya( void *haha )
    }
 }
 
+//===========================================================================================================
+//===========================================================================================================
 
 TESTFUNC_t testfunction[] = {
     {"seasonreset", seasonExecute, defaultHelp},
