@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/10/27 22:13:49 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/05/27 15:27:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -393,10 +393,20 @@ int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
         OutMessage->MessageFlags = commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
         OutMessage->Retry        = commandRetries();
 
-        if( _currentCommand == DNP_WriteTime )
+        switch( _currentCommand )
         {
-            OutMessage->Priority = MAXPRIORITY - 1;
+            case DNP_WriteTime:
+                OutMessage->Priority = MAXPRIORITY - 1;
+                break;
+
+            case DNP_SetDigitalOut_Direct:
+            case DNP_SetDigitalOut_SBO_Operate:
+            case DNP_SetDigitalOut_SBO_Select:
+            case DNP_SetDigitalOut_SBO_SelectOnly:
+                OutMessage->Priority = MAXPRIORITY - 2;
+                break;
         }
+
     }
     else
     {
