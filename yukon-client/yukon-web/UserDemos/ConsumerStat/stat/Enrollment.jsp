@@ -122,10 +122,10 @@ function changeProgram(radioBtn, index) {
 				 <input type="hidden" name="action" value="UpdatePrograms">
                   <table border="1" cellspacing="0" cellpadding="3">
                     <tr align = "center"> 
-                      <td width="143" class="HeaderCell"> 
+                      <td width="175" class="HeaderCell"> 
                         <div align="center">Program Enrollment</div>
                       </td>
-                      <td width="132" class="HeaderCell"> 
+                      <td width="100" class="HeaderCell"> 
                         <div align="center">Status</div>
                       </td>
                     </tr>
@@ -146,47 +146,50 @@ function changeProgram(radioBtn, index) {
 		}
 %>
                         <tr> 
-                          <td width="143"> 
-                            <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                              <tr> 
-                                <td width="23"> 
-                                  <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
-								  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>>
-								  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
-								  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
-								  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
-                                </td>
-                                <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
-                              </tr>
-                            </table>
-<%
+                          <td width="175"><table width="185" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td><img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
+                              <td><table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+                                  <tr> 
+                                    <td width="23"> <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
+								  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>> 
+                                      <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>"> 
+                                      <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>"> 
+                                      <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>"> 
+                                    </td>
+                                    <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
+                                  </tr>
+                                </table>
+                                <%
 		if (category.getStarsEnrLMProgramCount() > 1) {
 			/* If more than one program under this category, show the program list */
 %>
-                            <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-<%
+                                <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+                                  <%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
 				/* Each row is a program in this category */
 %>
-                              <tr> 
-                                <td width="37"> 
-                                  <div align="right"> 
-                                    <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)"
+                                  <tr> 
+                                    <td width="37"> <div align="right"> 
+                                        <input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)"
 									<% if (program != null && prog.getProgramID() == program.getProgramID()) out.print("checked"); %>>
-                                  </div>
-                                </td>
-                                <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
-                              </tr>
-<%
+                                      </div></td>
+                                    <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
+                                  </tr>
+                                  <%
 			}	// End of program
 %>
-                            </table>
-<%
+                                </table>
+                                <%
 		}	// End of program list
 %>
-                          </td>
-                          <td width="132" valign="top" class="TableCell"> 
+                              </td>
+                            </tr>
+                          </table> 
+                          
+                        </td>
+                          <td width="100" valign="top" class="TableCell"> 
                             <div align="center"><%= programStatus %></div>
                           </td>
                         </tr>
