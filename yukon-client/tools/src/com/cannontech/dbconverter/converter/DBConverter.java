@@ -1818,7 +1818,6 @@ public boolean processStatusPoints()
 		statusPoint.getPointAlarming().setExcludeNotifyStates( statusPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
 		statusPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 		statusPoint.getPointAlarming().setNotificationGroupID(  new Integer(statusPoint.getPointAlarming().NONE_NOTIFICATIONID) );
-		statusPoint.getPointAlarming().setRecipientID( new Integer(-1) );//??
 	
 		statusPoint.getPointStatus().setInitialState(new Integer(1));
 		statusPoint.getPointStatus().setControlInhibit(new Character('N'));
