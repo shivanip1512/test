@@ -295,23 +295,20 @@ CtiLMGroupBase* CtiLMGroupPoint::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupPoint::restore(RWDBReader& rdr)
 {
-
-
     CtiLMGroupBase::restore(rdr);
-}
 
-/*---------------------------------------------------------------------------
-    restorePointSpecificDatabaseEntries
-    
-    Restores the database entries for a point group that are not contained
-    in the base table.
----------------------------------------------------------------------------*/
-void CtiLMGroupPoint::restorePointSpecificDatabaseEntries(RWDBReader& rdr)
-{
-
-
-    rdr["deviceidusage"] >> _deviceidusage;
-    rdr["pointidusage"] >> _pointidusage;
-    rdr["startcontrolrawstate"] >> _startcontrolrawstate;
+    RWDBNullIndicator isNull;
+    rdr["pointdeviceidusage"] >> isNull;
+    if( !isNull )
+    {
+        rdr["pointdeviceidusage"] >> _deviceidusage;
+        rdr["pointpointidusage"] >> _pointidusage;
+        rdr["pointstartcontrolrawstate"] >> _startcontrolrawstate;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
