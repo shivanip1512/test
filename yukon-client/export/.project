@@ -3,6 +3,7 @@
 	<name>export</name>
 	<comment></comment>
 	<projects>
+		<project>calchist</project>
 		<project>common</project>
 	</projects>
 	<buildSpec>
