@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/08/18 22:04:50 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/08/31 16:02:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,8 +141,8 @@ private:
     bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
     bool addToPendingSet(CtiPendingPointOperations &pendingControlRequest, RWTime &updatetime = RWTime());
 
-    void insertControlHistoryRow( CtiPendingPointOperations &ppc, const RWTime &now);
-    void postControlHistoryPoints( CtiPendingPointOperations &ppc, const RWTime &now);
+    void insertControlHistoryRow( CtiPendingPointOperations &ppc);
+    void postControlHistoryPoints( CtiPendingPointOperations &ppc);
     void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
     void bumpDeviceFromAlternateRate(CtiPointBase *pPoint);
     void bumpDeviceToAlternateRate(CtiPointBase *pPoint);

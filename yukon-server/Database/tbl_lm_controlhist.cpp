@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/08/18 22:10:59 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/08/31 16:02:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setStartTime( const RWTime& 
 {
     setDirty();
     _startDateTime = start;
-    setPreviousLogTime(start);
+    //setPreviousLogTime(start);
     return *this;
 }
 
@@ -398,10 +398,6 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 
     rdr["paobjectid"]          >> _paoID;
     rdr["lmctrlhistid"]        >> _lmControlHistID;
@@ -495,11 +491,6 @@ RWDBStatus CtiTableLMControlHistory::Restore()
 
     selector.where( table["paobjectid"] == getPAOID() && table["lmctrlhistid"] == maxid);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << selector.asString() << endl;
-    }
     RWDBReader reader = selector.reader( conn );
 
     if( reader() )
@@ -524,8 +515,17 @@ RWDBStatus CtiTableLMControlHistory::Insert()
 
 RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 {
+    RWDBStatus dbstat( RWDBStatus::ok );
+
     setLMControlHistoryID( LMControlHistoryIdGen() );
 
+#if 0
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dump();
+    }
+#endif
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
@@ -545,32 +545,42 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     getReductionValue() <<
     RWDBDateTime(getStopTime());
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if(getStopTime().seconds() >= getStartTime().seconds())
     {
-        if(isNewControl())
+        if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
         {
-            setPreviousLogTime( getStartTime() );
-        }
-        else if(getActiveRestore() == RWCString(LMAR_NEWCONTROL))
-        {
-            setPreviousLogTime(RWTime());
+            if(isNewControl())
+            {
+                setPreviousLogTime( getStartTime() );
+            }
+            else if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
+            {
+                setPreviousLogTime( getStopTime() );
+            }
+
+            setDirty(false);
+            setNotNewControl();
         }
         else
         {
-            setPreviousLogTime( getStopTime() );
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "   " << inserter.asString() << endl;
         }
 
-        setDirty(false);
-        setNotNewControl();
+        dbstat = inserter.status();
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "   " << inserter.asString() << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** LMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << inserter.asString() << endl;
+            dump();
+        }
     }
 
-    return inserter.status();
+    return dbstat;
 }
 
 
@@ -620,10 +630,10 @@ RWDBStatus CtiTableLMControlHistory::Delete()
     return deleter.status();
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime &now, const LONG increment, bool season_reset )
+CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime &logTime, const LONG increment, bool season_reset )
 {
     RWDate prevdate(getPreviousLogTime());
-    RWDate today(now);
+    RWDate today(logTime);
 
     bool newday = false;
     bool newmonth = false;
@@ -644,7 +654,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
         {
             // we must evaluate the day crossing.
             RWTime lastTimePrevious(prevdate, 23,59,59);
-            ULONG todaysSeconds = now.seconds() - lastTimePrevious.seconds() - 1;
+            ULONG todaysSeconds = logTime.seconds() - lastTimePrevious.seconds() - 1;
             partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
 
             if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
@@ -680,7 +690,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
     setCurrentSeasonalTime( newseason   ? newincrement : getCurrentSeasonalTime() + newincrement );
     setCurrentAnnualTime  ( newyear     ? newincrement : getCurrentAnnualTime()   + newincrement );
 
-    setStopTime( now );
+    setStopTime( logTime );
 
     return *this;
 }
@@ -843,10 +853,9 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
 
     RWDBExpr stdtXpr("startdatetime", FALSE);
     RWDBExpr anXpr("soe_tag", FALSE);
-    // activerestore='N' and soe_tag not in (select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T')
     selector.where( selector.where() &&
                     keyTable["activerestore"] == LMAR_NEWCONTROL &&
-                    !anXpr.in(RWDBExpr("(select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T' or activerestore='S')", FALSE)) &&
+                    !anXpr.in(RWDBExpr("(select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T' or activerestore='C' or activerestore='S')", FALSE)) &&
                     stdtXpr.in(RWDBExpr("(select max(startdatetime) from lmcontrolhistory where activerestore='N' group by paobjectid)", FALSE)) );
 
 }
