@@ -27,6 +27,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.StarsFactory;
@@ -1255,7 +1256,14 @@ public class StarsLiteFactory {
 		}
 		
 		ArrayList liteProgHist = liteAcctInfo.getProgramHistory();
-		starsProgs.setStarsLMProgramHistory( createStarsLMProgramHistory(liteProgHist) );
+		StarsLMProgramHistory starsProgHist = createStarsLMProgramHistory( liteProgHist );
+		starsProgs.setStarsLMProgramHistory( starsProgHist );
+		
+		OptOutEventQueue.OptOutEvent event = energyCompany.getOptOutEventQueue().findOptOutEvent( liteAcctInfo.getAccountID() );
+		if (event != null) {
+			StarsLMProgramEvent starsEvent = createStarsOptOutEvent( event, liteProgs, energyCompany );
+			starsProgHist.addStarsLMProgramEvent( starsEvent );
+		}
 		
 		ArrayList liteInvs = liteAcctInfo.getInventories();
 		StarsInventories starsInvs = new StarsInventories();
@@ -2128,6 +2136,22 @@ public class StarsLiteFactory {
         }
         
         return starsCustFAQs;
+	}
+	
+	public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, ArrayList liteProgs, LiteStarsEnergyCompany energyCompany) {
+		StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
+		
+		YukonListEntry optOutEntry = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION );
+		starsEvent.setEventAction( optOutEntry.getEntryText() );
+		starsEvent.setYukonDefID( optOutEntry.getYukonDefID() );
+		starsEvent.setEventDateTime( new Date(event.getStartDateTime()) );
+		starsEvent.setDuration( event.getPeriod() * 24 );
+		starsEvent.setNotes( "" );
+		
+		for (int i = 0; i < liteProgs.size(); i++)
+			starsEvent.addProgramID( ((LiteStarsLMProgram)liteProgs.get(i)).getLmProgram().getProgramID() );
+		
+		return starsEvent;
 	}
 	
 	

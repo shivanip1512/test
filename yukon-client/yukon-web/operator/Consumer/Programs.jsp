@@ -417,6 +417,10 @@ function resendNotEnrolled(form) {
 				}
 			}
 			
+			String scheduledStr = "";
+			if (event.hasDuration() && event.getEventDateTime().after(new Date()))
+				scheduledStr = "(Scheduled)";
+			
 			String progNames = "";
 			for (int j = 0; j < event.getProgramIDCount(); j++) {
 				for (int k = 0; k < categories.getStarsApplianceCategoryCount(); k++) {
@@ -441,6 +445,7 @@ function resendNotEnrolled(form) {
                   <td class="TableCell" width="100" ><%= datePart.format(event.getEventDateTime()) %></td>
                   <td class="TableCell" width="154" ><%= event.getEventAction() %> 
                     <% if (event.hasDuration()) { %>- <%= durationStr %><% } %>
+					<%= scheduledStr %>
                   </td>
                   <td class="TableCell" width="100" ><%= progNames %></td>
                 </tr>
