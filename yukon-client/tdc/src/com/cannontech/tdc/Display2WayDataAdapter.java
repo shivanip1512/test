@@ -196,7 +196,7 @@ private int addColumnDefinedRow( Signal signal )
 			createRowForEventViewer( signal );
 
 			// put a psuedo value in row location 0
-			createPsuedoPointValue( signal );
+			createPsuedoPointValue( 0 );
 			rowsAdded++;
 				
 			if( addBlankRowIfNeeded() )
@@ -434,15 +434,14 @@ protected void createDummyPointValue( long id, long timeStamp, String deviceName
  * Version: <version>
  * @param signal Signal
  */
+/*
 private void createPsuedoPointValue( Signal signal )
 {
-	int location = 0;
-		
 	pointValues.insertElementAt(
 		new PointValues( signal, PointTypes.INVALID_POINT ),
-		location );  // not really a point	
+		0 );
 }
-
+*/
 /**
  * Insert the method's description here.
  * Creation date: (4/13/00 5:04:56 PM)
@@ -1626,7 +1625,7 @@ public synchronized void processSignalReceived( Signal signal )
 
 
 		//change the PointDatas tags preserving the alarms bits for the PointData
-		if( ptVal != null && ptVal != DUMMY_POINT_VALUES )
+		if( ptVal != null && ptVal.getPointID() != PointTypes.SYS_PID_SYSTEM )
 		{
 			ptVal.setTags( 
 				(ptVal.getTags() & Signal.MASK_ANY_ALARM)

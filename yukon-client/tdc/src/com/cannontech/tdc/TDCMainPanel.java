@@ -92,7 +92,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	
 	private boolean refreshPressed = false;
 	private boolean initialStart = true;
-	private Date previousDate = new Date();
+	private Date previousDate = null;
 	
 	private javax.swing.JOptionPane closeBox = null;
 	private Display2WayDataAdapter dbAdaptor = null;
@@ -808,6 +808,11 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 				if( getCurrentDisplay() != null )
 					setLastDisplays( Display.getDisplayTypeIndexByType(getCurrentDisplay().getType()), getCurrentDisplay() );
 		
+
+				//new display, reset any page numbers
+				resetPagingProperties();
+
+
 				// check if we are a client display
 				if( isClientDisplay() )
 				{
@@ -816,7 +821,7 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 					// EACH CLIENT DISPLAY!!!				
 				}
 				else
-				{  	
+				{
 					// we must have a CORE or a USER CREATED display
 					setUpTable();
 
@@ -826,8 +831,7 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 					if( Display.isCoreType(getCurrentDisplay().getType()) ) 
 						initCoreDisplays();
 				}
-					
-				resetPagingProperties();	
+
 			}
 		}
 		finally
@@ -1665,22 +1669,7 @@ private void getHistoryDisplayData( Date date )
 		//see if we need to add paging capability here
 		if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 		{
-			getJRadioButtonPage1().setSelected( true );
-			
-			//remove all the page number JRadioButtons
-			for( int i = (getJPopupMenuPage().getComponentCount()-1); i >= 0; i-- )
-			{
-            java.awt.Component c = getJPopupMenuPage().getComponent(i);
-				if( c instanceof javax.swing.JRadioButtonMenuItem )
-				{
-					if( !( ((javax.swing.JRadioButtonMenuItem)c).getActionCommand().equalsIgnoreCase("1")) )
-					{
-						getButtonGroupPage().remove( (javax.swing.JRadioButtonMenuItem)c );
-						((javax.swing.JRadioButtonMenuItem)c).removeActionListener( this );
-						getJPopupMenuPage().remove( c );
-					}
-				}
-			}
+			getJRadioButtonPage1().setSelected( true );			
 
 			//add all the page number JRadioButtons
 			for( int i = 2; i <= totalPages; i++ )
@@ -2248,6 +2237,12 @@ private void initCoreDisplays()
 	// add in todays data
 	Date newDate = getPreviousDate();
 
+	if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) 
+		 || getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) )
+	{			
+		getHistoryDisplayData( newDate );
+	}
+
 	if( Display.isTodaysDate(newDate) )
 	{
 		//we are looking at today
@@ -2256,12 +2251,6 @@ private void initCoreDisplays()
 	else
 	{
 		setDisplayTitle( getCurrentDisplay().getName(), newDate );
-	}
-
-	if( Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) 
-		 || getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) )
-	{			
-		getHistoryDisplayData( newDate );
 	}
 
 }
@@ -3139,7 +3128,7 @@ public void jRadioButtonPage_ActionPerformed(java.awt.event.ActionEvent actionEv
 				pageNumber = 1;
 
 			//Always add 1 milleseconds less than 1 day (86399999L) to see the current day
-			final int MILLI_OFFSET = 86399999;
+			final int MILLI_OFFSET = 86399000;
 			
 			
 			//use to do the view creations
@@ -3489,8 +3478,21 @@ private void resetPagingProperties()
 	totalPages = 1;
 	pageNumber = 1;
 	
-	//getJButtonBack().setEnabled( false );
-	//getJButtonForward().setEnabled( false );	
+	//remove all the page number JRadioButtons
+	for( int i = (getJPopupMenuPage().getComponentCount()-1); i >= 0; i-- )
+	{
+		java.awt.Component c = getJPopupMenuPage().getComponent(i);
+		if( c instanceof javax.swing.JRadioButtonMenuItem )
+		{
+			if( !( ((javax.swing.JRadioButtonMenuItem)c).getActionCommand().equalsIgnoreCase("1")) )
+			{
+				getButtonGroupPage().remove( (javax.swing.JRadioButtonMenuItem)c );
+				((javax.swing.JRadioButtonMenuItem)c).removeActionListener( this );
+				getJPopupMenuPage().remove( c );
+			}
+		}
+	}
+
 }
 /**
  * Insert the method's description here.
@@ -3645,12 +3647,14 @@ private void setDisplayTitle(String title, Date date )
 	            calendar.get( calendar.YEAR ) + ")";
 		}
 	}
-	
-	
-	if( totalPages > 1 )
+
+
+	if( totalPages > 1
+		 && Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 	{
 		title += " (" + pageNumber + " of " + totalPages + ")";		
 	}
+	
 	
 
 		
@@ -3844,14 +3848,6 @@ public void setUpTable()
 				String displayName = getJComboCurrentDisplay().getSelectedItem().toString();
 				int displayNum = (int)getCurrentDisplay().getDisplayNumber();
 
-				//if we are active, we only can use todays date
-//				if( Display.isAlarmDisplay(displayNum)  &&
-//				    !getTableDataModel().isInactiveAlarms() )
-//				{
-//					setSelectedDate( new Date() );
-//				}
-
-		
 				if( displayNum == Display.UNKNOWN_DISPLAY_NUMBER )
 				{
 					TDCMainFrame.messageLog.addMessage("Unknown Core Display Number for '" + displayName + "' found.", MessageBoxFrame.ERROR_MSG );
@@ -3859,10 +3855,10 @@ public void setUpTable()
 				}
 				else
 					setDisplayTitle( displayName, null );
-					
+
 				getTableDataModel().setCurrentDisplay( getCurrentDisplay() );
 				getTableDataModel().makeTable();				
-				setColumnWidths();				
+				setColumnWidths();
 			}
 			else
 			{
@@ -4122,6 +4118,18 @@ public void writeAllDisplayColumnData()
 
 public Date getPreviousDate() 
 {
+	if( previousDate == null )
+	{
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime( new Date() );
+		cal.set( cal.HOUR_OF_DAY, 0 );
+		cal.set( cal.MINUTE, 0 );
+		cal.set( cal.SECOND, 0 );
+		cal.set( cal.MILLISECOND, 0 );
+
+		previousDate = cal.getTime();
+	}
+
 	return previousDate;
 }
 
