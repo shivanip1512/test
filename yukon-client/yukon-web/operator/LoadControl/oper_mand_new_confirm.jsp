@@ -87,100 +87,106 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-<table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
-    <tr>      
-    <td width="650" class="Main"> 
-      <div align="center"><br>
-        <form action="oper_mand.jsp?tab=newconfirm" method="post">
-        <input type=hidden name="confirmed" value="true">
-        <input type=hidden name="program" value="<%= programStr %>">
-        <input type=hidden name="notifydate" value="<%= notifyDateStr %>">
-        <input type=hidden name="notifytime" value="<%= notifyTimeStr %>">
-        <input type=hidden name="startdate" value="<%= curtailDateStr %>">
-        <input type=hidden name="starttime" value="<%= curtailTimeStr %>">
-        <input type=hidden name="duration" value="<%= checker.get("duration") %>">
-        <input type=hidden name="comments" value="<%= checker.get("comments") %>">
-                    <b> NOTIFICATION - NEW</b><br>
+            <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
+              <tr>      
+                <td width="650" class="Main"> 
+                  <div align="center"><br>
+                  <form action="oper_mand.jsp?tab=newconfirm" method="post">
+                    <input type=hidden name="confirmed" value="true">
+                    <input type=hidden name="program" value="<%= programStr %>">
+                    <input type=hidden name="notifydate" value="<%= notifyDateStr %>">
+                    <input type=hidden name="notifytime" value="<%= notifyTimeStr %>">
+                    <input type=hidden name="startdate" value="<%= curtailDateStr %>">
+                    <input type=hidden name="starttime" value="<%= curtailTimeStr %>">
+                    <input type=hidden name="duration" value="<%= checker.get("duration") %>">
+                    <input type=hidden name="comments" value="<%= checker.get("comments") %>">
+                    <b> NOTIFICATION - NEW</b><br><br>
+
+                    <table width="250" border="1" cellspacing="0" cellpadding="4" align="center">
+                      <tr> 
+                        <td width="150" class="TableCell"> 
+                          <div align="right">&nbsp;Program:</div>
+                        </td>
+                        <td width="150" class="TableCell">&nbsp;<%= checker.get("programname") %></td>
+                      </tr>
+                      <tr>  
+                        <td width="150" class="TableCell"> 
+                          <div align="right">Notify Date:</div>
+                        </td>
+                        <td width="150" class="TableCell">&nbsp;<%= notifyDateStr %></td>
+                      </tr>
+                      <tr> 
+                        <td width="150" class="TableCell"> 
+                          <div align="right">Notify Time:</div>
+                        </td>
+                        <td>
+                          <table>
+                            <tr>
+                              <td width="150" class="TableCell">&nbsp;<%= notifyTimeStr %></td>
+                             <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="150" class="TableCell"> 
+                          <div align="right">Curtail Date:</div>
+                        </td>
+                        <td width="150" class="TableCell">&nbsp;<%= curtailDateStr %></td>
+                      </tr>
+                      <tr> 
+                        <td width="150" class="TableCell"> 
+                          <div align="right">Curtail Time:</div>
+                        </td>
+                        <td>
+                          <table>
+                            <tr>
+                              <td width="150" class="TableCell">&nbsp;<%= curtailTimeStr %></td>
+                              <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %></td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="150" class="TableCell"> 
+                          <div align="right"> Duration:</div>
+                        </td>
+                        <td width="150" class="TableCell">&nbsp;<%= checker.get("duration") %></td>
+                      </tr>
+                    </table>
                     <br>
-</div>
-      <table width="250" border="1" cellspacing="0" cellpadding="4" align="center">
-          <tr> 
-            <td width="150" class="TableCell"> 
-              <div align="right">&nbsp;Program:</div>
-            </td>
-            <td width="150" class="TableCell">&nbsp;<%= checker.get("programname") %> 
-            </td>
-          </tr>
-          <tr>  
-            <td width="150" class="TableCell"> 
-              <div align="right">Notify Date:</div>
-            </td>
-            <td width="150" class="TableCell">&nbsp;<%= notifyDateStr %></td>
-          </tr>
-          <tr> 
-            <td width="150" class="TableCell"> 
-              <div align="right">Notify Time:</div>
-            </td>
-            <td width="150" class="TableCell">&nbsp;<%= notifyTimeStr %></td>
-            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
-			</td>
-          </tr>
-          <tr> 
-            <td width="150" class="TableCell"> 
-              <div align="right">Curtail Date:</div>
-            </td>
-            <td width="150" class="TableCell">&nbsp;<%= curtailDateStr %></td>
-          </tr>
-          <tr> 
-            <td width="150" class="TableCell"> 
-              <div align="right">Curtail Time:</div>
-            </td>
-            <td width="150" class="TableCell">&nbsp;<%= curtailTimeStr %></td>
-            <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
-			</td>
-          </tr>
-          <tr> 
-            <td width="150" class="TableCell"> 
-              <div align="right"> Duration:</div>
-            </td>
-            <td width="150" class="TableCell">&nbsp;<%= checker.get("duration") %> 
-            </td>
-          </tr>
-        </table>
-        <br>
-        <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
-          <tr> 
-            <td  class="MainHeader" width="83" height="29"> 
-              <div align="right"><b>Comments:</b>&nbsp;</div>
-            </td>
-            <td class="TableCell" width="511" height="29"><%= checker.get("comments") %> </td>
-          </tr>
-        </table>
-        <br>
-        <table
-    width="300" border="0" cellspacing="0" cellpadding="6" align="center">
-          <tr> 
-                      <td width="150" valign="top"> 
-                        <p align=RIGHT valign="TOP"> 
+                    <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
+                      <tr> 
+                        <td  class="MainHeader" width="83" height="29"> 
+                          <div align="right"><b>Comments:</b>&nbsp;</div>
+                        </td>
+                        <td class="TableCell" width="511" height="29"><%= checker.get("comments") %> </td>
+                      </tr>
+                    </table>
+                    <br>
+                    <table width="300" border="0" cellspacing="0" cellpadding="6" align="center">
+                      <tr> 
+                        <td width="150" valign="top"> 
+                          <p align=RIGHT valign="TOP"> 
                           <input type="submit" IMG value="Send" border="0" name="image">
-            </td>
-            <td width="150" valign="TOP"> 
-              <div align="left"><input type = "button" value="Cancel" name = "cancel" onclick = "goBack()"></div>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-  <br>  
-  </form>
-              
+                        </td>
+                        <td width="150" valign="TOP"> 
+                          <div align="left"><input type = "button" value="Cancel" name = "cancel" onclick = "javascipt:history.back()"></div>
+                        </td>
+                      </tr>
+                    </table>
+                    <br>  
+                  </form>
+                  </div>                  
+                </td>
+              </tr>
+            </table>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>
