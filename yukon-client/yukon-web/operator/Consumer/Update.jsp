@@ -139,6 +139,14 @@ function copyAddress(form) {
                           <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail() %>">
                         </td>
                       </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right"></div>
+                        </td>
+                        <td width="210"> 
+                          <input type="checkbox" name="checkbox" value="checkbox">
+                          <span class="TableCell">Notify day of control</span></td>
+                      </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
