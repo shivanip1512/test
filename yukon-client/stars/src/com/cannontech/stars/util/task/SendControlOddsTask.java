@@ -34,7 +34,7 @@ public class SendControlOddsTask implements Runnable {
 	private static final String blanks = "                                        ";
 	private static final String footer = "To unsubscribe from the notification list, " +
 			"please go to http://www.wisewatts.com and login with your username and password. " +
-			"On the first page (or the \"General\" link), uncheck the notification box (or check the box to subscribe again).";
+			"On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\"";
 	
 	private int energyCompanyID = 0;
 	
