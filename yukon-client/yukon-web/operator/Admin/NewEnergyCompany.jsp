@@ -8,13 +8,17 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
-function checkPassword(form) {
+function validate(form) {
+	if (form.Username.value == "") {
+		alert("Username of default operator login cannot be empty");
+		return false;
+	}
 	if (form.Password.value != form.PasswordC.value) {
-		alert("Password of default login doesn't match, please enter the password again");
+		alert("Passwords of default operator login don't match, please enter them again");
 		return false;
 	}
 	if (form.Password2.value != form.Password2C.value) {
-		alert("Password of second login doesn't match, please enter the password again");
+		alert("Passwords of second operator login don't match, please enter them again");
 		return false;
 	}
 	return true;
@@ -71,7 +75,7 @@ function checkPassword(form) {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return checkPassword(this)">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return validate(this)">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td class="HeaderCell">Create Energy Company</td>

@@ -16,7 +16,7 @@ function setPasswordChanged() {
 
 function checkPassword(form) {
 	if (passwdChanged && (form.Password.value != form.Password2.value)) {
-		alert("The passwords you entered doesn't match, please reenter them");
+		alert("The passwords you entered don't match, please enter them again");
 		return false;
 	}
 }
