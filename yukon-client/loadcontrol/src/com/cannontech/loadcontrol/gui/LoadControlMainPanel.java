@@ -17,6 +17,7 @@ import com.cannontech.common.gui.util.JDialogWait;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.ControlHistoryTableModel;
@@ -619,7 +620,7 @@ private GroupPopUpMenu getGroupPopUpMenu()
  * Creation date: (9/28/00 11:30:03 AM)
  * @return com.cannontech.loadcontrol.datamodels.GroupTableModel
  */
-private com.cannontech.loadcontrol.datamodels.GroupTableModel getGroupTableModel() 
+private GroupTableModel getGroupTableModel() 
 {
 	if( groupTableModel == null )
 	{
@@ -936,6 +937,29 @@ protected LMProgramBase getSelectedProgram()
 		
 	return getProgramTableModel().getProgramAt( selectedRow );
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return Object
+ */
+protected LMGroupBase getSelectedGroup() 
+{
+	javax.swing.ListSelectionModel lsm = getJTableGroup().getSelectionModel();
+	
+	//only one should be selected
+	int selectedRow = lsm.getMinSelectionIndex();
+	
+	if( selectedRow < 0 )
+		return null;
+	
+	Object row = getGroupTableModel().getRowAt( selectedRow );
+	
+	if( row instanceof LMGroupBase )	
+		return (LMGroupBase)row;
+	else
+		return null;
+}
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.loadcontrol.data.LMControlArea
@@ -1044,7 +1068,6 @@ private void initConnections() throws java.lang.Exception
 	getJTableControlArea().getModel().addTableModelListener( getGroupTableModel() );
 
 
-/** NEED TO ADD THIS ONCE THE DEF_COLLECTABLEs ARE DONE!! ***********
 	// add the GroupPopUp menu listener AND the ProgramPopUp menu listener here
 	//  Note: We have to overide: showIfPopupTrigger(java.awt.event.MouseEvent e)
 	//   because we have a different PopUpBox for each subclass of com.cannontech.loadcontrol.data.LMGroupBase  --Tricky!
@@ -1054,15 +1077,14 @@ private void initConnections() throws java.lang.Exception
 		{
 			if( e.isPopupTrigger() )
 			{
-				//com.cannontech.loadcontrol.data.LMGroupBase row = getGroupTableModel().getRowAt( getGroupTable().rowAtPoint(e.getPoint()) );
 				Object row = getGroupTableModel().getRowAt( getJTableGroup().rowAtPoint(e.getPoint()) );
 
 				//determines what popupBox is shown
-				if( row instanceof com.cannontech.loadcontrol.data.LMGroupBase )
+				if( row instanceof LMGroupBase )
 					getGroupPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-				else if( row instanceof LMProgramBase )
-					getProgramPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 
+//				else if( row instanceof LMProgramBase )
+//					getProgramPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 //				else if( row instanceof OfferRowData )
 //					getOfferPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 //				else if( row instanceof EExchangeRowData )
@@ -1075,7 +1097,7 @@ private void initConnections() throws java.lang.Exception
 	getJTableGroup().addMouseListener( groupListener );
 	getGroupPopUpMenu().addPopupMenuListener( this );
 	//getCurtailCustomerPopUpMenu().addPopupMenuListener( this );
-*/
+
 
 	//Add the ProgramPopUpMenu menu listeners
 	getJTableProgram().addMouseListener( new com.cannontech.clientutils.popup.PopUpMenuShower(getProgramPopUpMenu()) );
@@ -1262,11 +1284,10 @@ public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e)
  */
 public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
 {
-/*
 	if( e.getSource() == LoadControlMainPanel.this.getGroupPopUpMenu() )
-		getGroupPopUpMenu().setLoadControlGroup( 
-			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
+		getGroupPopUpMenu().setLoadControlGroup( getSelectedGroup() );
 
+/*
 	if( e.getSource() == LoadControlMainPanel.this.getCurtailCustomerPopUpMenu() )
 		getCurtailCustomerPopUpMenu().setLoadControlGroup( 
 			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );

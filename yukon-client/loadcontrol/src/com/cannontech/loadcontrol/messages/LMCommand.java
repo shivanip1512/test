@@ -38,24 +38,27 @@ public class LMCommand extends LMMessage
 	public static final int CONFIRM_GROUP								= 16;
 
           
-	public static final String[] COMMAND_STRINGS =
+	public static final String[] CMD_STRS =
 	{
-		"CHANGE THRESHOLD",
+		"CHANGE THRESHOLD",   //0
 		"CHANGE RESTORE OFFSET",
 		"CHANGE CURRENT START TIME",
 		"CHANGE CURRENT STOP TIME",
 		"CHANGE CURRENT OPERATIONAL STATE",
 		"ENABLE CONTROL AREA",
-		"DISABLE CONTROL AREA",
-		"ENABLE PROGRAM",
-		"DISABLE PROGRAM",
-		"SHED GROUP",
-		"SMART CYCLE GROUP",
-		"TRUE CYCLE GROUP",
-		"RESTORE GROUP",
-		"ENABLE GROUP",
-		"DISABLE GROUP",
-		"CONFIRM GROUP"
+		"DISABLE CONTROL AREA", //6
+		
+		"Enable Program",
+		"Disable Program",
+		"Retrieve All Areas", //9
+		
+		"Shed",
+		"Smart Cycle",
+		"True Cycle",
+		"Restore",
+		"Enable Group",  //14
+		"Disable Group",
+		"Confirm"
 		
 	};
 /**
@@ -65,7 +68,7 @@ public LMCommand() {
 	super();
 }
 /**
- * ScheduleCommand constructor comment.
+ * LMCommand constructor comment.
  */
 public LMCommand( int cmd, int yukID, int num, double val)
 {
@@ -76,6 +79,18 @@ public LMCommand( int cmd, int yukID, int num, double val)
 	setNumber(num);
 	setValue(val);
 }
+
+/**
+ * LMCommand constructor comment.
+ */
+public LMCommand( int cmd, int yukID, int num, double val, int count_, int auxid_ )
+{
+	this( cmd, yukID, num, val );
+
+	setCount( count_ );
+	setAuxid( auxid_ );
+}
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -83,16 +98,8 @@ public LMCommand( int cmd, int yukID, int num, double val)
 public int getCommand() {
 	return command;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/17/00 12:57:43 PM)
- * @return java.lang.String
- * @param command int
- */
-public static String getCommandString(int command) 
-{
-	return COMMAND_STRINGS[command];
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 2:30:42 PM)

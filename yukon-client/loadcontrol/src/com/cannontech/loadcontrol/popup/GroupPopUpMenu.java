@@ -7,18 +7,52 @@ package com.cannontech.loadcontrol.popup;
  */
 
 
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMGroupExpresscom;
+import com.cannontech.loadcontrol.data.LMGroupPoint;
+import com.cannontech.loadcontrol.data.LMGroupRipple;
+import com.cannontech.loadcontrol.data.LMGroupVersacom;
 import com.cannontech.loadcontrol.gui.manualentry.LMCurtailCustomerInfoPanel;
+import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
 	private LMGroupBase loadControlGroup = null;
 
-	//private javax.swing.JMenuItem jMenuItemCycle = null;
+	private javax.swing.JMenuItem jMenuItemTrueCycle = null;
+	private javax.swing.JMenuItem jMenuItemSmartCycle = null;
 	private javax.swing.JMenuItem jMenuItemConfirm = null;
 	private javax.swing.JMenuItem jMenuItemDisable = null;
 	private javax.swing.JMenuItem jMenuItemRestore = null;
 	private javax.swing.JMenuItem jMenuItemShed = null;
+
+	private static final String[] SHED_STRS = 
+	{
+		"5 minutes",
+		"7 minutes",
+		"10 minutes",
+		"15 minutes",
+		"20 minutes",
+		"30 minutes",
+		"45 minutes",
+		"1 hour",
+		"2 hours",
+		"3 hours",
+		"4 hours",
+		"6 hours",
+		"8 hours"
+	};
+
 
 	/**
 	 * GroupPopUpMenu constructor comment.
@@ -49,10 +83,12 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		if( e.getSource() == getJMenuItemRestore() )
 			executeRestore(e);
 	
-	/*
-		if( e.getSource() == getJMenuItemCycle() )
-			executeCycle(e);
-	*/
+	
+		if( e.getSource() == getJMenuItemTrueCycle() )
+			executeTrueCycle(e);
+	
+		if( e.getSource() == getJMenuItemSmartCycle() )
+			executeSmartCycle(e);
 	
 		if( e.getSource() == getJMenuItemDisable() )
 			executeDisableEnable(e);
@@ -65,9 +101,81 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	 * Creation date: (9/28/00 3:43:40 PM)
 	 * @param e java.awt.event.ActionEvent
 	 */
-	private void executeCycle(java.awt.event.ActionEvent e) 
+	private void executeTrueCycle(java.awt.event.ActionEvent e) 
 	{
+		GroupMsgPanel panel = new GroupMsgPanel();
+		OkCancelDialog dialog = new OkCancelDialog(
+				CtiUtilities.getParentFrame(this), 
+				"Enter Values", 
+				true, 
+				panel );
+		
+		dialog.setLocationRelativeTo(this);
+		dialog.show();
+
+		Object val = null;		
+
+		if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+		{
+			Object obj = panel.getValue(null);
+			
+			if( obj instanceof LMCommand )
+			{
+				LMCommand cmd = (LMCommand)obj;
+				cmd.setCommand( LMCommand.TRUE_CYCLE_GROUP );
+				cmd.setYukonID( getLoadControlGroup().getYukonID().intValue() );
+			
+				LoadControlClientConnection.getInstance().write( cmd );
+			}
+			else
+				throw new IllegalArgumentException(
+					"Should only return " + LMCommand.class.getName() +
+					" instances, instead reuturned a " + obj.getClass().getName() + 
+					" (very unbecoming)");	
+		}
 	}
+
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (9/28/00 3:43:40 PM)
+	 * @param e java.awt.event.ActionEvent
+	 */
+	private void executeSmartCycle(java.awt.event.ActionEvent e) 
+	{
+		GroupMsgPanel panel = new GroupMsgPanel();
+		OkCancelDialog dialog = new OkCancelDialog(
+				CtiUtilities.getParentFrame(this), 
+				"Enter Values", 
+				true, 
+				panel );
+		
+		dialog.setLocationRelativeTo(this);
+		dialog.show();
+
+		Object val = null;		
+
+		if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+		{
+			Object obj = panel.getValue(null);
+			
+			if( obj instanceof LMCommand )
+			{
+				LMCommand cmd = (LMCommand)obj;
+				cmd.setCommand( LMCommand.SMART_CYCLE_GROUP );
+				cmd.setYukonID( getLoadControlGroup().getYukonID().intValue() );
+			
+				LoadControlClientConnection.getInstance().write( cmd );
+			}
+			else
+				throw new IllegalArgumentException(
+					"Should only return " + LMCommand.class.getName() +
+					" instances, instead reuturned a " + obj.getClass().getName() + 
+					" (very unbecoming)");	
+		}
+				
+	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (9/28/00 3:43:40 PM)
@@ -75,7 +183,24 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	 */
 	private void executeDisableEnable(java.awt.event.ActionEvent e) 
 	{
+		if( getLoadControlGroup().getDisableFlag().booleanValue() )
+		{
+			//send a message to the server telling it to ENABLE this group
+			LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.ENABLE_GROUP,
+						 				getLoadControlGroup().getYukonID().intValue(),
+						 				0, 0.0) );
+		}
+		else
+		{
+			//send a message to the server telling it to DISABLE this group	
+			LoadControlClientConnection.getInstance().write(
+					new LMCommand( LMCommand.DISABLE_GROUP,
+						 				getLoadControlGroup().getYukonID().intValue(),
+						 				0, 0.0) );
+		}		
 	}
+
 	
 	/**
 	 * Insert the method's description here.
@@ -84,8 +209,17 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	 */
 	private void executeConfirm(java.awt.event.ActionEvent e) 
 	{
+		//send a message to the server telling it to CONFIRM this group
+		LoadControlClientConnection.getInstance().write(
+				new LMCommand( LMCommand.CONFIRM_GROUP,
+					 				getLoadControlGroup().getYukonID().intValue(),
+					 				0, 
+					 				0.0,
+					 				0,
+					 				0) ); //this auxid will be used for the alt routeID soon		
 	}
-	
+
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (9/28/00 3:43:40 PM)
@@ -93,7 +227,14 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	 */
 	private void executeRestore(java.awt.event.ActionEvent e) 
 	{
+		//send a message to the server telling it to RESTORE this group
+		LoadControlClientConnection.getInstance().write(
+				new LMCommand( LMCommand.RESTORE_GROUP,
+					 				getLoadControlGroup().getYukonID().intValue(),
+					 				0,
+					 				0.0) );
 	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (9/28/00 3:43:40 PM)
@@ -101,24 +242,50 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	 */
 	private void executeShed(java.awt.event.ActionEvent e) 
 	{
-	
+		Object val = JOptionPane.showInputDialog( 
+			this, "Shed Duration: ",
+			"Enter Shed Time", JOptionPane.QUESTION_MESSAGE,
+			null, 
+			(getLoadControlGroup() instanceof LMGroupRipple
+			  ? new Object[] { new StringBuffer("(Ripple Groups use programmed times in switch)") }
+			  : SHED_STRS), 
+			null );
+
+
+		if( val != null )
+		{
+			int seconds = 0;
+			if( val instanceof String )  //a StringBuffer will be here if RippleGroup is used
+				seconds = CtiUtilities.getIntervalSecondsValue(val.toString()).intValue();
+
+			//send a message to the server telling it to SHED this group
+			LoadControlClientConnection.getInstance().write(
+				new LMCommand( LMCommand.SHED_GROUP,
+					 				getLoadControlGroup().getYukonID().intValue(),
+					 				seconds, //shed time in seconds
+					 				0.0,
+					 				0,
+					 				0) ); //this auxid will be used for the alt routeID soon
+		}		
+
 	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/17/2001 1:56:43 PM)
 	 * @return javax.swing.JMenuItem
-	 *
-	private javax.swing.JMenuItem getJMenuItemCycle() 
+	 */
+	private javax.swing.JMenuItem getJMenuItemTrueCycle() 
 	{
-		if (jMenuItemCycle == null) 
+		if( jMenuItemTrueCycle == null ) 
 		{
 			try 
 			{
-				jMenuItemCycle = new javax.swing.JMenuItem();
-				jMenuItemCycle.setName("JMenuItemCycle");
-				jMenuItemCycle.setMnemonic('y');
-				jMenuItemCycle.setText("Cycle");
-				jMenuItemCycle.setActionCommand("jMenuItemCycle");
+				jMenuItemTrueCycle = new javax.swing.JMenuItem();
+				jMenuItemTrueCycle.setName("JMenuItemTrueCycle");
+				jMenuItemTrueCycle.setText(LMCommand.CMD_STRS[LMCommand.TRUE_CYCLE_GROUP] + "...");
+				jMenuItemTrueCycle.setMnemonic('y');
+				jMenuItemTrueCycle.setActionCommand("jMenuItemTrueCycle");
 			} 
 			catch (java.lang.Throwable ivjExc) 
 			{
@@ -126,9 +293,35 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			}
 		}
 	
-		return jMenuItemCycle;
+		return jMenuItemTrueCycle;
 	}
-	*/
+	
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (4/17/2001 1:56:43 PM)
+	 * @return javax.swing.JMenuItem
+	 */
+	private javax.swing.JMenuItem getJMenuItemSmartCycle() 
+	{
+		if( jMenuItemSmartCycle == null ) 
+		{
+			try 
+			{
+				jMenuItemSmartCycle = new javax.swing.JMenuItem();
+				jMenuItemSmartCycle.setName("JMenuItemSmartCycle");
+				jMenuItemSmartCycle.setText( LMCommand.CMD_STRS[LMCommand.SMART_CYCLE_GROUP] + "...");
+				jMenuItemSmartCycle.setMnemonic('m');
+				jMenuItemSmartCycle.setActionCommand("jMenuItemSmartCycle");
+			} 
+			catch (java.lang.Throwable ivjExc) 
+			{
+				handleException(ivjExc);
+			}
+		}
+	
+		return jMenuItemSmartCycle;
+	}
 	
 	/**
 	 * Insert the method's description here.
@@ -143,8 +336,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemConfirm = new javax.swing.JMenuItem();
 				jMenuItemConfirm.setName("JMenuItemConfirm");
+				jMenuItemConfirm.setText(LMCommand.CMD_STRS[LMCommand.CONFIRM_GROUP]);
 				jMenuItemConfirm.setMnemonic('f');
-				jMenuItemConfirm.setText("Confirm");
 				jMenuItemConfirm.setActionCommand("jMenuItemConfirm");
 			} 
 			catch (java.lang.Throwable ivjExc) 
@@ -169,8 +362,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemDisable = new javax.swing.JMenuItem();
 				jMenuItemDisable.setName("JMenuItemDisable");
+				jMenuItemDisable.setText( LMCommand.CMD_STRS[LMCommand.DISABLE_GROUP] );
 				jMenuItemDisable.setMnemonic('s');
-				jMenuItemDisable.setText("Disable");
 				jMenuItemDisable.setActionCommand("jMenuItemDisable");
 			} 
 			catch (java.lang.Throwable ivjExc) 
@@ -194,8 +387,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemRestore = new javax.swing.JMenuItem();
 				jMenuItemRestore.setName("JMenuItemRestore");
+				jMenuItemRestore.setText(LMCommand.CMD_STRS[LMCommand.RESTORE_GROUP]);
 				jMenuItemRestore.setMnemonic('t');
-				jMenuItemRestore.setText("Restore");
 				jMenuItemRestore.setActionCommand("jMenuItemRestore");
 			} 
 			catch (java.lang.Throwable ivjExc) 
@@ -219,8 +412,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemShed = new javax.swing.JMenuItem();
 				jMenuItemShed.setName("JMenuItemShed");
+				jMenuItemShed.setText(LMCommand.CMD_STRS[LMCommand.SHED_GROUP] + "...");
 				jMenuItemShed.setMnemonic('s');
-				jMenuItemShed.setText("Shed");
 				jMenuItemShed.setActionCommand("jMenuItemShed");
 			} 
 			catch (java.lang.Throwable ivjExc) 
@@ -257,7 +450,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	private void initConnections() throws java.lang.Exception 
 	{
 		getJMenuItemShed().addActionListener( this );
-		//getJMenuItemCycle().addActionListener( this );
+		getJMenuItemTrueCycle().addActionListener( this );
+		getJMenuItemSmartCycle().addActionListener( this );
 		getJMenuItemConfirm().addActionListener( this );
 		getJMenuItemRestore().addActionListener( this );
 		getJMenuItemDisable().addActionListener( this );
@@ -272,9 +466,12 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			setName("GroupPopUp");
 			setBorderPainted( true );
 	
-			add(getJMenuItemShed(), getJMenuItemShed().getName());
+			add(getJMenuItemShed(), getJMenuItemShed().getName());			
 			add(getJMenuItemRestore(), getJMenuItemRestore().getName());
-			//add(getJMenuItemCycle(), getJMenuItemCycle().getName());
+			
+			add(getJMenuItemTrueCycle(), getJMenuItemTrueCycle().getName());
+			add(getJMenuItemSmartCycle(), getJMenuItemSmartCycle().getName());
+
 			add(getJMenuItemDisable(), getJMenuItemDisable().getName());
 			add(getJMenuItemConfirm(), getJMenuItemConfirm().getName());
 			
@@ -299,17 +496,40 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			return;
 		
 
-		//lastly, handle any disablement
+		//handle any disablement text
 		getJMenuItemDisable().setText(
 			getLoadControlGroup().getDisableFlag().booleanValue() 
-			? "Enable"
-			: "Disable" );
-	
-		//getJMenuItemCycle().setEnabled( !getLoadControlGroup().getDisableFlag().booleanValue() );
+			? LMCommand.CMD_STRS[LMCommand.ENABLE_GROUP]
+			: LMCommand.CMD_STRS[LMCommand.DISABLE_GROUP] );
+
+
+		//only ExpressCom groups allowed
+		getJMenuItemTrueCycle().setEnabled( 
+				!getLoadControlGroup().getDisableFlag().booleanValue()
+				&& (getLoadControlGroup() instanceof LMGroupExpresscom) );
+		
+
+		//only ExpressCom & Versacom groups allowed
+		getJMenuItemSmartCycle().setEnabled( 
+				!getLoadControlGroup().getDisableFlag().booleanValue()
+				&& 
+				(getLoadControlGroup() instanceof LMGroupExpresscom
+				 || getLoadControlGroup() instanceof LMGroupVersacom) );
+
+		
 		getJMenuItemConfirm().setEnabled( !getLoadControlGroup().getDisableFlag().booleanValue() );
-		getJMenuItemRestore().setEnabled( !getLoadControlGroup().getDisableFlag().booleanValue() );
-		getJMenuItemShed().setEnabled( !getLoadControlGroup().getDisableFlag().booleanValue() );
-	
+		
+		
+		//all groups except PointGroup
+		getJMenuItemRestore().setEnabled( 
+				!getLoadControlGroup().getDisableFlag().booleanValue()
+				&& !(getLoadControlGroup() instanceof LMGroupPoint) );
+		
+		
+		//all groups except PointGroup
+		getJMenuItemShed().setEnabled(
+				!getLoadControlGroup().getDisableFlag().booleanValue()
+				&& !(getLoadControlGroup() instanceof LMGroupPoint) );	
 	}
 
 }
