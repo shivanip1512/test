@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2003/12/16 17:36:41 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2003/12/17 15:31:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,7 +157,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
 INT VerifyPortStatus(CtiPortSPtr Port);
 INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
 INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
-INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device);
+INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *&OutMessage);
 INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
 INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
 INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Device);
@@ -461,9 +461,9 @@ VOID PortThread(void *pid)
 #endif
 
         /* Make sure everything is A-OK with this device */
-        if((status = ValidateDevice(Port, Device)) != NORMAL)
+        if((status = ValidateDevice(Port, Device, OutMessage)) != NORMAL)
         {
-            SendError (OutMessage, status);
+            RequeueReportError(status, OutMessage);
             continue;
         }
 
@@ -543,8 +543,9 @@ VOID PortThread(void *pid)
 }
 
 /* Routine to initialize a remote based on it's type */
-void RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
+bool RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
 {
+    bool didareset = false;
     extern LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
 
     ULONG j;
@@ -566,6 +567,8 @@ void RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
                         {
                         case TYPE_CCU711:
                             {
+                                didareset = true;
+
                                 if(!(Port->isDialup()))
                                 {
                                     j = 0;
@@ -610,7 +613,8 @@ void RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
             }
         }
     }
-    return;
+
+    return didareset;
 }
 
 /*----------------------------------------------------------------------------*
@@ -3018,7 +3022,7 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice 
 }
 
 
-INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device)
+INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *&OutMessage)
 {
     INT status = NORMAL;
 
@@ -3032,7 +3036,26 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device)
             if(pInfo != NULL && pInfo->GetStatus(NEEDSRESET))
             {
                 /* Go Ahead an start this one up */
-                RemoteReset(Device, Port);
+                if( RemoteReset(Device, Port) )
+                {
+                    // This device probably sourced some OMs.  We should requeue the OM which got us here!
+                    OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
+
+                    if(Port->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                        }
+                        delete OutMessage;
+                    }
+
+                    OutMessage = 0;
+                    Sleep(100L);
+
+                    status = RETRY_SUBMITTED;
+
+                }
             }
         }
     }

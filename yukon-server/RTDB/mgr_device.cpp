@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2003/11/06 21:15:55 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2003/12/17 15:31:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1714,11 +1714,10 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
             }
         }
     }
-    else
+    else if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Error reading macro subdevices from database: " << macroResult.status().errorCode() << endl;
+        dout << RWTime() << " No macros or error reading macro subdevices from database: " << macroResult.status().errorCode() << endl;
     }
 
     if(DebugLevel & 0x00020000)
