@@ -1025,3 +1025,20 @@ bool CheckSocketSubsystem()
 
     return status;
 }
+
+
+RWCString& traceBuffer(RWCString &str, BYTE *Message, ULONG Length)
+{
+    INT status = NORMAL;
+    ULONG i;
+    ULONG offset = 0;
+
+    /* loop through all of the characters */
+    for(i = 0; i < Length; i++)
+    {
+        str += CtiNumStr((UINT)Message[i]).zpad(2).hex() + " ";
+    }
+
+    return str;
+}
+
