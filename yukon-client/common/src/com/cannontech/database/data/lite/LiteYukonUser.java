@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.user.YukonUser;
 
 /**
@@ -16,7 +15,7 @@ public class LiteYukonUser extends LiteBase {
 	private String password;
 	private String status;
 	
-	private LiteYukonUser() {
+	public LiteYukonUser() {
 		this(0,null,null,null);
 	}
 	
