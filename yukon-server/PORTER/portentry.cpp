@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/07/21 22:10:50 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/08/05 12:53:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -296,7 +296,7 @@ VOID ConnectionThread (VOID *Arg)
             }
         }
 
-        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
+        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD && !(OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
         {
             CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
