@@ -118,61 +118,6 @@ void CtiLMService::Init()
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    /*char temp[80];
-
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-    if (hLib)
-    {
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        bool trouble = FALSE;
-
-        if ( (*fpGetAsString)("LOAD_MANAGEMENT_DEBUG", temp, 80) )
-        {
-            RWCString tempStr(temp);
-            tempStr.toLower();
-
-            _LM_DEBUG = (tempStr=="true"?TRUE:FALSE);
-
-            {
-              CtiLockGuard<CtiLogger> logger_guard(dout);
-              dout << RWTime().asString() << " - LOAD_MANAGEMENT_DEBUG:  " << temp << endl;
-            }
-        }
-        else
-            trouble = TRUE;
-
-        if ( (*fpGetAsString)("LOAD_MANAGEMENT_LOG_FILE", temp, 80) )
-        {
-            logFile = temp;
-            dout.setOutputFile(logFile.data());
-
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime().asString() << " - "  << " - Load Management using log file: " << temp << endl;
-            }
-        }
-        else
-        {
-            dout.setOutputFile(logFile.data());
-            trouble = TRUE;
-        }
-
-        if ( trouble == TRUE )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Unable to find a config value in the configuration file! lmservice.cpp::Init()" << endl;
-        }
-
-        FreeLibrary(hLib);
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime().asString() << " - Unable to load cparms.dll" << endl;
-    }*/
-
     _quit = false;
 }
 
@@ -264,7 +209,7 @@ void CtiLMService::Run()
         if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Starting up the manager thread..." << endl;
+            dout << RWTime().asString() << " - Starting load manager thread..." << endl;
         }
         CtiLoadManager* manager = CtiLoadManager::getInstance();
         manager->start();
@@ -274,15 +219,15 @@ void CtiLMService::Run()
         if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Starting up the client connection thread..." << endl;
+            dout << RWTime().asString() << " - Starting client listener thread..." << endl;
         }
         CtiLMClientListener* clientListener = CtiLMClientListener::getInstance();
         clientListener->start();
 
-        {
+        /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime().asString() << " - Load Management started and initialized." << endl;
-        }
+            dout << RWTime().asString() << " - Load management started." << endl;
+        }*/
 
         SetStatus(SERVICE_RUNNING, 0, 0,
                   SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
