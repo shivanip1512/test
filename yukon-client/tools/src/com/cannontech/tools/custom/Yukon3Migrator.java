@@ -11,7 +11,6 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -24,24 +23,49 @@ import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.roles.YukonRoleDefs;
+import com.cannontech.roles.application.BillingRole;
+import com.cannontech.roles.application.CalcHistoricalRole;
+import com.cannontech.roles.application.WebGraphRole;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.tools.gui.IRunnableDBTool;
 import com.cannontech.user.UserUtils;
 
 /**
- * Utility program to migrate to Yukon 3.00
+ * Utility program to migrate to Yukon 3.0.
+ * The following is done:
+ *   - Copies all config.properties values into the correct Role property
+ *   -
  * 
  * @author ryan
  */
 public class Yukon3Migrator extends MessageFrameAdaptor
 {
 	private static final String CFG_FILE = "config.properties";
+	
+	//A list of property names AND their IDs that have been renamed since 3.0
+	private static final Object[][] RENAMED_PROPS =
+	{ 
+		//<String>oldName, <Integer>propID
+		{ "mail.smtp.host", new Integer(SystemRole.SMTP_HOST) },
+		{ "mail.from.address", new Integer(SystemRole.MAIL_FROM_ADDRESS) },
+		
+		{ "webgraph_home_directory", new Integer(WebGraphRole.HOME_DIRECTORY) },		
+		{ "webgraph_run_interval", new Integer(WebGraphRole.RUN_INTERVAL) },
+		
+		{ "billing_wiz_activate", new Integer(BillingRole.WIZ_ACTIVATE) },
+		{ "billing_input_file", new Integer(BillingRole.INPUT_FILE) },
+		
+		{ "calc_historical_interval", new Integer(CalcHistoricalRole.INTERVAL) },
+		{ "calc_historical_baseline_calctime", new Integer(CalcHistoricalRole.BASELINE_CALCTIME) },
+		{ "calc_historical_daysprevioustocollect", new Integer(CalcHistoricalRole.DAYS_PREVIOUS_TO_COLLECT) }
+	};
 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		if( args.length != 1 ) {
-			System.out.println("Usage:  ImageInserter dir");
-			System.out.println("Where dir is a directory");
+			System.out.println("Usage:  Yukon3Migrator dir");
+			System.out.println("Where dir is a directory that contains the Old Yukon Configuration files");
 			return;
 		}
 		
@@ -67,7 +91,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 		try 
 		{			
 			File[] allFiles = fDir.listFiles();
-			Properties props = null;
+			Properties fileProps = null;
 	
 			for( int i = 0; i < allFiles.length; i++ )
 			{
@@ -80,8 +104,8 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 
 					try
 					{
-						props = new Properties();
-						props.load(is);
+						fileProps = new Properties();
+						fileProps.load(is);
 					}
 					catch (Exception e)
 					{
@@ -89,7 +113,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 							"Can't read the " + CFG_FILE + " file. " +
 							"Make sure it is in the selected path" );
 						
-						props = null;
+						fileProps = null;
 					}
 					
 					break;	
@@ -97,14 +121,14 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 			}
 					
 			
-			if( props != null )
+			if( fileProps != null )
 			{
 				getIMessageFrame().addOutput("  Starting YUKON_USER properties");				
-				YukonUser yukUser = updateYukonUserProps( props );				
+				YukonUser yukUser = updateYukonUserProps( fileProps );				
 				getIMessageFrame().addOutput("");
 				
 				getIMessageFrame().addOutput("  Starting YUKON_GROUP properties");
-				YukonGroup yukGrp = updateYukonGroupProps( props );
+				YukonGroup yukGrp = updateYukonGroupProps( fileProps );
 
 
 				getIMessageFrame().addOutput(
@@ -131,9 +155,9 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 
 //	d:\yukon\client\config\
 
-	private YukonUser updateYukonUserProps( Properties oldProps ) throws Exception
+	private YukonUser updateYukonUserProps( Properties fileProps ) throws Exception
 	{
-		if( oldProps == null )
+		if( fileProps == null )
 			throw new IllegalArgumentException("Found no (null) old properties to exist");
 
 		LiteYukonUser yukUser =
@@ -160,8 +184,12 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 				LiteYukonRoleProperty lProp = (LiteYukonRoleProperty)roleProps.get(i);
 				if( lProp.getRolePropertyID() == usrRole.getRolePropertyID().intValue() )
 				{
-					String propVal = oldProps.getProperty( lProp.getKeyName() );
-					
+					String propVal = fileProps.getProperty( lProp.getKeyName() );
+
+					if( propVal == null )
+						propVal = handleRenamedProps( lProp.getRolePropertyID(), fileProps );
+
+
 					//we must have a valid value to assign it here
 					if( propVal != null )
 					{
@@ -185,9 +213,9 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 	}
 
 
-	private YukonGroup updateYukonGroupProps( Properties oldProps ) throws Exception
+	private YukonGroup updateYukonGroupProps( Properties fileProps ) throws Exception
 	{
-		if( oldProps == null )
+		if( fileProps == null )
 			throw new IllegalArgumentException("Found no (null) old properties to exist");
 
 		LiteYukonGroup yukGrp =
@@ -201,27 +229,36 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 			(YukonGroup)Transaction.createTransaction( 
 						Transaction.RETRIEVE, yukGrpPersist ).execute();
 		
-		
-		LiteYukonRoleProperty[] roleProps =
-				RoleFuncs.getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
-				
-		for( int i = 0; i < roleProps.length; i++ )
+//		
+//		LiteYukonRoleProperty[] roleProps =
+//				RoleFuncs.getRoleProperties( YukonRoleDefs.SYSTEM_ROLEID );
+
+		List roleProps =
+			DefaultDatabaseCache.getInstance().getAllYukonRoleProperties();
+
+		for( int i = 0; i < roleProps.size(); i++ )
 		{
 			for( int j = 0; j < yukGrpPersist.getYukonGroupRoles().size(); j++ )
 			{
 				YukonGroupRole grpRole = 
 					(YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
+
+				LiteYukonRoleProperty lProp = 
+						(LiteYukonRoleProperty)roleProps.get(i);
 			
-				if( roleProps[i].getRolePropertyID() == grpRole.getRolePropertyID().intValue() )
+				if( lProp.getRolePropertyID() == grpRole.getRolePropertyID().intValue() )
 				{
-					String propVal = oldProps.getProperty( roleProps[i].getKeyName() );
+					String propVal = fileProps.getProperty( lProp.getKeyName() );
+					
+					if( propVal == null )
+						propVal = handleRenamedProps( lProp.getRolePropertyID(), fileProps );
 					
 					//we must have a valid value to assign it here
 					if( propVal != null )
 					{
 						getIMessageFrame().addOutput(
 							"   Update Pending:  " +
-							roleProps[i].getKeyName() + "=" + propVal );
+							lProp.getKeyName() + "=" + propVal );
 
 						grpRole.setValue( propVal );
 					}
@@ -236,6 +273,30 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 		
 		//give back the DB object
 		return yukGrpPersist; 
+	}
+
+	/**
+	 * Checks to see if the given propID was renamed, if so, a property look up
+	 * is done with the OldPropertyName as the key
+	 * 
+	 * @param propID
+	 * @param fileProps
+	 * @return old property value
+	 */
+	private String handleRenamedProps( int propID, final Properties fileProps )
+	{
+
+		for( int i = 0; i < RENAMED_PROPS.length; i++ )
+		{
+			int renamedPropID = ((Integer)RENAMED_PROPS[i][1]).intValue();
+			if( renamedPropID == propID )
+			{
+				return fileProps.getProperty( RENAMED_PROPS[i][0].toString() );
+			}
+			
+		}
+
+		return null;
 	}
 
 
