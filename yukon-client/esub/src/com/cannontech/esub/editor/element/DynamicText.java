@@ -1,8 +1,12 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
 import com.loox.jloox.*;
 import java.io.*;
+import java.util.Iterator;
+import java.util.List;
 import java.awt.Font;
 import java.awt.Color;
 
@@ -83,7 +87,7 @@ public java.lang.String getLinkTo() {
  * Creation date: (12/18/2001 4:51:49 PM)
  * @return com.cannontech.database.data.lite.LitePoint
  */
-public com.cannontech.database.data.lite.LitePoint getPoint() {
+public com.cannontech.database.data.lite.LitePoint getPoint() {	
 	return point;
 }
 /**
@@ -186,7 +190,14 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
  * @param newPointID int
  */
 public void setPointID(int newPointID) {
-	point.setPointID(newPointID);
+	List pList = DefaultDatabaseCache.getInstance().getAllPoints();
+	Iterator iter = pList.iterator();
+	while( iter.hasNext() ) {
+		LitePoint lp = (LitePoint) iter.next();
+		if( lp.getPointID() == newPointID ) {
+			point = lp;
+		}			
+	}
 }
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()

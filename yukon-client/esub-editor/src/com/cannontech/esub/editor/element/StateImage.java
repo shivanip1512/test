@@ -4,9 +4,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Iterator;
+import java.util.List;
 
 import com.loox.jloox.*;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
@@ -232,7 +235,14 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
  * @param newPointID int
  */
 public void setPointID(int newPointID) {
-	point.setPointID(newPointID);
+	List pList = DefaultDatabaseCache.getInstance().getAllPoints();
+	Iterator iter = pList.iterator();
+	while( iter.hasNext() ) {
+		LitePoint lp = (LitePoint) iter.next();
+		if( lp.getPointID() == newPointID ) {
+			point = lp;
+		}			
+	}
 }
 /**
  * Creation date: (1/8/2002 1:56:52 PM)
