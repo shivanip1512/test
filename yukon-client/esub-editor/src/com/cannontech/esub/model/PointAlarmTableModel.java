@@ -20,10 +20,10 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	private static final String DEVICENAME_COL = "Device Name";
 	private static final String POINTNAME_COL = "Point Name";
 	private static final String TEXTMESSAGE_COL = "Text Message";
-	private static final String USERNAME_COL = "Username";
+	//private static final String USERNAME_COL = "Username";
 		
 	private static final String[] columnNames = {
-		TIMESTAMP_COL, DEVICENAME_COL, POINTNAME_COL, TEXTMESSAGE_COL, USERNAME_COL
+		TIMESTAMP_COL, DEVICENAME_COL, POINTNAME_COL, TEXTMESSAGE_COL/*, USERNAME_COL*/
 	};
 	
 	private static final int NUM_COLUMNS = columnNames.length;
@@ -97,7 +97,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		row.add(device.getPaoName());
 		row.add(point.getPointName());
 		row.add(s.getDescription());	
-		row.add(s.getUserName());
+		//row.add(s.getUserName());
 		rows.add(row);			
 	}
 	
