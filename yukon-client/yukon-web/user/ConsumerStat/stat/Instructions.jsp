@@ -46,7 +46,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule.jsp"; %>
+		  <% String pageName = "Instructions.jsp"; %>
           <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
