@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/18 16:22:50 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/23 19:46:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@
 
 extern CtiRouteManager    RouteManager;
 
-LoadRemoteRoutes(CtiDeviceBase *RemoteRecord);
+LoadRemoteRoutes(CtiDeviceBase *Dev);
 LoadPortRoutes (USHORT Port);
 
 /* Routine to load all routes on a system */
@@ -106,171 +106,26 @@ LoadPortRoutes (USHORT Port)
 
 
 /* Routine to load routes into specified CCU */
-LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
+LoadRemoteRoutes(CtiDeviceBase *Dev)
 {
     USHORT            Index;
     USHORT            RouteCount;
     USHORT            AmpMode;
     OUTMESS           *OutMessage;
-    // CtiDeviceBase     *RemoteRecord;
     CtiRoute          *RouteRecord;
 
     /* get this remote from database */
-    if( NULL != RemoteRecord )
+    if( NULL != Dev )
     {
-        /* make sure we do this one */
-        if( (RemoteRecord->getType()    == TYPE_CCU711)     &&
-            (RemoteRecord->getAddress() != CCUGLOBAL        &&
-             RemoteRecord->getAddress() != RTUGLOBAL) )
+        /* Find all non-broadcast 711 transmitters. */
+        if((Dev->getType() == TYPE_CCU711) && (Dev->getAddress() != CCUGLOBAL && Dev->getAddress() != RTUGLOBAL) )
         {
-
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)RemoteRecord->getTrxInfo();
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 
             /* set the initial PARID for routes */
             RouteCount = 0;
 
             /* now check if this dude has any routes */
-
-#ifdef OLD_WAY    //  CGP 071999 Must add back in...
-            memcpy (RouteRecord.RemoteName, RemoteRecord.RemoteName, STANDNAMLEN);
-
-            if( !(RoutegetRemoteFirst (&RouteRecord)) )
-            {
-                /* If set amp based on amp in first route */
-                if( AmpFailOver & AMP_SWAPPING )
-                {
-                    if( AmpFailOver & AMP_FAILOVER )
-                    {
-                        AmpMode = LOBYTE (-4);
-                    }
-                    else
-                    {
-                        AmpMode = LOBYTE (-1);
-                    }
-                }
-                else
-                {
-                    if( RouteRecord.AmpNum == 2 )
-                    {
-                        if( AmpFailOver & AMP_FAILOVER )
-                        {
-                            AmpMode = LOBYTE (-2);
-                        }
-                        else
-                        {
-                            AmpMode = LOBYTE (1);
-                        }
-                    }
-                    else if( AmpFailOver & AMP_FAILOVER )
-                    {
-                        AmpMode = LOBYTE (-3);
-                    }
-                    else
-                    {
-                        AmpMode = LOBYTE (0);
-                    }
-                }
-                /* Now do the routes */
-                do
-                {
-                    if( RouteCount > 32 )
-                        break;
-
-                    /* Lock the route record */
-                    if( !(RouteLock (&RouteRecord)) )
-                    {
-                        RouteRecord.CCUTableEntry = RouteCount;
-                        if( RouteFastUpdate (&RouteRecord) )
-                        {
-                            RouteUnLock (&RouteRecord);
-                        }
-                    }
-                    else
-                    {
-                        RouteUnLock (&RouteRecord);
-                    }
-
-                    /* Allocate some memory */
-                    if( (OutMessage = new OUTMESS) == NULL )
-                    {
-                        return(MEMORY);
-                    }
-
-                    /* Load up the queue structure */
-                    OutMessage->Port = RemoteRecord.Port;
-                    OutMessage->Remote = RemoteRecord.Remote;
-                    OutMessage->TimeOut = TIMEOUT;
-                    OutMessage->Retry = 1;
-                    OutMessage->InLength = 0;
-                    OutMessage->Source = 0;
-                    OutMessage->Destination = DEST_DLC;
-                    OutMessage->Command = CMND_WMEMS;
-                    OutMessage->Sequence = 0;
-                    OutMessage->Priority = MAXPRIORITY - 1;
-                    OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | RCONT;
-                    OutMessage->ReturnNexus.NexusState = CTINEXUS_STATE_NULL;
-                    OutMessage->SaveNexus.NexusState = CTINEXUS_STATE_NULL;
-
-                    Index = PREIDL;
-
-                    /* Load route */
-                    OutMessage->Buffer.OutMessage[Index++] = 6;
-
-                    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (2000 + RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (2000 + RouteCount);
-
-                    OutMessage->Buffer.OutMessage[Index++] = RouteRecord.BusNum - 1;
-                    OutMessage->Buffer.OutMessage[Index++] = ((RouteRecord.VarBit & 0x07) << 5) | (RouteRecord.FixBit & 0x1f);
-
-                    OutMessage->Buffer.OutMessage[Index++] =  RouteRecord.getStages() & 0x07;
-                    if( RouteRecord.Timed )
-                        OutMessage->Buffer.OutMessage[Index - 1] |= 0x80;
-
-                    /* Load the Route set */
-                    OutMessage->Buffer.OutMessage[Index++] = 7;
-
-                    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (3300 + RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (3300 + RouteCount);
-
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (-1);
-
-                    /* Load the zone */
-                    OutMessage->Buffer.OutMessage[Index++] = 4;
-
-                    OutMessage->Buffer.OutMessage[Index++] = HIBYTE (14000 + RouteCount);
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (14000 + RouteCount);
-
-                    OutMessage->Buffer.OutMessage[Index++] = LOBYTE (RouteCount);
-
-                    /* Last SETL */
-                    OutMessage->Buffer.OutMessage[Index++] = 0;
-
-                    /* Thats it so send the message */
-                    OutMessage->OutLength = Index - PREIDL + 2;
-
-                    if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
-                    {
-                        printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord.Port);
-                        delete (OutMessage);
-                        continue;
-                    }
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    CCUInfo.findValue(&OutMessage->DeviceID)->PortQueueEnts++;
-                    CCUInfo.findValue(&OutMessage->DeviceID)->PortQueueConts++;
-
-                    RouteCount++;
-
-                } while( !(RoutegetRemoteGT (&RouteRecord)) );
-            }
-#else
             {  // get me some SCOPE...
 
                 CtiRTDB<CtiRoute>::CtiRTDBIterator   rte_itr(RouteManager.getMap());
@@ -281,13 +136,11 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     CtiRouteCCU *CCURouteRecord = (CtiRouteCCU*)rte_itr.value();
 
                     //  we only care about routes on this device
-                    if( CCURouteRecord->getCommRoute().getTrxDeviceID() != RemoteRecord->getID() )
+                    if( CCURouteRecord->getCommRoute().getTrxDeviceID() != Dev->getID() )       // if not me.
                         continue;
 
                     if( RouteCount > 32 )
                         break;
-
-                    // RouteRecord.CCUTableEntry = RouteCount; // This is used in exactly NO other place...
 
                     /* Allocate some memory */
                     if( (OutMessage = new OUTMESS) == NULL )
@@ -296,10 +149,10 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     }
 
                     /* Load up the queue structure */
-                    OutMessage->DeviceID = RemoteRecord->getID();
-                    OutMessage->TargetID = RemoteRecord->getID();
-                    OutMessage->Port     = RemoteRecord->getPortID();
-                    OutMessage->Remote   = RemoteRecord->getAddress();
+                    OutMessage->DeviceID = Dev->getID();
+                    OutMessage->TargetID = Dev->getID();
+                    OutMessage->Port     = Dev->getPortID();
+                    OutMessage->Remote   = Dev->getAddress();
                     OutMessage->TimeOut  = TIMEOUT;
                     OutMessage->Retry    = 1;
                     OutMessage->InLength = 0;
@@ -405,7 +258,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
                     if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
                     {
-                        printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                        printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
                         delete (OutMessage);
                         continue;
                     }
@@ -418,7 +271,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                     RouteCount++;
                 }
             }
-#endif
+
             /* Allocate some memory for additional functions */
             if( (OutMessage = new OUTMESS) == NULL )
             {
@@ -426,10 +279,10 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
             }
 
             /* Load up the queue structure */
-            OutMessage->DeviceID = RemoteRecord->getID();
-            OutMessage->TargetID = RemoteRecord->getID();
-            OutMessage->Port = RemoteRecord->getPortID();
-            OutMessage->Remote = RemoteRecord->getAddress();
+            OutMessage->DeviceID = Dev->getID();
+            OutMessage->TargetID = Dev->getID();
+            OutMessage->Port = Dev->getPortID();
+            OutMessage->Remote = Dev->getAddress();
             OutMessage->TimeOut = TIMEOUT;
             OutMessage->Retry = 1;
             OutMessage->InLength = 0;
@@ -462,7 +315,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
                      << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
             }
 
-            switch( ((CtiDeviceCCU *)RemoteRecord)->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
+            switch( ((CtiDeviceCCU *)Dev)->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
             {
                 case RouteAmpAltFail:
                     {
@@ -584,7 +437,7 @@ LoadRemoteRoutes(CtiDeviceBase *RemoteRecord)
 
             if( PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
             {
-                printf ("Error Writing to Queue for Port %2ld\n", RemoteRecord->getPortID());
+                printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                 delete (OutMessage);
                 return(QUEUE_WRITE);
             }
