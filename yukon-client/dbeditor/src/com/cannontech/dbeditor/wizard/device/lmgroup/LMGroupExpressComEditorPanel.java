@@ -1434,7 +1434,6 @@ private javax.swing.JButton getJButtonSplintModify() {
 			ivjJButtonSplintModify.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjJButtonSplintModify.setText(STRING_MODIFY);
 			// user code begin {1}
-			ivjJButtonSplintModify.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1481,7 +1480,6 @@ private javax.swing.JButton getJButtonUSERModify() {
 			ivjJButtonUSERModify.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjJButtonUSERModify.setText(STRING_MODIFY);
 			// user code begin {1}
-			ivjJButtonUSERModify.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1505,7 +1503,6 @@ private javax.swing.JButton getJButtonZIPModify() {
 			ivjJButtonZIPModify.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjJButtonZIPModify.setText(STRING_MODIFY);
 			// user code begin {1}
-			ivjJButtonZIPModify.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2039,7 +2036,6 @@ private javax.swing.JComboBox getJComboBoxSPLINTER() {
 			ivjJComboBoxSPLINTER.addItem( STRING_NEW );
 			ivjJComboBoxSPLINTER.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxSPLINTER.setSelectedItem( CtiUtilities.STRING_NONE );
-			ivjJComboBoxSPLINTER.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2090,7 +2086,6 @@ private javax.swing.JComboBox getJComboBoxUSER() {
 			ivjJComboBoxUSER.addItem( STRING_NEW );
 			ivjJComboBoxUSER.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxUSER.setSelectedItem( CtiUtilities.STRING_NONE );
-			ivjJComboBoxUSER.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2116,7 +2111,6 @@ private javax.swing.JComboBox getJComboBoxZIP() {
 			ivjJComboBoxZIP.addItem( STRING_NEW );
 			ivjJComboBoxZIP.addItem( CtiUtilities.STRING_NONE );
 			ivjJComboBoxZIP.setSelectedItem( CtiUtilities.STRING_NONE );
-			ivjJComboBoxZIP.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -3183,7 +3177,6 @@ private javax.swing.JLabel getSPLINTERLabel() {
 			ivjSPLINTERLabel.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjSPLINTERLabel.setText("Label: ");
 			// user code begin {1}
-			ivjSPLINTERLabel.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -3228,7 +3221,6 @@ private javax.swing.JLabel getUSERLabel() {
 			ivjUSERLabel.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjUSERLabel.setText("Label: ");
 			// user code begin {1}
-			ivjUSERLabel.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -3255,7 +3247,6 @@ public Object getValue(Object o)
 	else if( o instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
 		group = (com.cannontech.database.data.device.lm.LMGroupExpressCom)
 					((com.cannontech.database.data.multi.SmartMultiDBPersistent)o).getOwnerDBPersistent();
-	
 	
 	if( o instanceof com.cannontech.database.data.device.lm.LMGroupExpressCom || group != null )
 	{
@@ -3287,20 +3278,20 @@ public Object getValue(Object o)
 				getJTextFieldProgAddress(), 
 				IlmDefines.TYPE_PROGRAM) );
 
-	  if( getJTextFieldSplinterAddress().getText() != null && getJTextFieldSplinterAddress().getText().length() > 0 )
-			group.getLMGroupExpressComm().setSplinterAddress( new Integer(getJTextFieldSplinterAddress().getText()) );
-      else
-         group.getLMGroupExpressComm().setSplinterAddress( IlmDefines.NONE_ADDRESS_ID );
-
-	  if( getJTextFieldUserAddress().getText() != null && getJTextFieldUserAddress().getText().length() > 0 )			
-			group.getLMGroupExpressComm().setUdAddress( new Integer(getJTextFieldUserAddress().getText()) );
-      else
-         group.getLMGroupExpressComm().setUdAddress( IlmDefines.NONE_ADDRESS_ID );
-
-	  if( getJTextFieldZipAddress().getText() != null && getJTextFieldZipAddress().getText().length() > 0 )		
-		 group.getLMGroupExpressComm().setZipCodeAddress( new Integer(getJTextFieldZipAddress().getText()) );
-      else
-         group.getLMGroupExpressComm().setZipCodeAddress( IlmDefines.NONE_ADDRESS_ID );
+		group.setSplinterAddress( createAddress(
+				getJComboBoxSPLINTER(), 
+				getJTextFieldSplinterAddress(), 
+				IlmDefines.TYPE_SPLINTER) );
+				
+		group.setUserAddress( createAddress(
+				getJComboBoxUSER(), 
+				getJTextFieldUserAddress(), 
+				IlmDefines.TYPE_USER) );
+				
+		group.setZipCodeAddress( createAddress(
+				getJComboBoxZIP(), 
+				getJTextFieldZipAddress(), 
+				IlmDefines.TYPE_ZIP) );
 
 		if( getJCheckBoxSerial().isSelected() 
 			 && getJTextFieldSerialAddress().getText() != null 
@@ -3367,7 +3358,6 @@ public Object getValue(Object o)
       if( getJCheckBoxRelay8().isSelected() )
          relayUsage.append( '8' );
 
-
 		group.getLMGroupExpressComm().setAddressUsage( addressUsage.toString() );
 		group.getLMGroupExpressComm().setRelayUsage( relayUsage.toString() );
 	}
@@ -3388,7 +3378,6 @@ private javax.swing.JLabel getZIPLabel() {
 			ivjZIPLabel.setFont(new java.awt.Font("Arial", 1, 10));
 			ivjZIPLabel.setText("Label: ");
 			// user code begin {1}
-			ivjZIPLabel.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -3654,7 +3643,8 @@ public void jButtonGEOModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			getJButtonGEOModify().setText(STRING_MODIFY);
 			getJComboBoxGEO().setEditable(false);
-			getJComboBoxGEO().addItem(getJComboBoxGEO().getSelectedItem());
+			getJTextFieldGeoAddress().setEditable(false);
+			getJComboBoxPROG().addItem(getJComboBoxPROG().getSelectedItem());
 		}
 	}		
 	else
@@ -3703,6 +3693,7 @@ public void jButtonPROGModify_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			getJButtonPROGModify().setText(STRING_MODIFY);
 			getJComboBoxPROG().setEditable(false);
+			getJTextFieldProgAddress().setEditable(false);
 			getJComboBoxPROG().addItem(getJComboBoxPROG().getSelectedItem());
 		}
 	}		
@@ -3752,6 +3743,7 @@ public void jButtonSPIDModify_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			getJButtonSPIDModify().setText(STRING_MODIFY);
 			getJComboBoxSPID().setEditable(false);
+			getJTextFieldSPIDAddress().setEditable(false);
 			getJComboBoxSPID().addItem(getJComboBoxSPID().getSelectedItem());
 		}
 	}		
@@ -3801,6 +3793,7 @@ public void jButtonSplintModify_ActionPerformed(java.awt.event.ActionEvent actio
 		{
 			getJButtonSplintModify().setText(STRING_MODIFY);
 			getJComboBoxSPLINTER().setEditable(false);
+			getJTextFieldSplinterAddress().setEditable(false);
 			getJComboBoxSPLINTER().addItem(getJComboBoxSPLINTER().getSelectedItem());
 		}
 	}		
@@ -3850,6 +3843,7 @@ public void jButtonSUBModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			getJButtonSUBModify().setText(STRING_MODIFY);
 			getJComboBoxSUB().setEditable(false);
+			getJTextFieldSubAddress().setEditable(false);
 			getJComboBoxSUB().addItem(getJComboBoxSUB().getSelectedItem());
 		}
 	}		
@@ -3899,6 +3893,7 @@ public void jButtonUSERModify_ActionPerformed(java.awt.event.ActionEvent actionE
 		{
 			getJButtonUSERModify().setText(STRING_MODIFY);
 			getJComboBoxUSER().setEditable(false);
+			getJTextFieldUserAddress().setEditable(false);
 			getJComboBoxUSER().addItem(getJComboBoxUSER().getSelectedItem());
 		}
 	}		
@@ -3948,6 +3943,7 @@ public void jButtonZIPModify_ActionPerformed(java.awt.event.ActionEvent actionEv
 		{
 			getJButtonZIPModify().setText(STRING_MODIFY);
 			getJComboBoxZIP().setEditable(false);
+			getJTextFieldZipAddress().setEditable(false);
 			getJComboBoxZIP().addItem(getJComboBoxZIP().getSelectedItem());
 		}
 	}		
@@ -4033,6 +4029,16 @@ public void jCheckBoxPROG_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	if(getJCheckBoxLOAD().isSelected() && getJCheckBoxPROG().isSelected())
 		showLoadWarning();
 	
+	if(getJCheckBoxPROG().isSelected())
+		getJTextFieldProgAddress().setBackground(Color.CYAN);
+	else
+		getJTextFieldProgAddress().setBackground(Color.WHITE);
+		
+	if(getJCheckBoxSPLINTER().isSelected())
+		getJTextFieldSplinterAddress().setBackground(Color.CYAN);
+	else
+		getJTextFieldSplinterAddress().setBackground(Color.WHITE);
+	
 	fireInputUpdate();
 	return;
 }
@@ -4103,17 +4109,6 @@ public void jCheckBoxSerial_ActionPerformed(java.awt.event.ActionEvent actionEve
 			getJButtonFeedAddress().setBackground(Color.CYAN);
 	}
 	
-	//this is only for 3.0
-	getSPLINTERLabel().setEnabled(false);
-	getUSERLabel().setEnabled(false);
-	getZIPLabel().setEnabled(false);
-	getJButtonSplintModify().setEnabled(false);
-	getJButtonUSERModify().setEnabled(false);
-	getJButtonZIPModify().setEnabled(false);
-	getJComboBoxSPLINTER().setEnabled(false);
-	getJComboBoxUSER().setEnabled(false);
-	getJComboBoxZIP().setEnabled(false);
-	
 	fireInputUpdate();
 
 	return;
@@ -4124,6 +4119,16 @@ public void jCheckBoxSerial_ActionPerformed(java.awt.event.ActionEvent actionEve
 public void jCheckBoxSPLINTER_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	if(getJCheckBoxLOAD().isSelected() && getJCheckBoxSPLINTER().isSelected())
 		showLoadWarning();
+	
+	if(getJCheckBoxSPLINTER().isSelected())
+		getJTextFieldSplinterAddress().setBackground(Color.CYAN);
+	else
+		getJTextFieldSplinterAddress().setBackground(Color.WHITE);
+		
+	if(getJCheckBoxPROG().isSelected())
+		getJTextFieldProgAddress().setBackground(Color.CYAN);
+	else
+		getJTextFieldProgAddress().setBackground(Color.WHITE);
 	
 	fireInputUpdate();
 	return;
@@ -4497,12 +4502,27 @@ public void setValue(Object o)
 			getJTextFieldProgAddress().setEnabled(false);
 		}
 		
-		getJTextFieldZipAddress().setText( group.getLMGroupExpressComm().getZipCodeAddress().toString() );
-
-		getJTextFieldUserAddress().setText( group.getLMGroupExpressComm().getUdAddress().toString() );
-
-		getJTextFieldSplinterAddress().setText( group.getLMGroupExpressComm().getSplinterAddress().toString() );
-
+		getJTextFieldSplinterAddress().setText( group.getSplinterAddress().getAddress().toString() );
+		if(group.getSplinterAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
+		{
+			getJComboBoxSPLINTER().setSelectedItem( group.getSplinterAddress() );
+			getJTextFieldSplinterAddress().setEnabled(false);
+		}
+		
+		getJTextFieldUserAddress().setText( group.getUserAddress().getAddress().toString() );
+		if(group.getUserAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
+		{
+			getJComboBoxUSER().setSelectedItem( group.getUserAddress() );
+			getJTextFieldUserAddress().setEnabled(false);
+		}		
+		
+		getJTextFieldZipAddress().setText( group.getZipCodeAddress().getAddress().toString() );
+		if(group.getZipCodeAddress().getAddressName().compareTo(CtiUtilities.STRING_NONE) != 0)
+		{
+			getJComboBoxZIP().setSelectedItem( group.getZipCodeAddress() );
+			getJTextFieldZipAddress().setEnabled(false);
+		}
+		
 		Integer serial = new Integer(group.getLMGroupExpressComm().getSerialNumber());
 		if( serial.intValue() > IlmDefines.NONE_ADDRESS_ID.intValue() )
 		{
