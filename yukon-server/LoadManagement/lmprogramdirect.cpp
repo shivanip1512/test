@@ -468,6 +468,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             dout << RWTime() << " - " << text << ", " << additional << endl;
                         }
                     }
+                    // Dont let subordinate programs keep running
+                    stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, secondsFromBeginningOfDay);
                 }
 
                 if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) )
@@ -3288,6 +3290,38 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
     return returnBoolean;
 }
 
+/*----------------------------------------------------------------------------
+  stopSubordinatePrograms
+
+  Stops controlling any subordinate programs that may be active.
+  Returns true if any programs were found active and stopped.
+----------------------------------------------------------------------------*/  
+bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
+{
+    bool stopped_programs = false;
+    set<CtiLMProgramDirect*>& sub_set = getSubordinatePrograms();
+
+    for(set<CtiLMProgramDirect*>::iterator sub_iter = sub_set.begin();
+        sub_iter != sub_set.end();
+        sub_iter++)
+    {
+        if((*sub_iter)->getProgramState() != CtiLMProgramBase::InactiveState)
+        {
+            string text = "Stopping subordinate program: ";
+            text += (*sub_iter)->getPAOName();
+            string additional = "";
+            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+            signal->setSOE(2);
+            multiDispatchMsg->insert(signal);
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " - " <<  text << endl;
+        }
+        stopped_programs = (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901) || stopped_programs;
+        }
+    }
+    return stopped_programs;
+}
 
 /*---------------------------------------------------------------------------
     stopProgramControl
@@ -3682,8 +3716,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
     {
         if( secondsFrom1901 >= getDirectStartTime().seconds() )
         {
-            // are any of our master programs already running?  if so we can't start MASTERSLAVE
-            // are any of our slave programs already running?  if so, stop them! MASTERSLAVE
+            // are any of our master programs already running?  if so we can't start MASTERSLAVE - this is alreadya  constraint checked in executor
             returnBoolean = TRUE;
             {
                 RWCString text = RWCString("Manual Start, LM Program: ");
@@ -3699,6 +3732,8 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 }
             }
 
+            // Dont let subordinate programs keep running
+            stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, secondsFrom1901);
             manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
             setProgramState(CtiLMProgramBase::ManualActiveState);
         }

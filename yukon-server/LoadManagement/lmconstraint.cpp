@@ -92,11 +92,14 @@ bool CtiLMConstraintChecker::checkSeason(const CtiLMProgramDirect& lm_program,
     {
         if(!CtiSeasonManager::getInstance().isInSeason(startDate, lm_program.getSeasonScheduleId()))
         {
-            string result = "The program is not allowed to run outside of its' prescribed season schedule. ";
-            result += RWDate(startTime).asString();
-            result += " is not in a season in schedule id: ";
-            result += CtiNumStr(lm_program.getSeasonScheduleId());
-            results->push_back(result);
+            if(results != 0)
+            {
+                string result = "The program is not allowed to run outside of its' prescribed season schedule. ";
+                result += RWDate(startTime).asString();
+                result += " is not in a season in schedule id: ";
+                result += CtiNumStr(lm_program.getSeasonScheduleId());
+                results->push_back(result);
+            }
             return false;
         }
     } while(startDate++ <= stopDate);
@@ -148,10 +151,13 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
             bool is_holiday = CtiHolidayManager::getInstance().isHoliday(startDate, lm_program.getHolidayScheduleId());
             if(is_holiday && (weekdays[(size_t)7] == 'E' || weekdays[(size_t)7] == 'e'))
             {
-                result = "The program is not allowed to run on ";
-                result += startDate.asString();
-                result += ", which is a holiday";
-                results->push_back(result);
+                if(results != 0)
+                {
+                    result = "The program is not allowed to run on ";
+                    result += startDate.asString();
+                    result += ", which is a holiday";
+                    results->push_back(result);
+                }
                 violated = true;
                 break;
             }
@@ -163,8 +169,11 @@ bool CtiLMConstraintChecker::checkWeekDays(const CtiLMProgramDirect& lm_program,
             }
             if(weekdays[(size_t)week_day] != 'Y' && weekdays[(size_t)week_day] != 'y')
             {
-                result = "The program is not allowed to run on " + startDate.weekDayName();
-                results->push_back(result);
+                if(results != 0)
+                {
+                    result = "The program is not allowed to run on " + startDate.weekDayName();
+                    results->push_back(result);
+                }
                 violated = true;
                 break;
             }
@@ -190,12 +199,15 @@ bool CtiLMConstraintChecker::checkMaxHoursDaily(const CtiLMProgramDirect& lm_pro
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursDaily()/60 - lm_program.getMaxHoursDaily()*60;
         if( diff_minutes > 0)
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum daily control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
-            results->push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' maximum daily control hours: " + CtiNumStr(lm_program.getMaxHoursDaily());
-            results->push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current daily control hours: " + CtiNumStr((double)lm_group->getCurrentHoursDaily()/60.0/60.0);
-            results->push_back(result);
+            if(results != 0)
+            {
+                string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum daily control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+                results->push_back(result);
+                result = "load group, '" + lm_group->getPAOName() + "' maximum daily control hours: " + CtiNumStr(lm_program.getMaxHoursDaily());
+                results->push_back(result);
+                result = "load group, '" + lm_group->getPAOName() + "' current daily control hours: " + CtiNumStr((double)lm_group->getCurrentHoursDaily()/60.0/60.0);
+                results->push_back(result);
+            }
             violated = true;
         }
     }
@@ -219,12 +231,15 @@ bool CtiLMConstraintChecker::checkMaxHoursMonthly(const CtiLMProgramDirect& lm_p
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursMonthly()/60 - lm_program.getMaxHoursMonthly()*60;
         if( diff_minutes > 0)
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum monthly control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
-            results->push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' maximum monthly control hours: " + CtiNumStr(lm_program.getMaxHoursMonthly());
-            results->push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current monthly control hours: " + CtiNumStr((double)lm_group->getCurrentHoursMonthly()/60.0/60.0);
-            results->push_back(result);
+            if(results != 0)
+            {
+                string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum monthly control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+                results->push_back(result);
+                result = "load group, '" + lm_group->getPAOName() + "' maximum monthly control hours: " + CtiNumStr(lm_program.getMaxHoursMonthly());
+                results->push_back(result);
+                result = "load group, '" + lm_group->getPAOName() + "' current monthly control hours: " + CtiNumStr((double)lm_group->getCurrentHoursMonthly()/60.0/60.0);
+                results->push_back(result);
+            }
             violated = true;
         }
     }
@@ -247,12 +262,15 @@ bool CtiLMConstraintChecker::checkMaxHoursSeasonal(const CtiLMProgramDirect& lm_
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursSeasonal()/60 - lm_program.getMaxHoursSeasonal()*60;
         if( diff_minutes > 0)
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum seasonal control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
-            results->push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' maximum seasonal control hours: " + CtiNumStr(lm_program.getMaxHoursSeasonal());
-            results->push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current seasonal control hours: " + CtiNumStr((double)lm_group->getCurrentHoursSeasonal()/60.0/60.0);
-            results->push_back(result);
+            if(results != 0)
+            {
+                string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum seasonal control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+                results->push_back(result);
+                result = "load group, '" + lm_group->getPAOName() + "' maximum seasonal control hours: " + CtiNumStr(lm_program.getMaxHoursSeasonal());
+                results->push_back(result);
+                result = "load group, '" + lm_group->getPAOName() + "' current seasonal control hours: " + CtiNumStr((double)lm_group->getCurrentHoursSeasonal()/60.0/60.0);
+                results->push_back(result);
+            }
             violated = true;
         }
     }
@@ -276,11 +294,17 @@ bool CtiLMConstraintChecker::checkMaxHoursAnnually(const CtiLMProgramDirect& lm_
         if( diff_minutes > 0)
         {
             string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum annual control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
-            results->push_back(result);
+            if(results != 0)
+            {
+                results->push_back(result);
+            }
             result = "load group, '" + lm_group->getPAOName() + "' maximum annual control hours: " + CtiNumStr(lm_program.getMaxHoursAnnually());
             results->push_back(result);
             result = "load group, '" + lm_group->getPAOName() + "' current annual control hours: " + CtiNumStr((double)lm_group->getCurrentHoursAnnually()/60.0/60.0);
-            results->push_back(result);
+            if(results != 0)
+            {
+                results->push_back(result);
+            }
             violated = true;
         }
     }
@@ -301,7 +325,10 @@ bool CtiLMConstraintChecker::checkMinActivateTime(const CtiLMProgramDirect& lm_p
     if(!(run_time >= lm_program.getMinActivateTime()))
     {
         string result = "The program cannot run for less than its minimum activate time, which is " + CtiNumStr(lm_program.getMinActivateTime()/60.0/60.0) + " hours.";
-        results->push_back(result);
+        if(results != 0)
+        {
+            results->push_back(result);
+        }
         return false;
     }
     return true;
@@ -324,7 +351,10 @@ bool CtiLMConstraintChecker::checkMinRestartTime(const CtiLMProgramDirect& lm_pr
         if(lm_group->getControlCompleteTime().seconds() + lm_program.getMinRestartTime() > proposed_start_from_1901)
         {
             string result = "The program cannot control again until its minimum restart time, which is " + CtiNumStr((double)lm_program.getMinRestartTime()/60.0/60.0) + " hours, has elapsed since control last completed.";
-            results->push_back(result);
+            if(results != 0)
+            {
+                results->push_back(result);
+            }
             return false;
         }
     }
@@ -344,7 +374,10 @@ bool CtiLMConstraintChecker::checkMaxDailyOps(const CtiLMProgramDirect& lm_progr
     if(((CtiLMProgramDirect&)lm_program).getDailyOps() >= lm_program.getMaxDailyOps())
     {
         string result = "The program has reached its maximum daily operations, which is " + CtiNumStr(lm_program.getMaxDailyOps());
-        results->push_back(result);
+        if(results != 0)
+        {
+            results->push_back(result);
+        }
         return false;
     }
     
@@ -365,7 +398,10 @@ bool CtiLMConstraintChecker::checkMaxActivateTime(const CtiLMProgramDirect& lm_p
     if(!(run_time <= lm_program.getMaxActivateTime()))
     {
         string result = "The program cannot run for more than its maximum activate time, which is " + CtiNumStr((double)lm_program.getMaxActivateTime()/60.0/60.0) + " hours.";
-        results->push_back(result);
+        if(results != 0)
+        {
+            results->push_back(result);
+        }
         return false;
     }
     return true;
@@ -392,15 +428,21 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
             return true;
         }
         else
-        { 
-            results->push_back("The program cannot run outside of its prescribed control windows.  The proposed start and stop times span different control windows");
+        {
+            if(results != 0)
+            {
+                results->push_back("The program cannot run outside of its prescribed control windows.  The proposed start and stop times span different control windows");
+            }
             return false;
         }
     }
     
     if(start_ctrl_window == 0 && stop_ctrl_window == 0)
     { //start and stop outside any control windows
-        results->push_back("The program cannot run outside of its prescribed control windows");
+        if(results != 0)
+        {
+            results->push_back("The program cannot run outside of its prescribed control windows");
+        }
         return false;
     }
 
@@ -412,7 +454,10 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
         result += RWTime(start_ctrl_window->getAvailableStartTime() + today.seconds()).asString();
         result += " to ";
         result += RWTime(start_ctrl_window->getAvailableStopTime() + today.seconds()).asString();
-        results->push_back(result);
+        if(results != 0)
+        {
+            results->push_back(result);
+        }
         return false;
     }
 
@@ -424,7 +469,10 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
         result += RWTime(stop_ctrl_window->getAvailableStartTime() + today.seconds()).asString();
         result += " to ";
         result += RWTime(stop_ctrl_window->getAvailableStopTime() + today.seconds()).asString();
-        results->push_back(result);
+        if(results != 0)
+        {
+            results->push_back(result);
+        }
         return false;
     }
 
@@ -449,7 +497,10 @@ bool CtiLMConstraintChecker::checkMasterActive(const CtiLMProgramDirect& lm_prog
             string result = "The program cannot since its master program, ";
             result += (*master_iter)->getPAOName();
             result += " is active";
-            results->push_back(result);
+            if(results != 0)
+            {
+                results->push_back(result);
+            }
             master_active = true;
         }
     }
