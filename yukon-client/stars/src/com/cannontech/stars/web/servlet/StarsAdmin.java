@@ -489,7 +489,7 @@ public class StarsAdmin extends HttpServlet {
 		if (liteAcctInfo.getInventories().size() != 1)
 			throw new Exception( "Cannot determine the LM hardware to be updated" );
 		int invID = ((Integer) liteAcctInfo.getInventories().get(0)).intValue();
-		LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID, true );
+		LiteStarsLMHardware liteHw = energyCompany.getLMHardware( invID, true );
 		
 		StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
 		setStarsLMHardware( updateHw, fields, energyCompany );
@@ -562,20 +562,19 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			String acctNo = req.getParameter( "AcctNo" ).replace( '*', '%' );
-			CustomerAccount[] accounts = CustomerAccount.searchByAccountNumber(
+			int[] accountIDs = CustomerAccount.searchByAccountNumber(
 					energyCompany.getEnergyCompanyID(), acctNo );
 			
-			if (accounts != null) {
-				for (int i = 0; i < accounts.length; i++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
-							accounts[i].getAccountID().intValue(), true );
+			if (accountIDs != null) {
+				for (int i = 0; i < accountIDs.length; i++) {
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
 					DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 				}
 				
-				if (accounts.length > 1)
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accounts.length + " customer accounts have been deleted" );
+				if (accountIDs.length > 1)
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer accounts have been deleted" );
 				else
-					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accounts.length + " customer account has been deleted" );
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer account has been deleted" );
 			}
 			else
 	        	session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
@@ -950,13 +949,15 @@ public class StarsAdmin extends HttpServlet {
 						pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(pubPrograms[i].getWebSettingsID()) );
 						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
 								Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
-								
 						pubPrograms[i].setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
+						
+						LiteWebConfiguration liteCfg = SOAPServer.getWebConfiguration( pubProg.getWebConfiguration().getConfigurationID().intValue() );
+						StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
+						energyCompany.updateStarsWebConfig( liteCfg.getConfigID() );
 					}
 					else {
 						pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
 								Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
-						
 						pubPrograms[i] = (LiteLMProgram) StarsLiteFactory.createLite( pubProg.getLMProgramWebPublishing() );
 						energyCompany.addLMProgram( pubPrograms[i] );
 						
@@ -1250,7 +1251,7 @@ public class StarsAdmin extends HttpServlet {
 		    	// set InstallationCompanyID = 0 for all inventory assigned to this service company
 		    	ArrayList hardwares = energyCompany.getAllLMHardwares();
 		    	for (int j = 0; j < hardwares.size(); j++) {
-		    		LiteLMHardwareBase liteHw = (LiteLMHardwareBase) hardwares.get(j);
+		    		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(j);
 		    		if (liteHw.getInstallationCompanyID() == starsCompany.getCompanyID()) {
 		    			com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 		    					(com.cannontech.database.data.stars.hardware.LMHardwareBase) StarsLiteFactory.createDBPersistent( liteHw );
@@ -1316,38 +1317,41 @@ public class StarsAdmin extends HttpServlet {
         	boolean newCustomizedFAQ = Boolean.valueOf( req.getParameter("CustomizedFAQ") ).booleanValue();
         	boolean oldCustomizedFAQ = AuthFuncs.checkRoleProperty( liteUser, ConsumerInfoRole.CUSTOMIZED_FAQ_LINK );
 			
-	        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	        LiteYukonRole consumerInfoRole = AuthFuncs.getRole( ConsumerInfoRole.ROLEID );
-        	
-        	LiteYukonGroup operatorGroup = null;
-        	Iterator it = ((List) cache.getYukonUserGroupMap().get( liteUser )).iterator();
-        	while (it.hasNext()) {
-        		LiteYukonGroup group = (LiteYukonGroup) it.next();
-        		Map roleMap = (Map) cache.getYukonGroupRolePropertyMap().get( group );
-        		if (roleMap.get( consumerInfoRole ) != null) {
-        			operatorGroup = group;
-        			break;
-        		}
-        	}
         	LiteYukonGroup customerGroup = energyCompany.getResidentialCustomerGroup();
+        	LiteYukonGroup operatorGroup = energyCompany.getWebClientOperatorGroup();
         	
+        	boolean updateCustGroup = AuthFuncs.getRolePropValueGroup(customerGroup, ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK, null) != null;
+        	boolean updateOperGroup = AuthFuncs.getRolePropValueGroup(operatorGroup, ConsumerInfoRole.CUSTOMIZED_FAQ_LINK, null) != null;
+        	
+    		String sql = null;
+    		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    				sql, CtiUtilities.getDatabaseAlias() );
         	boolean changed = false;
         	
         	if (newCustomizedFAQ != oldCustomizedFAQ) {
-	        	String sql = "UPDATE YukonGroupRole SET Value = '" + newCustomizedFAQ + "'" +
-	        			" WHERE GroupID = " + operatorGroup.getGroupID() +
-	        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-	        			" AND RolePropertyID = " + ConsumerInfoRole.CUSTOMIZED_FAQ_LINK;
-        		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-        				sql, CtiUtilities.getDatabaseAlias() );
-        		stmt.execute();
-        		
-	        	sql = "UPDATE YukonGroupRole SET Value = '" + newCustomizedFAQ + "'" +
-	        			" WHERE GroupID = " + customerGroup.getGroupID() +
-	        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-	        			" AND RolePropertyID = " + ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK;
+        		if (updateCustGroup) {
+		        	sql = "UPDATE YukonGroupRole SET Value = '" + newCustomizedFAQ + "'" +
+		        			" WHERE GroupID = " + customerGroup.getGroupID() +
+		        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
+		        			" AND RolePropertyID = " + ResidentialCustomerRole.CUSTOMIZED_FAQ_LINK;
+		        	stmt.setSQLString( sql );
+		        	stmt.execute();
+        		}
+	        	
+        		if (updateOperGroup) {
+		        	sql = "UPDATE YukonGroupRole SET Value = '" + newCustomizedFAQ + "'" +
+		        			" WHERE GroupID = " + operatorGroup.getGroupID() +
+		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
+		        			" AND RolePropertyID = " + ConsumerInfoRole.CUSTOMIZED_FAQ_LINK;
+        		}
+        		else {
+        			sql = "UPDATE YukonUserRole SET Value = '" + newCustomizedFAQ + "'" +
+        					" WHERE UserID = " + liteUser.getUserID() +
+		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
+		        			" AND RolePropertyID = " + ConsumerInfoRole.CUSTOMIZED_FAQ_LINK;
+        		}
 	        	stmt.setSQLString( sql );
-	        	stmt.execute();
+        		stmt.execute();
 	        	
 	        	changed = true;
         	}
@@ -1357,28 +1361,41 @@ public class StarsAdmin extends HttpServlet {
         		String oldFAQLink = AuthFuncs.getRolePropertyValue( liteUser, ConsumerInfoRole.WEB_LINK_FAQ );
         		
         		if (!newFAQLink.equals(oldFAQLink)) {
-		        	String sql = "UPDATE YukonGroupRole SET Value = '" + newFAQLink + "'" +
-		        			" WHERE GroupID = " + operatorGroup.getGroupID() +
-		        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
-		        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
-	        		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-	        				sql, CtiUtilities.getDatabaseAlias() );
+        			if (updateCustGroup) {
+			        	sql = "UPDATE YukonGroupRole SET Value = '" + newFAQLink + "'" +
+			        			" WHERE GroupID = " + customerGroup.getGroupID() +
+			        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
+			        			" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
+			        	stmt.setSQLString( sql );
+			        	stmt.execute();
+        			}
+		        	
+		        	if (updateOperGroup) {
+			        	sql = "UPDATE YukonGroupRole SET Value = '" + newFAQLink + "'" +
+			        			" WHERE GroupID = " + operatorGroup.getGroupID() +
+			        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
+			        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
+		        	}
+		        	else {
+			        	sql = "UPDATE YukonUserRole SET Value = '" + newFAQLink + "'" +
+			        			" WHERE UserID = " + liteUser.getUserID() +
+			        			" AND RoleID = " + ConsumerInfoRole.ROLEID +
+			        			" AND RolePropertyID = " + ConsumerInfoRole.WEB_LINK_FAQ;
+		        	}
+		        	stmt.setSQLString( sql );
 	        		stmt.execute();
 	        		
-		        	sql = "UPDATE YukonGroupRole SET Value = '" + newFAQLink + "'" +
-		        			" WHERE GroupID = " + customerGroup.getGroupID() +
-		        			" AND RoleID = " + ResidentialCustomerRole.ROLEID +
-		        			" AND RolePropertyID = " + ResidentialCustomerRole.WEB_LINK_FAQ;
-		        	stmt.setSQLString( sql );
-		        	stmt.execute();
-		        	
 		        	changed = true;
         		}
         	}
         	
         	if (changed) {
-	        	ServerUtils.handleDBChange( operatorGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
-	        	ServerUtils.handleDBChange( customerGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+        		if (updateCustGroup)
+		        	ServerUtils.handleDBChange( customerGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+		        if (updateOperGroup)
+		        	ServerUtils.handleDBChange( operatorGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+		        else
+		        	ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_UPDATE );
         	}
 
         	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
@@ -1855,7 +1872,7 @@ public class StarsAdmin extends HttpServlet {
         	SOAPMessage reqMsg = action.build( req, session );
         	
         	StarsUpdateThermostatSchedule updateSched = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
-        	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( dftSettings.getInventoryID(), true );
+        	LiteStarsLMHardware liteHw = energyCompany.getLMHardware( dftSettings.getInventoryID(), true );
         	StarsUpdateThermostatScheduleResponse resp = action.updateThermostatSchedule( updateSched, liteHw, energyCompany );
         	action.parseResponse( resp, dftSettings );
 			
@@ -1870,20 +1887,26 @@ public class StarsAdmin extends HttpServlet {
 	private void createEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		try {
 			String warning = null;
+			LiteYukonGroup operGroup = null;
+			LiteYukonGroup custGroup = null;
 			
 			String operGroupName = req.getParameter("OperatorGroup");
-			LiteYukonGroup operGroup = AuthFuncs.getGroup( operGroupName );
-			if (operGroup == null) {
-				if (warning == null) warning = "Warning: ";
-				warning += "group '" + operGroupName + "' doesn't exist";
+			if (operGroupName.length() > 0) {
+				operGroup = AuthFuncs.getGroup( operGroupName );
+				if (operGroup == null) {
+					if (warning == null) warning = "Warning: ";
+					warning += "group \"" + operGroupName + "\" doesn't exist";
+				}
 			}
 			
 			String custGroupName = req.getParameter("CustomerGroup");
-			LiteYukonGroup custGroup = AuthFuncs.getGroup( custGroupName );
-			if (custGroup == null) {
-				if (warning == null) warning = "Warning: ";
-				else warning += ", ";
-				warning += "group '" + custGroupName + "' doesn't exist";
+			if (custGroupName.length() > 0) {
+				custGroup = AuthFuncs.getGroup( custGroupName );
+				if (custGroup == null) {
+					if (warning == null) warning = "Warning: ";
+					else warning += ", ";
+					warning += "group '" + custGroupName + "' doesn't exist";
+				}
 			}
 			
 			com.cannontech.database.data.user.YukonUser yukonUser =
@@ -1909,6 +1932,8 @@ public class StarsAdmin extends HttpServlet {
 				userRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
 				if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.CUSTOMER_GROUP_NAME && custGroup != null)
 					userRole.setValue( custGroupName );
+				else if (roleProps[i].getRolePropertyID() == EnergyCompanyRole.OPERATOR_GROUP_NAME && operGroup != null)
+					userRole.setValue( operGroupName );
 				else
 					userRole.setValue( CtiUtilities.STRING_NONE );
 				yukonUser.getYukonUserRoles().add( userRole );
@@ -2005,12 +2030,11 @@ public class StarsAdmin extends HttpServlet {
 		
 		try {
 			// Delete all customer accounts
-			CustomerAccount[] accounts = CustomerAccount.searchByAccountNumber(
+			int[] accountIDs = CustomerAccount.searchByAccountNumber(
 					energyCompany.getEnergyCompanyID(), "%" );
-			if (accounts != null) {
-				for (int i = 0; i < accounts.length; i++) {
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
-							accounts[i].getAccountID().intValue(), true );
+			if (accountIDs != null) {
+				for (int i = 0; i < accountIDs.length; i++) {
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
 					DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 				}
 			}
