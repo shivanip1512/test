@@ -655,6 +655,10 @@ public Date getStop()
 }
 public java.util.Date getStart()
 {
+	if( start == null)
+	{
+		start = ServletUtil.getToday();
+	}
 	return start;
 }
 private void setStart(java.util.Date newStart)
