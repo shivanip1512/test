@@ -55,19 +55,15 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  */
 public void archiveTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	fireInputUpdate();
+	String val = getArchiveTypeComboBox().getSelectedItem().toString();
 
-	if( ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase("None") ||
-			((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Change") )
-	{
-		getArchiveIntervalLabel().setEnabled(false);
-		getArchiveIntervalComboBox().setEnabled(false);
-	}
-	else
-	{
-		getArchiveIntervalLabel().setEnabled(true);
-		getArchiveIntervalComboBox().setEnabled(true);
-	}
+	getArchiveIntervalLabel().setEnabled(
+		"On Timer".equalsIgnoreCase(val) );
+		
+	getArchiveIntervalComboBox().setEnabled(
+		"On Timer".equalsIgnoreCase(val) );
+
+	fireInputUpdate();
 
 	return;
 }
@@ -821,18 +817,15 @@ public void setValue(Object val) {
  */
 public void updateTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	fireInputUpdate();
+	String val = getUpdateTypeComboBox().getSelectedItem().toString();
 
-	if( ((String)getUpdateTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Timer") )
-	{
-		getPeriodicRateLabel().setEnabled(true);
-		getPeriodicRateComboBox().setEnabled(true);
-	}
-	else
-	{
-		getPeriodicRateLabel().setEnabled(false);
-		getPeriodicRateComboBox().setEnabled(false);
-	}
+	getPeriodicRateLabel().setEnabled(
+		"On Timer".equalsIgnoreCase(val) );
+		
+	getPeriodicRateComboBox().setEnabled(
+		"On Timer".equalsIgnoreCase(val) );
+
+	fireInputUpdate();
 
 	return;
 }
