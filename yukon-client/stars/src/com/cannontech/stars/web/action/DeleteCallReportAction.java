@@ -75,7 +75,7 @@ public class DeleteCallReportAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			
 			int callID = reqOper.getStarsDeleteCallReport().getCallID();
@@ -134,9 +134,8 @@ public class DeleteCallReportAction implements ActionBase {
 			if (operation.getStarsSuccess() == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			int callID = reqOper.getStarsDeleteCallReport().getCallID();

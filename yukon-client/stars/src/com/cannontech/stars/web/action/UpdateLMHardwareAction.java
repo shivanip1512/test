@@ -62,7 +62,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			if (user == null) return null;
 			
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+					(StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
 			if (tz == null) tz = TimeZone.getDefault();
 
@@ -107,7 +107,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			}
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
 			StarsUpdateLMHardware updateHw = reqOper.getStarsUpdateLMHardware();
 			StarsDeleteLMHardware deleteHw = reqOper.getStarsDeleteLMHardware();

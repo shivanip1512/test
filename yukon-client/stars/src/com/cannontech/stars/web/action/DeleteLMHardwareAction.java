@@ -56,7 +56,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			if (user == null) return null;
 			
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+					(StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
 			if (tz == null) tz = TimeZone.getDefault();
 			

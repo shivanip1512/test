@@ -13,7 +13,7 @@
 		  <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Work Orders</td>
 		  <td width="" valign="middle">&nbsp;</td>
 		  <td width="" valign="middle" align="right"> 
-<% if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
+<% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
 	LiteStarsEnergyCompany origComp = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 %>
 			<span class="MainText"><a href="" class="Link3" onclick="document.restoreForm.submit(); return false;">Back To <%= origComp.getName() %></a></span>

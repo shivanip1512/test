@@ -1,7 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -13,7 +11,6 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
@@ -80,7 +77,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         	StarsGetEnergyCompanySettingsResponse resp = new StarsGetEnergyCompanySettingsResponse();
         	resp.setStarsEnergyCompanySettings( settings );
 	        
-            if (SOAPServer.isClientLocal()) storeEnergyCompanySettings( user, settings );
+            if (SOAPServer.isClientLocal())
+				session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
             
             respOper.setStarsGetEnergyCompanySettingsResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -117,10 +115,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             StarsGetEnergyCompanySettingsResponse resp = operation.getStarsGetEnergyCompanySettingsResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
-            if (!SOAPClient.isServerLocal()) {
-	        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-	        	storeEnergyCompanySettings( user, resp.getStarsEnergyCompanySettings() );
-            }
+            if (!SOAPClient.isServerLocal())
+				session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, resp.getStarsEnergyCompanySettings() );
             
             return 0;
         }
@@ -129,21 +125,6 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-	}
-	
-	public static void storeEnergyCompanySettings(StarsYukonUser user, StarsEnergyCompanySettings settings) {
-		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
-		
-		if (settings.getStarsCustomerSelectionLists() != null) {
-			Hashtable selectionListTable = new Hashtable();
-			for (int i = 0; i < settings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-				StarsCustSelectionList list = settings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-				if (list != null)
-					selectionListTable.put( list.getListName(), list );
-			}
-			
-			user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
-		}
 	}
 
 }

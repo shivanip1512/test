@@ -86,7 +86,7 @@ public class DeleteServiceRequestAction implements ActionBase {
 			Transaction.createTransaction(Transaction.DELETE, order).execute();
 			energyCompany.deleteWorkOrderBase( orderID );
 			
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			boolean fromWorkOrder = false;
 			
 			if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteOrder.getAccountID()) {
@@ -154,9 +154,8 @@ public class DeleteServiceRequestAction implements ActionBase {
 			if (operation.getStarsSuccess().getDescription() == null)
 				return 0;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			if (accountInfo == null)
 				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			

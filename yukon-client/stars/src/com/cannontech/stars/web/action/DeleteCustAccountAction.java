@@ -40,7 +40,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 			StarsCustAccountInformation accountInfo = null;
 			if (user != null)
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+				accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			if (accountInfo == null) return null;
 			
 			StarsDeleteCustomerAccount delAccount = new StarsDeleteCustomerAccount();
@@ -71,7 +71,7 @@ public class DeleteCustAccountAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			if (liteAcctInfo == null) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
@@ -119,8 +119,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			StarsSuccess resp = operation.getStarsSuccess();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			ServletUtils.removeTransientAttributes( user );
+			ServletUtils.removeTransientAttributes( session );
 			
 			return 0;
 		}

@@ -1,8 +1,5 @@
 package com.cannontech.stars.web;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -22,19 +19,12 @@ import com.cannontech.stars.util.ServerUtils;
  */
 public class StarsYukonUser {
 
-	private int userID = 0;
+	private LiteYukonUser yukonUser = null;
 	private int energyCompanyID = 0;
 	private LiteCustomer customer = null;
-	private Hashtable attributes = new Hashtable();
 	
 	private StarsYukonUser(LiteYukonUser user) {
-		userID = user.getUserID();
-	}
-	
-	public StarsYukonUser(StarsYukonUser starsUser) {
-		userID = starsUser.getUserID();
-		energyCompanyID = starsUser.getEnergyCompanyID();
-		customer = starsUser.getCustomer();
+		yukonUser = user;
 	}
 	
 	public static StarsYukonUser newInstance(LiteYukonUser user) throws InstantiationException {
@@ -45,11 +35,11 @@ public class StarsYukonUser {
 	}
 	
 	public int getUserID() {
-		return userID;
+		return yukonUser.getUserID();
 	}
 	
 	public LiteYukonUser getYukonUser() {
-		return com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( userID );
+		return yukonUser;
 	}
 	
 	public LiteCustomer getCustomer() {
@@ -75,31 +65,6 @@ public class StarsYukonUser {
 		}
 		
 		return null;
-	}
-	
-	public Object getAttribute(Object name) {
-		return attributes.get( name );
-	}
-	
-	public Enumeration getAttributeNames() {
-		return attributes.keys();
-	}
-	
-	public void setAttribute(Object name, Object value) {
-		attributes.put( name, value );
-	}
-	
-	public void removeAttribute(Object name) {
-		attributes.remove( name );
-	}
-	
-	public synchronized Integer getIncAttribute(Object name) {
-		Integer value = (Integer) attributes.get( name );
-		if (value != null) {
-			Integer newValue = new Integer( value.intValue()+1 );
-			attributes.put( name, newValue );
-		}
-		return value;
 	}
 	
 	private void init() throws InstantiationException {

@@ -39,7 +39,7 @@ public class ReloadCustAccountAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 			StarsCustAccountInformation accountInfo = null;
 			if (user != null)
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+				accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			if (accountInfo == null) return null;
 			
 			StarsReloadCustomerAccount reloadAccount = new StarsReloadCustomerAccount();
@@ -70,7 +70,7 @@ public class ReloadCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
@@ -84,7 +84,7 @@ public class ReloadCustAccountAction implements ActionBase {
 			if (SOAPServer.isClientLocal()) {
 				//energyCompany.updateCustAccountInformation( liteAcctInfo );
 				starsAcctInfo = energyCompany.updateStarsCustAccountInformation( liteAcctInfo );
-				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+				session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
 			}
 			else
 				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompany, true );
@@ -127,10 +127,8 @@ public class ReloadCustAccountAction implements ActionBase {
 			StarsReloadCustomerAccountResponse resp = operation.getStarsReloadCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			if (!SOAPClient.isServerLocal()) {
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
-			}
+			if (!SOAPClient.isServerLocal())
+				session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
 			
             return 0;
         }

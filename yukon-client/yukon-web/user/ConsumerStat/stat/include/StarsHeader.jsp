@@ -25,26 +25,16 @@
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
+	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+	
+	if (user != null && user != SOAPServer.getStarsYukonUser(lYukonUser))
 	{
 		// User login no longer valid
 		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
 		return;
 	}
 	
-	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
-	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
-	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
-	
-	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
-	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
-	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
-	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
-	
-	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (user == null || user.getYukonUser() != lYukonUser) {
+	if (user == null) {
 		// This is logged in using the normal LoginController, not the StarsLoginController
 		user = SOAPServer.getStarsYukonUser( lYukonUser );
 		if (user == null) {
@@ -70,13 +60,33 @@
 		actions.parse(reqMsg, respMsg, session);
 	}
 	
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
+	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
+	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
+	
+	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
+	
 	StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-			user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+			session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 	StarsCustomerFAQs customerFAQs = ecSettings.getStarsCustomerFAQs();
 	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 	StarsDefaultThermostatSchedules dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
+	
+	Hashtable selectionListTable = new Hashtable();
+	if (ecSettings.getStarsCustomerSelectionLists() != null) {
+		for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+			StarsCustSelectionList list = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+			selectionListTable.put( list.getListName(), list );
+		}
+		session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
+	}
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -91,9 +101,7 @@
 	StarsSavedThermostatSchedules thermSchedules = null;
 	StarsUser userLogin = null;
 	
-	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-	
-	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+	accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
 		account = accountInfo.getStarsCustomerAccount();
 		propAddr = account.getStreetAddress();

@@ -258,7 +258,7 @@ function init() {
                           <td class = "Background" align = "right" width="46%"> 
 <%
 	String visible = (daySetting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE)? "visible" : "hidden";
-	String checked = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
+	String checked = (String) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
 	if (checked == null || isRecommended) checked = "";
 %>
                             <span style="visibility:<%= visible %>"> 

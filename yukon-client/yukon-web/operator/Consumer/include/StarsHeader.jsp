@@ -38,11 +38,33 @@
  
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
+	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+	
+	if (user != null && user != SOAPServer.getStarsYukonUser(lYukonUser))
 	{
 		// User login no longer valid
 		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
 		return;
+	}
+	
+	if (user == null) {
+		// This is logged in using the normal LoginController, not the StarsLoginController
+		user = SOAPServer.getStarsYukonUser( lYukonUser );
+		if (user == null) {
+			// Something wrong happened when instantiating the StarsYukonUser
+			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+			return;
+		}
+		
+		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
+		
+		// Get the energy company settings
+		GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
+		SOAPMessage reqMsg = action.build(request, session);
+		SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
+		SOAPMessage respMsg = action.process(reqMsg, session);
+		SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
+		action.parse(reqMsg, respMsg, session);
 	}
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -58,23 +80,6 @@
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
-	
-	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (user == null || user.getYukonUser() != lYukonUser) {
-		// This is logged in using the normal LoginController, not the StarsLoginController
-		user = SOAPServer.getStarsYukonUser( lYukonUser );
-		if (user != null) {
-			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
-			
-			// Get the energy company settings
-			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
-			SOAPMessage reqMsg = action.build(request, session);
-			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-			SOAPMessage respMsg = action.process(reqMsg, session);
-			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-			action.parse(reqMsg, respMsg, session);
-		}
-	}
 	
 	StarsEnergyCompanySettings ecSettings = null;
 	StarsEnergyCompany energyCompany = null;
@@ -106,7 +111,7 @@
 	java.util.Vector custGraphs = null;
 
 	if (user != null) {
-		ecSettings = (StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+		ecSettings = (StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 		if (ecSettings != null) {   
 			energyCompany = ecSettings.getStarsEnergyCompany();
 			categories = ecSettings.getStarsEnrollmentPrograms();
@@ -116,9 +121,16 @@
 			dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
 		}
 		
-		selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+		if (ecSettings.getStarsCustomerSelectionLists() != null) {
+			selectionListTable = new Hashtable();
+			for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+				StarsCustSelectionList list = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+				selectionListTable.put( list.getListName(), list );
+			}
+			session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
+		}
 		
-		accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+		accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 		if (accountInfo != null) {
 			account = accountInfo.getStarsCustomerAccount();
 			propAddr = account.getStreetAddress();

@@ -201,8 +201,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private StarsDefaultThermostatSchedules starsDftThermSchedules = null;
 	private StarsEnergyCompanySettings starsOperECSettings = null;
 	private StarsEnergyCompanySettings starsCustECSettings = null;
+	private StarsCustomerSelectionLists starsOperSelLists = null;
+	private StarsCustomerSelectionLists starsCustSelLists = null;
 	
-	private Hashtable starsCustSelLists = null;		// Map String(list name) to StarsSelectionListEntry
+	private Hashtable starsSelectionLists = null;	// Map String(list name) to StarsSelectionListEntry
 	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
 	private Hashtable starsLMCtrlHists = null;		// Map Integer(group ID) to StarsLMControlHistory
@@ -492,8 +494,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsDftThermSchedules = null;
 		starsOperECSettings = null;
 		starsCustECSettings = null;
-		
+		starsOperSelLists = null;
 		starsCustSelLists = null;
+		
+		starsSelectionLists = null;
 		starsWebConfigs = null;
 		starsCustAcctInfos = null;
 		starsLMCtrlHists = null;
@@ -2608,7 +2612,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	/* The following methods are only used when SOAPClient exists locally */
 	
-	public StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
+	public synchronized StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
 		if (ServerUtils.isOperator(user)) {
 			if (starsOperECSettings == null) {
 				starsOperECSettings = new StarsEnergyCompanySettings();
@@ -2642,7 +2646,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public StarsEnergyCompany getStarsEnergyCompany() {
+	public synchronized StarsEnergyCompany getStarsEnergyCompany() {
 		if (starsEnergyCompany == null) {
 			starsEnergyCompany = new StarsEnergyCompany();
 			StarsLiteFactory.setStarsEnergyCompany( starsEnergyCompany, this );
@@ -2651,20 +2655,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	private Hashtable getStarsCustSelectionLists() {
-		if (starsCustSelLists == null)
-			starsCustSelLists = new Hashtable();
-		return starsCustSelLists;
+		if (starsSelectionLists == null)
+			starsSelectionLists = new Hashtable();
+		return starsSelectionLists;
 	}
 	
 	private StarsCustSelectionList getStarsCustSelectionList(String listName) {
-		Hashtable starsCustSelLists = getStarsCustSelectionLists();
-		synchronized (starsCustSelLists) {
-			StarsCustSelectionList starsList = (StarsCustSelectionList) starsCustSelLists.get( listName );
+		Hashtable starsSelectionLists = getStarsCustSelectionLists();
+		synchronized (starsSelectionLists) {
+			StarsCustSelectionList starsList = (StarsCustSelectionList) starsSelectionLists.get( listName );
 			if (starsList == null) {
 				YukonSelectionList yukonList = getYukonSelectionList( listName );
 				if (yukonList != null) {
 					starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
-					starsCustSelLists.put( starsList.getListName(), starsList );
+					starsSelectionLists.put( starsList.getListName(), starsList );
 				}
 			}
 			
@@ -2672,52 +2676,86 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 	}
 	
-	public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
-		StarsCustomerSelectionLists starsLists = new StarsCustomerSelectionLists();
+	private void updateOperSelectionLists() {
+		starsOperSelLists.removeAllStarsCustSelectionList();
+		
+		for (int i = 0; i < OPERATOR_SELECTION_LISTS.length; i++) {
+			StarsCustSelectionList list = getStarsCustSelectionList(OPERATOR_SELECTION_LISTS[i]);
+			if (list != null) starsOperSelLists.addStarsCustSelectionList( list );
+		}
+	}
+	
+	private void updateCustSelectionLists() {
+		starsCustSelLists.removeAllStarsCustSelectionList();
+		
+		// Currently the consumer side only need opt out period list and hardware status list
+		StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
+		if (list == null) {
+			list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+			if (list != null) {
+				StarsCustSelectionList cusList = new StarsCustSelectionList();
+				cusList.setListID( list.getListID() );
+				cusList.setListName( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS );
+				cusList.setStarsSelectionListEntry( list.getStarsSelectionListEntry() );
+				list = cusList;
+				
+				Hashtable starsSelectionLists = getStarsCustSelectionLists();
+				synchronized (starsSelectionLists) { starsSelectionLists.put(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS, cusList); }
+			}
+		}
+		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
+		
+		list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
+	}
+	
+	public synchronized void updateStarsCustomerSelectionLists() {
+		Hashtable starsSelectionLists = getStarsCustSelectionLists();
+		synchronized (starsSelectionLists) { starsSelectionLists.clear(); }
+		
+		if (starsOperSelLists != null)
+			updateOperSelectionLists();
+		if (starsCustSelLists != null)
+			updateCustSelectionLists();
+	}
+	
+	public synchronized StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
 		LiteYukonUser liteUser = starsUser.getYukonUser();
 		
 		if (ServerUtils.isOperator( starsUser )) {
-			for (int i = 0; i < OPERATOR_SELECTION_LISTS.length; i++)
-				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(OPERATOR_SELECTION_LISTS[i]) );
+			if (starsOperSelLists == null) {
+				starsOperSelLists = new StarsCustomerSelectionLists();
+				updateOperSelectionLists();
+			}
+			
+			return starsOperSelLists;
 		}
 		else if (ServerUtils.isResidentialCustomer( starsUser )) {
-			// Currently the consumer side only need opt out period list and hardware status list
-			StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
-			if (list == null) {
-				list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
-				if (list != null) {
-					StarsCustSelectionList cusList = new StarsCustSelectionList();
-					cusList.setListID( list.getListID() );
-					cusList.setListName( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS );
-					cusList.setStarsSelectionListEntry( list.getStarsSelectionListEntry() );
-					list = cusList;
-					
-					Hashtable starsCustSelLists = getStarsCustSelectionLists();
-					synchronized (starsCustSelLists) { starsCustSelLists.put(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS, cusList); }
-				}
+			if (starsCustSelLists == null) {
+				starsCustSelLists = new StarsCustomerSelectionLists();
+				updateCustSelectionLists();
 			}
-			if (list != null) starsLists.addStarsCustSelectionList( list );
 			
-			starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
+			return starsCustSelLists;
 		}
 		
-		return starsLists;
+		return null;
 	}
 	
-	public StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
+	public synchronized StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
 		if (starsEnrPrograms == null)
 			starsEnrPrograms = StarsLiteFactory.createStarsEnrollmentPrograms(
 					getAllApplianceCategories(), this );
 		return starsEnrPrograms;
 	}
 	
-	public StarsCustomerFAQs getStarsCustomerFAQs() {
+	public synchronized StarsCustomerFAQs getStarsCustomerFAQs() {
 		if (starsCustFAQs == null)
 			starsCustFAQs = StarsLiteFactory.createStarsCustomerFAQs( getAllCustomerFAQs() );
 		return starsCustFAQs;
 	}
 	
-	public StarsServiceCompanies getStarsServiceCompanies() {
+	public synchronized StarsServiceCompanies getStarsServiceCompanies() {
 		if (starsServCompanies == null) {
 			starsServCompanies = new StarsServiceCompanies();
 			
@@ -2740,7 +2778,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsServCompanies;
 	}
 	
-	public StarsExitInterviewQuestions getStarsExitInterviewQuestions() {
+	public synchronized StarsExitInterviewQuestions getStarsExitInterviewQuestions() {
 		if (starsExitQuestions == null) {
 			starsExitQuestions = new StarsExitInterviewQuestions();
             
@@ -2756,7 +2794,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsExitQuestions;
 	}
 	
-	public void updateStarsDefaultThermostatSchedules() {
+	public synchronized void updateStarsDefaultThermostatSchedules() {
 		boolean hasBasic = false;
 		boolean hasEpro = false;
 		boolean hasComm = false;
@@ -2795,7 +2833,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			starsCustECSettings.setStarsDefaultThermostatSchedules( starsDftThermSchedules );
 	}
 	
-	public StarsDefaultThermostatSchedules getStarsDefaultThermostatSchedules() {
+	public synchronized StarsDefaultThermostatSchedules getStarsDefaultThermostatSchedules() {
 		if (starsDftThermSchedules == null)
 			updateStarsDefaultThermostatSchedules();
 		return starsDftThermSchedules;

@@ -91,7 +91,7 @@ public class UpdateLoginAction implements ActionBase {
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-					user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
 			try {
 				updateLogin( updateLogin, liteAcctInfo, energyCompany );
@@ -146,9 +146,8 @@ public class UpdateLoginAction implements ActionBase {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
 			if (updateLogin.getUsername().equals("")) {
 				accountInfo.setStarsUser( null );

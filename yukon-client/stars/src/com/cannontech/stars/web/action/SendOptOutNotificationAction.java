@@ -62,7 +62,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			if (user == null) return null;
             
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsExitInterviewQuestions questions = ecSettings.getStarsExitInterviewQuestions();
 			StarsSendExitInterviewAnswers sendAnswers = new StarsSendExitInterviewAnswers();
             
@@ -109,7 +109,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsCustAccountInformation  liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation  liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
 			int energyCompanyID = user.getEnergyCompanyID();
 			energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );

@@ -6,7 +6,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse)
-			user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
+			session.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
 	
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	

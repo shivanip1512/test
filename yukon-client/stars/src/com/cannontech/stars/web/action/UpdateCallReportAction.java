@@ -48,7 +48,7 @@ public class UpdateCallReportAction implements ActionBase {
 				return null;
 
 			StarsEnergyCompanySettings ecSettings =
-				(StarsEnergyCompanySettings) user.getAttribute(
+				(StarsEnergyCompanySettings) session.getAttribute(
 					ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
 			TimeZone tz =
 				TimeZone.getTimeZone(
@@ -127,7 +127,7 @@ public class UpdateCallReportAction implements ActionBase {
 			}
 
 			LiteStarsCustAccountInformation accountInfo =
-				(LiteStarsCustAccountInformation) user.getAttribute(
+				(LiteStarsCustAccountInformation) session.getAttribute(
 					ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 
 			StarsUpdateCallReport updateCall =
@@ -219,11 +219,8 @@ public class UpdateCallReportAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 
-			StarsYukonUser user =
-				(StarsYukonUser) session.getAttribute(
-					ServletUtils.ATT_STARS_YUKON_USER);
 			StarsCustAccountInformation accountInfo =
-				(StarsCustAccountInformation) user.getAttribute(
+				(StarsCustAccountInformation) session.getAttribute(
 					ServletUtils.TRANSIENT_ATT_LEADING
 						+ ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 

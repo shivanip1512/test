@@ -1578,7 +1578,7 @@ public class ImportManager extends HttpServlet {
 		referer = req.getHeader( "referer" );
 		if (redirect == null) redirect = referer;
 		
-		if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null && !action.equalsIgnoreCase("RestoreContext")) {
+		if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null && !action.equalsIgnoreCase("RestoreContext")) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
 			resp.sendRedirect( referer );
 			return;
@@ -3113,8 +3113,8 @@ public class ImportManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		StarsEnergyCompanySettings ecSettings =
-				(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-		Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+				(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+		Hashtable selectionListTable = (Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 		
 		String listName = req.getParameter("ListName");
 		String[] values = req.getParameterValues("ImportValue");

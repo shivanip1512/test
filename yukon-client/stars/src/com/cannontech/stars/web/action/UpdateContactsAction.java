@@ -54,7 +54,7 @@ public class UpdateContactsAction implements ActionBase {
 			if (user == null) return null;
 			
 			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
 			StarsUpdateContacts updateContacts = new StarsUpdateContacts();
 
@@ -126,7 +126,7 @@ public class UpdateContactsAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			if (liteAcctInfo == null) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
@@ -252,9 +252,8 @@ public class UpdateContactsAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
 			StarsUpdateContactsResponse resp = operation.getStarsUpdateContactsResponse();
 			accountInfo.getStarsCustomerAccount().setPrimaryContact( resp.getPrimaryContact() );

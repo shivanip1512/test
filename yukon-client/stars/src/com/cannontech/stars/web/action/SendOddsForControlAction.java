@@ -47,9 +47,9 @@ public class SendOddsForControlAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+			Hashtable selectionLists = (Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 			
 			String[] progIDs = req.getParameterValues( "ProgID" );
@@ -189,9 +189,8 @@ public class SendOddsForControlAction implements ActionBase {
 			if (operation.getStarsSuccess() == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
 			
 			StarsSendOddsForControl sendCtrlOdds = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsSendOddsForControl();

@@ -49,10 +49,10 @@ public class SearchCustAccountAction implements ActionBase {
             if (user == null) return null;
             
             // Remove the "transient"(account-related) attributes
-            ServletUtils.removeTransientAttributes( user );
+            ServletUtils.removeTransientAttributes( session );
             
             // Remove the previous search result
-            user.removeAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS );
+			session.removeAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS );
 
             StarsSearchCustomerAccount searchAccount = new StarsSearchCustomerAccount();
             SearchBy searchBy = new SearchBy();
@@ -61,7 +61,7 @@ public class SearchCustAccountAction implements ActionBase {
             searchAccount.setSearchValue( req.getParameter("SearchValue") );
             
             // Remember the last search option
-            user.setAttribute( ServletUtils.ATT_LAST_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
+			session.setAttribute( ServletUtils.ATT_LAST_SEARCH_OPTION, new Integer(searchBy.getEntryID()) );
 
             StarsOperation operation = new StarsOperation();
             operation.setStarsSearchCustomerAccount( searchAccount );
@@ -157,13 +157,13 @@ public class SearchCustAccountAction implements ActionBase {
 						}
 					}
 		            
-					user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+					session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 		            
 					StarsCustAccountInformation starsAcctInfo = null;
 					if (SOAPServer.isClientLocal()) {
 						starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-						ServletUtils.removeTransientAttributes( user );
-						user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
+						ServletUtils.removeTransientAttributes( session );
+						session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo);
 					}
 					else	
 						starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompany, true );
@@ -214,14 +214,13 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (resp.getStarsCustAccountInformation() != null) {
 				if (!SOAPClient.isServerLocal())
-            		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+					session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
 			}
             else {
             	/* No customer account, or more than one account found */
-            	user.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
+				session.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
             	return StarsConstants.FAILURE_CODE_OPERATION_FAILED;
             }
             

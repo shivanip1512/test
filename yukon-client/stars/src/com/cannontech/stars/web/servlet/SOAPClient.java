@@ -169,7 +169,7 @@ public class SOAPClient extends HttpServlet {
 		if (req.getParameter("SwitchContext") != null) {
 			try{
 				int contextID = Integer.parseInt( req.getParameter("SwitchContext") );
-				StarsAdmin.doSwitchContext( user, contextID, referer );
+				StarsAdmin.doSwitchContext( user, session, contextID, referer );
 			}
 			catch (com.cannontech.stars.util.WebClientException e) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
@@ -177,7 +177,7 @@ public class SOAPClient extends HttpServlet {
 				return;
 			}
 		}
-		else if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
+		else if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
 			resp.sendRedirect( referer );
 			return;
@@ -331,7 +331,7 @@ public class SOAPClient extends HttpServlet {
 			StarsExitInterviewQuestions questions = null;
 			if (user != null) {
 				StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-						user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 				if (ecSettings != null)
 					questions = ecSettings.getStarsExitInterviewQuestions();
 			}

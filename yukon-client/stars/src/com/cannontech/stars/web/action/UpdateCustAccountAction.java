@@ -55,7 +55,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			if (user == null) return null;
 			
 			StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 
 			StarsUpdateCustomerAccount updateAccount = (StarsUpdateCustomerAccount)
 					StarsFactory.newStarsCustAccount( starsAcctInfo.getStarsCustomerAccount(), StarsUpdateCustomerAccount.class );
@@ -150,7 +150,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			}
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
 			try {
 				updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany );
@@ -196,9 +196,8 @@ public class UpdateCustAccountAction implements ActionBase {
 			if (operation.getStarsSuccess() == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
 			StarsUpdateCustomerAccount updateAccount = SOAPUtil.parseSOAPMsgForOperation(reqMsg).getStarsUpdateCustomerAccount();
 			accountInfo.setStarsCustomerAccount( (StarsCustomerAccount)

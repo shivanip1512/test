@@ -201,6 +201,7 @@ public class NewCustAccountAction implements ActionBase {
             
 			try {
 				liteAcctInfo = newCustomerAccount( newAccount, user, energyCompany );
+				session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 			}
 			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -210,8 +211,8 @@ public class NewCustAccountAction implements ActionBase {
             
 			if (SOAPServer.isClientLocal()) {
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-				ServletUtils.removeTransientAttributes( user );
-				user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
+				ServletUtils.removeTransientAttributes( session );
+				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
 			}
             
 			StarsSuccess success = new StarsSuccess();
@@ -274,9 +275,8 @@ public class NewCustAccountAction implements ActionBase {
 				accountInfo.setStarsCallReportHistory( new StarsCallReportHistory() );
 				accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
 				
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-				ServletUtils.removeTransientAttributes( user );
-				user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
+				ServletUtils.removeTransientAttributes( session );
+				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
 			}
 			
 			return 0;
@@ -438,7 +438,6 @@ public class NewCustAccountAction implements ActionBase {
 			
 			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
 			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
-			user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 			
 			return liteAcctInfo;
 		}

@@ -358,9 +358,9 @@ function init() {
                             <% } %>
                           <td class = "Background" align = "right" width="50%"> 
 <%
-	String weekdaysChecked = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS);
+	String weekdaysChecked = (String) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS);
 	if (weekdaysChecked == null || isRecommended) weekdaysChecked = "";
-	String weekendChecked = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
+	String weekendChecked = (String) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
 	if (weekendChecked == null || isRecommended) weekendChecked = "";
 %>
                             <input type="checkbox" name="ApplyToWeekdays" value="true" <%= weekdaysChecked %>>

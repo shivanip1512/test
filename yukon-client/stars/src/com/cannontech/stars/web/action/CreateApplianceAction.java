@@ -96,7 +96,7 @@ public class CreateApplianceAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+			java.util.Hashtable selectionLists = (java.util.Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
 			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("AppCatID")) );
@@ -368,7 +368,7 @@ public class CreateApplianceAction implements ActionBase {
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-					user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
 			LiteStarsAppliance liteApp = createAppliance( newApp, liteAcctInfo, energyCompany );
             
@@ -411,12 +411,11 @@ public class CreateApplianceAction implements ActionBase {
 			StarsCreateApplianceResponse resp = operation.getStarsCreateApplianceResponse();
 			StarsAppliance app = resp.getStarsAppliance();
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+					session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
 			StarsEnergyCompanySettings ecSettings = (StarsEnergyCompanySettings)
-					user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
             
 			StarsAppliances starsApps = accountInfo.getStarsAppliances();

@@ -1,12 +1,14 @@
 package com.cannontech.stars.util;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
-import com.cannontech.stars.web.StarsYukonUser;
+import javax.servlet.http.HttpSession;
+
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
@@ -333,13 +335,18 @@ public class ServletUtils {
 			return null;
 	}
     
-	public static void removeTransientAttributes(StarsYukonUser user) {
-		Enumeration enum = user.getAttributeNames();
+	public static void removeTransientAttributes(HttpSession session) {
+		Enumeration enum = session.getAttributeNames();
+		ArrayList attToBeRemoved = new ArrayList();
+		
 		while (enum.hasMoreElements()) {
 			String attName = (String) enum.nextElement();
 			if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
-				user.removeAttribute(attName);
+				attToBeRemoved.add( attName );
 		}
+		
+		for (int i = 0; i < attToBeRemoved.size(); i++)
+			session.removeAttribute( (String)attToBeRemoved.get(i) );
 	}
     
 	// Return image names: large icon, small icon, saving icon, control icon, environment icon

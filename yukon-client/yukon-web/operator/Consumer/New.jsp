@@ -4,7 +4,7 @@
 	StarsNewCustomerAccount newAccount = null;
 	
 	if (request.getParameter("Init") != null) {
-		ServletUtils.removeTransientAttributes(user);
+		ServletUtils.removeTransientAttributes(session);
 		session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		session.removeAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
 		session.removeAttribute(InventoryManager.STARS_INVENTORY_TEMP + "_NEW");
@@ -101,7 +101,7 @@ function validate(form) {
 }
 
 function clearPage() {
-<% if (user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT) != null) { %>
+<% if (session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT) != null) { %>
 	for (var i = 0; i < document.form1.length; i++) {
 		var e = document.form1.elements[i];
 		if (e.type == "checkbox") e.checked = false;

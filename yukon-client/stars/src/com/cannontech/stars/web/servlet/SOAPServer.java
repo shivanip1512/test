@@ -1,6 +1,8 @@
 package com.cannontech.stars.web.servlet;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.xml.messaging.JAXMServlet;
@@ -29,6 +31,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -65,11 +68,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	// Array of all the energy companies (LiteStarsEnergyCompany)
 	private static ArrayList energyCompanies = null;
     
-    // List of web configurations
+	// List of web configurations (LiteWebConfiguration)
     private static ArrayList webConfigList = null;
 	
-    // List of stars yukon users
-    private static ArrayList starsUserList = null;
+	// Map from user ID (Integer) to stars users (StarsYukonUser)
+	private static Hashtable starsYukonUsers = null;
 	
 	private PILConnectionServlet connToPIL = null;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
@@ -176,13 +179,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
     
     public static void refreshCache() {
-    	if (energyCompanies != null) {
-    		for (int i = 0; i < energyCompanies.size(); i++)
-    			((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
+    	synchronized (energyCompanies) {
+			if (energyCompanies != null) {
+				for (int i = 0; i < energyCompanies.size(); i++)
+					((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
+			}
+			energyCompanies = null;
     	}
-    	energyCompanies = null;
+    	
 		webConfigList = null;
-    	starsUserList = null;
+		starsYukonUsers = null;
     	
     	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
     	com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
@@ -191,6 +197,19 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     public static void refreshCache(LiteStarsEnergyCompany company) {
     	company.clear();
     	webConfigList = null;
+    	
+    	// Send DB change messages to all yukon users, so existing logins will be invalidated
+		synchronized (starsYukonUsers) {
+			Iterator it = starsYukonUsers.values().iterator();
+			while (it.hasNext()) {
+				StarsYukonUser user = (StarsYukonUser) it.next();
+				if (user.getEnergyCompanyID() == company.getLiteID()) {
+					ServerUtils.handleDBChange( user.getYukonUser(), DBChangeMsg.CHANGE_TYPE_UPDATE );
+					it.remove();
+				}
+			}
+		}
+		
 		com.cannontech.database.cache.functions.YukonListFuncs.releaseAllConstants();
     }
 
@@ -274,10 +293,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	return webConfigList;
     }
     
-    public static ArrayList getAllStarsYukonUsers() {
-    	if (starsUserList == null)
-    		starsUserList = new ArrayList();
-    	return starsUserList;
+	public static Hashtable getAllStarsYukonUsers() {
+		if (starsYukonUsers == null)
+			starsYukonUsers = new Hashtable();
+		return starsYukonUsers;
     }
     
     public static LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
@@ -353,18 +372,20 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
 	
 	public static StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
-		ArrayList userList = getAllStarsYukonUsers();
-		synchronized (userList) {
-			for (int i = 0; i < userList.size(); i++) {
-				StarsYukonUser user = (StarsYukonUser) userList.get(i);
-				if (user.getUserID() == yukonUser.getUserID())
-					return new StarsYukonUser(user);
+		Hashtable starsUsers = getAllStarsYukonUsers();
+		Integer userID = new Integer( yukonUser.getUserID() );
+		
+		synchronized (starsUsers) {
+			StarsYukonUser user = (StarsYukonUser) starsUsers.get( userID );
+			if (user != null) {
+				if (user.getYukonUser() == yukonUser)
+					return user;
 			}
 		}
 		
 		try {
 			StarsYukonUser user = StarsYukonUser.newInstance( yukonUser );
-			addStarsYukonUser( user );
+			synchronized (starsUsers) { starsUsers.put( userID, user ); }
 			return user;
 		}
 		catch (InstantiationException ie) {
@@ -374,22 +395,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
-	public static void addStarsYukonUser(StarsYukonUser user) {
-		ArrayList userList = getAllStarsYukonUsers();
-		synchronized (userList) { userList.add( user ); }
-	}
-	
 	public static void deleteStarsYukonUser(int userID) {
-		ArrayList userList = getAllStarsYukonUsers();
-		synchronized (userList) {
-			for (int i = 0; i < userList.size(); i++) {
-				StarsYukonUser user = (StarsYukonUser) userList.get(i);
-				if (user.getUserID() == userID) {
-					userList.remove(i);
-					return;
-				}
-			}
-		}
+		Hashtable starsUsers = getAllStarsYukonUsers();
+		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
 	
 	public static void updateLMControlHistory(LiteStarsLMControlHistory liteCtrlHist) {

@@ -76,7 +76,7 @@ public class WorkOrderManager extends HttpServlet {
 		String action = req.getParameter( "action" );
 		if (action == null) action = "";
 		
-		if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null && !action.equalsIgnoreCase("RestoreContext")) {
+		if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null && !action.equalsIgnoreCase("RestoreContext")) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation not allowed because you are currently checking information of a member. To make any changes, you must first log into the member energy company through \"Member Management\"." );
 			resp.sendRedirect( referer );
 			return;

@@ -84,7 +84,7 @@ public class UpdateControlNotificationAction implements ActionBase {
             int energyCompanyID = user.getEnergyCompanyID();
             LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	LiteContact litePrimContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
             
             StarsUpdateControlNotification updateNotif = reqOper.getStarsUpdateControlNotification();
@@ -172,9 +172,8 @@ public class UpdateControlNotificationAction implements ActionBase {
 			
 			StarsUpdateControlNotification updateNotif = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateControlNotification();
 			if (updateNotif.getEmail() != null) {
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-						user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				accountInfo.getStarsCustomerAccount().getPrimaryContact().setEmail( updateNotif.getEmail() );
 			}
 			

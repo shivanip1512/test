@@ -111,7 +111,7 @@ public class ServerUtils {
 		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 	
-	public static void sendDBChangeMsg(DBChangeMsg msg) {
+	public static void handleDBChangeMsg(DBChangeMsg msg) {
 		if (msg != null) {
 			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
 			
@@ -195,7 +195,7 @@ public class ServerUtils {
 				);
 		}
 		
-		sendDBChangeMsg( msg );
+		handleDBChangeMsg( msg );
 	}
 	
 	public static Date translateDate(long time) {

@@ -135,7 +135,7 @@ public class ProgramSignUpAction implements ActionBase {
 				liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
 			}
 			else
-				liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+				liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             
 			if (progSignUp.getStarsSULMPrograms() == null) {
 				// Resend the not enrolled command
@@ -256,7 +256,7 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user != null) {
 				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-						user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				
 				StarsProgramSignUpResponse resp = operation.getStarsProgramSignUpResponse();
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, resp.getDescription() );

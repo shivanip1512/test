@@ -3,7 +3,6 @@ package com.cannontech.stars.web.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
@@ -71,7 +70,6 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
 import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.GetEnergyCompanySettingsAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.AnswerType;
@@ -80,7 +78,6 @@ import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.QuestionType;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQ;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQGroup;
@@ -155,7 +152,7 @@ public class StarsAdmin extends HttpServlet {
 			return;
 		}
         
-		if (user.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null
+		if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) != null
 			&& !action.equalsIgnoreCase("SwitchContext")
 			&& !action.equalsIgnoreCase("RestoreContext"))
 		{
@@ -267,7 +264,7 @@ public class StarsAdmin extends HttpServlet {
 		
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerAddress starsAddr = null;
 			
 			int addressID = Integer.parseInt( req.getParameter("AddressID") );
@@ -325,7 +322,7 @@ public class StarsAdmin extends HttpServlet {
 		
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnergyCompany ec = ecSettings.getStarsEnergyCompany();
         	
 			// Create the data object from the request parameters
@@ -480,7 +477,7 @@ public class StarsAdmin extends HttpServlet {
 					grpDftRoute.setPAOName( energyCompany.getName() + " Default Route" );
 					grpDftRoute.setRouteID( new Integer(routeID) );
 					grpDftRoute = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpDftRoute ).execute();
-					ServerUtils.sendDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+					ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
 					
 					MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( PAOGroups.MACRO_GROUP );
 					grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
@@ -490,7 +487,7 @@ public class StarsAdmin extends HttpServlet {
 					macro.setMacroType( MacroTypes.GROUP );
 					grpSerial.getMacroGroupVector().add( macro );
 					grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
-					ServerUtils.sendDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+					ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
 					
 					String sql = "INSERT INTO OperatorSerialGroup VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
 					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -516,7 +513,7 @@ public class StarsAdmin extends HttpServlet {
 					com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
 					grpDB.setRouteID( new Integer(routeID) );
 					Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
-					ServerUtils.sendDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
+					ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
 				}
 				
 				energyCompany.setDefaultRouteID( routeID );
@@ -821,7 +818,7 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsEnrollmentPrograms starsAppCats = ecSettings.getStarsEnrollmentPrograms();
 			
 			int applianceCategoryID = Integer.parseInt( req.getParameter("AppCatID") );
@@ -1232,7 +1229,7 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
 			
 			String[] subjectIDs = req.getParameterValues("SubjectIDs");
@@ -1271,7 +1268,7 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
 			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
@@ -1387,7 +1384,7 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsCustomerFAQs starsFAQs = ecSettings.getStarsCustomerFAQs();
 			
 			int subjectID = Integer.parseInt( req.getParameter("SubjectID") );
@@ -1444,7 +1441,7 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+					(StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 			StarsExitInterviewQuestions starsExitQuestions = ecSettings.getStarsExitInterviewQuestions();
 			
 			String type = req.getParameter("type");
@@ -1701,7 +1698,6 @@ public class StarsAdmin extends HttpServlet {
 			String[] yukonDefIDs = req.getParameterValues("YukonDefIDs");
 			
 			YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
-			Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
 			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS)) {
 				// Handle customer opt out period list
@@ -1721,9 +1717,9 @@ public class StarsAdmin extends HttpServlet {
 						YukonListFuncs.getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
 					}
 					
-					energyCompany.deleteYukonSelectionList( cList.getListID() );
 					YukonListFuncs.getYukonSelectionLists().remove( new Integer(cList.getListID()) );
-					selectionListTable.remove( cList.getListName() );
+					energyCompany.deleteYukonSelectionList( cList.getListID() );
+					energyCompany.updateStarsCustomerSelectionLists();
 					
 					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
 					return;
@@ -1763,8 +1759,7 @@ public class StarsAdmin extends HttpServlet {
 				StarsLiteFactory.setConstantYukonSelectionList( cList, list );
 			}
 			
-			StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
-			selectionListTable.put( starsList.getListName(), starsList );
+			energyCompany.updateStarsCustomerSelectionLists();
 			
 			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
 				energyCompany.updateStarsDefaultThermostatSchedules();
@@ -2170,7 +2165,7 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	public static void doSwitchContext(StarsYukonUser user, int contextID, String backURL) throws WebClientException {
+	public static void doSwitchContext(StarsYukonUser user, HttpSession session, int contextID, String backURL) throws WebClientException {
 		if (contextID == user.getEnergyCompanyID()) return;
 		if (backURL == null) backURL = CtiUtilities.STRING_NONE;
 		
@@ -2183,9 +2178,8 @@ public class StarsAdmin extends HttpServlet {
 			if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == contextID) {
 				StarsYukonUser starsUser = SOAPServer.getStarsYukonUser( liteUser );
 				
-				GetEnergyCompanySettingsAction.storeEnergyCompanySettings(
-						user, member.getStarsEnergyCompanySettings(starsUser) );
-				user.setAttribute( ServletUtils.ATT_CONTEXT_SWITCHED, backURL );
+				session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, member.getStarsEnergyCompanySettings(starsUser) );
+				session.setAttribute( ServletUtils.ATT_CONTEXT_SWITCHED, backURL );
 				return;
 			}
 		}
@@ -2196,7 +2190,7 @@ public class StarsAdmin extends HttpServlet {
 	private void switchContext(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		int contextID = Integer.parseInt( req.getParameter("ContextID") );
 		try {
-			doSwitchContext( user, contextID, referer );
+			doSwitchContext( user, session, contextID, referer );
 		}
 		catch (WebClientException e) {
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
@@ -2206,13 +2200,12 @@ public class StarsAdmin extends HttpServlet {
 	private void restoreContext(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		GetEnergyCompanySettingsAction.storeEnergyCompanySettings(
-				user, energyCompany.getStarsEnergyCompanySettings(user) );
+		session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, energyCompany.getStarsEnergyCompanySettings(user) );
 		
-		String backURL = (String) user.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
+		String backURL = (String) session.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
 		if (backURL != null) redirect = backURL;
 		
-		user.removeAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
+		session.removeAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
 	}
 	
 	private void addMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {

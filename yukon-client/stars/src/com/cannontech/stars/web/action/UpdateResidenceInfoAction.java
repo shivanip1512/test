@@ -54,7 +54,7 @@ public class UpdateResidenceInfoAction implements ActionBase {
         	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         	if (user == null) return null;
         	
-        	Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+        	Hashtable selectionLists = (Hashtable) session.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
         	StarsUpdateResidenceInformation updateResInfo = new StarsUpdateResidenceInformation();
         	
         	updateResInfo.setResidenceType(
@@ -190,16 +190,9 @@ public class UpdateResidenceInfoAction implements ActionBase {
         
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-                respOper.setStarsFailure( StarsFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
             
             LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-            		user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             StarsUpdateResidenceInformation updateResInfo = reqOper.getStarsUpdateResidenceInformation();
             
             updateResidenceInformation( updateResInfo, liteAcctInfo );
@@ -242,9 +235,8 @@ public class UpdateResidenceInfoAction implements ActionBase {
 			StarsSuccess success = operation.getStarsSuccess();
 			if (success == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+					session.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			accountInfo.setStarsResidenceInformation( (StarsResidenceInformation)

@@ -78,9 +78,9 @@ public class GetCustAccountAction implements ActionBase {
             }
             
         	int energyCompanyID = user.getEnergyCompanyID();
-        	if (user.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED ) != null) {
+        	if (session.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED ) != null) {
         		StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings)
-        				user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+						session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
         		energyCompanyID = settings.getEnergyCompanyID();
         	}
         	
@@ -121,12 +121,12 @@ public class GetCustAccountAction implements ActionBase {
 	            }
             }
             
-    		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+			session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
     		
     		StarsCustAccountInformation starsAcctInfo = null;
     		if (SOAPServer.isClientLocal()) {
     			starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
-	        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
+				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsAcctInfo );
     		}
         	else
 				starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
@@ -171,10 +171,8 @@ public class GetCustAccountAction implements ActionBase {
             StarsCustAccountInformation accountInfo = resp.getStarsCustAccountInformation();
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			if (!SOAPClient.isServerLocal()) {
-	            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-	        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
-			}
+			if (!SOAPClient.isServerLocal())
+				session.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
             
             return 0;
         }
