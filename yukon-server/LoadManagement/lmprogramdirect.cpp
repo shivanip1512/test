@@ -3190,7 +3190,14 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         CtiLockGuard<CtiLogger> dout_guard(dout);
                         dout << RWTime() << "LMProgram: " << getPAOName() << ",  time refresh " << lm_group->getPAOName() << " next at: " << lm_group->getNextControlTime().asString() << endl;
                     }
+                    returnBoolean = TRUE;
                 } //end refreshing or ramping in a group
+                else if( lm_group->getGroupControlState() == CtiLMGroupBase::ActiveState &&
+                         lm_group->getNextControlTime().seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds())
+                { // This group is active but has no next control time! we need to give it one.
+                    lm_group->setNextControlTime(RWDBDateTime(RWTime(lm_group->getLastControlSent().seconds() + refresh_rate)));
+                    returnBoolean = TRUE;
+                }
             }
         }
 
