@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/09/27 17:12:08 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/09/29 13:55:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,18 +79,19 @@ typedef struct
 
 } TESTFUNC_t;
 
+
+
+
+//===========================================================================================================
+//===========================================================================================================
+
 class EThread : public CtiThread
 {
 public:
 
-   EThread();
+   EThread( string n, int t = 10 );
    ~EThread();
-   CtiThreadRegData getData( void );
    void setQuit( bool in );
-   bool inserted( void );
-   void setInserted( bool in );
-   bool timeToTickle( void );
-   void reset( void );
 
 protected:
 
@@ -98,18 +99,16 @@ protected:
 
 private:
 
+   string            _name;
    int               _heart_beat;
-   bool              _tickle;
-   bool              _added;
    bool              _quit;
 };
 
-EThread::EThread() :
-   _quit( false ),
-   _added( false ),
-   _tickle( false ),
-   _heart_beat( 0 )
+EThread::EThread( string n, int t ) :
+   _name( n ),
+   _quit( false )
 {
+   _heart_beat = t;     //how often we'll tickle the monitor
 }
 
 EThread::~EThread()
@@ -121,38 +120,19 @@ void EThread::setQuit( bool in )
    _quit = in;
 }
 
-bool EThread::inserted( void )
-{
-   return _added;
-}
-
-void EThread::setInserted( bool in )
-{
-   _added = in;
-}
-
-bool EThread::timeToTickle( void )
-{
-   return _tickle;
-}
-
-void EThread::reset( void )
-{
-   _tickle = false;
-}
-
 void EThread::run( void )
 {
-   int index = 0;
-
+   int cnt = _heart_beat;
+   
    while( !_quit )
    {
-      Sleep( 1000 );
+      sleep( 1000 );
 
-      if( index++ == 25 )
+      if( cnt++ == _heart_beat )
       {
-//         tickleMonitor( getID(), "bob", CtiThreadRegData::Restart, 25, ha );
-         index=0;
+         CtiThreadRegData  *data = new CtiThreadRegData( getID(), _name, CtiThreadRegData::None, _heart_beat, ha, 0 , booya, 0 );
+         ThreadMonitor.tickle( data );
+         cnt = 0;
       }
    }
 }
@@ -162,12 +142,81 @@ void EThread::run( void )
 
 void testThreads( int argc, char **argv )
 {
-   EThread           *bob = new EThread();
-   int               index = 0;
+   EThread  *bob = new EThread( "bob" );
+   EThread  *sam = new EThread( "sam", 20 );
+   EThread  *joe = new EThread( "joe", 11 );
+   EThread  *rat = new EThread( "rat", 40 );
+   int      index = 0;
 
    ThreadMonitor.start();
 
-   bob->start();
+   for( ;; )
+   {
+      Sleep( 1000 );
+
+      if( !bob->isRunning() )
+      {
+         bob->start();
+      }
+
+      if(( index == 40 ) && ( joe->isRunning() ))
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << " joe->setQuit" << endl;
+         }
+//         joe->setQuit( true );
+         joe->interrupt( CtiThread::SHUTDOWN );
+      }
+
+      if(( index == 53 ) && ( !joe->isRunning() ))
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << " joe->start" << endl;
+         }
+         joe->start();
+      }
+
+      if(( index == 55 ) && ( !sam->isRunning() ))
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << " sam->start" << endl;
+         }
+         sam->start();
+      }
+
+      if(( index % 12 == 0 ) && ( !rat->isRunning() ))
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << " rat->start" << endl;
+         }
+         rat->start();
+      }
+
+      if(( index % 50 == 0 ) && ( rat->isRunning() ))
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << " rat->setQuit" << endl;
+         }
+         rat->interrupt( CtiThread::SHUTDOWN );
+//         rat->setQuit( true );
+      }
+
+      if( index % 60 == 0 )
+      {
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << " ThreadMonitor.dump" << endl;
+         }
+         ThreadMonitor.dump();
+      }
+
+      index++;
+   }
 }
 
 //===========================================================================================================
