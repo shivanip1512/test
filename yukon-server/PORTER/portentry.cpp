@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/21 15:42:34 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/07/11 21:10:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,7 +239,7 @@ VOID ConnectionThread (VOID *Arg)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Portentry built an outmessage for " << tempDev->getName();
-                    dout << " at priority " << OutMessage->Priority << endl;
+                    dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
                 }
             }
 
@@ -295,7 +295,7 @@ VOID ConnectionThread (VOID *Arg)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Portentry connection received an outmessage for " << tempDev->getName();
-                    dout << " at priority " << OutMessage->Priority << endl;
+                    dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
                 }
             }
         }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/07/03 21:36:35 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/07/11 21:10:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -254,8 +254,8 @@ VOID PortThread (VOID *arg)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
-                dout << " at priority " << OutMessage->Priority << endl;
-                dout << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
+                dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
+                dout << RWTime() << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
         }
 
@@ -273,9 +273,9 @@ VOID PortThread (VOID *arg)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Portfield connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl
-            << "                           OutMessage->Remote   = " << OutMessage->Remote << endl
-            << "                           OutMessage->Port     = " << OutMessage->Port << endl;
+            dout << RWTime() << " Portfield connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl;
+            dout << RWTime() << "                           OutMessage->Remote   = " << OutMessage->Remote << endl;
+            dout << RWTime() << "                           OutMessage->Port     = " << OutMessage->Port << endl;
         }
 
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
@@ -307,23 +307,6 @@ VOID PortThread (VOID *arg)
                 }
             }
         }
-
-#ifdef DEBUG
-        if(OutMessage->DeviceID == 0 && OutMessage->TargetID == 0)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            if(OutMessage != NULL)
-            {
-                delete OutMessage; /* free up the OutMessage */
-                OutMessage = NULL;
-            }
-            continue;
-        }
-#endif
 
         gQueSlot = 0;   // Set this back to zero every time regardless of port type.
 
