@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.1 $
-*    DATE         :  $Date: 2004/04/06 21:10:18 $
+*    REVISION     :  $Revision: 1.2 $
+*    DATE         :  $Date: 2004/06/15 19:34:00 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.h,v $
+      Revision 1.2  2004/06/15 19:34:00  jrichter
+      Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
+
       Revision 1.1  2004/04/06 21:10:18  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -72,7 +75,7 @@ public:
     virtual const CHAR * getKeyDeleteFile();
     virtual const CHAR * getKeyRenameSave();
     virtual int getSubtractValue();
-
+    virtual int getExpectedNumOfEntries();
 
     RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
     static const CHAR * KEY_INTERVAL;
@@ -109,6 +112,8 @@ private:
     double      _stdLsAltPulseMultiplier;
     double      _stdLsPopulation;
     double      _stdLsWeight;
+
+    int _stdLsExpectedNumEntries;
 
     vector <CtiFDR_LodeStarInfoTable> _fileInfoList;
 };

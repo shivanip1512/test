@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/05/10 19:00:15 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2004/06/15 19:34:00 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.8  2004/06/15 19:34:00  jrichter
+      Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
+
       Revision 1.7  2004/05/10 19:00:15  jrichter
       Removed unnecessary debug.
 
@@ -168,21 +171,38 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
     RWTime oldTimeStamp = RWTime(RWDate(1,1,1990));
     RWOrdered pointDataList = multiDispatchMsg->getData();
     
-    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+    if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Number of pointDataList.entries(): " << pointDataList.entries() << endl;
+        dout << RWTime() << " savedStopTime.seconds() : " << savedStopTime.seconds() <<"savedStartTime.seconds() :"<< savedStartTime.seconds()<< endl;
+        dout << RWTime() << " savedStartTime.seconds()+(pointDataList.entries()*stdLsSecondsPerInterval)-getSubtractValue() " << savedStartTime.seconds()+(pointDataList.entries()*stdLsSecondsPerInterval)-getSubtractValue()<< endl;
     }
     for(long i=0;i<pointDataList.entries();i++)
     {
         CtiPointDataMsg* currentPointData = (CtiPointDataMsg*)pointDataList[i];
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() <<"point: "<<i<<"currentPointData->getTime().seconds(): " <<currentPointData->getTime().seconds()<< " oldTimeStamp.seconds() " << oldTimeStamp.seconds() << endl;
+        }
         if( currentPointData->getTime().seconds() <= oldTimeStamp.seconds() )
         {
-            currentPointData->setTime(RWTime(savedStartTime.seconds()+(stdLsSecondsPerInterval*(i+1))));
+            currentPointData->setTime(RWTime(savedStartTime.seconds()+(stdLsSecondsPerInterval*(i+1))-getSubtractValue()));
+        }
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() <<"point: " <<i<< " currentPointData->getTime(): " << currentPointData->getTime() << endl;
         }
     }
     if( savedStopTime.seconds() != savedStartTime.seconds()+(pointDataList.entries()*stdLsSecondsPerInterval)-getSubtractValue() )
     {
+        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() <<"returning FALSE!!!" << endl;
+        }
         returnBool = false;
     }
 
@@ -407,7 +427,8 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                                             // now we have a Drive/Path                                            
                                             if ( !tempString2.isNull() )
                                             {
-                                                translationDrivePath = tempString2;
+                                                translationDrivePath = RWCString ("\\yukon\\server\\import\\"); 
+                                                translationDrivePath += tempString2;
                                                 translationDrivePath.toUpper();
                                                 setDriveAndPath(translationDrivePath);
                                                 if (!(tempString1 = nextTranslate(";")).isNull())
@@ -724,9 +745,16 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
                                  dout << "Uh Sir" << endl;
                              }
+                             RWTime timestamp= RWTime();
+                             RWCString tempTime = timestamp.asString().remove(16);
+                             tempTime = tempTime.replace(10,1,'_');
+                             tempTime = tempTime.replace(2,1,'_');
+                             tempTime = tempTime.replace(5,1,'_');
+                             tempTime = tempTime.remove(13,1);
 
-                             _snprintf(newFileName, 250, "%s%s",fileNameAndPath,".bak");
-                             MoveFile(oldFileName,newFileName);
+                             _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime);
+                             MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
+                             //MoveFile(oldFileName,newFileName);
 
                              DWORD lastError = GetLastError();
                              if( lastError )

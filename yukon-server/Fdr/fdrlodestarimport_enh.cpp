@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2004/04/08 20:03:16 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2004/06/15 19:34:00 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.3  2004/06/15 19:34:00  jrichter
+      Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
+
       Revision 1.2  2004/04/08 20:03:16  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -241,6 +244,10 @@ const CHAR * CtiFDR_EnhancedLodeStar::getKeyRenameSave()
 int CtiFDR_EnhancedLodeStar::getSubtractValue()
 {
     return 1;
+}
+int CtiFDR_EnhancedLodeStar::getExpectedNumOfEntries()
+{
+    return _lsExpectedNumEntries;
 }
 
 
@@ -582,10 +589,12 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(RWCString& aLine)
                 case 8:
                     {
                         _lsSecondsPerInterval = atol(tempString1);
+                        _lsExpectedNumEntries = (_lsStopTime.seconds() -  _lsStartTime.seconds() + getSubtractValue())/_lsSecondsPerInterval;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " ENH: SecondsPerInterval: " <<_lsSecondsPerInterval << "..."<<endl;
+                            dout << RWTime() << " ENH: Num Of Entries Expected: " <<_lsExpectedNumEntries << "..."<<endl;
                         }
                         break;
                     }

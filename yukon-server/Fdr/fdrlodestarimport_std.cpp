@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2004/04/08 20:03:16 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2004/06/15 19:34:00 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.3  2004/06/15 19:34:00  jrichter
+      Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
+
       Revision 1.2  2004/04/08 20:03:16  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -233,6 +236,10 @@ int CtiFDR_StandardLodeStar::getSubtractValue()
 {
     return 60;
 }
+int CtiFDR_StandardLodeStar::getExpectedNumOfEntries()
+{
+    return _stdLsExpectedNumEntries;
+}
                                     
 
 RWTime CtiFDR_StandardLodeStar::ForeignToYukonTime (RWCString aTime, CHAR aDstFlag)
@@ -346,10 +353,23 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine)
                         
                         
                         RWCTokenizer   tokenizer(_stdLsCustomerIdentifier);// Tokenize the string aLine
-                        RWCString      tokenStrPartCID = tokenizer(" ");
-                        
+                        RWCString      tokenStrPartCID;// = tokenizer(" ");
+                        RWCString      tokenStr = "";
+                        bool firstTime = true;
+                        while (!(tokenStrPartCID = tokenizer(" ")).isNull()) 
+                        {
+                            if (firstTime) 
+                            { 
+                                tokenStr = tokenStrPartCID;
+                                firstTime = false;
+                            }
+                            else
+                            {
+                                tokenStr = tokenStr + " " + tokenStrPartCID;
+                            }
+                        }
                         CHAR keyString[80];
-                        _snprintf(keyString,80,"%s %d",tokenStrPartCID,_stdLsChannel);
+                        _snprintf(keyString,80,"%s %d",tokenStr,_stdLsChannel);
                         //_snprintf(keyString,80,"%s %d %s %s",tokenStrPartCID,_stdLsChannel,getDriveAndPath(),getFileName());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
@@ -420,7 +440,6 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " STD: IntervalsPerHour " <<_stdLsIntervalsPerHour<< endl;
                             dout << RWTime() << " STD: SecondsPerInterval " <<_stdLsSecondsPerInterval<< endl;
-                            dout << RWTime() << " STD: tmppointFound " <<tmppointFound<< endl;
                         }
                         RWCString stdLsDSTFlag = 'Y';
                         //Now we can convert the 
@@ -443,11 +462,13 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(RWCString& aLine)
                                 dout << RWTime() << " Could not parse Lodestar stop timestamp: " << tempString1 << " for Customer Identifier: " << _stdLsCustomerIdentifier << endl;
                             }
                         }
+                        _stdLsExpectedNumEntries = (_stdLsStopTime.seconds() - _stdLsStartTime.seconds() + getSubtractValue())/_stdLsSecondsPerInterval;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " STD: StartTime: " <<_stdLsStartTime << "..."<<endl;
                             dout << RWTime() << " STD: StopTime: " <<_stdLsStopTime << "..."<<endl;
+                            dout << RWTime() << " STD: Num Of Entries Expected: " <<_stdLsExpectedNumEntries << "..."<<endl;
                         }
                         break;
                     }  
@@ -952,17 +973,25 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(RWCString& aLine, CtiMultiMsg* mu
                             intervalStatus = atoi(tempTest);
                             tempCharPtr += 1;
 
-                            if (intervalValue == 0 && intervalStatus == 9) 
+                            /*if (intervalValue == 0 && intervalStatus == 9) 
                             {
                                 i= 12;
                             }
                             else
+                            { */
+                            if (multiDispatchMsg->getCount() < getExpectedNumOfEntries()) 
                             {
                                 
                                 CtiPointDataMsg* pointData = new CtiPointDataMsg(_pointId,intervalValue,importedQuality,fdrPoint.getPointType());
+                                pointData->setTime(RWTime(RWDate(1,1,1990)));
                                 pointData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
+                                if (intervalValue == 0 && intervalStatus == 9) 
+                                {
+                                    pointData->setTags(TAG_INVALID_LODESTAR_READING);
+                                }
+
                                 multiDispatchMsg->insert(pointData);
-                            }
+                           }
                         }
                         break;
                     }

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2004/04/06 21:10:18 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/06/15 19:33:59 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.5  2004/06/15 19:33:59  jrichter
+      Added FDR lodestar tag point def / fixed time stamp issue / modified backup file to append time stamp
+
       Revision 1.4  2004/04/06 21:10:18  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -81,7 +84,8 @@ public:
     virtual const CHAR * getKeyDeleteFile() = 0;
     virtual const CHAR * getKeyRenameSave() = 0;
     virtual int getSubtractValue() = 0;
-
+    virtual int getExpectedNumOfEntries() = 0;
+    
 
     int readConfig( void );
 
