@@ -94,7 +94,7 @@ function goToManual() {
                     <td width="32"> 
                       <div align="right"> 
                         <input type="checkbox" name="InvID" value="<%= thermostat.getInventoryID() %>" onClick="selectSingle(this.form)" <%= checked %>>
-                        <input type="hidden" name="type" value="<%= thermostat.getLMHardware().getStarsThermostatSettings().getThermostatType().toString() %>">
+                        <input type="hidden" name="type" value="<%= thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType().toString() %>">
                       </div>
                     </td>
                     <td width="256" class="TableCell"><%= label %></td>

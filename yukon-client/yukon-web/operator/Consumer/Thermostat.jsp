@@ -1,7 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	StarsThermoSettings thermoSettings = null;
+	StarsThermostatSettings thermoSettings = null;
 	int invID = 0;
 	int[] invIDs = new int[0];
 	

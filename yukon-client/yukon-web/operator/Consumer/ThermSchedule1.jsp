@@ -1,7 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	StarsThermoSettings thermoSettings = null;
+	StarsThermostatProgram thermoProgram = null;
 	int invID = 0;
 	int[] invIDs = new int[0];
 	
@@ -19,7 +19,7 @@
 		invID = invIDs[0];
 		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
 			if (inventories.getStarsInventory(i).getInventoryID() == invID) {
-				thermoSettings = inventories.getStarsInventory(i).getLMHardware().getStarsThermostatSettings();
+				thermoProgram = inventories.getStarsInventory(i).getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram();
 				break;
 			}
 		}
@@ -28,9 +28,19 @@
 		// Set a single thermostat
 		int thermNo = Integer.parseInt(request.getParameter("InvNo"));
 		StarsInventory thermostat = inventories.getStarsInventory(thermNo);
-		thermoSettings = thermostat.getLMHardware().getStarsThermostatSettings();
+		thermoProgram = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram();
 		invID = thermostat.getInventoryID();
 		thermNoStr = "InvNo=" + thermNo;
+	}
+	
+	if (thermoProgram.getScheduleName() != null) {
+		// If this is a "named" schedule, find the real schedule from the saved schedules of the account
+		for (int i = 0; i < thermSchedules.getStarsThermostatProgramCount(); i++) {
+			if (thermSchedules.getStarsThermostatProgram(i).getScheduleID() == thermoProgram.getScheduleID()) {
+				thermoProgram = thermSchedules.getStarsThermostatProgram(i);
+				break;
+			}
+		}
 	}
 %>
 <html>

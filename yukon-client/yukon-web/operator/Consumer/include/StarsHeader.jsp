@@ -82,7 +82,7 @@
 	StarsServiceCompanies companies = null;
 	StarsCustomerFAQs customerFAQs = null;
 	StarsExitInterviewQuestions exitQuestions = null;
-	StarsDefaultThermostatSettings[] allDftThermoSettings = null;
+	StarsDefaultThermostatSchedules dftThermoSchedules = null;
 	
 	Hashtable selectionListTable = null;
 	
@@ -100,6 +100,7 @@
 	StarsLMProgramHistory programHistory = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
+	StarsSavedThermostatSchedules thermSchedules = null;
 	StarsUser userLogin = null;
 	
 	java.util.Vector custGraphs = null;
@@ -112,7 +113,7 @@
 			companies = ecSettings.getStarsServiceCompanies();
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
 			exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-			allDftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
+			dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
 		}
 		
 		selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
@@ -132,6 +133,7 @@
 			programHistory = programs.getStarsLMProgramHistory();
 			callHist = accountInfo.getStarsCallReportHistory();
 			serviceHist = accountInfo.getStarsServiceRequestHistory();
+			thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
 			
 			userLogin = accountInfo.getStarsUser();
 			if (userLogin == null) {

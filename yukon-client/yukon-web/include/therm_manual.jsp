@@ -1,6 +1,6 @@
 <%
 /* Required predefined variables:
- * thermoSettings: StarsThermoSettings
+ * thermoSettings: StarsThermostatSettings
  * invID: int
  * invIDs: int[]
  * allTherm: boolean
@@ -8,32 +8,24 @@
  */
 	boolean isOperator = ServerUtils.isOperator(user);
 	
-	StarsDefaultThermostatSettings dftThermoSettings = null;
-	for (int i = 0; i < allDftThermoSettings.length; i++) {
-		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
-			dftThermoSettings = allDftThermoSettings[i];
-			break;
-		}
-	}
-	
 	StarsThermostatManualEvent lastEvent = null;
-	boolean useDefault = false;
+	int lastTemp = 72;
+	String modeStr = "";
+	String fanStr = "";
+	boolean runProgram = false;
+	
 	if (thermoSettings != null && thermoSettings.getStarsThermostatManualEventCount() > 0) {
 		lastEvent = thermoSettings.getStarsThermostatManualEvent(
 				thermoSettings.getStarsThermostatManualEventCount() - 1);
-	}
-	else {
-		lastEvent = dftThermoSettings.getStarsThermostatManualEvent(
-				dftThermoSettings.getStarsThermostatManualEventCount() - 1);
-		useDefault = true;
+		
+		StarsThermoModeSettings mode = lastEvent.getThermostatManualOption().getMode();
+		if (mode != null) modeStr = mode.toString();
+		StarsThermoFanSettings fan = lastEvent.getThermostatManualOption().getFan();
+		if (fan != null) fanStr = fan.toString();
+		runProgram = (lastEvent.getThermostatManualOption().getTemperature() == -1);
+		if (!runProgram) lastTemp = lastEvent.getThermostatManualOption().getTemperature();
 	}
 	
-	StarsThermoModeSettings mode = lastEvent.getThermostatManualOption().getMode();
-	String modeStr = (mode != null) ? mode.toString() : "";
-	StarsThermoFanSettings fan = lastEvent.getThermostatManualOption().getFan();
-	String fanStr = (fan != null) ? fan.toString() : "";
-	
-	boolean runProgram = (lastEvent.getThermostatManualOption().getTemperature() == -1);
 %>
 
 <script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/nav_menu.js">
@@ -185,7 +177,7 @@ function validateTemp(e) {
                               <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                                 <tr> 
                                   <td width="52%" height="53"> 
-                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= (runProgram)? 72 : lastEvent.getThermostatManualOption().getTemperature() %>" onkeypress="validateTemp(event)">
+                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= lastTemp %>" onkeypress="validateTemp(event)">
                                   </td>
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
@@ -212,15 +204,15 @@ function validateTemp(e) {
                                 <tr>
                                   <td class="TableCell" valign="top" bordercolor="#FFFFFF"><b>Last 
                                     Settings:</b><br>
-<% if (useDefault) { %>
+<% if (lastEvent == null) { %>
 									(None)
 <% } else { %>
 									Date: <%= datePart.format(lastEvent.getEventDateTime()) %><br>
-<%	if (lastEvent.getThermostatManualOption().getTemperature() == -1) { %>
+<%	if (runProgram) { %>
 									Run Program
 <%	} else { %>
-									Temp: <%= lastEvent.getThermostatManualOption().getTemperature() %>&deg 
-									<% if (lastEvent.getThermostatManualOption().getHold()) out.print("(Hold)"); %><br>
+									Temp: <%= lastTemp %>&deg 
+									<% if (lastEvent.getThermostatManualOption().getHold()) { %>(Hold)<% } %><br>
                                     Mode: <%= modeStr %><br>
                                     Fan: <%= fanStr %>
 <%	} %>

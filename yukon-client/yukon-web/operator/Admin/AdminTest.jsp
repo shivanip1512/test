@@ -438,8 +438,8 @@ function removeAllMembers(form) {
                             <td>
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
 <%
-		for (int i = 0; i < allDftThermoSettings.length; i++) {
-			StarsThermostatTypes type = allDftThermoSettings[i].getThermostatType();
+		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
+			StarsThermostatTypes type = dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType();
 			String typeName = "";
 			String url = "";
 			if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {

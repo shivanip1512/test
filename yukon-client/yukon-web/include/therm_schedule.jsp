@@ -1,6 +1,6 @@
 <%
 /* Required predefined variables:
- * thermoSettings: StarsThermoSettings
+ * thermoProgram: StarsThermotatProgram
  * invID: int
  * invIDs: int[]
  * allTherm: boolean
@@ -9,17 +9,17 @@
 	boolean isOperator = ServerUtils.isOperator(user);
 	boolean isRecommended = (invID < 0);
 	
-	StarsDefaultThermostatSettings dftThermoSettings = null;
+	StarsThermostatProgram dftThermoProgram = null;
 	if (!isRecommended) {
-		for (int i = 0; i < allDftThermoSettings.length; i++) {
-			if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
-				dftThermoSettings = allDftThermoSettings[i];
+		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
+			if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+				dftThermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
 				break;
 			}
 		}
 	}
 	else {
-		dftThermoSettings = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSettings()[0];
+		dftThermoProgram = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSchedules().getStarsThermostatProgram(0);
 	}
 	
 	StarsThermoDaySettings daySetting = null;
@@ -51,9 +51,9 @@
 	StarsThermostatSchedule schedule = null;
 	StarsThermostatSchedule dftSchedule = null;
 	
-	if (thermoSettings != null) {
-		for (int i = 0; i < thermoSettings.getStarsThermostatSeasonCount(); i++) {
-			StarsThermostatSeason season = thermoSettings.getStarsThermostatSeason(i);
+	if (thermoProgram != null) {
+		for (int i = 0; i < thermoProgram.getStarsThermostatSeasonCount(); i++) {
+			StarsThermostatSeason season = thermoProgram.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
@@ -77,9 +77,9 @@
 			schedule = heatSched;
 	}
 	
-	if (dftThermoSettings != null) {
-		for (int i = 0; i < dftThermoSettings.getStarsThermostatSeasonCount(); i++) {
-			StarsThermostatSeason season = dftThermoSettings.getStarsThermostatSeason(i);
+	if (dftThermoProgram != null) {
+		for (int i = 0; i < dftThermoProgram.getStarsThermostatSeasonCount(); i++) {
+			StarsThermostatSeason season = dftThermoProgram.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {

@@ -1,6 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
-	StarsThermoSettings thermoSettings = null;
+	StarsThermostatSettings thermoSettings = null;
 	StarsThermostatDynamicData curSettings = null;
 	int invID = 0;
 	int[] invIDs = new int[0];

@@ -474,7 +474,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
-		StarsThermostatTypes type = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings().getThermostatType();
+		StarsThermostatTypes type = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 		if (type.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
 	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %>";
@@ -513,7 +513,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 		for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
 			StarsInventory tstat = thermostats.getStarsInventory(i);
 			if (tstat.getInventoryID() == selectedInvIDs[0]) {
-				allType = tstat.getLMHardware().getStarsThermostatSettings().getThermostatType();
+				allType = tstat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 				break;
 			}
 		}

@@ -1,20 +1,12 @@
 <%
 /* Required predefined variables:
- * thermoSettings: StarsThermoSettings
+ * thermoSettings: StarsThermostatSettings
  * invID: int
  * invIDs: int[]
  * allTherm: boolean
  * thermNoStr: String
  */
 	boolean isOperator = ServerUtils.isOperator(user);
-	
-	StarsDefaultThermostatSettings dftThermoSettings = null;
-	for (int i = 0; i < allDftThermoSettings.length; i++) {
-		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-			dftThermoSettings = allDftThermoSettings[i];
-			break;
-		}
-	}
 	
 	int setpoint = 72;
 	int coolSetpoint = 72;
@@ -23,7 +15,7 @@
 	String modeStr = "";
 	String fanStr = "";
 	StarsThermostatManualEvent lastEvent = null;
-	boolean useDefault = false;
+	boolean runProgram = false;
 	
 	if (curSettings != null) {
 		if (curSettings.hasCoolSetpoint())
@@ -45,20 +37,16 @@
 		if (thermoSettings != null && thermoSettings.getStarsThermostatManualEventCount() > 0) {
 			lastEvent = thermoSettings.getStarsThermostatManualEvent(
 					thermoSettings.getStarsThermostatManualEventCount() - 1);
-		}
-		else {
-			lastEvent = dftThermoSettings.getStarsThermostatManualEvent(
-					dftThermoSettings.getStarsThermostatManualEventCount() - 1);
-			useDefault = true;
-		}
-		
-		if (lastEvent.getThermostatManualOption().getTemperature() != -1) {
-			setpoint = lastEvent.getThermostatManualOption().getTemperature();
-			hold = lastEvent.getThermostatManualOption().getHold();
-			if (lastEvent.getThermostatManualOption().getMode() != null)
-				modeStr = lastEvent.getThermostatManualOption().getMode().toString();
-			if (lastEvent.getThermostatManualOption().getFan() != null)
-				fanStr = lastEvent.getThermostatManualOption().getFan().toString();
+			
+			runProgram = (lastEvent.getThermostatManualOption().getTemperature() == -1);
+			if (!runProgram) {
+				setpoint = lastEvent.getThermostatManualOption().getTemperature();
+				hold = lastEvent.getThermostatManualOption().getHold();
+				if (lastEvent.getThermostatManualOption().getMode() != null)
+					modeStr = lastEvent.getThermostatManualOption().getMode().toString();
+				if (lastEvent.getThermostatManualOption().getFan() != null)
+					fanStr = lastEvent.getThermostatManualOption().getFan().toString();
+			}
 		}
 	}
 %>
@@ -332,15 +320,15 @@ function prepareSubmit() {
 <% } %>
                                     <div id="LastSettings" style="display:none"> 
                                       <b>Last Settings:</b><br>
-<% if (useDefault || lastEvent == null) { %>
+<% if (lastEvent == null) { %>
                                       (None) 
 <% } else { %>
                                       Time: <%= histDateFormat.format(lastEvent.getEventDateTime()) %><br>
-<%	if (lastEvent.getThermostatManualOption().getTemperature() == -1) { %>
+<%	if (runProgram) { %>
                                       Run Program 
 <%	} else { %>
-                                      Temp: <%= lastEvent.getThermostatManualOption().getTemperature() %>&deg; 
-                                      <%= (hold)? "(HOLD)" : "" %><br>
+                                      Temp: <%= setpoint %>&deg; 
+                                      <% if (hold) { %>(HOLD)<% } %><br>
                                       Mode: <%= modeStr %><br>
                                       Fan: <%= fanStr %> 
 <%	} %>

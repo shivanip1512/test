@@ -1,15 +1,15 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
-	StarsDefaultThermostatSettings thermoSettings = null;
-	for (int i = 0; i < allDftThermoSettings.length; i++) {
-		if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-			thermoSettings = allDftThermoSettings[i];
+	StarsThermostatProgram thermoProgram = null;
+	for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
+		if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+			thermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
 			break;
 		}
 	}
 	
 	StarsThermostatDynamicData curSettings = null;
-	int invID = thermoSettings.getInventoryID();
+	int invID = -1;
 	int[] invIDs = new int[0];
 	boolean allTherm = false;
 	String thermNoStr = "";

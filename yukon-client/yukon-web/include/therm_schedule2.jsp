@@ -1,6 +1,6 @@
 <%
 /* Required predefined variables:
- * thermoSettings: StarsThermoSettings
+ * thermoProgram: StarsThermostatProgram
  * curSettings: StarsThermostatDynamicData
  * invID: int
  * invIDs: int[]
@@ -10,17 +10,17 @@
 	boolean isOperator = ServerUtils.isOperator(user);
 	boolean isRecommended = (invID < 0);
 
-	StarsDefaultThermostatSettings dftThermoSettings = null;
+	StarsThermostatProgram dftThermoProgram = null;
 	if (!isRecommended) {
-		for (int i = 0; i < allDftThermoSettings.length; i++) {
-			if (allDftThermoSettings[i].getThermostatType().getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
-				dftThermoSettings = allDftThermoSettings[i];
+		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
+			if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+				dftThermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
 				break;
 			}
 		}
 	}
 	else {
-		dftThermoSettings = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSettings()[0];
+		dftThermoProgram = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSchedules().getStarsThermostatProgram(0);
 	}
 
 	StarsThermoDaySettings daySetting = null;
@@ -54,9 +54,9 @@
 	StarsThermostatSchedule dftHeatSched = null;
 	StarsThermostatSchedule dftSchedule = null;
 	
-	if (thermoSettings != null) {
-		for (int i = 0; i < thermoSettings.getStarsThermostatSeasonCount(); i++) {
-			StarsThermostatSeason season = thermoSettings.getStarsThermostatSeason(i);
+	if (thermoProgram != null) {
+		for (int i = 0; i < thermoProgram.getStarsThermostatSeasonCount(); i++) {
+			StarsThermostatSeason season = thermoProgram.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
@@ -78,9 +78,9 @@
 		}
 	}
 	
-	if (dftThermoSettings != null) {
-		for (int i = 0; i < dftThermoSettings.getStarsThermostatSeasonCount(); i++) {
-			StarsThermostatSeason season = dftThermoSettings.getStarsThermostatSeason(i);
+	if (dftThermoProgram != null) {
+		for (int i = 0; i < dftThermoProgram.getStarsThermostatSeasonCount(); i++) {
+			StarsThermostatSeason season = dftThermoProgram.getStarsThermostatSeason(i);
 			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
 				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
 					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType() ||
@@ -192,20 +192,29 @@ function setToDefault() {
 	form.time2.value = "<%= ampmTimeFormat.format(dftSchedule.getTime2().toDate()) %>";
 	form.time3.value = "<%= ampmTimeFormat.format(dftSchedule.getTime3().toDate()) %>";
 	form.time4.value = "<%= ampmTimeFormat.format(dftSchedule.getTime4().toDate()) %>";
-	
+<%
+	boolean dftSkip1 = (dftSchedule.getTemperature1() == -1);
+	boolean dftSkip2 = (dftSchedule.getTemperature2() == -1);
+	boolean dftSkip3 = (dftSchedule.getTemperature3() == -1);
+	boolean dftSkip4 = (dftSchedule.getTemperature4() == -1);
+	int dftTemp1 = (dftSkip1)? 72 : dftSchedule.getTemperature1();
+	int dftTemp2 = (dftSkip2)? 72 : dftSchedule.getTemperature2();
+	int dftTemp3 = (dftSkip3)? 72 : dftSchedule.getTemperature3();
+	int dftTemp4 = (dftSkip4)? 72 : dftSchedule.getTemperature4();
+%>	
 	var temp1C, temp1H, temp2C, temp2H, temp3C, temp3H, temp4C, temp4H;
 	if (<%= isCooling %>) {
-		temp1C = <%= dftSchedule.getTemperature1() %>;
-		temp2C = <%= dftSchedule.getTemperature2() %>;
-		temp3C = <%= dftSchedule.getTemperature3() %>;
-		temp4C = <%= dftSchedule.getTemperature4() %>;
+		temp1C = <%= dftTemp1 %>;
+		temp2C = <%= dftTemp2 %>;
+		temp3C = <%= dftTemp3 %>;
+		temp4C = <%= dftTemp4 %>;
 		temp1H = temp2H = temp3H = temp4H = null;
 	}
 	else {
-		temp1H = <%= dftSchedule.getTemperature1() %>;
-		temp2H = <%= dftSchedule.getTemperature2() %>;
-		temp3H = <%= dftSchedule.getTemperature3() %>;
-		temp4H = <%= dftSchedule.getTemperature4() %>;
+		temp1H = <%= dftTemp1 %>;
+		temp2H = <%= dftTemp2 %>;
+		temp3H = <%= dftTemp3 %>;
+		temp4H = <%= dftTemp4 %>;
 		temp1C = temp2C = temp3C = temp4C = null;
 	}
 	updateLayout(
@@ -216,9 +225,9 @@ function setToDefault() {
 	);
 	
 	toggleThermostat(1, true);
-	toggleThermostat(2, true);
-	toggleThermostat(3, true);
-	toggleThermostat(4, true);
+	toggleThermostat(2, <%= !dftSkip2 %>);
+	toggleThermostat(3, <%= !dftSkip3 %>);
+	toggleThermostat(4, <%= !dftSkip4 %>);
 	setChanged();
 }
 
@@ -226,20 +235,20 @@ function init() {
 <%	
 	boolean skip1 = (schedule.getTemperature1() == -1);
 	if (skip1) schedule.setTime1(dftSchedule.getTime1());
-	int ct1 = (skip1)? dftCoolSched.getTemperature1() : coolSched.getTemperature1();
-	int ht1 = (skip1)? dftHeatSched.getTemperature1() : heatSched.getTemperature1();
+	int ct1 = (skip1)? (dftSkip1? 72:dftCoolSched.getTemperature1()) : coolSched.getTemperature1();
+	int ht1 = (skip1)? (dftSkip1? 72:dftHeatSched.getTemperature1()) : heatSched.getTemperature1();
 	boolean skip2 = (schedule.getTemperature2() == -1);
 	if (skip2) schedule.setTime2(dftSchedule.getTime2());
-	int ct2 = (skip2)? dftCoolSched.getTemperature2() : coolSched.getTemperature2();
-	int ht2 = (skip2)? dftHeatSched.getTemperature2() : heatSched.getTemperature2();
+	int ct2 = (skip2)? (dftSkip2? 72:dftCoolSched.getTemperature2()) : coolSched.getTemperature2();
+	int ht2 = (skip2)? (dftSkip2? 72:dftHeatSched.getTemperature2()) : heatSched.getTemperature2();
 	boolean skip3 = (schedule.getTemperature3() == -1);
 	if (skip3) schedule.setTime3(dftSchedule.getTime3());
-	int ct3 = (skip3)? dftCoolSched.getTemperature3() : coolSched.getTemperature3();
-	int ht3 = (skip3)? dftHeatSched.getTemperature3() : heatSched.getTemperature3();
+	int ct3 = (skip3)? (dftSkip3? 72:dftCoolSched.getTemperature3()) : coolSched.getTemperature3();
+	int ht3 = (skip3)? (dftSkip3? 72:dftHeatSched.getTemperature3()) : heatSched.getTemperature3();
 	boolean skip4 = (schedule.getTemperature4() == -1);
 	if (skip4) schedule.setTime4(dftSchedule.getTime4());
-	int ct4 = (skip4)? dftCoolSched.getTemperature4() : coolSched.getTemperature4();
-	int ht4 = (skip4)? dftHeatSched.getTemperature4() : heatSched.getTemperature4();
+	int ct4 = (skip4)? (dftSkip4? 72:dftCoolSched.getTemperature4()) : coolSched.getTemperature4();
+	int ht4 = (skip4)? (dftSkip4? 72:dftHeatSched.getTemperature4()) : heatSched.getTemperature4();
 %>
 	updateLayout(
 		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= ct1 %>,<%= ht1 %>,
