@@ -48,17 +48,6 @@ CtiLMGroupRipple::~CtiLMGroupRipple()
 }
 
 /*---------------------------------------------------------------------------
-    getRouteId
-
-    Returns the route id of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupRipple::getRouteId() const
-{
-
-    return _routeid;
-}
-
-/*---------------------------------------------------------------------------
     getShedTime
 
     Returns the shed time of the group
@@ -70,41 +59,6 @@ ULONG CtiLMGroupRipple::getShedTime() const
 }
 
 /*---------------------------------------------------------------------------
-    getControlValue
-
-    Returns the control value of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupRipple::getControlValue() const
-{
-
-    return _controlvalue;
-}
-
-/*---------------------------------------------------------------------------
-    getRestoreValue
-
-    Returns the restore value of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupRipple::getRestoreValue() const
-{
-
-    return _restorevalue;
-}
-
-
-/*---------------------------------------------------------------------------
-    setRouteId
-
-    Sets the route id of the group
----------------------------------------------------------------------------*/
-CtiLMGroupRipple& CtiLMGroupRipple::setRouteId(ULONG rteid)
-{
-
-    _routeid = rteid;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
     setShedTime
 
     Sets the shed time of the group
@@ -113,30 +67,6 @@ CtiLMGroupRipple& CtiLMGroupRipple::setShedTime(ULONG shed)
 {
 
     _shedtime = shed;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setControlValue
-
-    Sets the control value of the group
----------------------------------------------------------------------------*/
-CtiLMGroupRipple& CtiLMGroupRipple::setControlValue(const RWCString& control)
-{
-
-    _controlvalue = control;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setRestoreValue
-
-    Sets the restore value of the group
----------------------------------------------------------------------------*/
-CtiLMGroupRipple& CtiLMGroupRipple::setRestoreValue(const RWCString& restore)
-{
-
-    _restorevalue = restore;
     return *this;
 }
 
@@ -268,15 +198,9 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULO
 --------------------------------------------------------------------------*/
 void CtiLMGroupRipple::restoreGuts(RWvistream& istrm)
 {
-
-
-
     CtiLMGroupBase::restoreGuts( istrm );
 
-    istrm >> _routeid
-          >> _shedtime
-          >> _controlvalue
-          >> _restorevalue;
+    istrm >> _shedtime;
 }
 
 /*---------------------------------------------------------------------------
@@ -286,16 +210,9 @@ void CtiLMGroupRipple::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupRipple::saveGuts(RWvostream& ostrm ) const  
 {
-
-
-        
     CtiLMGroupBase::saveGuts( ostrm );
 
-    ostrm << _routeid
-          << _shedtime
-          << _controlvalue
-          << _restorevalue;
-
+    ostrm << _shedtime;
     return;
 }
 
@@ -304,15 +221,11 @@ void CtiLMGroupRipple::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupRipple& CtiLMGroupRipple::operator=(const CtiLMGroupRipple& right)
 {
-
-
     if( this != &right )
     {
         CtiLMGroupBase::operator=(right);
-        _routeid = right._routeid;
         _shedtime = right._shedtime;
-        _controlvalue = right._controlvalue;
-        _restorevalue = right._restorevalue;
+        _refreshsent = right._refreshsent;
     }
 
     return *this;
@@ -353,24 +266,20 @@ CtiLMGroupBase* CtiLMGroupRipple::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupRipple::restore(RWDBReader& rdr)
 {
-
-
     CtiLMGroupBase::restore(rdr);
-}
 
-/*---------------------------------------------------------------------------
-    restoreRippleSpecificDatabaseEntries
-    
-    Restores the database entries for a ripple group that are not contained
-    in the base table.
----------------------------------------------------------------------------*/
-void CtiLMGroupRipple::restoreRippleSpecificDatabaseEntries(RWDBReader& rdr)
-{
+    RWDBNullIndicator isNull;
+    rdr["rippleshedtime"] >> isNull;
+    if( !isNull )
+    {
+        rdr["rippleshedtime"] >> _shedtime;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
-
-    rdr["routeid"] >> _routeid;
-    rdr["shedtime"] >> _shedtime;
-    rdr["controlvalue"] >> _controlvalue;
-    rdr["restorevalue"] >> _restorevalue;
+    _refreshsent = FALSE;
 }
 
