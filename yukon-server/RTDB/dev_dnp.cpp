@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/05/04 21:38:54 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/05/13 18:11:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,12 +112,12 @@ bool CtiDeviceDNP::clearedForScan(int scantype)
         {
             case ScanRateGeneral:
             {
-                status = !_scanGeneralPending;
+                status = !(_scanGeneralPending || _scanIntegrityPending || _scanAccumulatorPending);
                 break;
             }
             case ScanRateIntegrity:
             {
-                status = !_scanIntegrityPending;
+                status = !(_scanIntegrityPending || _scanAccumulatorPending);
                 break;
             }
             case ScanRateAccum:
