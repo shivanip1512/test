@@ -96,8 +96,8 @@ RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+90 )
-    {//is not valid and has been at 1.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
+    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
+    {//is not valid and has been at .5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
     }
 
@@ -234,12 +234,44 @@ void CtiLMControlAreaStore::reset()
                     if( _controlAreas->entries() > 0 )
                     {
                         dumpAllDynamicData();
+                        saveAnyProjectionData();
                         _controlAreas->clearAndDestroy();
                         wasAlreadyRunning = true;
                     }
     
                     RWDBDateTime currentDateTime;
                     RWDBDatabase db = getDatabase();
+
+                    RWTValHashMap<LONG,LONG,id_hash,equal_to<LONG> > controlPointHashMap;
+                    {//loading controllable statuses
+                        RWDBTable pointStatusTable = db.table("pointstatus");
+
+                        RWDBSelector selector = db.selector();
+                        selector.distinct();
+                        selector << pointStatusTable["pointid"];
+
+                        selector.from(pointStatusTable);
+
+                        selector.where( pointStatusTable["controloffset"]==1 );
+
+                        /*if( _LM_DEBUG )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                        }*/
+
+                        RWDBReader rdr = selector.reader(conn);
+
+                        RWDBNullIndicator isNull;
+                        while ( rdr() )
+                        {
+                            LONG tempPointId = 0;
+                            rdr["pointid"] >> tempPointId;
+
+                            controlPointHashMap.insert( tempPointId, tempPointId );
+                        }
+                    }
+
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
 
                     RWOrdered allGroupList;
@@ -278,6 +310,8 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMGroupTable["currenthoursannually"]
                                  << dynamicLMGroupTable["lastcontrolsent"]
                                  << dynamicLMGroupTable["timestamp"]
+                                 << dynamicLMGroupTable["controlstarttime"]
+                                 << dynamicLMGroupTable["controlcompletetime"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -357,6 +391,22 @@ void CtiLMControlAreaStore::reset()
                                             dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                         }*/
                                     }
+                                    else if( resolvePointType(tempPointType) == StatusPointType )
+                                    {
+                                        if( tempPointOffset == 0 )
+                                        {
+                                            LONG controlStatusPointId = -10000000;
+                                            if( controlPointHashMap.findValue(tempPointId,controlStatusPointId) )
+                                            {//just trying to see if this peusdo status point is controllable and has controlOffset of 1
+                                                currentLMGroupBase->setControlStatusPointId(controlStatusPointId);
+                                            }
+                                        }
+                                        /*else
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                        }*/
+                                    }
                                     /*else( resolvePointType(tempPointType) != StatusPointType )
                                     {//undefined group point
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -399,6 +449,32 @@ void CtiLMControlAreaStore::reset()
 
                                 if( currentLMGroupBase != NULL )
                                 {
+                                    rdr["pointid"] >> isNull;
+                                    if( !isNull )
+                                    {//have to do this block to get the controllable pseudo status point
+                                        LONG tempPointId = -1000;
+                                        LONG tempPointOffset = -1000;
+                                        RWCString tempPointType = "(none)";
+                                        rdr["pointid"] >> tempPointId;
+                                        rdr["pointoffset"] >> tempPointOffset;
+                                        rdr["pointtype"] >> tempPointType;
+                                        if( resolvePointType(tempPointType) == StatusPointType )
+                                        {
+                                            if( tempPointOffset == 0 )
+                                            {
+                                                LONG controlStatusPointId = -10000000;
+                                                if( controlPointHashMap.findValue(tempPointId,controlStatusPointId) )
+                                                {//just trying to see if this peusdo status point is controllable and has controlOffset of 1
+                                                    currentLMGroupBase->setControlStatusPointId(controlStatusPointId);
+                                                }
+                                            }
+                                            /*else
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                            }*/
+                                        }
+                                    }
                                     allGroupList.insert(currentLMGroupBase);
                                 }
                             }
@@ -440,6 +516,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
+                                 << lmProgramTable["holidayscheduleid"]
+                                 << lmProgramTable["seasonscheduleid"]
                                  << dynamicLMProgramTable["programstate"]
                                  << dynamicLMProgramTable["reductiontotal"]
                                  << dynamicLMProgramTable["startedcontrolling"]
@@ -602,6 +680,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
+                                 << lmProgramTable["holidayscheduleid"]
+                                 << lmProgramTable["seasonscheduleid"]
                                  << lmProgramCurtailmentTable["minnotifytime"]
                                  << lmProgramCurtailmentTable["heading"]
                                  << lmProgramCurtailmentTable["messageheader"]
@@ -729,6 +809,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
+                                 << lmProgramTable["holidayscheduleid"]
+                                 << lmProgramTable["seasonscheduleid"]
                                  << lmProgramEnergyExchangeTable["minnotifytime"]
                                  << lmProgramEnergyExchangeTable["heading"]
                                  << lmProgramEnergyExchangeTable["messageheader"]
@@ -1141,19 +1223,35 @@ void CtiLMControlAreaStore::reset()
                                 RWOrdered& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
 
                                 CtiLMProgramBase* programToPutInControlArea = NULL;
-                                if( directProgramHashMap.findValue(tempProgramId,programToPutInControlArea) ||
-                                    curtailmentProgramHashMap.findValue(tempProgramId,programToPutInControlArea) ||
-                                    energyExchangeProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
+                                if( directProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
                                 {
                                     programToPutInControlArea->setUserOrder(tempUserOrder);
                                     programToPutInControlArea->setStopOrder(tempStopOrder);
                                     programToPutInControlArea->setDefaultPriority(tempDefaultPriority);
                                     lmControlAreaProgramList.insert(programToPutInControlArea);
+                                    directProgramHashMap.remove(tempProgramId);
+                                }
+                                else if( curtailmentProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
+                                {
+                                    programToPutInControlArea->setUserOrder(tempUserOrder);
+                                    programToPutInControlArea->setStopOrder(tempStopOrder);
+                                    programToPutInControlArea->setDefaultPriority(tempDefaultPriority);
+                                    lmControlAreaProgramList.insert(programToPutInControlArea);
+                                    curtailmentProgramHashMap.remove(tempProgramId);
+                                }
+                                else if( energyExchangeProgramHashMap.findValue(tempProgramId,programToPutInControlArea) )
+                                {
+                                    programToPutInControlArea->setUserOrder(tempUserOrder);
+                                    programToPutInControlArea->setStopOrder(tempStopOrder);
+                                    programToPutInControlArea->setDefaultPriority(tempDefaultPriority);
+                                    lmControlAreaProgramList.insert(programToPutInControlArea);
+                                    energyExchangeProgramHashMap.remove(tempProgramId);
                                 }
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << "Cannot find LM Program with Id: " << programToPutInControlArea->getPAOId() << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    dout << "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    dout << "The LM Program may be in more than one Control Area which is not allowed, in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
                         }
@@ -1209,6 +1307,7 @@ void CtiLMControlAreaStore::reset()
                         while( rdr() )
                         {
                             CtiLMControlAreaTrigger* newTrigger = new CtiLMControlAreaTrigger(rdr);
+                            attachProjectionData(newTrigger);
 
                             /****************************************************************
                             *******  Inserting Trigger into the correct Control Area  *******
@@ -1535,6 +1634,39 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBase* progr
 }
 
 /*---------------------------------------------------------------------------
+    UpdateGroupDisableFlagInDB
+
+    Updates a disable flag in the yukonpaobject table in the database for
+    the group.
+---------------------------------------------------------------------------*/
+bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupBase* group)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    {
+
+        RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
+        RWDBUpdater updater = yukonPAObjectTable.updater();
+
+        updater.where( yukonPAObjectTable["paobjectid"] == group->getPAOId() );
+
+        updater << yukonPAObjectTable["disableflag"].assign( RWCString((group->getDisableFlag()?'Y':'N')) );
+
+        updater.execute( conn );
+
+        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
+                                                      group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
+                                                      ChangeTypeUpdate);
+        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+        return updater.status().isValid();
+    }
+}
+
+/*---------------------------------------------------------------------------
     UpdateTriggerInDB
 
     Updates a trigger threshold, restore offset, etc. in the database either
@@ -1600,7 +1732,6 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                     additional += currentControlArea->getDefOperationalState();
                     additional += ".";
                     CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                    if( _LM_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - " << text << ", " << additional << endl;
@@ -1638,7 +1769,6 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 additional += tempchar;
                 additional += ".";
                 CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                if( _LM_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << text << ", " << additional << endl;
@@ -1668,7 +1798,6 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 additional += tempchar;
                 additional += ".";
                 CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                if( _LM_DEBUG )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << text << ", " << additional << endl;
@@ -1684,5 +1813,129 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
     return returnBool;
 }
 
+
+/*---------------------------------------------------------------------------
+    saveAnyProjectionData
+
+    .
+---------------------------------------------------------------------------*/
+void CtiLMControlAreaStore::saveAnyProjectionData()
+{
+    if( _projectionQueues.entries() > 0 )
+        _projectionQueues.clear();
+
+    for(LONG i=0;i<_controlAreas->entries();i++)
+    {
+        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
+
+        RWOrdered& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
+        if( lmControlAreaTriggers.entries() > 0 )
+        {
+            for(LONG j=0;j<lmControlAreaTriggers.entries();j++)
+            {
+                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers[j];
+                if( currentLMControlAreaTrigger->getProjectionType() == CtiLMControlAreaTrigger::LSFProjectionType &&
+                    currentLMControlAreaTrigger->getTriggerType() != CtiLMControlAreaTrigger::StatusTriggerType )
+                {
+                    /*{
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << " - Saved Projection Point Entries Queue entries for Point Id: " << currentLMControlAreaTrigger->getPointId() << endl;
+                        for(int k=0;k<currentLMControlAreaTrigger->getProjectionPointEntriesQueue().entries();k++)
+                        {
+                            dout << " Entry number: " << k << " value: " << currentLMControlAreaTrigger->getProjectionPointEntriesQueue()[k].getValue() << " timestamp: " << currentLMControlAreaTrigger->getProjectionPointEntriesQueue()[k].getTimestamp() << endl;
+                        }
+                    }*/
+                    _projectionQueues.insert(CtiLMSavedProjectionQueue(currentLMControlAreaTrigger->getPointId(), currentLMControlAreaTrigger->getProjectionPointEntriesQueue()));
+                }
+            }
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    attachProjectionData
+
+    .
+---------------------------------------------------------------------------*/
+void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigger)
+{
+    for(LONG i=0;i<_projectionQueues.entries();i++)
+    {
+        CtiLMSavedProjectionQueue currentSavedQueue =  _projectionQueues.at(i);
+        if( trigger->getPointId() == currentSavedQueue.getPointId() )
+        {
+            RWTValDlist<CtiLMProjectionPointEntry> queueToCopyFrom = currentSavedQueue.getProjectionEntryList();
+            RWTValDlist<CtiLMProjectionPointEntry>& queueToFillUp = trigger->getProjectionPointEntriesQueue();
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << " - Restored Projection Point Entries Queue entries for PointId: " << trigger->getPointId() << endl;
+                for(int k=0;k<queueToCopyFrom.entries();k++)
+                {
+                    dout << " Entry number: " << k << " value: " << queueToCopyFrom[k].getValue() << " timestamp: " << queueToCopyFrom[k].getTimestamp() << endl;
+                }
+            }*/
+            for(LONG j=0;j<queueToCopyFrom.entries();j++)
+            {
+                queueToFillUp.insert(queueToCopyFrom.at(j));
+            }
+            break;
+        }
+    }
+}
+
 const RWCString CtiLMControlAreaStore::LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE = "LOAD_MANAGEMENT_SERVER";
+
+
+//*************************************************************
+//**********  CtiLMSavedProjectionQueue              **********
+//**********                                         **********
+//**********  This is equivalent to an inner class,  **********
+//**********  only used for saving projections       **********
+//*************************************************************
+CtiLMSavedProjectionQueue::CtiLMSavedProjectionQueue(LONG pointId, const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList)
+{
+    setPointId(pointId);
+    setProjectionEntryList(projectionEntryList);
+}
+
+CtiLMSavedProjectionQueue::CtiLMSavedProjectionQueue(const CtiLMSavedProjectionQueue& savedProjectionQueue)
+{
+    operator=(savedProjectionQueue);
+}
+
+CtiLMSavedProjectionQueue::~CtiLMSavedProjectionQueue()
+{
+}
+
+LONG CtiLMSavedProjectionQueue::getPointId() const
+{
+    return _pointId;
+}
+const RWTValDlist<CtiLMProjectionPointEntry>& CtiLMSavedProjectionQueue::getProjectionEntryList() const
+{
+    return _projectionEntryList;
+}
+
+CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::setPointId(LONG pointId)
+{
+    _pointId = pointId;
+    return *this;
+}
+CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::setProjectionEntryList(const RWTValDlist<CtiLMProjectionPointEntry>& projectionEntryList)
+{
+    _projectionEntryList = projectionEntryList;
+    return *this;
+}
+
+CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::operator=(const CtiLMSavedProjectionQueue& right)
+{
+    if( this != &right )
+    {
+        _pointId = right.getPointId();
+        _projectionEntryList = right.getProjectionEntryList();
+    }
+
+    return *this;
+}
+
 
