@@ -78,9 +78,9 @@
 				offerCal.setTime( offer.getOfferDate() );
 				nowCal.setTime( ServletUtil.getToday() );
 
-				if(   nowCal.get( Calendar.YEAR ) == offerCal.get(Calendar.YEAR) &&
-					( nowCal.get( Calendar.DAY_OF_YEAR ) == offerCal.get(Calendar.DAY_OF_YEAR) ||
-					  nowCal.get( Calendar.DAY_OF_YEAR )+1 == offerCal.get(Calendar.DAY_OF_YEAR) ) )
+//				if(   nowCal.get( Calendar.YEAR ) == offerCal.get(Calendar.YEAR) &&
+//					( nowCal.get( Calendar.DAY_OF_YEAR ) == offerCal.get(Calendar.DAY_OF_YEAR) ||
+//					  nowCal.get( Calendar.DAY_OF_YEAR )+1 == offerCal.get(Calendar.DAY_OF_YEAR) ) )
                       
 				{                   
 					offerList.add(offer);
@@ -102,16 +102,25 @@
 								for( int m = 0; m < replies.size(); m++ )
 								{    
 									reply = (LMEnergyExchangeCustomerReply) replies.elementAt(m);										
-								  // out.println(r.getAcceptStatus()); 
 									if( reply.getOfferID().equals( offer.getOfferID() ) &&											
-										!reply.getAcceptStatus().equalsIgnoreCase("noresponse") &&
-                                        !reply.getAcceptStatus().equalsIgnoreCase("declined") )
-                                        
-									{    
-                                        System.out.println(reply.getAcceptStatus());
-										// i think we found a reponse in that mess
-                                        LMEnergyExchangeOfferRevision rev = (LMEnergyExchangeOfferRevision) revisions.elementAt( reply.getRevisionNumber().intValue() );
-                                        
+										!reply.getAcceptStatus().equalsIgnoreCase("noresponse"))
+									{
+                                        LMEnergyExchangeOfferRevision rev = null;
+
+										if( reply.getAcceptStatus().equalsIgnoreCase("declined")
+         									&&( reply.getRevisionNumber().intValue() == ((LMEnergyExchangeOfferRevision)revisions.lastElement()).getRevisionNumber().intValue()))
+										{    
+											// i think we found a reponse in that mess
+	                                        rev = (LMEnergyExchangeOfferRevision) revisions.lastElement();
+										}
+										if( reply.getAcceptStatus().equalsIgnoreCase("accepted"))	//must be an accepted offer.
+										{
+											// i think we found a reponse in that mess									
+    	                                    rev = (LMEnergyExchangeOfferRevision) revisions.elementAt( reply.getRevisionNumber().intValue() );
+   	                                    }
+										
+										if( rev != null)
+										{
                                         // Make sure the offer is notified before showing it
                                         if( rev.getNotificationDateTime().before( new java.util.Date() ) )
                                         {                                       
@@ -123,6 +132,7 @@
 
 										    foundResponse = true;
 										    break;
+                                        }
                                         }
 									}
 								}
@@ -203,6 +213,10 @@
 			{   
 				checker.clear();
 
+			  //Look up the customer curtailable amount, use this as the default amount
+			  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
+			  String curtailAmount = gData2[0][0].toString();
+
 				for (int i = 0; i < 24; i++)
 				{
 					double price = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(i)).getPrice().doubleValue() / 100;
@@ -210,6 +224,16 @@
 
 					double amount = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(i)).getAmountRequested().doubleValue();
 					amountStrs[i] = numberFormat.format(amount);
+
+					if (!amountStrs[i].equals("0"))
+					{
+						amountStrs[i] = curtailAmount;
+					}
+					else
+					{
+						//'0' is a defined curtail amount so we must use something else.
+						amountStrs[i] = "-999";
+					}
 				}
 
 				checker.set("prices", priceStrs);
@@ -243,7 +267,7 @@
 		{
 			try {
 				double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
-				if (amountVal == 0)
+				if (amountVal < 0)	//'0' is a defined curtail amount so we must check for our default -999 value instead.
 					amountStrs[i] = "----";
 				else
 					amountStrs[i] = numberFormat.format(amountVal);
@@ -259,18 +283,30 @@
 				newAmountStrs = (String[]) checker.getObject("amount");
 				amountStrs = (String[]) newAmountStrs.clone();
 
+				boolean isTooSmall = false;
 				try {
 					for (int i = 0; i < 24; i++)
 					{
 						double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();                       
 						if (amountVal == 0)
 							amountStrs[i] = "----";
-						else					  
+						else {
+							if( amountVal < 500) {
+								isTooSmall = true;
+								checker.setError("amounterror" + String.valueOf(i), "");
+							}
                             amountStrs[i] = numberFormat.format(amountVal);
-                      					}
+                        }
+   					}
 				}
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
+					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
+					tab = "";
+				}
+				if( isTooSmall) {
+					checker.setError("amounterror", "Offer amount(s) must be equal to or greater than 500 kW");
+					checker.setError("flag","");
 					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
 					tab = "";
 				}
