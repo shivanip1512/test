@@ -152,11 +152,14 @@
               <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/> 
                 </a></div>
             </td>
-            <td>&nbsp;</td>
-          </form>
-          <form name="form1" method="post" action="">
-          </form>
-        </tr>
+		  </form>
+            <form method="post" action="Consumer/Odds.jsp">
+            <td width = "110" class = "Main"> 
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control 
+                </a></div>
+            </td>
+		  </form>
+          </tr>
         <tr> 
           <td width="110" class = "Main">&nbsp;</td>
           <td width="110" class = "Main">&nbsp;</td>
