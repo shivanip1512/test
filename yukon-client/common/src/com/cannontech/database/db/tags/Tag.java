@@ -12,7 +12,7 @@ package com.cannontech.database.db.tags;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Tags extends com.cannontech.database.db.DBPersistent 
+public class Tag extends com.cannontech.database.db.DBPersistent 
 {	
 	private Integer tagID = null;
 	private String tagName = null;
@@ -29,18 +29,18 @@ public class Tags extends com.cannontech.database.db.DBPersistent
 
    public static final String CONSTRAINT_COLUMNS[] = { "TagID" };
 
-   private static final String TABLE_NAME = "Tags";
+   private static final String TABLE_NAME = "Tag";
 /**
  * StateGroup constructor comment.
  */
-public Tags() 
+public Tag() 
 {
 	super();
 }
 /**
  * StateGroup constructor comment.
  */
-public Tags(Integer id, String name) {
+public Tag(Integer id, String name) {
 	super();
 	setTagID(id);
 	setTagName(name);
