@@ -5,6 +5,7 @@ import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 //import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -17,6 +18,13 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.common.gui.util.JTextFieldTimeEntry;
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.util.CtiUtilities;
+import javax.swing.AbstractAction;
+import com.cannontech.common.gui.util.TreeFindPanel;
+import java.awt.event.KeyEvent;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
 
 /**
  * Insert the type's description here.
@@ -37,6 +45,9 @@ public class LMScenarioProgramSettingsPanel extends com.cannontech.common.gui.ut
 	private javax.swing.JTextField ivjNameJTextField = null;
 	
 	private Vector allGears = null;
+	
+	private static OkCancelDialog dialog = null;
+	private static final TreeFindPanel FND_PANEL = new TreeFindPanel();
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -544,6 +555,73 @@ private void handleException(java.lang.Throwable exception) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
+	dialog = new OkCancelDialog(
+		CtiUtilities.getParentFrame(this),
+		"Search",
+		true, FND_PANEL );
+	
+	final AbstractAction searchAction = new AbstractAction()
+	{
+		public void actionPerformed(java.awt.event.ActionEvent e)
+		{
+			if( !dialog.isShowing() )
+			{
+				dialog.setSize(250, 120);
+				dialog.setLocationRelativeTo( LMScenarioProgramSettingsPanel.this );
+				dialog.show();
+		
+				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				{
+					Object value = FND_PANEL.getValue(null);
+					boolean found = false;
+							
+					if( value != null )
+					{
+						int numberOfRows = getTableModel().getRowCount();
+						for(int j = 0; j < numberOfRows; j++)
+						{
+							String programName = ((LiteBase)getTableModel().getValueAt(j, 0)).toString();
+							if(programName.compareTo(value.toString()) == 0)
+							{
+								getProgramsTable().setRowSelectionInterval(j, j);
+								getProgramsTable().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getProgramsTable().getRowHeight() * (j+1) - getProgramsTable().getRowHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+							//in case they don't know the full name and just entered a partial
+							if(programName.indexOf(value.toString()) > -1 && programName.indexOf(value.toString()) < 2)
+							{
+								getProgramsTable().setRowSelectionInterval(j, j);
+								getProgramsTable().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getProgramsTable().getRowHeight() * (j+1) - getProgramsTable().getRowHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+						}
+							
+						if( !found )
+							javax.swing.JOptionPane.showMessageDialog(
+								LMScenarioProgramSettingsPanel.this, "Unable to find your selected item", "Item Not Found",
+								javax.swing.JOptionPane.INFORMATION_MESSAGE );
+					}
+				}
+				dialog.setVisible(false);
+			}
+		}
+	};
+
+	//do the secret magic key combo: ALT + S
+	KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK, true);
+	getProgramsTable().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
+	getProgramsTable().getActionMap().put("FindAction", searchAction);
+	
 	// user code end
 	getProgramsTable().addMouseListener(ivjEventHandler);
 	getJButtonAdd().addActionListener(ivjEventHandler);
