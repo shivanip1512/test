@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/08/22 21:43:31 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/25 13:32:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,6 +83,7 @@ public:
    CtiTablePointLimit&  getLimit(INT i);
 
    // setters
+   void invalidateLimits();
    void set_limitValid(int i, BOOL b = TRUE);
 
    virtual DOUBLE      getMultiplier() const;

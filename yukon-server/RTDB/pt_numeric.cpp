@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/08/22 21:43:30 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/08/25 13:31:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -345,4 +345,14 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 
     return Value;
 }
+
+void CtiPointNumeric::invalidateLimits()
+{
+   LockGuard guard(monitor());
+   for(int i = 0; i <  MAX_POINTLIMITS; i++)
+   {
+       set_limitValid(i,FALSE);
+   }
+}
+
 
