@@ -12,6 +12,10 @@
 	    <tr> 
 		  <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Hardware 
 		    Inventory </td>
+<%
+	if (session.getAttribute(com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS) == null
+		|| liteEC.getParent() == null) {
+%>
 		  <td width="" valign="middle">&nbsp;</td>
 		  <td width="" valign="middle" align="right"> 
 			<span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span>
@@ -19,6 +23,11 @@
 		  <td width="57" valign="middle" align="left"> 
 			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span>
 		  </td>
+<% } else { %>
+		  <td width="" valign="middle" align="right"> 
+			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Back to <%= liteEC.getParent().getName() %></a></span>
+		  &nbsp;&nbsp;&nbsp;</td>
+<% } %>
 	    </tr>
 	  </table>
     </td>
