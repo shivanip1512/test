@@ -313,6 +313,23 @@ public synchronized CapBankDevice getRowAt(int rowIndex)
 	return (CapBankDevice)getRows().get(rowIndex);		
 }
 /**
+ * This method returns the capbank with the specified PAO ID
+ * @param paoID_ int
+ */
+public synchronized CapBankDevice getCapbank( int capID_ ) 
+{
+	for( int i = 0; i < getRowCount(); i++ )
+	{
+		CapBankDevice cap = getRowAt(i);
+		if( cap.getCcId().intValue() == capID_ )
+			return cap;		
+	}
+
+	return null;
+}
+
+
+/**
  * getRowCount method comment.
  */
 public int getRowCount() 

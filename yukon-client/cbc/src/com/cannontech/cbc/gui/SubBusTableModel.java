@@ -263,6 +263,23 @@ public synchronized SubBus getRowAt(int rowIndex)
 		return null;
 }
 /**
+ * This method returns the subbus with the specified PAO ID
+ * @param paoID_ int
+ */
+public synchronized SubBus getSubBus( int suBusID_ ) 
+{
+	for( int i = 0; i < getRowCount(); i++ )
+	{
+		SubBus bus = getRowAt(i);
+		if( bus.getCcId().intValue() == suBusID_ )
+			return bus;		
+	}
+
+	return null;
+}
+
+
+/**
  * getRowCount method comment.
  */
 public int getRowCount() 

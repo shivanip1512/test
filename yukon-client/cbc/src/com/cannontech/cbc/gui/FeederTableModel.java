@@ -208,6 +208,22 @@ public synchronized Feeder getRowAt(int rowIndex)
 		return null;
 }
 /**
+ * This method returns the feeder with the specified PAO ID
+ * @param paoID_ int
+ */
+public synchronized Feeder getFeeder( int feederID_ ) 
+{
+	for( int i = 0; i < getRowCount(); i++ )
+	{
+		Feeder feeder = getRowAt(i);
+		if( feeder.getCcId().intValue() == feederID_ )
+			return feeder;		
+	}
+
+	return null;
+}
+
+/**
  * getRowCount method comment.
  */
 public int getRowCount() 
