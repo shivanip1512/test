@@ -57,7 +57,7 @@ public class ServerUtils {
 		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
 		synchronized (yc) {
 			yc.setRouteID( routeID );
-			yc.setCommand( command );
+			yc.setCommandString( command );
 			yc.handleSerialNumber();
 		}
 	}
