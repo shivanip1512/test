@@ -31,13 +31,14 @@
               <tr> 
                 <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
               </tr>
-              <tr>
-			    <td width="265" height="28">&nbsp;</td> 
-                <td width="253" valign="middle">&nbsp;</td>
-                <td width="58" valign="middle">&nbsp;</td>
-                <td width="57" valign="middle"> 
-                  <div align="left"></div>
-                </td>
+              <tr> 
+                  <td width="265" height="28">&nbsp;</td>
+				  <td width="253" valign="middle">&nbsp;</td>
+                  <td width="58" valign="middle">&nbsp;</td>
+                  <td width="57" valign="middle"> 
+                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                      Off</a>&nbsp;</span></div>
+                  </td>
               </tr>
             </table>
           </td>
@@ -72,8 +73,7 @@
 		}
 	}
 	
-	StarsOperation operation = (StarsOperation) session.getAttribute("RESPONSE_OPERATION");
-	StarsLMControlHistory ctrlHist = operation.getStarsLMControlHistory();
+	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) session.getAttribute("LM_CONTROL_HISTORY");
 %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
@@ -97,12 +97,8 @@
                     <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
                       HISTORY </span></b></div>
                   </td>
-                  <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %>
+                    
                   </td>
                 </tr>
               </table>
@@ -122,12 +118,12 @@
                     <tr> 
                       <td width="107" valign="top"> 
                         <div align="center">
-						  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+						  <img src="../<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
                           <span class="TableCell"><%= program.getProgramName() %></span><br>
                         </div>
                       </td>
                       <td width="343" valign="top"> 
-                        <table width="325" border="0" cellspacing="0" cellpadding="3">
+                        <table width="325" border="1" cellspacing="0" cellpadding="3">
                           <tr> 
                             <td class="HeaderCell"> 
                               <div align="center">Begin Date/Time</div>
@@ -147,7 +143,7 @@
 %>
                           <tr> 
                             <td class="TableCell"> 
-                              <div align="center"><%= histDateFormat.format(hist.getStartDateTime()) %></div>
+                              <div align="right"><%= histDateFormat.format(hist.getStartDateTime()) %></div>
                             </td>
                             <td class="TableCell"> 
                               <div align="left"><%= CommonUtils.getDurationString(durationSec) %></div>

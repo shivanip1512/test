@@ -18,14 +18,13 @@
                 <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <form method="get" action="">
-                  <td width="265" height="28">&nbsp;&nbsp;&nbsp;</td>
-                  <td width="253" valign="middle">&nbsp;</td>
+                  <td width="265" height="28">&nbsp;</td>
+				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"></div>
+                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                      Off</a>&nbsp;</span></div>
                   </td>
-                </form>
               </tr>
             </table>
           </td>
@@ -69,11 +68,7 @@
                     <div align="center"><b><span class="Main">QUESTIONS - FAQ</span></b></div>
                   </td>
                   <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+                  
                   </td>
                 </tr>
               </table>

@@ -6,8 +6,11 @@
 <%
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	StarsCustomerAccountInformation accountInfo = (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
-	if (accountInfo == null) response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp");
+	StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+	if (accountInfo == null) {
+		response.sendRedirect("/login.jsp");
+		return;
+	}
 	
 	StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
     StreetAddress propAddr = account.getStreetAddress();
@@ -28,6 +31,8 @@
 						  {"Util.jsp", "Utility"},
 						  {"Installer.jsp", "Installer"},
 						  {"FAQ.jsp", "FAQ"},
+						  {"Enrollment.jsp", "Enrollment"},
+						  {"OptOut.jsp", "Opt Out"}
 						 };
 						   
 	Hashtable links = new Hashtable();
@@ -51,7 +56,9 @@
     <td> 
       <div align="left"><span class="NavHeader">Programs</span><br>
         <%= links.get("ProgramHist.jsp") %><br>
-        <%= links.get("Programs.jsp") %></div>
+		<%= links.get("Enrollment.jsp") %><br>
+		<%= links.get("OptOut.jsp") %></div>
+		
     </td>
   </tr>
   <tr> 

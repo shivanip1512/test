@@ -29,14 +29,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 
@@ -143,7 +143,7 @@
                             {                            
                   %>
         <tr> 
-                        <td width="25%" class="TableCell"> <a href="oper_mand.jsp?tab=profile&customerid=<%= customers[i].getYukonID() %>" class="BlackLink"><%= companyName %></a> 
+                        <td width="25%" class="TableCell"> <a href="oper_mand.jsp?tab=profile&customerid=<%= customers[i].getYukonID() %>" class="Link1"><%= companyName %></a> 
                         </td>
           <td width="15%" class="TableCell"> 
               <%= contact %> 
@@ -179,14 +179,14 @@
                     if( showAck )
                     {
                 %>
-                      <a href="oper_mand.jsp?tab=current&prog=<%= programID %>&noack=true" class="BlackLink"> 
+                      <a href="oper_mand.jsp?tab=current&prog=<%= programID %>&noack=true" class="Link1"> 
                       Unacknowledged Customers</a> 
                       <%
                     }
                     else
                     {
                 %>
-                      <a href="oper_mand.jsp?tab=current&prog=<%= programID %>" class="BlackLink"> 
+                      <a href="oper_mand.jsp?tab=current&prog=<%= programID %>" class="Link1"> 
                       All Customers</a> 
                       <%
                     }

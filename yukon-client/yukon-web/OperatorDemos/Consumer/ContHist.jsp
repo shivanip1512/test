@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String appNoStr = request.getParameter("AppNo");
 	int appNo = -1;
@@ -11,6 +12,18 @@
 	if (appNoStr != null)
 		backURL += "?AppNo=" + appNoStr;
 	
+	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
+	
+	StarsLMProgram program = null;
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
+		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+			program = starsProg;
+			break;
+		}
+	}
+	
+	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute("LM_CONTROL_HISTORY");
 %>
 <html>
 <head>
@@ -32,14 +45,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="265" height="28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Customer 
+                <td width="265" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Customer 
                   Account Information</td>
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
-                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                  <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -60,26 +73,10 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "ContHist1.jsp"; %>
-          <%@ include file="Nav.jsp" %>
-<%
-	// Header files have already been included in Nav.jsp
-	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
-	
-	StarsLMProgram program = null;
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-			program = starsProg;
-			break;
-		}
-	}
-	
-	StarsOperation operation = (StarsOperation) session.getAttribute("RESPONSE_OPERATION");
-	StarsLMControlHistory ctrlHist = operation.getStarsLMControlHistory();
-%>
-		  </td>
+          <td  valign="top" width="101"> 
+            <% String pageName = "ContHist1.jsp"; %>
+            <%@ include file="Nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "PROGRAMS - CONTROL HISTORY"; %><%@ include file="InfoSearchBar.jsp" %><br>
@@ -92,8 +89,7 @@
                   <table width="450" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr> 
                       <td width="107" valign="top"> 
-                        <div align="center">
-						  <img src="<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+                        <div align="center"> <img src="<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
                           <span class="TableCell"><%= program.getProgramName() %></span><br>
                         </div>
 						<br>

@@ -12,7 +12,7 @@
    java.util.Date stop = null;
    String period = null;
    String selectedPeriod = null;
-   String page_;
+   String page;
    String tab;
    int modelType = 0;
 
@@ -26,9 +26,9 @@
    if( tab == null )
       tab = "graph";
 
-   page_ = request.getParameter("page_");
-   if( page_ == null )
-       page_ = "1";
+   page = request.getParameter("page");
+   if( page == null )
+       page = "1";
    
    String modelTypeStr = request.getParameter("model");
    if (modelTypeStr != null)

@@ -31,12 +31,13 @@
               <tr> 
                 <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
               </tr>
-              <tr> 
-                <td width="265" height="28">&nbsp;</td>
+              <tr>
+			    <td width="265" height="28">&nbsp;</td> 
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
-                <td width="57" valign="middle">
-                  <div align="left"></div>
+                <td width="57" valign="middle"> 
+                  <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                    Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -72,8 +73,7 @@
 		}
 	}
 	
-	StarsOperation operation = (StarsOperation) session.getAttribute("RESPONSE_OPERATION");
-	StarsLMControlHistory ctrlHist = operation.getStarsLMControlHistory();
+	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) session.getAttribute("LM_CONTROL_HISTORY");
 %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
@@ -98,11 +98,7 @@
                       HISTORY </span></b></div>
                   </td>
                   <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+                    
                   </td>
                 </tr>
               </table>
@@ -122,7 +118,7 @@
                     <tr> 
                       <td width="107" valign="top"> 
                         <div align="center">
-						  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+						  <img src="../<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
                           <span class="TableCell"><%= program.getProgramName() %></span><br>
                         </div>
                       </td>

@@ -73,16 +73,6 @@ function getTopCoordinate() {
 
 
 
-<!-- Begin
-function Check(x,y) {
-for(i=1;i<=4;i++) {
-z = "option" + i ;
-document.all[z].src = "http://javascript.internet.com/img/radio-buttons/off.gif" ;
-}
-document.all[x].src = "http://javascript.internet.com/img/radio-buttons/on.gif"
-document.all.action.value = x
-}
-//  End -->
 </script>
 </head>
 <body bgcolor="#666699" leftmargin="0" topmargin="0">
@@ -103,7 +93,7 @@ document.all.action.value = x
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="login.jsp" class="blueLink">Log 
+                  <div align="left"><span class="Main"><a href="login.jsp" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -175,7 +165,7 @@ document.all.action.value = x
                       <table width="100%" border="0" height="80">
                         <tr> 
                           <td align = "center" width="15%"> 
-                            <p><b><img id = "0" src="SetBack.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 1, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                            <p><b><img id = "0" src="Setback.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 1, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
                               click on icon for a description</font></p>
                           </td>
                           <td width="85%"> 

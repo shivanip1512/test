@@ -18,14 +18,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height = "28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Load 
+                <td width="253" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
                   Control</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -112,7 +112,7 @@
                           %>
           <tr> 
            
-            <td width="25%" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="BlackLink"><%= curtailProgs[i].getYukonName() %></a></td>
+            <td width="25%" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
             <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
             <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
             <td width="25%" class="TableCell"><%= curtailProgs[i].getDuration() / 60 %></td>
@@ -153,7 +153,7 @@
                           %>
         <tr> 
          
-          <td width="25%" height="23" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="BlackLink"><%= curtailProgs[i].getYukonName() %></a></td>
+          <td width="25%" height="23" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
           <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
           <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
           <td width="25%" height="23" class="TableCell"><%= curtailProgs[i].getDuration() / 60 %></td>

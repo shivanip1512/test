@@ -18,14 +18,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310"><span class="BlueHeader">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></span></td>
+                <td width="310"><span class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></span></td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 
@@ -118,7 +118,7 @@
 				double amountCommitted = revisions[j].getAmountCommitted();
 			%>
                 <tr> 
-                  <td height="23" class="TableCell"><a href="oper_ee.jsp?tab=historydetail&prog=<%= program.getDeviceId() %>&offer=<%= offers[i].getOfferId() %>&rev=<%= revisions[j].getRevisionNumber() %>" class="BlackLink"> 
+                  <td height="23" class="TableCell"><a href="oper_ee.jsp?tab=historydetail&prog=<%= program.getDeviceId() %>&offer=<%= offers[i].getOfferId() %>&rev=<%= revisions[j].getRevisionNumber() %>" class="Link1"> 
                     <%= offers[i].getOfferId() %> - <%= revisions[j].getRevisionNumber() %> 
                     </a></td>
                   <td height="23" class="TableCell"><%= program.getProgramName() %></td>

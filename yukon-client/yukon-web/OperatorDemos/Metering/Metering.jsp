@@ -77,13 +77,14 @@ function jumpPage(form)
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
-                  <td width="253" valign="middle"><img src="SearchButton.gif" width="51" height="14"></td>
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
+                  
+                <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -104,7 +105,7 @@ function jumpPage(form)
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> <form>
-          <td  valign="top" width="101" class="TableCellWhite">
+          <td  valign="top" width="101" class="TableCell1">
 		      <div align="center">
                 <p><b><br>
                   Views:</b> 
@@ -123,7 +124,7 @@ function jumpPage(form)
                    {
                    %>
               <br clear="ALL">
-              <img src="Bullet.gif" width="12" height="12">&nbsp;<a href="/OperatorDemos/Metering/Metering.jsp?<%= "gdefid=" + gData[i][0] + "&start=" + dateFormat.format(start) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&model=" + modelType + "&page=1" %>" class="WhiteLink"><%=gData[i][1] %></a> 
+              <img src="Bullet.gif" width="12" height="12">&nbsp;<a href="/OperatorDemos/Metering/Metering.jsp?<%= "gdefid=" + gData[i][0] + "&start=" + dateFormat.format(start) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&model=" + modelType + "&page=1" %>" class="Link2"><%=gData[i][1] %></a> 
               <%
                    }
                 }
@@ -134,8 +135,7 @@ function jumpPage(form)
           <td width="1" bgcolor="#000000"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <b><span class="Main">All Trends</span></b><br>
-              <br>
+              
             </div>
             <table width="610" border="0" cellspacing="0" cellpadding="2" align="center">
               <tr> 
@@ -144,13 +144,15 @@ function jumpPage(form)
                   <table width="280" border="2" cellspacing="0" cellpadding="3">
                     <tr bgcolor="#CCCCCC"> 
                       <form method="GET" action="Metering.jsp" name="MForm">
-                        <td width="100" class="TableCell">Start Date:<br>
+                        <td width="101"><font face="Arial, Helvetica, sans-serif" size="1">Start 
+                          Date:</font><br>
                           <input type="text" name="start" value="<%= datePart.format(saveStart) %>" size="8">
                           <a href="javascript:show_calendar('MForm.start')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                         </td>
-                        <td width="100" class="TableCell">Time Period:<br>
+                        <td width="82"><font face="Arial, Helvetica, sans-serif" size="1">Time 
+                          Period:</font><br>
                           <select name="period">
                             <% /* Fill in the period drop down and attempt to match the current period
                  with one of the options */                           

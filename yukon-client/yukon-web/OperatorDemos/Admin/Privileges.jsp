@@ -18,13 +18,13 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="BlueHeader">&nbsp;&nbsp;&nbsp;Administration</td>
+                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;Administration</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -96,7 +96,7 @@
                     <input type="checkbox" name="checkbox42" value="checkbox">
                   </div>
                 </td>
-                <td width="338" class="TableCell">Load Management</td>
+                <td width="338" class="TableCell">Self Directed Control</td>
               </tr>
             </table>
               <br>

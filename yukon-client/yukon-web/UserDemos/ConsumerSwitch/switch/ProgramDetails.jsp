@@ -22,7 +22,8 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"></div>
+                  <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                    Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -67,11 +68,7 @@
                     <div align="center"><b><span class="Main">PROGRAM DETAILS</span></b></div>
                   </td>
                   <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+                   
                   </td>
                 </tr>
               </table>
@@ -94,7 +91,7 @@
                                 <tr> 
                                   <td> 
                                     
-                              <div align="center"><img src="../../AC.gif" width="60" height="59"></div>
+                              <div align="center"><img src="../AC.gif" width="60" height="59"></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -127,7 +124,7 @@
                               <table width="80" border="0" cellspacing="0" cellpadding="5">
                                 <tr> 
                                   <td> 
-                                    <div align="center"><img src="../../AC.gif" width="60" height="59"></div>
+                                    <div align="center"><img src="../AC.gif" width="60" height="59"></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -160,7 +157,7 @@
                               <table width="80" border="0" cellspacing="0" cellpadding="5">
                                 <tr> 
                                   <td> 
-                                    <div align="center"><img src="../../WaterHeater.gif" width="60" height="59"></div>
+                                    <div align="center"><img src="../WaterHeater.gif" width="60" height="59"></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -192,7 +189,7 @@
                               <table width="80" border="0" cellspacing="0" cellpadding="5">
                                 <tr> 
                                   <td> 
-                                    <div align="center"><img src="../../WaterHeater.gif" width="60" height="59"></div>
+                                    <div align="center"><img src="../WaterHeater.gif" width="60" height="59"></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -330,7 +327,7 @@
                               <table width="80" border="0" cellspacing="0" cellpadding="5">
                                 <tr> 
                                   <td> 
-                                    <div align="center"><img src="../../Pool.gif" width="60" height="59"></div>
+                                    <div align="center"><img src="../Pool.gif" width="60" height="59"></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -361,7 +358,7 @@
                     </tr>
                   </table>
 			<div align="center"> 
-              <form method="post" action="Programs.jsp">
+              <form method="post" action="Enrollment.jsp">
                 <input type="submit" name="Back" value="Back">
               </form>
             </div>

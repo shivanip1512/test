@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -19,14 +20,14 @@
               </tr>
               <tr bgcolor="666699"> 
                 <form method="get" action="">
-                  <td width="265" height = "30" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "30" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 </form>
@@ -73,7 +74,7 @@
                       <input type="checkbox" name="checkbox2" value="checkbox">
                     </div>
                   </td>
-                  <td width="317" class="TableCell">Load management</td>
+                  <td width="317" class="TableCell">Self Directed Control</td>
                 </tr>
                 <tr> 
                   <td width="171" class="TableCell"> 

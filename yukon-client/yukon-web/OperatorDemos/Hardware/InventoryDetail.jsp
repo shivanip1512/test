@@ -18,15 +18,15 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height="28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Hardware 
+                <td width="310" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Hardware 
                   Inventory </td>
                 <td width="235" height = "30" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 </form>
@@ -48,53 +48,23 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-                        
+          <td  valign="top" width="101">
             <table width="101" border="0" cellspacing="0" cellpadding="0" height="200">
               <tr> 
                 <td height="20" valign="top" align="center"> 
-                  <table width="101" border="0" cellspacing="0" cellpadding="2" align="center">
-                    <tr> 
-                      <td class="TableCellWhite"><i><br>
-                        </i>Search for device:</td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <select name="select3">
-                          <option>Serial #</option>
-                          <option>Install date</option>
-                        </select></td>
-                    </tr>
-                    <tr> 
-                      <td>
-                        <input type="text" name="textfield3" size="10">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <input type="submit" name="Input2" value="Search">
-                      </td>
-                    </tr>
-                  </table>
-                  <br>
-                  <hr>
-                  </td>
-              </tr>
-              <tr>
-                <td height="20" valign="top" align="center">
                   <table width="100" border="0" cellspacing="0" cellpadding="2" align="center">
                     <tr> 
-                      <td class="TableCellWhite"><i><br>
+                      <td class="TableCell1"><i><br>
                         </i>Add SN range:</td>
                     </tr>
                     <tr> 
-                      <td><span class="TableCellWhite"><i>Device Type</i></span><br>
-                       <select name="select">
+                      <td><span class="TableCell1"><i>Device Type</i></span><br>
+                        <select name="select">
                           <option>LCR 5000</option>
-						  <option>LCR 4000</option>
-						  <option>LCR 3000</option>
-						  <option>LCR 2000</option>
-						  <option>LCR 1000</option>
+                          <option>LCR 4000</option>
+                          <option>LCR 3000</option>
+                          <option>LCR 2000</option>
+                          <option>LCR 1000</option>
                         </select>
                       </td>
                     </tr>
@@ -102,7 +72,7 @@
                       <td> 
                         <table width="94" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                            <td class="TableCellWhite"><i>From</i></td>
+                            <td class="TableCell1"><i>From</i></td>
                           </tr>
                           <tr> 
                             <td> 
@@ -110,7 +80,7 @@
                             </td>
                           </tr>
                           <tr> 
-                            <td class="TableCellWhite"><i>To</i></td>
+                            <td class="TableCell1"><i>To</i></td>
                           </tr>
                           <tr> 
                             <td> 
@@ -120,7 +90,7 @@
                         </table>
                       </td>
                     </tr>
-                    <tr>
+                    <tr> 
                       <td> 
                         <input type="submit" name="Input" value="Submit">
                       </td>
@@ -132,9 +102,9 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><br>
-              <span class="Main"><b> INVENTORY DETAIL<br>
-              </b></span> 
+            <div align="center">
+              <% String header = "INVENTORY DETAIL"; %>
+              <%@ include file="../SearchBar.jsp" %>
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr>
 				<form name="form6" method="get" action=""> 
@@ -216,7 +186,7 @@
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="textarea2" rows="2 wrap="soft" cols="22"></textarea>
+                                  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -296,7 +266,7 @@
                   </td>
 				    </form>
                 </tr>
-              </table>
+              </table><br>
               </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

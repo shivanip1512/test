@@ -18,14 +18,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="BlueHeader">&nbsp;&nbsp;&nbsp;Work Orders</td>
+                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;Work Orders</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 </form>
@@ -47,42 +47,14 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-            <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
-              <tr> 
-                <td class="TableCellWhite"><br>
-                  Search:</td>
-              </tr>
-              <tr> 
-                <td> 
-                  <select name="select3">
-                    <option>Serial #</option>
-                    <option>Order #</option>
-                    <option>Address</option>
-                  </select>
-                </td>
-              </tr>
-              <tr> 
-                <td> 
-                  <input type="text" name="textfield3" size="10">
-                </td>
-              </tr>
-              <tr>
-                <form method="post" action="WorkOrder.jsp">
-                  <td> 
-                    <input type="submit" name="" value="Search">
-                  </td>
-                </form>
-              </tr>
-              <tr> 
-                <td height="20" valign="top" align="center">&nbsp; </td>
-              </tr>
-            </table>
-          </td>
+          <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><br>
-              <b><span class="Main">SERVICE ORDER LIST</span></b> 
+            <div align="center">
+              <b> 
+              <% String header = "SERVICE ORDER LIST"; %>
+              <%@ include file="SearchBar.jsp" %>
+              </b> 
               <p><span class="Main">Display</span>:&nbsp; 
                   <select name="select">
                     <option>All</option>
@@ -93,45 +65,35 @@
                   <input type="submit" name="" value="Submit">
                 </p> <form method="post" action="WorkOrder.jsp">
                 
-                <table width="550" border="1" cellspacing="0" cellpadding="3">
+                <table border="1" cellspacing="0" cellpadding="3">
                   <tr> 
-                    <td width="84" class="HeaderCell">Work Order # </td>
-                    <td width="61" class="HeaderCell">Date</td>
-                    <td width="62" class="HeaderCell">Assigned</td>
-                    <td width="225" class="HeaderCell">Description</td>
-                    <td width="76" class="HeaderCell">Details</td>
+                    <td  class="HeaderCell">Work Order # </td>
+                    <td  class="HeaderCell">Date</td>
+                    <td  class="HeaderCell">Assigned</td>
+                    <td  class="HeaderCell">Description</td>
                   </tr>
                   <tr bgcolor="#FFFFFF"> 
-                    <td width="84" class="TableCell">12345</td>
-                    <td width="61" class="TableCell">05/06/02</td>
-                    <td width="62" class="TableCell">Yes</td>
-                    <td width="225" class="TableCell"> 
-                      <textarea name="textarea" rows="2 wrap="soft" cols="24"></textarea>
-                    </td>
-                    <td width="76" class="TableCell"> 
-                      <input type="submit" name="" value="Details">
+                    <td class="TableCell"><a href="WorkOrder.jsp" class="Link1">12345</a></td>
+                    <td class="TableCell">05/06/02</td>
+                    <td class="TableCell">Yes</td>
+                    <td class="TableCell"> 
+                      <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                     </td>
                   </tr>
                   <tr bgcolor="#FFFFFF"> 
-                    <td width="84" class="TableCell">67890</td>
-                    <td width="61" class="TableCell">05/07/02</td>
-                    <td width="62" class="TableCell">No</td>
-                    <td width="225" class="TableCell"> 
-                      <textarea name="textarea2" rows="2 wrap="soft" cols="24"></textarea>
-                    </td>
-                    <td width="76" class="TableCell"> 
-                      <input type="submit" name="" value="Details">
+                    <td class="TableCell"><a href="WorkOrder.jsp" class="Link1">67890</a></td>
+                    <td  class="TableCell">05/07/02</td>
+                    <td  class="TableCell">No</td>
+                    <td class="TableCell"> 
+                      <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                     </td>
                   </tr>
                   <tr bgcolor="#FFFFFF"> 
-                    <td width="84" class="TableCell">12345</td>
-                    <td width="61" class="TableCell">05/07/02</td>
-                    <td width="62" class="TableCell">No</td>
-                    <td width="225" class="TableCell"> 
-                      <textarea name="textarea3" rows="2 wrap="soft" cols="24"></textarea>
-                    </td>
-                    <td width="76" class="TableCell"> 
-                      <input type="submit" name="" value="Details">
+                    <td  class="TableCell"><a href="WorkOrder.jsp" class="Link1">12345</a></td>
+                    <td  class="TableCell">05/07/02</td>
+                    <td class="TableCell">No</td>
+                    <td  class="TableCell"> 
+                      <textarea name="textarea3" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                     </td>
                   </tr>
                 </table>

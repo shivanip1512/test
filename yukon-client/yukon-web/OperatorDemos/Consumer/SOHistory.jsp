@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -18,14 +19,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="265" height="28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Customer 
+                <td width="265" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Customer 
                   Account Information</td>
 				<td width="253" valign="middle">&nbsp;</td>  
                 <td width="58" valign="middle"> 
-                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                  <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -100,7 +101,7 @@
                           <tr> 
                             <form name="form2" method="" action="">
                               <td class="TableCell"> 
-                                <textarea name="textarea2" rows="2 wrap="soft" cols="24"></textarea>
+                                <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                               </td>
                             </form>
                           </tr>
@@ -144,7 +145,7 @@
                           <tr> 
                             <form name="form2" method="" action="">
                               <td class="TableCell"> 
-                                <textarea name="textarea3" rows="2 wrap="soft" cols="24"></textarea>
+                                <textarea name="textarea3" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                               </td>
                             </form>
                           </tr>
@@ -159,7 +160,7 @@
                           <tr> 
                             <form name="form2" method="" action="">
                               <td class="TableCell"> 
-                                <textarea name="textarea" rows="2 wrap="soft" cols="24"></textarea>
+                                <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                               </td>
                             </form>
                           </tr>

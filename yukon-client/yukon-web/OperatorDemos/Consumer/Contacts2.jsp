@@ -35,15 +35,15 @@ function saveChanges() {
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -90,14 +90,14 @@ function saveChanges() {
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center">  <%@ include file="InfoSearchBar.jsp" %><br>
-              <span class="Main"><b>ACCOUNT - CONTACTS </b></span><br><br>
+            <div align="center"><% String header = "ACCOUNT - CONTACTS"; %><%@ include file="InfoSearchBar.jsp" %> 
               
+              <br>
 			<form name="form1" method="POST" action="/servlet/UpdateContacts">
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>CONTACT 
-                      (Primary)</b></span> 
+                      (Primary) </b></span> 
                       <hr>
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                         <tr> 
@@ -105,7 +105,7 @@ function saveChanges() {
                             <div align="right">Last Name:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="LastName" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onchange="setChanged()">
+                            <input type="text" name="LastName" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
                           </td>
                         </tr>
                         <tr> 
@@ -113,7 +113,7 @@ function saveChanges() {
                             <div align="right">First Name:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="FirstName" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onchange="setChanged()">
+                            <input type="text" name="FirstName" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
                           </td>
                         </tr>
                         <tr> 
@@ -121,7 +121,7 @@ function saveChanges() {
                             <div align="right">Home #:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onchange="setChanged()">
+                            <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
                           </td>
                         </tr>
                         <tr> 
@@ -129,7 +129,7 @@ function saveChanges() {
                             <div align="right">Work #:</div>
                           </td>
                           <td width="210"> 
-                            <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onchange="setChanged()">
+                            <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
                           </td>
                         </tr>
                       </table>
@@ -139,45 +139,44 @@ function saveChanges() {
                             <span class="MainHeader"><b>CONTACT 2</b></span> 
                             <hr>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-							<tr> 
-							  <td width="90" class="TableCell"> 
-								<div align="right">Last Name:</div>
-							  </td>
-							  <td width="210"> 
-								<input type="text" name="LastName2" maxlength="30" size="24" value="<%= contacts[0].getLastName() %>" onchange="setChanged()">
-							  </td>
-							</tr>
-							<tr> 
-							  <td width="90" class="TableCell"> 
-								<div align="right">First Name:</div>
-							  </td>
-							  <td width="210"> 
-								<input type="text" name="FirstName2" maxlength="30" size="24" value="<%= contacts[0].getFirstName() %>" onchange="setChanged()">
-							  </td>
-							</tr>
-							<tr> 
-							  <td width="90" class="TableCell"> 
-								<div align="right">Home #:</div>
-							  </td>
-							  <td width="210"> 
-								<input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= contacts[0].getHomePhone() %>" onchange="setChanged()">
-							  </td>
-							</tr>
-							<tr> 
-							  <td width="90" class="TableCell"> 
-								<div align="right">Work #:</div>
-							  </td>
-							  <td width="210"> 
-								<input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= contacts[0].getWorkPhone() %>" onchange="setChanged()">
-							  </td>
-							</tr>
-                            </table></td>
+                              <tr> 
+                                <td width="90" class="TableCell"> 
+                                  <div align="right">Last Name:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="LastName2" maxlength="30" size="24" value="<%= contacts[0].getLastName() %>" onChange="setChanged()">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="90" class="TableCell"> 
+                                  <div align="right">First Name:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="FirstName2" maxlength="30" size="24" value="<%= contacts[0].getFirstName() %>" onChange="setChanged()">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="90" class="TableCell"> 
+                                  <div align="right">Home #:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= contacts[0].getHomePhone() %>" onChange="setChanged()">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="90" class="TableCell"> 
+                                  <div align="right">Work #:</div>
+                                </td>
+                                <td width="210"> 
+                                  <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= contacts[0].getWorkPhone() %>" onChange="setChanged()">
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
                         </tr>
                       </table>
                     </td>
-                    <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CONTACT 
-                      3 </b></span> 
-                      <hr>
+                    <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CONTACT 3 </b></span><hr>
                       <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                         <tr> 
                           <td width="90" class="TableCell"> 
@@ -256,8 +255,7 @@ function saveChanges() {
                     </td>
                 </tr>
               </table>
-            </form>
-            </div>
+            </form> </div>
             <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

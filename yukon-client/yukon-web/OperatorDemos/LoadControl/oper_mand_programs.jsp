@@ -24,13 +24,13 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -105,7 +105,7 @@
                     {                    
                 %>
                 <tr class="TableCell"> 
-                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="BlackLink"><%= custs[j].getYukonName() %></a></td>
+                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="Link1"><%= custs[j].getYukonName() %></a></td>
                 </tr>
                 <%
                     }
@@ -130,7 +130,7 @@
                     {                    
                 %>
                 <tr class="TableCell"> 
-                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="BlackLink"><%= custs[j].getYukonName() %></a></td>
+                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getYukonID() %>" class="Link1"><%= custs[j].getYukonName() %></a></td>
                 </tr>
                 <%
                      }

@@ -47,12 +47,15 @@
             <table width="100" border="0" cellspacing="0" cellpadding="6">
               <tr> 
                 <td> 
-                  <p>&nbsp;</p><table width="85" border="0" cellspacing="0" cellpadding="0" align="center">
+                  <table width="85" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr> 
 					<form method="post" action="login.jsp">
                         <td align="center"> 
-                          <p> 
-                            <input type="submit" name="" value="Log In">
+                         
+                             
+                              
+                              <p><span class = "Main"> <a href = "login.jsp" class = "Link3">Log In</a></span>
+                            
                             <br>
                             &nbsp; </p>
                           </td>
@@ -62,7 +65,10 @@
 					<form method="post" action="Wizard1.jsp"> 
                         <td align="center"> 
                           <p> 
-                            <input type="submit" name="" value="Sign Up">
+                             
+                             <p><span class = "Main"><a href = "Wizard1.jsp" class = "Link3">Sign Up</a></span>
+                           
+                              
                             <br>
                             &nbsp; </p>
                           </td>
@@ -80,19 +86,19 @@
               <tr> 
                 <td> 
                   <div align="center"><span class="TableCell2">Savings</span><br>
-                    <img src="$$.gif" width="60" height="59"> </div>
+                    <img src="$$.gif" width="30" height="30"> </div>
                 </td>
               </tr>
               <tr> 
                 <td> 
                   <div align="center"><span class="TableCell2">Percent 
                     of control</span><br>
-                    <img src="Third.gif" width="60" height="59"></div>
+                    <img src="Third.gif" width="30" height="30"></div>
                 </td>
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000">&nbsp;</td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"> <span class="Main"><br>
@@ -270,37 +276,36 @@
                     </td>
                     <td valign="top"> 
                       <table width="280" border="0" cellspacing="0" cellpadding="0">
-                        <tr> 
-                          <td width="107"> 
-                            <table width="80" border="0" cellspacing="0" cellpadding="5">
-                              <tr> 
-                                <td> 
-                                  
+        <tr> 
+          <td width="107"> 
+            <table width="80" border="0" cellspacing="0" cellpadding="5">
+              <tr> 
+                <td> 
                                 <div align="center"><img src="Electric.gif" width="60" height="59"></div>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="center"><img src="$$$.gif" width="60" height="59"></div>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td> 
-                                  <div align="center"><img src="Half.gif" width="60" height="59"></div>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td width="343" valign="top"> 
-                            <p class="TableCell"><b>Electric Heat - ETS</b></p>
-                            <p class="TableCell">Your Electric Thermal Storage 
-                              heating system&#146;s heating elements are interrupted 
-                              on a daily 12-hour on, 12-hour off cycle. The heat 
-                              stored will supply your home needs.</p>
-                          </td>
-                        </tr>
-                      </table>
-                    <hr>
+                </td>
+              </tr>
+              <tr> 
+                <td> 
+                  <div align="center"><img src="$$$.gif" width="60" height="59"></div>
+                </td>
+              </tr>
+              <tr> 
+                <td> 
+                  <div align="center"><img src="Half.gif" width="60" height="59"></div>
+                </td>
+              </tr>
+            </table>
+          </td>
+                        <td width="280" valign="top"> 
+                          <p class="TableCell"><b>Electric Heat - ETS</b></p>
+                          <p class="TableCell">Your Electric Thermal Storage heating system&#146;s 
+                            heating elements are interrupted on a daily 12-hour 
+                            on, 12-hour off cycle. The heat stored will supply 
+                            your home needs.<br>
+                          </p>
+                        </td>
+        </tr>
+      </table><hr>
                       <table width="280" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td width="107"> 

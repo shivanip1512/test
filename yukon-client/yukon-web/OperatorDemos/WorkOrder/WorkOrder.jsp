@@ -18,14 +18,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="BlueHeader">&nbsp;&nbsp;&nbsp;Work Orders</td>
+                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;Work Orders</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 </form>
@@ -48,45 +48,15 @@
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <table width="101" border="0" cellspacing="0" cellpadding="6" height="200">
-              <tr> 
-                <td class="TableCellWhite"><br>
-                  Search:</td>
-              </tr>
-              <tr> 
-                <td> 
-                  <select name="select3">
-                    <option>Serial #</option>
-                    <option>Order #</option>
-                    <option>Address</option>
-                  </select>
-                </td>
-              </tr>
-              <tr> 
-                <td> 
-                  <input type="text" name="textfield3" size="10">
-                </td>
-              </tr>
-              <tr> 
-                <form method="post" action="WorkOrder.jsp">
-                  <td> 
-                    <input type="submit" name="" value="Search">
-                  </td>
-                </form>
-              </tr>
-              <tr> 
-                <td height="20" valign="top" align="center">
-                  <hr>
-                </td>
-              </tr>
-            </table>
-            <div align="center"><span class="TableCellWhite"><br>
-              <a href="SOList.jsp" class="WhiteLink">Back to List</a> </span> </div>
+            <div align="center"><span class="TableCell1"><br>
+              <a href="SOList.jsp" class="Link2">Back to List</a> </span> </div>
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><br>
-              <span class="Main"><b>SERVICE ORDER</b></span><br>
+            <div align="center"> 
+              <% String header = "SERVICE ORDER"; %>
+              <%@ include file="SearchBar.jsp" %>
+              
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr> 
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -136,7 +106,7 @@
                                 <div align="right">Description:</div>
                               </td>
                               <td width="200"> 
-                                <textarea name="textarea" rows="2 wrap="soft" cols="22"></textarea>
+                                <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                               </td>
                             </tr>
                             <tr> 
@@ -157,7 +127,7 @@
                                 <div align="right">Action:</div>
                               </td>
                               <td width="200"> 
-                                <textarea name="textarea2" rows="2 wrap="soft" cols="22"></textarea>
+                                <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                               </td>
                             </tr>
                           </table>
@@ -210,7 +180,7 @@
                               </tr>
                               <tr> 
                                 <td class="TableCell"> 
-                                  <textarea name="textarea3" rows="2 wrap="soft" cols="22"></textarea>
+                                  <textarea name="textarea3" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                                 </td>
                               </tr>
                             </table>

@@ -18,13 +18,13 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -99,7 +99,7 @@
             String link = "oper_mand.jsp?tab=historydetail&prog=" + program.getDeviceId() + "&ref=" + activities[i].getCurtailReferenceId();                        
 	%>
           <tr> 
-            <td width="25%" height="23" class="TableCell"><a href="<%= link %>" class="BlackLink"><%= program.getProgramName() %> </a></td>
+            <td width="25%" height="23" class="TableCell"><a href="<%= link %>" class="Link1"><%= program.getProgramName() %> </a></td>
             <td width="25%" height="23" class="TableCell"><%= mandTimeFormat.format( activities[i].getNotificationDateTime() ) + " " + mandDateFormat.format( activities[i].getNotificationDateTime() ) %></td>
             <td width="25%" height="23" class="TableCell"> <%= mandTimeFormat.format( activities[i].getCurtailmentStartTime() ) + " " + mandDateFormat.format( activities[i].getCurtailmentStartTime() ) %></td>
             <td width="25%" height="23" class="TableCell"><%= activities[i].getDuration() %></td>

@@ -3,6 +3,37 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<script langauge = "JavaScript">
+<!-- 
+function clearText(n) {
+	for (var i=0; i<document.MForm.elements.length; i++) {
+		if (n == document.MForm.elements[i].name){
+			document.MForm.elements[i].value = " ";
+			}}}
+
+function isblur(textBox, buttons) {
+var rButton;
+for (var i = 0; i<buttons.length; i++) {
+	if (buttons[i].value == textBox.name)
+	{
+		rButton = buttons[i];
+		break;}
+	}
+	if (!rButton.checked) {
+		textBox.blur();}	
+}
+
+function checkTemp(n, type) {
+
+if (n.value >10) {
+confirm("Are you sure you would like to " + type + " the temperature " + n.value + " degrees?");
+}
+}
+-->
+</script>
+
+
+
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -22,8 +53,8 @@
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    
-                  <div align="left"></div>
+                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                      Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -70,11 +101,7 @@
                     <div align="center"><b><span class="Main">PROGRAMS - THERMOSTAT</span></b></div>
                   </td>
                   <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+                    
                   </td>
                 </tr>
               </table>
@@ -85,15 +112,16 @@
                   </td>
                 </tr>
               </table>
-              <br>
+              <br><form name="MForm" method="post" action="">
+
               <table width="600" border="0" cellspacing="0">
                   <tr>
                     
                   <td width="107" valign="top" class="Main"><br>
-                    You may select a specific Temp Setpoint (actual temperature) 
-                    or select how many degrees you would like the temperature 
-                    to change by. If pre-cooling, also specify the duration in 
-                    hours. Then click Set.</td>
+                      You may select a specific Temp Setpoint (actual temperature) 
+                      or select how many degrees in one degee increments you would 
+                      like the temperature to change by. If pre-cooling, also 
+                      specify the duration in hours. Then click Set.</td>
                     <td width="489"> 
                       <table width="480" height="275"border="0" cellspacing="0" cellpadding="0" align="center" background="t-stat.jpg">
                         <tr> 
@@ -111,23 +139,23 @@
                                         <table width="185" border="0" cellspacing="0" cellpadding="0" align="center">
                                           <tr> 
                                             <td width="24"> 
-                                              <input type="radio" name="radiobutton" value="radiobutton">
+                                              <input type="radio" name="radiobutton1" value="setPoint" onclick = "clearText('change')" checked>
                                             </td>
                                             <td width="103" class="NavText">Temp 
                                               Setpoint</td>
                                             <td width="38"> 
-                                              <input type="text" name="textfield2" size="4">
+                                              <input type="text" name="setPoint" size="4" onfocus = "isblur(this, document.MForm.radiobutton1)"  >
                                             </td>
                                             <td width="20" class="TableCell">&deg;F</td>
                                           </tr>
                                           <tr> 
                                             <td width="24"> 
-                                              <input type="radio" name="radiobutton" value="radiobutton">
+                                              <input type="radio" name="radiobutton1" value="change"  onclick = "clearText('setPoint')">
                                             </td>
                                             <td width="103" class="NavText">Temp 
                                               Change (+/-)</td>
                                             <td width="38"> 
-                                              <input type="text" name="textfield2" size="4">
+                                              <input type="text" name="change" size="4" onfocus = "isblur(this, document.MForm.radiobutton1)" onchange = "checkTemp(this,'change')" >
                                             </td>
                                             <td width="20" class="TableCell">&deg;F</td>
                                           </tr>
@@ -149,8 +177,8 @@
                                 <td width="54" bgcolor="#CCCCCC" valign="top"> 
                                   <div align="right">
                                     <select name="select2">
-                                      <option>On</option>
                                       <option>Auto</option>
+                                      <option>On</option>
                                       <option>Off</option>
                                     </select>
                                   </div>
@@ -169,21 +197,21 @@
                                   <table width="185" border="0" cellspacing="0" cellpadding="0" align="center">
                                     <tr> 
                                       <td width="24"> 
-                                        <input type="radio" name="radiobutton" value="radiobutton">
+                                        <input type="radio" name="radiobutton"  value = "setPoint2" onclick = "clearText('decrease')" checked >
                                       </td>
                                       <td width="103" class="NavText">Temp Setpoint</td>
                                       <td width="39"> 
-                                        <input type="text" name="textfield3" size="4">
+                                        <input type="text" name="setPoint2" size="4" onfocus = "isblur(this, document.MForm.radiobutton)">
                                       </td>
                                       <td width="19" class="TableCell">&deg;F</td>
                                     </tr>
                                     <tr> 
                                       <td width="24"> 
-                                        <input type="radio" name="radiobutton" value="radiobutton">
+                                        <input type="radio" name="radiobutton" value="decrease" onclick = "clearText('setPoint2')">
                                       </td>
                                       <td width="103" class="NavText">Temp Decrease</td>
                                       <td width="39"> 
-                                        <input type="text" name="textfield22" size="4">
+                                        <input type="text" name="decrease" size="4"onfocus = "isblur(this, document.MForm.radiobutton)" onchange = "checkTemp(this,'decrease')">
                                       </td>
                                       <td width="19" class="TableCell">&deg;F</td>
                                     </tr>
@@ -218,7 +246,7 @@
                       </table>
                     </td>
                   </tr>
-                </table>
+                </table></form>
                 <p align="center" class="Main">&nbsp;</p>
                 </div>
 			

@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <%
 	String invNoStr = request.getParameter("InvNo");
 	int invNo = -1;
@@ -6,6 +7,23 @@
 			invNo = Integer.parseInt(invNoStr);
 		}
 		catch (NumberFormatException e) {}
+
+	StarsLMHardware hardware = null;
+	ArrayList appList = new ArrayList();
+	StarsAppliance[] starsApps = null;
+	
+	if (invNo >= 0) {
+		hardware = inventories.getStarsLMHardware(invNo);
+		
+		for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+			StarsAppliance app = appliances.getStarsAppliance(i);
+			if (app.getInventoryID() == hardware.getInventoryID())
+				appList.add(app);
+		}
+	}
+	
+	starsApps = new StarsAppliance[ appList.size() ];
+	appList.toArray( starsApps );
 %>
 
 <html>
@@ -28,15 +46,15 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -57,29 +75,10 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "Inventory.jsp?InvNo=" + invNoStr; %>
-          <%@ include file="Nav.jsp" %>
-<%	
-	// Header files have already been included in Nav.jsp
-	StarsLMHardware hardware = null;
-	ArrayList appList = new ArrayList();
-	StarsAppliance[] starsApps = null;
-	
-	if (invNo >= 0) {
-		hardware = inventories.getStarsLMHardware(invNo);
-		
-		for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-			StarsAppliance app = appliances.getStarsAppliance(i);
-			if (app.getInventoryID() == hardware.getInventoryID())
-				appList.add(app);
-		}
-	}
-	
-	starsApps = new StarsAppliance[ appList.size() ];
-	appList.toArray( starsApps );
-%>
-		  </td>
+          <td  valign="top" width="101"> 
+            <% String pageName = "Inventory.jsp?InvNo=" + invNoStr; %>
+            <%@ include file="Nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "HARDWARE - " + Mappings.getLMHardwareName(hardware.getLMDeviceType()); %><%@ include file="InfoSearchBar.jsp" %>
@@ -176,7 +175,7 @@
                                 <div align="right">Notes: </div>
                               </td>
                               <td width="200"> 
-                                <textarea name="Notes" rows="2 wrap="soft" cols="24"><%= hardware.getNotes() %></textarea>
+                                <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
                               </td>
                             </tr>
                           </table>
@@ -225,7 +224,7 @@
                                 <div align="right">Notes: </div>
                               </td>
                               <td width="200"> 
-                                <textarea name="notes" rows="2 wrap="soft" cols="24"></textarea>
+                                <textarea name="notes" rows="3 wrap="soft" cols="28" class = "TableCell"></textarea>
                               </td>
                             </tr>
                           </table>
@@ -241,18 +240,18 @@
                       <td width="104" class="HeaderCell">Date</td>
                       <td width="100" class="HeaderCell">Action</td>
                     </tr>
+<%
+	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
+	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
+%>
                     <tr valign="top"> 
-                      <td width="104" class="TableCell" bgcolor="#FFFFFF">11/02/99</td>
-                      <td width="100" class="TableCell" bgcolor="#FFFFFF">Install</td>
+                      <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= dateFormat.format(event.getEventDateTime()) %></td>
+                      <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
                     </tr>
-                    <tr valign="top"> 
-                      <td width="104" class="TableCell" bgcolor="#FFFFFF">07/30/00</td>
-                      <td width="100" class="TableCell" bgcolor="#FFFFFF">Reconfigure</td>
-                    </tr>
-                    <tr valign="top"> 
-                      <td width="104" class="TableCell" bgcolor="#FFFFFF">04/05/01</td>
-                      <td width="100" class="TableCell" bgcolor="#FFFFFF">Repair</td>
-                    </tr>
+<%
+	}
+%>
                   </table>
                   </td>
               </tr>
@@ -260,16 +259,19 @@
             <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
               <tr> 
                 <form name="form1" type="get" action="LCR5000.jsp">
-                  <td width="186"> 
+                  <td width="50%"> 
                     <div align="right"> 
                       <input type="submit" name="Submit2" value="Submit">
                     </div>
                   </td>
+                  <td width="194">
+                    <input type="reset" name="Cancel2" value="Cancel">
+                  </td>
                 </form>
                 <form name="form1">
                   <td width="194"> 
-                    <div align="left"> 
-                      <input type="reset" name="Cancel2" value="Cancel">
+                    <div align="left">
+                      <input type="button" name="Submit" value="Delete">
                     </div>
                   </td>
                 </form>
@@ -312,11 +314,10 @@
 		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= Mappings.getApplianceName(starsApps[i].getStarsApplianceCategory().getCategory()) %></td>
+                  <td width="104" class="TableCell"> <%= Mappings.getApplianceName(starsApps[i].getApplianceCategory()) %></td>
                   <td width="100" class="TableCell"> In Service</td>
                   <td width="120"> 
-                    <div align="center">
-					  <img src="<%= Mappings.getApplianceImage(starsApps[i].getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+                    <div align="center"> <img src="<%= Mappings.getApplianceImage(starsApps[i].getApplianceCategory()) %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>

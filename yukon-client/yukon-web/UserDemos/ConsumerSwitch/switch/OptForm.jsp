@@ -29,7 +29,8 @@ function MM_popupMsg(msg) { //v1.0
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"></div>
+                  <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                    Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -50,58 +51,53 @@ function MM_popupMsg(msg) { //v1.0
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-			<% String pageName = "Features.jsp"; %>
-            <%@ include file="Nav.jsp" %>
+		  <% String pageName = "Features.jsp"; %>
+          <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
-          
+
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              <div align="center"><br>
-              <table width="600" border="0" cellspacing="0">
-                <tr> 
-                  <td width="202"> 
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr> 
+              <div align="center"> 
+                <br>
+                
+              <div align="center"> 
+                <table width="600" border="0" cellspacing="0">
+                  <tr> 
+                    <td width="202"> 
+                      <table width="200" border="0" cellspacing="0" cellpadding="3">
+                        <tr> 
                         <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
                           <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                           <%= account.getCompany() %><br>
                           <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
                           <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
                           <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">OPT OUT OR CHANGE 
-                      PROGRAM </span></b></div>
-                  </td>
-                  <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
-                  </td>
-                </tr>
-              </table>
-              <table width="600" border="0" cellpadding="0" cellspacing="0">
-                <tr> 
-                  <td> 
-                    <hr>
-                  </td>
-                </tr>
-              </table>
-              <br>
-                <div align="center"> 
-                  
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="187" valign="top"> 
+                      <div align="center"><b><span class="Main">OPT OUT</span></b></div>
+                    </td>
+                    <td valign="top" width="205"> 
+                    
+                    </td>
+                  </tr>
+                </table>
+                <table width="600" border="0" cellpadding="0" cellspacing="0">
+                  <tr> 
+                    <td> 
+                      <hr>
+                    </td>
+                  </tr>
+                </table>
                 <p class="Main">Please complete the following form to opt out 
-                  of or change your program:</p>
+                  of your program:</p>
                   <hr>
-				  <form method="post" action="Features.jsp"> 
+				            <form method="post" action="OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 
-                        <p>Reason for opting out of or changing your program:</p>
+                        <p>Reason for opting out of your program:</p>
                       </td>
                     </tr>
                     <tr> 
@@ -144,17 +140,15 @@ function MM_popupMsg(msg) { //v1.0
                     </tr>
                   </table>
                   <p align="center"> 
-                    <input type="submit" name="Submit" value="Submit" onClick="MM_popupMsg('You will not receive a discount for this program during this time.  Are you sure you want to opt out of or change this program?')">
-                    </form>
-					<form method="post" action="Features.jsp"> 
-					<input type="submit" name="" value="Cancel">
-					</form>
-                    <br>
+                    <input type="submit" name="Submit" value="Submit">
+                    <input type="submit" name="Input" value="Cancel">
+                </form>
+				  <br>
                 </div>
                 </div>
 			
           </td>
-		  
+
 		  
         <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
     </tr>
@@ -163,6 +157,6 @@ function MM_popupMsg(msg) { //v1.0
     </td>
 	</tr>
 </table>
-<p align="center" class="TableCell2">&nbsp;</p>
+<div align="center"></div>
 </body>
 </html>

@@ -10,7 +10,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="java.util.Iterator" %>
-<%@ taglib uri="/WEB-INF/lib/jruntags.jar" prefix="jrun" %>
+<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%
    String pending = request.getParameter("pending");
    
@@ -109,15 +109,15 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height = "28" class="BlueHeader">&nbsp;&nbsp;&nbsp;Load 
+                <td width="253" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
                   Control</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -143,7 +143,7 @@
               <tr> 
                 <td height="20" valign="top"> 
                   <div align="left"> 
-                    <p align="center" class="TableCellWhite"><b><a href="switch_commands.jsp" class="WhiteLink"><br>
+                    <p align="center" class="TableCell1"><b><a href="switch_commands.jsp" class="Link2"><br>
                       Individual Switch Commands</a></b></p>
                   </div>
                 </td>
@@ -216,7 +216,7 @@
                     <tr> 
                       <td width="150" class="TableCell"> 
                         <center>
-                          <a href="<%= actionUrl %>" class="BlackLink"><%= sched.getScheduleName() %></a> 
+                          <a href="<%= actionUrl %>" class="Link1"><%= sched.getScheduleName() %></a> 
                         </center>
                       </td>
                       <td width="150" class="TableCell"> 
@@ -267,7 +267,7 @@
                     <tr> 
                       <td width="25%" class="TableCell">
                         <center>
-                          <a href="<%= actionURI %>" class="BlackLink"><%= p.getYukonName() %></a>
+                          <a href="<%= actionURI %>" class="Link1"><%= p.getYukonName() %></a>
                         </center>
                       </td>
                       <td width="25%" class="TableCell">

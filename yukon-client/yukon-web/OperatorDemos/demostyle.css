@@ -1,23 +1,23 @@
-a.BlackLink:active {color: #000000}
-a.BlackLink:visited {color: #000000}
-a.BlackLink:link {color: #000000}
-a.BlackLink:hover {color: #000000}
-a.WhiteLink:active {color: #FFFFFF}
-a.WhiteLink:visited {color: #FFFFFF}
-a.WhiteLink:link {color: #FFFFFF}
-a.WhiteLink:hover {color: #FFFFFF}
-a.blueLink:active {color: #99FFFF}
-a.blueLink:visited {color: #99FFFF}
-a.blueLink:link {color: #99FFFF}
-a.blueLink:hover {color: #99FFFF}
+a.Link1:active {color: #000000}
+a.Link1:visited {color: #000000}
+a.Link1:link {color: #000000}
+a.Link1:hover {color: #000000}
+a.Link2:active {color: #FFFFFF}
+a.Link2:visited {color: #FFFFFF}
+a.Link2:link {color: #FFFFFF}
+a.Link2:hover {color: #FFFFFF}
+a.Link3:active {color: #99FFFF}
+a.Link3:visited {color: #99FFFF}
+a.Link3:link {color: #99FFFF}
+a.Link3:hover {color: #99FFFF}
 .Header {  font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #FFFFFF}
 .HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; color: #000000; background-color: #CCCCCC}
-.TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000}
-.TableCellWhite {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF}
+.TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000; background-color: #FFFFFF}
+.TableCell1 {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF}
 .Main {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
 .MainHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000}
-.YellowHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFCC66; font-style: italic}
-.BlueHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #99FFFF; font-style: italic}
+.Header2 {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFCC66; font-style: italic}
+.Header3 {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #99FFFF; font-style: italic}
 .NavText {  font-family: Arial, Helvetica, sans-serif; font-size: 9px}
-.NavBlue {  font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #99FFFF}
+.Nav {  font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #99FFFF}
 .Background {  background-color: #666699}

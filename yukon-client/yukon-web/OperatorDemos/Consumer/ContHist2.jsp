@@ -18,14 +18,14 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="265" height="28"><span class="BlueHeader">&nbsp;&nbsp;&nbsp;Customer 
+                <td width="265" height="28"><span class="Header3">&nbsp;&nbsp;&nbsp;Customer 
                   Account Information</span></td>
 				<td width="253" valign="middle">&nbsp;</td>  
                 <td width="58" valign="middle"> 
-                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                  <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                  <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>

@@ -45,14 +45,14 @@ System.out.println("revisionNumber: " + revisionNumber);
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="BlueHeader">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
                 <td width="235"  height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 
@@ -140,7 +140,7 @@ System.out.println("revisionNumber: " + revisionNumber);
 				totalCommitted += reply.getAmountCommitted();
 			%>
           <tr> 
-            <td class="TableCell"><a href="oper_ee.jsp?tab=historyresponse&prog=<%= programId %>&offer=<%= offerId %>&rev=<%= revisionNumber %>&cust=<%= customers[j].getCustomerId() %>" class="BlackLink"> 
+            <td class="TableCell"><a href="oper_ee.jsp?tab=historyresponse&prog=<%= programId %>&offer=<%= offerId %>&rev=<%= revisionNumber %>&cust=<%= customers[j].getCustomerId() %>" class="Link1"> 
               <%= customers[j].getCustomerName() %> </a></td>
             <td class="TableCell"><%= reply.getAcceptStatus() %></td>
             <td class="TableCell"><%= numberFormat.format( reply.getAmountCommitted() ) %></td>

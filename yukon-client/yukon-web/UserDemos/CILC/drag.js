@@ -7,7 +7,7 @@ cr:constraint on right
 cl:contraint on left
 f:function to be called each time mouse is moved
 direction: specify 'horizontal' or 'vertical' depending on the direction 
-offset:not used at this time*/
+*/
 
 function beginDrag(event,ct, cb, cr, cl, offset, f, direction) {
 

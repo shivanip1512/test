@@ -95,10 +95,9 @@
                
                 <table width="42%" border="0">
                   <tr>
-                    <td width="8%"><span class = "TableCell"><img src="disconnect" width="40" height="65"></span></td>
+                    <td width="8%"><span class = "TableCell"><img src="disconnect" width="48" height="65"></span></td>
                     <td width="92%"><span class = "TableCell">*A disconnect box 
-                      is located on the outside of the house and allows you to 
-                      shut down the air conditioner.</span></td>
+                      is located on the outside of the house.</span></td>
                   </tr>
                 </table>
                 <br><table width="150" border="0" cellspacing="0" cellpadding="0">

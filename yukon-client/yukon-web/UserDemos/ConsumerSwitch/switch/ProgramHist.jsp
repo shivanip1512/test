@@ -17,15 +17,14 @@
               <tr> 
                 <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
               </tr>
-              <tr> 
-                <form method="get" action="">
-                  <td width="265" height="28">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle">&nbsp;</td>
-                  <td width="57" valign="middle"> 
-                    <div align="left"></div>
-                  </td>
-                </form>
+              <tr>
+			    <td width="265" height="28">&nbsp;</td> 
+                <td width="253" valign="middle">&nbsp;</td>
+                <td width="58" valign="middle">&nbsp;</td>
+                <td width="57" valign="middle"> 
+                  <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                    Off</a>&nbsp;</span></div>
+                </td>
               </tr>
             </table>
           </td>
@@ -70,11 +69,7 @@
                       SUMMARY </span></b></div>
                   </td>
                   <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+               
                   </td>
                 </tr>
               </table>
@@ -88,17 +83,19 @@
               <table width="200" border="1" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td height="58" bgcolor="#CCCCCC"> 
-                    <p align="center" class="TableCell"><i>Today's odds for control?</i><br>
+                    <p align="center" class="TableCell3">Today's odds for control?<br>
                       <b>Unlikely<br>
-                      </b> Last updated <font face="Arial, Helvetica, sans-serif" size="1">
+                      </b>
                       <script language="JAVASCRIPT" type="TEXT/JAVASCRIPT">
 	<!-- Hide script from old browsers
 
-	document.write("Last Updated: " + dayName[now.getDay()] + ", " + monName[now.getMonth()] + " " + now.getDate() + ",")
+	var now = new Date();
+	monName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	document.write("Last Updated: "  + monName[now.getMonth()]+ " " + now.getDate()+ ", "  + now.getYear())
 
 	// End hiding script from old browsers -->
 </script>
-                      </font>08:00 AM</p>
+                      <b>08:00 AM</b></p>
                     
                   </td>
                 </tr>
@@ -138,7 +135,7 @@
                 <tr bgcolor="#FFFFFF"> 
                   <td width="162"> 
                     <div align="center">
-					  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
+					  <img src="../<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>

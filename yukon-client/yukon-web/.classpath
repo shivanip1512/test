@@ -3,10 +3,19 @@
     <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
     <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
     <classpathentry kind="var" path="TOMCAT_HOME/lib/jasper-runtime.jar"/>
-    <classpathentry kind="src" path="WEB-INF/src"/>
     <classpathentry kind="src" path="work"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/servlet"/>
     <classpathentry kind="src" path="/loadcontrol"/>
+    <classpathentry kind="src" path="/stars"/>
+    <classpathentry kind="src" path="/trending"/>
+    <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+    <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
+    <classpathentry kind="lib" path="/third-party/classes12.jar"/>
+    <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
+    <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
+    <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="output" path="WEB-INF\classes"/>
 </classpath>

@@ -46,7 +46,7 @@
                   <p align="center" class="Main"><b>Sign In</b></p>
                 </td>
                 <td width="243"> 
-                  <div align="center"><img src="CinLogo.gif" width="148" height="35"></div>
+                  <div align="center"><img src="YourLogo.gif" width="202" height="58"></div>
                 </td>
               </tr>
             </table>
@@ -114,7 +114,7 @@
                   <p><table width="130" border="0" cellspacing="0" cellpadding="3">
                     <tr>
                       <td>
-                        <div align="center" class="Main">
+                        <div align="center" class="TableCell">
                           Brought to you by:
                         </div>
                       </td>

@@ -45,7 +45,7 @@
                     Sign In</b></p>
                   </td>
                 <td width="179"> 
-                  <div align="center"><img src="CinLogo.gif" width="148" height="35"></div>
+                  <div align="center"><img src="YourLogo.gif" width="202" height="58"></div>
                 </td>
               </tr>
             </table>

@@ -121,13 +121,13 @@ function jumpPage(form)
                     <table width="280" border="2" cellspacing="0" cellpadding="3">
                       <tr bgcolor="#CCCCCC"> 
                         <form method="GET" action="user_trending.jsp" name="MForm">
-                          <td width="108" class="TableCell">Start Date:<br>
+                          <td width="108" class="TableCell3">Start Date:<br>
                             <input type="text" name="start" value="<%= datePart.format(saveStart) %>" size="8">
                             <a href="javascript:show_calendar('MForm.start')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                           </td>
-                          <td width="75" class="TableCell">Time Period:<br>
+                          <td width="75" class="TableCell3">Time Period:<br>
                             <select name="period">
                               <% /* Fill in the period drop down and attempt to match the current period
                  with one of the options */                           

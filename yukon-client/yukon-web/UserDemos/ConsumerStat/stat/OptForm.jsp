@@ -25,12 +25,12 @@ function MM_popupMsg(msg) { //v1.0
                 <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-				  <td width="265" height="28">&nbsp;</td>
-                  <td width="253" valign="middle">&nbsp;</td>
+                  <td width="265" height="28">&nbsp;</td>
+				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    
-                  <div align="left"></div>
+                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                      Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -51,8 +51,8 @@ function MM_popupMsg(msg) { //v1.0
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-		  <% String pageName = "Features.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+            <% String pageName = "OptOut.jsp"; %>
+            <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
 
@@ -76,15 +76,10 @@ function MM_popupMsg(msg) { //v1.0
                       </table>
                     </td>
                     <td width="187" valign="top"> 
-                      <div align="center"><b><span class="Main">OPT OUT OR CHANGE 
-                        PROGRAM </span></b></div>
+                      <div align="center"><b><span class="Main">OPT OUT</span></b></div>
                     </td>
                     <td valign="top" width="205"> 
-                      <form name="form2" method="post" action="../../../login.jsp">
-                        <div align="right"> 
-                          <input type="submit" name="Log Off" value="Log Off">
-                        </div>
-                      </form>
+                     
                     </td>
                   </tr>
                 </table>
@@ -96,13 +91,13 @@ function MM_popupMsg(msg) { //v1.0
                   </tr>
                 </table>
                 <p class="Main">Please complete the following form to opt out 
-                  of or change your program:</p>
+                  of your program:</p>
                   <hr>
-				            <form method="post" action="Features.jsp">
+				            <form method="post" action="OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 
-                        <p>Reason for opting out of or changing your program:</p>
+                        <p>Reason for opting out of your program:</p>
                       </td>
                     </tr>
                     <tr> 
@@ -145,12 +140,10 @@ function MM_popupMsg(msg) { //v1.0
                     </tr>
                   </table>
                   <p align="center"> 
-                    <input type="submit" name="Submit" value="Submit" onClick="MM_popupMsg('You will not receive a discount for this program during this time.  Are you sure you want to opt out of or change this program?')">
-                  </form>
-				  <form method="post" action="Features.jsp">
-					<input type="submit" name="" value="Cancel">
-				  </form>	
-                    <br>
+                    <input type="submit" name="Submit" value="Submit">
+                    <input type="submit" name="Input" value="Cancel">
+                </form>
+				  <br>
                 </div>
                 </div>
 			

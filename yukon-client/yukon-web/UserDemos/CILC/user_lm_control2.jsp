@@ -329,7 +329,7 @@ function MM_popupMsg(msg) { //v1.0
                                                 <input type="radio" name="radiobutton" value="today">
                                             </td>
                                           </tr>
-                                          <tr class = "TableCell" align = "center"> 
+                                          <tr class = "TableCell3" align = "center"> 
                                               <td width="31%" valign = "top">On</td>
                                               <td width="33%" valign = "top">Off</td>
                                               <td width="36%">Today Only</td>

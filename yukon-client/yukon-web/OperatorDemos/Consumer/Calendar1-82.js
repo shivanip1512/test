@@ -20,7 +20,7 @@ Version: v1.82
 # notify Softricks.com and verify the licensing terms.
 #
 # Distributed under the GNU Lesser General Public License (GNU LGPL).
-# For more information visit: http://www.gnu.org/copyleft/lesser.jsp
+# For more information visit: http://www.gnu.org/copyleft/lesser.html
 #
 # Visit the website for more information on Softricks.com's Copyright, 
 # Privacy, Disclaimer and Terms of use policies.
@@ -963,7 +963,7 @@ function Calendar_CreateCalendarLayer(pLeft, pTop, pInitText) {
 
 function Calendar_Lwwrite(pText, pINLINE) {
 	if (isIE) {
-		document.all[pINLINE].innerhtml = pText;
+		document.all[pINLINE].innerHTML = pText;
 	} else if (isDOM) {
 		rng = document.createRange();
 		el = document.getElementById(pINLINE);
@@ -982,7 +982,7 @@ function Calendar_Lwwrite(pText, pINLINE) {
 function Calendar_MoveTo(pX, pY, pINLINE) {
 	if (isIE) {
 		document.all[pINLINE].style.top = pY;
-		document.all[pINLINE].style.left = pX; 
+		document.all[pINLINE].style.left = pX;
 	} else if (isDOM) {
 		document.getElementById(pINLINE).style.top = pY;
 		document.getElementById(pINLINE).style.left = pX;

@@ -1,3 +1,4 @@
+<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -27,15 +28,15 @@ function copyAddress(form) {
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -134,7 +135,7 @@ function copyAddress(form) {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="AcctNotes" rows="2 wrap="soft" cols="22"><%= account.getAccountNotes() %></textarea>
+                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getAccountNotes() %></textarea>
                         </td>
                       </tr>
                     </table>
@@ -246,7 +247,7 @@ function copyAddress(form) {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="PropNotes" rows="2 wrap="soft" cols="22"><%= account.getPropertyNotes() %></textarea>
+                          <textarea name="PropNotes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= account.getPropertyNotes() %></textarea>
                         </td>
                       </tr>
                     </table>
@@ -314,7 +315,7 @@ function copyAddress(form) {
                   </td>
                   <td width="194"> 
                     <div align="left"> 
-                      <input type="button" name="Cancel2" value="Cancel" onclick="document.URL='/OperatorDemos/Operations.jsp'">
+                      <input type="reset" name="Cancel2" value="Cancel">
                     </div>
                   </td>
               </tr>

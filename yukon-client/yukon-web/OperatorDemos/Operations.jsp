@@ -14,7 +14,7 @@
         </tr>
         <tr>
           <form name="form2" method="post" action="/login.jsp"><td>
-                      <div align="right"><span class="Main"><a href="/login.jsp" class="blueLink">Log 
+                      <div align="right"><span class="Main"><a href="/login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                     </td></form>
         </tr>
@@ -74,31 +74,21 @@
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="MeteringHeader.gif" width="161" height="15"><br>
       <table width="500" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
-          <td width="66">&nbsp;</td>
-          <td width="181">&nbsp;</td>
-          <td width="335"><font face="Arial, Helvetica, sans-serif" size="1">Search 
-            for Trend:</font></td>
+          <td width="81">&nbsp;</td>
+          <td width="407">&nbsp;</td>
         </tr>
         <tr> 
           <form method="post" action="Metering/Billing.jsp">
-            <td width="66"> 
+            <td width="81"> 
               <input type="submit" name="" value="Billing">
             </td>
           </form>
           <form method="post" action="Metering/Metering.jsp">
-            <td width="181"> 
+            <td width="407"> 
               <input type="submit" name="" value="All Trends">
             </td>
           </form>
           <form method="get" action="Metering/Metering.jsp">
-            <td width="335"> 
-              <select name="select3">
-                <option>Acct #12345</option>
-                <option>Acct #67890</option>
-              </select>
-              &nbsp; 
-              <input type="submit" name="Searchg" value="Search">
-            </td>
           </form>
         </tr>
       </table>
@@ -112,14 +102,13 @@
   </tr>
   <tr> 
     <td width="102" height="102" background="LoadImage.jpg">&nbsp;</td>
-    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="LoadHeader.gif" width="103" height="15"><br>
+    <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="LoadHeader.gif"><br>
       <table width="500" border="0" cellspacing="0" cellpadding="3" align="center">
         <tr> 
           <td width="61">&nbsp;</td>
           <td width="110">&nbsp;</td>
           <td width="201">&nbsp;</td>
-          <td width="204"><font face="Arial, Helvetica, sans-serif" size="1">Today's 
-            Odds for Control:</font></td>
+          <td width="204" class="TableCell">Today's Odds for Control:</td>
         </tr>
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
@@ -137,10 +126,13 @@
               <input type="submit" name="" value="Buy Back">
             </td>
           </form>
-          <td width="204"> 
-            <input type="submit" name="Likely" value="Likely">
-            &nbsp; 
-            <input type="submit" name="Unlikely" value="Unlikely">
+          <td width="204" class="TableCell"> 
+            <form name="form1" method="post" action="">
+              <input type="radio" name="radiobutton" value="radiobutton" checked>
+              Likely&nbsp;&nbsp; 
+              <input type="radio" name="radiobutton" value="radiobutton">
+              Unlikely 
+            </form>
           </td>
         </tr>
       </table>

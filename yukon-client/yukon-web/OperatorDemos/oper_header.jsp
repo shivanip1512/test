@@ -2,7 +2,7 @@
 <%@ page import="com.cannontech.database.data.web.Operator" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
-<%@ taglib uri="/WEB-INF/lib/jruntags.jar" prefix="jrun" %>
+<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>

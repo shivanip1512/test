@@ -22,7 +22,8 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"></div>
+                  <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                    Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -67,11 +68,7 @@
                       HISTORY </span></b></div>
                   </td>
                   <td valign="top" width="205"> 
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> 
-                        <input type="submit" name="Log Off" value="Log Off">
-                      </div>
-                    </form>
+                  
                   </td>
                 </tr>
               </table>

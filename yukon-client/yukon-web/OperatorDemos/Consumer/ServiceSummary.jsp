@@ -1,3 +1,11 @@
+<%@ include file="StarsHeader.jsp" %>
+<%
+	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute("SERVICE_HISTORY");
+	if (getServHistResp == null) {
+		response.sendRedirect("/servlet/SOAPClient?action=GetServiceHistory"); return;
+	}
+%>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -18,15 +26,15 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -54,49 +62,35 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
               <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="InfoSearchBar.jsp" %><br>
-              <br>
-            
-            </div>
-                
-              <table width="550" border="1" cellspacing="0" cellpadding="3" align="center">
-                <tr> 
-                  <td width="62" class="HeaderCell">Order # </td>
-                    <td width="100" class="HeaderCell">Date/Time</td>
-                    <td width="116" class="HeaderCell">Action</td>
-                    <td width="56" class="HeaderCell">Status</td>
-                    <td width="174" class="HeaderCell">Notes</td>
-                  </tr>
-                  <tr valign="top"> 
-                    <form name="form3" method="get" action="SOHistory.jsp">
-                      <td width="62" class="TableCell">12345<br>
-                        <input type="submit" name="Details" value="Details">
-                        </td>
-                    </form>
-                    <td width="100" class="TableCell">04/02/02 12:32</td>
-                    <td width="116" class="TableCell">Temporary Disabled</td>
-                    <td width="56" class="TableCell">Complete</td>
-                    <form name="form4" method="" action="">
-                      <td width="174"> 
-                        <textarea name="textarea" rows="2 wrap="soft" cols="24"></textarea>
-                      </td>
-                    </form>
-                  </tr>
-                  <tr valign="top"> 
-                    <form name="form3" method="get" action="SOHistory.jsp">
-                      <td width="62" class="TableCell">67890<br>
-                        <input type="submit" name="Details2" value="Details">
-                        </td>
-                    </form>
-                    <td width="100" class="TableCell">03/14/02 14:46 </td>
-                    <td width="116" class="TableCell">Future Activation </td>
-                    <td width="56" class="TableCell">Complete</td>
-                    <form name="form4" method="" action="">
-                      <td width="174"> 
-                        <textarea name="textarea" rows="2 wrap="soft" cols="24"></textarea>
-                      </td>
-                    </form>
-                  </tr>
-                </table>
+              </div>
+              
+            <table width="500" border="1" cellspacing="0" cellpadding="3" align="center">
+              <tr> 
+                <td width="50" class="HeaderCell">Order # </td>
+                <td width="55" class="HeaderCell">Date/Time</td>
+                <td width="51" class="HeaderCell">Type</td>
+                <td width="49" class="HeaderCell">Status</td>
+                <td width="55" class="HeaderCell">By Who</td>
+                <td width="164" class="HeaderCell">Desription</td>
+              </tr>
+<%
+	for (int i = 0; i < getServHistResp.getStarsServiceRequestHistoryCount(); i++) {
+		StarsServiceRequestHistory servHist = getServHistResp.getStarsServiceRequestHistory(i);
+%>
+              <tr valign="top"> 
+                <td width="50" class="TableCell"><a href="SOHistory.jsp" class="Link1"><%= servHist.getOrderNumber() %></a></td>
+                <td width="55" class="TableCell"><%= histDateFormat.format(servHist.getDateAssigned()) %></td>
+                <td width="51" class="TableCell"><%= servHist.getServiceType().getContent() %></td>
+                <td width="49" class="TableCell"><%= servHist.getCurrentState().getContent() %></td>
+                <td width="55" class="TableCell">&nbsp;</td>
+				<td width="164"> 
+				  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"><%= servHist.getDescription() %></textarea>
+				</td>
+              </tr>
+<%
+	}
+%>
+            </table>
               <p>&nbsp;</p>
                 </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

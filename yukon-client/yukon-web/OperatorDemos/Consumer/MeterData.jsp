@@ -1,6 +1,6 @@
-<html>
-<%@ include file="../oper_header.jsp" %>
+<%@ include file="StarsHeader.jsp" %>
 <%@ include file="../oper_trendingheader.jsp" %>
+<html>
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <head>
 <title>Energy Services Operations Center</title>
@@ -78,15 +78,15 @@ function jumpPage(form)
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                  <td width="265" height = "28" class="BlueHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   
                 <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="blueLink">Home</a></span></div>
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="blueLink">Log 
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -130,7 +130,7 @@ function jumpPage(form)
                     <form method="GET" action="../Consumer/MeterData.jsp" name="MForm">
                         <td width="98"> <font face="Arial, Helvetica, sans-serif" size="1">Start 
                           Date:</font><br>
-                          <input type="text" name="start" value="<%= datePart.format(saveStart) %>" size="8">
+                          <input type="text" name="start" value="<%= dateFormat.format(saveStart) %>" size="8">
                           <a href="javascript:show_calendar('MForm.start')"
 						onMouseOver="window.status='Pop Calendar';return true;"
 						onMouseOut="window.status='';return true;"> <img src="../Consumer/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
@@ -165,21 +165,21 @@ function jumpPage(form)
                   <table width="338" valign="top" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td width="84" valign="top"> 
-                        <form method="Get" action="/OperatorDemos/Consumer/MeterData.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self">
+                        <form method="Get" action="/OperatorDemos/Consumer/MeterData.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateTimeFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self">
 						<div align="center">
                         <input type="submit" name="tab" value="Graph">
 						</div>
                       </form>
 					  </td>
                       <td width="58" valign="top"> 
-                        <form method="Get" action="/OperatorDemos/Consumer/MeterData.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self">
+                        <form method="Get" action="/OperatorDemos/Consumer/MeterData.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateTimeFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self">
 						<div align="center">
                         <input type="submit" name="tab" value="Tab">
 						</div>
                       </form>
                       </td>
                       <td width="119" valign="top"> 
-                        <form method="Get" action="/OperatorDemos/Consumer/MeterData.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=summary&page=1&model=" + modelType %>" target="_self">
+                        <form method="Get" action="/OperatorDemos/Consumer/MeterData.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateTimeFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=summary&page=1&model=" + modelType %>" target="_self">
 						<div align="center">
                         <input type="submit" name="tab" value="Summary">
 						</div>
@@ -201,7 +201,7 @@ tot = siteopt.length;
         document.write("<OPTION value=" +siteopt[i]+ ">" +userFriendlyName[i]+ "</OPTION>");
 document.writeln('</SELECT>');
 document.writeln('<INPUT TYPE="hidden" NAME="gdefid" VALUE="<%=graphDefinitionId%>">');
-document.writeln('<INPUT TYPE="hidden" NAME="start" VALUE="<%=dateFormat.format(saveStart) %>">');
+document.writeln('<INPUT TYPE="hidden" NAME="start" VALUE="<%=dateTimeFormat.format(saveStart) %>">');
 document.writeln('<INPUT TYPE="hidden" NAME="period" VALUE="<%=period%>">');
 document.writeln('<INPUT TYPE="hidden" NAME="tab" VALUE="<%=tab %>">');
 document.writeln('<INPUT TYPE="hidden" NAME="model" VALUE="<%=modelType %>">');
@@ -232,20 +232,20 @@ document.writeln('</FORM>');
              if( tab.equalsIgnoreCase("summary") )
              {
               %>
-            <%@ include file="/../trendingsummary.jsp" %>
+            <%@ include file="../../trendingsummary.jsp" %>
             <%
              }
              else
              if( tab.equalsIgnoreCase("tab") )
              {
               %>
-            <%@ include file="/../trendingtabular.jsp" %>
+            <%@ include file="../../trendingtabular.jsp" %>
             <%
              }
              else // "graph" is default
              {
               %>
-            <img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=556&height=433&format=gif&start=" + dateFormat.format(start) + "&end=" + dateFormat.format(stop)+ "&model=" + modelType%>" width="556" height="433"> 
+            <img src="/servlet/GraphGenerator?<%="db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&width=556&height=433&format=gif&start=" + dateTimeFormat.format(start) + "&end=" + dateTimeFormat.format(stop)+ "&model=" + modelType%>" width="556" height="433"> 
             <%
              }
           %>
