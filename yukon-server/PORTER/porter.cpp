@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2004/07/27 16:41:35 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2004/08/11 19:54:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2005,7 +2005,7 @@ bool processInputFunction(CHAR Char)
         }
     case 0x71:              // alt-q
         {
-            PortManager.apply( applyPortQueueReport, NULL );
+            PortManager.apply( applyPortQueueReport, (void*)1 );
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
