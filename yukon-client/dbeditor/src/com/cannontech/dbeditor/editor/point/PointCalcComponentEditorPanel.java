@@ -252,39 +252,40 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 
 public void functionComboBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 
-	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+	if(getOperationFunctionComboBox().getModel().getSize() > 0)
 	{
-		getSelectBaselineComboBox().removeAllItems();
-		
-		for(int i = 0; i < getBasilHolder().size(); i++)
+		if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
 		{
-			getSelectBaselineComboBox().addItem(getBasilHolder().elementAt(i));
-		}
-		getSelectBaselineComboBox().setVisible(true);
+			getSelectBaselineComboBox().removeAllItems();
 		
-		if(currentlyMappedBaselineID != null)
-		{
-			for(int j = 0; j < getBasilHolder().size(); j++)
+			for(int i = 0; i < getBasilHolder().size(); i++)
 			{
-				if(((LiteBaseline)getBasilHolder().get(j)).getBaselineID() == currentlyMappedBaselineID.intValue())
+				getSelectBaselineComboBox().addItem(getBasilHolder().elementAt(i));
+			}
+			getSelectBaselineComboBox().setVisible(true);
+		
+			if(currentlyMappedBaselineID != null)
+			{
+				for(int j = 0; j < getBasilHolder().size(); j++)
 				{
-					getSelectBaselineComboBox().setSelectedIndex(j);
+					if(((LiteBaseline)getBasilHolder().get(j)).getBaselineID() == currentlyMappedBaselineID.intValue())
+					{
+						getSelectBaselineComboBox().setSelectedIndex(j);
+					}
 				}
 			}
-		}
 			
-		revalidate();
-		repaint();
-	}
-	else
-	{
-		getSelectBaselineComboBox().setVisible(false);
+			revalidate();
+			repaint();
+		}
+		else
+		{
+			getSelectBaselineComboBox().setVisible(false);
 		
-		revalidate();
-		repaint();
+			revalidate();
+			repaint();
+		}
 	}
-	
-
 	return;
 }
 /**
