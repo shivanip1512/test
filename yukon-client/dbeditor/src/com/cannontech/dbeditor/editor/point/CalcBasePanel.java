@@ -703,8 +703,9 @@ private void initialize() {
 	getUpdateTypeComboBox().addItem("On First Change");
 	getUpdateTypeComboBox().addItem("On All Change");
 	getUpdateTypeComboBox().addItem("On Timer");
+	getUpdateTypeComboBox().addItem("On Timer+Change");
 	getUpdateTypeComboBox().addItem("Historical");
-
+	
 	//Load the Periodic Rate combo box with default possible values
 	getPeriodicRateComboBox().addItem("1 second");
 	getPeriodicRateComboBox().addItem("2 second");
