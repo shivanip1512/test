@@ -192,7 +192,7 @@ private void connEtoC5(javax.swing.event.CaretEvent arg1) {
 				ivjAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 				ivjAddressTextField.setColumns(6);
 				// user code begin {1}
-			
+				ivjAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
@@ -395,6 +395,8 @@ private javax.swing.JLabel getJLabelPhoneNumber() {
 				ivjJTextFieldMeterNumber.setFont(new java.awt.Font("sansserif", 0, 14));
 				ivjJTextFieldMeterNumber.setColumns(6);
 				// user code begin {1}
+				ivjJTextFieldMeterNumber.setDocument(
+					new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_METER_NUMBER_LENGTH));
 				// user code end
 			} catch (java.lang.Throwable ivjExc) {
 				// user code begin {2}
