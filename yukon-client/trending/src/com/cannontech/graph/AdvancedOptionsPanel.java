@@ -553,8 +553,8 @@ private javax.swing.JTextField getRightRangeTextField() {
 	{
 		trendProperties.setDomainLabel( getDomainLabelTextField().getText().toString());
 		trendProperties.setDomainLabel_LD( getDomainLabelLoadDurationTextField().getText().toString());
-		trendProperties.setPrimaryRangeLabel( getLeftRangeTextField().getText().toString());
-		trendProperties.setSecondaryRangeLabel(getRightRangeTextField().getText().toString());
+		trendProperties.setRangeLabel( getLeftRangeTextField().getText().toString(), GraphDefines.PRIMARY_AXIS);
+		trendProperties.setRangeLabel(getRightRangeTextField().getText().toString(), GraphDefines.SECONDARY_AXIS);
 
 		trendProperties.writeDefaultsFile();
 		return trendProperties;
@@ -630,8 +630,8 @@ private javax.swing.JTextField getRightRangeTextField() {
 		
 		getDomainLabelTextField().setText(String.valueOf(trendProperties.getDomainLabel()));
 		getDomainLabelLoadDurationTextField().setText(String.valueOf(trendProperties.getDomainLabel_LD()));
-		getLeftRangeTextField().setText(String.valueOf(trendProperties.getPrimaryRangeLabel()));
-		getRightRangeTextField().setText(String.valueOf(trendProperties.getSecondaryRangeLabel()));
+		getLeftRangeTextField().setText(String.valueOf(trendProperties.getRangeLabel(GraphDefines.PRIMARY_AXIS)));
+		getRightRangeTextField().setText(String.valueOf(trendProperties.getRangeLabel(GraphDefines.SECONDARY_AXIS)));
 				
 	}
 	/**
