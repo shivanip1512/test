@@ -430,11 +430,12 @@ public class ImportManager extends HttpServlet {
 			FileItem custFile = getUploadFile( items, "CustFile" );
 			FileItem hwFile = getUploadFile( items, "HwFile" );
 			String email = getFormField( items, "Email" );
+			String preScan = getFormField( items, "PreScan" );
 			
 			if (custFile == null && hwFile == null)
 				throw new WebClientException( "No import file is provided" );
 			
-			TimeConsumingTask task = new ImportCustAccountsTask( user, custFile, hwFile, email, false );
+			TimeConsumingTask task = new ImportCustAccountsTask( user, custFile, hwFile, email, preScan != null );
 			long id = ProgressChecker.addTask( task );
 			
 			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
