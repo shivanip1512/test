@@ -36,6 +36,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
+import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -293,10 +294,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (dftRouteID == CtiUtilities.NONE_ID) {
 			String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 			
-			String sql = "select GENERICMACRO.CHILDID from OPERATORSERIALGROUP,GENERICMACRO "
-					   + "WHERE GENERICMACRO.OWNERID=OPERATORSERIALGROUP.LMGROUPID AND OPERATORSERIALGROUP.LOGINID=" + getUserID()
-					   + " ORDER BY GENERICMACRO.CHILDORDER";
-		    		   
+			String sql = 
+				"select gm.CHILDID from UserPaoOwner us, GENERICMACRO gm " +
+				"WHERE gm.OWNERID=us.PaoID AND us.UserID=" + getUserID() +
+				" AND gm.MacroType = '" + MacroTypes.GROUP + "'" +
+				" ORDER BY gm.CHILDORDER";
+
 			Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
 					dbAlias, sql, new Class[] { Integer.class } );
 			

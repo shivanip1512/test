@@ -384,16 +384,18 @@ public class StarsAdmin extends HttpServlet {
 				grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
 				
-				String sql = "INSERT INTO OperatorSerialGroup VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
+				String sql = "INSERT INTO UserPaoOwner VALUES (" + energyCompany.getUserID() + ", " + grpSerial.getPAObjectID() + ")";
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;
 				
-				String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, OperatorSerialGroup opgrp " +
-						"WHERE opgrp.LoginID = " + energyCompany.getUserID() + " AND opgrp.LMGroupID = macro.OwnerID " +
-						"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+				String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, UserPaoOwner us " +
+						"WHERE us.UserID = " + energyCompany.getUserID() +
+						" AND us.PaoID = macro.OwnerID " +
+						"AND macro.MacroType = '" + MacroTypes.GROUP +
+						"' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 				
@@ -401,7 +403,7 @@ public class StarsAdmin extends HttpServlet {
 					throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
 				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
 				
-				LMGroupExpressCom group = new LMGroupExpressCom();
+				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( PAOGroups.LM_GROUP_EXPRESSCOMM );
 				group.setLMGroupID( new Integer(groupID) );
 				group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
 				
@@ -416,8 +418,8 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
-		String sql = "SELECT exc.LMGroupID, opgrp.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, OperatorSerialGroup opgrp " +
-				"WHERE opgrp.LoginID = " + energyCompany.getUserID() + " AND opgrp.LMGroupID = macro.OwnerID " +
+		String sql = "SELECT exc.LMGroupID, opgrp.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, UserPaoOwner us " +
+				"WHERE us.UserID = " + energyCompany.getUserID() + " AND us.PaoID = macro.OwnerID " +
 				"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		stmt.execute();
@@ -426,7 +428,7 @@ public class StarsAdmin extends HttpServlet {
 			int dftRtGrpID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
 			int serialGrpID = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
 			
-			sql = "DELETE FROM OperatorSerialGroup WHERE LMGroupID = " + serialGrpID;
+			sql = "DELETE FROM UserPaoOwner WHERE PaoID = " + serialGrpID;
 			stmt.setSQLString( sql );
 			stmt.execute();
 			
