@@ -84,6 +84,8 @@ std_ansi_tbl_one_six.obj \
 std_ansi_tbl_two_one.obj \
 std_ansi_tbl_two_two.obj \
 std_ansi_tbl_two_three.obj \
+std_ansi_tbl_two_seven.obj \
+std_ansi_tbl_two_eight.obj \
 std_ansi_tbl_five_one.obj \
 std_ansi_tbl_five_two.obj \
 std_ansi_tbl_six_one.obj \
@@ -92,6 +94,7 @@ std_ansi_tbl_six_three.obj \
 std_ansi_tbl_six_four.obj \
 ansi_kv2_mtable_zero.obj \
 ansi_kv2_mtable_seventy.obj \
+ansi_kv2_mtable_onehundredten.obj \
 
 TRANSDATAOBJS=\
 transdata_application.obj \

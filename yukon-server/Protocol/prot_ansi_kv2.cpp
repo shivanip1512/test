@@ -10,10 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/01/03 23:07:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.5  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.4  2005/01/03 23:07:14  jrichter
       checking into 3.1, for use at columbia to test sentinel
 
@@ -43,7 +46,7 @@ CtiProtocolANSI_kv2::CtiProtocolANSI_kv2( void )
 {
     _tableZero=NULL;
     _tableSeventy=NULL;
-    _table_110=NULL;
+    _tableOneHundredTen=NULL;
 }
 
 CtiProtocolANSI_kv2::~CtiProtocolANSI_kv2( void )
@@ -65,12 +68,13 @@ void CtiProtocolANSI_kv2::destroyManufacturerTables( void )
       delete _tableSeventy;
       _tableSeventy = NULL;
    }
-
-   if( _table_110 != NULL )
+   if( _tableOneHundredTen != NULL )
    {
-      delete _table_110;
-      _table_110 = NULL;
+      delete _tableOneHundredTen;
+      _tableOneHundredTen = NULL;
    }
+
+
 }
 
 void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )
@@ -106,7 +110,8 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
                    dout << RWTime() << " Creating KV2 table 110" << endl;
                 }
 
-//                _table_110 = new CtiKV2AnsiTable_110( data );
+                _tableOneHundredTen = new CtiAnsiKV2ManufacturerTableOnehundredten( data );
+                _tableOneHundredTen->printResult();
                 break;
             }
         default:
@@ -200,4 +205,67 @@ int CtiProtocolANSI_kv2::snapshotData()
 
     return -1;
 
+}
+
+bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
+{
+    bool retVal = false;
+    switch(offset)
+    {
+        case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
+        case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:
+        {
+            *value = (_tableOneHundredTen->getVlnFundOnly()[0])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
+        case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:   
+        {
+            *value = (_tableOneHundredTen->getVlnFundOnly()[1])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE: 
+        case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:   
+        {
+            *value = (_tableOneHundredTen->getVlnFundOnly()[2])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT: 
+        case OFFSET_LOADPROFILE_PHASE_A_CURRENT:   
+        {
+            *value = (_tableOneHundredTen->getCurrFundOnly()[0])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT: 
+        case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+        {
+            *value = (_tableOneHundredTen->getCurrFundOnly()[1])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT: 
+        case OFFSET_LOADPROFILE_PHASE_C_CURRENT:   
+        {
+            *value = (_tableOneHundredTen->getCurrFundOnly()[2])/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT: 
+        case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:   
+        {
+            *value = (_tableOneHundredTen->getImputedNeutralCurr())/(float)10; //raw voltage quantities need to be scaled by factor of 1/10
+            retVal = true;
+            break;
+        }
+        default:
+        {
+            value = NULL;
+            break;
+        }
+    }
+    return retVal;
 }

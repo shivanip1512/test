@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/01/03 23:07:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.6  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.5  2005/01/03 23:07:14  jrichter
       checking into 3.1, for use at columbia to test sentinel
 
@@ -512,6 +515,82 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
            temp = temp * 60;
 
            result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
+           offset = 4;
+
+       }
+      break;
+   default:
+       break;
+   }
+
+   return( offset );
+}
+
+int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
+{
+   ULONG    temp;
+   
+   unsigned year = 0;  
+   unsigned month = 0;   
+   unsigned day = 0;     
+   unsigned hour = 0;    
+   unsigned minute = 0;  
+   unsigned second = 0;  
+
+   int      offset = 0;
+
+   switch( format )
+   {
+   case 0:
+       {
+       }
+      break;
+
+   case 1:
+      {
+      hour = BCDtoBase10( source + offset, 1 );
+      offset += 1;
+
+      minute = BCDtoBase10( source + offset, 1 );
+      offset += 1;
+
+      second = BCDtoBase10( source + offset, 1 );
+      offset += 1;
+      result = RWTime( hour, minute, second).seconds();
+      }
+      break;
+
+   case 2:
+       {
+       memcpy ((void *)&hour, source, sizeof (BYTE) );
+       source += sizeof (BYTE);
+       memcpy ((void *)&minute, source, sizeof (BYTE) );
+       source += sizeof (BYTE);
+       memcpy ((void *)&second, source, sizeof (BYTE) );
+       source += sizeof (BYTE);
+
+       offset = 3;
+       //result = 11;
+       RWTime timeResult( hour, minute, second);
+       //result = RWTime( RWDate( day, month, year ), hour, minute).seconds();
+       result = timeResult.seconds();
+       }
+      break;
+
+   case 3:
+       {
+           /*temp = (int)*source  
+               + ((int)*(source + 1)* 0x100) 
+               + ((int)*(source + 2)* 0x10000) 
+               + ((int)*(source + 3)* 0x1000000);
+
+           temp = temp * 60;
+           */
+           memcpy ((void *)&temp, source, sizeof (BYTE)*4 );
+           source += sizeof (BYTE)*4;
+
+
+           result = RWTime(temp /*- 3600*/).seconds();
            offset = 4;
 
        }

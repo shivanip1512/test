@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi_kv2.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/12/10 21:58:42 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: prot_ansi_kv2.h,v $
+      Revision 1.4  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.3  2004/12/10 21:58:42  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -34,9 +37,10 @@
 #include <windows.h>
 #include <rw\cstring.h>
 #include "prot_ansi.h"
-
+#include "pointdefs.h"
 #include "ansi_kv2_mtable_zero.h"
 #include "ansi_kv2_mtable_seventy.h"
+#include "ansi_kv2_mtable_onehundredten.h"
 //#include "kv2_ansi_table_oneten.h"
 
 class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
@@ -56,15 +60,15 @@ class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
         virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
         virtual void setAnsiDeviceType();
         virtual int snapshotData();
+        virtual bool retreiveKV2PresentValue( int offset, double *value );
 
 
    private:
 
       CtiAnsiKV2ManufacturerTableZero                   *_tableZero;
       CtiAnsiKV2ManufacturerTableSeventy                *_tableSeventy;
-//      CtiKV2AnsiTable_110               *_table_110;
+      CtiAnsiKV2ManufacturerTableOnehundredten          *_tableOneHundredTen;
 
-      BYTE               *_table_110;
 
 };
 

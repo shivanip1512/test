@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2004/12/10 21:58:43 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1274,11 +1274,6 @@ RWTime  CtiDeviceSingle::getLastLPTime()
         if(!bDone)
         {
             RWTime dispatchTime = peekDispatchTime();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " dispatchTime" << dispatchTime << endl;
-                dout << RWTime() << " getScanData().getLastLPTime() " << getScanData().getLastLPTime() << endl;
-            }
 
             if(getScanData().getLastLPTime() > dispatchTime)
             {

@@ -15,10 +15,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_four.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/10/01 17:54:27 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: std_ansi_tbl_six_four.h,v $
+      Revision 1.2  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.1  2004/10/01 17:54:27  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.  New files!
 
@@ -81,6 +84,7 @@ struct INT_FMT1_RCD
        }s128;
     }u;
 };
+
 struct INT_SET1_RCD
 {
     UINT8 *extended_int_status;

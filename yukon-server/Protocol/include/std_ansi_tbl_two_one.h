@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_one.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: std_ansi_tbl_two_one.h,v $
+      Revision 1.5  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.4  2004/09/30 21:37:20  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -86,6 +89,9 @@ public:
    int getCoinValues( void );
    int getOccur( void );
    int getTiers( void );
+   int getNbrPresentDemands(void);
+   int getNbrPresentValues(void);
+   bool getTimeRemainingFlag(void);
    bool getDemandResetCtrFlag( void );
    bool getTimeDateFieldFlag( void );
    bool getCumDemandFlag( void );

@@ -153,3 +153,8 @@ int CtiProtocolANSI_sentinel::snapshotData()
     return 1;
 }
 
+bool CtiProtocolANSI_sentinel::retreiveKV2PresentValue( int offset, double *value )
+{
+    return false;
+}
+

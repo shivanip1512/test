@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/12/10 21:58:42 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.8  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.7  2004/12/10 21:58:42  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -55,6 +58,8 @@
 #include "std_ansi_tbl_two_one.h"
 #include "std_ansi_tbl_two_two.h"
 #include "std_ansi_tbl_two_three.h"
+#include "std_ansi_tbl_two_seven.h"
+#include "std_ansi_tbl_two_eight.h"
 #include "std_ansi_tbl_five_one.h"
 #include "std_ansi_tbl_five_two.h"
 #include "std_ansi_tbl_six_one.h"
@@ -301,20 +306,21 @@ class IM_EX_PROT CtiProtocolANSI
     virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock) = 0;
     virtual void setAnsiDeviceType() = 0;
     virtual int snapshotData() = 0;
-
+    virtual bool retreiveKV2PresentValue( int offset, double *value )=0;
 
     /**** JULIE *****/
     void retreiveKWHValue( int *value );
     void retreiveKVARHValue( int *value );
     bool retreiveSummation( int offset, double *value );
     bool retreiveDemand( int offset, double *value );
-
+    bool retreivePresentValue( int offset, double *value );
     bool retreiveLPDemand( int offset, int dataSet );
     double getLPValue( int index );
     ULONG getLPTime( int index );
 
     int getUnitsOffsetMapping(int offset);
     int getRateOffsetMapping(int offset);
+    int getSegmentationOffsetMapping(int offset);
 
 
     int getSizeOfLPDataBlock(int dataSetNbr);
@@ -397,6 +403,8 @@ class IM_EX_PROT CtiProtocolANSI
       CtiAnsiTableTwoOne               *_tableTwoOne;
       CtiAnsiTableTwoTwo               *_tableTwoTwo;
       CtiAnsiTableTwoThree             *_tableTwoThree;
+      CtiAnsiTableTwoSeven             *_tableTwoSeven;
+      CtiAnsiTableTwoEight             *_tableTwoEight;
       CtiAnsiTableFiveOne              *_tableFiveOne;
       CtiAnsiTableFiveTwo              *_tableFiveTwo;
       CtiAnsiTableSixOne               *_tableSixOne;

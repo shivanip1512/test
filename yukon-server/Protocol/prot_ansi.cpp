@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/01/03 23:07:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.10  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.9  2005/01/03 23:07:14  jrichter
       checking into 3.1, for use at columbia to test sentinel
 
@@ -63,6 +66,8 @@ CtiProtocolANSI::CtiProtocolANSI()
    _tableTwoOne = NULL;
    _tableTwoTwo = NULL;
    _tableTwoThree = NULL;
+   _tableTwoSeven = NULL;
+   _tableTwoEight = NULL;
    _tableFiveOne = NULL; 
    _tableFiveTwo = NULL;
    _tableSixOne = NULL;
@@ -95,8 +100,6 @@ CtiProtocolANSI::CtiProtocolANSI()
    _lpNbrFullBlocks = 0;           
    _lpLastBlockSize = 0; 
    _stdTblsAvailable.push_back(0);
-
-   
 
    _lpValues = NULL;
    _lpTimes = NULL;
@@ -206,7 +209,16 @@ void CtiProtocolANSI::destroyMe( void )
       delete _tableTwoThree;
       _tableTwoThree = NULL;
    }
-
+   if( _tableTwoSeven != NULL )
+   {
+      delete _tableTwoSeven;
+      _tableTwoSeven = NULL;
+   }
+   if( _tableTwoEight != NULL )
+   {
+      delete _tableTwoEight;
+      _tableTwoEight = NULL;
+   }                
    if( _tableFiveOne != NULL )
    {
       delete _tableFiveOne;
@@ -480,16 +492,8 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
 
    if( getApplicationLayer().isTableComplete())
    {
-       /*if (_clearMfgTables)
-       {
-           _clearMfgTables = false;
-           if (clearMfgStatusFlags() < 0)
-           {
-               return true;
-           }
-       } */
-
-       if (isStdTableAvailableInMeter(_tables[_index].tableID))
+       if ((_tables[_index].type == ANSI_TABLE_TYPE_STANDARD && isStdTableAvailableInMeter(_tables[_index].tableID)) ||
+           (_tables[_index].type == ANSI_TABLE_TYPE_MANUFACTURER && isMfgTableAvailableInMeter(_tables[_index].tableID - 0x0800)))
        {
            if (_tables[_index].operation == ANSI_OPERATION_READ) 
            {
@@ -631,6 +635,10 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
               _tableTwoTwo->printResult();
           if (_tableTwoThree != NULL)
               _tableTwoThree->printResult();
+          if (_tableTwoSeven != NULL)
+              _tableTwoSeven->printResult();
+          if (_tableTwoEight != NULL)
+              _tableTwoEight->printResult();
           if (_tableFiveOne != NULL)
               _tableFiveOne->printResult();
           if (_tableFiveTwo != NULL)
@@ -641,8 +649,8 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
               _tableSixTwo->printResult();
           if (_tableSixThree != NULL)
               _tableSixThree->printResult();
-          //if (_tableSixFour != NULL)
-         //     _tableSixFour->printResult();
+          if (_tableSixFour != NULL)
+              _tableSixFour->printResult();
           if (_tableZeroEight != NULL)
               _tableZeroEight->printResult();
 
@@ -665,7 +673,7 @@ void CtiProtocolANSI::convertToTable(  )
     // if its manufactured, send it to the child class
     if (_tables[_index].type == ANSI_TABLE_TYPE_MANUFACTURER)
     {
-        if (isMfgTableAvailableInMeter(_tables[_index].tableID))
+        if (isMfgTableAvailableInMeter(_tables[_index].tableID - 0x0800))
         {
 
         }
@@ -817,7 +825,27 @@ void CtiProtocolANSI::convertToTable(  )
                   _tableTwoThree->printResult();
                }
                break;
+            case 27:
+               {
+                   _tableTwoSeven = new CtiAnsiTableTwoSeven( getApplicationLayer().getCurrentTable(),
+                                                             _tableTwoOne->getNbrPresentDemands(), 
+                                                             _tableTwoOne->getNbrPresentValues());
+                  _tableTwoSeven->printResult();
+               }
+               break;
+            case 28:
+               {
+                   _tableTwoEight = new CtiAnsiTableTwoEight( getApplicationLayer().getCurrentTable(),
+                                                             _tableTwoOne->getNbrPresentDemands(), 
+                                                             _tableTwoOne->getNbrPresentValues(),
+                                                             _tableTwoOne->getTimeRemainingFlag(), 
+                                                             _tableZeroZero->getRawNIFormat1(), 
+                                                             _tableZeroZero->getRawNIFormat2(),
+                                                             _tableZeroZero->getRawTimeFormat() );
 
+                  _tableTwoEight->printResult();
+               }
+               break;
             case 51:
                {
                   _tableFiveOne = new CtiAnsiTableFiveOne( getApplicationLayer().getCurrentTable() );
@@ -899,7 +927,27 @@ void CtiProtocolANSI::updateBytesExpected( )
     {
         if (isMfgTableAvailableInMeter(_tables[_index].tableID))
         {
-
+            switch( _tables[_index].tableID )
+            {
+                case 0:
+                {
+                    _tables[_index].bytesExpected = 59; 
+                    break;
+                }
+                case 70:
+                {
+                    _tables[_index].bytesExpected = 46; 
+                    break;
+                }
+                case 110:
+                {
+                    _tables[_index].bytesExpected = 166; 
+                    break;
+                }
+                default:
+                    break;
+            }
+           
         }
         else
         {
@@ -1448,6 +1496,89 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
     summationSelect = NULL;
     return success;
 }
+////////////////////////////////////////////////////////////////////////////////////
+// Present Values - volts, current, pf, etc...
+////////////////////////////////////////////////////////////////////////////////////
+bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
+{
+    bool success = false;
+    unsigned char* presentValueSelect;
+    int ansiOffset;
+    int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
+
+    if (ansiDeviceType == 1) //if 1, kv2 gets info from mfg tbl 110
+    {
+        success = retreiveKV2PresentValue(offset, value);
+        if (success)
+        {
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout << " *value =   "<<*value<<endl;
+            }
+        }
+    }
+    else
+    {
+        /* Watts = 0, Vars = 1, VA = 2, Volts = 8, Current = 12, etc */
+        ansiOffset = getUnitsOffsetMapping(offset);
+
+
+        if (_tableTwoSeven != NULL)
+        {
+            /* returns pointer to list of present Value Selects */
+            presentValueSelect = (unsigned char*)_tableTwoSeven->getValueSelect();
+
+            if (_tableTwoOne != NULL && presentValueSelect != NULL)
+            {                       
+                for (int x = 0; x < _tableTwoOne->getNbrPresentValues(); x++) 
+                {
+                    if ((int) presentValueSelect[x] != 255) 
+                    {
+                        if (_tableOneTwo != NULL)
+                        {                       
+                            if (_tableOneTwo->getRawTimeBase(presentValueSelect[x]) == 1 && 
+                                _tableOneTwo->getSegmentation(presentValueSelect[x]) == getSegmentationOffsetMapping(offset) && 
+                                _tableOneTwo->getRawIDCode(presentValueSelect[x]) == ansiOffset) 
+                            {
+                                if (_tableOneSix != NULL  && _tableTwoEight != NULL)
+                                {                       
+                                    if (_tableOneSix->getConstantsFlag(presentValueSelect[x]) && 
+                                        !_tableOneSix->getConstToBeAppliedFlag(presentValueSelect[x]))
+                                    {
+                                        if (_tableOneFive != NULL)
+                                        {    
+                                            *value = ((_tableTwoEight->getPresentValue(x) * 
+                                                   _tableOneFive->getElecMultiplier(presentValueSelect[x])) /*/ 1000000000*/);
+                                        }
+                                        else
+                                        {    
+                                            *value = (_tableTwoEight->getPresentValue(x) /*/ 1000000000*/);
+                                        }
+                                        success = true;
+                                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                        {
+                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                            dout << " *value =   "<<*value<<endl;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        *value = _tableTwoEight->getPresentValue(x);
+                                        success = true;
+                                    }
+                                }
+                                break;
+                            } 
+                        }
+                    }
+                }
+            }
+        }
+    }
+    presentValueSelect = NULL;
+    return success;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // LP Demands - KW, KVAR, KVA, etc...
@@ -1504,11 +1635,21 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                         _lpValues[y] = _tableSixFour->getLPDemandValue ( x, blkIndex, intvlIndex )
                                                                         * (_tableOneFive->getElecMultiplier((lpDemandSelect[x]%20)));
                                                         _lpTimes[y] = _tableSixFour->getLPDemandTime (blkIndex, intvlIndex);
+                                                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                                        {
+                                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                                            dout << "    **lpTime:  " << RWTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
+                                                        }
                                                     }
                                                     else
                                                     {
                                                         _lpValues[y] = _tableSixFour->getLPDemandValue ( x, blkIndex, intvlIndex );
                                                         _lpTimes[y] = _tableSixFour->getLPDemandTime (blkIndex, intvlIndex);
+                                                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                                                        {
+                                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                                            dout << "    **lpTime:  " << RWTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<<endl;
+                                                        }
                                                     }
 
                                                     if (intvlIndex + 1 == intvlsPerBlk) 
@@ -1545,6 +1686,8 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                         } 
                     }
                 }
+                if (success)
+                    break;
             }
         }
     }
@@ -1672,6 +1815,49 @@ int CtiProtocolANSI::getUnitsOffsetMapping(int offset)
     }
     return retVal;
 }
+
+int CtiProtocolANSI::getSegmentationOffsetMapping(int offset)
+{
+
+    int retVal = 0;
+    switch (offset)
+    {
+        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:       
+        case OFFSET_LOADPROFILE_NEUTRAL_CURRENT: 
+        {
+            retVal = 4;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:       
+        case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:        
+        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:       
+        case OFFSET_LOADPROFILE_PHASE_A_CURRENT:         
+        {
+            retVal = 5;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:       
+        case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:         
+        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:       
+        case OFFSET_LOADPROFILE_PHASE_B_CURRENT:         
+        {
+            retVal = 6;
+            break;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:       
+        case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:  
+        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:       
+        case OFFSET_LOADPROFILE_PHASE_C_CURRENT: 
+        {
+            retVal = 7;
+            break;
+        }
+        default:
+            break;
+    }
+    return retVal;
+}
+
 
 int CtiProtocolANSI::getRateOffsetMapping(int offset)
 {

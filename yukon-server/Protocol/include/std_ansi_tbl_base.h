@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/12/10 21:58:42 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: std_ansi_tbl_base.h,v $
+      Revision 1.4  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.3  2004/12/10 21:58:42  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -181,7 +184,7 @@ public:
    int toUint32STime( BYTE *source, ULONG &result, int format );
    ULONG BCDtoBase10( UCHAR* buffer, ULONG len );
    int toUint32LTime( BYTE *source, ULONG &result, int format );
-
+   int toTime( BYTE *source, ULONG &result, int format );
 
    CtiAnsiTableBase();
    virtual ~CtiAnsiTableBase();

@@ -543,12 +543,6 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
             if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts) 
             {
                 blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
-                {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "    **blkIntvlTime: " << RWTime(blkIntvlTime)<<endl;
-        }
-        
-
                 retVal = true;
             }
             else
@@ -556,10 +550,6 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
                 if (blkIntvl < _nbrBlkIntsSet1)
                 {
                     blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
-                    {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "    **blkIntvlTime: " << RWTime(blkIntvlTime)<<endl;
-            } 
                     retVal = true;
                 }
                 else

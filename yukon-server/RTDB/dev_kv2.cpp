@@ -10,8 +10,8 @@
 * Author: Eric Schmit
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_kv2.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/01/03 23:07:15 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/01/25 18:33:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *
 *    History: 
       $Log: dev_kv2.cpp,v $
+      Revision 1.9  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.8  2005/01/03 23:07:15  jrichter
       checking into 3.1, for use at columbia to test sentinel
 
@@ -216,8 +219,8 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
         { 63,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 64,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  0,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
-        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-       // { 70,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
+        { 70,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
+        {110,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
         
 //        {110,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
@@ -354,6 +357,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << "----- (_8(|) WHOOHOO!!! ----" << endl;
+                dout << RWTime() << " Point Offset ==> " <<x<< endl;
             }
             foundSomething = true;
             pData = CTIDBG_new CtiPointDataMsg();
@@ -427,13 +431,31 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                     gotLPValues = getProtocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
                     break;  
                 }
+                case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
+                case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:
+                case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
+                case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:   
+                case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE: 
+                case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:   
+                case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT: 
+                case OFFSET_LOADPROFILE_PHASE_A_CURRENT:   
+                case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT: 
+                case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+                case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT: 
+                case OFFSET_LOADPROFILE_PHASE_C_CURRENT:   
+                case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT: 
+                case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:   
+                {
+                    gotValue = getProtocol().retreivePresentValue(x, &value);
+                    break;
+                }
                 default:
                 {  
                     gotValue = false;
                     gotLPValues = false;
                 }
                 break;
-            }
+            }                 
              
             if (gotValue) 
             {
@@ -451,7 +473,6 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " gotValue! "<< endl;
-                    dout << RWTime() << " getProtocol().getTotalWantedLPBlockInts()  "<< getProtocol().getTotalWantedLPBlockInts()<< endl;
                 }
 
                 pData = NULL;

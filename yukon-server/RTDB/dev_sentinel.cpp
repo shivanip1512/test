@@ -439,6 +439,8 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg)
         { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 27,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 28,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
     //    { 51,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 61,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
@@ -656,6 +658,24 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                     gotLPValues = getProtocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
                     break;  
+                }
+                case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
+                case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:  
+                case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
+                case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:  
+                case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
+                case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:  
+                case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
+                case OFFSET_LOADPROFILE_PHASE_A_CURRENT:  
+                case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
+                case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+                case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
+                case OFFSET_LOADPROFILE_PHASE_C_CURRENT:  
+                case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
+                case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:  
+                {
+                    gotValue = getProtocol().retreivePresentValue(x, &value);
+                    break;
                 }
                 default:
                 {  

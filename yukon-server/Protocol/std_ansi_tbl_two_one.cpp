@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_one.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: std_ansi_tbl_two_one.cpp,v $
+      Revision 1.5  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.4  2004/09/30 21:37:18  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -128,6 +131,26 @@ int CtiAnsiTableTwoOne::getTiers( void )
 {
    return _tiers;
 }
+
+int CtiAnsiTableTwoOne::getNbrPresentDemands(void)
+{
+    return _nbr_present_demands;
+}
+
+int CtiAnsiTableTwoOne::getNbrPresentValues(void)
+{
+    return _nbr_present_values;
+}
+
+bool CtiAnsiTableTwoOne::getTimeRemainingFlag(void)
+{
+    if( _reg_func1_flags.time_remaining_flag  & 0x01 )
+      return true;
+   else
+      return false;
+}
+
+
 
 //=========================================================================================================================================
 //=========================================================================================================================================

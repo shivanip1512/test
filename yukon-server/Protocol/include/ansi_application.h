@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/01/03 23:07:15 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/25 18:33:51 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.8  2005/01/25 18:33:51  jrichter
+      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
+
       Revision 1.7  2005/01/03 23:07:15  jrichter
       checking into 3.1, for use at columbia to test sentinel
 
@@ -172,6 +175,8 @@ class IM_EX_PROT CtiANSIApplication
     void setProcDataSize( USHORT dataSize );
     void setPassword( BYTE *password);
     void setAnsiDeviceType(BYTE devType);
+    BYTE getAnsiDeviceType();
+
 
 
     int encryptDataMethod();

@@ -42,6 +42,7 @@ class IM_EX_PROT CtiProtocolANSI_sentinel:public CtiProtocolANSI
         virtual void setAnsiDeviceType();
         virtual int snapshotData();
 
+        virtual bool retreiveKV2PresentValue( int offset, double *value );
 
         int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
 
