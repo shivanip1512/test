@@ -13,9 +13,6 @@ public interface IMACSConnection extends IServerConnection
 	public void addMessageEventListener(MessageEventListener listener);
 
 	public IConnectionBase getMACSConnBase();
-	//public void addObserver(Observer obs);	
-	//public boolean handleMessage(Object message); 
-
 	
 	public void doHandleMessage(Object obj);
 
