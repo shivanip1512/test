@@ -3,8 +3,9 @@ insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Residential
 insert into YukonRoleProperty values(-1106,-2,'operator_group_name','Web Client Operators','Group name of all the web client operator logins');
 
 /* Web Client Role Properties */
-insert into YukonRoleProperty values(-10806,-108,'nav_connector_middle','MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
+insert into YukonRoleProperty values(-10806,-108,'log_in_url','(none)','The url of the customized login page. The users will be redirected to this page after they log off.');
 insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
+insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 
 /* Operator Administrator Role Properties */
 insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
@@ -127,6 +128,7 @@ insert into yukongrouprole values (504,-300,-108,-10804,'(none)');
 insert into yukongrouprole values (505,-300,-108,-10805,'DemoHeaderCES.gif');
 insert into yukongrouprole values (506,-300,-108,-10806,'(none)');
 insert into yukongrouprole values (507,-300,-108,-10807,'(none)');
+insert into yukongrouprole values (508,-300,-108,-10808,'(none)');
 insert into yukongrouprole values (520,-300,-400,-40000,'true');
 insert into yukongrouprole values (521,-300,-400,-40001,'true');
 insert into yukongrouprole values (522,-300,-400,-40002,'false');
@@ -181,6 +183,7 @@ insert into yukongrouprole values (704,-301,-108,-10804,'(none)');
 insert into yukongrouprole values (705,-301,-108,-10805,'(none)');
 insert into yukongrouprole values (706,-301,-108,-10806,'(none)');
 insert into yukongrouprole values (707,-301,-108,-10807,'(none)');
+insert into yukongrouprole values (708,-301,-108,-10808,'(none)');
 insert into yukongrouprole values (720,-301,-201,-20100,'true');
 insert into yukongrouprole values (721,-301,-201,-20101,'true');
 insert into yukongrouprole values (722,-301,-201,-20102,'true');
