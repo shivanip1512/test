@@ -55,7 +55,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		fireInputUpdate();
 
 	if (e.getSource() == getJCheckBoxDisable())
+	{
+		disableFlag_ActionPerformed(e);
 		fireInputUpdate();
+	}
 	
 	// user code end
 	if (e.getSource() == getJButtonAdd()) 
@@ -1069,6 +1072,18 @@ public void jButtonAddress_ActionPerformed(java.awt.event.ActionEvent actionEven
 	return;
 }
 
+public void disableFlag_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+
+	// if no rows exist, clear the selection
+	if( getTableModel().getRowCount() == 0 || getJTableEmail().getSelectedRow() == -1)
+		return;
+	ContactNotification currentTableSelection = getTableModel().getContactNotificationRow(getJTableEmail().getSelectedRow());
+	currentTableSelection.setDisableFlag( getJCheckBoxDisable().isSelected() ? "Y" : "N"  );
+	getTableModel().fireTableDataChanged();
+	return;
+	
+}
 
 /**
  * Comment
