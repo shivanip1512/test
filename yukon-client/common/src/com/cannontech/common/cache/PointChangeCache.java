@@ -1,5 +1,8 @@
 package com.cannontech.common.cache;
 
+import java.util.Date;
+import java.util.Hashtable;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
@@ -9,6 +12,7 @@ import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.PointData;
 
 /**
  * PointChangeCache provides the current value of all Yukon points.
@@ -36,17 +40,21 @@ public class PointChangeCache  implements Runnable, java.util.Observer {
 
 	// Stores current PointData messages by PointID
 	// ( key = Integer, value = com.cannontech.message.dispatch.message.PointData)
-	private java.util.Hashtable pointData = new java.util.Hashtable();
+	private Hashtable pointData = new Hashtable();
 	
 	// Stores current Signal messages by PointID
 	// ( key = Integer, value = com.cannontech.message.dispatch.message.Signal)
-	private java.util.Hashtable signalData = new java.util.Hashtable();
-		
+	private Hashtable signalData = new Hashtable();
+	
+	// Stores current tags by PointID
+	// (key = Integer, value = Long)	
+	private Hashtable tagData = new Hashtable();
+	
 	// Thread to harvest the incoming messages
 	private Thread runner = null;
 
 	//Date of the last point change received from dispatch
-	private java.util.Date lastChange = null;
+	private Date lastChange = null;
 		
 	// Singleton instance
 	private static PointChangeCache instance;
@@ -98,7 +106,7 @@ public synchronized void connect()
 	com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
 	pReg.setRegFlags(com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK |
 							com.cannontech.message.dispatch.message.PointRegistration.REG_ALARMS );
-
+								
 	com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
 	multi.getVector().addElement(reg);
 	multi.getVector().addElement(pReg);
@@ -209,6 +217,17 @@ public String getState(long pointId, double value, String dbAlias)
 public com.cannontech.message.dispatch.message.PointData getValue(long pointId) {
 	return (com.cannontech.message.dispatch.message.PointData) pointData.get( new Long(pointId) );
 }
+
+/**
+ * Returns the tags for a point if available
+ * @param pointId
+ * @return
+ */
+public long getTags(long pointId) {
+	Long t = (Long) tagData.get(new Long(pointId));
+	return t == null ? 0 : t.longValue();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/27/2000 5:06:48 PM)
@@ -226,9 +245,11 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 	else
 	if (msg instanceof com.cannontech.message.dispatch.message.PointData)
 	{
-		Long id = new Long(((com.cannontech.message.dispatch.message.PointData) msg).getId());		
-		pointData.put(id, msg);		
-		
+		PointData pd = (PointData) msg;
+		Long id = new Long(pd.getId());
+		Long tags = new Long(pd.getTags());		
+		pointData.put(id, pd);		
+		tagData.put(id, tags);
 		CTILogger.debug("Received point data for point id:  " + id);
 	}
 	else
@@ -238,9 +259,9 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 			(com.cannontech.message.dispatch.message.Signal) msg;
 
 		Long id = new Long( signal.getId() );
-
-		CTILogger.debug("Received signal id:  " + id + " tags:  " + signal.getTags() );
+		Long tags = new Long(signal.getTags());
 		
+		CTILogger.debug("Received signal id:  " + id + " tags:  " + signal.getTags() );
 			
 		if( (signal.getTags() & com.cannontech.message.dispatch.message.Signal.MASK_ANY_ALARM) != 0 )
 		{						
@@ -253,6 +274,7 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 			CTILogger.debug("Removing signal");
 		
 		}		
+		tagData.put(id, tags);
 	}
 	else
 	if(msg instanceof DBChangeMsg) {
