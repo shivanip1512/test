@@ -2,15 +2,16 @@
 *
 * File:   dnp_application
 *
-* Class:  CtiDNPApplication
+* Namespace: CtiDNP
+* Class:     Application
 * Date:   5/7/2002
 *
 * Author: Matt Fisher
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/03/10 21:15:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,27 +20,33 @@
 #pragma warning( disable : 4786)
 
 
-#include <vector>
+#include <queue>
 
-#include "dllbase.h"
+using namespace std;
+
 #include "message.h"
 
 #include "dnp_objects.h"
 #include "dnp_transport.h"
 
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
 
-//#define DNP_APP_BUF_SIZE 2048
-
-class CtiDNPApplication
+class Application
 {
 public:
+    enum FunctionCode;
+
     enum
     {
-        ApplicationBufferSize = 2048
+        BufferSize = 2048
     };
 
+    typedef queue< const ObjectBlock * > object_block_queue;
+
 private:
-    struct _dnp_app_control
+    struct control_header
     {
         unsigned char seq         : 4;
         unsigned char unsolicited : 1;
@@ -48,7 +55,7 @@ private:
         unsigned char first       : 1;
     };
 
-    struct _dnp_app_indications
+    struct indications
     {
         unsigned short all_stations : 1;
         unsigned short class_1      : 1;
@@ -67,35 +74,37 @@ private:
         unsigned short reserved     : 2;
     };
 
+    short _dstAddr, _srcAddr;
+
 #pragma pack( push, 1 )
 
-    short _dstAddr, _srcAddr;
-    struct appReq
+    struct request_t
     {
-        _dnp_app_control ctrl;
-        unsigned char func_code;
-        unsigned char buf[ApplicationBufferSize/* - sizeof(_dnp_app_control) - 1*/];
-    } _appReq;
+        control_header ctrl;
+        unsigned char  func_code;
+        unsigned char  buf[BufferSize];
+    } _request;
 
-    struct appRsp
+    struct response_t
     {
-        _dnp_app_control ctrl;
-        unsigned char func_code;
-        _dnp_app_indications ind;
-        unsigned char buf[ApplicationBufferSize/* - sizeof(_dnp_app_control) - 1 - sizeof(_dnp_app_indications)*/];
-    } _appRsp;
+        control_header ctrl;
+        unsigned char  func_code;
+        indications    ind;
+        unsigned char  buf[BufferSize];
+    } _response;
 
-    struct appAck
+    struct acknowledge_t
     {
-        _dnp_app_control ctrl;
-        unsigned char func_code;
-    } _appAck;
+        control_header ctrl;
+        unsigned char  func_code;
+    } _acknowledge;
 
 #pragma pack( pop )
 
-    int _seqno, _replyExpected;
-    int _appReqBytesUsed, _appRspBytesUsed;
-    bool _inHasPoints, _hasOutput;
+    FunctionCode _request_function;
+    int _seqno;
+    int _request_buf_len,
+        _response_buf_len;
 
     enum ApplicationIOState
     {
@@ -109,14 +118,20 @@ private:
 
     int _comm_errors;
 
-    /*vector< CtiDNPObjectBlock * > _outObjectBlocks;*/
-    vector< CtiDNPObjectBlock * > _inObjectBlocks;
+    bool _final_frame_received;
+
+    object_block_queue _out_object_blocks,
+                       _in_object_blocks;
 
     void reset( void );
-    void generateAck( appAck *app_packet, unsigned char seq);
+    void generateAck( acknowledge_t *app_packet, unsigned char seq);
+
+    void processInput( void );
+    void eraseOutboundObjectBlocks( void );
+    void eraseInboundObjectBlocks( void );
 
 protected:
-    CtiDNPTransport _transport;
+    Transport _transport;
 
     enum
     {
@@ -127,64 +142,37 @@ protected:
 
 
 public:
-    enum AppFuncCode;
+    Application();
 
-    CtiDNPApplication();
+    Application(const Application &aRef);
 
-    CtiDNPApplication(const CtiDNPApplication &aRef);
+    virtual ~Application();
 
-    virtual ~CtiDNPApplication();
-
-    CtiDNPApplication &operator=(const CtiDNPApplication &aRef);
+    Application &operator=(const Application &aRef);
 
 
     //  initialization functions
     void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
     void setOptions( int options );
-
     void resetLink( void );
 
-    void setCommand( AppFuncCode func );
-    void addObjectBlock( const CtiDNPObjectBlock &obj );
-
-
-    //  these six functions are for the Out/InMess Scanner/Porter/Pil interactions
-    int  getLengthReq( void );
-    void serializeReq( unsigned char *buf );
-    void restoreReq  ( unsigned char *buf, int len );
-
-    int  getLengthRsp( void );
-    void serializeRsp( unsigned char *buf );
-    void restoreRsp  ( unsigned char *buf, int len );
-
+    void setCommand( FunctionCode fc );
+    void addObjectBlock( const ObjectBlock *obj );
+    void initForOutput( void );
 
     //  comm functions
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-
     //  checking completion
-    bool isTransactionComplete( void );
-    bool errorCondition( void );
-    bool isReplyExpected( void );
-
+    bool isTransactionComplete( void ) const;
+    bool errorCondition( void )        const;
+    bool isOneWay( void )              const;
 
     //  post-completion processing
-    void processInput( void );
-    void eraseOutboundObjectBlocks( void );
-    void eraseInboundObjectBlocks( void );
-    bool hasInboundPoints( void );
-    void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+    void getObjects( object_block_queue &object_queue );
 
-    bool isControlResult( void )        const;
-    int  getControlResultStatus( void ) const;
-    long getControlResultOffset( void ) const;
-
-    bool          hasTimeResult( void ) const;
-    unsigned long getTimeResult( void ) const;
-
-
-    enum AppFuncCode
+    enum FunctionCode
     {
         RequestConfirm            = 0x00,
         RequestRead               = 0x01,
@@ -217,4 +205,9 @@ public:
         ResponseUnsolicited = 0x82
     };
 };
+
+}
+}
+}
+
 #endif // #ifndef __DNP_APPLICATION_H__
