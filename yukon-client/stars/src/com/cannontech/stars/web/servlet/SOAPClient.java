@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
@@ -92,26 +93,29 @@ public class SOAPClient extends HttpServlet {
 	 */
 	public void init() throws ServletException {
 		super.init();
-		try {
-			// If "soap_server" is defined in config.properties, it means SOAPServer is running remotely
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle( "config" );
-			SOAP_SERVER_URL = bundle.getString( "soap_server" );
+		
+		// If "stars_soap_server" is defined in config.properties, it means SOAPServer is running remotely
+		// For now, always consider SOAPServer is running locally
+		SOAP_SERVER_URL = CtiProperties.getInstance().getProperty( CtiProperties.KEY_STARS_SOAP_SERVER );
+		
+		if (SOAP_SERVER_URL != null) {
 			CTILogger.info( "SOAP Server resides remotely at " + SOAP_SERVER_URL );
 
 			StarsOperation respOper = sendRecvOperation( new StarsOperation() );
 			if (respOper == null)	// This is not good!
 				CTILogger.error( "Cannot connect to SOAPServer, following operations may not function properly!" );
 			
-			setServerLocal( false );
-			SOAPServer.setClientLocal( false );
+			//setServerLocal( false );
+			//SOAPServer.setClientLocal( false );
+			setServerLocal( true );
+			SOAPServer.setClientLocal( true );
 			
 			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 		}
-		catch (java.util.MissingResourceException mre) {
+		else {
 			setServerLocal( true );
 			SOAPServer.setClientLocal( true );
 		}
-		
 	}
 	
 	private static SOAPMessenger getSOAPMessenger() {
@@ -143,7 +147,6 @@ public class SOAPClient extends HttpServlet {
 	public static void initSOAPServer(HttpServletRequest req) {
 		if (isServerLocal() && SOAPServer.getInstance() == null) {
 			// SOAPServer not initiated yet, let's wake it up!
-			//String reqURL = req.getRequestURL();
 			String reqURL = req.getRequestURL().toString();
 			SOAP_SERVER_URL = reqURL.substring( 0, reqURL.lastIndexOf("/servlet") ) + "/servlet/SOAPServer";
 			CTILogger.info( "SOAP Server resides locally at " + SOAP_SERVER_URL );
