@@ -133,7 +133,6 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		
 		StringBuffer sql = new StringBuffer("SELECT PAO.PAONAME, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
 				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
@@ -329,15 +328,15 @@ public class LoadGroupModel extends ReportModelBase
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 130, 10, null),
-				new ColumnProperties(0, 1, 65, 10, "MM/dd/yyyy"),
-				new ColumnProperties(65, 1, 55, 10, "hh:mm:ss"),
-				new ColumnProperties(120, 1, 55, 10, "hh:mm:ss"),
-				new ColumnProperties(175, 1, 55, 10, null),
-				new ColumnProperties(230, 1, 80, 10, null),
-				new ColumnProperties(310, 1, 55, 10, null),
-				new ColumnProperties(365, 1, 55, 10, null),
-				new ColumnProperties(420, 1, 55, 10, null),
-				new ColumnProperties(475, 1, 55, 10, null)
+				new ColumnProperties(0, 1, 60, 10, "MM/dd/yyyy"),
+				new ColumnProperties(60, 1, 50, 10, "hh:mm:ss"),
+				new ColumnProperties(110, 1, 50, 10, "hh:mm:ss"),
+				new ColumnProperties(160, 1, 50, 10, null),
+				new ColumnProperties(210, 1, 190, 10, null),
+				new ColumnProperties(400, 1, 50, 10, null),
+				new ColumnProperties(450, 1, 50, 10, null),
+				new ColumnProperties(500, 1, 50, 10, null),
+				new ColumnProperties(0, 1, 100, 10, null)
 			};
 		}
 		return columnProperties;
