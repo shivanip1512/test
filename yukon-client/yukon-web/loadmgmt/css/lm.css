@@ -1,0 +1,11 @@
+
+
+.lm_optUnsel 	{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:130 px;}
+.lm_optSel   	{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #666699; cursor:default; width:130 px;}
+
+
+.confMsg		{ font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #000000 }
+.lm_tip_cell	{ cursor: pointer; text-align: center; text-decoration: underline; }
+.boldMsg		{ font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #FF0000 }
+.defButton		{ font-family: Arial, Helvetica, sans-serif; font-size: 12px; width: 80 px;}
+.refreshTxt		{ font-family: Arial, Helvetica, sans-serif; font-size: 12px;  color: #FFFF00; font-style: italic}
