@@ -217,7 +217,73 @@ int main(int argc, char **argv)
                         cout << "    " << str << endl;
                     }
 
-                    if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9]?_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
+                    if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9]_[0-9]+(_[0-9]+)?_[0-9][0-9][0-9][0-9]?")).isNull())
+                    {
+                        str = str.strip(RWCString::both, '_');
+
+                        RWCTokenizer next(str);
+                        RWCString datestr = next("_");
+                        RWCString majorRevision = next("_");
+                        RWCString minorRevision = next("_");
+                        RWCString buildRevision = next("_");
+                        RWCString timestr = next(" \0");
+
+                        majorRevision = majorRevision.strip(RWCString::both, '_');
+                        minorRevision = minorRevision.strip(RWCString::both, '_');
+                        buildRevision = buildRevision.strip(RWCString::both, '_');
+
+                        if(gMajorRevision > 0)
+                        {
+                            if(gMinorRevision > 0)
+                            {
+                                // Looking for the largest build with these major and minor revisions.
+                                if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                    minorRevisionVal == atoi(minorRevision.data()) &&
+                                    buildRevisionVal < atoi(buildRevision.data()) )
+                                {
+                                    buildRevisionVal = atoi(buildRevision.data());
+                                }
+                            }
+                            else
+                            {
+                                // Looking for the largest build with this major revision.
+                                if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                    minorRevisionVal < atoi(minorRevision.data()) )
+                                {
+                                    minorRevisionVal = atoi(minorRevision.data());
+                                    buildRevisionVal = atoi(buildRevision.data());
+                                }
+                                else if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                         minorRevisionVal == atoi(minorRevision.data()) &&
+                                         buildRevisionVal < atoi(buildRevision.data()) )
+                                {
+                                    buildRevisionVal = atoi(buildRevision.data());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if( majorRevisionVal < atoi(majorRevision.data()) )
+                            {
+                                majorRevisionVal = atoi(majorRevision.data());
+                                minorRevisionVal = atoi(minorRevision.data());
+                                buildRevisionVal = atoi(buildRevision.data());
+                            }
+                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                     minorRevisionVal < atoi(minorRevision.data()) )
+                            {
+                                minorRevisionVal = atoi(minorRevision.data());
+                                buildRevisionVal = atoi(buildRevision.data());
+                            }
+                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                     minorRevisionVal == atoi(minorRevision.data()) &&
+                                     buildRevisionVal < atoi(buildRevision.data()) )
+                            {
+                                buildRevisionVal = atoi(buildRevision.data());
+                            }
+                        }
+                    }
+                    else if(!(str = token.match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9]?_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
                     {
                         str = str.strip(RWCString::both, '_');
 
