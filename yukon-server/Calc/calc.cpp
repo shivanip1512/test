@@ -40,11 +40,8 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
     }
     else if( !updateType.compareTo(UpdateType_OneChange, RWCString::ignoreCase))
     {
-        // FIXFIXFIX - Treat the same for now but should be a different update type
         _updateInterval = 0;
-        _updateType = allUpdate;
-
-        // XXX  invalid for now
+        _updateType = anyUpdate;
     }
     else if( !updateType.compareTo(UpdateType_Historical, RWCString::ignoreCase))
     {
@@ -52,11 +49,18 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
 //        _updateType = historical;
 
         // XXX  invalid for now
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Historical Update Type not supported in calc and logic server." << endl;
+        }
         _valid = FALSE;
-
     }
     else
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Invalid Update Type: " << updateType << endl;
+        }
         _valid = FALSE;
     }
 
@@ -218,6 +222,16 @@ BOOL CtiCalc::ready( void )
             case allUpdate:
                 for( ; iter( ); )
                     isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
+                break;
+            case anyUpdate:
+                for( ; iter( ); )
+                {
+                    isReady |= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
+                    if( isReady )
+                    {
+                        break;
+                    }
+                }
                 break;
         }
     }
