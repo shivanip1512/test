@@ -355,7 +355,7 @@ public class WebGraph implements com.cannontech.database.cache.DBChangeListener
 	 */
 	public static void main(String[] args) 
 	{
-		com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "  --   Web Graph Started.");
+		com.cannontech.clientutils.CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +com.cannontech.common.version.VersionTools.getDatabaseVersion());
 	
 		System.setProperty("cti.app.name", "WebGraph");
 		WebGraph webGraph= new WebGraph();
