@@ -7,6 +7,68 @@
 	
 	<target name="build">
         <mkdir dir="build"/>
+
+
+		<!--****************************************************
+		*  Compile the JSP files into java files
+		*   This is to ensure that all the JSPs will "work"
+		*****************************************************-->
+		<jspc srcdir="${yukon-web}"
+			destdir="build"
+			compiler="jasper41"
+			uriroot="${yukon-web}"
+			verbose="9">
+			<include name="**/*.jsp" />
+				
+		    <classpath>
+				<pathelement path="${java.class.path}"/>
+		         <fileset dir="${yukon.lib}">
+		            <include name="**/*.jar"/>
+		         </fileset>
+		    </classpath>
+		</jspc>
+
+		<!--*********************************************************
+		*  Compile the JSP generated java files into class files
+		*  This is not done for now since the generated java files 
+		*  are all put into the same package!!
+		**********************************************************-->
+		<!--
+		<javac srcdir="build" destdir="jspbuild" target="1.3">
+			<classpath>                        
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath> 
+		</javac>
+		-->
+
+		<!--****************************************************
+		*  Make the java files Tomcat compatible
+		*****************************************************-->
+		<!--
+		<move todir="${tempdir}">
+			<fileset dir="${jspdest}">
+			<include name="**/*.java"/>
+			<exclude name="**/*$jsp.java"/>
+			</fileset>
+			<mapper type="glob" from="*.java" to="*$jsp.java"/>
+		</move>
+		
+		<move todir="${jspdest}">
+			<fileset dir="${tempdir}">
+			<include name="**/*$jsp.java"/>
+			</fileset>
+		</move>
+		-->
+	
+
+
+		<!--*********************************************************
+		*  The old build target starts here
+		**********************************************************-->
+<!--
+        <mkdir dir="build"/>
         <copy todir="build">
             <fileset dir=".">
                 <exclude name="build/**" />
@@ -29,25 +91,46 @@
               <include name="*.properties"/>
            </fileset>
         </copy>
+		
+	    <war destfile="${yukon.lib}/yukon-web.war" basedir="build"
+	        webxml="WEB-INF/web.xml"
+	        duplicate="preserve">
+	    </war>
+-->
 
-        <war destfile="${yukon.lib}/yukon-web.war" basedir="build"
-            webxml="WEB-INF/web.xml"
-            duplicate="preserve">
-        </war>
-	</target>
+<!--
+		<copy todir="jspbuild/WEB-INF">
+		   <fileset dir="${yukon-web}/WEB-INF" >
+		      <include name="**/*.*"/>
+		   </fileset>
+		</copy>
+	
+		<copy todir="jspbuild" includeEmptyDirs = "false" >
+		   <fileset dir="${yukon-web}" >
+		      <exclude name="**/*.jsp"/>
+		      <exclude name="**/build/"/>
+		      <exclude name="**/tempbuild/"/>
+		      <exclude name="**/jspbuild/"/>
+		      <exclude name="**/work/"/>
+		   </fileset>
+		</copy>          
+-->
+
+	</target> <!-- End BUILD target -->
+
    	
 	<target name="clean">
 		<delete file="${yukon.lib}/yukon-web.war" />
         <delete dir="build"/>
 	</target>
 	
-   <target name = "copy">
-       <copy todir="c:/Tomcat/webapps" preservelastmodified="yes">
-           <fileset dir=".">
-               <include name="**/*.war"/>
-           </fileset>
-       </copy>
-   </target>
+	<target name = "copy">
+		<copy todir="c:/Tomcat/webapps" preservelastmodified="yes">
+			<fileset dir=".">
+				<include name="**/*.war"/>
+			</fileset>
+		</copy>
+	</target>
 	
 
 	<target name="webbuild" depends="build,webcopy"/>	
@@ -61,5 +144,133 @@
 			</fileset>
 		</copy>
 	</target>
+
+
+
+
+
+	<!-- Translate and compile all jsp files for current web app 
+	depends="jspc_preparse" -->
+    <target name="jspc" >
+    
+<delete quiet="true"> <fileset dir="tempbuild"/> </delete>
+<delete quiet="true"> <fileset dir="jspbuild"/> </delete>
+
+		<foreach target="jspc_preparse" param="param.jspdir" >
+			<path>
+				<dirset dir="${yukon-web}">
+					<exclude name="jspbuild"/>
+					<exclude name="tempbuild"/>
+				</dirset>
+			</path>
+		</foreach>
+		
+		<foreach target="javac_jsp_compile" param="param.jspdir" >
+			<path>				
+				<dirset dir="jspbuild" >
+					<exclude name="tempbuild"/>
+				</dirset>
+			</path>
+		</foreach>
+
+    </target>
+
+
+    <!-- Use Jasper2 to parse jsp into java -->
+    <target name="jspc_preparse" description="Use Jasper2 to parse jsp into java">
+		<echo message="jspc_preparse called for ${param.jspdir}" />
+
+
+			<jspc srcdir="${param.jspdir}"
+				destdir="jspbuild"
+				package="org.apache.jsp"
+				compiler="jasper41"
+				uriroot="${yukon-web}"
+                failonerror="true"
+				verbose="9">
+				<include name="**/*.jsp" />
+				<exclude name="**/include/**"/>
+
+			    <classpath>
+					<pathelement path="${java.class.path}"/>
+			         <fileset dir="${yukon.lib}">
+			            <include name="**/*.jar"/>			            
+			         </fileset>
+			    </classpath>
+			</jspc>
+
+            <!-- Fix all the package names -->
+<!--            
+            <replaceregexp
+                    match="^package org.apache.jsp.*;"
+                    replace="package org.apache.jsp;" >
+                    <fileset dir="${tempbuild}" >
+                            <include name="**/*.java" />
+                    </fileset>
+            </replaceregexp>
+-->
+			<!--****************************************************
+			*  Make the java files Tomcat compatible
+			*****************************************************-->
+<!--			<move todir="jspbuild">
+				<fileset dir="jspbuild">
+				<include name="**/*.java"/>
+				<exclude name="**/*$jsp.java"/>
+				</fileset>
+				<mapper type="glob" from="*_jsp.java" to="*$jsp.java"/>
+			</move>
+-->
+
+    </target>
+
+
+	<target name="javac_jsp_compile" description="Compiling _jsp.java files for one tomcat directory">
+		<echo message="javac_jsp_compile called for ${param.jspdir}" />
+
+		<property name="tempbuild" value="${yukon-web}/tempbuild" />
+
+		<mkdir dir="${tempbuild}" />
+		<copy todir="${tempbuild}" >
+        	<fileset dir="${param.jspdir}" >
+				<include name="*.java" />
+			</fileset>
+		</copy>
+
+
+		<javac srcdir="${tempbuild}" destdir="${param.jspdir}" target="1.3"
+						debug="on" optimize="off">
+			<classpath>
+				<fileset dir="${yukon.lib}">
+					<include name="**/*.jar"/>
+				</fileset>
+                <fileset dir="${param.jspdir}" >
+                    <include name="*.java" />
+                </fileset>				
+			</classpath> 
+		</javac>
+
+		<available property="package.created" file="jspbuild/org/apache/jsp" />
+
+
+
+		<!-- If no jsp / java files in this dir, then skip move because it would fail -->
+<!--		
+		<if> <istrue value="${package.created}" />
+			<then>
+				<move todir="${param.jspdir}">
+					<fileset dir="${tempbuild}/org/apache/jsp" />
+				</move>
+			</then>
+			<else>
+				<echo message="No java files to compile in ${param.jspdir}" />
+			</else>
+		</if>
+-->
+
+<!-- <delete quiet="true"> <fileset dir="${tempbuild}"/> </delete> -->
+
+	</target>
+
+
 	
 </project>
