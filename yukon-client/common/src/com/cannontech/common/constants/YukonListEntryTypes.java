@@ -65,5 +65,6 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_FAN_STAT_AUTO				= 2502;
 	public static final int YUK_DEF_ID_FAN_STAT_ON				= 2503;
 	public static final int YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW	= 2601;
+	public static final int YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST	= 2699;
 
 }
