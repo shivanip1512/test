@@ -66,33 +66,26 @@ public void delete() throws java.sql.SQLException
 public String getName() {
 	return name;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public final static Integer getNextStateGroupID() 
+public final static Integer getNextStateGroupID() throws java.sql.SQLException 
+{	
+	return getNextStateGroupID(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+}
+
+public final static Integer getNextStateGroupID(String databaseAlias) throws java.sql.SQLException 
 {
-	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement("SELECT Max(StateGroupID)+1 FROM " + TABLE_NAME ,
+													databaseAlias );
 
-	synchronized(cache)
+	try
 	{
-		java.util.List stateGroups = cache.getAllStateGroups();
-		java.util.Collections.sort(stateGroups);
-
-		int counter = 1;
-		int currentID;
-		 														
-		for(int i=0;i<stateGroups.size();i++)
-		{
-			currentID = ((com.cannontech.database.data.lite.LiteStateGroup)stateGroups.get(i)).getStateGroupID();
-
-			if( currentID > counter )
-				break;
-			else
-				counter = currentID + 1;
-		}		
-		
-		return new Integer( counter );
+		stmt.execute();
+		return new Integer(stmt.getRow(0)[0].toString());
+	}
+	catch( Exception e )
+	{
+	   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	   return new Integer(-5);
 	}
 }
 /**

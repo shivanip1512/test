@@ -10,7 +10,15 @@ public final class StateFactory {
 public final static GroupState createGroupState() {
 
 	GroupState returnGroupState = null;
-	returnGroupState = createGroupState( com.cannontech.database.db.state.StateGroup.getNextStateGroupID() );
+	
+	try
+	{
+		returnGroupState = createGroupState( com.cannontech.database.db.state.StateGroup.getNextStateGroupID() );
+	}
+	catch (Exception e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
 	
 	return returnGroupState;
 }
