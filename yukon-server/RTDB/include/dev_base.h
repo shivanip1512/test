@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/05/10 21:35:51 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/05/19 14:48:53 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,7 +228,7 @@ public:
 
     virtual bool hasQueuedWork() const;
     virtual bool isExecutionProhibitedByInternalLogic() const;
-    virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage);
+    virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt = 0);
     virtual LONG deviceQueueCommunicationTime() const;          // how many millis of comm time do we have?
     virtual LONG deviceMaxCommunicationTime() const;            // maximum transmitter transmit time that this device is permitted to grab.  Assigned by db or CPARM "PORTER_MAX_TRANSMITTER_TIME"
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
@@ -312,7 +312,7 @@ inline INT CtiDeviceBase::getStopBits() const { return ONESTOPBIT; }
 inline INT CtiDeviceBase::getParity() const { return NOPARITY; }
 inline INT CtiDeviceBase::getProtocolWrap() const { return ProtocolWrapNone; }
 inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
-inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage) { return NORMAL; }
+inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
 inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
 

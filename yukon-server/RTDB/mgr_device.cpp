@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2004/05/11 18:32:57 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2004/05/19 14:49:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,15 +78,17 @@ static void applyMustCompleteTimeIsEvaluateNext(const long key, CtiDeviceSPtr de
 
     if(devA != devB.get() && devA->getExclusion().proximityExcludes(devB->getID()))
     {
+        RWTime now;
+
         // Use the most restrictive of it's current or devA's..
-        if( devB->getExclusion().getMustCompleteBy() > devA->getExclusion().getEvaluateNextAt() ||
-            devB->getExclusion().getMustCompleteBy() < RWTime() )
+        if( devA->getExclusion().getEvaluateNextAt() > now &&
+            ( devB->getExclusion().getMustCompleteBy() > devA->getExclusion().getEvaluateNextAt()) )
         {
             devB->getExclusion().setMustCompleteBy( devA->getExclusion().getEvaluateNextAt() );                      // prevent any devB  which may be seleced below from taking our entire slot.
 
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << devA->getName() << " requires " << devB->getName() << " to complete by " << devB->getExclusion().getMustCompleteBy() << " if grant occurs" << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << RWTime() << " " << devA->getName() << " requires " << devB->getName() << " to complete by " << devB->getExclusion().getMustCompleteBy() << " if grant occurs" << endl;
             }
         }
     }
@@ -98,16 +100,18 @@ static void applyEvaluateNextByExecutingUntil(const long key, CtiDeviceSPtr devB
 
     if(devA != devB.get() && devA->getExclusion().proximityExcludes(devB->getID()))
     {
+        RWTime now;
+
         // Use the most restrictive of it's current or devA's..
         if( devB->getExclusion().getEvaluateNextAt() < devA->getExclusion().getExecutingUntil() ||
-            devB->getExclusion().getEvaluateNextAt() < RWTime() )
+            devB->getExclusion().getEvaluateNextAt() < now )
         {
             devB->getExclusion().setEvaluateNextAt(devA->getExclusion().getExecutingUntil());    // mark out all proximity conflicts to when devA will be done.
             devB->setExecutionProhibited(devA->getID(), devA->getExclusion().getExecutingUntil());
 
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << devB->getName() << " delayed by " << devA->getName() << " until " << devB->getExclusion().getEvaluateNextAt() << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << RWTime() << " " << devB->getName() << "'s execution blocked by " << devA->getName() << " until " << devB->getExclusion().getEvaluateNextAt() << endl;
             }
         }
     }
@@ -135,8 +139,8 @@ static void applyRemoveInfiniteProhibit(const long unusedkey, CtiDeviceSPtr Devi
 
         if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(slog);
+            slog << RWTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
         }
     }
     catch(...)
@@ -1683,13 +1687,45 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                      *  Walk the anxiousDevice's exclusion list checking if any of the devices on it indicate that they are
                      *  currently executing.  If any of them are executing, the anxious device cannot start.
                      */
+                    bool busted = false;
                     CtiDeviceSPtr device;
-                    vector< CtiDeviceSPtr > exlist;
+                    vector< CtiDeviceSPtr > anxiousDeviceBlocksThisVector;
+
+                    if(anxiousDevice->getExclusion().hasTimeExclusion())
+                    {
+                        /* This exclusion identifies a cycle time type exclusion window/start/duration */
+                        RWTime open = anxiousDevice->getExclusion().getTimeSlotOpen();
+                        RWTime close = anxiousDevice->getExclusion().getTimeSlotClose();
+
+                        if( anxiousDevice->getExclusion().isTimeExclusionOpen() )
+                        {
+                            // The window is open.  All proximity devices should eventually clear out of our way.
+                            if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Device " << anxiousDevice->getName() << " is in its execution window and will execute if there are no proximity conflicts." << endl;
+                            }
+
+                            bstatus = true;             // Provided no proximity exclusion is executing, we can go!
+                        }
+                        else
+                        {
+                            if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Device " << anxiousDevice->getName() << " is outside its execution window and will execute at " << open << " - " << close << endl;
+                            }
+
+                            deviceexclusion = anxiousDevice->getExclusion().getCycleTimeExclusion();                             // Pass this out to the callee as the device which blocked us first!
+                            busted = true;
+                            bstatus = false;
+                        }
+                    }
 
                     CtiDevice::exclusions exvector = anxiousDevice->getExclusions();
                     CtiDevice::exclusions::iterator itr;
 
-                    for(itr = exvector.begin(); itr != exvector.end(); itr++)
+                    for(itr = exvector.begin(); !busted && itr != exvector.end(); itr++)
                     {
                         CtiTablePaoExclusion &paox = *itr;
 
@@ -1709,7 +1745,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                             dout << RWTime() << " Device " << anxiousDevice->getName() << " cannot execute because " << device->getName() << " is executing" << endl;
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
-                                        exlist.clear();             // Cannot use the list to block other devices.
+                                        anxiousDeviceBlocksThisVector.clear();             // Cannot use the list to block other devices.
                                         bstatus = false;
                                         break;                      // we cannot go
                                     }
@@ -1719,21 +1755,15 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                     }
                                     else
                                     {
-                                        exlist.push_back(device);
+                                        anxiousDeviceBlocksThisVector.push_back(device);
                                     }
                                 }
 
                                 break;
                             }
-                        case (CtiTablePaoExclusion::ExFunctionTimeMethod1):
+                        case (CtiTablePaoExclusion::ExFunctionCycleTime):
                             {
-                                /* This exclusion identifies a cycle time type exclusion window/start/duration */
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-
+                                // Processed above!
                                 break;
                             }
                         default:
@@ -1747,10 +1777,13 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                         }
                     }
 
-                    if(!exlist.empty())     // This tells me that I have no conflicting devices!
+                    //
+                    // If none of anxiousDevice's exclusions devices caused it to blink, we will iterate across the vector and mark them prohibited.
+                    //
+                    if(!anxiousDeviceBlocksThisVector.empty())     // This tells me that I have no conflicting devices!
                     {
                         vector< CtiDeviceSPtr >::iterator xitr;
-                        for(xitr = exlist.begin(); xitr != exlist.end(); xitr++)
+                        for(xitr = anxiousDeviceBlocksThisVector.begin(); xitr != anxiousDeviceBlocksThisVector.end(); xitr++)
                         {
                             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                             {
@@ -1771,13 +1804,11 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
 
             if(bstatus)
             {
-#if 0
-                if( getDebugLevel() & DEBUGLEVEL_EXCLUSIONS && anxiousDevice->hasExclusions() )
+                if( 0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS && anxiousDevice->hasExclusions() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
                 }
-#endif
                 anxiousDevice->getExclusion().setExecutingUntil(anxiousDevice->selectCompletionTime());                    // Mark ourselves as executing!
             }
         }
@@ -2386,7 +2417,8 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
          *  This apply function only examines TIME excluded transmitters
          */
         if( portid == devA->getPortID() &&
-            devA->getExclusion().getEvaluateNextAt() <= now && devA->getExclusion().hasTimeExclusion() )
+            devA->getExclusion().hasTimeExclusion() &&
+            devA->getExclusion().getEvaluateNextAt() <= now )
         {
             // Is this transmitter permitted to transmit right now?
             if(devA->getExclusion().isTimeExclusionOpen())
@@ -2417,11 +2449,19 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                 {   // Allocate out some of devA's time window.
                     devA->getExclusion().setEvaluateNextAt( now + 20 );
                     _exclusionMap.apply(applyMustCompleteTimeIsEvaluateNext, (void*)(devA.get()));
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " " << devA->getName() << " has no queued work.  Proximity excluded devices released until " << devA->getExclusion().getEvaluateNextAt() << endl;
+                    }
                 }
             }
             else
             {
-                devA->getExclusion().setEvaluateNextAt( devA->getExclusion().getNextTimeSlotOpen() );  // offset may be the next window open, or the partial allocation given up in the case of no codes.
+                RWTime opens = devA->getExclusion().getTimeSlotOpen();
+                if(now > opens) opens = devA->getExclusion().getNextTimeSlotOpen();
+
+                devA->getExclusion().setEvaluateNextAt( opens );  // offset may be the next window open, or the partial allocation given up in the case of no codes.
                 _exclusionMap.apply(applyMustCompleteTimeIsEvaluateNext, (void*)(devA.get()));
             }
         }
@@ -2434,7 +2474,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
         devS->getExclusion().setExecutingUntil( devS->getExclusion().getExecutionGrantExpires() );           // Make sure we know who is executing.
         _exclusionMap.apply(applyEvaluateNextByExecutingUntil, (void*)(devS.get()));
     }
-    else if(!devS)       // We did not find any time excluded transmitters willing to take the ball.
+    else       // We did not find any time excluded transmitters willing to take the ball.
     {
         // Find Best Proximity Excluded Device with queue entries.
 
@@ -2473,10 +2513,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
 
     if(devS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << devS->getName() << " Execution Grant Expires at " << devS->getExclusion().getExecutionGrantExpires() << endl;
-        dout << RWTime() << " " << devS->getName() << " Execution Must Complete by " << devS->getExclusion().getMustCompleteBy() << endl;
-        dout << RWTime() << " " << devS->getName() << " selected to execute!" << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(slog);
+        slog << RWTime() << " " << devS->getName() << " Execution Grant Expires at " << devS->getExclusion().getExecutionGrantExpires() << endl;
+        slog << RWTime() << " " << devS->getName() << " Execution Must Complete by " << devS->getExclusion().getMustCompleteBy() << endl;
     }
 
 

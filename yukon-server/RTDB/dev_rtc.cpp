@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/10 21:35:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/19 14:48:53 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.5  2004/05/19 14:48:53  cplender
+* Exclusion changes
+*
 * Revision 1.4  2004/05/10 21:35:50  cplender
 * Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
 *
@@ -36,13 +39,15 @@
 
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
+#include "protocol_sa.h"
 #include "pt_base.h"
 #include "pt_numeric.h"
 #include "pt_status.h"
 #include "pt_accum.h"
 
 
-CtiDeviceRTC::CtiDeviceRTC()
+CtiDeviceRTC::CtiDeviceRTC() :
+_millis(0)
 {
 }
 
@@ -299,15 +304,30 @@ LONG CtiDeviceRTC::getAddress() const
 }
 
 
-INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage)
+INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
     if(!(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags))
     {
+
+        if(OutMessage->Buffer.SASt._groupType == SA205)
+        {
+            _millis += gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
+        }
+        else
+        {
+            _millis += gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 222);
+        }
+
         OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
         _workQueue.putQueue(OutMessage);
         OutMessage= 0;
+
+        if(dqcnt)
+        {
+            *dqcnt = (UINT)_workQueue.entries();
+        }
 
         status = QUEUED_TO_DEVICE;
     }
@@ -325,17 +345,27 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
     bool stat = false;
 
     if( (OutMessage = _workQueue.getQueue( 500 )) != NULL )
+    {
+        if(OutMessage->Buffer.SASt._groupType == SA205)
+        {
+            _millis -= gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_205_CODE", 1000);
+        }
+        else
+        {
+            _millis -= gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 225);
+        }
+
+        if(_millis < 0) _millis = 0;
+
         stat = true;
+    }
 
     return stat;
 }
 
 LONG CtiDeviceRTC::deviceQueueCommunicationTime() const
 {
-    LONG  millis;
-
-
-    millis = _workQueue.entries() * gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_CODE", 222);
+    LONG millis = _millis;
 
     if(millis > 0)
     {

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/05/10 21:35:50 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/05/19 14:48:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -944,13 +944,13 @@ RWTime CtiDeviceBase::selectCompletionTime() const
         bestTime = _exclusion.getMustCompleteBy();
     }
 
-    if( now < _exclusion.getNextTimeSlotClose() && _exclusion.getNextTimeSlotClose() < bestTime )
+    if( now < _exclusion.getTimeSlotClose() && _exclusion.getTimeSlotClose() < bestTime )
     {
-        bestTime = _exclusion.getNextTimeSlotClose();
+        bestTime = _exclusion.getTimeSlotClose();
     }
 
     LONG queueTime = deviceQueueCommunicationTime();
-    if(queueTime > 0 && now + queueTime < bestTime)
+    if(queueTime > 0 && now + (queueTime / 1000) + 1 < bestTime)
     {
         bestTime = now + ((queueTime / 1000) + 1);
     }

@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/10 21:35:51 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/19 14:48:53 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.5  2004/05/19 14:48:53  cplender
+* Exclusion changes
+*
 * Revision 1.4  2004/05/10 21:35:51  cplender
 * Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
 *
@@ -48,6 +51,8 @@ protected:
 
 private:
 
+    LONG _millis;
+
 public:
 
     typedef CtiDeviceRemote Inherited;
@@ -66,7 +71,7 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual bool hasQueuedWork() const;
-    virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage);
+    virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
     virtual LONG deviceQueueCommunicationTime() const;
     virtual LONG deviceMaxCommunicationTime() const;

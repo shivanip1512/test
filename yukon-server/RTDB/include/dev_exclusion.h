@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/10 21:35:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/19 14:48:53 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.4  2004/05/19 14:48:53  cplender
+* Exclusion changes
+*
 * Revision 1.3  2004/05/10 21:35:51  cplender
 * Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
 *
@@ -56,6 +59,8 @@ public:
 protected:
 
     LONG _deviceId;
+
+    CtiTablePaoExclusion _cycleTimeExclusion;          // Used if this device has a time exclusion?
 
     mutable CtiMutex    _exclusionMux;            // Used when processing the exclusion logic
     exclusions          _exclusionRecords;        // This is the list of database records identifying the exclusions on or against this pao.
@@ -115,7 +120,10 @@ public:
     bool isTimeExclusionOpen() const;          // This device has no time slot, or no is in the timeslot.
     bool proximityExcludes(LONG id) const;
 
+    RWTime getTimeSlotOpen() const;
     RWTime getNextTimeSlotOpen() const;
-    RWTime getNextTimeSlotClose() const;
+    RWTime getTimeSlotClose() const;
+    CtiTablePaoExclusion getCycleTimeExclusion() const;
+
 };
 #endif // #ifndef __DEV_EXCLUSION_H__

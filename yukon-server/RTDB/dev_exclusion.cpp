@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/10 21:35:50 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/19 14:48:53 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.4  2004/05/19 14:48:53  cplender
+* Exclusion changes
+*
 * Revision 1.3  2004/05/10 21:35:50  cplender
 * Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
 *
@@ -30,6 +33,7 @@
 #include "dev_exclusion.h"
 #include "guard.h"
 #include "logger.h"
+#include "utility.h"
 
 
 CtiDeviceExclusion::CtiDeviceExclusion(LONG id) :
@@ -79,7 +83,7 @@ bool CtiDeviceExclusion::hasExclusions() const
 
         if(ex_guard.isAcquired())
         {
-            bstatus = _exclusionRecords.size() != 0;
+            bstatus = _exclusionRecords.size() != 0 || (_cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime);
         }
         else
         {
@@ -112,7 +116,14 @@ void CtiDeviceExclusion::addExclusion(CtiTablePaoExclusion &paox)
 
         if(guard.isAcquired())
         {
-            _exclusionRecords.push_back(paox);
+            if(paox.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime)
+            {
+                _cycleTimeExclusion = paox;                     // Store this in a special slot to make it quicker to discover.  Only one of these.
+            }
+            else
+            {
+                _exclusionRecords.push_back(paox);
+            }
         }
         else
         {
@@ -137,6 +148,7 @@ void CtiDeviceExclusion::clearExclusions()
 
         if(guard.isAcquired())
         {
+            _cycleTimeExclusion.setFunctionId( CtiTablePaoExclusion::ExFunctionInvalid );
             _exclusionRecords.clear();
         }
         else
@@ -229,6 +241,14 @@ RWTime CtiDeviceExclusion::getExecutingUntil() const
 
 void CtiDeviceExclusion::setExecutingUntil(RWTime set)
 {
+    #if 0
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " Executing until " << set << endl;
+    }
+    #endif
+
     _executingUntil = set;
     return;
 }
@@ -375,20 +395,9 @@ bool CtiDeviceExclusion::hasTimeExclusion() const
 {
     bool b = false;
 
-    exclusions::const_iterator itr;
-
-    for(itr = _exclusionRecords.begin(); itr != _exclusionRecords.end(); itr++)
+    if(_cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime)
     {
-        const CtiTablePaoExclusion &paox = *itr;
-
-        switch(paox.getFunctionId())
-        {
-        case (CtiTablePaoExclusion::ExFunctionTimeMethod1):
-            {
-                b = true;
-                break;
-            }
-        }
+        b = true;
     }
 
     return b;
@@ -460,25 +469,64 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
 {
     bool bstatus = false;
 
-    // ACH ACH ACH
+    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    {
+        if(_cycleTimeExclusion.getFunctionId() == (CtiTablePaoExclusion::ExFunctionCycleTime))
+        {
+            RWTime now;
+            RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
+
+            RWTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();               // Back up one position.
+            RWTime close = open + _cycleTimeExclusion.getTransmitTime();
+
+            bstatus = (open <= now && now < close);
+        }
+    }
 
     return bstatus;
+}
+
+RWTime CtiDeviceExclusion::getTimeSlotOpen() const
+{
+    RWTime tm;
+
+    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    {
+        RWTime now;
+        RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
+        RWTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();
+        tm = open;
+    }
+
+    return tm;
 }
 
 RWTime CtiDeviceExclusion::getNextTimeSlotOpen() const
 {
     RWTime tm;
 
-    // ACH ACH ACH
+    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    {
+        RWTime now;
+        RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
+        tm = nextOpen + _cycleTimeExclusion.getCycleOffset();
+    }
 
     return tm;
 }
 
-RWTime CtiDeviceExclusion::getNextTimeSlotClose() const
+RWTime CtiDeviceExclusion::getTimeSlotClose() const
 {
-    RWTime tm(YUKONEOT);
+    RWTime tm;
 
-    // ACH ACH ACH
+    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    {
+        RWTime now;
+        RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
+        RWTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();
+        RWTime close = open + _cycleTimeExclusion.getTransmitTime();
+        tm = close;
+    }
 
     return tm;
 }
@@ -507,4 +555,10 @@ bool CtiDeviceExclusion::proximityExcludes(LONG id) const
 
     return b;
 }
+
+CtiTablePaoExclusion CtiDeviceExclusion::getCycleTimeExclusion() const
+{
+    return _cycleTimeExclusion;
+}
+
 
