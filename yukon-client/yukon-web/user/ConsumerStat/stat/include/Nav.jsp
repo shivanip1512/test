@@ -196,18 +196,20 @@ pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 		StarsThermostatSettings settings = thermostats.getStarsLMHardware(i).getStarsThermostatSettings();
 %>
 	pageLinks[<%= i %>] = new Array(3);
-	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=" + <%= i %>;
+	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=<%= i %>";
 <%
 		if (settings.getStarsThermostatDynamicData() == null) {
 %>
-	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=" + <%= i %>;
-	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=" + <%= i %>;
+	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
 <%
 		}
 		else {
+			StarsThermoModeSettings navMode = settings.getStarsThermostatDynamicData().getMode();
+			String navModeStr = (navMode != null)? "&mode=" + navMode.toString() : "";
 %>
-	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=" + <%= i %>;
-	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=" + <%= i %>;
+	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %><%= navModeStr %>";
+	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %><%= navModeStr %>";
 <%
 		}
 	}

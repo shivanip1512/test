@@ -403,28 +403,30 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 		int num = Integer.parseInt( ((String[]) switches.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(2);
-	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=" + <%= num %>;
-	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=" + <%= num %>;
+	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
 	}
 	for (int i = 0; i < thermostats.size(); i++) {
 		int num = Integer.parseInt( ((String[]) thermostats.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(4);
-	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=" + <%= num %>;
-	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=" + <%= num %>;
+	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
 		StarsThermostatSettings settings = inventories.getStarsLMHardware(num).getStarsThermostatSettings();
 		if (settings.getStarsThermostatDynamicData() == null) {
 %>
-	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=" + <%= num %>;
-	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=" + <%= num %>;
+	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=<%= num %>";
 <%
 		}
 		else {
+			StarsThermoModeSettings navMode = settings.getStarsThermostatDynamicData().getMode();
+			String navModeStr = (navMode != null)? "&mode=" + navMode.toString() : "";
 %>
-	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=" + <%= num %>;
-	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=" + <%= num %>;
+	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %><%= navModeStr %>";
+	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=<%= num %><%= navModeStr %>";
 <%
 		}
 	}
@@ -432,7 +434,7 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 		int num = Integer.parseInt( ((String[]) meters.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(1);
-	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=" + <%= num %>;
+	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 <%
 	}
 %>
