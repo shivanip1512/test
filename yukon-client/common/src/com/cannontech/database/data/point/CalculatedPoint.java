@@ -12,6 +12,7 @@ public class CalculatedPoint extends ScalarPoint {
 	private CalcBase calcBase = null;
 	private java.util.Vector calcComponentVector = null;
 	private CalcPointBaseline calcBaselinePoint = null;
+	private boolean baselineAssigned = false;
 /**
  * CalculatedPoint constructor comment.
  */
@@ -44,8 +45,11 @@ public void add() throws java.sql.SQLException
 	for( int i = 0; i < getCalcComponentVector().size(); i++ )
 		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
 
-	if(getCalcBaselinePoint().getBaselineID() != null)
-		((CalcPointBaseline) getCalcBaselinePoint()).add();
+	if(baselineAssigned)
+	{
+		getCalcBaselinePoint().setPointID(getPoint().getPointID());
+		getCalcBaselinePoint().add();
+	}
 }
 /**
  * Insert the method's description here.
@@ -64,7 +68,8 @@ public void addPartial() throws java.sql.SQLException {
 public void delete() throws java.sql.SQLException 
 {
 	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
-	CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );
+	if(! baselineAssigned)
+		CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );
 	
 	//a dynamic table used by the CalcHistorical application
 	delete(DynamicCalcHistorical.TABLE_NAME, "PointID", getPoint().getPointID());
@@ -90,6 +95,7 @@ public CalcBase getCalcBase() {
 		
 	return this.calcBase;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/22/2001 12:39:07 PM)
@@ -122,8 +128,11 @@ public CalcPointBaseline getCalcBaselinePoint() {
 	if(calcBaselinePoint == null)
 		calcBaselinePoint = new CalcPointBaseline();
 		
-	
 	return calcBaselinePoint;
+}
+
+public boolean getBaselineAssigned() {
+	return baselineAssigned;
 }
 /**
  * This method was created in VisualAge.
@@ -135,8 +144,7 @@ public void retrieve() throws java.sql.SQLException{
 
 	calcComponentVector = CalcComponent.getCalcComponents(getPoint().getPointID());
 	
-	if(getCalcBaselinePoint().getBaselineID() != null)
-		calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
+	calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
 }
 /**
  * This method was created in VisualAge.
@@ -145,6 +153,7 @@ public void retrieve() throws java.sql.SQLException{
 public void setCalcBase(CalcBase newValue) {
 	this.calcBase = newValue;
 }
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.util.Vector
@@ -158,6 +167,10 @@ public void setCalcComponentVector(java.util.Vector newValue) {
  */
 public void setCalcBaselinePoint(CalcPointBaseline newValue) {
 	this.calcBaselinePoint = newValue;
+}
+
+public void setBaselineAssigned(boolean truthValue) {
+	baselineAssigned = truthValue;
 }
 /**
  * Insert the method's description here.
@@ -203,8 +216,12 @@ public void update() throws java.sql.SQLException {
 	
 	CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());	
 	
-	if(getCalcBaselinePoint().getBaselineID() != null)
+	if(baselineAssigned)
+	{
+		getCalcBaselinePoint().setPointID(getPoint().getPointID());
 		getCalcBaselinePoint().add();
+	}
+	
 }
 
 public static boolean inUseByPoint(Integer baselineID, String databaseAlias)

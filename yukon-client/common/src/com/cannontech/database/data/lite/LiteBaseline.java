@@ -173,11 +173,24 @@ public final java.util.Vector getAllBaselines(java.sql.Connection conn)
 
 public java.util.Vector getAllBaselines()
 {
-	java.sql.Connection conn = null;
+	java.util.Vector tempVector = null;
 	
-	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+	try
+	{
+		java.sql.Connection conn = null;
+	
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 
-	return getAllBaselines(conn);
+		tempVector = getAllBaselines(conn);
+
+		conn.close();
+	}
+	catch( java.sql.SQLException e2 )
+	{
+		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+	}	
+	
+	return tempVector;
 	 
 	
 }

@@ -9,6 +9,7 @@ import java.util.Collections;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -143,6 +144,7 @@ public void addComponentButton_ActionPerformed(java.awt.event.ActionEvent action
 	if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
 	{
 		currentlyMappedBaselineID = new Integer(((com.cannontech.database.data.lite.LiteBaseline)getSelectBaselineComboBox().getSelectedItem()).getBaselineID());
+		
 	}
 		
 	calcComponentVector.addElement(getOperationFunctionComboBox().getSelectedItem());
@@ -258,7 +260,18 @@ public void functionComboBox_ActionPerformed(java.awt.event.ActionEvent actionEv
 			getSelectBaselineComboBox().addItem(getBasilHolder().elementAt(i));
 		}
 		getSelectBaselineComboBox().setVisible(true);
-
+		
+		if(currentlyMappedBaselineID != null)
+		{
+			for(int j = 0; j < getBasilHolder().size(); j++)
+			{
+				if(((LiteBaseline)getBasilHolder().get(j)).getBaselineID() == currentlyMappedBaselineID.intValue())
+				{
+					getSelectBaselineComboBox().setSelectedIndex(j);
+				}
+			}
+		}
+			
 		revalidate();
 		repaint();
 	}
@@ -463,6 +476,8 @@ public void editComponentButton_ActionPerformed(java.awt.event.ActionEvent actio
 		{
 			currentlyMappedBaselineID = new Integer(((com.cannontech.database.data.lite.LiteBaseline)getSelectBaselineComboBox().getSelectedItem()).getBaselineID());
 		}
+	else
+		currentlyMappedBaselineID = null;
 
 	if( componentValid )
 	{
@@ -1040,6 +1055,14 @@ public Object getValue(Object val)
 					newCalcComponent.setComponentPointID(new Integer(((DevicePointOperandLite) operand).getLitePoint().getPointID()));
 
 				newCalcComponent.setFunctionName((String) operation);
+				newCalcComponent.setOperation((String) operation);
+				
+				if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) && currentlyMappedBaselineID != null )
+				{
+					calcPoint.getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
+					calcPoint.setBaselineAssigned(true);
+				}
+
 			}
 
 			calcComponentsVector.addElement(newCalcComponent);
@@ -1047,7 +1070,6 @@ public Object getValue(Object val)
 	}
 
 	calcPoint.setCalcComponentVector(calcComponentsVector);
-	calcPoint.getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
 	return val;
 
 }
@@ -1275,13 +1297,11 @@ public void setValue(Object val)
 //			}
 //		}
 
-
-
 		//fill in the calc components of this point
 		java.util.Vector calcComponents = calcPoint.getCalcComponentVector();
 		com.cannontech.database.data.lite.LiteBaseline temp = new com.cannontech.database.data.lite.LiteBaseline();
 		basilHolder = temp.getAllBaselines();
-		
+ 
 		String type = null;
 		Object operand = null;
 		LitePoint litePoint = null;
@@ -1290,12 +1310,11 @@ public void setValue(Object val)
 		java.util.Vector calcComponentEntry = null;
 		CalcComponent singleCalcComponent = null;
 
-
 		for (int i = 0; i < calcComponents.size(); i++)
 		{
 			calcComponentEntry = new java.util.Vector(3);
 			singleCalcComponent = (CalcComponent) calcComponents.get(i);
-
+			
 			//get and add the type
 			type = singleCalcComponent.getComponentType();
 			calcComponentEntry.addElement(type);
@@ -1325,6 +1344,7 @@ public void setValue(Object val)
 			}
 			else if( CalcComponentTypes.FUNCTION_COMP_TYPE.equalsIgnoreCase(type) )
 			{
+							
 				componentPointID = singleCalcComponent.getComponentPointID().intValue();
 				if (componentPointID > 0)
 				{
@@ -1346,10 +1366,15 @@ public void setValue(Object val)
 
 				calcComponentEntry.addElement( operand );
 				calcComponentEntry.addElement( singleCalcComponent.getFunctionName() );
+							
+				if(singleCalcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION))
+				{
+					currentlyMappedBaselineID = calcPoint.getCalcBaselinePoint().getBaselineID();
+				}
 			}
-			
-			
+						
 			getTableModel().addRow(calcComponentEntry);
+			
 		}
 	}
 	fireInputUpdate();
