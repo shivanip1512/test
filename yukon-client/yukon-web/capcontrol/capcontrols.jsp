@@ -1,5 +1,5 @@
 
-<%@ include file="Functions.jsp" %>
+<%@ include file="Functions.js" %>
 <%@ include file="cbc_header.jsp" %>
 
 <!-- JavaScript needed for jump menu--->
@@ -63,7 +63,7 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="demostyle.css" type="text/css">
+<link rel="stylesheet" href="CannonStyle.css" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
@@ -132,7 +132,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 			<table width="657" border="0" cellspacing="0" cellpadding="0">
 			  <tr> 
-                <td width="650" valign="top" class="MainText" align="center"> 
+                <td width="650" valign="top" class="Main" align="center"> 
                   <p>&nbsp;</p>
 
 		<% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
@@ -159,7 +159,7 @@
                   </table>
 
 				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -224,7 +224,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
 
                         <td width="100"><%= feederMdl.getColumnName(FeederTableModel.NAME_COLUMN) %></td>
                         <td width="44"> <%= feederMdl.getColumnName(FeederTableModel.CURRENT_STATE_COLUMN) %></td>
@@ -289,7 +289,7 @@
                     </tr>
                   </table>
                     <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
                         <td width="130"><%=capBankMdl.getColumnName(CapBankTableModel.CB_NAME_COLUMN) %></td>
                         <td width="228"><%=capBankMdl.getColumnName(CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         <td width="43"> <%=capBankMdl.getColumnName(CapBankTableModel.STATUS_COLUMN) %></td>
@@ -340,7 +340,7 @@
                   </table>
 
                   <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                    <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                    <tr bgcolor="#CCCCCC" class="HeaderCell"> 
 
                       <td width="16%" align="center"> 
                         <input type="radio" name="cmdID" value="<%= enableID %>">

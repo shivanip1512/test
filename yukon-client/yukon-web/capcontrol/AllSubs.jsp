@@ -1,5 +1,5 @@
 <!-- JavaScript needed for jump menu--->
-<%@ include file="Functions.jsp" %>
+<%@ include file="Functions.js" %>
 <%@ include file="cbc_header.jsp" %>
 
 
@@ -8,7 +8,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
-<link rel="stylesheet" href="demostyle.css" type="text/css">
+<link rel="stylesheet" href="CannonStyle.css" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
@@ -95,7 +95,8 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-                <td width="650" valign="top" class="MainText"> 
+                <td width="650" valign="top" class="Main"> 
+                  
                   <p>&nbsp;</p>
                   <form name="MForm"> 
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
@@ -118,7 +119,7 @@
                   
                   
 				    <table width="604" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr bgcolor="#CCCCCC" class="HeaderCell1"> 
+                      <tr bgcolor="#CCCCCC" class="HeaderCell"> 
                         <td width="100"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
                         <td width="44"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
@@ -159,10 +160,14 @@
                         <td width="71" class="TableCell"> 
 
                         
-                          <select name="select2">
-                            <option>Graph A</option>
-                            <option>Graph B</option>
+                         <form name="GraphForm" >
+                          <select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
+                            <option value="AllSubs.jsp">Graph A</option>
+                            <option value="AllSubs.jsp">Graph B</option>
+                            <option value="temp\<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
                           </select>
+                         </form>
+                          
                         </td>
                         <td width="80" class="TableCell"> 
                           <select name="select3">

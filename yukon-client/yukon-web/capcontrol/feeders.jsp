@@ -1,5 +1,5 @@
 
-<%@ include file="Functions.jsp" %>
+<%@ include file="Functions.js" %>
 <%@ include file="cbc_header.jsp" %>
 
 <!-- JavaScript needed for jump menu--->
