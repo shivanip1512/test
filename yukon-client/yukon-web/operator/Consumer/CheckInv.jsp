@@ -128,7 +128,7 @@
                 </table>
 <%
 	}
-	else if (liteInv.getAccountID() == com.cannontech.common.util.CtiUtilities.NONE_ID) {
+	else if (liteInv.getAccountID() == com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID) {
 %>
                 <p class="MainText">The hardware or device is currently in the 
                   warehouse. Would you like to select it?</p>
