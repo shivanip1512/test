@@ -1,6 +1,8 @@
 package com.cannontech.analysis.data.activity;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 
 /**
@@ -17,24 +19,26 @@ import java.util.Date;
  */
 public class ActivityLog
 {	
-	private Integer ecID = null;
-	private Integer userID = null;
+//	private Integer ecID = null;
+//	private Integer userID = null;
+	private String userName = null;
 	private Integer custID = null;	//used to get the primary contact
 	private String acctNumber = null;
 	private Integer acctID = null;
 	private Integer actionCount = new Integer(0);			
-//	private Date dateTime = null;
+	private Date dateTime = null;
 	private String action = null;
-//	private String description = null;
-	
+	private String description = null;
+
+	private String ecName = null;
 	/**
 	 * Default Constructor
 	 */
-	public ActivityLog(Integer ecID_, Integer userID_, Integer custID_, String acctNum_, Integer acctID_, Integer actionCount_, String action_)
+	public ActivityLog(String ecName_, String userName_, Integer custID_, String acctNum_, Integer acctID_, Integer actionCount_, String action_)
 	{
 		super();
-		ecID = ecID_;
-		userID = userID_;
+		ecName = ecName_;
+		userName = userName_;
 		custID = custID_;
 		acctNumber = acctNum_;
 		acctID = acctID_;
@@ -44,17 +48,18 @@ public class ActivityLog
 	/**
 	 * Default Constructor
 	 */
-	public ActivityLog(Integer ecID_, Integer userID_, Integer custID_, Integer acctID_, Integer actionCount_, 
+	public ActivityLog(String ecName_, String userName_, Integer custID_, Integer acctID_, String acctNum_,
 						Date dateTime_, String action_, String description_)
 	{
 		super();
-		ecID = ecID_;
-		userID = userID_;
+		ecName = ecName_;
+		userName = userName_;
 		custID = custID_;
-		actionCount = actionCount_;
-//		dateTime = dateTime_;
+		acctID = acctID_;
+		acctNumber = acctNum_;
+		dateTime = dateTime_;
 		action = action_;
-//		description = description_;		
+		description = description_;		
 	}
 	
 	/**
@@ -92,17 +97,17 @@ public class ActivityLog
 	/**
 	 * @return
 	 */
-	public Integer getECID()
+	public String getECName()
 	{
-		return ecID;
+		return ecName;
 	}
 
 	/**
 	 * @return
 	 */
-	public Integer getUserID()
+	public String getUserName()
 	{
-		return userID;
+		return userName;
 	}
 
 	/**
@@ -111,6 +116,37 @@ public class ActivityLog
 	public Integer getAcctID()
 	{
 		return acctID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getDateTime()
+	{
+		return dateTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getDateOnly()
+	{
+		GregorianCalendar zeroedDate = new GregorianCalendar();
+		zeroedDate.setTime((Date)dateTime.clone());
+		zeroedDate.set(Calendar.HOUR_OF_DAY, 0);
+		zeroedDate.set(Calendar.MINUTE, 0);
+		zeroedDate.set(Calendar.SECOND, 0);
+		zeroedDate.set(Calendar.MILLISECOND, 0);
+		return zeroedDate.getTime();
+	}
+
+
+	/**
+	 * @return
+	 */
+	public String getDescription()
+	{
+		return description;
 	}
 
 }
