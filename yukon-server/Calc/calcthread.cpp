@@ -416,6 +416,8 @@ void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
         case periodicPlusUpdate:
             _onUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
             break;
+        case historical:
+            break;
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
