@@ -1,5 +1,7 @@
 package com.cannontech.database.db.company;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Creation date: (10/18/2001 1:20:37 PM)
  */
@@ -8,7 +10,7 @@ public class EnergyCompany extends com.cannontech.database.db.DBPersistent
 	private Integer energyCompanyID = null;
 	private String name = null;
 	private Integer routeID = null;
-	private Integer webConfigID = null;
+	private Integer webConfigID = new Integer(CtiUtilities.NONE_ID);
 
 	public static final String[] SETTER_COLUMNS = 
 	{ 
