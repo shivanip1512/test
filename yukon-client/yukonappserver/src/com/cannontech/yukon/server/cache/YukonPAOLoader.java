@@ -33,7 +33,7 @@ java.util.Date timerStop = null;
 timerStart = new java.util.Date();
 //temp code
 	String sqlString = "SELECT PAObjectID, Category, PAOName, " +
-			"Type, PAOClass " +
+			"Type, PAOClass, Description " +
 			"FROM YukonPAObject WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
 
 	java.sql.Connection conn = null;
@@ -52,6 +52,7 @@ timerStart = new java.util.Date();
 			String paoName = rset.getString(3).trim();
 			String paoType = rset.getString(4).trim();
 			String paoClass = rset.getString(5).trim();
+			String paoDescription = rset.getString(6).trim();
 
 			com.cannontech.database.data.lite.LiteYukonPAObject pao =
 				new com.cannontech.database.data.lite.LiteYukonPAObject(
@@ -59,7 +60,8 @@ timerStart = new java.util.Date();
 						paoName, 
 						com.cannontech.database.data.pao.PAOGroups.getCategory(paoCategory),
 						com.cannontech.database.data.pao.PAOGroups.getPAOType(paoCategory, paoType),
-						com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass) );
+						com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
+						paoDescription );
 
 			allPAObjects.add( pao );
 		}
