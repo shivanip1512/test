@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/07/27 16:55:33 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/12/07 18:08:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -501,7 +501,7 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow,
                             quality = DeviceFillerQuality;
                             value = 0.0;
                         }
-                        else if( checkLoadProfileQuality( pulses, quality, bad_data ) )
+                        else if( checkDemandQuality( pulses, quality, bad_data ) )
                         {
                             value = 0.0;
                         }
