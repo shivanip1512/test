@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/01/31 17:08:09 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/01 18:01:50 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -679,6 +679,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 _outbound.data[(_outbound.length - 1) + 1] =  crc & 0x00ff;
             }
         }
+/*        else
+        {
+            //  what should we do if the generate causes an error?
+        }*/
     }
 
 
@@ -881,7 +885,8 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
             _in_total = 0;
         }
     }
-    else if( status == ErrPortSimulated )
+
+    if( status == ErrPortSimulated )
     {
         if( _command == Command_SendQueuedCodes )
         {
@@ -907,15 +912,12 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
         retval = NoError;
     }
-
-//  this is handled by isTransactionComplete, and i want to make sure the complaint there gets printed
-/*
-    //  always exit if the expiration time is past
-    if( _completion_time.seconds() && _completion_time <= Now )
+    else if( status )
     {
+        //  retries go here eventually...  or something like that
         _transactionComplete = true;
     }
-*/
+
     return retval;
 }
 
