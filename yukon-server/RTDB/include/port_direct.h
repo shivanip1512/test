@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/03/13 19:36:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/04/29 13:43:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,7 +75,7 @@ public:
    virtual INT reset(INT trace);
    virtual INT setup(INT trace);
    virtual INT close(INT trace);
-   virtual INT  connectToDevice(CtiDevice *Device, INT trace);
+   virtual INT  connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace);
    virtual INT  disconnect(CtiDevice *Device, INT trace);
    virtual BOOL connected();
    virtual BOOL shouldDisconnect() const;

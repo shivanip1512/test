@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:36:15 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/04/29 13:43:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ public:
     virtual BOOL shouldDisconnect() const;
     virtual void setShouldDisconnect(BOOL b = TRUE);
 
-    virtual INT connectToDevice(CtiDevice *Device, INT trace) = 0;
+    virtual INT connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace) = 0;
 
     virtual INT reset(INT trace) = 0;
     virtual INT setup(INT trace) = 0;

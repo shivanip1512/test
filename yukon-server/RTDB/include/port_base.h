@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/03/13 19:36:15 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/04/29 13:43:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,7 @@ public:
     BOOL isTAP() const;
     CtiPort& setTAP(BOOL b = TRUE);
 
-    virtual INT connectToDevice(CtiDevice *Device, INT trace);
+    virtual INT connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace);
     virtual BOOL connected();
     virtual BOOL connectedTo(LONG devID);
     virtual BOOL connectedTo(ULONG crc);
@@ -183,6 +183,11 @@ public:
     virtual bool hasExclusions() const;
     exclusions getExclusions() const;
 
+    virtual size_t addPort(CtiPortSPtr port);
+
+    ULONG queueCount() const;
+
+
 protected:
 
     CtiTblPAO           _tblPAO;
@@ -235,6 +240,9 @@ inline INT CtiPort::getBaudRate() const { return 0;}
 inline INT CtiPort::getBits() const { return 8; }
 inline INT CtiPort::getStopBits() const { return 1; }
 inline INT CtiPort::getParity() const { return NOPARITY; }
+
+inline size_t CtiPort::addPort(CtiPortSPtr port) { return (size_t)0; }
+
 
 
 #endif // #ifndef __PORT_BASE_H__

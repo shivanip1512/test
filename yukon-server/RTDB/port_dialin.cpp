@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialin
@@ -8,7 +9,7 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2003/03/13 19:36:04 $
+* DATE         :  $Date: 2003/04/29 13:43:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,9 +32,11 @@ CtiPortDialin::~CtiPortDialin()
 {
 }
 
-INT CtiPortDialin::connectToDevice(CtiDevice *Device, INT trace)
+INT CtiPortDialin::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = !NORMAL;
+
+    LastDeviceId = 0L;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -353,6 +356,5 @@ INT CtiPortDialin::modemSetup(USHORT Trace, BOOL dcdTest)
 
     return(NORMAL);
 }
-
 
 

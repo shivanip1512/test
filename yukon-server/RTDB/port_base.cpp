@@ -1,5 +1,6 @@
 
 
+
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -46,12 +47,14 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                 //  set bright yellow for the time message
                 trace.setBrightYellow();
                 trace.setTrace( RWTime().asString() );
+                trace.setEnd(false);
                 traceList.insert(trace.replicateMessage());
 
                 //  set bright cyan for the info message
                 trace.setBrightCyan();
                 msg = "  P: " + CtiNumStr(getPortID()).spad(3) + " / " + getName();
                 trace.setTrace(msg);
+                trace.setEnd(false);
                 traceList.insert(trace.replicateMessage());
 
                 if(Dev != NULL)
@@ -59,20 +62,22 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                     trace.setBrightCyan();
                     msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
                     trace.setTrace(msg);
+                    trace.setEnd(false);
                     traceList.insert(trace.replicateMessage());
                 }
 
                 if(ErrorCode)
                 {
                     trace.setBrightRed();
-                    msg = " IN: " + CtiNumStr(ErrorCode).spad(3) + "\n";
+                    msg = " IN: " + CtiNumStr(ErrorCode).spad(3);
                 }
                 else
                 {
                     trace.setBrightWhite();
-                    msg = " IN:\n";
+                    msg = " IN:";
                 }
                 trace.setTrace(msg);
+                trace.setEnd(true);
                 traceList.insert(trace.replicateMessage());
 
 
@@ -86,10 +91,11 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
                     GetErrorString(ErrorCode, ebuff);
                     trace.setBrightRed();
                     trace.setTrace( RWCString(ebuff) );
+                    trace.setEnd(true);
                     traceList.insert(trace.replicateMessage());
 
                     trace.setNormal();
-                    trace.setTrace( RWCString("\n") );
+                    trace.setEnd(true);
                     traceList.insert(trace.replicateMessage());
                 }
             }
@@ -135,12 +141,14 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
                 //  set bright yellow for the time message
                 trace.setBrightYellow();
                 trace.setTrace( RWTime().asString() );
+                trace.setEnd(false);
                 traceList.insert(trace.replicateMessage());
 
                 //  set bright cyan for the info message
                 trace.setBrightCyan();
                 msg = "  P: " + CtiNumStr(getPortID()).spad(3) + " / " + getName();
                 trace.setTrace(msg);
+                trace.setEnd(false);
                 traceList.insert(trace.replicateMessage());
 
                 if(Dev != NULL)
@@ -148,20 +156,22 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
                     trace.setBrightCyan();
                     msg = "  D: " + CtiNumStr(Dev->getID()).spad(3) + " / " + Dev->getName();
                     trace.setTrace(msg);
+                    trace.setEnd(false);
                     traceList.insert(trace.replicateMessage());
                 }
 
                 if(ErrorCode)
                 {
                     trace.setBrightRed();
-                    msg = " OUT: " + CtiNumStr((short)ErrorCode).spad(3) + "\n";
+                    msg = " OUT: " + CtiNumStr((short)ErrorCode).spad(3);
                 }
                 else
                 {
                     trace.setBrightWhite();
-                    msg = " OUT:\n";
+                    msg = " OUT:";
                 }
                 trace.setTrace(msg);
+                trace.setEnd(true);
                 traceList.insert(trace.replicateMessage());
 
                 //  then print the formatted hex trace
@@ -483,10 +493,12 @@ CtiPort& CtiPort::setTAP(BOOL b)
     return *this;
 }
 
-INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
+INT CtiPort::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = NORMAL;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
+
+    LastDeviceId = 0L;
 
     /*
      *  This next block Makes sure we hang up if we are connected to a different device's UID
@@ -605,6 +617,7 @@ INT CtiPort::generateTraces(BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWT
         {
             /* yes so goto CTIDBG_new line */
             trace.setTrace( RWCString( buffer ) );
+            trace.setEnd(true);
             traceList.insert(trace.replicateMessage());
 
             buffer[0] = '\0';
@@ -627,7 +640,7 @@ INT CtiPort::generateTraces(BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWT
         }
     }
 
-    trace.setTrace( RWCString( buffer ) + RWCString("\n") );
+    trace.setTrace( RWCString( buffer ));
     traceList.insert(trace.replicateMessage());
 
     return status;
@@ -641,11 +654,13 @@ void CtiPort::fileTraces(RWTPtrSlist< CtiMessage > &traceList) const
         CtiLockGuard<CtiLogger> portlog_guard(_portLog);
         for(size_t i = 0; i < traceList.entries(); i++)
         {
-            RWCString trace = ((CtiTraceMsg*)traceList.at(i))->getTrace();
-
-            _portLog << trace;
+            CtiTraceMsg* pTrace = (CtiTraceMsg*)traceList.at(i);
+            _portLog << pTrace->getTrace();
+            if(pTrace->isEnd())
+            {
+                _portLog << endl;
+            }
         }
-        _portLog << endl;
     }
 }
 
@@ -823,4 +838,16 @@ CtiPort& CtiPort::setProtocolWrap(INT prot)
     return *this;
 }
 
+
+ULONG CtiPort::queueCount() const
+{
+    ULONG QueEntries = 0;
+
+    if(_portQueue != NULL)
+    {
+        QueryQueue( _portQueue, &QueEntries );
+    }
+
+    return QueEntries;
+}
 

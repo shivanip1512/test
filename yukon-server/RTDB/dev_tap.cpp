@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_tap
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:36:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/04/29 13:43:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,11 +18,12 @@
 
 #include <windows.h>
 
+#include "cparms.h"
 #include "dsm2.h"
 #include "logger.h"
 #include "porter.h"
 
-#include "yukon.h"
+#include "cmdparse.h"
 #include "pt_base.h"
 
 #include "pointtypes.h"
@@ -31,8 +33,9 @@
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "msg_trace.h"
-#include "cmdparse.h"
+#include "numstr.h"
 #include "dev_tap.h"
+#include "yukon.h"
 
 
 CtiDeviceTapPagingTerminal::~CtiDeviceTapPagingTerminal()
@@ -72,16 +75,16 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("TAP Devices do not support this command (yet?)"),
-                                             nRet,
-                                             OutMessage->Request.RouteID,
-                                             OutMessage->Request.MacroOffset,
-                                             OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
-                                             OutMessage->Request.UserID,
-                                             OutMessage->Request.SOE,
-                                             RWOrdered()));
+                                                    RWCString(OutMessage->Request.CommandStr),
+                                                    RWCString("TAP Devices do not support this command (yet?)"),
+                                                    nRet,
+                                                    OutMessage->Request.RouteID,
+                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.Attempt,
+                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.UserID,
+                                                    OutMessage->Request.SOE,
+                                                    RWOrdered()));
 
             if(OutMessage)                // And get rid of our memory....
             {
@@ -675,18 +678,22 @@ INT CtiDeviceTapPagingTerminal::traceOut (PCHAR Message, ULONG Count, RWTPtrSlis
 
     trace.setBrightYellow();
     trace.setTrace(  RWTime().asString() + RWCString(" ") );
+    trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightCyan();
     trace.setTrace(  getName() + RWCString(" ") );
+    trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightWhite();
     trace.setTrace(  RWCString("SENT: ") );
+    trace.setEnd(false);
     traceList.insert( trace.replicateMessage() );
 
     trace.setBrightGreen();
-    trace.setTrace( RWCString("\"") + outStr + RWCString("\"\n\n") );
+    trace.setTrace( RWCString("\"") + outStr + RWCString("\"") );
+    trace.setEnd(true);
     traceList.insert( trace.replicateMessage() );
 
     return(NORMAL);
@@ -709,18 +716,22 @@ INT CtiDeviceTapPagingTerminal::traceIn(PCHAR  Message, ULONG  Count, RWTPtrSlis
 
         trace.setBrightYellow();
         trace.setTrace(  RWTime().asString() + RWCString(" ") );
+        trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightCyan();
         trace.setTrace(  getName() + RWCString(" ") );
+        trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightWhite();
         trace.setTrace(  RWCString("RECV: ") );
+        trace.setEnd(false);
         traceList.insert( trace.replicateMessage() );
 
         trace.setBrightMagenta();
-        trace.setTrace( RWCString("\"") + _inStr + RWCString("\"\n\n") );
+        trace.setTrace( RWCString("\"") + _inStr + RWCString("\"") );
+        trace.setEnd(true);
         traceList.insert( trace.replicateMessage() );
 
         _inStr = RWCString();     // Reset it for the next message
@@ -783,7 +794,20 @@ INT CtiDeviceTapPagingTerminal::printChar( RWCString &Str, CHAR Char )
         break;
 
     default:
-        Str.append(Char);
+        if(Char >= 0x20 && Char < 0x7f)
+        {
+            Str.append(Char);
+        }
+        else
+        {
+            Str.append( RWCString("<0x") + CtiNumStr(Char).hex().zpad(2) + RWCString(">") );
+            if(getDebugLevel() & 0x00000001)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Unhandled character 0x" << hex << (int)Char << dec << endl;
+            }
+        }
         break;
     }
 
@@ -1039,7 +1063,6 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                     else if(xfer.getInBuffer()[0] == CHAR_ESC || xfer.getInBuffer()[0] == CHAR_NAK)
                     {
                         status = ErrorPageNAK;
-                        setLogOnNeeded(TRUE);
                         setCurrentState( StateAbort );
                         if(xfer.doTrace(commReturnValue))
                         {
@@ -1452,21 +1475,34 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
 {
     ULONG CSum = 0;
 
-    RWCString num;
-
-    for(int i = 0; i < getTap().getPagerNumber().length(); i++ )
+    if( !gConfigParms.getValueAsString("TCPARM_USE_NEW_TAP_GUID").compareTo("true", RWCString::ignoreCase) )
     {
-        CHAR ch = getTap().getPagerNumber().data()[(size_t)i];
-
-        if( isdigit(ch) )
+        if(isDialup())
         {
-            num.append(ch);
+            CSum = Inherited::getUniqueIdentifier();
+        }
+        else
+        {
+            CSum = getPortID();     // Use the port ID as a GUID for all TAPs on this port!
         }
     }
+    else
+    {
+        RWCString num;
 
-    // Now get a standard CRC
-    CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+        for(int i = 0; i < getTap().getPagerNumber().length(); i++ )
+        {
+            CHAR ch = getTap().getPagerNumber().data()[(size_t)i];
+
+            if( isdigit(ch) )
+            {
+                num.append(ch);
+            }
+        }
+
+        // Now get a standard CRC
+        CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+    }
 
     return CSum;
 }
-

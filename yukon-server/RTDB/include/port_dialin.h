@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:15 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/04/29 13:43:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,7 +45,7 @@ public:
     virtual ~CtiPortDialin();
     CtiPortDialin& operator=(const CtiPortDialin& aRef);
 
-    INT  connectToDevice(CtiDevice *Device, INT trace);
+    INT  connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace);
 
     INT reset(INT trace);
     INT setup(INT trace);

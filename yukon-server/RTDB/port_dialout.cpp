@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   port_dialout
@@ -7,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/04/01 16:30:54 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/04/29 13:43:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,10 +44,11 @@ CtiPortDialout& CtiPortDialout::operator=(const CtiPortDialout& aRef)
     return *this;
 }
 
-INT CtiPortDialout::connectToDevice(CtiDevice *Device, INT trace)
+INT CtiPortDialout::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
 {
     INT status     = NORMAL;
     ULONG DeviceCRC = Device->getUniqueIdentifier();
+    LastDeviceId = 0L;
 
     /*
      *  This next block Makes sure we hang up if we are connected to a different device's PhoneCRC
@@ -54,18 +56,21 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, INT trace)
      *  If getCDWait is zero, we presume that the device does NOT provide DCD feedback.  In that case,
      *  we must assume that we still are connected and should send a hangup.
      */
-
-    if(_superPort->isViable() && _superPort->connected() && !_superPort->connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
+    if(_superPort->isViable() && _superPort->connected())
     {
+        if(!_superPort->connectedTo(DeviceCRC))      // This port connected to a device, and is not connected to this device.
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            // If we cannot use dcd to tell if we are online, we must do a hangup
+            // dcdTest indicates that we ARE on/off line if !FALSE, we must hangup.
+            if( _superPort->getCDWait() == 0  || _superPort->dcdTest() )
+            {
+                _superPort->disconnect(Device, trace);
+            }
         }
-        // If we cannot use dcd to tell if we are online, we must do a hangup
-        // dcdTest indicates that we ARE on/off line if !FALSE, we must hangup.
-        if( _superPort->getCDWait() == 0  || _superPort->dcdTest() )
+        else if( _superPort->connectedTo(DeviceCRC) && _superPort->getConnectedDevice() != Device->getID() )
         {
-            _superPort->disconnect(Device, trace);
+            LastDeviceId = _superPort->getConnectedDevice();    // This is a device swap...
+            Device->setLogOnNeeded(FALSE);
         }
     }
 
@@ -742,5 +747,4 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 
     return status;
 }
-
 

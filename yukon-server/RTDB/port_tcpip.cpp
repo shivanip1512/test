@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/03/13 19:36:06 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/04/29 13:43:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -874,7 +874,7 @@ INT CtiPortTCPIPDirect::setup(INT trace)
     return NORMAL;
 }
 
-INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, INT trace)
+INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
 {
     INT status = NORMAL;
 
@@ -892,11 +892,11 @@ INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, INT trace)
 
     if(_dialable)
     {
-        status = _dialable->connectToDevice(Device,trace);
+        status = _dialable->connectToDevice(Device, LastDeviceId,trace);
     }
     else
     {
-        status = Inherited::connectToDevice(Device,trace);
+        status = Inherited::connectToDevice(Device, LastDeviceId,trace);
     }
     return status;
 }

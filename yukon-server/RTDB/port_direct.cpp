@@ -203,7 +203,7 @@ INT CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
     _dcb.Parity    = parity;
     _dcb.StopBits  = stopbits;
 
-    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
 }
 
 INT CtiPortDirect::byteTime(ULONG bytes) const
@@ -239,56 +239,56 @@ INT CtiPortDirect::dsrTest() const
 
 INT CtiPortDirect::lowerRTS()
 {
-    #if 1
+#if 1
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
-    return (EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
-    #else
+    return(EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
+#else
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
-    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-    #endif
+    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+#endif
 }
 
 INT CtiPortDirect::raiseRTS()
 {
-    #if 1
+#if 1
     _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
-    return (EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
-    #else
+    return(EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
+#else
     _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
-    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-    #endif
+    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+#endif
 }
 
 INT CtiPortDirect::lowerDTR()
 {
-    #if 1
+#if 1
     _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
-    return (EscapeCommFunction(_portHandle, CLRDTR) ? NORMAL : SYSTEM);
-    #else
+    return(EscapeCommFunction(_portHandle, CLRDTR) ? NORMAL : SYSTEM);
+#else
     _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
-    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-    #endif
+    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+#endif
 }
 
 INT CtiPortDirect::raiseDTR()
 {
-    #if 1
+#if 1
     _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
-    return (EscapeCommFunction(_portHandle, SETDTR) ? NORMAL : SYSTEM);
-    #else
+    return(EscapeCommFunction(_portHandle, SETDTR) ? NORMAL : SYSTEM);
+#else
     _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
-    return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
-    #endif
+    return(SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
+#endif
 }
 
 INT CtiPortDirect::inClear()
 {
-    return (PurgeComm(_portHandle, PURGE_RXCLEAR) ? NORMAL : SYSTEM );
+    return(PurgeComm(_portHandle, PURGE_RXCLEAR) ? NORMAL : SYSTEM );
 }
 
 INT CtiPortDirect::outClear()
 {
-    return (PurgeComm(_portHandle, PURGE_TXCLEAR) ? NORMAL : SYSTEM );
+    return(PurgeComm(_portHandle, PURGE_TXCLEAR) ? NORMAL : SYSTEM );
 }
 
 INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMessage > &traceList)
@@ -606,7 +606,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
             Xfer.setOutCount( Xfer.getOutCount() + 2 );
         }
 
-        #if 0  // 20020708 CGP.  This code seems custom.
+#if 0  // 20020708 CGP.  This code seems custom.
         /* Wait for DCD to dissapear */
         if(getTablePortSettings().getCDWait() != 0)
         {
@@ -617,7 +617,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
                 i+= 50;
             }
         }
-        #endif
+#endif
 
         /* Check if we need to key ... Pre Key Delay */
         if(getDelay(PRE_RTS_DELAY))
@@ -678,9 +678,9 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
         if(status == NORMAL)
         {
             /* if software queue is not empty wait for it to be */
-            for (int cnt=0; cnt < 5; cnt++)
+            for(int cnt=0; cnt < 5; cnt++)
             {
-                if ((ByteCount = getPortOutQueueCount()) != 0)
+                if((ByteCount = getPortOutQueueCount()) != 0)
                 {
                     CTISleep ((10000L * ByteCount) / getTablePortSettings().getBaudRate());
                 }
@@ -835,7 +835,7 @@ INT CtiPortDirect::setPortReadTimeOut(USHORT millitimeout)
     _cto.ReadTotalTimeoutMultiplier = 0;
     _cto.ReadTotalTimeoutConstant = (millitimeout);
 
-    return (SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
+    return(SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
 }
 
 INT CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
@@ -843,7 +843,7 @@ INT CtiPortDirect::setPortWriteTimeOut(USHORT millitimeout)
     _cto.WriteTotalTimeoutMultiplier = 0;
     _cto.WriteTotalTimeoutConstant = (millitimeout);
 
-    return (SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
+    return(SetCommTimeouts(_portHandle, &_cto) ? NORMAL : SYSTEM);
 }
 
 
@@ -878,7 +878,7 @@ INT CtiPortDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pByt
 
 bool CtiPortDirect::isViable() const
 {
-    return (getHandle() != NULL);
+    return(getHandle() != NULL);
 }
 
 
@@ -908,17 +908,17 @@ INT CtiPortDirect::setup(INT trace)
     return NORMAL;
 }
 
-INT  CtiPortDirect::connectToDevice(CtiDevice *Device, INT trace)
+INT  CtiPortDirect::connectToDevice(CtiDevice *Device, LONG &LastDeviceId, INT trace)
 {
     INT status = NORMAL;
 
     if(_dialable)
     {
-        status = _dialable->connectToDevice(Device,trace);
+        status = _dialable->connectToDevice(Device, LastDeviceId,trace);
     }
     else
     {
-        status = Inherited::connectToDevice(Device,trace);
+        status = Inherited::connectToDevice(Device, LastDeviceId, trace);
     }
 
     return status;
@@ -1000,14 +1000,14 @@ int CtiPortDirect::enableXONXOFF()
     _dcb.fOutX  = TRUE;
     _dcb.fInX   = TRUE;
 
-    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
 }
 int CtiPortDirect::disableXONXOFF()
 {
     _dcb.fOutX  = FALSE;
     _dcb.fInX   = FALSE;
 
-    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
 }
 
 int CtiPortDirect::enableRTSCTS()
@@ -1015,14 +1015,14 @@ int CtiPortDirect::enableRTSCTS()
     _dcb.fOutxCtsFlow = 1;
     _dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
 
-    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
 }
 int CtiPortDirect::disableRTSCTS()
 {
     _dcb.fOutxCtsFlow = 0;
     _dcb.fRtsControl = RTS_CONTROL_DISABLE;
 
-    return (SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
 }
 
 int CtiPortDirect::getPortInQueueCount()
@@ -1032,7 +1032,7 @@ int CtiPortDirect::getPortInQueueCount()
 
     if(ClearCommError(_portHandle, &Err, &Stat))
     {
-       return Stat.cbInQue;
+        return Stat.cbInQue;
     }
 
     return 0;
@@ -1045,7 +1045,7 @@ int CtiPortDirect::getPortOutQueueCount()
 
     if(ClearCommError(_portHandle, &Err, &Stat))
     {
-       return Stat.cbOutQue;
+        return Stat.cbOutQue;
     }
 
     return 0;
@@ -1054,5 +1054,5 @@ int CtiPortDirect::getPortOutQueueCount()
 int CtiPortDirect::getPortCommError()
 {
     DWORD   Errors;
-    return ( ClearCommError(_portHandle, &Errors, NULL) ? Errors : SYSTEM );
+    return( ClearCommError(_portHandle, &Errors, NULL) ? Errors : SYSTEM );
 }
