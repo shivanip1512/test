@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLogin.java,v 1.25 2003/03/06 00:07:24 zyao Exp $
+ * $Id: StarsLogin.java,v 1.26 2003/03/11 23:34:47 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -24,7 +24,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.25 $ $Date: 2003/03/06 00:07:24 $
+ * @version $Revision: 1.26 $ $Date: 2003/03/11 23:34:47 $
 **/
 public class StarsLogin extends com.cannontech.stars.xml.serialize.StarsUsr 
 implements java.io.Serializable

@@ -45,7 +45,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	
 	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
 	
-	private static boolean clientLocal = false;
+	private static boolean clientLocal = true;
     
     // Instance of the SOAPServer object
     private static SOAPServer instance = null;

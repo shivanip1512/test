@@ -27,7 +27,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustSelectionListsResponse implements java.io.Serializable {
+public class StarsCustomerSelectionLists implements java.io.Serializable {
 
 
       //--------------------------/
@@ -41,10 +41,10 @@ public class StarsGetCustSelectionListsResponse implements java.io.Serializable 
      //- Constructors -/
     //----------------/
 
-    public StarsGetCustSelectionListsResponse() {
+    public StarsCustomerSelectionLists() {
         super();
         _starsCustSelectionListList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponse()
+    } //-- com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists()
 
 
       //-----------/
@@ -207,11 +207,11 @@ public class StarsGetCustSelectionListsResponse implements java.io.Serializable 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponse unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponse.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponse unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists unmarshal(java.io.Reader) 
 
     /**
     **/

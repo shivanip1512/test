@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlSummary.java,v 1.25 2003/03/06 00:07:21 zyao Exp $
+ * $Id: ControlSummary.java,v 1.26 2003/03/11 23:34:42 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.25 $ $Date: 2003/03/06 00:07:21 $
+ * @version $Revision: 1.26 $ $Date: 2003/03/11 23:34:42 $
 **/
 public class ControlSummary implements java.io.Serializable {
 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StreetAddressDescriptor.java,v 1.25 2003/03/06 00:07:19 zyao Exp $
+ * $Id: StreetAddressDescriptor.java,v 1.26 2003/03/11 23:34:41 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.25 $ $Date: 2003/03/06 00:07:19 $
+ * @version $Revision: 1.26 $ $Date: 2003/03/11 23:34:41 $
 **/
 public class StreetAddressDescriptor extends StarsCustomerAddressDescriptor {
 

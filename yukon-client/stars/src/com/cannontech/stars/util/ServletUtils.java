@@ -53,6 +53,7 @@ public class ServletUtils {
 	
 	public static final String ATT_YUKON_USER = "YUKON_USER";
 	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
+	public static final String ATT_ENERGY_COMPANY_WEB_CONFIG = "ENERGY_COMPANY_WEB_CONFIG";
 	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
 	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
 	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
@@ -71,6 +72,7 @@ public class ServletUtils {
 	public static final String OUT_OF_SERVICE = "Out of Service";
 	
 	public static final String IMAGE_NAME_SEPARATOR = ",";
+	
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     

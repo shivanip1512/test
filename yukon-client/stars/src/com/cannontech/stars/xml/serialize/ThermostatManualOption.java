@@ -25,57 +25,23 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustSelectionLists implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _energyCompanyID;
-
-    /**
-     * keeps track of state for field: _energyCompanyID
-    **/
-    private boolean _has_energyCompanyID;
+public class ThermostatManualOption extends StarsThermoManOpt 
+implements java.io.Serializable
+{
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsGetCustSelectionLists() {
+    public ThermostatManualOption() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustSelectionLists()
+    } //-- com.cannontech.stars.xml.serialize.ThermostatManualOption()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-    **/
-    public void deleteEnergyCompanyID()
-    {
-        this._has_energyCompanyID= false;
-    } //-- void deleteEnergyCompanyID() 
-
-    /**
-     * Returns the value of field 'energyCompanyID'.
-     * 
-     * @return the value of field 'energyCompanyID'.
-    **/
-    public int getEnergyCompanyID()
-    {
-        return this._energyCompanyID;
-    } //-- int getEnergyCompanyID() 
-
-    /**
-    **/
-    public boolean hasEnergyCompanyID()
-    {
-        return this._has_energyCompanyID;
-    } //-- boolean hasEnergyCompanyID() 
 
     /**
     **/
@@ -115,26 +81,15 @@ public class StarsGetCustSelectionLists implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'energyCompanyID'.
-     * 
-     * @param energyCompanyID the value of field 'energyCompanyID'.
-    **/
-    public void setEnergyCompanyID(int energyCompanyID)
-    {
-        this._energyCompanyID = energyCompanyID;
-        this._has_energyCompanyID = true;
-    } //-- void setEnergyCompanyID(int) 
-
-    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetCustSelectionLists unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.ThermostatManualOption unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetCustSelectionLists) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetCustSelectionLists.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustSelectionLists unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.ThermostatManualOption) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ThermostatManualOption.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.ThermostatManualOption unmarshal(java.io.Reader) 
 
     /**
     **/

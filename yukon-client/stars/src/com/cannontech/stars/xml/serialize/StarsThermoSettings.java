@@ -43,7 +43,7 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     private java.util.Vector _starsThermostatSeasonList;
 
-    private StarsThermostatManualOption _starsThermostatManualOption;
+    private java.util.Vector _starsThermostatManualEventList;
 
 
       //----------------/
@@ -53,12 +53,36 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     public StarsThermoSettings() {
         super();
         _starsThermostatSeasonList = new Vector();
+        _starsThermostatManualEventList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsThermoSettings()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * 
+     * 
+     * @param vStarsThermostatManualEvent
+    **/
+    public void addStarsThermostatManualEvent(StarsThermostatManualEvent vStarsThermostatManualEvent)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        _starsThermostatManualEventList.addElement(vStarsThermostatManualEvent);
+    } //-- void addStarsThermostatManualEvent(StarsThermostatManualEvent) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vStarsThermostatManualEvent
+    **/
+    public void addStarsThermostatManualEvent(int index, StarsThermostatManualEvent vStarsThermostatManualEvent)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        _starsThermostatManualEventList.insertElementAt(vStarsThermostatManualEvent, index);
+    } //-- void addStarsThermostatManualEvent(int, StarsThermostatManualEvent) 
 
     /**
      * 
@@ -98,6 +122,13 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     /**
     **/
+    public java.util.Enumeration enumerateStarsThermostatManualEvent()
+    {
+        return _starsThermostatManualEventList.elements();
+    } //-- java.util.Enumeration enumerateStarsThermostatManualEvent() 
+
+    /**
+    **/
     public java.util.Enumeration enumerateStarsThermostatSeason()
     {
         return _starsThermostatSeasonList.elements();
@@ -114,14 +145,39 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     } //-- int getInventoryID() 
 
     /**
-     * Returns the value of field 'starsThermostatManualOption'.
      * 
-     * @return the value of field 'starsThermostatManualOption'.
+     * 
+     * @param index
     **/
-    public StarsThermostatManualOption getStarsThermostatManualOption()
+    public StarsThermostatManualEvent getStarsThermostatManualEvent(int index)
+        throws java.lang.IndexOutOfBoundsException
     {
-        return this._starsThermostatManualOption;
-    } //-- StarsThermostatManualOption getStarsThermostatManualOption() 
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsThermostatManualEventList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        return (StarsThermostatManualEvent) _starsThermostatManualEventList.elementAt(index);
+    } //-- StarsThermostatManualEvent getStarsThermostatManualEvent(int) 
+
+    /**
+    **/
+    public StarsThermostatManualEvent[] getStarsThermostatManualEvent()
+    {
+        int size = _starsThermostatManualEventList.size();
+        StarsThermostatManualEvent[] mArray = new StarsThermostatManualEvent[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = (StarsThermostatManualEvent) _starsThermostatManualEventList.elementAt(index);
+        }
+        return mArray;
+    } //-- StarsThermostatManualEvent[] getStarsThermostatManualEvent() 
+
+    /**
+    **/
+    public int getStarsThermostatManualEventCount()
+    {
+        return _starsThermostatManualEventList.size();
+    } //-- int getStarsThermostatManualEventCount() 
 
     /**
      * 
@@ -196,10 +252,29 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     /**
     **/
+    public void removeAllStarsThermostatManualEvent()
+    {
+        _starsThermostatManualEventList.removeAllElements();
+    } //-- void removeAllStarsThermostatManualEvent() 
+
+    /**
+    **/
     public void removeAllStarsThermostatSeason()
     {
         _starsThermostatSeasonList.removeAllElements();
     } //-- void removeAllStarsThermostatSeason() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public StarsThermostatManualEvent removeStarsThermostatManualEvent(int index)
+    {
+        java.lang.Object obj = _starsThermostatManualEventList.elementAt(index);
+        _starsThermostatManualEventList.removeElementAt(index);
+        return (StarsThermostatManualEvent) obj;
+    } //-- StarsThermostatManualEvent removeStarsThermostatManualEvent(int) 
 
     /**
      * 
@@ -225,15 +300,34 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     } //-- void setInventoryID(int) 
 
     /**
-     * Sets the value of field 'starsThermostatManualOption'.
      * 
-     * @param starsThermostatManualOption the value of field
-     * 'starsThermostatManualOption'.
+     * 
+     * @param index
+     * @param vStarsThermostatManualEvent
     **/
-    public void setStarsThermostatManualOption(StarsThermostatManualOption starsThermostatManualOption)
+    public void setStarsThermostatManualEvent(int index, StarsThermostatManualEvent vStarsThermostatManualEvent)
+        throws java.lang.IndexOutOfBoundsException
     {
-        this._starsThermostatManualOption = starsThermostatManualOption;
-    } //-- void setStarsThermostatManualOption(StarsThermostatManualOption) 
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsThermostatManualEventList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        _starsThermostatManualEventList.setElementAt(vStarsThermostatManualEvent, index);
+    } //-- void setStarsThermostatManualEvent(int, StarsThermostatManualEvent) 
+
+    /**
+     * 
+     * 
+     * @param starsThermostatManualEventArray
+    **/
+    public void setStarsThermostatManualEvent(StarsThermostatManualEvent[] starsThermostatManualEventArray)
+    {
+        //-- copy array
+        _starsThermostatManualEventList.removeAllElements();
+        for (int i = 0; i < starsThermostatManualEventArray.length; i++) {
+            _starsThermostatManualEventList.addElement(starsThermostatManualEventArray[i]);
+        }
+    } //-- void setStarsThermostatManualEvent(StarsThermostatManualEvent) 
 
     /**
      * 

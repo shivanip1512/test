@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustSelectionListsResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsEnrollmentProgramsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsGetCustSelectionListsResponseDescriptor extends org.exolab.cas
      //- Constructors -/
     //----------------/
 
-    public StarsGetCustSelectionListsResponseDescriptor() {
+    public StarsEnrollmentProgramsDescriptor() {
         super();
-        xmlName = "stars-GetCustSelectionListsResponse";
+        xmlName = "stars-EnrollmentPrograms";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,40 +60,40 @@ public class StarsGetCustSelectionListsResponseDescriptor extends org.exolab.cas
         
         //-- initialize element descriptors
         
-        //-- _starsCustSelectionListList
-        desc = new XMLFieldDescriptorImpl(StarsCustSelectionList.class, "_starsCustSelectionListList", "stars-CustSelectionList", NodeType.Element);
+        //-- _starsApplianceCategoryList
+        desc = new XMLFieldDescriptorImpl(StarsApplianceCategory.class, "_starsApplianceCategoryList", "stars-ApplianceCategory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetCustSelectionListsResponse target = (StarsGetCustSelectionListsResponse) object;
-                return target.getStarsCustSelectionList();
+                StarsEnrollmentPrograms target = (StarsEnrollmentPrograms) object;
+                return target.getStarsApplianceCategory();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetCustSelectionListsResponse target = (StarsGetCustSelectionListsResponse) object;
-                    target.addStarsCustSelectionList( (StarsCustSelectionList) value);
+                    StarsEnrollmentPrograms target = (StarsEnrollmentPrograms) object;
+                    target.addStarsApplianceCategory( (StarsApplianceCategory) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsCustSelectionList();
+                return new StarsApplianceCategory();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsCustSelectionListList
+        //-- validation code for: _starsApplianceCategoryList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsEnrollmentProgramsDescriptor()
 
 
       //-----------/
@@ -125,7 +125,7 @@ public class StarsGetCustSelectionListsResponseDescriptor extends org.exolab.cas
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

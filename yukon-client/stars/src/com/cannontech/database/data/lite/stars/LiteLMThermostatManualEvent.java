@@ -11,22 +11,23 @@ import com.cannontech.database.data.lite.LiteTypes;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteLMThermostatManualOption extends LiteBase {
+public class LiteLMThermostatManualEvent extends LiteLMCustomerEvent {
 
+	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
 	private int previousTemperature = 0;
 	private boolean holdTemperature = false;
 	private int operationStateID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private int fanOperationID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	
-	public LiteLMThermostatManualOption() {
+	public LiteLMThermostatManualEvent() {
 		super();
-		setLiteType( LiteTypes.STARS_THERMOSTAT_MANUAL_OPTION );
+		setLiteType( LiteTypes.STARS_LMTHERMOSTAT_MANUAL_EVENT );
 	}
 	
-	public LiteLMThermostatManualOption(int invID) {
+	public LiteLMThermostatManualEvent(int eventID) {
 		super();
-		setInventoryID( invID );
-		setLiteType( LiteTypes.STARS_THERMOSTAT_MANUAL_OPTION );
+		setEventID( eventID );
+		setLiteType( LiteTypes.STARS_LMTHERMOSTAT_MANUAL_EVENT );
 	}
 	
 	/**
@@ -43,14 +44,6 @@ public class LiteLMThermostatManualOption extends LiteBase {
 	 */
 	public boolean isHoldTemperature() {
 		return holdTemperature;
-	}
-
-	public int getInventoryID() {
-		return getLiteID();
-	}
-
-	public void setInventoryID(int inventoryID) {
-		setLiteID( inventoryID );
 	}
 
 	/**
@@ -99,6 +92,22 @@ public class LiteLMThermostatManualOption extends LiteBase {
 	 */
 	public void setPreviousTemperature(int previousTemperature) {
 		this.previousTemperature = previousTemperature;
+	}
+
+	/**
+	 * Returns the inventoryID.
+	 * @return int
+	 */
+	public int getInventoryID() {
+		return inventoryID;
+	}
+
+	/**
+	 * Sets the inventoryID.
+	 * @param inventoryID The inventoryID to set
+	 */
+	public void setInventoryID(int inventoryID) {
+		this.inventoryID = inventoryID;
 	}
 
 }

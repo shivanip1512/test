@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustomerFAQsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsCustomerFAQsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsGetCustomerFAQsDescriptor extends org.exolab.castor.xml.util.X
      //- Constructors -/
     //----------------/
 
-    public StarsGetCustomerFAQsDescriptor() {
+    public StarsCustomerFAQsDescriptor() {
         super();
-        xmlName = "stars-GetCustomerFAQs";
+        xmlName = "stars-CustomerFAQs";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,50 +60,40 @@ public class StarsGetCustomerFAQsDescriptor extends org.exolab.castor.xml.util.X
         
         //-- initialize element descriptors
         
-        //-- _energyCompanyID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "EnergyCompanyID", NodeType.Element);
+        //-- _starsCustomerFAQGroupList
+        desc = new XMLFieldDescriptorImpl(StarsCustomerFAQGroup.class, "_starsCustomerFAQGroupList", "stars-CustomerFAQGroup", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetCustomerFAQs target = (StarsGetCustomerFAQs) object;
-                if(!target.hasEnergyCompanyID())
-                    return null;
-                return new Integer(target.getEnergyCompanyID());
+                StarsCustomerFAQs target = (StarsCustomerFAQs) object;
+                return target.getStarsCustomerFAQGroup();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetCustomerFAQs target = (StarsGetCustomerFAQs) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteEnergyCompanyID();
-                        return;
-                    }
-                    target.setEnergyCompanyID( ((Integer)value).intValue());
+                    StarsCustomerFAQs target = (StarsCustomerFAQs) object;
+                    target.addStarsCustomerFAQGroup( (StarsCustomerFAQGroup) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new StarsCustomerFAQGroup();
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(false);
+        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _energyCompanyID
+        //-- validation code for: _starsCustomerFAQGroupList
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
+        fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustomerFAQsDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsCustomerFAQsDescriptor()
 
 
       //-----------/
@@ -135,7 +125,7 @@ public class StarsGetCustomerFAQsDescriptor extends org.exolab.castor.xml.util.X
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetCustomerFAQs.class;
+        return com.cannontech.stars.xml.serialize.StarsCustomerFAQs.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -46,8 +46,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             if (changedSchedules == null) return null;
             
             StarsThermostatSettings thermSettings = accountInfo.getStarsThermostatSettings();
-            StarsUpdateThermostatSettings updateSettings = new StarsUpdateThermostatSettings();
-            updateSettings.setInventoryID( thermSettings.getInventoryID() );
+            StarsUpdateThermostatSchedule updateSched = new StarsUpdateThermostatSchedule();
+            updateSched.setInventoryID( thermSettings.getInventoryID() );
             
             // Send only those schedules that have been changed
             for (int i = 0; i < thermSettings.getStarsThermostatSeasonCount(); i++) {
@@ -60,11 +60,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             			season2.addStarsThermostatSchedule( season.getStarsThermostatSchedule(j) );
             	}
             	
-            	updateSettings.addStarsThermostatSeason( season2 );
+            	updateSched.addStarsThermostatSeason( season2 );
             }
             
             StarsOperation operation = new StarsOperation();
-            operation.setStarsUpdateThermostatSettings( updateSettings );
+            operation.setStarsUpdateThermostatSchedule( updateSched );
             
             return SOAPUtil.buildSOAPMessage( operation );
         }
@@ -102,15 +102,15 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 			
-			StarsUpdateThermostatSettings starsSettings = reqOper.getStarsUpdateThermostatSettings();
+			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
 			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
 			
 			// Key: StarsThermoDaySettings, value: StarsThermostatSchedule[2] ([0] is heat schedule, [1] is cool schedule)
 			Hashtable daySettings = new Hashtable();
 			boolean newSettings = false;
 			
-			for (int i = 0; i < starsSettings.getStarsThermostatSeasonCount(); i++) {
-				StarsThermostatSeason starsSeason = starsSettings.getStarsThermostatSeason(i);
+			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
+				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
 				LiteLMThermostatSeason liteSeason = null;
 				LMThermostatSeason season = null;
 				Integer webConfigID = energyCompany.getThermSeasonWebConfigID( starsSeason.getMode() );
@@ -214,7 +214,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 			}
 			
-			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsSettings.getInventoryID(), true );
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( updateSched.getInventoryID(), true );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID());
 			
 			Iterator it = daySettings.entrySet().iterator();
@@ -290,17 +290,16 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 			}
 			
-			// Add "config" to the hardware events
-            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
-            Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
-            
+			// Add "change schedule" to the hardware events
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
     		
-    		eventDB.setInventoryID( new Integer(starsSettings.getInventoryID()) );
-    		eventBase.setEventTypeID( hwEventEntryID );
-    		eventBase.setActionID( configEntryID );
+    		eventDB.setInventoryID( new Integer(updateSched.getInventoryID()) );
+    		eventBase.setEventTypeID( new Integer(
+    				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID()) );
+    		eventBase.setActionID( new Integer(
+    				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CHANGE_SCHEDULE).getEntryID()) );
     		eventBase.setEventDateTime( new Date() );
     		
     		event.setEnergyCompanyID( new Integer(energyCompanyID) );
@@ -308,14 +307,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     				Transaction.createTransaction( Transaction.INSERT, event ).execute();
     				
     		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-    		if (liteHw.getLmHardwareHistory() == null)
-    			liteHw.setLmHardwareHistory( new ArrayList() );
     		liteHw.getLmHardwareHistory().add( liteEvent );
+    		
+    		StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+    		StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
+    		StarsUpdateThermostatScheduleResponse resp = new StarsUpdateThermostatScheduleResponse();
+    		resp.setStarsLMHardwareEvent( starsEvent );
 			
-			StarsSuccess success = new StarsSuccess();
-			success.setDescription( "Thermostat settings updated successfully" );
-			respOper.setStarsSuccess( success );
-			
+			respOper.setStarsUpdateThermostatScheduleResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -323,7 +322,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update thermostat settings") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot update thermostat schedules") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {
@@ -347,12 +346,28 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 
-			StarsSuccess success = operation.getStarsSuccess();
-            if (success == null)
+			StarsUpdateThermostatScheduleResponse resp = operation.getStarsUpdateThermostatScheduleResponse();
+            if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            
+            	
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             user.removeAttribute( ServletUtils.ATT_CHANGED_THERMOSTAT_SETTINGS );
+            
+            // Append the new hardware event to hardware history
+            StarsUpdateThermostatSchedule updateSched = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
+            int invID = updateSched.getInventoryID();
+            
+            StarsLMHardwareEvent event = resp.getStarsLMHardwareEvent();
+            StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+            		user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+            
+            StarsInventories inventories = accountInfo.getStarsInventories();
+            for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+            	if (inventories.getStarsLMHardware(i).getInventoryID() == invID) {
+            		inventories.getStarsLMHardware(i).getStarsLMHardwareHistory().addStarsLMHardwareEvent( event );
+            		break;
+            	}
+            }
             
             return 0;
         }

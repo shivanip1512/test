@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustomerFAQsResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsUpdateThermostatManualOptionResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsGetCustomerFAQsResponseDescriptor extends org.exolab.castor.xm
      //- Constructors -/
     //----------------/
 
-    public StarsGetCustomerFAQsResponseDescriptor() {
+    public StarsUpdateThermostatManualOptionResponseDescriptor() {
         super();
-        xmlName = "stars-GetCustomerFAQsResponse";
+        xmlName = "stars-UpdateThermostatManualOptionResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,40 +60,41 @@ public class StarsGetCustomerFAQsResponseDescriptor extends org.exolab.castor.xm
         
         //-- initialize element descriptors
         
-        //-- _starsCustomerFAQGroupList
-        desc = new XMLFieldDescriptorImpl(StarsCustomerFAQGroup.class, "_starsCustomerFAQGroupList", "stars-CustomerFAQGroup", NodeType.Element);
+        //-- _starsThermostatManualEvent
+        desc = new XMLFieldDescriptorImpl(StarsThermostatManualEvent.class, "_starsThermostatManualEvent", "stars-ThermostatManualEvent", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetCustomerFAQsResponse target = (StarsGetCustomerFAQsResponse) object;
-                return target.getStarsCustomerFAQGroup();
+                StarsUpdateThermostatManualOptionResponse target = (StarsUpdateThermostatManualOptionResponse) object;
+                return target.getStarsThermostatManualEvent();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetCustomerFAQsResponse target = (StarsGetCustomerFAQsResponse) object;
-                    target.addStarsCustomerFAQGroup( (StarsCustomerFAQGroup) value);
+                    StarsUpdateThermostatManualOptionResponse target = (StarsUpdateThermostatManualOptionResponse) object;
+                    target.setStarsThermostatManualEvent( (StarsThermostatManualEvent) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsCustomerFAQGroup();
+                return new StarsThermostatManualEvent();
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsCustomerFAQGroupList
+        //-- validation code for: _starsThermostatManualEvent
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustomerFAQsResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOptionResponseDescriptor()
 
 
       //-----------/
@@ -125,7 +126,7 @@ public class StarsGetCustomerFAQsResponseDescriptor extends org.exolab.castor.xm
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetCustomerFAQsResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOptionResponse.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

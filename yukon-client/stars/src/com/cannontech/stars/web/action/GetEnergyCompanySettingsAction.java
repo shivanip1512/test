@@ -1,27 +1,18 @@
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteLMProgram;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsWebConfigFactory;
-import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
-import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms;
-import com.cannontech.stars.xml.serialize.StarsGetEnrollmentProgramsResponse;
-import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -33,14 +24,14 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * @author yao
  * @version 1.0
  */
-public class GetEnrollmentProgramsAction implements ActionBase {
+public class GetEnergyCompanySettingsAction implements ActionBase {
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsGetEnrollmentPrograms getEnrProgs = new StarsGetEnrollmentPrograms();
+			StarsGetEnergyCompanySettings getSettings = new StarsGetEnergyCompanySettings();
 			
 			int energyCompanyID = 0;
 			String companyIDStr = req.getParameter("CompanyID");
@@ -50,11 +41,11 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 				}
 				catch (NumberFormatException e) {}
 			if (energyCompanyID > 0)
-				getEnrProgs.setEnergyCompanyID( energyCompanyID );
-			getEnrProgs.setCategory( req.getParameter("Category") );
+				getSettings.setEnergyCompanyID( energyCompanyID );
+			getSettings.setProgramCategory( req.getParameter("ProgCat") );
 			
 			StarsOperation operation = new StarsOperation();
-			operation.setStarsGetEnrollmentPrograms( getEnrProgs );
+			operation.setStarsGetEnergyCompanySettings( getSettings );
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
@@ -75,11 +66,11 @@ public class GetEnrollmentProgramsAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-            StarsGetEnrollmentPrograms getEnrProgs = reqOper.getStarsGetEnrollmentPrograms();
-            int energyCompanyID = getEnrProgs.getEnergyCompanyID();
+            StarsGetEnergyCompanySettings getSettings = reqOper.getStarsGetEnergyCompanySettings();
+            int energyCompanyID = getSettings.getEnergyCompanyID();
             
+        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (energyCompanyID <= 0) {
-            	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             	if (user != null)
             		energyCompanyID = user.getEnergyCompanyID();
 	            else {
@@ -91,8 +82,18 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
-            respOper.setStarsGetEnrollmentProgramsResponse(
-            		energyCompany.getStarsGetEnrollmentProgramsResponse(getEnrProgs.getCategory()) );
+            StarsGetEnergyCompanySettingsResponse resp = new StarsGetEnergyCompanySettingsResponse();
+            if (ServerUtils.isOperator( user )) {
+            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists() );
+            }
+            else if (ServerUtils.isResidentialCustomer( user )) {
+	            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
+            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
+            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
+            }
+            
+            respOper.setStarsGetEnergyCompanySettingsResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -124,17 +125,36 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-            StarsGetEnrollmentProgramsResponse programs = operation.getStarsGetEnrollmentProgramsResponse();
-            if (programs == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+            StarsGetEnergyCompanySettingsResponse resp = operation.getStarsGetEnergyCompanySettingsResponse();
+            if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            String category = reqOper.getStarsGetEnrollmentPrograms().getCategory();
-            StringBuffer attName = new StringBuffer( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
-            if (category != null && category.length() > 0)
-            	attName.append("_").append( category.toUpperCase() );
-
         	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-    		user.setAttribute(attName.toString(), programs);
+        	
+        	if (resp.getStarsWebConfig() != null)
+        		user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG, resp.getStarsWebConfig() );
+        		
+        	if (resp.getStarsEnrollmentPrograms() != null) {
+	            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+	            String category = reqOper.getStarsGetEnergyCompanySettings().getProgramCategory();
+	            StringBuffer attName = new StringBuffer( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+	            if (category != null && category.length() > 0)
+	            	attName.append("_").append( category.toUpperCase() );
+	            	
+	    		user.setAttribute( attName.toString(), resp.getStarsEnrollmentPrograms() );
+        	}
+        	
+        	if (resp.getStarsCustomerSelectionLists() != null) {
+	            Hashtable selectionListTable = new Hashtable();
+	            for (int i = 0; i < resp.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+	            	StarsCustSelectionList list = resp.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+	            	selectionListTable.put( list.getListName(), list );
+	            }
+	            
+	        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
+        	}
+        	
+        	if (resp.getStarsCustomerFAQs() != null)
+	        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
             
             return 0;
         }

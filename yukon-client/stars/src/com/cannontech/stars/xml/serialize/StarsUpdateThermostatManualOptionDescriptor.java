@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetCustSelectionListsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsUpdateThermostatManualOptionDescriptor extends com.cannontech.stars.xml.serialize.StarsThermoManOptDescriptor {
 
 
       //--------------------------/
@@ -47,41 +47,37 @@ public class StarsGetCustSelectionListsDescriptor extends org.exolab.castor.xml.
      //- Constructors -/
     //----------------/
 
-    public StarsGetCustSelectionListsDescriptor() {
+    public StarsUpdateThermostatManualOptionDescriptor() {
         super();
-        xmlName = "stars-GetCustSelectionLists";
+        setExtendsWithoutFlatten(new com.cannontech.stars.xml.serialize.StarsThermoManOptDescriptor());
+        xmlName = "stars-UpdateThermostatManualOption";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _energyCompanyID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "EnergyCompanyID", NodeType.Element);
+        //-- _inventoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsGetCustSelectionLists target = (StarsGetCustSelectionLists) object;
-                if(!target.hasEnergyCompanyID())
+                StarsUpdateThermostatManualOption target = (StarsUpdateThermostatManualOption) object;
+                if(!target.hasInventoryID())
                     return null;
-                return new Integer(target.getEnergyCompanyID());
+                return new Integer(target.getInventoryID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsGetCustSelectionLists target = (StarsGetCustSelectionLists) object;
+                    StarsUpdateThermostatManualOption target = (StarsUpdateThermostatManualOption) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
-                        target.deleteEnergyCompanyID();
+                        target.deleteInventoryID();
                         return;
                     }
-                    target.setEnergyCompanyID( ((Integer)value).intValue());
+                    target.setInventoryID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -92,10 +88,9 @@ public class StarsGetCustSelectionListsDescriptor extends org.exolab.castor.xml.
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _energyCompanyID
+        //-- validation code for: _inventoryID
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
@@ -103,7 +98,9 @@ public class StarsGetCustSelectionListsDescriptor extends org.exolab.castor.xml.
         }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsGetCustSelectionListsDescriptor()
+        //-- initialize element descriptors
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOptionDescriptor()
 
 
       //-----------/
@@ -121,13 +118,15 @@ public class StarsGetCustSelectionListsDescriptor extends org.exolab.castor.xml.
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -135,7 +134,7 @@ public class StarsGetCustSelectionListsDescriptor extends org.exolab.castor.xml.
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsGetCustSelectionLists.class;
+        return com.cannontech.stars.xml.serialize.StarsUpdateThermostatManualOption.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

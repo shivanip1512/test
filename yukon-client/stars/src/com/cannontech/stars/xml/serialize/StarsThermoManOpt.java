@@ -27,7 +27,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsThermostatManualOption implements java.io.Serializable {
+public abstract class StarsThermoManOpt implements java.io.Serializable {
 
 
       //--------------------------/
@@ -57,9 +57,9 @@ public class StarsThermostatManualOption implements java.io.Serializable {
      //- Constructors -/
     //----------------/
 
-    public StarsThermostatManualOption() {
+    public StarsThermoManOpt() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsThermostatManualOption()
+    } //-- com.cannontech.stars.xml.serialize.StarsThermoManOpt()
 
 
       //-----------/
@@ -138,24 +138,16 @@ public class StarsThermostatManualOption implements java.io.Serializable {
      * 
      * @param out
     **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
+    public abstract void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
      * 
      * 
      * @param handler
     **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
+    public abstract void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
 
     /**
      * Sets the value of field 'fan'.
@@ -198,17 +190,6 @@ public class StarsThermostatManualOption implements java.io.Serializable {
         this._temperature = temperature;
         this._has_temperature = true;
     } //-- void setTemperature(int) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsThermostatManualOption unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsThermostatManualOption) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsThermostatManualOption.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsThermostatManualOption unmarshal(java.io.Reader) 
 
     /**
     **/

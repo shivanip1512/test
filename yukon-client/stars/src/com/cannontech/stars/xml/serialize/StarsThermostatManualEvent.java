@@ -25,30 +25,25 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetEnrollmentPrograms implements java.io.Serializable {
+public class StarsThermostatManualEvent extends com.cannontech.stars.xml.serialize.StarsLMCustomerEvent 
+implements java.io.Serializable
+{
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _energyCompanyID;
-
-    /**
-     * keeps track of state for field: _energyCompanyID
-    **/
-    private boolean _has_energyCompanyID;
-
-    private java.lang.String _category;
+    private ThermostatManualOption _thermostatManualOption;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsGetEnrollmentPrograms() {
+    public StarsThermostatManualEvent() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms()
+    } //-- com.cannontech.stars.xml.serialize.StarsThermostatManualEvent()
 
 
       //-----------/
@@ -56,38 +51,14 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
     //-----------/
 
     /**
-    **/
-    public void deleteEnergyCompanyID()
-    {
-        this._has_energyCompanyID= false;
-    } //-- void deleteEnergyCompanyID() 
-
-    /**
-     * Returns the value of field 'category'.
+     * Returns the value of field 'thermostatManualOption'.
      * 
-     * @return the value of field 'category'.
+     * @return the value of field 'thermostatManualOption'.
     **/
-    public java.lang.String getCategory()
+    public ThermostatManualOption getThermostatManualOption()
     {
-        return this._category;
-    } //-- java.lang.String getCategory() 
-
-    /**
-     * Returns the value of field 'energyCompanyID'.
-     * 
-     * @return the value of field 'energyCompanyID'.
-    **/
-    public int getEnergyCompanyID()
-    {
-        return this._energyCompanyID;
-    } //-- int getEnergyCompanyID() 
-
-    /**
-    **/
-    public boolean hasEnergyCompanyID()
-    {
-        return this._has_energyCompanyID;
-    } //-- boolean hasEnergyCompanyID() 
+        return this._thermostatManualOption;
+    } //-- ThermostatManualOption getThermostatManualOption() 
 
     /**
     **/
@@ -127,36 +98,26 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'category'.
+     * Sets the value of field 'thermostatManualOption'.
      * 
-     * @param category the value of field 'category'.
+     * @param thermostatManualOption the value of field
+     * 'thermostatManualOption'.
     **/
-    public void setCategory(java.lang.String category)
+    public void setThermostatManualOption(ThermostatManualOption thermostatManualOption)
     {
-        this._category = category;
-    } //-- void setCategory(java.lang.String) 
-
-    /**
-     * Sets the value of field 'energyCompanyID'.
-     * 
-     * @param energyCompanyID the value of field 'energyCompanyID'.
-    **/
-    public void setEnergyCompanyID(int energyCompanyID)
-    {
-        this._energyCompanyID = energyCompanyID;
-        this._has_energyCompanyID = true;
-    } //-- void setEnergyCompanyID(int) 
+        this._thermostatManualOption = thermostatManualOption;
+    } //-- void setThermostatManualOption(ThermostatManualOption) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsThermostatManualEvent unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsThermostatManualEvent) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsThermostatManualEvent.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsThermostatManualEvent unmarshal(java.io.Reader) 
 
     /**
     **/

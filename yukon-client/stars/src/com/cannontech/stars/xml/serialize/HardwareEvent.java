@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateThermostatSettings extends StarsThermoSettings 
+public class HardwareEvent extends StarsLMCustomerEvent 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateThermostatSettings() {
+    public HardwareEvent() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettings()
+    } //-- com.cannontech.stars.xml.serialize.HardwareEvent()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettings unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.HardwareEvent unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettings) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettings.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettings unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.HardwareEvent) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.HardwareEvent.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.HardwareEvent unmarshal(java.io.Reader) 
 
     /**
     **/

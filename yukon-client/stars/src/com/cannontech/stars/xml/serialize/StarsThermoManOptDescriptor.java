@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsThermoManOptDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
      //- Constructors -/
     //----------------/
 
-    public StarsThermostatManualOptionDescriptor() {
+    public StarsThermoManOptDescriptor() {
         super();
-        xmlName = "stars-ThermostatManualOption";
+        xmlName = "stars-ThermoManOpt";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -66,7 +66,7 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                StarsThermoManOpt target = (StarsThermoManOpt) object;
                 if(!target.hasTemperature())
                     return null;
                 return new Integer(target.getTemperature());
@@ -75,7 +75,7 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                    StarsThermoManOpt target = (StarsThermoManOpt) object;
                     // ignore null values for non optional primitives
                     if (value == null) return;
                     
@@ -109,7 +109,7 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                StarsThermoManOpt target = (StarsThermoManOpt) object;
                 if(!target.hasHold())
                     return null;
                 return new Boolean(target.getHold());
@@ -118,7 +118,7 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                    StarsThermoManOpt target = (StarsThermoManOpt) object;
                     // ignore null values for non optional primitives
                     if (value == null) return;
                     
@@ -152,14 +152,14 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                StarsThermoManOpt target = (StarsThermoManOpt) object;
                 return target.getMode();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                    StarsThermoManOpt target = (StarsThermoManOpt) object;
                     target.setMode( (com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings) value);
                 }
                 catch (Exception ex) {
@@ -185,14 +185,14 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                StarsThermoManOpt target = (StarsThermoManOpt) object;
                 return target.getFan();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermostatManualOption target = (StarsThermostatManualOption) object;
+                    StarsThermoManOpt target = (StarsThermoManOpt) object;
                     target.setFan( (com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings) value);
                 }
                 catch (Exception ex) {
@@ -212,7 +212,7 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsThermostatManualOptionDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsThermoManOptDescriptor()
 
 
       //-----------/
@@ -244,7 +244,7 @@ public class StarsThermostatManualOptionDescriptor extends org.exolab.castor.xml
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsThermostatManualOption.class;
+        return com.cannontech.stars.xml.serialize.StarsThermoManOpt.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

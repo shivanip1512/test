@@ -56,8 +56,8 @@ public class InventoryBase extends DBPersistent {
 	    	}
     	}
     	
-    	com.cannontech.database.db.stars.hardware.LMThermostatManualOption thermOption =
-    			new com.cannontech.database.db.stars.hardware.LMThermostatManualOption();
+    	com.cannontech.database.db.stars.event.LMThermostatManualEvent thermOption =
+    			new com.cannontech.database.db.stars.event.LMThermostatManualEvent();
     	thermOption.setInventoryID( getInventoryBase().getInventoryID() );
     	thermOption.setDbConnection( getDbConnection() );
     	thermOption.delete();

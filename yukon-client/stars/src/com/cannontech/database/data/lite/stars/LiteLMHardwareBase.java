@@ -211,6 +211,8 @@ public class LiteLMHardwareBase extends LiteBase {
 	 * @return com.cannontech.stars.xml.serialize.StarsLMHardwareHistory
 	 */
 	public java.util.ArrayList getLmHardwareHistory() {
+		if (lmHardwareHistory == null)
+			lmHardwareHistory = new java.util.ArrayList();
 		return lmHardwareHistory;
 	}
 

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
 import com.cannontech.database.data.lite.LiteBase;
 
 /**
@@ -12,8 +13,8 @@ import com.cannontech.database.data.lite.LiteBase;
  */
 public class LiteStarsThermostatSettings extends LiteBase {
 	
-	private java.util.ArrayList thermostatSeasons = null;	// List of LiteLMThermostatSeason
-	private LiteLMThermostatManualOption thermostatOption = null;
+	private ArrayList thermostatSeasons = null;		// List of LiteLMThermostatSeason
+	private ArrayList thermostatManualEvents = null;	// List of LMThermostatManualEvent
 	
 	public LiteStarsThermostatSettings() {
 		super();
@@ -36,7 +37,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 * Returns the thermostatSeasons.
 	 * @return java.util.ArrayList
 	 */
-	public java.util.ArrayList getThermostatSeasons() {
+	public ArrayList getThermostatSeasons() {
 		if (thermostatSeasons == null)
 			thermostatSeasons = new java.util.ArrayList();
 		return thermostatSeasons;
@@ -46,7 +47,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 * Sets the thermostatSeasons.
 	 * @param thermostatSeasons The thermostatSeasons to set
 	 */
-	public void setThermostatSeasons(java.util.ArrayList thermostatSeasons) {
+	public void setThermostatSeasons(ArrayList thermostatSeasons) {
 		this.thermostatSeasons = thermostatSeasons;
 	}
 
@@ -54,16 +55,18 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 * Returns the thermostatOption.
 	 * @return LiteLMThermostatManualOption
 	 */
-	public LiteLMThermostatManualOption getThermostatOption() {
-		return thermostatOption;
+	public ArrayList getThermostatManualEvents() {
+		if (thermostatManualEvents == null)
+			thermostatManualEvents = new ArrayList();
+		return thermostatManualEvents;
 	}
 
 	/**
 	 * Sets the thermostatOption.
 	 * @param thermostatOption The thermostatOption to set
 	 */
-	public void setThermostatOption(LiteLMThermostatManualOption thermostatOption) {
-		this.thermostatOption = thermostatOption;
+	public void setThermostatManualEvents(ArrayList thermostatManualEvents) {
+		this.thermostatManualEvents = thermostatManualEvents;
 	}
 
 }

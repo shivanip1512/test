@@ -36,7 +36,7 @@ public class SOAPClient extends HttpServlet {
 
     private static String SOAP_SERVER_URL = null;
     private static SOAPMessenger soapMsgr = null;
-    private static boolean serverLocal = false;
+    private static boolean serverLocal = true;
 
     private static final String loginURL = "/login.jsp";
     private static final String homeURL = "/operator/Operations.jsp";
@@ -63,13 +63,13 @@ public class SOAPClient extends HttpServlet {
 			SOAP_SERVER_URL = bundle.getString( "soap_server" );
 			CTILogger.info( "SOAP Server is remotely at \"" + SOAP_SERVER_URL + "\"" );
 			
+			// "soap_server" is defined in config.properties, which means SOAPServer is running remotely
+			setServerLocal( false );
+			SOAPServer.setClientLocal( false );
+			
 			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 		}
 		catch (java.util.MissingResourceException mre) {
-			// "soap_server" is not defined in config.properties, which means SOAPServer resides on the same server
-			setServerLocal( true );
-			SOAPServer.setClientLocal( true );
-			
 			SOAP_SERVER_URL = "/servlet/SOAPServer";
 			CTILogger.info( "SOAP Server is locally at \"" + SOAP_SERVER_URL + "\"" );
 		}
@@ -139,8 +139,7 @@ public class SOAPClient extends HttpServlet {
         if (action.equalsIgnoreCase("OperatorLogin")) {
         	MultiAction actions = new MultiAction();
         	actions.addAction( new LoginAction(), req, session );
-        	actions.addAction( new GetEnrollmentProgramsAction(), req, session );
-        	actions.addAction( new GetCustSelListsAction(), req, session );
+        	actions.addAction( new GetEnergyCompanySettingsAction(), req, session );
 
         	clientAction = (ActionBase) actions;
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
@@ -149,8 +148,7 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("UserLogin")) {
             MultiAction actions = new MultiAction();
         	actions.addAction( new LoginAction(), req, session );
-    		actions.addAction( new GetEnrollmentProgramsAction(), req, session );
-        	actions.addAction( new GetCustomerFAQsAction(), req, session );
+        	actions.addAction( new GetEnergyCompanySettingsAction(), req, session );
         	actions.addAction( new GetCustAccountAction(), req, session );
         	
         	clientAction = (ActionBase) actions;
@@ -291,11 +289,6 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new GetServiceHistoryAction();
         	destURL = "/operator/Consumer/ServiceSummary.jsp";
         }
-        else if (action.equalsIgnoreCase("GetEnrPrograms")) {
-        	clientAction = new GetEnrollmentProgramsAction();
-        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
-        }
         else if (action.equalsIgnoreCase("CreateAppliance")) {
         	clientAction = new CreateApplianceAction();
         	destURL = "/operator/Consumer/Appliance.jsp";
@@ -341,7 +334,7 @@ public class SOAPClient extends HttpServlet {
         	nextURL = errorURL = referer;
         }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
-        	clientAction = new UpdateThermostatOptionAction();
+        	clientAction = new UpdateThermostatManualOptionAction();
         	destURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         	nextURL = errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         }

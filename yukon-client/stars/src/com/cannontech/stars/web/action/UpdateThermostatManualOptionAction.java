@@ -10,8 +10,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.hardware.*;
-import com.cannontech.message.porter.ClientConnection;
-import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -29,7 +27,7 @@ import com.cannontech.stars.xml.util.*;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class UpdateThermostatOptionAction implements ActionBase {
+public class UpdateThermostatManualOptionAction implements ActionBase {
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -42,20 +40,17 @@ public class UpdateThermostatOptionAction implements ActionBase {
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             if (accountInfo == null) return null;
             
-            StarsThermostatManualOption option = new StarsThermostatManualOption();
+            StarsUpdateThermostatManualOption option = new StarsUpdateThermostatManualOption();
             option.setTemperature( Integer.parseInt(req.getParameter("tempField")) );
             option.setHold( Boolean.valueOf(req.getParameter("hold")).booleanValue() );
             if (req.getParameter("mode").length() > 0)
 	            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
 	        if (req.getParameter("fan").length() > 0)
 	            option.setFan( StarsThermoFanSettings.valueOf(req.getParameter("fan")) );
-            
-            StarsUpdateThermostatSettings updateSettings = new StarsUpdateThermostatSettings();
-            updateSettings.setStarsThermostatManualOption( option );
-            updateSettings.setInventoryID( accountInfo.getStarsThermostatSettings().getInventoryID() );
+            option.setInventoryID( accountInfo.getStarsThermostatSettings().getInventoryID() );
             
             StarsOperation operation = new StarsOperation();
-            operation.setStarsUpdateThermostatSettings( updateSettings );
+            operation.setStarsUpdateThermostatManualOption( option );
             
             return SOAPUtil.buildSOAPMessage( operation );
         }
@@ -93,12 +88,12 @@ public class UpdateThermostatOptionAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 			
-			StarsUpdateThermostatSettings starsSettings = reqOper.getStarsUpdateThermostatSettings();
-			StarsThermostatManualOption starsOption = starsSettings.getStarsThermostatManualOption();
+			StarsUpdateThermostatManualOption starsOption = reqOper.getStarsUpdateThermostatManualOption();
 			
-			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsSettings.getInventoryID(), true );
+			LiteLMHardwareBase liteHw = energyCompany.getLMHardware( starsOption.getInventoryID(), true );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getRouteID()) + " load 1";
 			
+			//StringBuffer cmd = new StringBuffer("putconfig xcom setstate")
 			StringBuffer cmd = new StringBuffer("control xcom setstate")
 					.append(" temp ").append(starsOption.getTemperature());
 			if (starsOption.getMode() != null)
@@ -109,52 +104,32 @@ public class UpdateThermostatOptionAction implements ActionBase {
 				cmd.append(" hold");
 			cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
 			ServerUtils.sendCommand( cmd.toString() );
+
+			com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
+					new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
+			event.getLMCustomerEventBase().setEventTypeID( new Integer(
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMTHERMOSTAT_MANUAL).getEntryID()) );
+			event.getLMCustomerEventBase().setActionID( new Integer(
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_MANUAL_OPTION).getEntryID()) );
+			event.getLMCustomerEventBase().setEventDateTime( new Date() );
 			
-			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
-			LiteLMThermostatManualOption liteOption = liteSettings.getThermostatOption();
+			event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
+			event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
+			event.getLmThermostatManualEvent().setOperationStateID( ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID) );
+			event.getLmThermostatManualEvent().setFanOperationID( ServerUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompanyID) );
 			
-			if (liteOption == null) liteOption = new LiteLMThermostatManualOption();
-			liteOption.setInventoryID( starsSettings.getInventoryID() );
-			liteOption.setPreviousTemperature( starsOption.getTemperature() );
-			liteOption.setHoldTemperature( starsOption.getHold() );
-			liteOption.setOperationStateID( ServerUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompanyID).intValue() );
-			liteOption.setFanOperationID( ServerUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompanyID).intValue() );
+			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
+					Transaction.createTransaction(Transaction.INSERT, event).execute();
 			
-			com.cannontech.database.db.stars.hardware.LMThermostatManualOption option =
-					(com.cannontech.database.db.stars.hardware.LMThermostatManualOption) StarsLiteFactory.createDBPersistent( liteOption );
-			if (liteSettings.getThermostatOption() == null) {
-				Transaction.createTransaction(Transaction.INSERT, option).execute();
-				liteSettings.setThermostatOption( liteOption );
-			}
-			else
-				Transaction.createTransaction(Transaction.UPDATE, option).execute();
+			LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) StarsLiteFactory.createLite( event );
+			liteAcctInfo.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
 			
-			// Add "config" to the hardware events
-            Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
-            Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
-            
-    		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-    		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-    		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-    		
-    		eventDB.setInventoryID( new Integer(starsSettings.getInventoryID()) );
-    		eventBase.setEventTypeID( hwEventEntryID );
-    		eventBase.setActionID( configEntryID );
-    		eventBase.setEventDateTime( new Date() );
-    		
-    		event.setEnergyCompanyID( new Integer(energyCompanyID) );
-    		event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-    				Transaction.createTransaction( Transaction.INSERT, event ).execute();
-    				
-    		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-    		if (liteHw.getLmHardwareHistory() == null)
-    			liteHw.setLmHardwareHistory( new ArrayList() );
-    		liteHw.getLmHardwareHistory().add( liteEvent );
-				
-			StarsSuccess success = new StarsSuccess();
-			success.setDescription( "Thermostat manual option updated successfully" );
-			respOper.setStarsSuccess( success );
+			StarsThermostatManualEvent starsEvent = StarsLiteFactory.createStarsThermostatManualEvent( liteEvent );
+			StarsUpdateThermostatManualOptionResponse resp = new StarsUpdateThermostatManualOptionResponse();
+			resp.setStarsThermostatManualEvent( starsEvent );
 			
+			respOper.setStarsUpdateThermostatManualOptionResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -185,16 +160,16 @@ public class UpdateThermostatOptionAction implements ActionBase {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
-
-			StarsSuccess success = operation.getStarsSuccess();
-            if (success == null)
+			
+			StarsUpdateThermostatManualOptionResponse resp = operation.getStarsUpdateThermostatManualOptionResponse();
+            if (resp == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            	
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+
+			StarsThermostatManualEvent event = resp.getStarsThermostatManualEvent();
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            accountInfo.getStarsThermostatSettings().setStarsThermostatManualOption(
-            		reqOper.getStarsUpdateThermostatSettings().getStarsThermostatManualOption() );
+            StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+            		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+            accountInfo.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
             
             return 0;
         }

@@ -81,7 +81,7 @@ public class GetDefaultThermoSettingsAction implements ActionBase {
             }
             
             StarsDefaultThermostatSettings starsSettings = new StarsDefaultThermostatSettings();
-            StarsLiteFactory.setStarsThermostatSettings( starsSettings, liteSettings );
+            StarsLiteFactory.setStarsThermostatSettings( starsSettings, liteSettings, energyCompanyID );
             
             StarsGetDefaultThermostatSettingsResponse resp = new StarsGetDefaultThermostatSettingsResponse();
             resp.setStarsDefaultThermostatSettings( starsSettings );

@@ -81,9 +81,9 @@ public class StarsLiteFactory {
 			lite = new LiteLMThermostatSeason();
 			setLiteLMThermostatSeason( (LiteLMThermostatSeason) lite, (com.cannontech.database.data.stars.hardware.LMThermostatSeason) db );
 		}
-		else if (db instanceof com.cannontech.database.db.stars.hardware.LMThermostatManualOption) {
-			lite = new LiteLMThermostatManualOption();
-			setLiteLMThermostatManualOption( (LiteLMThermostatManualOption) lite, (com.cannontech.database.db.stars.hardware.LMThermostatManualOption) db );
+		else if (db instanceof com.cannontech.database.data.stars.event.LMThermostatManualEvent) {
+			lite = new LiteLMThermostatManualEvent();
+			setLiteLMThermostatManualEvent( (LiteLMThermostatManualEvent) lite, (com.cannontech.database.data.stars.event.LMThermostatManualEvent) db );
 		}
 		else if (db instanceof com.cannontech.database.data.stars.appliance.ApplianceBase) {
 			lite = new LiteStarsAppliance();
@@ -244,12 +244,13 @@ public class StarsLiteFactory {
 		}
 	}
 	
-	public static void setLiteLMThermostatManualOption(LiteLMThermostatManualOption liteOption, com.cannontech.database.db.stars.hardware.LMThermostatManualOption option) {
-		liteOption.setInventoryID( option.getInventoryID().intValue() );
-		liteOption.setPreviousTemperature( option.getPreviousTemperature().intValue() );
-		liteOption.setHoldTemperature( option.getHoldTemperature().equalsIgnoreCase("Y") ? true : false );
-		liteOption.setOperationStateID( option.getOperationStateID().intValue() );
-		liteOption.setFanOperationID( option.getFanOperationID().intValue() );
+	public static void setLiteLMThermostatManualEvent(LiteLMThermostatManualEvent liteEvent, com.cannontech.database.data.stars.event.LMThermostatManualEvent event) {
+		setLiteLMCustomerEvent(liteEvent, event.getLMCustomerEventBase());
+		liteEvent.setInventoryID( event.getLmThermostatManualEvent().getInventoryID().intValue() );
+		liteEvent.setPreviousTemperature( event.getLmThermostatManualEvent().getPreviousTemperature().intValue() );
+		liteEvent.setHoldTemperature( event.getLmThermostatManualEvent().getHoldTemperature().equalsIgnoreCase("Y") );
+		liteEvent.setOperationStateID( event.getLmThermostatManualEvent().getOperationStateID().intValue() );
+		liteEvent.setFanOperationID( event.getLmThermostatManualEvent().getFanOperationID().intValue() );
 	}
 	
 	public static void setLiteApplianceBase(LiteStarsAppliance liteApp, com.cannontech.database.data.stars.appliance.ApplianceBase app) {
@@ -305,6 +306,10 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.data.stars.event.LMProgramEvent();
 				setLMCustomerEventBase( (com.cannontech.database.data.stars.event.LMCustomerEventBase) db, (LiteLMCustomerEvent) lite );
 				break;
+			case LiteTypes.STARS_LMTHERMOSTAT_MANUAL_EVENT:
+				db = new com.cannontech.database.data.stars.event.LMThermostatManualEvent();
+				setLMThermostatManualEvent( (com.cannontech.database.data.stars.event.LMThermostatManualEvent) db, (LiteLMThermostatManualEvent) lite );
+				break;
 			case LiteTypes.STARS_LMHARDWARE:
 				db = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				setLMHardwareBase( (com.cannontech.database.data.stars.hardware.LMHardwareBase) db, (LiteLMHardwareBase) lite );
@@ -320,10 +325,6 @@ public class StarsLiteFactory {
 			case LiteTypes.STARS_THERMOSTAT_SEASON_ENTRY:
 				db = new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
 				setLMThermostatSeasonEntry( (com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry) db, (LiteLMThermostatSeasonEntry) lite );
-				break;
-			case LiteTypes.STARS_THERMOSTAT_MANUAL_OPTION:
-				db = new com.cannontech.database.db.stars.hardware.LMThermostatManualOption();
-				setLMThermostatManualOption( (com.cannontech.database.db.stars.hardware.LMThermostatManualOption) db, (LiteLMThermostatManualOption) lite );
 				break;
 			case LiteTypes.STARS_APPLIANCE:
 				db = new com.cannontech.database.data.stars.appliance.ApplianceBase();
@@ -457,12 +458,13 @@ public class StarsLiteFactory {
 		entry.setTemperature( new Integer(liteEntry.getTemperature()) );
 	}
 	
-	public static void setLMThermostatManualOption(com.cannontech.database.db.stars.hardware.LMThermostatManualOption option, LiteLMThermostatManualOption liteOption) {
-		option.setInventoryID( new Integer(liteOption.getInventoryID()) );
-		option.setPreviousTemperature( new Integer(liteOption.getPreviousTemperature()) );
-		option.setHoldTemperature( liteOption.isHoldTemperature() ? "Y":"N" );
-		option.setOperationStateID( new Integer(liteOption.getOperationStateID()) );
-		option.setFanOperationID( new Integer(liteOption.getFanOperationID()) );
+	public static void setLMThermostatManualEvent(com.cannontech.database.data.stars.event.LMThermostatManualEvent event, LiteLMThermostatManualEvent liteEvent) {
+		setLMCustomerEventBase( event, liteEvent );
+		event.getLmThermostatManualEvent().setInventoryID( new Integer(liteEvent.getInventoryID()) );
+		event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(liteEvent.getPreviousTemperature()) );
+		event.getLmThermostatManualEvent().setHoldTemperature( liteEvent.isHoldTemperature() ? "Y" : "N" );
+		event.getLmThermostatManualEvent().setOperationStateID( new Integer(liteEvent.getOperationStateID()) );
+		event.getLmThermostatManualEvent().setFanOperationID( new Integer(liteEvent.getFanOperationID()) );
 	}
 	
 	public static void setApplianceBase(com.cannontech.database.data.stars.appliance.ApplianceBase app, LiteStarsAppliance liteApp) {
@@ -569,15 +571,16 @@ public class StarsLiteFactory {
 		starsEvent.setYukonDefID( entry.getYukonDefID() );
 	}
 	
-	public static void setStarsThermostatSettings(StarsThermoSettings starsSettings, LiteStarsThermostatSettings liteSettings) {
+	public static void setStarsThermostatSettings(StarsThermoSettings starsSettings, LiteStarsThermostatSettings liteSettings, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 		starsSettings.setInventoryID( liteSettings.getInventoryID() );
-		
 		for (int i = 0; i < liteSettings.getThermostatSeasons().size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(i);
 			StarsThermostatSeason starsSeason = new StarsThermostatSeason();
 			
-			LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
-			if (liteConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
+			//LiteWebConfiguration liteConfig = SOAPServer.getWebConfiguration( liteSeason.getWebConfigurationID() );
+			StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteSeason.getWebConfigurationID() );
+			if (starsConfig.getAlternateDisplayName().equalsIgnoreCase("Summer"))
 				starsSeason.setMode( StarsThermoModeSettings.COOL );
 			else
 				starsSeason.setMode( StarsThermoModeSettings.HEAT );
@@ -588,7 +591,7 @@ public class StarsLiteFactory {
 			starsSeason.setStartDate( new org.exolab.castor.types.Date(startCal.getTime()) );
 			
 			if (liteSettings.getInventoryID() < 0)	// Add thermostat season web configuration only to default settings
-				starsSeason.setStarsWebConfig( createStarsWebConfig(liteConfig) );
+				starsSeason.setStarsWebConfig( starsConfig );
 			
 			Hashtable towTable = new Hashtable();
 			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
@@ -639,8 +642,10 @@ public class StarsLiteFactory {
 			starsSettings.addStarsThermostatSeason( starsSeason );
 		}
 		
-		if (liteSettings.getThermostatOption() != null)
-			starsSettings.setStarsThermostatManualOption( createStarsThermostatManualOption(liteSettings.getThermostatOption()) );
+		for (int i = 0; i < liteSettings.getThermostatManualEvents().size(); i++) {
+			LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) liteSettings.getThermostatManualEvents().get(i);
+			starsSettings.addStarsThermostatManualEvent( StarsLiteFactory.createStarsThermostatManualEvent(liteEvent) );
+		}
 	}
 	
 	public static void setStarsQuestionAnswer(StarsQuestionAnswer starsQuestion, LiteInterviewQuestion liteQuestion) {
@@ -727,11 +732,11 @@ public class StarsLiteFactory {
 		
 		if (liteAcctInfo.getThermostatSettings() != null) {
 			StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
-			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings() );
+			setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings(), energyCompanyID );
 			starsAcctInfo.setStarsThermostatSettings( starsThermSettings );
 			
 			StarsDefaultThermostatSettings starsDftThermSettings = new StarsDefaultThermostatSettings();
-			setStarsThermostatSettings( starsDftThermSettings, energyCompany.getDefaultThermostatSettings() );
+			setStarsThermostatSettings( starsDftThermSettings, energyCompany.getDefaultThermostatSettings(), energyCompanyID );
 			starsAcctInfo.setStarsDefaultThermostatSettings( starsDftThermSettings );
 		}
 		
@@ -1108,18 +1113,14 @@ public class StarsLiteFactory {
 		return starsWebConfig;
 	}
 	
-	public static StarsApplianceCategory createStarsApplianceCategory(LiteApplianceCategory liteAppCat, ArrayList liteProgs) {
+	public static StarsApplianceCategory createStarsApplianceCategory(LiteApplianceCategory liteAppCat, ArrayList liteProgs, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		
 		StarsApplianceCategory starsAppCat = new StarsApplianceCategory();
 		starsAppCat.setApplianceCategoryID( liteAppCat.getApplianceCategoryID() );
 		starsAppCat.setCategoryID( liteAppCat.getCategoryID() );
 		starsAppCat.setDescription( forceNotNull(liteAppCat.getDescription()) );
-		
-		ArrayList liteWebConfigs = SOAPServer.getAllWebConfigurations();
-		for (int i = 0; i < liteWebConfigs.size(); i++) {
-			LiteWebConfiguration liteWebConfig = (LiteWebConfiguration) liteWebConfigs.get(i);
-			if (liteWebConfig.getConfigID() == liteAppCat.getWebConfigurationID())
-				starsAppCat.setStarsWebConfig( createStarsWebConfig(liteWebConfig) );
-		}
+		starsAppCat.setStarsWebConfig( energyCompany.getStarsWebConfig(liteAppCat.getWebConfigurationID()) );
 		
 		if (liteProgs != null) {
 			for (int i = 0; i < liteProgs.size(); i++) {
@@ -1127,12 +1128,7 @@ public class StarsLiteFactory {
 				StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
 				starsProg.setProgramID( liteProg.getProgramID() );
 				starsProg.setProgramName( liteProg.getProgramName() );
-				
-				for (int j = 0; j < liteWebConfigs.size(); j++) {
-					LiteWebConfiguration liteWebConfig = (LiteWebConfiguration) liteWebConfigs.get(j);
-					if (liteWebConfig.getConfigID() == liteProg.getWebSettingsID())
-						starsProg.setStarsWebConfig( createStarsWebConfig(liteWebConfig) );
-				}
+				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
 				
 				starsAppCat.addStarsEnrLMProgram( starsProg );
 			}
@@ -1163,14 +1159,18 @@ public class StarsLiteFactory {
 		return starsUser;
 	}
 	
-	public static StarsThermostatManualOption createStarsThermostatManualOption(LiteLMThermostatManualOption liteOpt) {
-		StarsThermostatManualOption starsOpt = new StarsThermostatManualOption();
-		starsOpt.setTemperature( liteOpt.getPreviousTemperature() );
-		starsOpt.setHold( liteOpt.isHoldTemperature() );
-		starsOpt.setMode( ServerUtils.getThermModeSetting(liteOpt.getOperationStateID()) );
-		starsOpt.setFan( ServerUtils.getThermFanSetting(liteOpt.getFanOperationID()) );
+	public static StarsThermostatManualEvent createStarsThermostatManualEvent(LiteLMThermostatManualEvent liteEvent) {
+		StarsThermostatManualEvent starsEvent = new StarsThermostatManualEvent();
+		setStarsLMCustomerEvent(starsEvent, liteEvent);
 		
-		return starsOpt;
+		ThermostatManualOption starsOption = new ThermostatManualOption();
+		starsOption.setTemperature( liteEvent.getPreviousTemperature() );
+		starsOption.setHold( liteEvent.isHoldTemperature() );
+		starsOption.setMode( ServerUtils.getThermModeSetting(liteEvent.getOperationStateID()) );
+		starsOption.setFan( ServerUtils.getThermFanSetting(liteEvent.getFanOperationID()) );
+		starsEvent.setThermostatManualOption( starsOption );
+		
+		return starsEvent;
 	}
 	
 	public static StarsAppliance createStarsAppliance(LiteStarsAppliance liteApp, int energyCompanyID) {

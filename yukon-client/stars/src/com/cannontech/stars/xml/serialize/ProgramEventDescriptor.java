@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateThermostatSettingsDescriptor extends StarsThermoSettingsDescriptor {
+public class ProgramEventDescriptor extends StarsLMCustomerEventDescriptor {
 
 
       //--------------------------/
@@ -47,10 +47,10 @@ public class StarsUpdateThermostatSettingsDescriptor extends StarsThermoSettings
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateThermostatSettingsDescriptor() {
+    public ProgramEventDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsThermoSettingsDescriptor());
-        xmlName = "stars-UpdateThermostatSettings";
+        setExtendsWithoutFlatten(new StarsLMCustomerEventDescriptor());
+        xmlName = "ProgramEvent";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,7 +58,7 @@ public class StarsUpdateThermostatSettingsDescriptor extends StarsThermoSettings
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettingsDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.ProgramEventDescriptor()
 
 
       //-----------/
@@ -92,7 +92,7 @@ public class StarsUpdateThermostatSettingsDescriptor extends StarsThermoSettings
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsUpdateThermostatSettings.class;
+        return com.cannontech.stars.xml.serialize.ProgramEvent.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
