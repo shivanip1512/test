@@ -176,6 +176,13 @@ public void setStateGroup(com.cannontech.database.db.state.StateGroup newValue) 
  */
 public void setStateGroupID(Integer stateGroupID) {
 	getStateGroup().setStateGroupID(stateGroupID);
+	if( getStatesVector() != null )
+			for( int i = 0; i < getStatesVector().size(); i++ )
+				{
+					State state = (State) getStatesVector().get(i);
+					state.getState().setStateGroupID(getStateGroup().getStateGroupID());
+				}
+	
 }
 /**
  * This method was created in VisualAge.
