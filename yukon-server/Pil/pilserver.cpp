@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2005/02/17 22:58:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,7 @@ CtiPILExecutorFactory   ExecFactory;
 DLLIMPORT extern CTINEXUS PorterNexus;
 DLLIMPORT extern VOID PortPipeCleanup (ULONG Reason);
 
+static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName);
@@ -779,7 +780,7 @@ void CtiPILServer::nexusThread()
         }
 
         InMessage = CTIDBG_new INMESS;
-        memset(InMessage, sizeof(*InMessage), 0);
+        memset(InMessage, 0, sizeof(*InMessage));
 
         /* get a result off the port pipe */
         if(PorterNexus.CTINexusRead ( InMessage, sizeof(*InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(*InMessage))
@@ -1366,7 +1367,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             CtiDeviceManager::spiterator itr_dev;
 
             vector< CtiDeviceManager::ptr_type > match_coll;
-            DeviceManager->select(findMeterGroupName, (void*)(Dev.get()), match_coll);
+            DeviceManager->select(findMeterGroupName, (void*)(gname.data()), match_coll);
             CtiDeviceSPtr sptr;
 
             while(!match_coll.empty())
@@ -1410,7 +1411,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             CtiDeviceManager::spiterator itr_dev;
 
             vector< CtiDeviceManager::ptr_type > match_coll;
-            DeviceManager->select(findAltMeterGroupName, (void*)(Dev.get()), match_coll);
+            DeviceManager->select(findAltMeterGroupName, (void*)(gname.data()), match_coll);
             CtiDeviceSPtr sptr;
 
             while(!match_coll.empty())
@@ -1635,7 +1636,8 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
     bool shed = false;
     try
     {
-        if(parse.getCommand() == ControlRequest)
+        if(gConfigParms.getValueAsString("PIL_IDENTIFY_SUBGROUP_CONTROLS").contains("true", RWCString::ignoreCase) &&
+           parse.getCommand() == ControlRequest)
         {
             if(Dev->getType() == TYPE_MACRO)
             {
@@ -1668,11 +1670,6 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
                     CtiMessage *pMsg = sptr->rsvpToDispatch(true);
                     if(pMsg)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << sptr->getName() << " Produced a message" << endl;
-                            pMsg->dump();
-                        }
                         vgList.insert(pMsg);
                     }
 
@@ -1729,13 +1726,13 @@ static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdev
 }
 
 
-static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGroupName)
+static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
 {
     bool bstat = false;
 
     if(otherdevice->isMeter() || isION(otherdevice->getType()))
     {
-        RWCString gname((char*)vptrGroupName);
+        RWCString gname((char*)vptrGname);
         RWCString mgname = otherdevice->getMeterGroupName();
         mgname.toLower();
 
@@ -1748,10 +1745,10 @@ static bool findMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *
     return bstat;
 }
 
-static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrAltGroupName)
+static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
 {
     bool bstat = false;
-    RWCString gname((char*)vptrAltGroupName);
+    RWCString gname((char*)vptrGname);
     RWCString mgname = otherdevice->getAlternateMeterGroupName();
     mgname.toLower();
 
