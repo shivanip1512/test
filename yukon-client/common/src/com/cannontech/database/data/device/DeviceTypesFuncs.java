@@ -284,6 +284,18 @@ public final static boolean isLMProgram(int deviceType)
 			return false;
 	}
 }
+
+public final static boolean isLMProgramDirect(int deviceType) 
+{
+	switch(deviceType)
+	{
+		case LM_DIRECT_PROGRAM:
+			return true;
+	
+		default:
+			return false;
+	}
+}
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)
