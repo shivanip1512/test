@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2003/03/04 16:27:01 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2003/04/07 15:58:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -877,7 +877,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
     CHAR newFileName[50];
     int retVal = TCL_OK;
     bool dsm2ImportFlag = false;
-    int protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
+    int protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
 
     if( argc < 2 )
     {
@@ -975,7 +975,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands using versacom only " <<endl;;
+                            dout << RWTime() << " - Will export commands using versacom only " <<endl;
                         }
                     } 
                     else if(RWCString(argv[i]).contains (RWCString ("expresscom"),RWCString::ignoreCase))
@@ -983,7 +983,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         protocol = TEXT_CMD_FILE_SPECIFY_EXPRESSCOM;
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands using expresscom only " <<endl;;
+                            dout << RWTime() << " - Will export commands using expresscom only " <<endl;
                         }
                     }
                     else if(RWCString(argv[i]).contains (RWCString ("none"),RWCString::ignoreCase))
@@ -991,15 +991,15 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                         protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands without specifying protocol " <<endl;;
+                            dout << RWTime() << " - Will export commands without specifying protocol " <<endl;
                         }
                     }
                     else
                     {
-                        protocol = TEXT_CMD_FILE_SPECIFY_VERSACOM;
+                        protocol = TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL;
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
-                            dout << RWTime() << " - Will export commands using versacom only " <<endl;;
+                            dout << RWTime() << " - Will export commands without specifing protocol " <<endl;
                         }
                     }
                 }

@@ -404,7 +404,7 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                     {
                         /****************************
                         * line is a service cmd to a serial number
-                        * format:  2,serial #,cmd where cmd is IN or OUT
+                        * format:  2,serial #,in|out[,hours:#][,load:]
                         *****************************
                         */
                         if (!(tempString1 = cmdLine(",\r\n")).isNull())
@@ -421,9 +421,13 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                 {
                                     *programming = RWCString ("PutConfig xcom serial ");
                                 }
-                                else
+                                else if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_VERSACOM)
                                 {
                                     *programming = RWCString ("PutConfig versacom serial ");
+                                }
+                                else
+                                {
+                                    *programming = RWCString ("PutConfig serial ");
                                 }
 
                                 if (tempString1.contains("in"))
@@ -439,6 +443,29 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                 else
                                 {
                                     retCode = false;
+                                }
+
+                                // everything from now on is optional
+                                if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                                {
+                                    // check for a timeout
+                                    if (tempString1.contains("offhours:"))
+                                    {
+                                        int colon = tempString1.first(':');
+
+                                        if( colon !=RW_NPOS )
+                                        {
+                                            tempString1.replace(colon,1,' ');
+                                            *programming += " temp ";
+                                            *programming += tempString1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        CtiLockGuard< CtiLogger > guard(dout);
+                                        dout << RWTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
+                                        retCode = false;
+                                    }
                                 }
                             }
                             else
