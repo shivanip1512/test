@@ -33,6 +33,7 @@ import com.cannontech.roles.yukon.LoggingRole;
  * */
 public class CTILogger
 {
+	private static boolean alwaysUseStandardLogger = false;
 	private static boolean isCreated = false;
 
 	private static final Layout DEF_LAYOUT = 
@@ -99,7 +100,11 @@ public class CTILogger
 
    private static synchronized Logger getLogger()
    {
-      if( !isCreated )
+   	  if(alwaysUseStandardLogger) {
+   	  		return LogManager.getLogger(STANDARD_LOGGER);
+   	  }
+   	  
+      if( !alwaysUseStandardLogger && !isCreated )
       {
          //Init our logger object for the first time
          createLogger( STANDARD_LOGGER );
@@ -316,5 +321,21 @@ public class CTILogger
 		updateLogSettings();
 		getLogger().warn(msg,t);
    }
+
+	/**
+	 * Return whether or not to always use the standard logger
+	 * @return
+	 */
+	public static boolean isAlwaysUseStandardLogger() {
+		return alwaysUseStandardLogger;
+	}
+
+	/**
+	 * If set to true the standard logger will always be used
+	 * @param b
+	 */
+	public static void setAlwaysUseStandardLogger(boolean b) {
+		alwaysUseStandardLogger = b;
+	}
 
 }
