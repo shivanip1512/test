@@ -13,6 +13,7 @@ yukon-client/commander/build
 yukon-client/common/.cvsignore
 yukon-client/common/bin
 yukon-client/common/build
+yukon-client/cttp/bin
 yukon-client/custom/.cvsignore
 yukon-client/custom/bin
 yukon-client/custom/build
