@@ -294,6 +294,44 @@ public class StarsEnergyCompanyDescriptor extends org.exolab.castor.xml.util.XML
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
+        //-- _timeZone
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_timeZone", "TimeZone", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnergyCompany target = (StarsEnergyCompany) object;
+                return target.getTimeZone();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnergyCompany target = (StarsEnergyCompany) object;
+                    target.setTimeZone( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _timeZone
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsEnergyCompanyDescriptor()
 
 

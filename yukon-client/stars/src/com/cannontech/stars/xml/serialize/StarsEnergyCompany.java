@@ -49,6 +49,8 @@ public class StarsEnergyCompany implements java.io.Serializable {
 
     private CompanyAddress _companyAddress;
 
+    private java.lang.String _timeZone;
+
 
       //----------------/
      //- Constructors -/
@@ -129,6 +131,16 @@ public class StarsEnergyCompany implements java.io.Serializable {
     {
         return this._mainPhoneNumber;
     } //-- java.lang.String getMainPhoneNumber() 
+
+    /**
+     * Returns the value of field 'timeZone'.
+     * 
+     * @return the value of field 'timeZone'.
+    **/
+    public java.lang.String getTimeZone()
+    {
+        return this._timeZone;
+    } //-- java.lang.String getTimeZone() 
 
     /**
     **/
@@ -234,6 +246,16 @@ public class StarsEnergyCompany implements java.io.Serializable {
     {
         this._mainPhoneNumber = mainPhoneNumber;
     } //-- void setMainPhoneNumber(java.lang.String) 
+
+    /**
+     * Sets the value of field 'timeZone'.
+     * 
+     * @param timeZone the value of field 'timeZone'.
+    **/
+    public void setTimeZone(java.lang.String timeZone)
+    {
+        this._timeZone = timeZone;
+    } //-- void setTimeZone(java.lang.String) 
 
     /**
      * 
