@@ -778,6 +778,7 @@ public static void main(java.lang.String[] args)
 	Baseline baseLine = new Baseline();
 
 	GregorianCalendar lastCalcPointRawPointHistoryTimeStamp;
+	int calcComponentIndex = 0;
 
 	Vector tempPointDataMsgVector = null;
 	java.util.Date now = null;
@@ -816,18 +817,18 @@ public static void main(java.lang.String[] args)
 					
 					//contains CalcComponent values.
 					Vector currentCalcComponents = new Vector();
-					for(int j = 0; j < allHistoricalCalcComponentsList.size(); j++)
+					while (calcComponentIndex < allHistoricalCalcComponentsList.size())
 					{
 						// Find the calcComponents entries with pointIds matching the LitePoint (current CalcBase pointId).
-						if ( pointID == ((CalcComponent) allHistoricalCalcComponentsList.get(j)).getPointID().intValue())
+						if ( pointID == ((CalcComponent) allHistoricalCalcComponentsList.get(calcComponentIndex)).getPointID().intValue())
 						{
-							currentCalcComponents.add(allHistoricalCalcComponentsList.get(j));
+							currentCalcComponents.add(allHistoricalCalcComponentsList.get(calcComponentIndex));
+							calcComponentIndex++;
 						}
-//  Commented out:  the break statement was the cause of only the first point getting updated ...ever!  Bad Craphysterical.						
-//						else
-//						{
-//							break;
-//						}
+						else
+						{
+							break;
+						}
 					}
 					if ( !currentCalcComponents.isEmpty() )
 					{
@@ -854,6 +855,7 @@ public static void main(java.lang.String[] args)
 
 			// Clear out the lists.
 			allHistoricalCalcComponentsList.clear();
+			calcComponentIndex = 0;
 		}
 
 		// CALCULATE BASELINE TOTALS.
