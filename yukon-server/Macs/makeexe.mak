@@ -145,21 +145,14 @@ mc_fileint.obj:	mc_fileint.h fileint.h dlldefs.h queue.h logger.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		message.h ctidbgmem.h collectable.h mc_msg.h ctibase.h \
 		ctinexus.h
-mc_interp.obj:	mc_interp.h mutex.h dlldefs.h ctdpcptrq.h logger.h \
-		thread.h guard.h mccmd.h msg_pcrequest.h message.h \
-		ctidbgmem.h collectable.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_signal.h yukon.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h ctibase.h ctinexus.h
-mc_interp_pool.obj:	mc_interp_pool.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h mc_interp.h ctdpcptrq.h
 mc_main.obj:	CServiceConfig.h dlldefs.h mc_svc.h cservice.h \
 		mc_server.h mc.h logger.h thread.h mutex.h guard.h CParms.h \
-		message.h ctidbgmem.h collectable.h queue.h interp.h \
-		ctdpcptrq.h types.h mgr_mcsched.h rtdb.h hashkey.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mc_sched.h dbmemobject.h \
-		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
-		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h clistener.h clientconn.h \
+		message.h ctidbgmem.h collectable.h queue.h mgr_mcsched.h \
+		rtdb.h hashkey.h dllbase.h os2_2w32.h types.h cticalls.h \
+		dsm2.h mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
+		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h ctdpcptrq.h clistener.h clientconn.h \
 		observe.h mc_msg.h mc_script.h mc_scheduler.h mgr_holiday.h \
 		mc_fileint.h fileint.h ctibase.h ctinexus.h
 mc_msg.obj:	mc_msg.h message.h ctidbgmem.h collectable.h dlldefs.h \
@@ -177,23 +170,22 @@ mc_script.obj:	mc_script.h mc.h logger.h thread.h mutex.h dlldefs.h \
 		guard.h message.h ctidbgmem.h collectable.h
 mc_server.obj:	mc_server.h mc.h logger.h thread.h mutex.h dlldefs.h \
 		guard.h CParms.h message.h ctidbgmem.h collectable.h queue.h \
-		interp.h ctdpcptrq.h types.h mgr_mcsched.h rtdb.h hashkey.h \
-		dllbase.h os2_2w32.h cticalls.h dsm2.h mc_sched.h \
-		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
-		mc_dbthr.h mccmd.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_signal.h yukon.h clistener.h \
+		mgr_mcsched.h rtdb.h hashkey.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mc_sched.h dbmemobject.h tbl_pao.h \
+		tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h ctdpcptrq.h clistener.h \
 		clientconn.h observe.h mc_msg.h mc_script.h mc_scheduler.h \
 		mgr_holiday.h mc_fileint.h fileint.h numstr.h
 mc_svc.obj:	mc_svc.h cservice.h dlldefs.h mc_server.h mc.h logger.h \
 		thread.h mutex.h guard.h CParms.h message.h ctidbgmem.h \
-		collectable.h queue.h interp.h ctdpcptrq.h types.h \
-		mgr_mcsched.h rtdb.h hashkey.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mc_sched.h dbmemobject.h tbl_pao.h \
-		tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
-		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h clistener.h clientconn.h \
-		observe.h mc_msg.h mc_script.h mc_scheduler.h mgr_holiday.h \
-		mc_fileint.h fileint.h
+		collectable.h queue.h mgr_mcsched.h rtdb.h hashkey.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mc_sched.h \
+		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
+		mc_dbthr.h mccmd.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h ctdpcptrq.h \
+		clistener.h clientconn.h observe.h mc_msg.h mc_script.h \
+		mc_scheduler.h mgr_holiday.h mc_fileint.h fileint.h
 mgr_mcsched.obj:	mgr_mcsched.h mc.h logger.h thread.h mutex.h \
 		dlldefs.h guard.h rtdb.h hashkey.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mc_sched.h dbmemobject.h tbl_pao.h \
