@@ -3,7 +3,9 @@ package com.cannontech.graph.model;
 import com.cannontech.common.util.KeysAndValues;
 
 /**
- * Insert the type's description here.
+ * Properties for a Trend.
+ * Properties are read from a file, if exists, or defaulted to best guess.
+ * Properties can be written to a file for next startup feature.
  * Creation date: (7/10/2001 5:01:43 PM)
  * @author: 
  */
@@ -19,6 +21,7 @@ public class TrendProperties
 	private final String OPTIONS_KEY = "OPTIONS";
 	private final String VIEWTYPE_KEY = "VIEWTYPE";
 	private final String RESOLUTION_KEY = "RESOLUTION";
+	private final String GDEF_NAME_KEY = "NAME";
 
 	private static String rangeLabel1 = "Reading";
 	private static String rangeLabel2 = "Reading";
@@ -28,8 +31,8 @@ public class TrendProperties
 	private static long resolutionInMillis = 1;	//default to millis
 	public int optionsMaskSettings = TrendModelType.NONE_MASK;
 	public int viewType = TrendModelType.LINE_VIEW;
+	public String gdefName = "";
 	
-	public int graphDefID = -1;
 	/**
 	 * TrendPropertiesconstructor comment.
 	 */
@@ -62,18 +65,32 @@ public class TrendProperties
 		setResolutionInMillis(resolution_);
 	}
 	
+	/**
+	 * @param newLabel
+	 */
 	public void setPrimaryRangeLabel(String newLabel)
 	{
 		rangeLabel1 = newLabel;
 	}
+	/**
+	 * @param newLabel
+	 */
 	public void setSecondaryRangeLabel(String newLabel)
 	{
 		rangeLabel2 = newLabel;
 	}
+	/**
+	 * The label used for the Primary (left by default) Range axis.
+	 * @return rangeLabel1
+	 */
 	public String getPrimaryRangeLabel()
 	{
 		return rangeLabel1;
 	}
+	/**
+	 * The label used for the Secondary (right by default) Range axis. 
+	 * @return
+	 */
 	public String getSecondaryRangeLabel()
 	{
 		return rangeLabel2;
@@ -98,6 +115,7 @@ public class TrendProperties
 	}
 
 	/**
+	 * The label used for the Domain axis. 
 	 * @return
 	 */
 	public String getDomainLabel()
@@ -114,6 +132,7 @@ public class TrendProperties
 	}
 
 	/**
+	 * The label used for the Domain axis during Load Duration data display.
 	 * @return
 	 */
 	public String getDomainLabel_LD()
@@ -130,6 +149,8 @@ public class TrendProperties
 	}
 
 	/**
+	 * An options bit mask.
+	 * See com.cannontech.graph.model.TrendModelType for valid option masks. 
 	 * @return
 	 */
 	public int getOptionsMaskSettings()
@@ -137,6 +158,10 @@ public class TrendProperties
 		return optionsMaskSettings;
 	}
 
+	/**
+	 * @param newMask Bit mask to apply.
+	 * @param addMask Boolean value to add/remove (T/F) a masked bit. 
+	 */
 	public void updateOptionsMaskSettings(int newMask, boolean addMask)
 	{
 		// when setMasked = true, the newMask will be added to the options_mask
@@ -162,6 +187,8 @@ public class TrendProperties
 		optionsMaskSettings = i;
 	}
 	/**
+	 * The view (bar, line, etc.) type for a trend.
+	 * See com.cannontech.graph.model.TrendModelType for valid view types.
 	 * @return
 	 */
 	public int getViewType()
@@ -177,6 +204,28 @@ public class TrendProperties
 		viewType = i;
 	}
 	
+	/**
+	 * The last selected graph name.
+	 * GraphDefinition.Name table-column value.
+	 * @return
+	 */
+	public String getGdefName()
+	{
+		return gdefName;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setGdefName(String string)
+	{
+		gdefName = string;
+	}
+
+	/**
+	 * Write the TrendProperties to a file, TREND_DEFAULTS_DIRECTORY+TREND_DEFAULTS_FILENAME, 
+	 * in a Keys=Values format (com.cannontech.common.util.KeysAndValues)
+	 */
 	public void writeDefaultsFile()
 	{
 		try
@@ -206,7 +255,8 @@ public class TrendProperties
 	}		
 	
 	/**
-	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
+	 * Parse the properties file (TREND_DEFAULTS_DIRECTORY+TREND_DEFAULTS_FILENAME, if exists)
+	 *  for properties last saved values.
 	 */
 	public void parseDatFile()
 	{
@@ -247,13 +297,19 @@ public class TrendProperties
 				{
 					setResolutionInMillis(Long.parseLong(values[i]));
 				}
+				else if( keys[i].equalsIgnoreCase(GDEF_NAME_KEY))
+				{
+					setGdefName(values[i].toString());
+				}
 			}
 		}
 		com.cannontech.clientutils.CTILogger.info( " LOADED trending properties from file.");
 	}		
 	
 	/**
-	 * 
+	 * Builds a KeysAndValues class with all trendProperties and their current values.
+	 * Keys=Values format (com.cannontech.common.util.KeysAndValues)
+	 * @return KeysAndValues
 	 */
 	public KeysAndValues buildKeysAndValues()
 	{
@@ -281,6 +337,9 @@ public class TrendProperties
 		keys.add(RESOLUTION_KEY); 
 		values.add(String.valueOf(getResolutionInMillis()));
 		
+		keys.add(GDEF_NAME_KEY); 
+		values.add(getGdefName());
+
 		String[] keysArray = new String[keys.size()];
 		keys.toArray(keysArray);
 		String[] valuesArray = new String[values.size()];
