@@ -33,8 +33,8 @@
             </td>
             <td width="34%" valign="top"> 
               <div align="right"><img src="YukonLogoWhite.gif" width="132" height="28"></div>
-              <font face="Arial, Helvetica, sans-serif" size="2"><A HREF="SVGView.exe">Click here to install Adobe SVG Plugin 3.0
-            </A></FONT><BR>
+              
+            <font face="Arial, Helvetica, sans-serif" size="2">\</font> <BR>
             <BR>
 
             </td>
@@ -70,14 +70,15 @@
               via pager or e-mail message. Substation information is accessed 
               by a Web browser located on any computer with Internet or intranet 
               access.</font></p>
-            <p><font face="Arial, Helvetica, sans-serif" size="2">The specifications 
-              of the esubstation.com application are listed <a href="esubSpecificationGuide.pdf" class="BlackLink" target="_blank">here</a>.</font></p>
-            <p><font face="Arial, Helvetica, sans-serif" size="2">Sign in below 
-              to view our application.</font><br>
-              <br></p>
-            <p>
-      <center>
-        <table width="250" border="0" cellspacing="0" cellpadding="5"
+			  
+            <p align="center"><font face="Arial, Helvetica, sans-serif" size="2">This 
+              applicaion requires Adobe SVG Viewer 3.0 or greater</font> <br>
+              <br>
+            <div align="center"><a href="http://www.adobe.com/svg/viewer/install/"><img src="images/svgdownload.gif" width="88" height="31" border="0"></a></div>
+            <br>
+            <font face="Arial, Helvetica, sans-serif" size="2">Sign in below to view our application.</font><br>
+              <FORM METHOD="POST" ACTION="esub-demo4/sublist.html"> 
+        <table width="300" border="0" cellspacing="0" cellpadding="5"
     height="89">
 	
 		<%
@@ -94,10 +95,10 @@
  		  }
 		%>
           <tr>
-          <FORM METHOD="POST" ACTION="esub-demo4/sublist.html"> 
+          
             <td width="40%" height="20"> 
-              <p align=RIGHT>&nbsp;<font size="-1" face="Arial">User Name:</font>
-            </td>
+                      <p align=left>&nbsp;<font size="-1" face="Arial">User Name:</font> 
+                    </td>
             <td width="60%" height="20"> <font size="-1" face="Arial">
               <input name="USERNAME" type="text" 
         size="20">
@@ -105,8 +106,8 @@
           </tr>
           <tr> 
             <td width="40%" height="20"> 
-              <p align=RIGHT>&nbsp;<font size="-1" face="Arial">Password:</font>
-            </td>
+                      <p align=left>&nbsp;<font size="-1" face="Arial">Password:</font> 
+                    </td>
             <td width="60%" height="20"> <font size="-1" face="Arial">
               <input name="PASSWORD" type="password" 
         size="20">
@@ -116,9 +117,10 @@
             <td width="40%" height="20">&nbsp; </td>
             <td width="60%" height="20"> <input type="image" src="SubmitButton.gif" width="58" height="20" border="0"></td>
             <input name="LOGIN" type="hidden" value="true"/>
-            </form>
+           
           </tr>
         </table>
+		 </form>
 		<div align="center"><br>
                           <font face="Arial, Helvetica, sans-serif" size="2">To obtain a password, 
               or if you have forgotten your password, contact:<br>
