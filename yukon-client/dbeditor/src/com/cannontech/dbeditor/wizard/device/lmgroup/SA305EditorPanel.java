@@ -1476,15 +1476,15 @@ public Object getValue(Object o)
 			threeOhFive.getLMGroupSA305().setSubstationAddress(new Integer(subAddress));
 		threeOhFive.getLMGroupSA305().setIndividualAddress(getJTextFieldIndividualAddress().getText());
 		if(rateFamily.compareTo("") == 0)
-			threeOhFive.getLMGroupSA305().setRateFamily(new Integer(-1));
+			threeOhFive.getLMGroupSA305().setRateFamily(new Integer(0));
 		else
 			threeOhFive.getLMGroupSA305().setRateFamily(new Integer(rateFamily));
 		if(rateMember.compareTo("") == 0)
-			threeOhFive.getLMGroupSA305().setRateMember(new Integer(-1));
+			threeOhFive.getLMGroupSA305().setRateMember(new Integer(0));
 		else
 			threeOhFive.getLMGroupSA305().setRateMember(new Integer(rateMember));
 		if(rateHierarchy.compareTo("") == 0)
-			threeOhFive.getLMGroupSA305().setRateHierarchy(new Integer(-1));
+			threeOhFive.getLMGroupSA305().setRateHierarchy(new Integer(0));
 		else
 			threeOhFive.getLMGroupSA305().setRateHierarchy(new Integer(rateHierarchy));
 		
@@ -1652,6 +1652,7 @@ public void jCheckBoxSerial_ActionPerformed(java.awt.event.ActionEvent actionEve
 		
 		getJCheckBoxRateUsage().setSelected(true);
 	}
+	fireInputUpdate();
 	return;
 }
 /**
@@ -1718,11 +1719,7 @@ public void setValue(Object o)
 		else
 			getJTextFieldSubAddress().setText(subAdd.toString());
 		getJTextFieldIndividualAddress().setText(threeOhFive.getLMGroupSA305().getIndividualAddress());
-		//make sure the panel correctly reflects the use of individual address instead of other addresses
-		if(threeOhFive.getLMGroupSA305().getIndividualAddress().compareTo(" ") != 0)
-		{
-			this.getJCheckBoxSerial().doClick();
-		}
+
 		Integer rateFam = threeOhFive.getLMGroupSA305().getRateFamily();
 		if(rateFam.intValue() == -1)
 			getJTextFieldRateFamily().setText("");
@@ -1748,6 +1745,9 @@ public void setValue(Object o)
 			getJCheckBoxSubUsage().setSelected(true);
 		if(addressUsage.indexOf('R') != -1 )
 			getJCheckBoxRateUsage().setSelected(true);
+		//make sure the panel correctly reflects the use of individual address instead of other addresses
+		else
+			this.getJCheckBoxSerial().doClick();
 			
 		String loadNumber = threeOhFive.getLMGroupSA305().getLoadNumber();
 		if(loadNumber.indexOf('1') != -1 )
@@ -1768,8 +1768,29 @@ public boolean isInputValid()
 {
 	String utilityAddress = getJTextFieldUtilityAddress().getText();
 	if(utilityAddress.compareTo("") == 0)
+	{
+		setErrorString("Please specify a utility address.");
 		return false;
-
+	}
+		
+	String rateFamily = getJTextFieldRateFamily().getText();
+	String rateMember = getJTextFieldRateMember().getText();
+	String rateHierarchy = getJTextFieldRateHierarchy().getText();
+	if(rateFamily.compareTo("") == 0)
+	{
+		setErrorString("Please fill in a value for the rate family field.");
+		return false;
+	}
+	if(rateMember.compareTo("") == 0)
+	{
+		setErrorString("Please fill in a value for the rate member field.");  
+		return false;
+	}
+	if(rateHierarchy.compareTo("") == 0)
+	{
+		setErrorString("Please fill in a value for the rate hierarchy field");
+		return false;
+	}
 	return true;
 }
 
