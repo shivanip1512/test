@@ -38,6 +38,8 @@ class JS {
 	"	elem.getOwnerDocument().documentElement.appendChild(selectedRect);\n" +
 	"} //end addBorder\n" +
 	"function noBorder(elem) {\n" +
+	"   if(selectedRect == null)\n" +
+	"       return;\n" +
 	"	var b = findChild(selectedRect);\n" +
 	"	if(b != null) {\n" +
 	"		elem.getOwnerDocument().documentElement.removeChild(b);\n" +
