@@ -112,11 +112,13 @@ $(BIN)\*.exe
 #UPDATE#
 dbsigsend.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h tbl_signal.h dbmemobject.h pointdefs.h \
-		utility.h yukon.h
+		utility.h yukon.h ctidbgmem.h
 tbl_rawpthistory.obj:	tbl_rawpthistory.h dlldefs.h pointdefs.h \
-		utility.h dsm2.h mutex.h guard.h yukon.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dbaccess.h sema.h logger.h thread.h
+		utility.h dsm2.h mutex.h guard.h yukon.h ctidbgmem.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dbaccess.h sema.h \
+		logger.h thread.h
 tbl_signal.obj:	tbl_signal.h dbmemobject.h dlldefs.h pointdefs.h \
-		utility.h dsm2.h mutex.h guard.h yukon.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dbaccess.h sema.h logger.h thread.h
+		utility.h dsm2.h mutex.h guard.h yukon.h ctidbgmem.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dbaccess.h sema.h \
+		logger.h thread.h
 #ENDUPDATE#

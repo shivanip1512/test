@@ -125,31 +125,33 @@ allclean:   clean all
                $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 #UPDATE#
 clientconn.obj:	clientconn.h ctdpcptrq.h dlldefs.h lmmessage.h \
-		message.h collectable.h lmcontrolarea.h connection.h \
-		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h logger.h thread.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
-		queue.h observe.h lmprogrambase.h lmgroupbase.h \
-		msg_pcrequest.h msg_cmd.h executor.h lmcontrolareastore.h \
-		lmcontrolareatrigger.h lmid.h ctibase.h ctinexus.h
-clistener.obj:	clistener.h clientconn.h ctdpcptrq.h dlldefs.h \
-		lmmessage.h message.h collectable.h lmcontrolarea.h \
+		message.h ctidbgmem.h collectable.h lmcontrolarea.h \
 		connection.h exchange.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
+		msg_ptreg.h msg_reg.h queue.h observe.h lmprogrambase.h \
+		lmgroupbase.h msg_pcrequest.h msg_cmd.h executor.h \
+		lmcontrolareastore.h lmcontrolareatrigger.h lmid.h ctibase.h \
+		ctinexus.h
+clistener.obj:	clistener.h clientconn.h ctdpcptrq.h dlldefs.h \
+		lmmessage.h message.h ctidbgmem.h collectable.h \
+		lmcontrolarea.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
 		msg_ptreg.h msg_reg.h queue.h observe.h lmprogrambase.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h lmcontrolareastore.h \
 		lmcontrolareatrigger.h lmid.h configparms.h cparms.h \
 		ctibase.h ctinexus.h executor.h
-executor.obj:	executor.h lmmessage.h message.h collectable.h dlldefs.h \
-		lmcontrolarea.h connection.h exchange.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h observe.h lmprogrambase.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h ctdpcptrq.h \
-		clistener.h clientconn.h lmcontrolareastore.h \
-		lmcontrolareatrigger.h lmid.h loadmanager.h dbaccess.h sema.h \
-		pointtypes.h configparms.h cparms.h ctibase.h ctinexus.h \
+executor.obj:	executor.h lmmessage.h message.h ctidbgmem.h \
+		collectable.h dlldefs.h lmcontrolarea.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h observe.h lmprogrambase.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h ctdpcptrq.h clistener.h \
+		clientconn.h lmcontrolareastore.h lmcontrolareatrigger.h \
+		lmid.h loadmanager.h dbaccess.h sema.h pointtypes.h \
+		configparms.h cparms.h ctibase.h ctinexus.h \
 		lmprogramcurtailment.h lmprogramenergyexchange.h \
 		lmenergyexchangeoffer.h lmenergyexchangeofferrevision.h \
 		lmenergyexchangehourlyoffer.h lmenergyexchangecustomer.h \
@@ -159,7 +161,7 @@ executor.obj:	executor.h lmmessage.h message.h collectable.h dlldefs.h \
 lmcontrolarea.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmcontrolarea.h \
 		connection.h exchange.h logger.h thread.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h observe.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h lmid.h lmprogramdirect.h \
@@ -170,50 +172,52 @@ lmcontrolarea.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 lmcontrolareastore.obj:	lmcontrolareastore.h observe.h types.h \
 		dlldefs.h lmcontrolarea.h connection.h exchange.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h logger.h \
-		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
-		queue.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
-		msg_cmd.h lmcontrolareatrigger.h lmid.h lmcurtailcustomer.h \
-		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
+		thread.h message.h ctidbgmem.h collectable.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h lmprogrambase.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h lmid.h \
+		lmcurtailcustomer.h lmenergyexchangecustomer.h \
+		lmenergyexchangecustomerreply.h \
 		lmenergyexchangeofferrevision.h lmenergyexchangeoffer.h \
 		lmenergyexchangehourlyoffer.h \
 		lmenergyexchangehourlycustomer.h lmprogramcurtailment.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
 		lmprogramenergyexchange.h lmgroupversacom.h lmgroupemetcon.h \
-		lmgroupripple.h lmgrouppoint.h lmprogramcontrolwindow.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		devicetypes.h dbaccess.h sema.h ctibase.h ctinexus.h \
-		configparms.h cparms.h msg_dbchg.h loadmanager.h executor.h \
-		lmmessage.h ctdpcptrq.h
+		lmgroupexpresscom.h lmgroupripple.h lmgrouppoint.h \
+		lmprogramcontrolwindow.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h devicetypes.h dbaccess.h \
+		sema.h ctibase.h ctinexus.h configparms.h cparms.h \
+		msg_dbchg.h loadmanager.h executor.h lmmessage.h ctdpcptrq.h
 lmcontrolareatrigger.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmcontrolareatrigger.h observe.h lmid.h lmprogrambase.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
-		msg_signal.h yukon.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
-		pointtypes.h logger.h thread.h loadmanager.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h configparms.h \
-		cparms.h lmcontrolareastore.h lmcontrolarea.h executor.h \
-		lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h
+		ctidbgmem.h msg_signal.h yukon.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h pointtypes.h logger.h thread.h \
+		loadmanager.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h configparms.h cparms.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h lmmessage.h ctdpcptrq.h ctibase.h \
+		ctinexus.h
 lmcurtailcustomer.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmcurtailcustomer.h observe.h msg_pcrequest.h message.h \
-		collectable.h lmid.h logger.h thread.h loadmanager.h \
-		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
-		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmgroupbase.h \
-		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
-		ctibase.h ctinexus.h device.h devicetypes.h resolvers.h \
-		db_entry_defines.h
+		ctidbgmem.h collectable.h lmid.h logger.h thread.h \
+		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h msg_cmd.h pointtypes.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmgroupbase.h lmcontrolareatrigger.h executor.h lmmessage.h \
+		ctdpcptrq.h ctibase.h ctinexus.h device.h devicetypes.h \
+		resolvers.h db_entry_defines.h
 lmenergyexchangecustomer.obj:	dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmenergyexchangecustomer.h observe.h \
 		lmenergyexchangecustomerreply.h lmid.h logger.h thread.h \
-		loadmanager.h connection.h exchange.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h lmcontrolareastore.h lmcontrolarea.h \
-		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		loadmanager.h connection.h exchange.h message.h ctidbgmem.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
+		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
+		lmcontrolarea.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
 		ctibase.h ctinexus.h device.h devicetypes.h resolvers.h \
 		db_entry_defines.h
@@ -221,11 +225,11 @@ lmenergyexchangecustomerreply.obj:	dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmenergyexchangecustomerreply.h observe.h \
 		lmenergyexchangehourlycustomer.h lmid.h logger.h thread.h \
-		loadmanager.h connection.h exchange.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h lmcontrolareastore.h lmcontrolarea.h \
-		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		loadmanager.h connection.h exchange.h message.h ctidbgmem.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
+		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
+		lmcontrolarea.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
 		ctibase.h ctinexus.h device.h devicetypes.h resolvers.h \
 		db_entry_defines.h
@@ -233,7 +237,7 @@ lmenergyexchangehourlycustomer.obj:	dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmenergyexchangehourlycustomer.h observe.h lmid.h logger.h \
 		thread.h loadmanager.h connection.h exchange.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
 		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
 		lmcontrolarea.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
@@ -244,7 +248,7 @@ lmenergyexchangehourlyoffer.obj:	dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmenergyexchangehourlyoffer.h observe.h lmid.h logger.h \
 		thread.h loadmanager.h connection.h exchange.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
 		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
 		lmcontrolarea.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
@@ -259,18 +263,18 @@ lmenergyexchangeofferrevision.obj:	dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmenergyexchangeofferrevision.h observe.h \
 		lmenergyexchangehourlyoffer.h lmid.h logger.h thread.h \
-		loadmanager.h connection.h exchange.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h msg_cmd.h pointtypes.h \
-		configparms.h cparms.h lmcontrolareastore.h lmcontrolarea.h \
-		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		loadmanager.h connection.h exchange.h message.h ctidbgmem.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
+		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
+		lmcontrolarea.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
 		ctibase.h ctinexus.h device.h devicetypes.h resolvers.h \
 		db_entry_defines.h
 lmgroupbase.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmgroupbase.h \
-		observe.h msg_pcrequest.h message.h collectable.h msg_cmd.h \
-		lmid.h logger.h thread.h loadmanager.h connection.h \
+		observe.h msg_pcrequest.h message.h ctidbgmem.h collectable.h \
+		msg_cmd.h lmid.h logger.h thread.h loadmanager.h connection.h \
 		exchange.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
 		yukon.h msg_ptreg.h msg_reg.h queue.h pointtypes.h \
 		configparms.h cparms.h lmcontrolareastore.h lmcontrolarea.h \
@@ -279,7 +283,7 @@ lmgroupbase.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		resolvers.h db_entry_defines.h
 lmgroupemetcon.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmgroupemetcon.h \
-		lmgroupbase.h observe.h msg_pcrequest.h message.h \
+		lmgroupbase.h observe.h msg_pcrequest.h message.h ctidbgmem.h \
 		collectable.h msg_cmd.h lmid.h logger.h thread.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
@@ -287,9 +291,19 @@ lmgroupemetcon.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
 		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
 		ctibase.h ctinexus.h
+lmgroupexpresscom.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
+		lmgroupexpresscom.h lmgroupbase.h observe.h msg_pcrequest.h \
+		message.h ctidbgmem.h collectable.h msg_cmd.h lmid.h logger.h \
+		thread.h loadmanager.h connection.h exchange.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h pointtypes.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
+		ctibase.h ctinexus.h
 lmgrouppoint.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmgrouppoint.h \
-		lmgroupbase.h observe.h msg_pcrequest.h message.h \
+		lmgroupbase.h observe.h msg_pcrequest.h message.h ctidbgmem.h \
 		collectable.h msg_cmd.h lmid.h logger.h thread.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
@@ -299,7 +313,7 @@ lmgrouppoint.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		ctibase.h ctinexus.h
 lmgroupripple.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmgroupripple.h \
-		lmgroupbase.h observe.h msg_pcrequest.h message.h \
+		lmgroupbase.h observe.h msg_pcrequest.h message.h ctidbgmem.h \
 		collectable.h msg_cmd.h lmid.h logger.h thread.h \
 		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
@@ -309,24 +323,26 @@ lmgroupripple.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		ctibase.h ctinexus.h
 lmgroupversacom.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmgroupbase.h \
-		observe.h msg_pcrequest.h message.h collectable.h msg_cmd.h \
-		lmgroupversacom.h lmid.h logger.h thread.h loadmanager.h \
-		connection.h exchange.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
-		pointtypes.h configparms.h cparms.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h
-lmmessage.obj:	lmmessage.h message.h collectable.h dlldefs.h \
-		lmcontrolarea.h connection.h exchange.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h observe.h lmprogrambase.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h lmid.h
+		observe.h msg_pcrequest.h message.h ctidbgmem.h collectable.h \
+		msg_cmd.h lmgroupversacom.h lmid.h logger.h thread.h \
+		loadmanager.h connection.h exchange.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h pointtypes.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
+		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
+		ctibase.h ctinexus.h
+lmmessage.obj:	lmmessage.h message.h ctidbgmem.h collectable.h \
+		dlldefs.h lmcontrolarea.h connection.h exchange.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
+		thread.h msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
+		yukon.h msg_ptreg.h msg_reg.h queue.h observe.h \
+		lmprogrambase.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmid.h
 lmprogrambase.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmid.h \
 		lmprogrambase.h observe.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
+		yukon.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmprogramcontrolwindow.h pointtypes.h logger.h thread.h \
 		device.h devicetypes.h loadmanager.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h configparms.h cparms.h \
@@ -337,28 +353,29 @@ lmprogramcontrolwindow.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h lmid.h \
 		lmprogramcontrolwindow.h observe.h pointdefs.h pointtypes.h \
 		logger.h thread.h loadmanager.h connection.h exchange.h \
-		message.h collectable.h msg_multi.h msg_pdata.h msg_signal.h \
-		yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h configparms.h \
-		cparms.h lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
-		lmgroupbase.h msg_pcrequest.h lmcontrolareatrigger.h \
-		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h
+		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
+		configparms.h cparms.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
+		ctibase.h ctinexus.h
 lmprogramcurtailment.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h lmid.h \
 		lmprogrambase.h observe.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h pointtypes.h logger.h \
-		thread.h loadmanager.h connection.h exchange.h msg_ptreg.h \
-		msg_reg.h queue.h configparms.h cparms.h lmcontrolareastore.h \
-		lmcontrolarea.h lmcontrolareatrigger.h executor.h lmmessage.h \
-		ctdpcptrq.h ctibase.h ctinexus.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h msg_email.h
+		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
+		yukon.h lmgroupbase.h msg_pcrequest.h msg_cmd.h pointtypes.h \
+		logger.h thread.h loadmanager.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmcontrolareatrigger.h \
+		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h \
+		lmprogramcurtailment.h lmcurtailcustomer.h msg_email.h
 lmprogramdirect.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h lmprogramdirect.h \
 		lmprogrambase.h observe.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h lmprogramdirectgear.h \
-		lmgrouppoint.h devicetypes.h lmid.h desolvers.h \
-		db_entry_defines.h pointtypes.h logger.h thread.h \
+		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
+		yukon.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmprogramdirectgear.h lmgrouppoint.h devicetypes.h lmid.h \
+		desolvers.h db_entry_defines.h pointtypes.h logger.h thread.h \
 		loadmanager.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h configparms.h cparms.h lmcontrolareastore.h \
 		lmcontrolarea.h lmcontrolareatrigger.h executor.h lmmessage.h \
@@ -367,28 +384,38 @@ lmprogramdirectgear.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		lmprogramdirectgear.h observe.h lmid.h lmprogrambase.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
-		msg_signal.h yukon.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
-		pointtypes.h logger.h thread.h loadmanager.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h configparms.h \
-		cparms.h lmcontrolareastore.h lmcontrolarea.h \
-		lmcontrolareatrigger.h executor.h lmmessage.h ctdpcptrq.h \
-		ctibase.h ctinexus.h
+		ctidbgmem.h msg_signal.h yukon.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h pointtypes.h logger.h thread.h \
+		loadmanager.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h configparms.h cparms.h lmcontrolareastore.h \
+		lmcontrolarea.h lmcontrolareatrigger.h executor.h lmmessage.h \
+		ctdpcptrq.h ctibase.h ctinexus.h
 lmprogramenergyexchange.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h lmid.h \
 		lmprogrambase.h observe.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
+		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
+		yukon.h lmgroupbase.h msg_pcrequest.h msg_cmd.h pointtypes.h \
+		logger.h thread.h loadmanager.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h configparms.h cparms.h \
+		lmcontrolareastore.h lmcontrolarea.h lmcontrolareatrigger.h \
+		executor.h lmmessage.h ctdpcptrq.h ctibase.h ctinexus.h \
+		lmprogramenergyexchange.h lmenergyexchangeoffer.h \
+		lmenergyexchangeofferrevision.h lmenergyexchangecustomer.h \
+		lmenergyexchangecustomerreply.h msg_email.h
+lmprogramthermostatgear.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
+		lmprogramthermostatgear.h observe.h lmprogramdirectgear.h \
+		lmid.h lmprogrambase.h msg_multi.h collectable.h msg_pdata.h \
+		pointdefs.h message.h ctidbgmem.h msg_signal.h yukon.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h pointtypes.h logger.h \
 		thread.h loadmanager.h connection.h exchange.h msg_ptreg.h \
 		msg_reg.h queue.h configparms.h cparms.h lmcontrolareastore.h \
 		lmcontrolarea.h lmcontrolareatrigger.h executor.h lmmessage.h \
-		ctdpcptrq.h ctibase.h ctinexus.h lmprogramenergyexchange.h \
-		lmenergyexchangeoffer.h lmenergyexchangeofferrevision.h \
-		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
-		msg_email.h
+		ctdpcptrq.h ctibase.h ctinexus.h
 lmserver.obj:	lmserver.h clistener.h clientconn.h ctdpcptrq.h \
-		dlldefs.h lmmessage.h message.h collectable.h lmcontrolarea.h \
-		connection.h exchange.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		dlldefs.h lmmessage.h message.h ctidbgmem.h collectable.h \
+		lmcontrolarea.h connection.h exchange.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
 		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
 		msg_ptreg.h msg_reg.h queue.h observe.h lmprogrambase.h \
 		lmgroupbase.h msg_pcrequest.h msg_cmd.h ctibase.h ctinexus.h \
@@ -396,22 +423,22 @@ lmserver.obj:	lmserver.h clistener.h clientconn.h ctdpcptrq.h \
 lmservice.obj:	lmservice.h cservice.h dlldefs.h loadmanager.h \
 		dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h connection.h exchange.h logger.h \
-		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
-		queue.h msg_cmd.h pointtypes.h configparms.h cparms.h \
-		lmcontrolareastore.h observe.h lmcontrolarea.h \
+		thread.h message.h ctidbgmem.h collectable.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h yukon.h msg_ptreg.h \
+		msg_reg.h queue.h msg_cmd.h pointtypes.h configparms.h \
+		cparms.h lmcontrolareastore.h observe.h lmcontrolarea.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h lmid.h executor.h lmmessage.h \
 		ctdpcptrq.h ctibase.h ctinexus.h clistener.h clientconn.h \
 		eventlog.h rtdb.h hashkey.h
 loadmanager.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h connection.h \
-		exchange.h logger.h thread.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h yukon.h \
-		msg_ptreg.h msg_reg.h queue.h msg_cmd.h msg_pcrequest.h \
-		msg_pcreturn.h msg_dbchg.h pointtypes.h configparms.h \
-		cparms.h loadmanager.h lmcontrolareastore.h observe.h \
-		lmcontrolarea.h lmprogrambase.h lmgroupbase.h \
+		exchange.h logger.h thread.h message.h ctidbgmem.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h msg_cmd.h \
+		msg_pcrequest.h msg_pcreturn.h msg_dbchg.h pointtypes.h \
+		configparms.h cparms.h loadmanager.h lmcontrolareastore.h \
+		observe.h lmcontrolarea.h lmprogrambase.h lmgroupbase.h \
 		lmcontrolareatrigger.h lmid.h executor.h lmmessage.h \
 		ctdpcptrq.h ctibase.h ctinexus.h netports.h resolvers.h \
 		db_entry_defines.h devicetypes.h lmprogramdirect.h \
@@ -419,7 +446,7 @@ loadmanager.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 main.obj:	lmcontrolareastore.h observe.h types.h dlldefs.h \
 		lmcontrolarea.h connection.h exchange.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
 		lmcontrolareatrigger.h lmid.h loadmanager.h dbaccess.h sema.h \

@@ -89,9 +89,9 @@ deps:
 
 #UPDATE#
 fdrtristate.obj:	cparms.h dlldefs.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h msg_signal.h yukon.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		msg_pdata.h pointdefs.h message.h ctidbgmem.h msg_signal.h \
+		yukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
 		exchange.h logger.h thread.h queue.h pointtypes.h \
 		fdrtristate.h fdrftpinterface.h fdrinterface.h mgr_fdrpoint.h \
 		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \

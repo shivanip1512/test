@@ -196,7 +196,7 @@ calccomponent.obj:	calccomponent.h pointstore.h hashkey.h rtdb.h \
 		mutex.h guard.h pointdefs.h logger.h thread.h calc.h
 calclogicsvc.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h ctinexus.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		ctidbgmem.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_cmd.h msg_reg.h msg_ptreg.h \
 		msg_dbchg.h pointtypes.h configparms.h cparms.h logger.h \
 		thread.h calclogicsvc.h connection.h exchange.h queue.h \
@@ -204,35 +204,37 @@ calclogicsvc.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		pointstore.h rtdb.h
 calcthread.obj:	ctibase.h ctinexus.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h pointtypes.h \
-		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h logger.h thread.h calcthread.h hashkey.h \
-		calc.h calccomponent.h pointstore.h rtdb.h
+		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h logger.h thread.h \
+		calcthread.h hashkey.h calc.h calccomponent.h pointstore.h \
+		rtdb.h
 calc_logic.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h CServiceConfig.h \
 		rtdb.h hashkey.h ctibase.h ctinexus.h cparms.h configparms.h \
 		calclogicsvc.h connection.h exchange.h logger.h thread.h \
-		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h cservice.h \
-		calcthread.h calc.h calccomponent.h pointstore.h
-log.obj:	yukon.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h connection.h exchange.h logger.h \
-		thread.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h queue.h \
-		ctinexus.h msg_cmd.h pointtypes.h
-lurk.obj:	yukon.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h mutex.h guard.h cparms.h message.h collectable.h \
-		connection.h exchange.h logger.h thread.h msg_multi.h \
+		message.h ctidbgmem.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h cservice.h calcthread.h calc.h calccomponent.h \
+		pointstore.h
+log.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h connection.h exchange.h \
+		logger.h thread.h message.h collectable.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
-		queue.h ctinexus.h msg_cmd.h msg_dbchg.h
+		queue.h ctinexus.h msg_cmd.h pointtypes.h
+lurk.obj:	yukon.h ctidbgmem.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h cparms.h message.h \
+		collectable.h connection.h exchange.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h ctinexus.h msg_cmd.h msg_dbchg.h
 newval.obj:	queue.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		netports.h message.h collectable.h msg_cmd.h msg_reg.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		netports.h message.h ctidbgmem.h collectable.h msg_cmd.h \
+		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h connection.h pointtypes.h
 newvalrng.obj:	queue.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		netports.h message.h collectable.h msg_cmd.h msg_reg.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		netports.h message.h ctidbgmem.h collectable.h msg_cmd.h \
+		msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h connection.h pointtypes.h
 pointstore.obj:	pointstore.h hashkey.h rtdb.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h \

@@ -83,9 +83,9 @@ id_sgdll.obj:    id_sgdll.cpp include\id_sgdll.h
 
 
 #UPDATE#
-id_scanner.obj:	utility.h dlldefs.h dsm2.h mutex.h guard.h \
+id_scanner.obj:	utility.h dsm2.h mutex.h dlldefs.h guard.h \
 		id_scanner.h id_build.h id_vinfo.h
-id_sgdll.obj:	utility.h dlldefs.h dsm2.h mutex.h guard.h id_sgdll.h \
+id_sgdll.obj:	utility.h dsm2.h mutex.h dlldefs.h guard.h id_sgdll.h \
 		id_build.h id_vinfo.h
 scanglob.obj:	os2_2w32.h dlldefs.h types.h scanner.h dllbase.h \
 		cticalls.h dsm2.h mutex.h guard.h scanglob.h utility.h
@@ -98,8 +98,8 @@ scanner.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dbaccess.h \
 		queues.h porter.h lm_auto.h perform.h scanner.h ilex.h \
 		master.h scanglob.h scansup.h rtdb.h hashkey.h mgr_device.h \
 		dev_base.h cmdparse.h parsevalue.h rte_base.h dbmemobject.h \
-		ctibase.h ctinexus.h message.h collectable.h tbl_pao.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h yukon.h \
+		ctibase.h ctinexus.h message.h ctidbgmem.h collectable.h \
+		tbl_pao.h tbl_rtcomm.h resolvers.h pointtypes.h yukon.h \
 		db_entry_defines.h desolvers.h logger.h thread.h tbl_base.h \
 		tbl_2way.h tbl_stats.h tbl_scanrate.h slctdev.h dev_single.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
@@ -111,7 +111,7 @@ scanner.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dbaccess.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \
 		tbl_pt_limit.h exchange.h msg_reg.h msg_dbchg.h \
 		c_port_interface.h group.h cparms.h configparms.h \
-		connection.h msg_ptreg.h queue.h utility.h
+		connection.h msg_ptreg.h queue.h utility.h dllyukon.h
 scansup.obj:	os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h scanglob.h scansup.h
 scansvc.obj:	scanglob.h dlldefs.h scansvc.h cservice.h
