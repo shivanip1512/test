@@ -18,6 +18,8 @@ import com.cannontech.message.dispatch.message.Command;
 
 public final class CalcHistorical
 {
+	private Thread starter = null;
+
 	private Integer aggregationInterval = null;//interval in seconds between calculations
 	private com.cannontech.message.dispatch.ClientConnection dispatchConnection = null;
 	private GregorianCalendar nextCalcTime = null;
@@ -768,6 +770,218 @@ public static void logEvent(String event, int severity)
 	}
 	logger.log( event, severity);
 }
+
+public void start()
+{
+	Runnable runner = new Runnable()
+	{
+		public void run()
+		{
+			Baseline baseLine = new Baseline();
+		
+			GregorianCalendar lastCalcPointRawPointHistoryTimeStamp;
+			int calcComponentIndex = 0;
+		
+			Vector tempPointDataMsgVector = null;
+			java.util.Date now = null;
+			
+			figureNextCalcTime();
+			baseLine.figureNextBaselineCalcTime();
+			
+			com.cannontech.clientutils.CTILogger.info("Calc Historical Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()+ " Started.");
+			logEvent("Calc Historical (Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()+ ") Started.", com.cannontech.common.util.LogWriter.INFO);
+		
+			sleepThread = new Thread();
+		
+			do
+			{
+				now = new java.util.Date();
+				
+				if( getNextCalcTime().getTime().compareTo(now) <= 0 )
+				{
+					com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting period calculating of historical points.");
+					logEvent("Starting period calculating of historical points.", com.cannontech.common.util.LogWriter.INFO);
+					
+					// Get a list of all 'Historical' CalcPoints and their fields from Point table in database. 
+					// Get a list of all CalcComponents and their fields from calcComponent table in database
+					//contains com.cannontech.database.db.point.calculation.CalcComponent values.
+					Vector allHistoricalCalcComponentsList = retrieveHistoricalCalcComponents();
+					//contains 
+					Vector calcBasePoints = getCalcBasePoints(allHistoricalCalcComponentsList);
+								
+					//calcBasePoints, Vector of Integer pointIds for distinct calcBase points.
+					 
+					for (int i = 0; i < calcBasePoints.size(); i++)
+					{
+						if( isService)	//Check for service exit
+						{
+							int pointID = ((Integer)calcBasePoints.get(i)).intValue();
+							
+							//contains CalcComponent values.
+							Vector currentCalcComponents = new Vector();
+							while (calcComponentIndex < allHistoricalCalcComponentsList.size())
+							{
+								// Find the calcComponents entries with pointIds matching the LitePoint (current CalcBase pointId).
+								if ( pointID == ((CalcComponent) allHistoricalCalcComponentsList.get(calcComponentIndex)).getPointID().intValue())
+								{
+									currentCalcComponents.add(allHistoricalCalcComponentsList.get(calcComponentIndex));
+									calcComponentIndex++;
+								}
+								else
+								{
+									break;
+								}
+							}
+							if ( !currentCalcComponents.isEmpty() )
+							{
+								lastCalcPointRawPointHistoryTimeStamp = getCalcHistoricalLastUpdateTimeStamp(pointID);
+				
+								Vector rphDataVectorOfVectors = getRawPointHistoryVectorOfVectors(currentCalcComponents, lastCalcPointRawPointHistoryTimeStamp);
+								tempPointDataMsgVector = parseAndCalculateRawPointHistories(rphDataVectorOfVectors, pointID, currentCalcComponents);
+								writeMultiMessage( tempPointDataMsgVector, pointID);
+							}
+							//else
+								//com.cannontech.clientutils.CTILogger.info("Skipping point "+ litePoint.getPointID());
+						}
+						else
+						{
+							//Forcing the for loop exit
+							i = calcBasePoints.size();
+							break;
+						}
+					}
+		
+					com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with period calculating of historical points.");
+					logEvent("Done with period calculating of historical points.", com.cannontech.common.util.LogWriter.INFO);
+					figureNextCalcTime();
+		
+					// Clear out the lists.
+					allHistoricalCalcComponentsList.clear();
+					calcComponentIndex = 0;
+				}
+		
+				// CALCULATE BASELINE TOTALS.
+				if (baseLine.getNextBaselineCalcTime().getTime().compareTo(now) <= 0)
+				{
+					com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting baseline calculation of baseline calc points.");
+					logEvent("Starting baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
+		
+					// Get a list of all 'Historical' & 'Baseline' CalcPoints and their fields from Point table in database.
+					//contains com.cannontech.database.db.point.calculation.CalcComponent values. 
+					Vector allBaselineCalcComponents = retrieveHistoricalCalcComponents();
+					Vector calcBasePoints = getCalcBasePoints(allBaselineCalcComponents);
+					baseLine.setHistoricalCalcComponents(allBaselineCalcComponents);
+					
+					// Loop through each calcBase point(ID).	
+					for (int i = 0; i < calcBasePoints.size(); i++)
+					{
+						//Kind of hackery to init this thing here...but it works for now.
+						baseLine.returnPointDataMsgVector = new Vector();
+						Integer pointID = ((Integer)calcBasePoints.get(i));				
+						tempPointDataMsgVector = baseLine.main(pointID);
+						writeMultiMessage(tempPointDataMsgVector, pointID.intValue());
+					}
+		
+					com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with baseline calculation of baseline calc points.");
+					logEvent("Done with baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
+					baseLine.figureNextBaselineCalcTime();
+				}
+		
+				try
+				{
+					System.gc();
+					sleepThread.sleep(2000);
+				}
+				catch (InterruptedException ie)
+				{
+					com.cannontech.clientutils.CTILogger.info("Exiting Calc Historical");
+					logEvent("Exiting Calc Historical", com.cannontech.common.util.LogWriter.ERROR);
+					if (getDispatchConnection().isValid())
+					{
+						try
+						{
+							getDispatchConnection().disconnect();
+						}
+						catch (java.io.IOException ioe)
+						{
+							ioe.printStackTrace();
+						}
+					}
+					break;
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+		
+				if (getDispatchConnection().isValid())
+				{
+					Object msg = getDispatchConnection().read(0);
+					if (msg != null)
+					{
+						if (msg instanceof Command)
+						{
+							if (((Command) msg).getOperation() == Command.ARE_YOU_THERE)
+							{
+								com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
+								logEvent("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
+								getDispatchConnection().write(msg);
+							}
+						}
+					}
+				}
+			}while (isService);
+		
+			try
+			{
+				getDispatchConnection().disconnect();
+				dispatchConnection = null;
+			}
+			catch(java.io.IOException ioe)
+			{
+				logEvent("An exception occured disconnecting from load control", com.cannontech.common.util.LogWriter.ERROR);
+				com.cannontech.clientutils.CTILogger.info("An exception occured disconnecting from load control");
+			}
+		
+			logger.getPrintWriter().close();
+			logger = null;
+			
+			com.cannontech.clientutils.CTILogger.info("Exiting Calc Historical...at end");
+			logEvent("Exiting Calc Historical...at end", com.cannontech.common.util.LogWriter.INFO);
+
+			//be sure the runner thread is NULL
+			starter = null;		
+		}
+	};
+
+	if( starter == null )
+	{
+		starter = new Thread( runner, "CalcHistorical" );
+		starter.start();
+	}
+
+}
+
+/** 
+ * Stop us
+ */
+public void stop()
+{
+	try
+	{
+		Thread t = starter;
+		starter = null;
+		t.interrupt();
+	}
+	catch (Exception e)
+	{}
+}
+
+public boolean isRunning()
+{
+	return starter != null;
+}
+
 /**
  * Starts the application.
  */
@@ -775,178 +989,11 @@ public static void main(java.lang.String[] args)
 {
 	System.setProperty("cti.app.name", "CalcHistorical");
 	CalcHistorical calcHistorical = new CalcHistorical();
-	Baseline baseLine = new Baseline();
-
-	GregorianCalendar lastCalcPointRawPointHistoryTimeStamp;
-	int calcComponentIndex = 0;
-
-	Vector tempPointDataMsgVector = null;
-	java.util.Date now = null;
 	
-	calcHistorical.figureNextCalcTime();
-	baseLine.figureNextBaselineCalcTime();
-	
-	com.cannontech.clientutils.CTILogger.info("Calc Historical Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()+ " Started.");
-	logEvent("Calc Historical (Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()+ ") Started.", com.cannontech.common.util.LogWriter.INFO);
-
-	sleepThread = new Thread();
-
-	do
-	{
-		now = new java.util.Date();
-		
-		if (calcHistorical.getNextCalcTime().getTime().compareTo(now) <= 0)
-		{
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting period calculating of historical points.");
-			logEvent("Starting period calculating of historical points.", com.cannontech.common.util.LogWriter.INFO);
-			
-			// Get a list of all 'Historical' CalcPoints and their fields from Point table in database. 
-			// Get a list of all CalcComponents and their fields from calcComponent table in database
-			//contains com.cannontech.database.db.point.calculation.CalcComponent values.
-			Vector allHistoricalCalcComponentsList = calcHistorical.retrieveHistoricalCalcComponents();
-			//contains 
-			Vector calcBasePoints = calcHistorical.getCalcBasePoints(allHistoricalCalcComponentsList);
-						
-			//calcBasePoints, Vector of Integer pointIds for distinct calcBase points.
-			 
-			for (int i = 0; i < calcBasePoints.size(); i++)
-			{
-				if( isService)	//Check for service exit
-				{
-					int pointID = ((Integer)calcBasePoints.get(i)).intValue();
-					
-					//contains CalcComponent values.
-					Vector currentCalcComponents = new Vector();
-					while (calcComponentIndex < allHistoricalCalcComponentsList.size())
-					{
-						// Find the calcComponents entries with pointIds matching the LitePoint (current CalcBase pointId).
-						if ( pointID == ((CalcComponent) allHistoricalCalcComponentsList.get(calcComponentIndex)).getPointID().intValue())
-						{
-							currentCalcComponents.add(allHistoricalCalcComponentsList.get(calcComponentIndex));
-							calcComponentIndex++;
-						}
-						else
-						{
-							break;
-						}
-					}
-					if ( !currentCalcComponents.isEmpty() )
-					{
-						lastCalcPointRawPointHistoryTimeStamp = getCalcHistoricalLastUpdateTimeStamp(pointID);
-		
-						Vector rphDataVectorOfVectors = calcHistorical.getRawPointHistoryVectorOfVectors(currentCalcComponents, lastCalcPointRawPointHistoryTimeStamp);
-						tempPointDataMsgVector = calcHistorical.parseAndCalculateRawPointHistories(rphDataVectorOfVectors, pointID, currentCalcComponents);
-						calcHistorical.writeMultiMessage( tempPointDataMsgVector, pointID);
-					}
-					//else
-						//com.cannontech.clientutils.CTILogger.info("Skipping point "+ litePoint.getPointID());
-				}
-				else
-				{
-					//Forcing the for loop exit
-					i = calcBasePoints.size();
-					break;
-				}
-			}
-
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with period calculating of historical points.");
-			logEvent("Done with period calculating of historical points.", com.cannontech.common.util.LogWriter.INFO);
-			calcHistorical.figureNextCalcTime();
-
-			// Clear out the lists.
-			allHistoricalCalcComponentsList.clear();
-			calcComponentIndex = 0;
-		}
-
-		// CALCULATE BASELINE TOTALS.
-		if (baseLine.getNextBaselineCalcTime().getTime().compareTo(now) <= 0)
-		{
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting baseline calculation of baseline calc points.");
-			logEvent("Starting baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
-
-			// Get a list of all 'Historical' & 'Baseline' CalcPoints and their fields from Point table in database.
-			//contains com.cannontech.database.db.point.calculation.CalcComponent values. 
-			Vector allBaselineCalcComponents = calcHistorical.retrieveHistoricalCalcComponents();
-			Vector calcBasePoints = calcHistorical.getCalcBasePoints(allBaselineCalcComponents);
-			baseLine.setHistoricalCalcComponents(allBaselineCalcComponents);
-			
-			// Loop through each calcBase point(ID).	
-			for (int i = 0; i < calcBasePoints.size(); i++)
-			{
-				//Kind of hackery to init this thing here...but it works for now.
-				baseLine.returnPointDataMsgVector = new Vector();
-				Integer pointID = ((Integer)calcBasePoints.get(i));				
-				tempPointDataMsgVector = baseLine.main(pointID);
-				calcHistorical.writeMultiMessage(tempPointDataMsgVector, pointID.intValue());
-			}
-
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with baseline calculation of baseline calc points.");
-			logEvent("Done with baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
-			baseLine.figureNextBaselineCalcTime();
-		}
-
-		try
-		{
-			System.gc();
-			sleepThread.sleep(2000);
-		}
-		catch (InterruptedException ie)
-		{
-			com.cannontech.clientutils.CTILogger.info("Exiting Calc Historical");
-			logEvent("Exiting Calc Historical", com.cannontech.common.util.LogWriter.ERROR);
-			if (calcHistorical.getDispatchConnection().isValid())
-			{
-				try
-				{
-					calcHistorical.getDispatchConnection().disconnect();
-				}
-				catch (java.io.IOException ioe)
-				{
-					ioe.printStackTrace();
-				}
-			}
-			break;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		if (calcHistorical.getDispatchConnection().isValid())
-		{
-			Object msg = calcHistorical.getDispatchConnection().read(0);
-			if (msg != null)
-			{
-				if (msg instanceof Command)
-				{
-					if (((Command) msg).getOperation() == Command.ARE_YOU_THERE)
-					{
-						com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
-						logEvent("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
-						calcHistorical.getDispatchConnection().write(msg);
-					}
-				}
-			}
-		}
-	}while (isService);
-
-	try
-	{
-		calcHistorical.getDispatchConnection().disconnect();
-		calcHistorical.dispatchConnection = null;
-	}
-	catch(java.io.IOException ioe)
-	{
-		logEvent("An exception occured disconnecting from load control", com.cannontech.common.util.LogWriter.ERROR);
-		com.cannontech.clientutils.CTILogger.info("An exception occured disconnecting from load control");
-	}
-
-	logger.getPrintWriter().close();
-	logger = null;
-	
-	com.cannontech.clientutils.CTILogger.info("Exiting Calc Historical...at end");
-	logEvent("Exiting Calc Historical...at end", com.cannontech.common.util.LogWriter.INFO);
+	calcHistorical.start();	
 }
+
+
 /**
  * @param allHistoricalCalcComponentsList
  * @return
