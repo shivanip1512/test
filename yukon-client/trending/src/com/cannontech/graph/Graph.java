@@ -9,14 +9,9 @@ package com.cannontech.graph;
  */
 import java.awt.Rectangle;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.w3c.dom.Element;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.GraphFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.graph.buffer.html.PeakHtml;
@@ -25,6 +20,10 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.TimeSeriesCollection;
 
 public class Graph implements GraphDefines
 {
@@ -230,16 +229,14 @@ public void encodeJpeg(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
 	{
-		ChartUtilities cu = new ChartUtilities();
-		cu.writeChartAsJPEG(out, getFreeChart(), getWidth(), getHeight());
+		ChartUtilities.writeChartAsJPEG(out, getFreeChart(), getWidth(), getHeight());
 	}
 }
 public void encodePng(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
 	{
-		ChartUtilities cu = new ChartUtilities();
-		cu.writeChartAsPNG(out, getFreeChart(), getWidth() , getHeight());
+		ChartUtilities.writeChartAsPNG(out, getFreeChart(), getWidth() , getHeight());
 	}
 }
 
@@ -806,8 +803,9 @@ public void getDataNow(java.util.List paobjects)
 	for (int i = 0; i < paobjects.size(); i++)
 	{
 		LiteYukonPAObject paobject = (LiteYukonPAObject)paobjects.get(i);
-		if(com.cannontech.database.data.device.DeviceTypesFuncs.hasDeviceScanRate(paobject.getLiteID()))
+		if(com.cannontech.database.data.device.DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()))
 		{
+			System.out.println("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
 			com.cannontech.message.dispatch.message.Command messageCommand = new com.cannontech.message.dispatch.message.Command();
 			messageCommand.setOperation(com.cannontech.message.dispatch.message.Command.ALTERNATE_SCAN_RATE);
 			messageCommand.setPriority(14);
