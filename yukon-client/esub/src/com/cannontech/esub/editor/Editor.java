@@ -152,6 +152,7 @@ public class Editor extends JPanel {
 				.getInstance()
 				.createEditorPanel(elem.getClass());
 
+		if( editor != null ) {
 		editor.addPropertyPanelListener(new PropertyPanelListener() {
 			public void selectionPerformed(PropertyPanelEvent e) {
 				if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
@@ -170,7 +171,7 @@ public class Editor extends JPanel {
 		propertyDialog.pack();
 		propertyDialog.setLocationRelativeTo(getDrawing().getLxView());
 		propertyDialog.show();
-
+		}
 	}
 	/**
 	 * Creation date: (12/17/2001 1:59:00 PM)

@@ -6,6 +6,7 @@
 		<project>common</project>
 		<project>dbeditor</project>
 		<project>tdc</project>
+		<project>trending</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
