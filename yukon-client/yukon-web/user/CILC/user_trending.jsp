@@ -7,7 +7,7 @@
 <!-- Java script needed for the Calender Function--->
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <!-- Java script needed for the Calender Function--->
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 <SCRIPT Language="Javascript">
 function fsub() {
 	document.MForm.submit();
@@ -54,7 +54,7 @@ MM_reloadPage(true);
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -71,7 +71,7 @@ MM_reloadPage(true);
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -90,7 +90,7 @@ MM_reloadPage(true);
             <% String pageName = "user_trending.jsp"; %> 
             <%@ include file="nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" > 
             <table width="98%" border="0" cellspacing="0" cellpadding="0" height="18">
               <tr> 
@@ -113,7 +113,7 @@ MM_reloadPage(true);
                             <input type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="9">
                             <a href="javascript:show_calendar('MForm.start')"
 							onMouseOver="window.status='Pop Calendar';return true;"
-							onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
+							onMouseOut="window.status='';return true;"> <img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                           </td>
                           <td width="45%"><font face="Arial, Helvetica, sans-serif" size="1">Time 
                             Period: </font> 

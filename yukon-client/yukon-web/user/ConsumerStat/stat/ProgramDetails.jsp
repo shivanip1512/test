@@ -15,11 +15,11 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
 <script language="JavaScript">
 	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
 </script>
@@ -35,7 +35,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -54,7 +54,7 @@
             <% String pageName = "Enrollment.jsp"; %>
             <%@ include file="Nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
 		    <td width="657" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"><br>
@@ -95,11 +95,11 @@
             <table width="95%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
               <tr> 
                 <td width="17%"><b>The following symbols represent:</b></td>
-                <td width="8%"><img src="../../$$Sm.gif" ></td>
+                <td width="8%"><img src="../../../Images/Icons/$$Sm.gif" ></td>
                 <td width="21%">Savings: More dollar signs means more savings!</td>
-                <td width="8%"><img src="../../ThirdSm.gif"></td>
+                <td width="8%"><img src="../../../Images/Icons/ThirdSm.gif"></td>
                 <td width="13%" valign="top">Percent of Control</td>
-                <td width="8%"><img src="../../Tree2Sm.gif"></td>
+                <td width="8%"><img src="../../../Images/Icons/Tree2Sm.gif"></td>
                 <td width="25%" valign="top">Environment: More trees means mean 
                   a healthier environment.</td>
               </tr>
@@ -130,10 +130,10 @@
                       <td class = "TableCell" valign = "top"><%= program.getStarsWebConfig().getDescription() %><br>
                         <table width="210" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                            <td><% if (imgNames[1] != null) { %><img src="../<%= imgNames[1] %>"><% } %></td>
-                            <td><% if (imgNames[2] != null) { %><img src="../<%= imgNames[2] %>"><% } %></td>
-                            <td><% if (imgNames[3] != null) { %><img src="../<%= imgNames[3] %>"><% } %></td>
-                            <td><% if (imgNames[4] != null) { %><img src="../<%= imgNames[4] %>"><% } %></td>
+                            <td><% if (imgNames[1] != null) { %><img src="../../../Images/Icons/<%= imgNames[1] %>"><% } %></td>
+                            <td><% if (imgNames[2] != null) { %><img src="../../../Images/Icons/<%= imgNames[2] %>"><% } %></td>
+                            <td><% if (imgNames[3] != null) { %><img src="../../../Images/Icons/<%= imgNames[3] %>"><% } %></td>
+                            <td><% if (imgNames[4] != null) { %><img src="../../../Images/Icons/<%= imgNames[4] %>"><% } %></td>
                           </tr>
                         </table>
                       </td>
@@ -169,7 +169,7 @@
           </td>
 		  
 		  
-        <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
 	  

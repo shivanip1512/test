@@ -15,11 +15,11 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
 <script language="JavaScript">
 	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
 </script>
@@ -35,7 +35,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -54,7 +54,7 @@
 		  <% String pageName = "General.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <table width="235" border="1" cellspacing="0" cellpadding="3" align="center">
@@ -81,7 +81,7 @@
                                   Enrolled Programs</b> </div>
                                 <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
-                                    <td colspan="3" background="dot.gif" height="8"></td>
+                                    <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
                                   <%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
@@ -110,11 +110,11 @@
                                   <tr> 
                                     <td width="64"> 
                                       <div align="center"> <span class="TableCell"> 
-                                        <img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
+                                        <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
                                         <%= program.getProgramName() %></span> 
                                       </div>
                                     </td>
-                                    <td width="8" background="dot.gif"> </td>
+                                    <td width="8" background="../../../Images/Icons/dot.gif"> </td>
                                     <td width="128" class="Main"> 
                                       <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
                                         <tr height="50"> 
@@ -146,7 +146,7 @@
                                     </td>
                                   </tr>
                                   <tr> 
-                                    <td colspan="3" background="dot.gif" height="8"></td>
+                                    <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
                                   <%
 	}
@@ -207,16 +207,15 @@
                   <td width="171" valign="top"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
-                    <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                    <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                    <%= primContact.getHomePhone() %></span><br> <br> <img src="Family.jpg" width="168" height="224"> 
+					<%= ServletUtils.getFormattedAddress(propAddr) %><br>
+                    <%= primContact.getHomePhone() %></span><br> <br> <img src="../Family.jpg" width="168" height="224"> 
                   </td>
                 </tr>
               </table>
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

@@ -122,7 +122,7 @@ function changeProgram(radioBtn, index) {
     <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr bgcolor="#FFFFFF"> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -139,7 +139,7 @@ function changeProgram(radioBtn, index) {
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="stat/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -155,7 +155,7 @@ function changeProgram(radioBtn, index) {
         </tr>
         <tr> 
           <td  valign="top" width="101">&nbsp; </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 		    <form method="post" action="Wizard4.jsp">
 			<input type="hidden" name="AcctNo" value="<%= request.getParameter("AcctNo") %>">
@@ -178,7 +178,7 @@ function changeProgram(radioBtn, index) {
                       <table width="100%" border="0" height="80">
                       <tr> 
                         <td align = "center" width="15%"> 
-                          <p><b><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 300, text)"></b><br>
+                          <p><b><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 300, text)"></b><br>
                             <font face="Arial, Helvetica, sans-serif" size="1">click on icon for a description</font></p>
                         </td>
                         <td width="85%" valign="top"> 
@@ -242,7 +242,7 @@ function changeProgram(radioBtn, index) {
 <!--
                         <tr> 
                           <td align = "center" width="15%"> 
-                            <p><b><img id = "0" src="AC.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 0, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                            <p><b><img id = "0" src="../../Images/Icons/AC.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 0, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
                               click on icon for a description</font></p>
                           </td>
                           <td width="85%"> 
@@ -279,7 +279,7 @@ function changeProgram(radioBtn, index) {
                       <table width="100%" border="0" height="80">
                         <tr> 
                           <td align = "center" width="15%"> 
-                            <p><b><img id = "0" src="SetBack.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 1, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                            <p><b><img id = "0" src="../../Images/Icons/SetBack.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 1, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
                               click on icon for a description</font></p>
                           </td>
                           <td width="85%"> 
@@ -343,7 +343,7 @@ function changeProgram(radioBtn, index) {
             </form>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

@@ -20,9 +20,9 @@
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
+			links.put(linkMap[i][0], "<img src=\"../../" + bulletImg + "\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
 		else
-			links.put(linkMap[i][0], "<img src=\"" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+			links.put(linkMap[i][0], "<img src=\"../../" + bulletImg2 + "\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
 	}
 %>
 
@@ -93,7 +93,7 @@
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_QUESTIONS_FAQ %>">
 <cti:checkRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
-		<img src="<%= bulletImg2 %>" width="12" height="12"><a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
+		<img src="../../<%= bulletImg2 %>" width="12" height="12"><a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
 </cti:checkRole>
 <cti:checkNoRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
         <%= links.get("FAQ.jsp") %><br>

@@ -10,18 +10,12 @@ a.Link3:active {color: #99FFFF}
 a.Link3:visited {color: #99FFFF}
 a.Link3:link {color: #99FFFF}
 a.Link3:hover {color: #99FFFF}
-a.Link4:active {color: #666699}
-a.Link4:visited {color: #666699}
-a.Link4:link {color: #666699}
-a.Link4:hover {color: #666699}
-.Header {  font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #FFFFFF}
 .HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; color: #000000; background-color: #CCCCCC}
 .TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000; background-color: #FFFFFF}
 .TableCell2 {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF}
 .Main {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
 .MainHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000}
 .NavHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFCC66; font-style: italic}
-.PageHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #99FFFF; font-style: italic}
 .NavText {  font-family: Arial, Helvetica, sans-serif; font-size: 9px}
 .NavText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #99FFFF}
 .Background {  background-color: #666699}

@@ -18,7 +18,7 @@
     <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -35,7 +35,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="stat/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -51,7 +51,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101">&nbsp; </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <form method="post" action="/servlet/SOAPClient" onsubmit="return checkPassword(this)">
 			  <input type="hidden" name="action" value="ProgramSignUp">
@@ -127,7 +127,7 @@
             </form>
       
           </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

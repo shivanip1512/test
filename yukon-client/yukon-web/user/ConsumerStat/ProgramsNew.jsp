@@ -18,7 +18,7 @@
     <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -34,7 +34,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="stat/VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -79,7 +79,7 @@
               </tr>
             </table>
           </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> <br>
             <div align="center"> 
               <b><span class="Main">PROGRAMS<br>
@@ -90,11 +90,11 @@
               <table width="95%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
                 <tr> 
                   <td width="17%"><b>The following symbols represent:</b></td>
-                  <td width="8%"><img src="../$$Sm.gif" ></td>
+                  <td width="8%"><img src="../../Images/Icons/$$Sm.gif" ></td>
                   <td width="21%">Savings: More dollar signs means more savings!</td>
-                  <td width="8%"><img src="../ThirdSm.gif"></td>
+                  <td width="8%"><img src="../../Images/Icons/ThirdSm.gif"></td>
                   <td width="13%" valign="top">Percent of Control</td>
-                  <td width="8%"><img src="../Tree2Sm.gif"></td>
+                  <td width="8%"><img src="../../Images/Icons/Tree2Sm.gif"></td>
                   <td width="25%" valign="top">Environment: More trees means mean 
                     a healthier environment.</td>
                 </tr>
@@ -114,10 +114,10 @@
                           fan will keep running. You may notice a slight increase 
                           in your indoor air temperature.<br> <table width="210" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td><img src="../ACSm.gif"></td>
-                              <td><img src="../$$$Sm.gif" ></td>
-                              <td><img src="../HalfSm.gif"></td>
-                              <td><img src="../Tree3Sm.gif"></td>
+                              <td><img src="../../Images/Icons/ACSm.gif"></td>
+                              <td><img src="../../Images/Icons/$$$Sm.gif" ></td>
+                              <td><img src="../../Images/Icons/HalfSm.gif"></td>
+                              <td><img src="../../Images/Icons/Tree3Sm.gif"></td>
                             </tr>
                           </table></td>
                       </tr>
@@ -133,10 +133,10 @@
                           fan will keep running. You may notice a slight increase 
                           in your indoor air temperature.<br> <table width="210" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td><img src="../ACSm.gif"></td>
-                              <td><img src="../$$Sm.gif" ></td>
-                              <td><img src="../ThirdSm.gif"></td>
-                              <td><img src="../Tree2Sm.gif"></td>
+                              <td><img src="../../Images/Icons/ACSm.gif"></td>
+                              <td><img src="../../Images/Icons/$$Sm.gif" ></td>
+                              <td><img src="../../Images/Icons/ThirdSm.gif"></td>
+                              <td><img src="../../Images/Icons/Tree2Sm.gif"></td>
                             </tr>
                           </table></td>
                       </tr>
@@ -152,10 +152,10 @@
                           notice a slight increase in your indoor air temperature.<br> 
                           <table width="210" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td><img src="../SetbackSm.gif"></td>
-                              <td><img src="../$$$Sm.gif" ></td>
-                              <td><img src="../HalfSm.gif"></td>
-                              <td><img src="../Tree3Sm.gif"></td>
+                              <td><img src="../../Images/Icons/SetbackSm.gif"></td>
+                              <td><img src="../../Images/Icons/$$$Sm.gif" ></td>
+                              <td><img src="../../Images/Icons/HalfSm.gif"></td>
+                              <td><img src="../../Images/Icons/Tree3Sm.gif"></td>
                             </tr>
                           </table></td>
                       </tr>
@@ -171,10 +171,10 @@
                           notice a slight increase in your indoor air temperature.<br> 
                           <table width="210" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
-                              <td><img src="../SetbackSm.gif"></td>
-                              <td><img src="../$Sm.gif" ></td>
-                              <td><img src="../QuarterSm.gif"></td>
-                              <td><img src="../Tree1Sm.gif"></td>
+                              <td><img src="../../Images/Icons/SetbackSm.gif"></td>
+                              <td><img src="../../Images/Icons/$Sm.gif" ></td>
+                              <td><img src="../../Images/Icons/QuarterSm.gif"></td>
+                              <td><img src="../../Images/Icons/Tree1Sm.gif"></td>
                             </tr>
                           </table></td>
                       </tr>
@@ -184,7 +184,7 @@
               <b><span class="Main"> </span> </b> </div>
             
           </td>
-          <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

@@ -147,11 +147,11 @@ if (text.length == 2) {
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
 <script language="JavaScript">
 	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
 </script>
@@ -167,7 +167,7 @@ if (text.length == 2) {
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -186,7 +186,7 @@ if (text.length == 2) {
 		  <% String pageName = "Thermostat.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
-          <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
             <div align="center"><br>
@@ -221,7 +221,7 @@ if (text.length == 2) {
 			  <input type="hidden" name="mode" value="">
 			  <input type="hidden" name="fan" value="">
               <div align = "left">
-                  <table width="93%" border="0" background="ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
+                  <table width="93%" border="0" background="../../../Images/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
                     <tr> 
                       <td width="73%" height="40" > 
                         <table width="91%" border="0" height="100">
@@ -236,10 +236,10 @@ if (text.length == 2) {
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
                                       <tr> 
-                                        <td><img src="ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
+                                        <td><img src="../../../Images/ThermImages/UpBk.gif" width="21" height="21" onclick = "incTemp()"></td>
                                       </tr>
                                       <tr> 
-                                        <td><img src="ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
+                                        <td><img src="../../../Images/ThermImages/DownBk.gif" width="21" height="21" onclick = "decTemp()"></td>
                                       </tr>
                                     </table>
                                   </td>
@@ -249,7 +249,7 @@ if (text.length == 2) {
                                 <tr> 
                                   <td>
                                     <input type="checkbox" name="hold" value="true">
-                                    <img src="ThermImages/Hold.gif" width="34" height="9"></td>
+                                    <img src="../../../Images/ThermImages/Hold.gif" width="34" height="9"></td>
                                 </tr>
                               </table>
                             </td>
@@ -284,28 +284,28 @@ if (text.length == 2) {
                                   <td width="53%"  height="59" valign = "bottom"> 
                                     <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Cool.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img src="../../../Images/ThermImages/Cool.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Heat.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img src="../../../Images/ThermImages/Heat.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Off.gif"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img src="../../../Images/ThermImages/Off.gif"></td>
                                       </tr>
                                     </table>
                                   </td>
                                   <td width="47%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"> 
-                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/Auto.gif"></td>
+                                        <td><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img src="../../../Images/ThermImages/Auto.gif"></td>
                                       </tr>
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="ThermImages/Arrow.gif" style="visibility:hidden"></td>
-                                        <td><img src="ThermImages/On.gif"></td>
+                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
+                                        <td><img src="../../../Images/ThermImages/On.gif"></td>
                                       </tr>
                                       <tr> 
                                         <td height="14"></td>
@@ -320,7 +320,7 @@ if (text.length == 2) {
                               <div align="left"></div>
                               <table width="84%" border="0" height="45">
                                 <tr> 
-                                  <td><img src="ThermImages/Submit.gif" width="65" height="40" onClick = "submitIt()"></td>
+                                  <td><img src="../../../Images/ThermImages/Submit.gif" width="65" height="40" onClick = "submitIt()"></td>
                                 </tr>
                               </table>
                             </td>
@@ -352,7 +352,7 @@ if (text.length == 2) {
           </td>
 		  
 		  
-        <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
 	  

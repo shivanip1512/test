@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <!-- Java script needed for the Calender Function--->
-<script language="JavaScript" src ="drag.js">
+<script language="JavaScript" src="../../JavaScript/drag.js">
 </script>
 <script language="JavaScript">
 <!--
@@ -162,7 +162,7 @@ MM_reloadPage(true);
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -179,7 +179,7 @@ MM_reloadPage(true);
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -198,7 +198,7 @@ MM_reloadPage(true);
 		  <% String pageName = "user_lm_control.jsp"; %>
           <%@ include file="nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		    <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"> 
@@ -334,21 +334,21 @@ MM_reloadPage(true);
                             </div>
                             </td>
 							
-                            <td width="261" class = "TableCell" background="Parts/StartStopBG2.gif" height="70" valign="middle">
+                            <td width="261" class = "TableCell" background="../../Images/Parts/StartStopBG2.gif" height="70" valign="middle">
                               <table width="99%" border="0"height="63">
                                 <tr> 
                                   <td width="14%"><font face="Arial, Helvetica, sans-serif" size="1">Start</font></td>
                                   <td width="12%"> 
                                     <input type="text" name="startTime1" size = "4" value = "00:00" onchange = "moveStartStopPtr('start')">
                                   </td>
-                                  <td width="74%"><img name = "startPtr" src="Parts/SliderShort.gif" onMouseDown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr.style.left),10,20,'showStartTime1()','horizontal');" onLoad = "setPixTime()" style = "position:relative; top:-20px; left:10px; cursor:pointer;"></td>
+                                  <td width="74%"><img name = "startPtr" src="../../Images/Parts/SliderShort.gif" onMouseDown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr.style.left),10,'showStartTime1()','horizontal','');" onLoad = "setPixTime()" style = "position:relative; top:-20px; left:10px; cursor:pointer;"></td>
                                 </tr>
                                 <tr> 
                                   <td width="14%"><font face="Arial, Helvetica, sans-serif" size="1">Stop</font></td>
                                   <td width="12%"> 
                                     <input type="text" name="stopTime1" size = "4" value = "23:50" onchange = "moveStartStopPtr('stop')">
                                   </td>
-                                  <td width="74%"><img name = "stopPtr" onMouseDown = "beginDrag(event,0,0,153,parseInt(document.timeForm.startPtr.style.left),20,'showStopTime1()','horizontal');" onLoad = "setPixTime()" src="Parts/SliderShort.gif" style = "position:relative; top:-13px; left:153px; cursor:pointer;"></td>
+                                  <td width="74%"><img name = "stopPtr" onMouseDown = "beginDrag(event,0,0,153,parseInt(document.timeForm.startPtr.style.left),'showStopTime1()','horizontal','');" onLoad = "setPixTime()" src="../../Images/Parts/SliderShort.gif" style = "position:relative; top:-13px; left:153px; cursor:pointer;"></td>
                                 </tr>
                               </table>
                             </td>
@@ -359,21 +359,21 @@ MM_reloadPage(true);
                               <p class="TableCell">Time Window 2:</p>
                             </div>
                             </td>
-                            <td width="261" background="Parts/StartStopBG2.gif" height="83" valign="middle">
+                            <td width="261" background="../../Images/Parts/StartStopBG2.gif" height="83" valign="middle">
                               <table width="99%" border="0" height="63">
                                 <tr> 
                                   <td width="14%"><font face="Arial, Helvetica, sans-serif" size="1">Start</font></td>
                                   <td width="12%"> 
                                     <input type="text" name="startTime2" size = "4" value = "00:00" onchange = "moveStartStopPtr('start2')">
                                   </td>
-                                  <td width="74%"><img name = "startPtr2" onMouseDown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr2.style.left),10,20,'showStartTime2()','horizontal');"  onLoad = "setPixTime()" src="Parts/SliderShort.gif" style="position:relative; top:-13px; left:10px; cursor:pointer;" ></td>
+                                  <td width="74%"><img name = "startPtr2" onMouseDown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr2.style.left),10,'showStartTime2()','horizontal','');"  onLoad = "setPixTime()" src="../../Images/Parts/SliderShort.gif" style="position:relative; top:-13px; left:10px; cursor:pointer;" ></td>
                                 </tr>
                                 <tr> 
                                   <td width="14%"><font face="Arial, Helvetica, sans-serif" size="1">Stop</font></td>
                                   <td width="12%"> 
                                     <input type="text" name="stopTime2" size = "4" value = "23:50" onchange = "moveStartStopPtr('stop2')">
                                   </td>
-                                  <td width="74%"><img name = "stopPtr2" src="Parts/SliderShort.gif" onMouseDown = "beginDrag(event,0,0,153,parseInt(document.timeForm.startPtr2.style.left),20,'showStopTime2()','horizontal');" onLoad = "setPixTime()" style = "position:relative; top:-9px; left:152px; cursor:pointer;"></td>
+                                  <td width="74%"><img name = "stopPtr2" src="../../Images/Parts/SliderShort.gif" onMouseDown = "beginDrag(event,0,0,153,parseInt(document.timeForm.startPtr2.style.left),'showStopTime2()','horizontal','');" onLoad = "setPixTime()" style = "position:relative; top:-9px; left:152px; cursor:pointer;"></td>
                                 </tr>
                               </table>
                             </td>
@@ -462,7 +462,7 @@ MM_reloadPage(true);
             </div><br>
               </td>
 		  
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

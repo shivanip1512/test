@@ -4,7 +4,7 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
-<script language="JavaScript" src ="drag.js">
+<script language="JavaScript" src="../../JavaScript/drag.js">
 </script>
 <script language="JavaScript">
 <!--
@@ -181,7 +181,7 @@ function MM_findObj(n, d) { //v4.0
 //-->
 </script>
 <!-- Java script needed for the Calender Function--->
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 <SCRIPT Language="Javascript">
 function fsub() {
 	document.MForm.submit();
@@ -214,7 +214,7 @@ function MM_popupMsg(msg) { //v1.0
     <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -232,7 +232,7 @@ function MM_popupMsg(msg) { //v1.0
               </tr>
             </table>
           </td>
-          <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>
@@ -251,7 +251,7 @@ function MM_popupMsg(msg) { //v1.0
             <% String pageName = "user_lm_control.jsp"; %>
             <%@ include file="nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="650" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <p><br>
@@ -302,8 +302,8 @@ function MM_popupMsg(msg) { //v1.0
                                             <input id = "temperature" type="text" value="75" size="3" onchange = "(navigator.appName == 'Netscape')?moveTempPtrNS():moveTempPtrIE()" >
                                             &nbsp;<sup>&deg</sup> </b></div>
                                         </td>
-                                        <td height="295" width="72" background = "Parts/ThermometerBG.jpg"> 
-                                          <img name = "arrow" id= "arrow" onmousedown = "(navigator.appName == 'Netscape')?beginDrag(event,-120,160,0,0,20,'showTempNS()','vertical'):beginDrag(event,-120,80,0,0,20,'showTempIE()','vertical');" src="Parts/ThermSlider.gif"  onload = "setPixTemp()" style = "position:relative; top:0px; left:8px; cursor:pointer"> 
+                                        <td height="295" width="72" background = "../../Images/Parts/ThermometerBG.jpg"> 
+                                          <img name = "arrow" id= "arrow" onmousedown = "(navigator.appName == 'Netscape')?beginDrag(event,-120,160,0,0,'showTempNS()','vertical',''):beginDrag(event,-120,80,0,0,'showTempIE()','vertical','');" src="../../Images/Parts/ThermSlider.gif"  onload = "setPixTemp()" style = "position:relative; top:0px; left:8px; cursor:pointer"> 
                                         </td>
                                       </tr>
                                     </table>
@@ -355,7 +355,7 @@ function MM_popupMsg(msg) { //v1.0
                            
                             <table width="218" border="0" cellspacing="0" height="267">
                               <tr> 
-                                <td background="Parts/GraphBG.gif" height="281"> 
+                                <td background="../../Images/Parts/GraphBG.gif" height="281"> 
                                   <table width="100%" border="0" height="223">
                                     <tr> 
                                       <td valign = "top"> 
@@ -365,10 +365,10 @@ function MM_popupMsg(msg) { //v1.0
                                       </td>
                                     </tr>
                                     <tr> 
-                                      <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.rooftop.stopPtr.style.left),27,20,'showStartTime1()','horizontal')" src="Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                      <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.rooftop.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../Images/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
                                     </tr>
                                     <tr> 
-                                      <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.rooftop.startPtr.style.left),20,'showStopTime1()','horizontal')" src="Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                      <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.rooftop.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../Images/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
                                     </tr>
                                     <tr> 
                                       <td valign = "bottom"> 
@@ -464,7 +464,7 @@ function MM_popupMsg(msg) { //v1.0
             </table>
             <p>&nbsp;</p>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
       </table>
     </td>

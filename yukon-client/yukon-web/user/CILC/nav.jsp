@@ -14,9 +14,9 @@
 	Hashtable links = new Hashtable();
 	for (int i = 0; i < linkMap.length; i++) {
 		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
+			links.put(linkMap[i][0], "<img src=\"../Bullet.gif\" width=\"12\" height=\"12\"><span class=\"NavText2\">" + linkMap[i][1] + "</span>");
 		else
-			links.put(linkMap[i][0], "<img src=\"Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+			links.put(linkMap[i][0], "<img src=\"../Bullet2.gif\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
 	}
 %>
 
@@ -41,11 +41,11 @@
 						{
 							if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid())
 							{%>
-								<img src="Bullet.gif" width="12" height="12"><span class="NavText2"><%=gData[i][1] %></span><br>
+								<img src="../Bullet.gif" width="12" height="12"><span class="NavText2"><%=gData[i][1] %></span><br>
 							<%}
 							else 
 							{%>
-								<img src="Bullet2.gif" width="12" height="12"><a href="/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+								<img src="../Bullet2.gif" width="12" height="12"><a href="/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
 							<%}
 						}
 					}%></div>

@@ -5,9 +5,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <!-- Java script needed for the Calender Function--->
-<script language="JavaScript" src ="drag.js">
+<script language="JavaScript" src="../../JavaScript/drag.js">
 </script>
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="..\..\Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
 <SCRIPT Language="Javascript">
 <!--
 
@@ -157,7 +157,7 @@ function MM_findObj(n, d) { //v4.0
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -174,7 +174,7 @@ function MM_findObj(n, d) { //v4.0
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -193,7 +193,7 @@ function MM_findObj(n, d) { //v4.0
 		  <% String pageName = "user_lm_time.jsp"; %>
           <%@ include file="nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		    <td width="657" valign="top" bgcolor="#FFFFFF"> 
               <div align="center"><br>
@@ -335,7 +335,7 @@ function MM_findObj(n, d) { //v4.0
                                     <input type="text" name="date" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
                                     <a href="javascript:show_calendar('rooftop.date')"
 						onMouseOver="window.status='Pop Calendar';return true;"
-						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
+						onMouseOut="window.status='';return true;"> <img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
                                 </tr>
                                 <tr> 
                                   <td width="85" height="85">&nbsp; </td>
@@ -343,7 +343,7 @@ function MM_findObj(n, d) { //v4.0
                                   <td width="36" height="85" class="TableCell"> 
                                     <div align="right">Time: </div>
                                   </td>
-                                  <td width="179" background="Parts/StartStopBG.gif" height="85" valign="top"> 
+                                  <td width="179" background="../../Images/Parts/StartStopBG.gif" height="85" valign="top"> 
                                     <table width="100" border="0" cellspacing="0" height="40" align="center">
                                       <tr> 
                                         <td valign = "top" align = "center"> 
@@ -353,7 +353,7 @@ function MM_findObj(n, d) { //v4.0
                                         </td>
                                       </tr>
                                     </table>
-                                   <img name = "startPtr" onload = "setPixTime()" onmousedown = "beginDrag(event,0,0,parseInt(document.rooftop.stopPtr.style.left),9,20,'showStartTime1()','horizontal')" src="Parts/SliderShort.gif" width="17" height="19" style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
+                                   <img name = "startPtr" onload = "setPixTime()" onmousedown = "beginDrag(event,0,0,parseInt(document.rooftop.stopPtr.style.left),9,'showStartTime1()','horizontal','')" src="../../Images/Parts/SliderShort.gif" width="17" height="19" style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
                                    
                                   </td>
                                 </tr>
@@ -395,7 +395,7 @@ function MM_findObj(n, d) { //v4.0
                                     <input type="text" name="date2" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
                                     <a href="javascript:show_calendar('rooftop.date2')"
 						onMouseOver="window.status='Pop Calendar';return true;"
-						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
+						onMouseOut="window.status='';return true;"> <img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
                                 </tr>
                                 <tr> 
                                   <td width="81" height="85">&nbsp; </td>
@@ -403,7 +403,7 @@ function MM_findObj(n, d) { //v4.0
                                   <td width="34" height="85"> 
                                     <div align="right" class="TableCell">Time: </div>
                                   </td>
-                                  <td width="170" background="Parts/StartStopBG.gif" height="85" valign="top"> 
+                                  <td width="170" background="../../Images/Parts/StartStopBG.gif" height="85" valign="top"> 
                                    
                                       <table width="100" border="0" cellspacing="0" height="40" align = "center">
                                         <tr> 
@@ -414,7 +414,7 @@ function MM_findObj(n, d) { //v4.0
                                           </td>
                                         </tr>
                                       </table>
-                                      <img name = "stopPtr" src="Parts/SliderShort.gif" width="17" height="19" onmousedown = "beginDrag(event,0,0,152,parseInt(document.rooftop.startPtr.style.left),20,'showStopTime1()','horizontal')" onload = "setPixTime()" style = "position:relative; top:0px; left:152px; cursor:pointer;"><br>
+                                      <img name = "stopPtr" src="../../Images/Parts/SliderShort.gif" width="17" height="19" onmousedown = "beginDrag(event,0,0,152,parseInt(document.rooftop.startPtr.style.left),'showStopTime1()','horizontal','')" onload = "setPixTime()" style = "position:relative; top:0px; left:152px; cursor:pointer;"><br>
                                     
                                   </td>
                                 </tr>
@@ -494,7 +494,7 @@ function MM_findObj(n, d) { //v4.0
                </div>
               </td>
 		  
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>

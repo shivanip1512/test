@@ -18,7 +18,7 @@ function MM_popupMsg(msg) { //v1.0
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -35,7 +35,7 @@ function MM_popupMsg(msg) { //v1.0
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -54,7 +54,7 @@ function MM_popupMsg(msg) { //v1.0
 		  <% String pageName = "ChangeForm.jsp"; %>
           <%@ include file="Nav.jsp" %>
           </td>
-          <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
 
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               <div align="center"> 
@@ -155,7 +155,7 @@ function MM_popupMsg(msg) { //v1.0
           </td>
 
 		  
-        <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
 	  
