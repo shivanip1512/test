@@ -5,30 +5,33 @@ import java.util.Date;
 /**
  * This type was created in VisualAge.
  */
-public class SOELog extends com.cannontech.database.db.DBPersistent 
+public class TAGLog extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer logID = null;
 	private Integer pointID = null;
-	private Date soeDateTime = null;
-	private Integer millis = null;
-	private String description = null;
-	private String additionalInfo = null;
+	private Integer tagID = null;
+	private String userName = null;
+	private String action = null;
+	private String description = null;	
+	private Date tagTime = null;	
+	private String refStr = null;	
+	private String forStr = null;	
 
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
 	public static final String COLUMNS[] = 
 	{	
-		"PointID", "SOEDateTime", 
-		"Millis", "Description", "AdditionalInfo"
+		"PointID", "TagID", "UserName", "Action",
+		"Description", "TagTime", "RefStr", "ForStr"
 	};
 
 
-	public final static String TABLE_NAME = "SOELog";
+	public final static String TABLE_NAME = "TAGLog";
 
 /**
- * SOELog constructor comment.
+ * TAGLog constructor comment.
  */
-public SOELog() {
+public TAGLog() {
 	super();
 }
 /**
@@ -38,9 +41,9 @@ public void add() throws java.sql.SQLException
 {
 	Object addValues[] = 
 	{ 
-		getLogID(), getPointID(), 
-		getSoeDateTime(), getMillis(),
-		getDescription(), getAdditionalInfo() 
+		getLogID(), getPointID(), getTagID(), getUserName(),
+		getAction(), getDescription(),
+		getTagTime(), getRefStr(), getForStr()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -87,10 +90,13 @@ public void retrieve() throws java.sql.SQLException
 	if( results.length == COLUMNS.length )
 	{
 		setPointID( (Integer) results[0] );
-		setSoeDateTime( (Date) results[1] );
-		setMillis( (Integer) results[2] );
-		setDescription( (String) results[3] );
-		setAdditionalInfo( (String) results[4] );
+		setTagID( (Integer) results[1] );
+		setUserName( (String) results[2] );
+		setAction( (String) results[3] );
+		setDescription( (String) results[4] );
+		setTagTime( (Date) results[5] );
+		setRefStr( (String) results[6] );
+		setForStr( (String) results[7] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -126,61 +132,111 @@ public void update() throws java.sql.SQLException
 {
 	Object setValues[] = 
 	{ 
-		getPointID(), 
-		getSoeDateTime(), getMillis(),
-		getDescription(), getAdditionalInfo() 
+		getPointID(), getTagID(), getUserName(),
+		getAction(), getDescription(),
+		getTagTime(), getRefStr(), getForStr()
 	};
 	
 	Object constraintValues[] = { getLogID() };
 
 	update( TABLE_NAME, COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+
 	/**
 	 * @return
 	 */
-	public String getAdditionalInfo()
+	public String getAction()
 	{
-		return additionalInfo;
+		return action;
 	}
 
 	/**
 	 * @return
 	 */
-	public Integer getMillis()
+	public String getForStr()
 	{
-		return millis;
+		return forStr;
 	}
 
 	/**
 	 * @return
 	 */
-	public Date getSoeDateTime()
+	public String getRefStr()
 	{
-		return soeDateTime;
+		return refStr;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getTagID()
+	{
+		return tagID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getTagTime()
+	{
+		return tagTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getUserName()
+	{
+		return userName;
 	}
 
 	/**
 	 * @param string
 	 */
-	public void setAdditionalInfo(String string)
+	public void setAction(String string)
 	{
-		additionalInfo = string;
+		action = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setForStr(String string)
+	{
+		forStr = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setRefStr(String string)
+	{
+		refStr = string;
 	}
 
 	/**
 	 * @param integer
 	 */
-	public void setMillis(Integer integer)
+	public void setTagID(Integer integer)
 	{
-		millis = integer;
+		tagID = integer;
 	}
 
 	/**
 	 * @param date
 	 */
-	public void setSoeDateTime(Date date)
+	public void setTagTime(Date date)
 	{
-		soeDateTime = date;
+		tagTime = date;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setUserName(String string)
+	{
+		userName = string;
 	}
 
 }
