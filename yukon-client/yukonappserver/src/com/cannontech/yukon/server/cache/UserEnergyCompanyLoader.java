@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 
 /**
- * Builds up a maps
+ * Builds up maps
  * Map<LiteYukonUser,List<LiteYukonGroup>> and
  * Map<LiteYukonGroup,List<LiteYukonUser>>
  * @author alauinger
@@ -63,12 +63,17 @@ public class UserEnergyCompanyLoader implements Runnable
    			companyMap.put(new Integer(c.getLiteID()), c);
    		}
    		
-   		String sql1 = "SELECT CustomerContact.LoginID,EnergyCompanyCustomerList.EnergyCompanyID " +
-   					" FROM EnergyCompanyCustomerList,CICustContact,CustomerContact " +
-   					" WHERE EnergyCompanyCustomerList.CustomerID=CICustContact.DeviceID " +
-   					" AND CICustContact.ContactID=CustomerContact.ContactID";
-   					
-   	    String sql2 = "SELECT OperatorLoginID,EnergyCompanyID FROM EnergyCompanyOperatorLoginList";
+   		String sql1 = "SELECT Contact.LoginID,EnergyCompanyCustomerList.EnergyCompanyID " +
+   							  " FROM EnergyCompanyCustomerList,Customer,Contact " +
+   							  " WHERE EnergyCompanyCustomerList.CustomerID=Customer.CustomerID " +
+   							  " AND Customer.PrimaryContactID=Contact.ContactID"; 
+   							  
+	    String sql2 = "SELECT Contact.LoginID,EnergyCompanyCustomerList.EnergyCompanyID " + 
+	    					  " FROM EnergyCompanyCustomerList,CustomerAdditionalContact,Contact " + 
+	    					  " WHERE EnergyCompanyCustomerList.CustomerID=CustomerAdditionalContact.CustomerID " +
+	    					  " AND CustomerAdditionalContact.ContactID=Contact.ContactID";
+	    					     					
+   	    String sql3 = "SELECT OperatorLoginID,EnergyCompanyID FROM EnergyCompanyOperatorLoginList";
    	         		
       	Connection conn = null;
       	Statement stmt = null;
@@ -76,31 +81,17 @@ public class UserEnergyCompanyLoader implements Runnable
       	try {
         	conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
          	stmt = conn.createStatement();
+
          	rset = stmt.executeQuery(sql1);
-   
-      		while (rset.next()) {
-      			Integer userID = new Integer(rset.getInt(1));
-      			Integer companyID = new Integer(rset.getInt(2));
-      			
-      			LiteYukonUser user = (LiteYukonUser) userMap.get(userID);
-      			LiteEnergyCompany company = (LiteEnergyCompany) companyMap.get(companyID);
-   
-   				allUserEnergyCompanies.put(user,company);
-      		}
-      		
-      		      		
+   			populateMap(userMap,companyMap,rset);
       		rset.close();
-      		rset = stmt.executeQuery(sql2);
       		
-   			while(rset.next()) {
-   				Integer userID = new Integer(rset.getInt(1));
-   				Integer companyID = new Integer(rset.getInt(2));
-   				
-   				LiteYukonUser user = (LiteYukonUser) userMap.get(userID);
-   				LiteEnergyCompany company = (LiteEnergyCompany) companyMap.get(companyID);
-   				
-   				allUserEnergyCompanies.put(user,company);
-   			}   		            		   			      		
+      		rset = stmt.executeQuery(sql2);
+      		populateMap(userMap,companyMap,rset);
+   			rset.close();
+   			
+   			rset = stmt.executeQuery(sql3);   			
+   			populateMap(userMap, companyMap, rset);            		   			      		   			
       	}
       	catch(SQLException e ) {
          	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -115,14 +106,26 @@ public class UserEnergyCompanyLoader implements Runnable
          	catch( java.sql.SQLException e ) {
             	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
          	}
-   
-   
+      
    		CTILogger.info( 
        (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for YukonUserGroupLoader (" + allUserEnergyCompanies.size() + " loaded)" );   
+       " Secs for UserEnergyCompanyLoader (" + allUserEnergyCompanies.size() + " loaded)" );   
       }
    
    }
+
+public void populateMap(HashMap userMap, HashMap companyMap, ResultSet rset)
+	throws SQLException {
+	while(rset.next()) {
+		Integer userID = new Integer(rset.getInt(1));
+		Integer companyID = new Integer(rset.getInt(2));
+		
+		LiteYukonUser user = (LiteYukonUser) userMap.get(userID);
+		LiteEnergyCompany company = (LiteEnergyCompany) companyMap.get(companyID);
+		
+		allUserEnergyCompanies.put(user,company);
+	}   		
+}
    
    
 
