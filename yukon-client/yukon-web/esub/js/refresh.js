@@ -8,9 +8,14 @@ var alarmsTableID = 'alarmsTable';
 var alarmTextID = 'alarmText';
 
 /* refresh rates of various elements in milliseconds */
-var graphRefreshRate = 120 * 1000;
-var pointRefreshRate  = 2 * 1000; //15 * 1000;
-var tableRefreshRate  = 2 * 1000; // * 1000;
+var graphRefreshRate = 360 * 1000;
+var pointRefreshRate  = 15 * 1000; 
+var tableRefreshRate  = 15 * 1000; 
+
+var allDynamicTextElem = new Array();
+var allAlarmTextElem = new Array();
+var allStateImageElem = new Array();
+var allDynamicGraphElem = new Array();
 
 /* rectangle to indicate an image is a link */
 var selectedRect = null;
@@ -19,27 +24,19 @@ var selectedRect = null;
    periodic updates */   
 function refresh(evt) {	
 	SVGDoc = evt.getTarget().getOwnerDocument();
-	updateAll();	
-} //end refresh
-
-/* update everything! */
-function updateAll() {
-	updateAllPoints();
-	updateAllGraphs();
-	updateAllTables();
-} //end updateAll
-
-function updateAllPoints() {
+	
+	/* Find all the dynamic elements and store them so 
+	   we don't have to look them up again. */
 	dynText = SVGDoc.getElementsByTagName('text');
 	for (var i=0; i<dynText.getLength(); i++) 
 	{		
 		var elemID = dynText.item(i).getAttribute('elementID');
-    	if(elemID == dynamicTextID) {    
-			updateNode(dynText.item(i));
+    	if(elemID == dynamicTextID) {  
+    		allDynamicTextElem.push(dynText.item(i));  
 		}
 		
 		if(elemID == alarmTextID) {
-			updateAlarmText(dynText.item(i))
+			allAlarmTextElem.push(dynText.item(i));
 		}
 	}
 	
@@ -48,25 +45,41 @@ function updateAllPoints() {
 	{
 		var elemID = dynImages.item(j).getAttribute('elementID');
 		if(elemID == stateImageID) {
-			updateImage(dynImages.item(j));
+			allStateImageElem.push(dynImages.item(j));
 		}
+		else
+		if(elemID == dynamicGraphID) {
+			allDynamicGraphElem.push(dynImages.item(j));
+		}		
 	}
 	
+	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
+	setTimeout('updateAllGraphs()', graphRefreshRate); 
+	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
+} //end refresh
+
+function updateAllPoints() {
+	var i;
+	for(i = 0; i < allDynamicTextElem.length; i++) {
+		updateNode(allDynamicTextElem[i]);
+	}
+	
+	for(i = 0; i < allAlarmTextElem.length; i++) {
+		updateAlarmText(allAlarmTextElem[i]);
+	}
+
+	for(i = 0; i < allStateImageElem.length; i++) {
+		updateImage(allStateImageElem[i]);
+	}
 	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
 } //end updatePoints
 
 function updateAllGraphs() {
-	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
-	for (i=0; i < dynSVG.getLength(); i++) {
-		var svgElement = dynSVG.item(i);
-
-		if (svgElement.getAttribute('elementID') == dynamicGraphID) {
-			updateGraph(svgElement);
-		}
-		else {
-			continue;
-		}
+	var i;
+	for(i = 0; i < allDynamicGraphElem.length; i++) {
+		updateGraph(allDynamicGraphElem[i]);
 	}
+	
 	setTimeout('updateAllGraphs()', graphRefreshRate); 
 } //end updateGraphs
 
@@ -85,6 +98,8 @@ function updateAllTables() {
 	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
 } //end updateTables
 
+
+
 /* update an individual graph */
 function updateGraph(node) {
 
@@ -98,52 +113,10 @@ function updateGraph(node) {
 			"&period=" + node.getAttribute('period') +
 			"&db=" + node.getAttribute('db') +
 			"&loadfactor=" + node.getAttribute('loadfactor');	
-			
-	getURL(url, fn2);
-	
-	function fn2(obj) {
-		var Newnode = parseXML(obj.content, SVGDoc);
-		var gdefid = node.getAttribute('gdefid');
-		var view = node.getAttribute('view');
-		var width = node.getAttribute('width');
-		var height = node.getAttribute('height');
-		var format = node.getAttribute('format');
-		var start = node.getAttribute('start');
-		var period = node.getAttribute('period');
-		var loadfactor = node.getAttribute('loadfactor');
-		var db = node.getAttribute('db');
-		var x = node.getAttribute('x');
-		var y = node.getAttribute('y');
-		
-		if(findChild(node) != null) {
-			SVGDoc.documentElement.replaceChild(Newnode,node);
-		}
-		
-		var svgElements = Newnode.getOwnerDocument().documentElement.getElementsByTagName('svg');
 
-		for (j = 0; j<svgElements.getLength(); j++) {
-			var svgElem = svgElements.item(j);
-			if (svgElem.getAttribute('gdefid') == gdefid) {     	
-				svgElem.setAttributeNS(null, 'view', view);
-     			svgElem.setAttributeNS(null, 'width', width);
-     			svgElem.setAttributeNS(null, 'height', height);
-			 	svgElem.setAttributeNS(null, 'format', format);
-			 	svgElem.setAttributeNS(null, 'start', start);
-				svgElem.setAttributeNS(null, 'period', period);
-			 	svgElem.setAttributeNS(null, 'db', db);
-			 	svgElem.setAttributeNS(null, 'loadfactor', loadfactor);
-			 	svgElem.setAttributeNS(null, 'x', x);
-			 	svgElem.setAttributeNS(null, 'y', y);
-			 	svgElem.setAttributeNS(null, 'object', 'graph');     	
-			 	svgElem.setAttributeNS(null, 'elementID', dynamicGraphID);
-			 	svgElem.setAttributeNS(null, 'onclick', 'updateGraphChange(evt)');
-     		}
-			else  {
-	  			continue;	  
-	    	} 
-		}
-	} // end f2
-} // end updateGraph
+	node.setAttributeNS(xlinkNS, 'xlink\:href', url);
+	
+} //end updateGraph
 
 /* update an individual table */
 function updateAlarmsTable(node,url) {
