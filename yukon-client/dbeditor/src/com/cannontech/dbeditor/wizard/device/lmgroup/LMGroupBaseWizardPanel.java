@@ -6,6 +6,7 @@ import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.device.lm.MacroGroup;
 
 public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjIdentificationPanel = null;
@@ -301,7 +302,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 		com.cannontech.database.data.point.PointBase historyPoint =
 			com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
 
-		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(5);
+		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(6);
 		
 		//set default for point tables
 		historyPoint = PointFactory.createNewPoint(
@@ -357,7 +358,15 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 				paoID,
 				new Integer(ids[4]),
 				PointTypes.PT_OFFSET_MONTHLY_HISTORY,
-				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );			
+				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );
+				
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"CONTROL COUNTDOWN",
+				paoID,
+				new Integer(ids[5]),
+				PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
+				com.cannontech.database.data.point.PointUnits.UOMID_COUNTS) );				
 	
 	}
 
@@ -990,14 +999,21 @@ public Object getValue(Object val)
 			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
 	}
 
-	//some status points are needed for control history
-	com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
-	smartDB.addDBPersistent( lmGroup );
-	smartDB.setOwnerDBPersistent( lmGroup );
+	if( val instanceof MacroGroup )
+			return val;  //Macros will not have record history capability
+	
+	else
+	{
+	
+		//some status points are needed for control history
+		com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
+		smartDB.addDBPersistent( lmGroup );
+		smartDB.setOwnerDBPersistent( lmGroup );
 			
-	createExtraObjects( smartDB );
+		createExtraObjects( smartDB );
 
-	return smartDB;
+		return smartDB;
+	}
 	
 }
 /**
@@ -1163,12 +1179,12 @@ public void setSwitchType(String type)
 		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 	getJCheckBoxDisableControl().setVisible( 
 		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
-
+	/*
 	getJCheckBoxHistory().setVisible( getJCheckBoxHistory().isVisible() &&
 		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 
 	getJPanelHistory().setVisible( getJCheckBoxHistory().isVisible() &&
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );		
+		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );*/
 
 }
 /**
