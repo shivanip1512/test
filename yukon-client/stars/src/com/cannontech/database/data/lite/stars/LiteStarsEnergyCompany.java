@@ -962,26 +962,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				if (rset != null) rset.close();
 				if (stmt != null) stmt.close();
 				
-				// Find the corresponding hardware type id
-				int dftHwTypeID = 0;
-				YukonSelectionList devTypeList = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
-				for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
-					YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
-					if (entry.getYukonDefID() == hwTypeDefID) {
-						dftHwTypeID = entry.getEntryID();
-						break;
-					}
-				}
-				if (dftHwTypeID == 0) return null;
-	        	
-	        	int categoryID = ECUtils.getInventoryCategoryID(dftHwTypeID, this);
+				// Use the hardware type id of the default energy company,
+				// so that we won't have a problem deleting a device type
+				int hwTypeID = SOAPServer.getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID();
+	        	int categoryID = ECUtils.getInventoryCategoryID(hwTypeID, this);
 	        	
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				hardware.setInventoryID( new Integer(dftInvID) );
 				hardware.getInventoryBase().setCategoryID( new Integer(categoryID) );
 				hardware.getInventoryBase().setNotes( "Default Thermostat" );
-				hardware.getLMHardwareBase().setLMHardwareTypeID( new Integer(dftHwTypeID) );
+				hardware.getLMHardwareBase().setLMHardwareTypeID( new Integer(hwTypeID) );
 				hardware.getLMHardwareBase().setManufacturerSerialNumber( "0" );
 				hardware.setEnergyCompanyID( getEnergyCompanyID() );
 				hardware.setDbConnection( conn );
@@ -1856,56 +1847,47 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
 		com.cannontech.database.data.stars.hardware.LMThermostatSeason[] seasons =
 				com.cannontech.database.data.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( new Integer(liteHw.getInventoryID()) );
-		if (liteHw.getInventoryID() >= 0) {
-			// Check to see if thermostat season entries are complete, and if not, re-populate thermostat tables
-			boolean thermTableComplete = true;
-			
-			int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
-			LiteStarsLMHardware dftHw = getDefaultLMHardware(hwTypeDefID);
-			if (dftHw == null) {
-				CTILogger.error( "Cannot find default thermostat settings" );
-				return null;
-			}
-			
-			ArrayList dftThermSeasons = dftHw.getThermostatSettings().getThermostatSeasons();
-			int numSeasons = dftThermSeasons.size();
-			int numIntervals = ((LiteLMThermostatSeason) dftThermSeasons.get(0)).getSeasonEntries().size() / 3;
-	        
-			if (seasons == null || seasons.length < numSeasons)
-				thermTableComplete = false;
-			else {
-				for (int i = 0; i < seasons.length; i++) {
-					int numSeasonEntries = seasons[i].getLMThermostatSeasonEntries().size();
-					if (liteHw.isOneWayThermostat() && numSeasonEntries < 3 * numIntervals ||
-						liteHw.isTwoWayThermostat() && numSeasonEntries < 7 * numIntervals)
-					{
-						thermTableComplete = false;
-						break;
-					}
+		
+		// Check to see if thermostat season entries are complete, and if not, re-populate thermostat tables
+		boolean thermTableComplete = true;
+		if (seasons == null || seasons.length != 2)
+			thermTableComplete = false;
+		else {
+			for (int i = 0; i < seasons.length; i++) {
+				int numSeasonEntries = seasons[i].getLMThermostatSeasonEntries().size();
+				if (liteHw.isOneWayThermostat() && numSeasonEntries != 12 ||
+					liteHw.isTwoWayThermostat() && numSeasonEntries != 28)
+				{
+					thermTableComplete = false;
+					break;
 				}
 			}
-	        
-			if (!thermTableComplete) {
-				java.sql.Connection conn = null;
-				try {
-					conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-					if (seasons != null) {
-						for (int i = 0; i < seasons.length; i++) {
-							seasons[i].setDbConnection( conn );
-							seasons[i].delete();
-						}
+		}
+		
+		if (!thermTableComplete) {
+			java.sql.Connection conn = null;
+			try {
+				conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+				if (seasons != null) {
+					for (int i = 0; i < seasons.length; i++) {
+						seasons[i].setDbConnection( conn );
+						seasons[i].delete();
 					}
+				}
+				
+				if (liteHw.getInventoryID() >= 0)
 					seasons = CreateLMHardwareAction.populateThermostatTables( liteHw, this, conn );
+				else
+					seasons = CreateLMHardwareAction.populateThermostatTables( liteHw, SOAPServer.getDefaultEnergyCompany(), conn );
+			}
+			catch (java.sql.SQLException e) {
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if (conn != null) conn.close();
 				}
-				catch (java.sql.SQLException e) {
-					e.printStackTrace();
-				}
-				finally {
-					try {
-						if (conn != null) conn.close();
-					}
-					catch (java.sql.SQLException e) {}
-				}
+				catch (java.sql.SQLException e) {}
 			}
 		}
         
