@@ -954,6 +954,12 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
     _cmd["flag"]      = CtiParseValue( flag   );
     _cmd["offset"]    = CtiParseValue( offset );
 
+    #if 1
+
+    doParseControlExpresscom(CmdStr);
+    doParseControlSA(CmdStr);
+
+    #else
     if(isKeyValid("type"))
     {
         switch( getiValue("type") )
@@ -988,7 +994,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
             }
         }
     }
-
+    #endif
 }
 
 
