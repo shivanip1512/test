@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/10/29 20:02:11 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/11/08 16:24:54 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.15  2004/11/08 16:24:54  mfisher
+* implemented getVerificationObjects() instead of just thinking about it
+*
 * Revision 1.14  2004/10/29 20:02:11  mfisher
 * added verification support
 *
@@ -617,6 +620,18 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
     return status;
 }
+
+
+void CtiDeviceRTC::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
+{
+    while( !_verification_objects.empty() )
+    {
+        work_queue.push(_verification_objects.front());
+
+        _verification_objects.pop();
+    }
+}
+
 
 
 ULONG CtiDeviceRTC::messageDuration(int groupType)

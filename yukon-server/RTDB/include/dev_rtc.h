@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/10/29 20:02:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/11/08 16:24:58 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.9  2004/11/08 16:24:58  mfisher
+* implemented getVerificationObjects() instead of just thinking about it
+*
 * Revision 1.8  2004/10/29 20:02:11  mfisher
 * added verification support
 *
@@ -111,7 +114,7 @@ public:
     INT ErrorDecode (INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage> &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
-
+    void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
 };
 #endif // #ifndef __DEV_RTC_H__
