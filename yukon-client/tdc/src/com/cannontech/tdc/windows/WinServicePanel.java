@@ -482,7 +482,8 @@ public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
  */
 public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
 {
-	if( e.getSource() == getServicePopUpMenu() ) 
+	if( e.getSource() == getServicePopUpMenu()
+		 && getJTableServices().getSelectedRow() >= 0 ) 
 	{      
       NTService service = getJTableModel().getRowAt( getJTableServices().getSelectedRow() );
    
