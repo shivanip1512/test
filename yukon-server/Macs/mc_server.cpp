@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/09/30 14:39:27 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/03/25 17:43:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,9 +238,9 @@ void CtiMCServer::executeCommand(const string& command, const string& target)
 
     // Acquire an interpreter and send out the command
     CtiInterpreter* interp = _interp_pool.acquireInterpreter();
-            
-    // init default pil request priority        
-    interp->evaluate("set MessagePriority 7");
+
+    // reset mccmd for this command
+    interp->evaluate("MCCMDReset");
 
     interp->evaluate( to_send, false ); //no blocking
     
@@ -381,6 +381,9 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         //Acquire an interpreter to use
         CtiInterpreter* interp = _interp_pool.acquireInterpreter();
 
+	// reset mccmd for this script
+	interp->evaluate("MCCMDReset");
+	
         // init the correct schedule id and holiday schedule id
         string init_id("set ScheduleID ");
         init_id += CtiNumStr( sched.getScheduleID() );
@@ -394,7 +397,6 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 
 	// (re)set some variables
 	interp->evaluate("set ScheduleName \"" + sched.getScheduleName() + "\"");
-        interp->evaluate("set MessagePriority 7");
 
         {        
             CtiLockGuard< CtiLogger > guard(dout);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2004/03/11 17:27:24 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2004/03/25 17:44:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -394,10 +394,15 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
 }
 
+int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+    return Mccmd_Init(interp);
+}
+
 int Mccmd_Init(Tcl_Interp* interp)
 {
     /* Register MACS commands with the interpreter */
-
+    
     Tcl_CreateCommand( interp, "PILStartup", Mccmd_Connect, NULL, NULL );
     Tcl_CreateCommand( interp, "PILSTARTUP", Mccmd_Connect, NULL, NULL );
     Tcl_CreateCommand( interp, "pilstartup", Mccmd_Connect, NULL, NULL );
@@ -406,6 +411,10 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "PILSHUTDOWN", Mccmd_Disconnect, NULL, NULL );
     Tcl_CreateCommand( interp, "pilshutdown", Mccmd_Disconnect, NULL, NULL );
 
+    Tcl_CreateCommand( interp, "MCCMDReset", Mccmd_Reset, NULL, NULL );
+    Tcl_CreateCommand( interp, "MCCMDRESET", Mccmd_Reset, NULL, NULL );
+    Tcl_CreateCommand( interp, "mccmdreset", Mccmd_Reset, NULL, NULL );
+    
     Tcl_CreateCommand( interp, "Command", Command, NULL, NULL );
     Tcl_CreateCommand( interp, "command", Command, NULL, NULL );
     Tcl_CreateCommand( interp, "COMMAND", Command, NULL, NULL );
@@ -533,12 +542,11 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Unable to load cparms dll " << endl;
     }
 
-
+    if( gMccmdDebugLevel & MCCMD_DEBUG_INIT )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << "Using: " << init_script << endl;
+        dout << "Using MCCMD init script: " << init_script << endl;
     }
-
 
     Tcl_EvalFile(interp, (char*) init_script.data() );
 

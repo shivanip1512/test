@@ -49,7 +49,8 @@ using namespace std;
 #define MCCMD_DEBUG_LEVEL       "MCCMD_DEBUGLEVEL"
 
 /* Debug levels */
-#define MCCMD_DEBUG_PILREQUEST 0x00000001
+#define MCCMD_DEBUG_INIT       0x00000001
+#define MCCMD_DEBUG_PILREQUEST 0x00000002
 
 extern unsigned gMccmdDebugLevel;
 
@@ -71,7 +72,9 @@ static int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, ch
 /* Close the connection to the PIL */
 static int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 
-
+/* Reset state info for the given interpreter */
+static int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+    
 static int Command(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);

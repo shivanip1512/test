@@ -24,6 +24,9 @@ pilstartup
 # Useful in conjunction with the global ErrorList 
 # see dsm2.h for possible values
 
+# Default PIL Message Priority
+set MessagePriority 7
+
 set DEVICE_INHIBITED "85"
 
 set Selected "Nothing selected"
