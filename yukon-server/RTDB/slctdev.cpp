@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/10/27 22:06:11 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/12/18 02:08:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -196,6 +196,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPEMCT410:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT410;
+            break;
         }
     case TYPE_REPEATER800:
         {
