@@ -324,6 +324,7 @@ BOOL InEchoToOut(const INMESS *In, OUTMESS *Out)
     Out->ReturnNexus = In->ReturnNexus;
     Out->Sequence = In->Sequence;
     Out->Priority = In->Priority;
+    // Out->MessageFlags = In->MessageFlags;
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
     memcpy(&(Out->Request), &(In->Return), sizeof(PIL_ECHO));
@@ -351,6 +352,7 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
     In->ReturnNexus         = Out->ReturnNexus;
     In->SaveNexus           = Out->SaveNexus;
     In->Priority            = Out->Priority;
+    In->MessageFlags        = Out->MessageFlags;
 
     In->DeviceIDofLMGroup   = Out->DeviceIDofLMGroup;
     In->TrxID               = Out->TrxID;
@@ -2185,7 +2187,6 @@ LONG ResetBreakAlloc()
     return allocReqNum;
 }
 
-
 #define LOADPROFILESEQUENCE 4  //  CtiProtocolEmetcon::Scan_LoadProfile
 
 
@@ -2232,6 +2233,7 @@ bool findLPRequestEntries(void *om, void* d)
 
     return(bRet);
 }
+
 void cleanupOutMessages(void *unusedptr, void* d)
 {
     OUTMESS *OutMessage = (OUTMESS *)d;
@@ -2245,9 +2247,66 @@ void cleanupOutMessages(void *unusedptr, void* d)
     return;
 }
 
+void applyPortQueueOutMessageReport(void *ptr, void* d)
+{
+    CtiQueueAnalysis_t *pQA = (CtiQueueAnalysis_t*)ptr;
+    OUTMESS *OutMessage = (OUTMESS *)d;
 
+    if(pQA != 0 &&
+       OutMessage->HeadFrame[0] == 0x02 && OutMessage->HeadFrame[1] == 0xe0 &&
+       OutMessage->TailFrame[0] == 0xea && OutMessage->TailFrame[1] == 0x03)
+    {
+        // This is indeed an OutMessage I like
+        int i = OutMessage->Priority;
 
+        if(0 < i && i < 16)
+        {
+            pQA->priority_count[i] = pQA->priority_count[i] + 1;    // Accumulate on into this priority bin!
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
+        // Now I need to look for some of the interesting metrics in the system!  These will be the first 16.
+        // #define NOWAIT          0x0000
+        // #define NORESULT        0x0000
+        // #define WAIT            0x0001
+        // #define RESULT          0x0002
+        // #define QUEUED          0x0004
+        // #define ACTIN           0x0008
+        // #define AWORD           0x0010
+        // #define BWORD           0x0020
+        // #define DTRAN           0x0040
+        // #define RCONT           0x0080
+        // #define RIPPLE          0x0100
+        // #define STAGE           0x0200
+        // #define VERSACOM        0x0400
+        // #define TSYNC           0x0800
+        // #define REMS            0x1000   // This can never be used now.... CGP Corey.
+        // #define FISHERPIERCE    0x1000
+        // #define ENCODED         0x4000
+        // #define DECODED         0x4000
+        // #define COMMANDCODE     0x8000
 
+        UINT ec = OutMessage->EventCode;
+
+        for(i = 0; i < 16; i++)
+        {
+            if( ec >> i & 0x00001 )
+            {
+                pQA->metrics[i] = pQA->metrics[i] + 1;
+            }
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Malformed OutMessage.  Header and Footer are not valid. **** " << endl;
+    }
+
+    return;
+}
 
 
