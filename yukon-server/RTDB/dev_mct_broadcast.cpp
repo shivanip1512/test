@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/21 23:11:50 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/03/06 18:06:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,7 +217,7 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
                                             RWTPtrSlist< OUTMESS >         &outList)
 {
     bool  found = false;
-    INT   function;
+    INT   function = 0;
     INT   nRet = NoError;
     int   intervallength;
     RWCString temp;
