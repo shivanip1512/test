@@ -47,6 +47,11 @@ public Integer getStartingPeriodCnt()
 	return getMethodRateCount();
 }
 
+public String getGroupSelectionMethod()
+{
+	return super.getGroupSelectionMethod();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/11/2002 10:40:08 AM)
@@ -73,5 +78,10 @@ public void setCyclePeriodLength(Integer seconds)
 public void setStartingPeriodCnt(Integer periodCnt ) 
 {
 	setMethodRateCount( periodCnt );
+}
+
+public void setGroupSelectionMethod(String method) 
+{
+	super.setGroupSelectionMethod( method );
 }
 }
