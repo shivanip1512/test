@@ -1,6 +1,5 @@
 package com.cannontech.analysis.data.statistic;
 
-import com.cannontech.analysis.Reportable;
 
 /**
  * Created on Dec 15, 2003
@@ -8,7 +7,7 @@ import com.cannontech.analysis.Reportable;
  * All statistical models MUST implement this interface!
  * @author snebben
  */
-public abstract class StatisticData implements Reportable
+public class StatisticData
 {	
 	/** Valid statType from DynamicPaoStatistics.statisticalType value critera, null results in all?*/
 	public static final String DAILY_STAT_TYPE = "Daily";
