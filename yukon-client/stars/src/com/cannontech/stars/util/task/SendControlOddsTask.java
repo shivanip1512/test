@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.tools.email.EmailMessage;
 
 /**
  * @author yao
@@ -126,7 +127,9 @@ public class SendControlOddsTask implements Runnable {
 					text.append( "\r\n\r\n\r\n" ).append( footer );
 					
 					try {
-						ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
+						EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
+						emailMsg.setFrom( from );
+						emailMsg.send();
 					}
 					catch (Exception e) {
 						e.printStackTrace();

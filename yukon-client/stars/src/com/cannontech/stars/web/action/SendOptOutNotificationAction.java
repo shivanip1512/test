@@ -38,6 +38,7 @@ import com.cannontech.stars.xml.serialize.StarsSendExitInterviewAnswers;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.tools.email.EmailMessage;
 
 /**
  * @author yao
@@ -329,7 +330,9 @@ public class SendOptOutNotificationAction implements ActionBase {
         String from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
         String subject = ServletUtils.capitalize2(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " Notification";
 		
-		ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
+		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
+		emailMsg.setFrom( from );
+		emailMsg.send();
 	}
 	
 	public static void sendReenableNotification(
@@ -389,7 +392,9 @@ public class SendOptOutNotificationAction implements ActionBase {
         String from = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
         String subject = ServletUtils.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " Notification";
 		
-		ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
+		EmailMessage emailMsg = new EmailMessage( to, subject, text.toString() );
+		emailMsg.setFrom( from );
+		emailMsg.send();
 	}
 
 }

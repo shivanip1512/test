@@ -7,15 +7,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.TimeZone;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -100,32 +92,6 @@ public class ServerUtils {
 			if (fw != null) fw.close();
 		}
     }
-	
-	public static void sendEmailMsg(String from, String[] to, String[] cc, String subject, String text) throws Exception {
-		CtiProperties props = CtiProperties.getInstance();
-		Session session = Session.getDefaultInstance( props, null );
-		
-		Message emailMsg = new MimeMessage( session );
-		emailMsg.setFrom( new InternetAddress(from) );
-		
-		Address[] toAddrs = new Address[ to.length ];
-		for (int i = 0; i < to.length; i++)
-			toAddrs[i] = new InternetAddress( to[i] );
-		emailMsg.setRecipients( Message.RecipientType.TO, toAddrs );
-		
-		if (cc != null) {
-			Address[] ccAddrs = new Address[ cc.length ];
-			for (int i = 0; i < to.length; i++)
-				ccAddrs[i] = new InternetAddress( cc[i] );
-			emailMsg.setRecipients( Message.RecipientType.CC, ccAddrs );
-		}
-		
-		emailMsg.setSubject( subject );
-		emailMsg.setSentDate( new Date() );
-		emailMsg.setText( text );
-		
-		Transport.send( emailMsg );
-	}
 	
 	/**
 	 * Return date in the format of MM/dd/yy HH:mm in the specified time zone
