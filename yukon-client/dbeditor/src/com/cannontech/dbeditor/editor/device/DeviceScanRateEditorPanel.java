@@ -1863,7 +1863,6 @@ public void setDeviceType(int type)
 	{		
 		if( DeviceTypesFuncs.isMCT3xx(type) )
 		{
-			setHealthObjectsVisible(false);
 			getIntegrityRateCheckBox().setText("Demand & Status Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");
 		}
@@ -1905,7 +1904,8 @@ public void setDeviceType(int type)
 		
       setHealthObjectsVisible( 
             !(type == PAOGroups.LMT_2 
-              || type == PAOGroups.DCT_501) );     
+              || type == PAOGroups.DCT_501
+              || DeviceTypesFuncs.isMCT3xx(type) ) );
       
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
