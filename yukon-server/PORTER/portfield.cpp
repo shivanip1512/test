@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2002/09/19 17:53:34 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2002/09/30 15:03:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2869,21 +2869,13 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
     {
         if( aPortRecord->isDialup() )
         {
-            if(aPortRecord->getType() == PortTypeLocalDialup)
+            if(aIEDDevice->getCurrentState() == CtiDeviceIED::StateCompleteNoHUP)
             {
-                if(aIEDDevice->getCurrentState() == CtiDeviceIED::StateCompleteNoHUP)
-                {
-                    aPortRecord->setShouldDisconnect( FALSE );
-                }
-                else
-                {
-                    aPortRecord->setShouldDisconnect( TRUE );
-                }
+                aPortRecord->setShouldDisconnect( FALSE );
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                aPortRecord->setShouldDisconnect( TRUE );
             }
         }
     }
