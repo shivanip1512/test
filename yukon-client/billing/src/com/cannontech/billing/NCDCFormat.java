@@ -165,13 +165,20 @@ public boolean retrieveBillingData(String dbAlias)
 			while (rset.next())
 			{
 				currentPointID = rset.getInt(2);
+				
+				double multiplier = 1;
+				if( getBillingDefaults().getRemoveMultiplier())
+				{
+					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
+				}
+				
 				if( currentPointID != lastPointID )	//just getting max time for each point
 				{
 					lastPointID = currentPointID;
 
 					String meterNumber = rset.getString(1);
 					java.sql.Timestamp ts = rset.getTimestamp(3);
-					double reading = rset.getDouble(4);
+					double reading = rset.getDouble(4) / multiplier;
 					currentDeviceID = rset.getInt(5);
 					int ptOffset = rset.getInt(6);
 					Date tsDate = new Date(ts.getTime());

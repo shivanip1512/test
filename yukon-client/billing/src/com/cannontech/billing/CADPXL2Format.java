@@ -124,6 +124,8 @@ public boolean retrieveBillingData(String dbAlias)
 			Integer meterPositionNumber = new Integer(0);
 			String accountNumber = new String();
 			int registerNumCount = 1;
+		
+			double value = 0;
 			
 			int pointID = 0;
 			int ptOffset = 0;
@@ -137,12 +139,21 @@ public boolean retrieveBillingData(String dbAlias)
 			{
 				rsetCount++;
 				pointID = rset.getInt(2);
+				
+				double multiplier = 1;
+				if( getBillingDefaults().getRemoveMultiplier())
+				{
+					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
+				}
+				
 				if( pointID != lastPointID )	//just getting max time for each point
 				{
 					lastPointID = pointID;
 					meterNumber = rset.getString(1);
 					ptOffset = rset.getInt(3);
 					java.sql.Timestamp ts = rset.getTimestamp(4);
+					value = rset.getDouble(5) / multiplier;
+					
 					deviceID = rset.getInt(6);
 					paoName = rset.getString(7);
 					Date tsDate = new Date(ts.getTime());
@@ -165,7 +176,7 @@ public boolean retrieveBillingData(String dbAlias)
 							com.cannontech.billing.record.CADPXL2Record lastRecord =
 							(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
 
-							lastRecord.getKwhReadingVector().add( new Double(rset.getDouble(5)));
+							lastRecord.getKwhReadingVector().add( new Double(value));
 						}
 						else if ( isKW(ptOffset) )
 						{
@@ -175,7 +186,7 @@ public boolean retrieveBillingData(String dbAlias)
 							//** Get the last record and add to it the other pointOffsets' values. **//
 							com.cannontech.billing.record.CADPXL2Record lastRecord =
 								(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
-							lastRecord.getKwReadingVector().add (new Double(rset.getDouble(5)));
+							lastRecord.getKwReadingVector().add (new Double(value));
 							
 							/* registerNumCount needs to be incremented with every register loop through.
 							   Since the ptOffsets are sorted in ascending order, this will be the first
@@ -192,7 +203,7 @@ public boolean retrieveBillingData(String dbAlias)
 							com.cannontech.billing.record.CADPXL2Record lastRecord =
 								(com.cannontech.billing.record.CADPXL2Record)getRecordVector().get(recCount -1);
 						
-							lastRecord.getKvarReadingVector().add(new Double(rset.getDouble(5)));
+							lastRecord.getKvarReadingVector().add(new Double(value));
 						}
 					}
 					
@@ -208,14 +219,14 @@ public boolean retrieveBillingData(String dbAlias)
 							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
-							kwhValueVector.add(new Double(rset.getDouble(5)));
+							kwhValueVector.add(new Double(value));
 						}
 						else if (isKW(ptOffset))
 						{
 							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
-							kwValueVector.add (new Double(rset.getDouble(5)));
+							kwValueVector.add (new Double(value));
 						}
 
 						else if (isKVAR(ptOffset))
@@ -223,7 +234,7 @@ public boolean retrieveBillingData(String dbAlias)
 							if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
-							kvarValueVector.add(new Double(rset.getDouble(5)));
+							kvarValueVector.add(new Double(value));
 						}
 						
 						//*****************************************************************************************

@@ -19,7 +19,7 @@ public CADPFormat()
 /**
  * Retrieves values from the database and inserts them in a FileFormatBase object
  * Creation date: (11/30/00)
- */
+ *//*
 public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbAlias)
 {
 	long timer = System.currentTimeMillis();
@@ -91,7 +91,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					sql.append(", " + validAccPtOffsets[i]);
 				}
 				sql.append( ") )) ORDER BY DMG.METERNUMBER, DMG.DEVICEID, PT.POINTOFFSET, RPH.TIMESTAMP DESC");
-*/
+
 
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
@@ -193,8 +193,8 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						}
 					}
 					
-					else	//**  HAVE NEW POINT AND METERNUMBER **//
-					{
+					else	//**  HAVE NEW POINT AND METERNUMBER **/
+/*					{
 						hadKWH = false;
 						hadKW = false;
 						hadKVAR = false;
@@ -204,7 +204,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						//*****************************************************************************************
 						/* Add the value to the correct unitOfMeasure Vector according to the point offset 
 						*/
-						if (ptOffset == 1 || isKWH(ptOffset))
+/*						if (ptOffset == 1 || isKWH(ptOffset))
 						{
 							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
@@ -235,7 +235,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 						   If the accountNumber is NOT found in the hash table then the paoName  is
 						   		used as the accountNumber also
 						*/
-						Object tempActNum = null;
+/*						Object tempActNum = null;
 						
 						if( accountNumbersHashTable != null)
 							tempActNum = accountNumbersHashTable.get(meterNumber);
@@ -449,13 +449,20 @@ public boolean retrieveBillingData(String dbAlias)
 			{
 				rsetCount++;
 				pointID = rset.getInt(2);
+				
+				double multiplier = 1;
+				if( getBillingDefaults().getRemoveMultiplier())
+				{
+					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
+				}
+
 				if( pointID != lastPointID )	//just getting max time for each point
 				{
 					lastPointID = pointID;
 					meterNumber = rset.getString(1);
 					ptOffset = rset.getInt(3);
 					java.sql.Timestamp ts = rset.getTimestamp(4);
-					value = rset.getDouble(5);
+					value = rset.getDouble(5) / multiplier;
 					deviceID = rset.getInt(6);
 					paoName = rset.getString(7);
 					Date tsDate = new Date(ts.getTime());

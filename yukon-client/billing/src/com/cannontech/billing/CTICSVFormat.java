@@ -115,6 +115,12 @@ public boolean retrieveBillingData(String dbAlias)
 			while (rset.next())
 			{
 				currentPointID = rset.getInt(4);
+				
+				double multiplier = 1;
+				if( getBillingDefaults().getRemoveMultiplier())
+				{
+					multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
+				}
 
 				// Our break label so we can exit the if-else checks
 				inValidTimestamp:
@@ -138,7 +144,7 @@ public boolean retrieveBillingData(String dbAlias)
 					lastPointID = currentPointID;
 
 					String paoName = rset.getString(1);
-					double reading = rset.getDouble(2);
+					double reading = rset.getDouble(2) / multiplier;
 					String unitMeasure = rset.getString(5);
 					
 					com.cannontech.billing.record.CTICSVRecord csvRec = 

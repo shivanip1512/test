@@ -13,7 +13,7 @@ public class BillingFileDefaults
 	public static final String BILLING_DEFAULTS_FILENAME = "\\BillingDefaultSetting.DAT";
 	public static final String BILLING_DEFAULTS_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 	//Number of members in this class.
-	private final int NUMBER_OF_PARAMETERS = 6;
+	private final int NUMBER_OF_PARAMETERS = 7;
 
 	private int formatID = -1;
 	private int demandDaysPrev = 30;
@@ -21,7 +21,9 @@ public class BillingFileDefaults
 	//private String[] collectionGroup = null;
 	private java.util.Vector billGroup = null;
 	private String outputFileDir = null;
-
+	private boolean removeMultiplier = false;
+	
+	
 	//USED BUT NOT STORED IN THE FILE BECAUSE WE CAN'T PREDICT THIS, YET?
 	private String inputFileDir = null;
 	private java.util.Date endDate = null;
@@ -49,8 +51,8 @@ public BillingFileDefaults()
  * DynamicBilling constructor comment.
  */
 public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays, 
-				String newSingleBillGrp, int billingGroupIndex, String newOutFile, 
-				String newInFile, java.util.Date newEndDate)
+				String newSingleBillGrp, int billingGroupIndex, String newOutFile,
+				boolean newRemoveMultiplier, String newInFile, java.util.Date newEndDate)
 {
 	super();
 	setFormatID( newFormatID );
@@ -59,6 +61,7 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
 	setBillGroup( newSingleBillGrp );
 	setBillGroupColumn( billingGroupIndex );
 	setOutputFile( newOutFile );
+	setRemoveMultiplier( newRemoveMultiplier );
 	
 	setInputFile( newInFile );
 	setEndDate( newEndDate );
@@ -68,7 +71,7 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
  */
 public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays, 
 				java.util.Vector newBillGrp, int billingGroupIndex, String newOutFile, 
-				String newInFile, java.util.Date newEndDate)
+				boolean newRemoveMultiplier, String newInFile, java.util.Date newEndDate)
 {
 	super();
 	setFormatID( newFormatID );
@@ -77,7 +80,8 @@ public BillingFileDefaults(int newFormatID, int newDemandDays, int newEnergyDays
 	setBillGroup( newBillGrp );
 	setBillGroupColumn( billingGroupIndex);
 	setOutputFile( newOutFile );
-
+	setRemoveMultiplier( newRemoveMultiplier );
+	
 	setInputFile( newInFile );
 	setEndDate( newEndDate );
 }
@@ -231,6 +235,12 @@ public String getInputFileDir()
 	}
 	return inputFileDir;
 }
+
+public boolean getRemoveMultiplier()
+{
+	return removeMultiplier ;
+}
+
 public String getOutputFileDir()
 {
 	if (outputFileDir == null)
@@ -428,6 +438,10 @@ public void setOutputFile(String newOutputFile)
 {
 	outputFileDir = newOutputFile;
 }
+public void setRemoveMultiplier(boolean newRemoveMultiplier)
+{
+	removeMultiplier = newRemoveMultiplier;
+}
 /**
  * Insert the method's description here.
  * Creation date: (5/14/2002 1:54:19 PM)
@@ -443,8 +457,9 @@ public void updateFileDefaults(java.util.Vector infileDefaultsVector)
 	setBillGroup((String)infileDefaultsVector.get(index++));
 	setOutputFile((String)infileDefaultsVector.get(index++));
 	
-	if( index < infileDefaultsVector.size())
+//	if( index < infileDefaultsVector.size())
 		setBillGroupColumn((String)infileDefaultsVector.get(index++));
+		setRemoveMultiplier(new Boolean((String)infileDefaultsVector.get(index++)).booleanValue());
 	//setInputFile((String)infileDefaultsVector.get(index++));
 }
 /**
@@ -486,6 +501,8 @@ public void writeDefaultsFile()
 
 		// write the type of bill Group being used (MUST BE A DB COLUMN FROM DEVICEMETERGROUP table)
 		writer.write( getBillGroupColumn() + "\r\n" );
+		
+		writer.write( String.valueOf(getRemoveMultiplier()));
 
 		writer.close();
 	}

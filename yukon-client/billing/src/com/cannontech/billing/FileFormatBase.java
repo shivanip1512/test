@@ -16,6 +16,7 @@ public abstract class FileFormatBase
 	private java.util.Vector recordVector = null;
 	private boolean appending = false;
 	public static BillingFileDefaults billingDefaults = null;
+	public java.util.Hashtable pointIDMultiplierHashTable = null;
 	
 	public static final int validAnalogPtOffsets[] =
 	{
@@ -102,6 +103,15 @@ public StringBuffer getOutputAsStringBuffer()
 public java.lang.String getOutputFileName() 
 {
 	return getBillingDefaults().getOutputFileDir();
+}
+
+public java.util.Hashtable getPointIDMultiplierHashTable()
+{
+	if( pointIDMultiplierHashTable == null)
+	{
+		pointIDMultiplierHashTable = retrievePointIDMultiplierHashTable();
+	}
+	return pointIDMultiplierHashTable;
 }
 /**
  * Insert the method's description here.
@@ -251,6 +261,71 @@ public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
  */
 //returns true if the data retrieval was successfull
 abstract public boolean retrieveBillingData(String dbAlias);
+
+public java.util.Hashtable retrievePointIDMultiplierHashTable()
+{
+//	java.util.Vector returnMultipliers = new java.util.Vector();
+	java.util.Hashtable multiplierHashTable = new java.util.Hashtable();
+	
+	String sql = new String("SELECT ACC.POINTID, ACC.MULTIPLIER FROM POINTACCUMULATOR ACC");
+
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	try
+	{
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+
+		if( conn == null )
+		{
+			System.out.println(":  Error getting database connection.");
+			return null;
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			rset = pstmt.executeQuery();
+
+			while( rset.next() )
+			{
+				Integer pointID = new Integer(rset.getInt(1));
+				Double multiplier = new Double(rset.getDouble(2));
+				multiplierHashTable.put(pointID, multiplier);				
+			}
+			
+			sql = new String("SELECT ANA.POINTID, ANA.MULTIPLIER FROM POINTANALOG ANA");
+			pstmt = conn.prepareStatement(sql.toString());
+			rset = pstmt.executeQuery();
+			
+			while( rset.next())
+			{
+				Integer pointID = new Integer( rset.getInt(1));
+				Double multiplier = new Double( rset.getDouble(2));
+				multiplierHashTable.put(pointID, multiplier);
+			}
+		}
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			e2.printStackTrace();//sometin is up
+			return null;
+		}	
+	}
+
+	return multiplierHashTable;
+}
+
 public void setBillingDefaults(BillingFileDefaults newBillingDefaults)
 {
 	billingDefaults = newBillingDefaults;
