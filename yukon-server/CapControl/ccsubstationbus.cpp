@@ -28,6 +28,7 @@
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
+extern ULONG _SEND_TRIES;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 
@@ -2562,9 +2563,52 @@ BOOL CtiCCSubstationBus::isPastResponseTime(const RWDBDateTime& currentDateTime)
     }
     else
     {
-        if( ((getLastOperationTime().seconds() + getMinResponseTime()) <= currentDateTime.seconds()) )
+        if( ((getLastOperationTime().seconds() + (getMinResponseTime()/_SEND_TRIES)) <= currentDateTime.seconds()) )
         {
             returnBoolean = TRUE;
+        }
+    }
+
+    return returnBoolean;
+}
+
+/*---------------------------------------------------------------------------
+    checkForAndPerformSendRetry
+
+    Returns boolean if .
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+{
+    BOOL returnBoolean = FALSE;
+
+    if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+    {
+        for(LONG i=0;i<_ccfeeders.entries();i++)
+        {
+            CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders[i];
+            if( currentCCFeeder->getRecentlyControlledFlag() &&
+                currentCCFeeder->isPastResponseTime(currentDateTime,getMinResponseTime()) &&
+                currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, pilMessages, getMinResponseTime()) )
+            {
+                setLastOperationTime(currentDateTime);
+                returnBoolean = TRUE;
+                break;
+            }
+        }
+    }
+    else
+    {
+        for(LONG i=0;i<_ccfeeders.entries();i++)
+        {
+            CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders[i];
+            if( currentCCFeeder->getPAOId() == getLastFeederControlledPAOId() &&
+                currentCCFeeder->getRecentlyControlledFlag() &&
+                currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, pilMessages, getMinResponseTime()) )
+            {
+                setLastOperationTime(currentDateTime);
+                returnBoolean = TRUE;
+                break;
+            }
         }
     }
 
