@@ -77,7 +77,7 @@ public class DisconnectPointCreate extends PointCreate
 			
 			// set default settings for BASE point
 			statusPoint.getPoint().setPointID(new Integer(pointID));
-		    statusPoint.getPoint().setPointName("DISCONNECT");
+		    statusPoint.getPoint().setPointName("DISCONNECT STATUS");
 	
 			Integer deviceID = new Integer( litePaobject.getLiteID());
 			statusPoint.getPoint().setPaoID( deviceID );
