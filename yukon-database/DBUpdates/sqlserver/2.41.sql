@@ -477,6 +477,7 @@ insert into YukonRoleProperty values(-30302,-303,'Control','false','Controls con
 
 /* CICustomer Commercial Metering Role Properties */
 insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
+insert into yukonroleproperty values(-30401, -304, 'Trending Get Data Now Button', 'false', 'Controls access to retrieve meter data on demand');
 
 /* Residential Customer Role Properties */
 insert into YukonRoleProperty values(-40000,-400,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
