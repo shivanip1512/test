@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/28 18:14:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@ using namespace std;
 #define DEBUGLEVEL_FACTORY          0x00000400
 #define DEBUGLEVEL_DATABASE         0x00000800
 #define DEBUGLEVEL_MSG_COMMAND      0x00001000
+#define DEBUGLEVEL_STATISTICS       0x00002000
 #define DEBUGLEVEL_MGR_POINT        0x00010000
 #define DEBUGLEVEL_MGR_DEVICE       0x00020000
 #define DEBUGLEVEL_MGR_ROUTE        0x00040000
