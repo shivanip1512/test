@@ -1960,23 +1960,28 @@ void  CtiCommandParser::doParsePutConfigVersacom(void)
             }
         }
 
-        if(!(token = CmdStr.match("led[ \t]+(y|n)(y|n)(y|n)")).isNull())
+        if(!(token = CmdStr.match("led[ \t]+(y|n)[ \t]*(y|n)[ \t]*(y|n)")).isNull())
         {
             INT   flag = 0;
             int   i;
             int   mask;
 
-            if(!(strnum = token.match("(y|n)(y|n)(y|n)")).isNull())
+            token.toLower();
+
+            if(!(strnum = token.match("(y|n)[ \t]*(y|n)[ \t]*(y|n)")).isNull())
             {
-                for(i = 0, mask = 0x10 ; i < 3; i++, mask <<= 1)
+                for(i = 0, mask = 0x20 ; i < strnum.length(); i++)
                 {
                     if(strnum[(size_t)i] == 'y')
                     {
                         flag |= mask;
                     }
-                }
 
-                flag <<= 1;
+                    if(strnum[(size_t)i] != ' ' && strnum[(size_t)i] != '\t')
+                    {
+                        mask <<= 1;
+                    }
+                }
             }
 
             _cmd["led"] = CtiParseValue( flag );
