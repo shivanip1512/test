@@ -27,6 +27,14 @@
        <jar jarfile="${yukon.lib}/esub-editor.jar"
             basedir="build/" 
             manifest="resource/manifest.mf" />       
+            
+        <copy todir="${yukon.lib}/images">
+       		<fileset dir="images">
+	   			<include name="**/*.gif"/>
+	    		<include name="**/*.png"/>
+	    		<include name="**/*.jpg"/>
+	    	</fileset>
+       </copy>
    </target>
 
 	<target name="install" depends="build">
@@ -39,7 +47,8 @@
 				<include name="**/*.gif"/>
  				<include name="**/*.ico"/>
 	    	</fileset>
-       </copy>       
+
+       </copy>             
    </target>
    
    <target name="clean">
