@@ -382,31 +382,6 @@ public void jMenuItemSubBusData_ActionPerformed(java.awt.event.ActionEvent actio
 	return;
 }
 /**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		SubBusPopUp aSubBusPopUp;
-		aSubBusPopUp = new SubBusPopUp(new com.cannontech.cbc.data.CBCClientConnection());
-		frame.setContentPane(aSubBusPopUp);
-		frame.setSize(aSubBusPopUp.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JPopupMenu");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-/**
  * Insert the method's description here.
  * Creation date: (1/5/2001 4:45:07 PM)
  * @param newConnectionWrapper com.cannontech.cbc.CBCClientConnection
