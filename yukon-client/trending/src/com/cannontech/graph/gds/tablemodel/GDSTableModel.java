@@ -1,9 +1,17 @@
 package com.cannontech.graph.gds.tablemodel;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.graph.GDSTypes;
+import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Insert the type's description here.
@@ -151,7 +159,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			Integer id = gds.getPointID();
 			
 			//must not have found it so we'll try some predefined points too.
-			if( id.intValue() == com.cannontech.database.data.point.PointTypes.SYS_PID_THRESHOLD)
+			if( id.intValue() == PointTypes.SYS_PID_THRESHOLD)
 				return "Threshold";
 			
 			LitePoint pt = PointFuncs.getLitePoint( id.intValue() );
@@ -177,12 +185,12 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 		case TYPE_NAME_COLUMN:
 		{
 			//Display the String value of the int
-			String type = GraphDataSeries.getType(gds.getType().intValue());
-			if( type.equalsIgnoreCase(GraphDataSeries.DATE_TYPE_STRING))
+			String type = GDSTypesFuncs.getType(gds.getType().intValue());
+			if( type.equalsIgnoreCase(GDSTypes.DATE_TYPE_STRING))
 			{
 				java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MM/dd/yy");
 				//get timestamp from database;
-				if( !com.cannontech.common.util.CtiUtilities.STRING_NONE.equalsIgnoreCase(gds.getMoreData()))
+				if( !CtiUtilities.STRING_NONE.equalsIgnoreCase(gds.getMoreData()))
 					type = format.format(gds.getSpecificDate());
 				else
 					type = "mm/dd/yy";
@@ -260,7 +268,7 @@ public boolean isCellEditable(int row, int column)
 		String value = ((String)getValueAt(row,column));
 		
 		//When type column value is 'THRESHOLD', the combo box is NOT editable.
-		if( !value.equalsIgnoreCase( GraphDataSeries.THRESHOLD_TYPE_STRING))
+		if( !value.equalsIgnoreCase( GDSTypes.THRESHOLD_TYPE_STRING))
 			editable = true;
 	}
 		
@@ -322,7 +330,7 @@ public void setValueAt(Object value, int row, int col)
 			gds.setLabel( valueString );
 		break;
 		case COLOR_NAME_COLUMN:
-			gds.setColor( new Integer(Colors.getColorID(com.cannontech.common.gui.util.Colors.getColor(value.toString()))));
+			gds.setColor( new Integer(Colors.getColorID(Colors.getColor(value.toString()))));
 			
 		break;		
 		case AXIS_NAME_COLUMN:
@@ -332,23 +340,40 @@ public void setValueAt(Object value, int row, int col)
 		case TYPE_NAME_COLUMN:
 		{
 			//Save the Integer value of the String.
-			gds.setType( new Integer(GraphDataSeries.getTypeInt(new String(value.toString()))));
+			gds.setType( new Integer(GDSTypesFuncs.getTypeInt(new String(value.toString()))));
 			
-			String moreData = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-			if( GraphDataSeries.isDateType(gds.getType().intValue()))
+			String moreData = CtiUtilities.STRING_NONE;
+			if( GDSTypesFuncs.isDateType(gds.getType().intValue()))
 			{
-				java.util.Date date = com.cannontech.util.ServletUtil.parseDateStringLiberally(value.toString());
+				java.util.Date date = ServletUtil.parseDateStringLiberally(value.toString());
 				if(date != null)
 				{
 					Long ts = new Long(date.getTime());
 					moreData = String.valueOf(ts);
-					gds.setMoreData(moreData);
 				}
 			}
-			else
+			else if( GDSTypesFuncs.isPeakType(gds.getType().intValue()))
 			{
-				gds.setMoreData(moreData);
-			}
+				if( CtiUtilities.STRING_NONE.equalsIgnoreCase(gds.getMoreData()))
+				{
+					GregorianCalendar peakCal = new GregorianCalendar();
+					/*TODO THIS IS ONLY TEMPORARY FOR ACCESSING DATA 
+					peakCal.set(Calendar.MONTH, 11);
+					peakCal.set(Calendar.YEAR, 2003);
+					/*********/
+					
+					peakCal.set(Calendar.DATE, 1);
+					peakCal.set(Calendar.HOUR, 0);
+					peakCal.set(Calendar.MINUTE, 0);
+					peakCal.set(Calendar.SECOND, 0);
+					peakCal.set(Calendar.MILLISECOND, 0);
+					System.out.println("###More data " + peakCal.getTime());
+					moreData = String.valueOf(peakCal.getTime().getTime());
+				}
+				else
+					moreData = gds.getMoreData();
+			}			
+			gds.setMoreData(moreData);
 		}
 		break;
 		
