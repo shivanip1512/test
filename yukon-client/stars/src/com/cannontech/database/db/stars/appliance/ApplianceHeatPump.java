@@ -17,7 +17,7 @@ public class ApplianceHeatPump extends DBPersistent {
 	
 	private Integer applianceID = null;
 	private Integer pumpTypeID = new Integer( CtiUtilities.NONE_ID );
-	private Integer standBySourceID = new Integer( CtiUtilities.NONE_ID );
+	private Integer standbySourceID = new Integer( CtiUtilities.NONE_ID );
 	private Integer secondsDelayToRestart = new Integer(0);
 	
 	public static final String[] SETTER_COLUMNS = {
@@ -37,7 +37,7 @@ public class ApplianceHeatPump extends DBPersistent {
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = {
-			getApplianceID(), getPumpTypeID(), getStandBySourceID(), getSecondsDelayToRestart()
+			getApplianceID(), getPumpTypeID(), getStandbySourceID(), getSecondsDelayToRestart()
 		};
 		
 		add( TABLE_NAME, addValues );
@@ -62,7 +62,7 @@ public class ApplianceHeatPump extends DBPersistent {
 		
 		if (results.length == SETTER_COLUMNS.length) {
 			setPumpTypeID( (Integer) results[0] );
-			setStandBySourceID( (Integer) results[1] );
+			setStandbySourceID( (Integer) results[1] );
 			setSecondsDelayToRestart( (Integer) results[2] );
 		}
 		else
@@ -74,12 +74,38 @@ public class ApplianceHeatPump extends DBPersistent {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = {
-			getPumpTypeID(), getStandBySourceID(), getSecondsDelayToRestart()
+			getPumpTypeID(), getStandbySourceID(), getSecondsDelayToRestart()
 		};
 		Object[] constraintValues = { getApplianceID() };
 		
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
+    
+    public static ApplianceHeatPump getApplianceHeatPump(Integer appID) {
+    	String sql = "SELECT ApplianceID, PumpTypeID, StandbySourceID, SecondsDelayToRestart " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceHeatPump app = new ApplianceHeatPump();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setPumpTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setStandbySourceID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		app.setSecondsDelayToRestart( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the applianceID.
@@ -109,8 +135,8 @@ public class ApplianceHeatPump extends DBPersistent {
 	 * Returns the standBySourceID.
 	 * @return Integer
 	 */
-	public Integer getStandBySourceID() {
-		return standBySourceID;
+	public Integer getStandbySourceID() {
+		return standbySourceID;
 	}
 
 	/**
@@ -133,8 +159,16 @@ public class ApplianceHeatPump extends DBPersistent {
 	 * Sets the standBySourceID.
 	 * @param standBySourceID The standBySourceID to set
 	 */
-	public void setStandBySourceID(Integer standBySourceID) {
-		this.standBySourceID = standBySourceID;
+	public void setStandbySourceID(Integer standbySourceID) {
+		this.standbySourceID = standbySourceID;
+	}
+
+	/**
+	 * Sets the applianceID.
+	 * @param applianceID The applianceID to set
+	 */
+	public void setApplianceID(Integer applianceID) {
+		this.applianceID = applianceID;
 	}
 
 }

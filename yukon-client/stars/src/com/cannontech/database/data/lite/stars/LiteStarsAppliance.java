@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -17,10 +18,12 @@ public class LiteStarsAppliance extends LiteBase {
 	private int applianceCategoryID = com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT;
 	private int lmProgramID = 0;
 	private int yearManufactured = 0;
-	private int manufacturerID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int locationID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int manufacturerID = CtiUtilities.NONE_ID;
+	private int locationID = CtiUtilities.NONE_ID;
 	private String notes = null;
 	private String modelNumber = null;
+	private int kwCapacity = 0;
+	private int efficiencyRating = 0;
 	
 	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
 	private int addressingGroupID = 0;
@@ -202,6 +205,38 @@ public class LiteStarsAppliance extends LiteBase {
 	 */
 	public void setModelNumber(String modelNumber) {
 		this.modelNumber = modelNumber;
+	}
+
+	/**
+	 * Returns the efficiencyRating.
+	 * @return int
+	 */
+	public int getEfficiencyRating() {
+		return efficiencyRating;
+	}
+
+	/**
+	 * Returns the kwCapacity.
+	 * @return int
+	 */
+	public int getKWCapacity() {
+		return kwCapacity;
+	}
+
+	/**
+	 * Sets the efficiencyRating.
+	 * @param efficiencyRating The efficiencyRating to set
+	 */
+	public void setEfficiencyRating(int efficiencyRating) {
+		this.efficiencyRating = efficiencyRating;
+	}
+
+	/**
+	 * Sets the kwCapacity.
+	 * @param kwCapacity The kwCapacity to set
+	 */
+	public void setKWCapacity(int kwCapacity) {
+		this.kwCapacity = kwCapacity;
 	}
 
 }

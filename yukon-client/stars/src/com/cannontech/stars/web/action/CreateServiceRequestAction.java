@@ -149,24 +149,6 @@ public class CreateServiceRequestAction implements ActionBase {
             StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, energyCompanyID );
             StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
             resp.setStarsServiceRequest( starsOrder );
-            
-            boolean newServiceCompany = true;
-            if (accountInfo.getServiceCompanies() == null)
-            	accountInfo.setServiceCompanies( new ArrayList() );
-            for (int i = 0; i < accountInfo.getServiceCompanies().size(); i++) {
-            	int companyID = ((Integer) accountInfo.getServiceCompanies().get(i)).intValue();
-            	if (liteOrder.getServiceCompanyID() == companyID) {
-            		newServiceCompany = false;
-            		break;
-            	}
-            }
-            
-            if (newServiceCompany) {
-            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
-            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
-            	resp.setStarsServiceCompany( starsCompany );
-            	ServerUtils.updateServiceCompanies( accountInfo, energyCompanyID );
-            }
 
             respOper.setStarsCreateServiceRequestResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -208,10 +190,6 @@ public class CreateServiceRequestAction implements ActionBase {
 			// Serivce request history must already be retrieved before, e.g. when the account info is loaded
 			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
 			accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, resp.getStarsServiceRequest() );
-			
-			StarsServiceCompany company = resp.getStarsServiceCompany();
-			if (company != null)
-				accountInfo.getStarsServiceCompanies().addStarsServiceCompany( company );
 
             return 0;
         }

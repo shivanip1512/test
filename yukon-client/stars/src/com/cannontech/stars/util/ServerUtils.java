@@ -137,19 +137,6 @@ public class ServerUtils {
 		return false;
 	}
 	
-	public static void updateServiceCompanies(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID) {
-		ArrayList companyList = new ArrayList();
-		liteAcctInfo.setServiceCompanies( companyList );
-		
-		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			Integer invID = (Integer) liteAcctInfo.getInventories().get(i);
-			LiteLMHardwareBase liteHw = SOAPServer.getEnergyCompany(energyCompanyID).getLMHardware( invID.intValue(), true );
-			Integer companyID = new Integer( liteHw.getInstallationCompanyID() );
-			if (!companyList.contains( companyID ))
-				companyList.add( companyID );
-		}
-	}
-	
 	public static void sendEmailMsg(String from, String[] to, String[] cc, String subject, String text) throws Exception {
 		Properties props = new Properties();
 		props.load( ServerUtils.class.getResourceAsStream("/config.properties") );

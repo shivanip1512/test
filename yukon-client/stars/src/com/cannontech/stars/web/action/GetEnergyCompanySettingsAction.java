@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.common.constants.RoleTypes;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServerUtils;
@@ -94,12 +96,16 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 	            if (ServerUtils.isOperator( user )) {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
-	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user.getYukonUser()) );
+	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
+					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARE ) != null
+						|| AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_WORKORDERS) != null)
+						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
 	            }
 	            else if (ServerUtils.isResidentialCustomer( user )) {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
-	            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
+	            	if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_QUESTIONS ) != null)
+		            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
 	            }
 	        	
 	        	user.setAttribute( ServletUtils.ATT_ENERGY_COMPANY, resp.getStarsEnergyCompany() );
@@ -115,6 +121,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 		            }
 		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
 	        	}
+	        	if (resp.getStarsServiceCompanies() != null)
+	        		user.setAttribute( ServletUtils.ATT_SERVICE_COMPANIES, resp.getStarsServiceCompanies() );
 	        	if (resp.getStarsCustomerFAQs() != null)
 		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
             }
@@ -124,13 +132,17 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
-	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user.getYukonUser()) );
+	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists(user) );
+					if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_HARDWARE ) != null
+						|| AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_WORKORDERS) != null)
+						resp.setStarsServiceCompanies( energyCompany.getStarsServiceCompanies() );
 	            }
 	            else if (ServerUtils.isResidentialCustomer( user )) {
 		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
-	            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
+	            	if (AuthFuncs.checkRole( user.getYukonUser(), RoleTypes.CONSUMERINFO_QUESTIONS ) != null)
+		            	resp.setStarsCustomerFAQs( energyCompany.getStarsCustomerFAQs() );
 	            }
             }
             
@@ -185,6 +197,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
 		            }
 		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
 	        	}
+	        	if (resp.getStarsServiceCompanies() != null)
+	        		user.setAttribute( ServletUtils.ATT_SERVICE_COMPANIES, resp.getStarsServiceCompanies() );
 	        	if (resp.getStarsCustomerFAQs() != null)
 		        	user.setAttribute( ServletUtils.ATT_CUSTOMER_FAQS, resp.getStarsCustomerFAQs() );
             }

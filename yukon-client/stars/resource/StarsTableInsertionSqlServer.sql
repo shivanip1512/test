@@ -32,94 +32,32 @@ INSERT INTO CustomerAccount VALUES (0,0,'(none)',0,0,'(none)',-1)
 
 /* InventoryBase */
 INSERT INTO InventoryBase VALUES (0,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'(none)',0)
+INSERT INTO InventoryBase VALUES (-1,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'Default Thermostat',0)
 
 /* ECToInventoryMapping */
 INSERT INTO ECToInventoryMapping VALUES (-1,0)
-
-
-
-/* YukonWebConfiguration */
-insert into YukonWebConfiguration values (1,'','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','XYZ Utility','')
-insert into YukonWebConfiguration values(
-2, 'AC.gif', '<b>CYCLE AC<br> Light, Medium</b> - When controlled, your air conditioning compressor will be interrupted for 10 minutes out of every half hour if you sign up for the light program and interrupted for 15 minutes out of every half hour if you sign up for the medium program.', 'Cycle AC', '')
-insert into YukonWebConfiguration values(
-3, 'WaterHeater.gif', '<b>WATER HEATER<br>4 Hour, 8 Hour</b> - When controlled, power to your water heater''s heating elements is turned off for up to 4 hours or 8 hours depending on the program you choose. The hot water in the tank will still be available for you to use.<br><br>  <b>ETS</b> - Your Electric Thermal Storage water heater''s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The hot water stored in the tank will supply your hot water needs.', 'Water Heater', '')
-insert into YukonWebConfiguration values(
-4, 'DualFuel.gif', '<b>DUAL FUEL <br> Limited 4 Hour, Unlimited</b> - When controlled, electric power to your home''s heating system will be switched off, and your non-electric heat source will provide for your home''s heating needs. Control is limited to four hours consecutively when signed up for the limited program. While usually limited to a few hours, control could be for an extended period if signed up for the unlimited program.', 'Dual Fuel Space Heater', '')
-insert into YukonWebConfiguration values(
-5, 'Electric.gif', '<b>ETS</b><br>Your Electric Thermal Storage heating system''s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The heat stored will supply your home needs.', 'ETS', '')
-insert into YukonWebConfiguration values(
-6, 'Pool.gif', '<b>POOL PUMP</b><br>When controlled, power to your pool pump is interrupted. Interruptions usually last for 4 hours or less.', 'Pool Pump', '')
-insert into YukonWebConfiguration values(
-7, 'HotTub.gif', '<b>HOT TUB</b><br>When controlled, power to your hot tub''s water heating elements are interrupted. Interruptions usually last for four hours or less.', 'Hot Tub', '')
-insert into YukonWebConfiguration values(8, 'AC.gif,ACSm.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'When controlled, your air conditioning compressor will be interrupted for 15 minutes out of every half hour. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'Medium', '')
-insert into YukonWebConfiguration values(9, 'AC.gif,ACSm.gif,$$Sm.gif,ThirdSm.gif,Tree2Sm.gif', 'When controlled, your air conditioning compressor will be interrupted for ten minutes out of every half hour. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'Light', '')
-insert into YukonWebConfiguration values(10, 'WaterHeater.gif,WaterSm.gif,$$Sm.gif,ThirdSm.gif,Tree2Sm.gif', 'When controlled, power to your water heater''s heating elements is turned off for up to eight hours. The hot water in the tank will still be available for you use.', '8 Hour', '')
-insert into YukonWebConfiguration values(11, 'WaterHeater.gif,WaterSm.gif,$$Sm.gif,SixthSm.gif,Tree2Sm.gif', 'When controlled, power to your water heater''s heating elements is turned off for up to four hours. The hot water in the tank will still be available for you use.', '4 Hour', '')
-insert into YukonWebConfiguration values(12, 'WaterHeater.gif,WaterSm.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'Your Electric Thermal Storage water heater''s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The hot water stored in the tank will supply your hot water needs.', 'ETS', '')
-insert into YukonWebConfiguration values(13, 'DualFuel.gif,DualFuelSm.gif,$$Sm.gif,SixthSm.gif,Tree2Sm.gif', 'When controlled, electric power to your home’s heating system will be switched off, and your non-electric heat source will provide for your home''s heating needs. Control is limited to four hours consecutively. ', 'Limited 4 Hour', '')
-insert into YukonWebConfiguration values(14, 'DualFuel.gif,DualFuelSm.gif,$$$Sm.gif,ThirdSm.gif,Tree3Sm.gif', 'When controlled, electric power to your home’s heating system will be switched off, and your non-electric heat source will provide for your home''s heating needs. While usually limited to a few hours, control could be for an extended period. ', 'Unlimited', '')
-insert into YukonWebConfiguration values(15, 'Electric.gif,ElectricSm.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'Your Electric Thermal Storage heating system’s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The heat stored will supply your home needs.', 'ETS', '')
-insert into YukonWebConfiguration values(16, 'Pool.gif,PoolPumpSm.gif,$Sm.gif,SixthSm.gif,Tree1Sm.gif', 'When controlled, power to your pool pump is interrupted. Interruptions usually last for 4 hours or less.', '', '')
-insert into YukonWebConfiguration values(17, 'HotTub.gif,HotTubSm.gif,$Sm.gif,SixthSm.gif,Tree1Sm.gif', '', '', '')
-insert into YukonWebConfiguration values(
-18, 'Setback.gif', '<b>SETBACK <br>2&deg, 4&deg</b> - When controlled, your air conditioning compressor will be set back 2 degrees or 4 degrees depending on the program you sign up for. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'SetBack', '')
-insert into YukonWebConfiguration values(19, 'Setback.gif,$Sm.gif,QuarterSm.gif,Tree1Sm.gif', 'When controlled, your air conditioning compressor will be set back two degrees. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', '2&deg', '')
-insert into YukonWebConfiguration values(20, 'Setback.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'When controlled, your air conditioning compressor will be set back four degrees. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', '4&deg', '')
-insert into YukonWebConfiguration values(21,'Irrigation.gif','<b>IRRIGATION</b><br>Irrigation control.','Irrigation','')
-insert into YukonWebConfiguration values(22,'Irrigation.gif,IrrigationSm.gif','Irrigation control.','Irrigation','')
-
-
-
-/* energy company address */
-insert into Address values (100,'9000 6th Street','','Minneapolis','MN','55441','(none)')
-
-/* energy company contact */
-insert into Contact values (100,'(none)','(none)',-1,100)
-insert into ContactNotification values (101,100,2,'N','1-800-555-5432')
-insert into ContactNotification values (102,100,4,'N','1-800-555-5431')
-insert into ContactNotification values (103,100,1,'N','info@xyzutility.com')
-
-/* EnergyCompany */
-insert into EnergyCompany values (1,'Test Company',3,1,100)
-
-/* Create operator login */
-insert into YukonUser values (101,'op1','op1',0,'1970-01-01','Enabled')
-insert into YukonUserGroup values (101,-210)
-insert into energycompanyoperatorloginlist values(1,101)
-
-/* Create residential customer login */
-insert into YukonUser values (102,'thermostat','test',0,'1970-01-01','Enabled')
-insert into YukonUserGroup values (102,-211)
-
-/* Create a "super" web operator for some testing functions */
-insert into YukonUser values (100,'super','super',0,'1970-01-01','Enabled')
-insert into YukonUserGroup values (100,-210)
-insert into YukonRole values (-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(none)')
-insert into YukonUserRole values (100,-1000,'(none)')
-insert into energycompanyoperatorloginlist values(1,100)
-
+INSERT INTO ECToInventoryMapping VALUES (-1,-1)
 
 /* YukonSelectionList */
-insert into YukonSelectionList values (1001,'A','','Not visible, list defines the event ids','LMCustomerEvent','N')
-insert into YukonSelectionList values (1002,'A','','Not visible, defines possible event actions','LMCustomerAction','N')
-insert into YukonSelectionList values (1003,'A','','Not visible, defines inventory device category','InventoryCategory','N')
-insert into YukonSelectionList values (1004,'A','','Device voltage selection','DeviceVoltage','N')
-insert into YukonSelectionList values (1005,'A','','Device type selection','DeviceType','N')
-insert into YukonSelectionList values (1006,'N','','Hardware status selection', 'DeviceStatus','N')
-insert into YukonSelectionList values (1007,'A','','Appliance category','ApplianceCategory','N')
-insert into YukonSelectionList values (1008,'A','','Call type selection', 'CallType','N')
-insert into YukonSelectionList values (1009,'A','','Service type selection', 'ServiceType','N')
-insert into YukonSelectionList values (1010,'N','','Service request status', 'ServiceStatus','N')
-insert into YukonSelectionList values (1011,'N','','Search by selection', 'SearchBy','N')
-insert into YukonSelectionList values (1012,'A','','Appliance manufacturer selection', 'Manufacturer','N')
-insert into YukonSelectionList values (1013,'A','','Appliance location selection', 'ApplianceLocation','N')
-insert into YukonSelectionList values (1014,'N','','Chance of control selection', 'ChanceOfControl','N')
-insert into YukonSelectionList values (1015,'N','','Thermostat settings time of week selection', 'TimeOfWeek','N')
-insert into YukonSelectionList values (1016,'N','','Question type selection', 'QuestionType','N')
-insert into YukonSelectionList values (1017,'N','','Answer type selection', 'AnswerType','N')
-insert into YukonSelectionList values (1018,'N','','Thermostat mode selection', 'ThermostatMode','N')
-insert into YukonSelectionList values (1019,'N','','Thermostat fan state selection', 'ThermostatFanState','N')
+insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N')
+insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N')
+insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N')
+insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','N')
+insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','N')
+insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection', 'DeviceStatus','N')
+insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N')
+insert into YukonSelectionList values (1008,'A','(none)','Call type selection', 'CallType','N')
+insert into YukonSelectionList values (1009,'A','(none)','Service type selection', 'ServiceType','N')
+insert into YukonSelectionList values (1010,'N','(none)','Service request status', 'ServiceStatus','N')
+insert into YukonSelectionList values (1011,'N','(none)','Search by selection', 'SearchBy','N')
+insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection', 'Manufacturer','N')
+insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection', 'ApplianceLocation','N')
+insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection', 'ChanceOfControl','N')
+insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection', 'TimeOfWeek','N')
+insert into YukonSelectionList values (1016,'N','(none)','Question type selection', 'QuestionType','N')
+insert into YukonSelectionList values (1017,'N','(none)','Answer type selection', 'AnswerType','N')
+insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection', 'ThermostatMode','N')
+insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection', 'ThermostatFanState','N')
 insert into YukonSelectionList values (1020,'O','(none)','Customer FAQ groups', 'CustomerFAQGroup','N')
 insert into YukonSelectionList values (1021,'N','(none)','Residence type selection', 'ResidenceType','N')
 insert into YukonSelectionList values (1022,'N','(none)','Construction material selection', 'ConstructionMaterial','N')
@@ -132,7 +70,23 @@ insert into YukonSelectionList values (1028,'N','(none)','Main heating system se
 insert into YukonSelectionList values (1029,'N','(none)','Number of occupants selection', 'NumberOfOccupants','N')
 insert into YukonSelectionList values (1030,'N','(none)','Ownership type selection', 'OwnershipType','N')
 insert into YukonSelectionList values (1031,'N','(none)','Main fuel type selection', 'FuelType','N')
-
+insert into YukonSelectionList values (1032,'N','(none)','Tonnage selection', 'Tonnage','N')
+insert into YukonSelectionList values (1033,'N','(none)','AC type selection', 'ACType','N')
+insert into YukonSelectionList values (1034,'N','(none)','Number of gallons selection', 'NumberOfGallons','N')
+insert into YukonSelectionList values (1035,'N','(none)','Energy source selection', 'EnergySource','N')
+insert into YukonSelectionList values (1036,'N','(none)','Switch over type selection', 'SwitchOverType','N')
+insert into YukonSelectionList values (1037,'N','(none)','Transfer switch type selection', 'TransferSwitchType','N')
+insert into YukonSelectionList values (1038,'N','(none)','Transfer switch manufacturer selection', 'TransferSwitchMfg','N')
+insert into YukonSelectionList values (1039,'N','(none)','Dryer type selection', 'DryerType','N')
+insert into YukonSelectionList values (1040,'N','(none)','Bin size selection', 'BinSize','N')
+insert into YukonSelectionList values (1041,'N','(none)','Horse power selection', 'HorsePower','N')
+insert into YukonSelectionList values (1042,'N','(none)','Heat source selection', 'HeatSource','N')
+insert into YukonSelectionList values (1043,'N','(none)','Storage type selection', 'StorageType','N')
+insert into YukonSelectionList values (1044,'N','(none)','Pump type selection', 'PumpType','N')
+insert into YukonSelectionList values (1045,'N','(none)','Standby source selection', 'StandbySource','N')
+insert into YukonSelectionList values (1046,'N','(none)','Irrigation type selection', 'IrrigationType','N')
+insert into YukonSelectionList values (1047,'N','(none)','Soil type selection', 'SoilType','N')
+insert into YukonSelectionList values (1048,'N','(none)','Device location selection', 'DeviceLocation','N')
 
 /* YukonListEntry */
 insert into YukonListEntry values (1001,1001,0,'Program',1001)
@@ -241,6 +195,154 @@ insert into YukonListEntry values (1103,1029,0,'9+',0)
 insert into YukonListEntry values (1104,1030,0,'Own',0)
 insert into YukonListEntry values (1105,1030,0,'Rent',0)
 
+/* ECToGenericMapping */
+insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1002, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1003, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1004, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1005, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1006, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1007, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1008, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1009, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1010, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1011, 'YukonSelectionList')
+insert into ectogenericmapping values (-1, 1012, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1013, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1014, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1015, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1016, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1017, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1018, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1019, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1020, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1021, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1022, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1023, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1024, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1025, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1026, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1027, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1028, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1029, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1030, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1031, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1032, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1033, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1034, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1035, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1036, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1037, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1038, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1039, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1040, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1041, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1042, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1043, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1044, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList')
+insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList')
+
+/* Thermostat tables */
+/* LMThermostatSeason */
+INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00',1)
+INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00',2)
+
+/* LMThermostatSeasonEntry */
+INSERT INTO LMThermostatSeasonEntry VALUES (1,-1,1046,21600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (2,-1,1046,30600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (3,-1,1046,61200,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (4,-1,1046,75600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (5,-1,1048,21600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (6,-1,1048,30600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (7,-1,1048,61200,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (8,-1,1048,75600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (9,-1,1049,21600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (10,-1,1049,30600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (11,-1,1049,61200,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (12,-1,1049,75600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (13,-2,1046,21600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (14,-2,1046,30600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (15,-2,1046,61200,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (16,-2,1046,75600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (17,-2,1048,21600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (18,-2,1048,30600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (19,-2,1048,61200,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (20,-2,1048,75600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (21,-2,1049,21600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (22,-2,1049,30600,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (23,-2,1049,61200,72)
+INSERT INTO LMThermostatSeasonEntry VALUES (24,-2,1049,75600,72)
+
+/* LMThermostatManualEvent */
+INSERT INTO LMCustomerEventBase VALUES (-1,1064,1066,'01-JAN-70','','')
+INSERT INTO LMThermostatManualEvent VALUES (-1,-1,72,'N',1054,1058)
+INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1)
+
+
+
+/* YukonWebConfiguration */
+insert into YukonWebConfiguration values (1,'','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','XYZ Utility','')
+insert into YukonWebConfiguration values(
+2, 'AC.gif', '<b>CYCLE AC<br> Light, Medium</b> - When controlled, your air conditioning compressor will be interrupted for 10 minutes out of every half hour if you sign up for the light program and interrupted for 15 minutes out of every half hour if you sign up for the medium program.', 'Cycle AC', '')
+insert into YukonWebConfiguration values(
+3, 'WaterHeater.gif', '<b>WATER HEATER<br>4 Hour, 8 Hour</b> - When controlled, power to your water heater''s heating elements is turned off for up to 4 hours or 8 hours depending on the program you choose. The hot water in the tank will still be available for you to use.<br><br>  <b>ETS</b> - Your Electric Thermal Storage water heater''s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The hot water stored in the tank will supply your hot water needs.', 'Water Heater', '')
+insert into YukonWebConfiguration values(
+4, 'DualFuel.gif', '<b>DUAL FUEL <br> Limited 4 Hour, Unlimited</b> - When controlled, electric power to your home''s heating system will be switched off, and your non-electric heat source will provide for your home''s heating needs. Control is limited to four hours consecutively when signed up for the limited program. While usually limited to a few hours, control could be for an extended period if signed up for the unlimited program.', 'Dual Fuel Space Heater', '')
+insert into YukonWebConfiguration values(
+5, 'Electric.gif', '<b>ETS</b><br>Your Electric Thermal Storage heating system''s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The heat stored will supply your home needs.', 'ETS', '')
+insert into YukonWebConfiguration values(
+6, 'Pool.gif', '<b>POOL PUMP</b><br>When controlled, power to your pool pump is interrupted. Interruptions usually last for 4 hours or less.', 'Pool Pump', '')
+insert into YukonWebConfiguration values(
+7, 'HotTub.gif', '<b>HOT TUB</b><br>When controlled, power to your hot tub''s water heating elements are interrupted. Interruptions usually last for four hours or less.', 'Hot Tub', '')
+insert into YukonWebConfiguration values(8, 'AC.gif,ACSm.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'When controlled, your air conditioning compressor will be interrupted for 15 minutes out of every half hour. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'Medium', '')
+insert into YukonWebConfiguration values(9, 'AC.gif,ACSm.gif,$$Sm.gif,ThirdSm.gif,Tree2Sm.gif', 'When controlled, your air conditioning compressor will be interrupted for ten minutes out of every half hour. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'Light', '')
+insert into YukonWebConfiguration values(10, 'WaterHeater.gif,WaterSm.gif,$$Sm.gif,ThirdSm.gif,Tree2Sm.gif', 'When controlled, power to your water heater''s heating elements is turned off for up to eight hours. The hot water in the tank will still be available for you use.', '8 Hour', '')
+insert into YukonWebConfiguration values(11, 'WaterHeater.gif,WaterSm.gif,$$Sm.gif,SixthSm.gif,Tree2Sm.gif', 'When controlled, power to your water heater''s heating elements is turned off for up to four hours. The hot water in the tank will still be available for you use.', '4 Hour', '')
+insert into YukonWebConfiguration values(12, 'WaterHeater.gif,WaterSm.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'Your Electric Thermal Storage water heater''s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The hot water stored in the tank will supply your hot water needs.', 'ETS', '')
+insert into YukonWebConfiguration values(13, 'DualFuel.gif,DualFuelSm.gif,$$Sm.gif,SixthSm.gif,Tree2Sm.gif', 'When controlled, electric power to your home’s heating system will be switched off, and your non-electric heat source will provide for your home''s heating needs. Control is limited to four hours consecutively. ', 'Limited 4 Hour', '')
+insert into YukonWebConfiguration values(14, 'DualFuel.gif,DualFuelSm.gif,$$$Sm.gif,ThirdSm.gif,Tree3Sm.gif', 'When controlled, electric power to your home’s heating system will be switched off, and your non-electric heat source will provide for your home''s heating needs. While usually limited to a few hours, control could be for an extended period. ', 'Unlimited', '')
+insert into YukonWebConfiguration values(15, 'Electric.gif,ElectricSm.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'Your Electric Thermal Storage heating system’s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The heat stored will supply your home needs.', 'ETS', '')
+insert into YukonWebConfiguration values(16, 'Pool.gif,PoolPumpSm.gif,$Sm.gif,SixthSm.gif,Tree1Sm.gif', 'When controlled, power to your pool pump is interrupted. Interruptions usually last for 4 hours or less.', '', '')
+insert into YukonWebConfiguration values(17, 'HotTub.gif,HotTubSm.gif,$Sm.gif,SixthSm.gif,Tree1Sm.gif', '', '', '')
+insert into YukonWebConfiguration values(
+18, 'Setback.gif', '<b>SETBACK <br>2&deg, 4&deg</b> - When controlled, your air conditioning compressor will be set back 2 degrees or 4 degrees depending on the program you sign up for. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'SetBack', '')
+insert into YukonWebConfiguration values(19, 'Setback.gif,$Sm.gif,QuarterSm.gif,Tree1Sm.gif', 'When controlled, your air conditioning compressor will be set back two degrees. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', '2&deg', '')
+insert into YukonWebConfiguration values(20, 'Setback.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'When controlled, your air conditioning compressor will be set back four degrees. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', '4&deg', '')
+insert into YukonWebConfiguration values(21,'Irrigation.gif','<b>IRRIGATION</b><br>Irrigation control.','Irrigation','')
+insert into YukonWebConfiguration values(22,'Irrigation.gif,IrrigationSm.gif','Irrigation control.','Irrigation','')
+
+
+
+/* energy company address */
+insert into Address values (100,'9000 6th Street','','Minneapolis','MN','55441','(none)')
+
+/* energy company contact */
+insert into Contact values (100,'(none)','(none)',-1,100)
+insert into ContactNotification values (101,100,2,'N','1-800-555-5432')
+insert into ContactNotification values (102,100,4,'N','1-800-555-5431')
+insert into ContactNotification values (103,100,1,'N','info@xyzutility.com')
+
+/* EnergyCompany */
+insert into EnergyCompany values (1,'Test Company',3,1,100)
+
+/* Create operator login */
+insert into YukonUser values (101,'op1','op1',0,'1970-01-01','Enabled')
+insert into YukonUserGroup values (101,-210)
+insert into energycompanyoperatorloginlist values(1,101)
+
+/* Create residential customer login */
+insert into YukonUser values (102,'thermostat','test',0,'1970-01-01','Enabled')
+insert into YukonUserGroup values (102,-211)
+
+/* Create a "super" web operator for some testing functions */
+insert into YukonUser values (100,'super','super',0,'1970-01-01','Enabled')
+insert into YukonUserGroup values (100,-210)
+insert into YukonRole values (-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(none)')
+insert into YukonUserRole values (100,-1000,'(none)')
+insert into energycompanyoperatorloginlist values(1,100)
 
 
 /* service company contacts */
@@ -279,7 +381,6 @@ insert into AccountSite values (1,1,'NE0095',101,'')
 insert into CustomerAccount values (1,1,'12345',101,101,'Fenced in yard, call',102)	/* login id set here! */
 
 /* inventory base */
-INSERT INTO InventoryBase VALUES (-1,0,0,0,'01-JAN-70','01-JAN-70','01-JAN-70','(none)',0,'Default Thermostat',0)
 insert into InventoryBase values (1,1,1,1011,'18-May-02','01-Jun-02','1970-01-01 00:00:00.000','',1012,'',0)
 insert into InventoryBase values (2,1,1,1011,'18-May-02','01-Jun-02','1970-01-01 00:00:00.000','',1012,'Thermostat',0)
 
@@ -299,6 +400,12 @@ insert into ApplianceCategory values (7, 'Irrigation', 1069, 21)
 /* appliance base */
 insert into ApplianceBase values (1,1,1,5,'2000',1039,1043,0,0,'')
 insert into ApplianceBase values (2,1,2,8,'2000',1040,1042,0,0,'')
+
+/* appliance air conditioner */
+insert into ApplianceAirConditioner values (1,0,0)
+
+/* appliance water heater */
+insert into ApplianceWaterHeater values (2,0,0,0)
 
 /* lm hardware configuration */
 insert into LMHardwareConfiguration values (1,1,4)
@@ -335,42 +442,10 @@ insert into CustomerFAQ values(7,1063,'How much credit do I receive if I opt out
 INSERT INTO ECToAccountMapping VALUES (1, 1)
 
 /* ECToInventoryMapping */
-INSERT INTO ECToInventoryMapping VALUES (1,-1)
 INSERT INTO ECToInventoryMapping VALUES (1, 1)
 INSERT INTO ECToInventoryMapping VALUES (1, 2)
 
 /* ECToGenericMapping */
-insert into ectogenericmapping values (1, 1001, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1002, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1003, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1004, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1005, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1006, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1007, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1008, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1009, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1010, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1011, 'YukonSelectionList')
-insert into ectogenericmapping values (1, 1012, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1013, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1014, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1015, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1016, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1017, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1018, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1019, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1020, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1021, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1022, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1023, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1024, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1025, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1026, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1027, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1028, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1029, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1030, 'YukonSelectionList')
-insert into ECToGenericMapping values (1, 1031, 'YukonSelectionList')
 insert into ECToGenericMapping values (1, 5, 'LMPrograms')
 insert into ECToGenericMapping values (1, 6, 'LMPrograms')
 insert into ECToGenericMapping values (1, 7, 'LMPrograms')
@@ -399,38 +474,3 @@ INSERT INTO ECToGenericMapping VALUES (1, 6, 'CustomerFAQ')
 INSERT INTO ECToGenericMapping VALUES (1, 7, 'CustomerFAQ')
 
 
-/* Thermostat tables */
-/* LMThermostatSeason */
-INSERT INTO LMThermostatSeason VALUES (1,-1,-1,'01-JUN-00',1)
-INSERT INTO LMThermostatSeason VALUES (2,-1,-2,'15-OCT-00',2)
-
-/* LMThermostatSeasonEntry */
-INSERT INTO LMThermostatSeasonEntry VALUES (1,1,1046,21600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (2,1,1046,30600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (3,1,1046,61200,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (4,1,1046,75600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (5,1,1048,21600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (6,1,1048,30600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (7,1,1048,61200,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (8,1,1048,75600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (9,1,1049,21600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (10,1,1049,30600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (11,1,1049,61200,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (12,1,1049,75600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (13,2,1046,21600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (14,2,1046,30600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (15,2,1046,61200,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (16,2,1046,75600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (17,2,1048,21600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (18,2,1048,30600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (19,2,1048,61200,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (20,2,1048,75600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (21,2,1049,21600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (22,2,1049,30600,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (23,2,1049,61200,72)
-INSERT INTO LMThermostatSeasonEntry VALUES (24,2,1049,75600,72)
-
-/* LMThermostatManualEvent */
-INSERT INTO LMCustomerEventBase VALUES (-1,1064,1066,'01-JAN-70','','')
-INSERT INTO LMThermostatManualEvent VALUES (-1,-1,72,'N',1054,1058)
-INSERT INTO ECToLMCustomerEventMapping VALUES (-1,-1)

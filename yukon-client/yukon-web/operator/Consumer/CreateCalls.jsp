@@ -142,7 +142,7 @@ function checkCallNo(form) {
                           <td width="50%"> 
                             <select name="CallType">
 <%
-	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
+	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(i);
 %>

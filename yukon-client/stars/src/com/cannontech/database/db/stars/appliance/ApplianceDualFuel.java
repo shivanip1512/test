@@ -16,7 +16,7 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceDualFuel extends DBPersistent {
 	
 	private Integer applianceID = null;
-	private Integer swithOverTypeID = new Integer( CtiUtilities.NONE_ID );
+	private Integer switchOverTypeID = new Integer( CtiUtilities.NONE_ID );
 	private Integer secondaryKWCapacity = new Integer(0);
 	private Integer secondaryEnergySourceID = new Integer( CtiUtilities.NONE_ID );
 	
@@ -37,7 +37,7 @@ public class ApplianceDualFuel extends DBPersistent {
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = {
-			getApplianceID(), getSwithOverTypeID(), getSecondaryKWCapacity(), getSecondaryEnergySourceID()
+			getApplianceID(), getSwitchOverTypeID(), getSecondaryKWCapacity(), getSecondaryEnergySourceID()
 		};
 		
 		add( TABLE_NAME, addValues );
@@ -61,7 +61,7 @@ public class ApplianceDualFuel extends DBPersistent {
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setSwithOverTypeID( (Integer) results[0] );
+			setSwitchOverTypeID( (Integer) results[0] );
 			setSecondaryKWCapacity( (Integer) results[1] );
 			setSecondaryEnergySourceID( (Integer) results[2] );
 		}
@@ -74,13 +74,39 @@ public class ApplianceDualFuel extends DBPersistent {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = {
-			getSwithOverTypeID(), getSecondaryKWCapacity(), getSecondaryEnergySourceID()
+			getSwitchOverTypeID(), getSecondaryKWCapacity(), getSecondaryEnergySourceID()
 		};
 		Object[] constraintValues = { getApplianceID() };
 		
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 		
 	}
+    
+    public static ApplianceDualFuel getApplianceDualFuel(Integer appID) {
+    	String sql = "SELECT ApplianceID, SwitchOverTypeID, SecondaryKWCapacity, SecondaryEnergySourceID " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceDualFuel app = new ApplianceDualFuel();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setSwitchOverTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setSecondaryKWCapacity( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		app.setSecondaryEnergySourceID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the applianceID.
@@ -110,8 +136,8 @@ public class ApplianceDualFuel extends DBPersistent {
 	 * Returns the swithOverTypeID.
 	 * @return Integer
 	 */
-	public Integer getSwithOverTypeID() {
-		return swithOverTypeID;
+	public Integer getSwitchOverTypeID() {
+		return switchOverTypeID;
 	}
 
 	/**
@@ -142,8 +168,8 @@ public class ApplianceDualFuel extends DBPersistent {
 	 * Sets the swithOverTypeID.
 	 * @param swithOverTypeID The swithOverTypeID to set
 	 */
-	public void setSwithOverTypeID(Integer swithOverTypeID) {
-		this.swithOverTypeID = swithOverTypeID;
+	public void setSwitchOverTypeID(Integer switchOverTypeID) {
+		this.switchOverTypeID = switchOverTypeID;
 	}
 
 }

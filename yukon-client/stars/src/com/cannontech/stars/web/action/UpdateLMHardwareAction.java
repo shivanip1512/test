@@ -204,24 +204,6 @@ public class UpdateLMHardwareAction implements ActionBase {
             StarsUpdateLMHardwareResponse resp = new StarsUpdateLMHardwareResponse();
             resp.setStarsLMHardware( StarsLiteFactory.createStarsLMHardware(liteHw, energyCompanyID) );
             
-            boolean newServiceCompany = true;
-            if (liteAcctInfo.getServiceCompanies() == null)
-            	liteAcctInfo.setServiceCompanies( new ArrayList() );
-            for (int i = 0; i < liteAcctInfo.getServiceCompanies().size(); i++) {
-            	int companyID = ((Integer) liteAcctInfo.getServiceCompanies().get(i)).intValue();
-            	if (liteHw.getInstallationCompanyID() == companyID) {
-            		newServiceCompany = false;
-            		break;
-            	}
-            }
-            
-            if (newServiceCompany) {
-            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteHw.getInstallationCompanyID() );
-            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
-            	resp.setStarsServiceCompany( starsCompany );
-            	ServerUtils.updateServiceCompanies( liteAcctInfo, energyCompanyID );
-            }
-            
             respOper.setStarsUpdateLMHardwareResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -271,10 +253,6 @@ public class UpdateLMHardwareAction implements ActionBase {
 					break;
 				}
 			}
-			
-			StarsServiceCompany company = resp.getStarsServiceCompany();
-			if (company != null)
-				accountInfo.getStarsServiceCompanies().addStarsServiceCompany( company );
 			
             return 0;
         }

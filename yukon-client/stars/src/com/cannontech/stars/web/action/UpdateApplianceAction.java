@@ -58,7 +58,7 @@ public class UpdateApplianceAction implements ActionBase {
 			
 			Location loc = (Location) StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
-						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_LOCATION, Integer.parseInt(req.getParameter("Location"))),
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION, Integer.parseInt(req.getParameter("Location"))),
 					Location.class );
 			updateApp.setLocation( loc );
 			

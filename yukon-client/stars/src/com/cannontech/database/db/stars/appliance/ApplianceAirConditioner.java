@@ -16,7 +16,7 @@ import com.cannontech.database.db.DBPersistent;
 public class ApplianceAirConditioner extends DBPersistent {
 
     private Integer applianceID = null;
-    private Integer tonageID = new Integer( CtiUtilities.NONE_ID );
+    private Integer tonnageID = new Integer( CtiUtilities.NONE_ID );
     private Integer typeID = new Integer( CtiUtilities.NONE_ID );
 
     public static final String[] SETTER_COLUMNS = {
@@ -39,7 +39,7 @@ public class ApplianceAirConditioner extends DBPersistent {
 
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
-            getApplianceID(), getTonageID(), getTypeID()
+            getApplianceID(), getTonnageID(), getTypeID()
         };
 
         add( TABLE_NAME, addValues );
@@ -47,7 +47,7 @@ public class ApplianceAirConditioner extends DBPersistent {
 
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getTonageID(), getTypeID()
+            getTonnageID(), getTypeID()
         };
 
         Object[] constraintValues = { getApplianceID() };
@@ -61,11 +61,36 @@ public class ApplianceAirConditioner extends DBPersistent {
         Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
         if (results.length == SETTER_COLUMNS.length) {
-            setTonageID( (Integer) results[0] );
+            setTonnageID( (Integer) results[0] );
             setTypeID( (Integer) results[1] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
+    }
+    
+    public static ApplianceAirConditioner getApplianceAirConditioner(Integer appID) {
+    	String sql = "SELECT ApplianceID, TonnageID, TypeID " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceAirConditioner app = new ApplianceAirConditioner();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setTonnageID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setTypeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
     }
 
     public Integer getApplianceID() {
@@ -79,8 +104,8 @@ public class ApplianceAirConditioner extends DBPersistent {
 	 * Returns the tonageID.
 	 * @return Integer
 	 */
-	public Integer getTonageID() {
-		return tonageID;
+	public Integer getTonnageID() {
+		return tonnageID;
 	}
 
 	/**
@@ -95,8 +120,8 @@ public class ApplianceAirConditioner extends DBPersistent {
 	 * Sets the tonageID.
 	 * @param tonageID The tonageID to set
 	 */
-	public void setTonageID(Integer tonageID) {
-		this.tonageID = tonageID;
+	public void setTonnageID(Integer tonnageID) {
+		this.tonnageID = tonnageID;
 	}
 
 	/**

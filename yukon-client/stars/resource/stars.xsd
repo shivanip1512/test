@@ -120,6 +120,86 @@
 			<xs:element name="ServiceCompany" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="Notes" type="xs:string"/>
 			<xs:element name="ModelNumber" type="xs:string"/>
+			<xs:element name="KWCapacity" type="xs:int"/>
+			<xs:element name="EfficiencyRating" type="xs:int"/>
+			<xs:element name="AirConditioner" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Tonnage" type="stars-CustListEntry"/>
+						<xs:element name="Type" type="stars-CustListEntry"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="WaterHeater" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="NumberOfGallons" type="stars-CustListEntry"/>
+						<xs:element name="EnergySource" type="stars-CustListEntry"/>
+						<xs:element name="NumberOfElements" type="xs:int"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DualFuel" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SwitchOverType" type="stars-CustListEntry"/>
+						<xs:element name="SecondaryKWCapacity" type="xs:int"/>
+						<xs:element name="SecondaryEnergySource" type="stars-CustListEntry"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Generator" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TransferSwitchType" type="stars-CustListEntry"/>
+						<xs:element name="TransferSwitchManufacturer" type="stars-CustListEntry"/>
+						<xs:element name="PeakKWCapacity" type="xs:int"/>
+						<xs:element name="FuelCapGallons" type="xs:int"/>
+						<xs:element name="StartDelaySeconds" type="xs:int"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GrainDryer" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DryerType" type="stars-CustListEntry"/>
+						<xs:element name="BinSize" type="stars-CustListEntry"/>
+						<xs:element name="BlowerEnergySource" type="stars-CustListEntry"/>
+						<xs:element name="BlowerHorsePower" type="stars-CustListEntry"/>
+						<xs:element name="BlowerHeatSource" type="stars-CustListEntry"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="StorageHeat" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="StorageType" type="stars-CustListEntry"/>
+						<xs:element name="PeakKWCapacity" type="xs:int"/>
+						<xs:element name="HoursToRecharge" type="xs:int"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="HeatPump" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PumpType" type="stars-CustListEntry"/>
+						<xs:element name="StandbySource" type="stars-CustListEntry"/>
+						<xs:element name="RestartDelaySeconds" type="xs:int"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Irrigation" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="IrrigationType" type="stars-CustListEntry"/>
+						<xs:element name="HorsePower" type="stars-CustListEntry"/>
+						<xs:element name="EnergySource" type="stars-CustListEntry"/>
+						<xs:element name="SoilType" type="stars-CustListEntry"/>
+						<xs:element name="MeterLocation" type="stars-CustListEntry"/>
+						<xs:element name="MeterVoltage" type="stars-CustListEntry"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="applianceID" type="xs:int"/>
 		<xs:attribute name="applianceCategoryID" type="xs:int"/>
@@ -270,13 +350,9 @@
 				<xs:element ref="stars-CreateServiceRequest" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequestResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateServiceRequest" minOccurs="0"/>
-				<xs:element ref="stars-UpdateServiceRequestResponse" minOccurs="0"/>
+				
 				<xs:element ref="stars-GetServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-GetServiceRequestHistoryResponse" minOccurs="0"/>
-
-
-
-
 				<xs:element ref="stars-CreateAppliance" minOccurs="0"/>
 				<xs:element ref="stars-CreateApplianceResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateAppliance" minOccurs="0"/>
@@ -302,7 +378,8 @@
 				<xs:element ref="stars-GetEnergyCompanySettingsResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateControlNotification" minOccurs="0"/>
 				<xs:element ref="stars-SendOddsForControl" minOccurs="0"/>
-			<xs:element ref="stars-UpdateResidenceInformation" minOccurs="0"/></xs:all>
+				<xs:element ref="stars-UpdateResidenceInformation" minOccurs="0"/>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-SULMPrograms">
@@ -391,10 +468,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-CustomerAccount"/>
-				<xs:element type="stars-Residence" minOccurs="0" ref="stars-ResidenceInformation"/><xs:element ref="stars-LMPrograms"/>
+				<xs:element ref="stars-ResidenceInformation" minOccurs="0"/>
+				<xs:element ref="stars-LMPrograms"/>
 				<xs:element ref="stars-Appliances" minOccurs="0"/>
 				<xs:element ref="stars-Inventories" minOccurs="0"/>
-				<xs:element ref="stars-ServiceCompanies" minOccurs="0"/>
 				<xs:element ref="stars-CallReportHistory" minOccurs="0"/>
 				<xs:element ref="stars-ServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-ThermostatSettings" minOccurs="0" maxOccurs="1"/>
@@ -673,7 +750,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-ServiceRequest"/>
-				<xs:element ref="stars-ServiceCompany" minOccurs="0"/>
+				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -684,20 +761,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-UpdateServiceRequestResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ServiceCompany" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-ServiceRequestHistory">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ServiceRequest" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="stars-ServiceRequestHistory"><xs:complexType><xs:sequence><xs:element ref="stars-ServiceRequest" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
 	<xs:element name="stars-GetServiceRequestHistory">
 		<xs:complexType>
 			<xs:simpleContent>
@@ -817,7 +881,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMHardware"/>
-				<xs:element ref="stars-ServiceCompany" minOccurs="0"/>
+				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -826,7 +890,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMHardware"/>
-				<xs:element ref="stars-ServiceCompany" minOccurs="0"/>
+				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1054,7 +1118,7 @@
 				<xs:element ref="stars-EnrollmentPrograms" minOccurs="0"/>
 				<xs:element ref="stars-CustomerSelectionLists" minOccurs="0"/>
 				<xs:element ref="stars-CustomerFAQs" minOccurs="0"/>
-			</xs:sequence>
+			<xs:element ref="stars-ServiceCompanies" minOccurs="0"/></xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateControlNotification">

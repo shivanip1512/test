@@ -11,17 +11,23 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.NodeType;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateServiceRequestResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class NumberOfGallonsDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -41,53 +47,18 @@ public class StarsUpdateServiceRequestResponseDescriptor extends org.exolab.cast
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateServiceRequestResponseDescriptor() {
+    public NumberOfGallonsDescriptor() {
         super();
-        xmlName = "stars-UpdateServiceRequestResponse";
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
+        xmlName = "NumberOfGallons";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _starsServiceCompanyList
-        desc = new XMLFieldDescriptorImpl(StarsServiceCompany.class, "_starsServiceCompanyList", "stars-ServiceCompany", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsUpdateServiceRequestResponse target = (StarsUpdateServiceRequestResponse) object;
-                return target.getStarsServiceCompany();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsUpdateServiceRequestResponse target = (StarsUpdateServiceRequestResponse) object;
-                    target.addStarsServiceCompany( (StarsServiceCompany) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsServiceCompany();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsServiceCompanyList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponseDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.NumberOfGallonsDescriptor()
 
 
       //-----------/
@@ -105,13 +76,15 @@ public class StarsUpdateServiceRequestResponseDescriptor extends org.exolab.cast
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -119,7 +92,7 @@ public class StarsUpdateServiceRequestResponseDescriptor extends org.exolab.cast
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse.class;
+        return com.cannontech.stars.xml.serialize.NumberOfGallons.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -2,6 +2,7 @@ package com.cannontech.stars.xml;
 
 import java.util.Vector;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListFuncs;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -50,6 +51,22 @@ public class StarsFactory {
 			StarsCustListEntry newEntry = (StarsCustListEntry) type.newInstance();
 			newEntry.setEntryID( entry.getEntryID() );
 			newEntry.setContent( entry.getContent() );
+			//newEntry.setYukonDefID( entry.getYukonDefID() );
+			
+			return newEntry;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static StarsCustListEntry newStarsCustListEntry(YukonListEntry entry, Class type) {
+		try {
+			StarsCustListEntry newEntry = (StarsCustListEntry) type.newInstance();
+			newEntry.setEntryID( entry.getEntryID() );
+			newEntry.setContent( entry.getEntryText() );
 			//newEntry.setYukonDefID( entry.getYukonDefID() );
 			
 			return newEntry;

@@ -285,7 +285,6 @@ public class NewCustAccountAction implements ActionBase {
 			accountInfo.setStarsLMPrograms( new StarsLMPrograms() );
 			accountInfo.setStarsAppliances( new StarsAppliances() );
 			accountInfo.setStarsInventories( new StarsInventories() );
-			accountInfo.setStarsServiceCompanies( new StarsServiceCompanies() );
 			accountInfo.setStarsCallReportHistory( new StarsCallReportHistory() );
 			accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
 			

@@ -80,7 +80,7 @@
                                 <td width="200"> 
                                   <select name="DeviceType">
                               <%
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 %>
@@ -130,7 +130,7 @@
                                 <td width="200"> 
 								  <select name="Voltage">
                               <%
-	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
+	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
 %>
@@ -148,7 +148,7 @@
                                 <td width="200"> 
                                   <select name="Status">
                               <%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
+	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
 %>
@@ -192,13 +192,12 @@
                                 </td>
                                 <td width="200"> 
                                   <select name="ServiceCompany">
-                              <%
-	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
+<%
+	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
-                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+                              		<option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+<%
 	}
 %>
                                   </select>
@@ -210,7 +209,15 @@
                                 </td>
                                 <td width="200"> 
                                   <select name="Location">
-                                    <option>Outside North</option>
+<%
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION );
+	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
+%>
+                              		<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                                   </select>
                                 </td>
                               </tr>

@@ -197,10 +197,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		getAllWebConfigurations();
     	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
     	if (companies != null) {
-	    	for (int i = 0; i < companies.length; i++) {
-	    		if (companies[i].getEnergyCompanyID().intValue() < 0) continue;	// Don't initialize the default company now
+	    	for (int i = 0; i < companies.length; i++)
 	    		companies[i].init();
-	    	}
     	}
     	
     	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
@@ -319,6 +317,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	}
     	
     	return null;
+    }
+    
+    public static LiteStarsEnergyCompany getDefaultEnergyCompany() {
+    	return getEnergyCompany( DEFAULT_ENERGY_COMPANY_ID );
     }
 	
 	public static LiteWebConfiguration getWebConfiguration(int configID) {

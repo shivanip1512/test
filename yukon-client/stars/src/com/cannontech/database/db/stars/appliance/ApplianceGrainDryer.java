@@ -86,6 +86,34 @@ public class ApplianceGrainDryer extends DBPersistent {
 		
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
+    
+    public static ApplianceGrainDryer getApplianceGrainDryer(Integer appID) {
+    	String sql = "SELECT ApplianceID, DryerTypeID, BinSizeID, BlowerEnergySourceID, BlowerHorsePowerID, BlowerHeatSourceID " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceGrainDryer app = new ApplianceGrainDryer();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setDryerTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setBinSizeID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		app.setBlowerEnergySourceID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		app.setBlowerHorsePowerID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+    		app.setBlowerHeatSourceID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the applianceID.

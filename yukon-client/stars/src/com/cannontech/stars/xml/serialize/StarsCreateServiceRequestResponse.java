@@ -11,8 +11,14 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
@@ -28,8 +34,6 @@ public class StarsCreateServiceRequestResponse implements java.io.Serializable {
 
     private StarsServiceRequest _starsServiceRequest;
 
-    private StarsServiceCompany _starsServiceCompany;
-
 
       //----------------/
      //- Constructors -/
@@ -43,16 +47,6 @@ public class StarsCreateServiceRequestResponse implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'starsServiceCompany'.
-     * 
-     * @return the value of field 'starsServiceCompany'.
-    **/
-    public StarsServiceCompany getStarsServiceCompany()
-    {
-        return this._starsServiceCompany;
-    } //-- StarsServiceCompany getStarsServiceCompany() 
 
     /**
      * Returns the value of field 'starsServiceRequest'.
@@ -100,17 +94,6 @@ public class StarsCreateServiceRequestResponse implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'starsServiceCompany'.
-     * 
-     * @param starsServiceCompany the value of field
-     * 'starsServiceCompany'.
-    **/
-    public void setStarsServiceCompany(StarsServiceCompany starsServiceCompany)
-    {
-        this._starsServiceCompany = starsServiceCompany;
-    } //-- void setStarsServiceCompany(StarsServiceCompany) 
 
     /**
      * Sets the value of field 'starsServiceRequest'.

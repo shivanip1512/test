@@ -116,7 +116,7 @@ function checkOrderNumber(form) {
                           <td width="210"> 
                             <select name="ServiceType">
                               <%
-	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
+	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
 %>
@@ -133,13 +133,12 @@ function checkOrderNumber(form) {
                           </td>
                           <td width="210"> 
                             <select name="ServiceCompany">
-                              <%
-	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
+<%
+	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+                              <option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+<%
 	}
 %>
                             </select>

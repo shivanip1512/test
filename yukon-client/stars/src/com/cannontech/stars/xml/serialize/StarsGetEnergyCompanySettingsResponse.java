@@ -11,8 +11,14 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
@@ -35,6 +41,8 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     private StarsCustomerSelectionLists _starsCustomerSelectionLists;
 
     private StarsCustomerFAQs _starsCustomerFAQs;
+
+    private StarsServiceCompanies _starsServiceCompanies;
 
 
       //----------------/
@@ -89,6 +97,16 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     {
         return this._starsEnrollmentPrograms;
     } //-- StarsEnrollmentPrograms getStarsEnrollmentPrograms() 
+
+    /**
+     * Returns the value of field 'starsServiceCompanies'.
+     * 
+     * @return the value of field 'starsServiceCompanies'.
+    **/
+    public StarsServiceCompanies getStarsServiceCompanies()
+    {
+        return this._starsServiceCompanies;
+    } //-- StarsServiceCompanies getStarsServiceCompanies() 
 
     /**
      * Returns the value of field 'starsWebConfig'.
@@ -180,6 +198,17 @@ public class StarsGetEnergyCompanySettingsResponse implements java.io.Serializab
     {
         this._starsEnrollmentPrograms = starsEnrollmentPrograms;
     } //-- void setStarsEnrollmentPrograms(StarsEnrollmentPrograms) 
+
+    /**
+     * Sets the value of field 'starsServiceCompanies'.
+     * 
+     * @param starsServiceCompanies the value of field
+     * 'starsServiceCompanies'.
+    **/
+    public void setStarsServiceCompanies(StarsServiceCompanies starsServiceCompanies)
+    {
+        this._starsServiceCompanies = starsServiceCompanies;
+    } //-- void setStarsServiceCompanies(StarsServiceCompanies) 
 
     /**
      * Sets the value of field 'starsWebConfig'.

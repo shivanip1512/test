@@ -108,7 +108,7 @@ function checkCallNo(form) {
                     <td class="TableCell" width="69">
 					  <select name="CallType" onchange="setChanged(this.form, <%= i %>)">
 <%
-	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
+	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int j = 0; j < callTypeList.getStarsSelectionListEntryCount(); j++) {
 		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(j);
 		String selectedStr = (call.getCallType().getEntryID() == entry.getEntryID()) ? "selected" : "";

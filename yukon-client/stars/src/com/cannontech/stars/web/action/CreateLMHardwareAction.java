@@ -238,24 +238,6 @@ public class CreateLMHardwareAction implements ActionBase {
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );
             
-            boolean newServiceCompany = true;
-            if (liteAcctInfo.getServiceCompanies() == null)
-            	liteAcctInfo.setServiceCompanies( new ArrayList() );
-            for (int i = 0; i < liteAcctInfo.getServiceCompanies().size(); i++) {
-            	int companyID = ((Integer) liteAcctInfo.getServiceCompanies().get(i)).intValue();
-            	if (liteHw.getInstallationCompanyID() == companyID) {
-            		newServiceCompany = false;
-            		break;
-            	}
-            }
-            
-            if (newServiceCompany) {
-            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteHw.getInstallationCompanyID() );
-            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
-            	resp.setStarsServiceCompany( starsCompany );
-            	liteAcctInfo.getServiceCompanies().add( new Integer(liteCompany.getCompanyID()) );
-            }
-            
             respOper.setStarsCreateLMHardwareResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
@@ -306,10 +288,6 @@ public class CreateLMHardwareAction implements ActionBase {
 			}
 			starsInvs.addStarsLMHardware( i+1, hw );
 			session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i+1) );
-			
-			StarsServiceCompany company = resp.getStarsServiceCompany();
-			if (company != null)
-				accountInfo.getStarsServiceCompanies().addStarsServiceCompany( company );
 			
             return 0;
         }

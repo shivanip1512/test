@@ -11,8 +11,14 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
@@ -35,8 +41,6 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     private StarsAppliances _starsAppliances;
 
     private StarsInventories _starsInventories;
-
-    private StarsServiceCompanies _starsServiceCompanies;
 
     private StarsCallReportHistory _starsCallReportHistory;
 
@@ -131,16 +135,6 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         return this._starsResidenceInformation;
     } //-- StarsResidenceInformation getStarsResidenceInformation() 
-
-    /**
-     * Returns the value of field 'starsServiceCompanies'.
-     * 
-     * @return the value of field 'starsServiceCompanies'.
-    **/
-    public StarsServiceCompanies getStarsServiceCompanies()
-    {
-        return this._starsServiceCompanies;
-    } //-- StarsServiceCompanies getStarsServiceCompanies() 
 
     /**
      * Returns the value of field 'starsServiceRequestHistory'.
@@ -282,17 +276,6 @@ public class StarsCustAccountInformation implements java.io.Serializable {
     {
         this._starsResidenceInformation = starsResidenceInformation;
     } //-- void setStarsResidenceInformation(StarsResidenceInformation) 
-
-    /**
-     * Sets the value of field 'starsServiceCompanies'.
-     * 
-     * @param starsServiceCompanies the value of field
-     * 'starsServiceCompanies'.
-    **/
-    public void setStarsServiceCompanies(StarsServiceCompanies starsServiceCompanies)
-    {
-        this._starsServiceCompanies = starsServiceCompanies;
-    } //-- void setStarsServiceCompanies(StarsServiceCompanies) 
 
     /**
      * Sets the value of field 'starsServiceRequestHistory'.

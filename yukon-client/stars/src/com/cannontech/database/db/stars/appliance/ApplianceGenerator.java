@@ -87,6 +87,34 @@ public class ApplianceGenerator extends DBPersistent {
 		
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
+    
+    public static ApplianceGenerator getApplianceGenerator(Integer appID) {
+    	String sql = "SELECT ApplianceID, TransferSwitchTypeID, TransferSwitchMfgID, PeakKWCapacity, FuelCapGallons, StartDelaySeconds " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceGenerator app = new ApplianceGenerator();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setTransferSwitchTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setTransferSwitchMfgID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		app.setPeakKWCapacity( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		app.setFuelCapGallons( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+    		app.setStartDelaySeconds( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the applianceID.

@@ -48,7 +48,7 @@ public class CreateApplianceAction implements ActionBase {
 			java.util.Hashtable selectionLists = (java.util.Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateAppliance newApp = new StarsCreateAppliance();
-			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("Category")) );
+			newApp.setApplianceCategoryID( Integer.parseInt(req.getParameter("AppCatID")) );
 			newApp.setCategoryName( "" );
 			newApp.setYearManufactured( req.getParameter("ManuYear") );
 			newApp.setNotes( req.getParameter("Notes") );
@@ -62,7 +62,7 @@ public class CreateApplianceAction implements ActionBase {
 			
 			Location loc = (Location) StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
-						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_LOCATION, Integer.parseInt(req.getParameter("Location"))),
+						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION, Integer.parseInt(req.getParameter("Location"))),
 					Location.class );
 			newApp.setLocation( loc );
 			
@@ -116,6 +116,7 @@ public class CreateApplianceAction implements ActionBase {
             com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
             
             appDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+            appDB.setApplianceCategoryID( new Integer(newApp.getApplianceCategoryID()) );
             appDB.setLMProgramID( new Integer(0) );
             if (!newApp.getYearManufactured().equals(""))
             	appDB.setYearManufactured( Integer.valueOf(newApp.getYearManufactured()) );
@@ -123,20 +124,6 @@ public class CreateApplianceAction implements ActionBase {
             appDB.setLocationID( new Integer(newApp.getLocation().getEntryID()) );
             appDB.setNotes( newApp.getNotes() );
             appDB.setModelNumber( newApp.getModelNumber() );
-            
-            java.util.ArrayList appCats = energyCompany.getAllApplianceCategories();
-            if (appCats == null || appCats.size() == 0)
-            	appDB.setApplianceCategoryID( new Integer(com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT) );
-            else {
-            	// Find the first appliance category that's in the specified "category"
-            	for (int i = 0; i < appCats.size(); i++) {
-            		LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
-            		if (appCat.getCategoryID() == newApp.getApplianceCategoryID()) {
-            			appDB.setApplianceCategoryID( new Integer(appCat.getApplianceCategoryID()) );
-            			break;
-            		}
-            	}
-            }
             
             app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction(Transaction.INSERT, app).execute();
             

@@ -23,7 +23,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
 	private ArrayList appliances = null;	// List of LiteStarsAppliance
 	private ArrayList inventories = null;	// List of IDs of LiteLMHardware
-	private ArrayList serviceCompanies = null;	// List of IDs of LiteServiceCompany
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private LiteStarsThermostatSettings thermostatSettings = null;
@@ -200,24 +199,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setSiteInformation(LiteSiteInformation siteInformation) {
 		this.siteInformation = siteInformation;
-	}
-
-	/**
-	 * Returns the serviceCompanies.
-	 * @return ArrayList
-	 */
-	public ArrayList getServiceCompanies() {
-		if (serviceCompanies == null)
-			serviceCompanies = new ArrayList();
-		return serviceCompanies;
-	}
-
-	/**
-	 * Sets the serviceCompanies.
-	 * @param serviceCompanies The serviceCompanies to set
-	 */
-	public void setServiceCompanies(ArrayList serviceCompanies) {
-		this.serviceCompanies = serviceCompanies;
 	}
 
 	/**

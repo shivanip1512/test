@@ -80,6 +80,32 @@ public class ApplianceWaterHeater extends DBPersistent {
 		
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
+    
+    public static ApplianceWaterHeater getApplianceWaterHeater(Integer appID) {
+    	String sql = "SELECT ApplianceID, NumberOfGallonsID, EnergySourceID, NumberOfElements " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceWaterHeater app = new ApplianceWaterHeater();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setNumberOfGallonsID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setEnergySourceID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		app.setNumberOfElements( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the applianceID.

@@ -125,6 +125,8 @@ function changeProgram(radioBtn, index) {
 	
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		if (category.getStarsEnrLMProgramCount() == 0) continue;
+		
 		StarsLMProgram program = null;
 		String programStatus = "Not Enrolled";
 		

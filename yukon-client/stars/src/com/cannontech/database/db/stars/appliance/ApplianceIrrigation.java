@@ -77,6 +77,35 @@ public class ApplianceIrrigation extends DBPersistent {
 
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
+    
+    public static ApplianceIrrigation getApplianceIrrigation(Integer appID) {
+    	String sql = "SELECT ApplianceID, IrrigationTypeID, HorsePowerID, EnergySourceID, SoilTypeID, MeterLocationID, MeterVoltageID " +
+    			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
+    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    		if (stmt.getRowCount() == 0) return null;
+    		Object[] row = stmt.getRow(0);
+    		
+    		ApplianceIrrigation app = new ApplianceIrrigation();
+    		app.setApplianceID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+    		app.setIrrigationTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+    		app.setHorsePowerID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
+    		app.setEnergySourceID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		app.setSoilTypeID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+    		app.setMeterLocationID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+    		app.setMeterVoltageID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+    		
+    		return app;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return null;
+    }
 
 	/**
 	 * Returns the applianceID.

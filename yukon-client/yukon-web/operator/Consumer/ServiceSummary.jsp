@@ -113,7 +113,7 @@ function checkOrderNo(form) {
                 <td width="49" class="TableCell">
 				  <select name="ServiceType" onchange="setChanged(this.form, <%= i %>)">
 <%
-	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
+	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
 	for (int j = 0; j < serviceTypeList.getStarsSelectionListEntryCount(); j++) {
 		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(j);
 		String selectedStr = (order.getServiceType().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -127,7 +127,7 @@ function checkOrderNo(form) {
                 <td width="52" class="TableCell">
 				  <select name="Status" onchange="setChanged(this.form, <%= i %>)">
 <%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
+	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
 	for (int j = 0; j < statusList.getStarsSelectionListEntryCount(); j++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(j);
 		String selectedStr = (order.getCurrentState().getEntryID() == entry.getEntryID()) ? "selected" : "";

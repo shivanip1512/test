@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSearchByTypeDescriptor.java,v 1.30 2003/03/24 19:56:00 zyao Exp $
+ * $Id: StarsSearchByTypeDescriptor.java,v 1.31 2003/03/30 01:21:15 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -11,14 +11,21 @@ package com.cannontech.stars.xml.serialize.types;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
  * 
- * @version $Revision: 1.30 $ $Date: 2003/03/24 19:56:00 $
+ * @version $Revision: 1.31 $ $Date: 2003/03/30 01:21:15 $
 **/
 public class StarsSearchByTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

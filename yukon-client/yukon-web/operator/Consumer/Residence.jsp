@@ -78,7 +78,7 @@
                         <td width="184" valign="top"> 
                           <select name="ResidenceType">
 <%
-	StarsCustSelectionList resTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE );
+	StarsCustSelectionList resTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE );
 	for (int i = 0; i < resTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = resTypeList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getResidenceType().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -97,7 +97,7 @@
                         <td width="184"> 
                           <select name="ConstMaterial">
 <%
-	StarsCustSelectionList constMtrlList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL );
+	StarsCustSelectionList constMtrlList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL );
 	for (int i = 0; i < constMtrlList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = constMtrlList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getConstructionMaterial().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -116,7 +116,7 @@
                         <td width="184"> 
                           <select name="DecadeBuilt">
 <%
-	StarsCustSelectionList decadeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT );
+	StarsCustSelectionList decadeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DECADE_BUILT );
 	for (int i = 0; i < decadeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = decadeList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getDecadeBuilt().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -135,7 +135,7 @@
                         <td width="184"> 
                           <select name="SquareFeet">
 <%
-	StarsCustSelectionList sqrFeetList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET );
+	StarsCustSelectionList sqrFeetList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SQUARE_FEET );
 	for (int i = 0; i < sqrFeetList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = sqrFeetList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getSquareFeet().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -154,7 +154,7 @@
                         <td width="184"> 
                           <select name="InsulationDepth">
 <%
-	StarsCustSelectionList inslDepthList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH );
+	StarsCustSelectionList inslDepthList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_INSULATION_DEPTH );
 	for (int i = 0; i < inslDepthList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = inslDepthList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getInsulationDepth().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -173,7 +173,7 @@
                         <td width="184"> 
                           <select name="GeneralCondition">
 <%
-	StarsCustSelectionList conditionList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION );
+	StarsCustSelectionList conditionList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GENERAL_CONDITION );
 	for (int i = 0; i < conditionList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = conditionList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getGeneralCondition().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -197,7 +197,7 @@
                         <td width="184"> 
                           <select name="CoolingSystem">
 <%
-	StarsCustSelectionList coolSysList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM );
+	StarsCustSelectionList coolSysList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_COOLING_SYSTEM );
 	for (int i = 0; i < coolSysList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = coolSysList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getMainCoolingSystem().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -216,7 +216,7 @@
                         <td width="184"> 
                           <select name="HeatingSystem">
 <%
-	StarsCustSelectionList heatSysList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM );
+	StarsCustSelectionList heatSysList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEATING_SYSTEM );
 	for (int i = 0; i < heatSysList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = heatSysList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getMainHeatingSystem().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -235,7 +235,7 @@
                         <td width="184"> 
                           <select name="OccupantNum">
 <%
-	StarsCustSelectionList occpNumList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS );
+	StarsCustSelectionList occpNumList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_OCCUPANTS );
 	for (int i = 0; i < occpNumList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = occpNumList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getNumberOfOccupants().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -254,7 +254,7 @@
                         <td width="184"> 
                           <select name="OwnershipType">
 <%
-	StarsCustSelectionList ownTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE );
+	StarsCustSelectionList ownTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE );
 	for (int i = 0; i < ownTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = ownTypeList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getOwnershipType().getEntryID() == entry.getEntryID()) ? "selected" : "";
@@ -273,7 +273,7 @@
                         <td width="184"> 
                           <select name="FuelType">
 <%
-	StarsCustSelectionList fuelTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE );
+	StarsCustSelectionList fuelTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE );
 	for (int i = 0; i < fuelTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = fuelTypeList.getStarsSelectionListEntry(i);
 		String selectStr = (residence != null && residence.getMainFuelType().getEntryID() == entry.getEntryID()) ? "selected" : "";

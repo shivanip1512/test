@@ -11,10 +11,16 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.NodeType;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
@@ -215,38 +221,6 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsInventories
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsServiceCompanies
-        desc = new XMLFieldDescriptorImpl(StarsServiceCompanies.class, "_starsServiceCompanies", "stars-ServiceCompanies", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsCustAccountInformation target = (StarsCustAccountInformation) object;
-                return target.getStarsServiceCompanies();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsCustAccountInformation target = (StarsCustAccountInformation) object;
-                    target.setStarsServiceCompanies( (StarsServiceCompanies) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsServiceCompanies();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsServiceCompanies
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

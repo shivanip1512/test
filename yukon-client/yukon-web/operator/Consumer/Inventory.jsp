@@ -192,14 +192,14 @@ function deleteHardware(form) {
                                 </td>
                                 <td width="200"> 
                                   <select name="Status">
-                                    <%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
+<%
+	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == hardware.getDeviceStatus().getEntryID()) ? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-                                    <%
+<%
 	}
 %>
                                   </select>
@@ -248,14 +248,12 @@ function deleteHardware(form) {
                                   </td>
                                   <td width="200"> 
                                     <select name="ServiceCompany">
-                              <%
-	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
-		String selectedStr = (entry.getEntryID() == hardware.getInstallationCompany().getEntryID())? "selected" : "";
+<%
+	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+		StarsServiceCompany company = companies.getStarsServiceCompany(i);
 %>
-                              		  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-                              <%
+                              		  <option value="<%= company.getCompanyID() %>"><%= company.getCompanyName() %></option>
+<%
 	}
 %>
                                     </select>
@@ -267,7 +265,15 @@ function deleteHardware(form) {
                                   </td>
                                   <td width="200"> 
                                     <select name="Location">
-                                      <option>Outside North</option>
+<%
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION );
+	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
+%>
+                              		  <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                                     </select>
                                   </td>
                                 </tr>

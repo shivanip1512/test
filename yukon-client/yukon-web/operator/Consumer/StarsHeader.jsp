@@ -1,9 +1,11 @@
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
+<%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 
 <%@ page import="javax.xml.soap.SOAPMessage" %>
 <%@ page import="com.cannontech.stars.web.action.*" %>
@@ -45,6 +47,7 @@
 	StarsWebConfig ecWebSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+	StarsServiceCompanies companies = (StarsServiceCompanies) user.getAttribute( ServletUtils.ATT_SERVICE_COMPANIES );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -57,7 +60,6 @@
 	StarsAppliances appliances = null;
 	StarsInventories inventories = null;
 	StarsLMPrograms programs = null;
-	StarsServiceCompanies companies = null;
 	StarsCallReportHistory callHist = null;
 	StarsServiceRequestHistory serviceHist = null;
 	StarsUser userLogin = null;
@@ -74,7 +76,6 @@
 		appliances = accountInfo.getStarsAppliances();
 		inventories = accountInfo.getStarsInventories();
 		programs = accountInfo.getStarsLMPrograms();
-		companies = accountInfo.getStarsServiceCompanies();
 		callHist = accountInfo.getStarsCallReportHistory();
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
 		

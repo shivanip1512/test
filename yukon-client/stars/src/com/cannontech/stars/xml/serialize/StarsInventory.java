@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventory.java,v 1.30 2003/03/24 19:55:26 zyao Exp $
+ * $Id: StarsInventory.java,v 1.31 2003/03/30 01:20:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -11,12 +11,20 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Date;
+import org.exolab.castor.xml.*;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.ContentHandler;
 
 /**
  * 
  * 
- * @version $Revision: 1.30 $ $Date: 2003/03/24 19:55:26 $
+ * @version $Revision: 1.31 $ $Date: 2003/03/30 01:20:44 $
 **/
 public abstract class StarsInventory implements java.io.Serializable {
 

@@ -30,8 +30,8 @@ import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsUpdateServiceRequest;
-import com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -145,7 +145,6 @@ public class UpdateServiceRequestAction implements ActionBase {
         	
         	ArrayList orderHist = accountInfo.getServiceRequestHistory();
         	StarsUpdateServiceRequest updateOrders = reqOper.getStarsUpdateServiceRequest();
-        	StarsUpdateServiceRequestResponse resp = new StarsUpdateServiceRequestResponse();
         	
         	for (int i = 0; i < updateOrders.getStarsServiceRequestCount(); i++) {
         		StarsServiceRequest newOrder = updateOrders.getStarsServiceRequest(i);
@@ -177,30 +176,15 @@ public class UpdateServiceRequestAction implements ActionBase {
         						(com.cannontech.database.db.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
 						Transaction.createTransaction(Transaction.UPDATE, orderDB).execute();
 			            
-			            boolean newServiceCompany = true;
-			            if (accountInfo.getServiceCompanies() == null)
-			            	accountInfo.setServiceCompanies( new ArrayList() );
-			            for (int k = 0; k < accountInfo.getServiceCompanies().size(); k++) {
-			            	int companyID = ((Integer) accountInfo.getServiceCompanies().get(k)).intValue();
-			            	if (liteOrder.getServiceCompanyID() == companyID) {
-			            		newServiceCompany = false;
-			            		break;
-			            	}
-			            }
-			            
-			            if (newServiceCompany) {
-			            	LiteServiceCompany liteCompany = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
-			            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, user.getEnergyCompanyID() );
-			            	resp.addStarsServiceCompany( starsCompany );
-			            	ServerUtils.updateServiceCompanies( accountInfo, user.getEnergyCompanyID() );
-			            }
-			            
         				break;
         			}
         		}
         	}
+        	
+        	StarsSuccess success = new StarsSuccess();
+        	success.setDescription( "Service request updated successfully" );
             
-            respOper.setStarsUpdateServiceRequestResponse( resp );
+            respOper.setStarsSuccess( success );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -232,6 +216,10 @@ public class UpdateServiceRequestAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
+			StarsSuccess success = operation.getStarsSuccess();
+			if (success == null)
+				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsUpdateServiceRequest updateOrders = reqOper.getStarsUpdateServiceRequest();
 			
@@ -256,10 +244,6 @@ public class UpdateServiceRequestAction implements ActionBase {
 					}
 				}
 			}
-			
-			StarsUpdateServiceRequestResponse resp = operation.getStarsUpdateServiceRequestResponse();
-			for (int i = 0; i < resp.getStarsServiceCompanyCount(); i++)
-				accountInfo.getStarsServiceCompanies().addStarsServiceCompany( resp.getStarsServiceCompany(i) );
 			
             return 0;
         }

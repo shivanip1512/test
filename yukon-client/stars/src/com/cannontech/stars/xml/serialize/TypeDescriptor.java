@@ -11,16 +11,23 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import org.exolab.castor.mapping.AccessMode;
+import org.exolab.castor.mapping.ClassDescriptor;
+import org.exolab.castor.mapping.FieldDescriptor;
+import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.FieldValidator;
-import org.exolab.castor.xml.XMLFieldHandler;
+import org.exolab.castor.xml.TypeValidator;
+import org.exolab.castor.xml.XMLFieldDescriptor;
+import org.exolab.castor.xml.handlers.*;
 import org.exolab.castor.xml.util.XMLFieldDescriptorImpl;
+import org.exolab.castor.xml.validators.*;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public class TypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class TypeDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -42,6 +49,7 @@ public class TypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
 
     public TypeDescriptor() {
         super();
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
         xmlName = "Type";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
@@ -68,13 +76,15 @@ public class TypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
