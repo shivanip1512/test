@@ -32,7 +32,6 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
-
 	
 	private com.cannontech.database.data.lite.LitePoint point;	
 	private int displayAttribs = 0x00;
@@ -112,10 +111,9 @@ public int getPointID() {
  * Creation date: (12/18/2001 4:58:59 PM)
  */
 private void initialize() {
-	//setText("N/A");
+	
 	setFont(DEFAULT_FONT);
 	setPaint(DEFAULT_COLOR);
-
 	point = new com.cannontech.database.data.lite.LitePoint(INVALID_POINT);
 }
 
