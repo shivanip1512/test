@@ -606,6 +606,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					errorMsg += ": " + e.getMessage();
 			}
 		}
+		finally {
+			if (fw != null) fw.close();
+		}
 		
 		stopTime = System.currentTimeMillis();
 		
