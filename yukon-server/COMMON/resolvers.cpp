@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/02/21 20:34:11 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/03/05 23:54:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -301,6 +301,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "rtu-dnp")
     {
         nRet = TYPE_DNPRTU;
+    }
+    else if(rwsTemp == "rtu-dart")
+    {
+        nRet = TYPE_DARTRTU;
     }
     else if(rwsTemp == "ion-7330")
     {
@@ -959,6 +963,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_WELCORTU:
     case TYPE_SES92RTU:
     case TYPE_DNPRTU:
+    case TYPE_DARTRTU:
     case TYPE_ION7330:
     case TYPE_ION7700:
     case TYPE_ION8300:
