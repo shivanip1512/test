@@ -4,6 +4,7 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.StatusPoint;
 public class DisconnectPointCreate extends PointCreate
@@ -25,9 +26,10 @@ public class DisconnectPointCreate extends PointCreate
 	 */
 	public boolean isDeviceValid( int type_ )
 	{
-		// Valid MCT213 or MCT310ID
-		return ( type_ == com.cannontech.database.data.device.DeviceTypesFuncs.MCT213 ||
-					type_ == com.cannontech.database.data.device.DeviceTypesFuncs.MCT310ID);
+		// Valid points go here
+		return ( type_ == DeviceTypesFuncs.MCT213 ||
+					 type_ == DeviceTypesFuncs.MCT310ID ||
+					 type_ == DeviceTypesFuncs.MCT310IDL );
 	}
 
 	/**
