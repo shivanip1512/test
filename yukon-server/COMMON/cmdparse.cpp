@@ -480,6 +480,10 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
                 _cmd["outage"] = CtiParseValue(atoi(RWCString(cmdtok())));
             }
         }
+        else if(CmdStr.contains(" codes"))
+        {
+            _cmd["codes"] = CtiParseValue(TRUE);
+        }
         else
         {
             // Default Get Value request has been specified....
