@@ -2278,7 +2278,7 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - priority = " << i << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         // Now I need to look for some of the interesting metrics in the system!  These will be the first 16.
