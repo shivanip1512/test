@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/10/15 17:40:23 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/18 20:52:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,7 @@ CtiLogger& CtiLogger::setOutputFile(const string& file)
 {
     CtiLockGuard<CtiMutex> guard(_log_mux);
 
-    _filename = file;
+    _filename = scrub(file);
     return *this;
 }
 
@@ -269,6 +269,27 @@ string CtiLogger::getTodaysFileName() const
     return(retVal);
 }
 
+
+string CtiLogger::scrub(const string& filename)
+{
+    string tmp = filename;
+
+    //  this only gets called once per file per day, so it's not too expensive
+    for(int i = 0; i < tmp.length(); i++)
+    {
+        //  if the character is not a-z, A-Z, 0-9, '-', or '_', scrub it to an underscore
+        if( !(tmp[i] >= 'a' && tmp[i] <= 'z') && !(tmp[i] >= 'A' && tmp[i] <= 'Z') &&
+            !(tmp[i] >= '0' && tmp[i] <= '9') &&
+            !(tmp[i] == '-') && !(tmp[i] == '_') && !(tmp[i] == ' ') )
+        {
+            tmp[i] = '_';
+        }
+    }
+
+    return tmp;
+}
+
+
 bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
 {
     int cur_month;
@@ -287,7 +308,7 @@ bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
     }
     else
     {
-        //file either doesn't exist or hasn'nt been modified this month
+        //file either doesn't exist or hasn't been modified this month
         //open with default to truncate
         strm.open( file.data() );
     }

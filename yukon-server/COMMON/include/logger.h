@@ -118,6 +118,7 @@ private:
     strstream* _current_stream;
 
     void doOutput();
+    string scrub(const string& filename);
     bool tryOpenOutputFile(ofstream& strm, const string& file);
     string getTodaysFileName() const;
 };
