@@ -288,6 +288,26 @@ ULONG CtiCCCapBank::getTagsControlStatus() const
 }
 
 /*---------------------------------------------------------------------------
+    getOriginalFeederId
+
+    Returns the original feeder id on the cap bank used for temp cap bank moves
+---------------------------------------------------------------------------*/
+ULONG CtiCCCapBank::getOriginalFeederId() const
+{
+    return _originalfeederid;
+}
+
+/*---------------------------------------------------------------------------
+    getOriginalSwitchingOrder
+
+    Returns the original switching order on the cap bank used for temp cap bank moves 
+---------------------------------------------------------------------------*/
+ULONG CtiCCCapBank::getOriginalSwitchingOrder() const
+{
+    return _originalswitchingorder;
+}
+
+/*---------------------------------------------------------------------------
     setPAOId
 
     Sets the id of the capbank - use with caution
@@ -604,6 +624,45 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(ULONG tags)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setOriginalFeederId
+
+    Sets the original feeder id on the capbank for temp cap bank moves
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(ULONG origfeeder)
+{
+    if( _originalfeederid != origfeeder )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _originalfeederid = origfeeder;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOriginalSwitchingOrder
+
+    Sets the switching order on the capbank for temp cap bank moves
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(ULONG origorder)
+{
+    if( _originalswitchingorder != origorder )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _originalswitchingorder = origorder;
+    return *this;
+}
+
+
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -637,7 +696,8 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _operationanalogpointid
     >> _currentdailyoperations
     >> tempTime1
-    >> _tagscontrolstatus;
+    >> _tagscontrolstatus
+    >> _originalfeederid;
 
     _laststatuschangetime = RWDBDateTime(tempTime1);
 }
@@ -674,7 +734,8 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _operationanalogpointid
     << _currentdailyoperations
     << _laststatuschangetime.rwtime()
-    << _tagscontrolstatus;
+    << _tagscontrolstatus
+    << _originalfeederid;
 }
 
 /*---------------------------------------------------------------------------
@@ -708,6 +769,8 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _currentdailyoperations = right._currentdailyoperations;
         _laststatuschangetime = right._laststatuschangetime;
         _tagscontrolstatus = right._tagscontrolstatus;
+        _originalfeederid = right._originalfeederid;
+        _originalswitchingorder = right._originalswitchingorder;
     }
     return *this;
 }
@@ -777,6 +840,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         rdr["laststatuschangetime"] >> _laststatuschangetime;
         rdr["tagscontrolstatus"] >> _tagscontrolstatus;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
+        rdr["originalfeederid"] >> _originalfeederid;
+        rdr["originalswitchingorder"] >> _originalswitchingorder;
 
         _insertDynamicDataFlag = FALSE;
         _dirty = FALSE;
@@ -788,6 +853,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         setLastStatusChangeTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setControlStatus(CtiCCCapBank::Open);
         setTagsControlStatus(0);
+        setOriginalFeederId(0);
+        setOriginalSwitchingOrder(0);
 
         _insertDynamicDataFlag = TRUE;
         /*{
@@ -892,8 +959,14 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
             << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)_laststatuschangetime )
             << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
-            << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime);
+            << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
+            << dynamicCCCapBankTable["originalfeederid"].assign( _originalfeederid )
+            << dynamicCCCapBankTable["originalswitchingorder"].assign( _originalswitchingorder );
 
+            /*{
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << updater.asString().data() << endl;
+            }*/
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -928,7 +1001,9 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << _currentdailyoperations
             << _laststatuschangetime
             << _tagscontrolstatus
-            << currentDateTime;
+            << currentDateTime
+            << _originalfeederid
+            << _originalswitchingorder;
 
             /*if( _CC_DEBUG )
             {
