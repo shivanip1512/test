@@ -7,8 +7,11 @@ package com.cannontech.graph.model;
  */
 public class TrendProperties
 {
+	private static long resolutionInMillis = 1000;	//default to millis
+		
 	public static String rangeLabel1 = "Reading";
 	public  static String rangeLabel2 = "Reading";
+	
 	
 	public static void setRangeLabel_primary(String newLabel)
 	{
@@ -25,6 +28,24 @@ public class TrendProperties
 	public static String getRangeLabel_secondary()
 	{
 		return rangeLabel2;
+	}
+
+	/**
+	 * Returns the resolutionInMillis.
+	 * @return long
+	 */
+	public static long getResolutionInMillis()
+	{
+		return resolutionInMillis;
+	}
+
+	/**
+	 * Sets the resolutionInMillis.
+	 * @param resolutionInMillis The resolutionInMillis to set
+	 */
+	public static void setResolutionInMillis(long resolutionInMillis)
+	{
+		TrendProperties.resolutionInMillis = resolutionInMillis;
 	}
 
 }

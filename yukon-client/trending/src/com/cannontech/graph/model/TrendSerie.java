@@ -218,15 +218,22 @@ public class TrendSerie
 	
 	public long[] getPeriodsArray()
 	{
+		long resolution = TrendProperties.getResolutionInMillis();
 		if( periodsArray == null)
 		{
 			if( getDataPairArray() == null)
 				return null;
-				
+			java.util.Date now = new java.util.Date();
+
 			periodsArray = new long[getDataPairArray().length];
 			for (int i = 0; i < getDataPairArray().length; i++)
 			{
-				periodsArray[i] = getDataPairArray(i).getPeriod().getStart().getTime();
+				long time = getDataPairArray(i).getPeriod().getStart().getTime();
+				long round = time % resolution;  //60000 should be modifiable!
+				time = time - round;
+				periodsArray[i] = time;
+				
+//				periodsArray[i] = getDataPairArray(i).getPeriod().getStart().getTime();
 			}
 		}
 		return periodsArray;
