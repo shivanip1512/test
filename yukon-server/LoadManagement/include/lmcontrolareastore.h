@@ -18,6 +18,7 @@
 #ifndef CTILMCONTROLAREASTORE_H
 #define CTILMCONTROLAREASTORE_H
 
+#include <map>
 
 #include <rw/vstream.h>
 #include <rw/db/db.h>
@@ -90,6 +91,8 @@ public:
 
     RWOrdered* getControlAreas(ULONG secondsFrom1901 = RWDBDateTime().seconds());
     bool findProgram(LONG programID, CtiLMProgramBase** program = NULL, CtiLMControlArea** controlArea = NULL);
+
+    CtiLMGroupBase* findGroupByPointID(long point_id);
     
     static CtiLMControlAreaStore* getInstance();
     static void deleteInstance();
@@ -132,7 +135,8 @@ private:
     bool checkMidnightDefaultsForReset();
 
     RWOrdered* _controlAreas;
-        
+    map< long, CtiLMGroupBase* > _point_group_map;
+    
     RWThread _resetthr;
 
     bool _isvalid;

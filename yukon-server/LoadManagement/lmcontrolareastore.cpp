@@ -162,6 +162,21 @@ bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBase** progr
 
 }
 
+/*----------------------------------------------------------------------------
+  findGroupByCtrlHistPointID
+
+  Attempts to locate a lmgroup given a control history point id.
+  The given point could be any of the control history points.
+  Returns 0 if no group is found.
+  This member exists mostly for efficiency in updating groups when point
+  data shows up.
+----------------------------------------------------------------------------*/  
+CtiLMGroupBase* CtiLMControlAreaStore::findGroupByPointID(long point_id)
+{
+    map< long, CtiLMGroupBase* >::iterator iter = _point_group_map.find(point_id);
+    return (iter == _point_group_map.end() ? 0 : iter->second);
+}
+
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
 
@@ -583,6 +598,8 @@ void CtiLMControlAreaStore::reset()
 	    
 		}// end second group pass - make sure to fix up group ordering after groups are linked with programs below.
 		{ // Begin loading group point information
+		    _point_group_map.clear();
+		    
 		    RWDBTable pointTable = db.table("point");
 		    RWDBTable lmGroupTable = db.table("lmgroup");
 
@@ -632,15 +649,19 @@ void CtiLMControlAreaStore::reset()
 			    {
 			    case DAILYCONTROLHISTOFFSET:
 				lm_group->setHoursDailyPointId(point_id);
+				_point_group_map.insert(make_pair(point_id,lm_group));
 				break;
 			    case MONTHLYCONTROLHISTOFFSET:
 				lm_group->setHoursMonthlyPointId(point_id);
+				_point_group_map.insert(make_pair(point_id,lm_group));
 				break;
 			    case SEASONALCONTROLHISTOFFSET:
 				lm_group->setHoursSeasonalPointId(point_id);
+				_point_group_map.insert(make_pair(point_id,lm_group));
 				break;
 			    case ANNUALCONTROLHISTOFFSET:
 				lm_group->setHoursAnnuallyPointId(point_id);
+				_point_group_map.insert(make_pair(point_id,lm_group));
 				break;
 			    default:
 			    {
@@ -658,6 +679,7 @@ void CtiLMControlAreaStore::reset()
 				if(controlPointHashMap.findValue(point_id, control_status_point_id))
 				{
 				    lm_group->setControlStatusPointId(control_status_point_id);
+      				    _point_group_map.insert(make_pair(point_id,lm_group));
 				}
 			    }
 			    break;

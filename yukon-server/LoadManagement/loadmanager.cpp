@@ -1034,7 +1034,55 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 currentControlArea->setUpdatedFlag(TRUE);
             }
         }
+	CtiLMGroupBase* lm_group = store->findGroupByPointID(pointID);
+	if(lm_group != 0)
+	{   //we know this point is associated with this group,
+	    //figure out how and deal with it
+	    if( lm_group->getHoursDailyPointId() == pointID )
+	    {
+		RWTime now;
+		struct tm now_tm, timestamp_tm;
 
+		now.extract(&now_tm);
+		timestamp.extract(&timestamp_tm);
+
+		long nowDaysSince1900 = (now_tm.tm_year*365) + now_tm.tm_yday;
+		long timestampDaysSince1900 = (timestamp_tm.tm_year*365) + timestamp_tm.tm_yday;
+
+		if( nowDaysSince1900 == timestampDaysSince1900  )
+		{//i.e. is this daily control history from today or from some previous day
+		    lm_group->setCurrentHoursDaily(value);
+		    currentControlArea->setUpdatedFlag(TRUE);
+		}
+		else
+		{
+		    if( lm_group->getCurrentHoursDaily() != 0 )
+			currentControlArea->setUpdatedFlag(TRUE);
+		    lm_group->setCurrentHoursDaily(0.0);
+		}
+	    }
+	    if( lm_group->getHoursMonthlyPointId() == pointID )
+	    {
+		lm_group->setCurrentHoursMonthly(value);
+		currentControlArea->setUpdatedFlag(TRUE);
+	    }
+	    if( lm_group->getHoursSeasonalPointId() == pointID )
+	    {
+		lm_group->setCurrentHoursSeasonal(value);
+		currentControlArea->setUpdatedFlag(TRUE);
+	    }
+	    if( lm_group->getHoursAnnuallyPointId() == pointID )
+	    {
+		lm_group->setCurrentHoursAnnually(value);
+		currentControlArea->setUpdatedFlag(TRUE);
+	    }
+	    if( lm_group->getControlStatusPointId() == pointID )
+	    {
+		lm_group->setGroupControlState(value);
+		currentControlArea->setUpdatedFlag(TRUE);
+	    }	    
+	}
+#ifdef _BUNG_
         RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
 
         for(LONG k=0;k<lmPrograms.entries();k++)
@@ -1092,6 +1140,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 }
             }
         }
+#endif	
     }
 }
 
