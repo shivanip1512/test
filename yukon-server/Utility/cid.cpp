@@ -118,7 +118,7 @@ typedef vector< CtiDirBuild > CTIDIRVECTOR;
 void ProcessCID(CtiDirBuild &db, RWCString &cidfile);
 void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename);
 void ProcessDirectory( CTIFILEVECTOR &vect, const RWCString &path);
-void GenerateVInfo(CtiDirBuild db, CTIFILEVECTOR &vect);
+void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, RWCString &infoname);
 
 
 void ProcessDirectory(CTIFILEVECTOR &vect, const RWCString &path)
@@ -205,7 +205,7 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
 
             if(!str.match("Revision").isNull())
             {
-               if( !(tstr = str.match("\\$Revision: 1.2 $")).isNull() )
+               if( !(tstr = str.match("\\$Revision:[ \t0-9\\.]*")).isNull() )
                {
                   finfo.rev = tstr.strip(RWCString::both, '$');
                   //cout << filename << " : " << finfo.rev << endl;
@@ -214,7 +214,7 @@ void ProcessFile(CTIFILEVECTOR &vect, RWCString &filename)
 
             if(!str.match("Date").isNull())
             {
-               if( !(tstr = str.match("\\$Date: 2002/04/15 15:20:07 $")).isNull() )
+               if( !(tstr = str.match("\\$Date:[ \ta-zA-Z0-9\\.:/]*")).isNull() )
                {
                   tstr = tstr.strip(RWCString::both, '$');
                   tstr.replace("Date:","");
@@ -408,36 +408,8 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
       }
       else
       {
-         if(gDoCheckouts)
-         {
-            DWORD stat = STILL_ACTIVE;
-            STARTUPINFO si;
-            PROCESS_INFORMATION pi;
-
-            memset(&si, 0, sizeof(STARTUPINFO));
-            si.cb = sizeof(STARTUPINFO);
-            si.lpReserved = NULL;
-            si.lpDesktop = NULL;
-
-
-            sprintf(temp, "get -y -l %s", file);
-            CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
-
-
-            while(stat == STILL_ACTIVE)
-            {
-               Sleep(1000);
-               GetExitCodeProcess(pi.hProcess, &stat);
-            }
-
-            cout << "CID file " << cidfile << " has been checked out" << endl;
-         }
-         else
-         {
-            // Now prepare to re-write the file!
-            // Make sure we can access it.
-            chmod(cidfile, _S_IREAD | _S_IWRITE);
-         }
+          cout << "Could not open " << cidfile << " for writing" << endl;
+          return;
       }
 
 
@@ -456,39 +428,6 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
          fclose(fp);
 
          fileStrings.clear();
-
-         if(!bWritable)
-         {
-            if(gDoCheckouts)
-            {
-               DWORD stat = STILL_ACTIVE;
-               STARTUPINFO si;
-               PROCESS_INFORMATION pi;
-
-               memset(&si, 0, sizeof(STARTUPINFO));
-               si.cb = sizeof(STARTUPINFO);
-               si.lpReserved = NULL;
-               si.lpDesktop = NULL;
-
-
-               sprintf(temp, "put -y -M\"Revision Number Update\" %s", file);
-               CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
-
-
-               while(stat == STILL_ACTIVE)
-               {
-                  Sleep(1000);
-                  GetExitCodeProcess(pi.hProcess, &stat);
-               }
-
-               cout << "CID file " << cidfile << " has been checked back in" << endl;
-            }
-            else
-            {
-               // Make sure we cannot access it.
-               chmod(cidfile, _S_IREAD);
-            }
-         }
       }
       else
       {
@@ -497,22 +436,20 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
    }
    else
    {
-      cout << " Couldn't open CID file" << endl;
+      cout << " Couldn't open CID file " << cidfile.data() << " for writing" << endl;
    }
 }
 
-void GenerateVInfo(CtiDirBuild db, CTIFILEVECTOR &vect)
+void GenerateVInfo(CtiDirBuild &db, CTIFILEVECTOR &vect, RWCString &infoname)
 {
    char temp[128];
    char dir[128];
    char file[128];
    char *ptr = NULL;
-   bool bWritable = false;
    FILE *fp;
 
    RWCString vinfo(db._dir);
-
-   vinfo = vinfo + "\\id_vinfo.h";
+   vinfo = vinfo + "\\" + infoname;
 
    if(!GetFullPathName(vinfo, 128, dir, &ptr))
    {
@@ -526,42 +463,6 @@ void GenerateVInfo(CtiDirBuild db, CTIFILEVECTOR &vect)
 
 
    // Now prepare to generate the id_vinfo.h file
-   if( !access(vinfo, 2) )
-   {
-      bWritable = true;
-   }
-   else
-   {
-      if(gDoCheckouts)
-      {
-         DWORD stat = STILL_ACTIVE;
-         STARTUPINFO si;
-         PROCESS_INFORMATION pi;
-
-         memset(&si, 0, sizeof(STARTUPINFO));
-         si.cb = sizeof(STARTUPINFO);
-         si.lpReserved = NULL;
-         si.lpDesktop = NULL;
-
-
-         sprintf(temp, "get -y -l %s", file);
-         CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
-
-
-         while(stat == STILL_ACTIVE)
-         {
-            Sleep(1000);
-            GetExitCodeProcess(pi.hProcess, &stat);
-         }
-
-         cout << "VINFO file " << vinfo << " has been checked out" << endl;
-      }
-      else
-      {
-         // Make sure we can access it.
-         chmod(vinfo, _S_IREAD | _S_IWRITE);
-      }
-   }
 
    fp = fopen(vinfo.data(), "w");
 
@@ -599,38 +500,6 @@ void GenerateVInfo(CtiDirBuild db, CTIFILEVECTOR &vect)
       fprintf(fp, "};\n");
       fclose(fp);
 
-      if(!bWritable)
-      {
-         if(gDoCheckouts)
-         {
-            DWORD stat = STILL_ACTIVE;
-            STARTUPINFO si;
-            PROCESS_INFORMATION pi;
-
-            memset(&si, 0, sizeof(STARTUPINFO));
-            si.cb = sizeof(STARTUPINFO);
-            si.lpReserved = NULL;
-            si.lpDesktop = NULL;
-
-
-            sprintf(temp, "put -y -M\"Revision Number Update\" %s", file);
-            CreateProcess(NULL, temp, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, dir, &si, &pi);
-
-
-            while(stat == STILL_ACTIVE)
-            {
-               Sleep(1000);
-               GetExitCodeProcess(pi.hProcess, &stat);
-            }
-
-            cout << "VINFO file " << vinfo << " has been checked back in" << endl;
-         }
-         else
-         {
-            // Make sure we cannot access it.
-            chmod(vinfo, _S_IREAD);
-         }
-      }
    }
    else
    {
@@ -645,10 +514,17 @@ int main(int argc, char **argv)
    INT flag = 0;
    CTIFILEVECTOR vect;
 
+   RWCString infoname;
+
    if(argc < 2)
    {
       cout << "What cid header file please?" << endl;
       return -1;
+   }
+
+   if( argc > 2 )
+   {
+       infoname = RWCString( argv[2] );
    }
 
    char temp[128];
@@ -689,13 +565,17 @@ int main(int argc, char **argv)
 
    RWCString cidname(argv[1]);
 
-   ProcessCID(db, cidname);
+   if(gDoCheckouts)
+   {
+       ProcessCID(db, cidname);
 
-   ProcessDirectory(vect, path);
-
-   GenerateVInfo(db, vect);
-
-   vect.clear();
+       if(!infoname.isNull())
+       {
+           ProcessDirectory(vect, path);
+           GenerateVInfo(db, vect, infoname);
+           vect.clear();
+       }
+   }
 
    return(0);
 }

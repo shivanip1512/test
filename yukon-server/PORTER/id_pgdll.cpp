@@ -9,13 +9,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/id_pgdll.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:19:22 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/15 23:31:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 
 #include "include\id_pgdll.h"
-#include "include\id_vinfo.h"
+#include "id_vinfo.h"
 
