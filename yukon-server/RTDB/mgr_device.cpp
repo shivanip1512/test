@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2005/01/18 19:11:03 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2005/01/27 17:53:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -708,8 +708,6 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
         CtiDeviceBase *pSp;
 
         {
-            {
-
                 if(paoID == 0)
                 {
                     apply(applyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
@@ -1636,7 +1634,6 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to apply applyInvalidateNotUpdated." << endl;
                     }
                 }
-            }
         }   // Temporary results are destroyed to free the connection
     }
     catch(RWExternalErr e )
@@ -2406,13 +2403,14 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
     {
         int trycount = 0;
 
+        #if 0
         LockGuard gaurd(getMux(), 30000);
 
         while(!gaurd.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
             }
             gaurd.tryAcquire(30000);
 
@@ -2420,12 +2418,13 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint: Unable to lock device mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  CtiPortManager::apply " << endl;
                 }
                 return;
             }
         }
+        #endif
 
         _smartMap.apply(applyFun,d);
     }
