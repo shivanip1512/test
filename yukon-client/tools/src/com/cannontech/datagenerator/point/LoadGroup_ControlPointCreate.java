@@ -29,7 +29,10 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		boolean seasonalHistory = true;
 		boolean annualHistory = true;
 		boolean controlStatus = true;
+		boolean controlCountdown = true;
 	}
+
+
 	/**
 	 * Constructor for LoadGroup_ControlPointCreate.
 	 */
@@ -70,7 +73,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_DAILY_HISTORY,
 						PointUnits.UOMID_COUNTS));
-				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding DAILY_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
 				pointID++;
 				addCount++;
 			}
@@ -78,11 +81,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.monthlyHistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("MONTHLY HISTORY", 
-						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_MONTHLY_HISTORY,
 						PointUnits.UOMID_COUNTS));
-				CTILogger.info("Adding PointId " + pointID  + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding MONTHLY_HISTROY PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
 				pointID++;
 				addCount++;
 			}
@@ -90,11 +93,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.seasonalHistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("SEASON HISTORY", 
-						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_SEASONAL_HISTORY,
 						PointUnits.UOMID_COUNTS));
-				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding SEASONAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				pointID++;
 				addCount++;
 			}
@@ -102,11 +105,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.annualHistory)
 			{
 				multi.addDBPersistent(PointFactory.createAnalogPoint("ANNUAL HISTORY", 
-						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_ANNUAL_HISTORY,
 						PointUnits.UOMID_COUNTS));
-				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding ANNUAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				pointID++;
 				addCount++;
 			}
@@ -116,15 +119,27 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				PointBase pointBase = PointFactory.createNewPoint(new Integer(pointID),
 						PointTypes.STATUS_POINT,
 						"CONTROL STATUS",
-						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(paobjectID),
 						new Integer(0) );
 				pointBase.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
 				((StatusPoint)pointBase).setPointStatus( new PointStatus( new Integer(pointID)));
 				((StatusPoint)pointBase).getPointStatus().setControlOffset(	new Integer(1));
 				((StatusPoint)pointBase).getPointStatus().setControlType( PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL));
 				multi.addDBPersistent(pointBase);
-				CTILogger.info("Adding PointId " + pointID + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding CONTROL_STATUS PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 	
+				pointID++;
+				addCount++;
+			}
+
+			if( createPoint.controlCountdown)
+			{
+				multi.addDBPersistent(PointFactory.createAnalogPoint("CONTROL COUNTDOWN", 
+						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(pointID),
+						PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
+						PointUnits.UOMID_COUNTS));
+				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + devicesVector.get(i));
 				pointID++;
 				addCount++;
 			}
@@ -176,6 +191,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).annualHistory = false;
 		else if( lp.getPointOffset() == 0 && lp.getPointType() == PointTypes.STATUS_POINT)
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).controlStatus = false;
+		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_CONTROL_COUNTDOWN && lp.getPointType() == PointTypes.ANALOG_POINT)
+			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).controlCountdown = false;
 			
 		return false;
 	}	
