@@ -55,7 +55,7 @@ public class DrawingUpdater extends TimerTask {
 
 		if (drawing == null) {
 			return;
-		}
+		} 	
 
 		synchronized (drawing) {			
 			try {
