@@ -12,6 +12,7 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(MSG)\include \
 -I$(RW) \
+-I$(BOOST) \
 
 
 .PATH.cpp = .
@@ -32,8 +33,8 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
-;$(RW)
-
+;$(RW) \
+;$(BOOST) 
 
 
 TESTOBJS=\
