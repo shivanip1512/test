@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/02/17 23:25:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,7 +151,7 @@ VOID PorterConnectionThread (VOID *Arg)
 
     for(; !PorterQuit ;)
     {
-        NewNexus = (CTINEXUS*) malloc(sizeof(CTINEXUS));
+        NewNexus = (CTINEXUS*) CTIDBG_new CTINEXUS;
 
         if(NewNexus == NULL)
         {
@@ -373,6 +373,8 @@ VOID ConnectionThread (VOID *Arg)
             PorterEntryPoint(OutMessage);
         }
     } /* and do it all again */
+
+    if(MyNexus) delete MyNexus;
 
     if(OutMessage != NULL)
     {
