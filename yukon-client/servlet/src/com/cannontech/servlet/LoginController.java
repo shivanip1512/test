@@ -36,9 +36,10 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
 	
 	private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
+	private static final String SAVE_CURRENT_USER = com.cannontech.common.constants.LoginController.SAVE_CURRENT_USER;
 	
 	private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
-	private static final String SAVED_YUKON_USER = com.cannontech.common.constants.LoginController.SAVED_YUKON_USER;
+	private static final String SAVED_YUKON_USERS = com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS;
 		
 	private static final String LOGIN_URL_COOKIE = com.cannontech.common.constants.LoginController.LOGIN_URL_COOKIE;
 	
@@ -69,8 +70,26 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		
 		if(user != null && 
 			(home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
-			HttpSession session = req.getSession(true); 
-			try {						
+			HttpSession session = req.getSession(true);
+			
+			try {
+				if (req.getParameter(SAVE_CURRENT_USER) != null) {
+					// Add the current user to the end of the saved user list
+					LiteYukonUser currentUser = (LiteYukonUser) session.getAttribute( YUKON_USER );
+					if (currentUser != null) { 
+						java.util.LinkedList savedUsers = (java.util.LinkedList) session.getAttribute( SAVED_YUKON_USERS );
+						if (savedUsers == null) {
+							savedUsers = new java.util.LinkedList();
+							session.setAttribute( SAVED_YUKON_USERS, savedUsers );
+						}
+						savedUsers.addLast( currentUser );
+					}
+				}
+				else {
+					// If SAVED_CURRENT_USER is not specified, "forget" all the saved users
+					session.removeAttribute( SAVED_YUKON_USERS );
+				}
+				
 				initSession(user, session);
 				ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + req.getRemoteAddr());
 				
@@ -102,22 +121,33 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			}
 			ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + req.getRemoteAddr());
 			resp.sendRedirect(redirectURI);
-		}			
+		}
 	}
 	else 
 	if(LOGOUT.equalsIgnoreCase(action)) {
 		HttpSession session = req.getSession();
 		if(session != null) {
 			LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);			
-			LiteYukonUser savedUser = (LiteYukonUser) session.getAttribute(SAVED_YUKON_USER);
+			java.util.LinkedList savedUsers = (java.util.LinkedList) session.getAttribute(SAVED_YUKON_USERS);
 			session.invalidate();
-			if (savedUser != null && !savedUser.equals(user)) {
-				// Restore saved yukon user into session after logging off
-				session = req.getSession( true );
-				session.setAttribute(SAVED_YUKON_USER, savedUser);
-			}
+			
 			if(user != null) {
 				ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + req.getRemoteAddr());
+			}
+			
+			if (savedUsers != null) {
+				// Restore saved yukon user into session after logging off
+				LiteYukonUser savedUser = (LiteYukonUser) savedUsers.removeLast();
+				session = req.getSession( true );
+				session.setAttribute(YUKON_USER, savedUser);
+				if (savedUsers.size() > 0)
+					session.setAttribute(SAVED_YUKON_USERS, savedUsers);
+				
+				String loginUrl = AuthFuncs.getRolePropertyValue(savedUser, WebClientRole.LOG_IN_URL, LOGIN_URI);
+				Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
+				c.setPath("/"+req.getContextPath());
+				c.setMaxAge(Integer.MAX_VALUE);
+				resp.addCookie(c);
 			}
 		}
 
@@ -164,8 +194,8 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	}	
 }
 
-private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException  {
-	session.setAttribute(com.cannontech.common.constants.LoginController.YUKON_USER, user);
+private void initSession(LiteYukonUser user, HttpSession session) throws TransactionException {
+	session.setAttribute(YUKON_USER, user);
 }
 
 }

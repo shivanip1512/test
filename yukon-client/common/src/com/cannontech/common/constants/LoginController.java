@@ -30,16 +30,16 @@ public interface LoginController {
 	public static final String USERNAME = "USERNAME";
 	public static final String PASSWORD = "PASSWORD";
 	public static final String ACTION = "ACTION";
-
+	public static final String REDIRECT = "REDIRECT";
+	public static final String SAVE_CURRENT_USER = "SAVE_CURRENT_USER";
+	
 	/* Possible Action Values */
 	public static final String LOGIN = "LOGIN";
 	public static final String CLIENT_LOGIN = "CLIENTLOGIN";
 	public static final String LOGOUT = "LOGOUT";
 	
-	public static final String REDIRECT = "REDIRECT";
-	
 	public static final String YUKON_USER = "YUKON_USER";
-	public static final String SAVED_YUKON_USER = "SAVED_YUKON_USER";
+	public static final String SAVED_YUKON_USERS = "SAVED_YUKON_USERS";
 	
 	public static final String LOGIN_URL_COOKIE = "LOGIN_URL";
 	
