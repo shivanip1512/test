@@ -217,7 +217,7 @@ public class SOAPUtil {
 	    	StarsOperation operation = parseSOAPMsgForOperation( msg );
 	    	StringWriter sw = new StringWriter();
 	    	operation.marshal( sw );
-	    	CTILogger.info( leading + sw.toString() );
+	    	CTILogger.debug( leading + sw.toString() );
     	}
     	catch (Exception e) {
     		e.printStackTrace();
