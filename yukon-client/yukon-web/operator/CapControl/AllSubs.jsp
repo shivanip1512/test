@@ -7,9 +7,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="refresh" content= <%= CapControlWebAnnex.REFRESH_SECONDS %> >
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
+<link rel="stylesheet" href="demostyle.css" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
@@ -26,9 +25,11 @@
                 <td colspan="4" height="74" background="Header.gif">&nbsp;</td>
               </tr>
               <tr bgcolor="#666699"> 
-                <td width="253" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
+                <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
                 	Capacitor Control 
             		<% if( !cbcServlet.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
+            		<% if( cbcSession.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
+            			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %> seconds) </font><%}%>
             		</em></font></td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
@@ -76,7 +77,6 @@
 	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
 	                  						? " selected" : "" ) ;
 	                  		%>
-	                  		
 									<option value="<%= area %>" <%= s %>><%= area %></option>
 	                  <% } %>
 
@@ -149,16 +149,16 @@
                       
                       <tr valign="top"> 
                         <td width="100" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= i %>" >
-                          <div name = "subPopup" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'subMenu')" >
+                          <div name = "subPopup" align = "left" cursor:default;" >
                              <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>
                         </td>
 
                         <td width="44" class="TableCell">
-                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=SUB_CNTRL" >
+                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
 	                    		<font color="<%= cbcServlet.convertColor(subBusMdl.getCellForegroundColor( i, SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
 	                    		<%= subBusMdl.getValueAt(i, SubBusTableModel.CURRENT_STATE_COLUMN) %> 
-	                    		</font>
+	                    		</font></a>
                         </td>
 
                         <td width="44" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.TARGET_COLUMN) %></td>
@@ -191,11 +191,6 @@
                   <br>
                   </form>
                   <br>
-               <div id="subMenu" class = "bgmenu" style = "width:75px; left: 214px; top: 216px" >
-               <div id = "Enable1ID" name = "enable"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "">&nbsp;&nbsp;&nbsp;Enable</div>
-					<div id = "Disable1ID" name = "disable" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "">&nbsp;&nbsp;&nbsp;Disable</div>
-					<div id = "Confirm1ID" name = "confirm" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "">&nbsp;&nbsp;&nbsp;Confirm</div>
-					</div>
 				</tr>
 </table>
 

@@ -30,17 +30,54 @@
 	String lastArea = request.getParameter("area");
 	if( lastArea == null )
 		lastArea = cbcSession.getLastArea();
+		
 	if( lastArea == null)
 		lastArea = SubBusTableModel.ALL_FILTER;
 	
 	
 	cbcSession.setLastArea( lastArea );
+	cbcSession.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF );	
 	
-CTILogger.debug( "		CBC-HDR called" );
 	
 	//set the filter to the one we want
 	subBusMdl.setFilter( cbcSession.getLastArea() );
 	
+	
+	//handle any commands that we may need to send to the server from any page here
+	String cmdType = request.getParameter("cmdExecute");
+	
+	if( "Submit".equals(cmdType) )
+	{
+		try
+		{
+			Integer cmdID = new Integer( request.getParameter("cmdID") );
+			String controlType = request.getParameter("controlType");
+			Integer cmdRowID = new Integer( request.getParameter("cmdRowID") );
+			String manChange = request.getParameter("manualChange");
+			
+			
+			CTILogger.debug(request.getServletPath() +
+				"	  cmdID = " + cmdID +
+				", controlType = " + controlType +
+				", cmdRowID = " + cmdRowID +
+				", manualChng = " + manChange  );
+			
+			//send the command with the id, type, rowid
+			cbcServlet.executeCommand( 
+							cmdID.intValue(), 
+							controlType, 
+							cmdRowID.intValue(),
+							(manChange == null ? null : new Integer(manChange)) );
+			
+			cbcSession.setRefreshRate( CapControlWebAnnex.REF_SECONDS_PEND );
+		}
+		catch( Exception e )
+		{
+			CTILogger.warn( "Command was attempted but failed for the following reason:", e );
+		}
+	}
+
+
 	
 //	 ADD THIS TO THE TOP LATER
 //<cti:checklogin/>

@@ -11,13 +11,13 @@
 	{
 		feederRowID = new Integer(strID);
 		
-		CTILogger.debug("  		FdrRowCnt=" + feederMdl.getRowCount() );
+		CTILogger.debug(request.getServletPath() + "	FdrRowCnt = " + feederMdl.getRowCount() );
 		
 		if( feederRowID.intValue() >= 0 && feederRowID.intValue() < feederMdl.getRowCount() )
 		{
 			capBankMdl.setCapBankDevices( feederMdl.getRowAt( feederRowID.intValue() ).getCcCapBanks() );
 			
-			CTILogger.debug("  		CBRowCnt=" + capBankMdl.getRowCount() );
+			CTILogger.debug(request.getServletPath() + "	CapRowCnt = " + capBankMdl.getRowCount() );
 		}
 		else  //just force ourself to catch a newly created exception
 			throw new ArrayIndexOutOfBoundsException(
@@ -39,9 +39,8 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="refresh" content= <%= CapControlWebAnnex.REFRESH_SECONDS %> >
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<meta http-equiv="refresh" content= <%= cbcSession.getRefreshRate() %> >
+<link rel="stylesheet" href="demostyle.css" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
@@ -58,9 +57,11 @@
                 <td colspan="4" height="74" background="Header.gif">&nbsp;</td>
               </tr>
               <tr bgcolor="#666699"> 
-                <td width="253" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
+                <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
                 	Capacitor Control 
             		<% if( !cbcServlet.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
+            		<% if( cbcSession.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
+            			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %> seconds) </font><%}%>
             		</em></font></td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
@@ -197,9 +198,10 @@
                           </a></td>
 
                         <td width="44" class="TableCell">
+                        	<a href= "capcontrols.jsp?rowID=<%= feederRowID.intValue() %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
                         	<font color="<%= cbcServlet.convertColor(feederMdl.getCellForegroundColor( feederRowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN ) ) %>">
                         	<%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.CURRENT_STATE_COLUMN) %>
-                        </font></td>
+                        </font></a></td>
                         
                         
                         <td width="44" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.TARGET_COLUMN) %></td>
@@ -261,9 +263,10 @@
                         <td width="228" class="TableCell"><%= capBankMdl.getValueAt(i, CapBankTableModel.BANK_ADDRESS_COLUMN) %></td>
                         
                         <td width="43" class="TableCell">
+                        	<a href= "capcontrols.jsp?rowID=<%= i %>&controlType=<%= CapControlWebAnnex.CMD_CAPBANK %>" >
                         	<font color="<%= cbcServlet.convertColor(capBankMdl.getCellForegroundColor( i, CapBankTableModel.STATUS_COLUMN ) ) %>">
                         	<%= capBankMdl.getValueAt(i, CapBankTableModel.STATUS_COLUMN) %>
-                        </font></td>
+                        </font></a></td>
                         
                         <td width="98" class="TableCell"> <%= capBankMdl.getValueAt(i, CapBankTableModel.TIME_STAMP_COLUMN) %></td>
                         <td width="33" class="TableCell"> <%= capBankMdl.getValueAt(i, CapBankTableModel.BANK_SIZE_COLUMN) %></td>
@@ -276,25 +279,6 @@
                     </table>
 				  </form>
                   <br>
-                  <div id="subMenu" class = "bgmenu" style = "width:75px; left: 214px; top: 216px"> 
-                    <div id = "Enable1ID" name = "enable"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "???">&nbsp;&nbsp;&nbsp;Enable</div>
-					<div id = "Disable1ID" name = "disable" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Disable</div>
-				<div id = "Confirm1ID" name = "confirm" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Confirm</div>
-				</div>
-				<div id="FeederMenu" class = "bgmenu" style = "width:75px; left: 214px; top: 216px"> 
-                    <div id = "Enable2ID" name = "enable"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "???">&nbsp;&nbsp;&nbsp;Enable</div>
-					<div id = "Disable2ID" name = "disable" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Disable</div>
-				</div>
-				<div id="CapMenu" class = "bgmenu" style = "width:75px; left: 214px; top: 216px"> 
-                    <div id = "AckID" name = "acknowledge"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "???">&nbsp;&nbsp;&nbsp;Ack Alarm</div>
-					<div id = "ClearID" name = "clear" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Clear Alarm</div>
-					<div id = "ManualID" name = "manual" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Manual</div>
-					<div id = "Enable3ID" name = "enable" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Enable</div>
-					<div id = "Disable3ID" name = "disable" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Disable</div>
-					<div id = "Confirm2ID" name = "confirm" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Confirm</div>
-					<div id = "OpenID" name = "open" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Open</div>
-					<div id = "CloseID" name = "close" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "????">&nbsp;&nbsp;&nbsp;Close</div>
-				</div>
 				</tr>
 </table>
 
