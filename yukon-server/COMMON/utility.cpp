@@ -2504,3 +2504,58 @@ RWCString explainTags(const unsigned tags)
     return str;
 }
 
+
+IM_EX_CTIBASE unsigned char addBitToSA305CRC(unsigned char crc, unsigned char bit) // bit is 0 or 1
+{
+    unsigned char msb = ((crc&0x80)?1:0);
+    bit = msb ^ bit;
+    crc<<=1;
+    crc|=bit;
+    if (bit)
+        crc^=0x48;
+
+    return(crc);
+}
+
+IM_EX_CTIBASE unsigned char addOctalCharToSA305CRC(unsigned char crc, unsigned char ch) // octal char
+{
+    int i=0;
+    ch-='0';
+    for (i=0; i<3; i++)
+    {
+        crc = addBitToSA305CRC(crc, ch&0x04?1:0);
+        ch<<=1;
+    }
+    return(crc);
+}
+
+IM_EX_CTIBASE void testSA305CRC(char* testData)
+{
+    unsigned i;
+    unsigned char crc=0;
+    for (i=0; i<strlen(testData)-3; i++)
+        crc = addOctalCharToSA305CRC(crc,testData[i]);
+    // shift in one false 0
+    crc = addBitToSA305CRC(crc, 0);
+    printf("%o\r\n",crc);
+
+    return;
+}
+
+IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length)
+{
+    int value = 0;
+
+    for(int i = 0; i < length; i++)
+    {
+        value <<= 1;
+
+        if(buffer[i] == '1')
+        {
+            value |= 0x00000001;
+        }
+    }
+
+    return value;
+}
+
