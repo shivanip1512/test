@@ -26,7 +26,6 @@ import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -1344,11 +1343,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addContact(LiteContact liteContact, LiteStarsCustAccountInformation liteAcctInfo) {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized (cache) {
-			cache.getAllContacts().add( liteContact );
-		}
-		
 		if (liteAcctInfo != null) {
 			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
 			synchronized (contactAcctInfoMap) { contactAcctInfoMap.put(new Integer(liteContact.getContactID()), liteAcctInfo); }
@@ -1361,11 +1355,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		LiteContact liteContact = ContactFuncs.getContact( contactID );
 		
 		if (liteContact != null) {
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized (cache) {
-				cache.getAllContacts().remove( liteContact );
-			}
-			
 			Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
 			synchronized (contactAcctInfoMap) { contactAcctInfoMap.remove(new Integer(contactID)); }
 			
@@ -1961,20 +1950,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		liteAcctInfo.setCustomerAccount( (LiteCustomerAccount) StarsLiteFactory.createLite(account.getCustomerAccount()) );
 		liteAcctInfo.setAccountSite( (LiteAccountSite) StarsLiteFactory.createLite(site.getAccountSite()) );
 		liteAcctInfo.setSiteInformation( (LiteSiteInformation) StarsLiteFactory.createLite(site.getSiteInformation().getSiteInformation()) );
-		
-		if (account.getCustomer() instanceof com.cannontech.database.data.customer.CICustomerBase) {
-			LiteCICustomer liteCI = new LiteCICustomer();
-			StarsLiteFactory.setLiteCICustomer( liteCI, (com.cannontech.database.data.customer.CICustomerBase)account.getCustomer() );
-			liteAcctInfo.setCustomer( liteCI );
-		}
-		else {
-			LiteCustomer liteCustomer = new LiteCustomer();
-			StarsLiteFactory.setLiteCustomer( liteCustomer, account.getCustomer() );
-			liteAcctInfo.setCustomer( liteCustomer );
-		}
+		liteAcctInfo.setCustomer( DefaultDatabaseCache.getInstance().getCustomer(account.getCustomerAccount().getCustomerID().intValue()) );
 		
 		Hashtable contactAcctInfoMap = getContactCustAccountInfoMap();
 		synchronized (contactAcctInfoMap) {
+			contactAcctInfoMap.put( new Integer(liteAcctInfo.getCustomer().getPrimaryContactID()), liteAcctInfo );
+			
 			Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 			for (int i = 0; i < contacts.size(); i++)
 				contactAcctInfoMap.put( new Integer(((LiteContact)contacts.get(i)).getContactID()), liteAcctInfo );
@@ -2156,6 +2137,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (accountList) {
 			if (accountList.contains(liteAcctInfo)) accountList.remove( liteAcctInfo );
 		}
+		
+		// Remove customer from the cache
+		if (liteAcctInfo.getCustomer() instanceof LiteCICustomer)
+			ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
+		else
+			DefaultDatabaseCache.getInstance().deleteCustomer( liteAcctInfo.getCustomer().getCustomerID() );
     	
 		// Remote all contacts from the cache
 		deleteContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
@@ -2516,7 +2503,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		synchronized (starsCustAcctInfos) { starsCustAcctInfos.remove( new Integer(accountID) ); }
 	}
 	
-	public Hashtable getStarsLMCtrlHists() {
+	private Hashtable getStarsLMCtrlHists() {
 		if (starsLMCtrlHists == null)
 			starsLMCtrlHists = new Hashtable();
 		return starsLMCtrlHists;
@@ -2581,6 +2568,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsCtrlHist;
 		}
+	}
+	
+	public void deleteStarsLMControlHistory(int groupID) {
+		Hashtable starsLMCtrlHists = getStarsLMCtrlHists();
+		synchronized (starsLMCtrlHists) { starsLMCtrlHists.remove(new Integer(groupID)); }
 	}
 
 }

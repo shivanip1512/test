@@ -353,9 +353,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			}
 		}
 		
-		StarsYukonUser user = new StarsYukonUser( yukonUser );
-		addStarsYukonUser( user );
-		return user;
+		try {
+			StarsYukonUser user = StarsYukonUser.newInstance( yukonUser );
+			addStarsYukonUser( user );
+			return user;
+		}
+		catch (InstantiationException ie) {
+			CTILogger.error( ie.getMessage(), ie );
+		}
+		
+		return null;
 	}
 	
 	public static void addStarsYukonUser(StarsYukonUser user) {

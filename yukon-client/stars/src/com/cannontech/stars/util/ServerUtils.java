@@ -151,7 +151,7 @@ public class ServerUtils {
 				typeOfChange
 				);
 		}
-		else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY || lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
+		else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
 			msg = new DBChangeMsg(
 				lite.getLiteID(),
 				DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
@@ -160,15 +160,27 @@ public class ServerUtils {
 				typeOfChange
 				);
 		}
-		
-		DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
-		
-		com.cannontech.message.util.ClientConnection conn = SOAPServer.getInstance().getClientConnection();
-		if (conn == null) {
-			CTILogger.error( "Cannot get dispatch client connection" );
-			return;
+		else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
+			msg = new DBChangeMsg(
+				lite.getLiteID(),
+				DBChangeMsg.CHANGE_CUSTOMER_DB,
+				DBChangeMsg.CAT_CUSTOMER,
+				DBChangeMsg.CAT_CUSTOMER,
+				typeOfChange
+				);
 		}
-    	conn.write( msg );
+		
+		if (msg != null) {
+			DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
+			
+			com.cannontech.message.util.ClientConnection conn = SOAPServer.getInstance().getClientConnection();
+			if (conn == null) {
+				CTILogger.error( "Cannot get dispatch client connection" );
+				return;
+			}
+			
+			conn.write( msg );
+		}
 	}
 	
 	public static Date translateDate(long time) {

@@ -14,7 +14,9 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -190,7 +192,7 @@ public class NewCustAccountAction implements ActionBase {
             }
             catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_SESSION_INVALID, e.getMessage()) );
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
             }
             
@@ -411,10 +413,13 @@ public class NewCustAccountAction implements ActionBase {
         
 		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite( primContact );
 		energyCompany.addContact( liteContact, liteAcctInfo );
+		
 		for (int i = 0; i < addContacts.size(); i++) {
 			liteContact = (LiteContact) StarsLiteFactory.createLite( (com.cannontech.database.data.customer.Contact) addContacts.get(i) );
 			energyCompany.addContact( liteContact, liteAcctInfo );
 		}
+        
+		ServerUtils.handleDBChange(liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_ADD);
         
 		//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
 		return liteAcctInfo;

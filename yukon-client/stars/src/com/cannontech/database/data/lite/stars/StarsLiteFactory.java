@@ -935,12 +935,14 @@ public class StarsLiteFactory {
 		account.setAccountSite( acctSite );
 		
 		if (liteAccount.getCustomer() instanceof LiteCICustomer) {
-			com.cannontech.database.data.customer.CICustomerBase ci = new com.cannontech.database.data.customer.CICustomerBase();
-			setCICustomerBase( ci, (LiteCICustomer)liteAccount.getCustomer() );
-			account.setCustomer( ci );
+			com.cannontech.database.data.customer.CICustomerBase ciCust =
+					new com.cannontech.database.data.customer.CICustomerBase();
+			StarsLiteFactory.setCICustomerBase( ciCust, (LiteCICustomer)liteAccount.getCustomer() );
+			account.setCustomer( ciCust );
 		}
 		else {
-			com.cannontech.database.data.customer.Customer customer = new com.cannontech.database.data.customer.Customer();
+			com.cannontech.database.data.customer.Customer customer =
+					new com.cannontech.database.data.customer.Customer();
 			StarsLiteFactory.setCustomer( customer.getCustomer(), liteAccount.getCustomer() );
 			account.setCustomer( customer );
 		}

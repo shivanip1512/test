@@ -2,7 +2,6 @@ package com.cannontech.database.data.stars.customer;
 
 import java.util.Vector;
 
-import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -88,8 +87,11 @@ public class CustomerAccount extends DBPersistent {
         getCustomerAccount().delete();
         getAccountSite().delete();
         getBillingAddress().delete();
-        if (getCustomer() != null) getCustomer().delete();
-
+		
+		// Delete customer
+		// TODO: In the future, a CICustomer may not be deleted when its account is deleted
+		if (getCustomer() != null) getCustomer().delete();
+        
         setDbConnection(null);
     }
 
@@ -148,27 +150,6 @@ public class CustomerAccount extends DBPersistent {
 
         getAccountSite().setAccountSiteID( getCustomerAccount().getAccountSiteID() );
         getAccountSite().retrieve();
-
-        if (getCustomer() == null) {
-			com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
-            customerDB.setCustomerID( getCustomerAccount().getCustomerID() );
-            customerDB.setDbConnection( getDbConnection() );
-            customerDB.retrieve();
-            
-            if (customerDB.getCustomerTypeID().intValue() == CustomerTypes.CUSTOMER_CI) {
-            	customer = new com.cannontech.database.data.customer.CICustomerBase();
-            	customer.setCustomer( customerDB );
-            	customer.setCustomerID( customerDB.getCustomerID() );
-            	customer.setDbConnection( getDbConnection() );
-            	customer.retrieve();
-            }
-            else {
-            	customer = new com.cannontech.database.data.customer.Customer();
-            	customer.setCustomer( customerDB );
-            	customer.setDbConnection( getDbConnection() );
-            	customer.retrieve();
-            }
-        }
 		
 		setApplianceVector( com.cannontech.database.db.stars.appliance.ApplianceBase.getApplianceIDs(
 				getCustomerAccount().getAccountID(), getDbConnection()) );

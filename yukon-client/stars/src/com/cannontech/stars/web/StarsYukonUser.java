@@ -3,9 +3,12 @@ package com.cannontech.stars.web;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServerUtils;
 
@@ -21,18 +24,24 @@ public class StarsYukonUser {
 
 	private int userID = 0;
 	private int energyCompanyID = 0;
-	private int[] accountIDs = null;
+	private LiteCustomer customer = null;
 	private Hashtable attributes = new Hashtable();
 	
-	public StarsYukonUser(LiteYukonUser user) {
+	private StarsYukonUser(LiteYukonUser user) {
 		userID = user.getUserID();
-		init();
 	}
 	
 	public StarsYukonUser(StarsYukonUser starsUser) {
 		userID = starsUser.getUserID();
 		energyCompanyID = starsUser.getEnergyCompanyID();
-		accountIDs = starsUser.getCustomerAccountIDs();
+		customer = starsUser.getCustomer();
+	}
+	
+	public static StarsYukonUser newInstance(LiteYukonUser user) throws InstantiationException {
+		StarsYukonUser starsUser = new StarsYukonUser(user);
+		starsUser.init();
+		
+		return starsUser;
 	}
 	
 	public int getUserID() {
@@ -43,12 +52,29 @@ public class StarsYukonUser {
 		return com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( userID );
 	}
 	
+	public LiteCustomer getCustomer() {
+		return customer;
+	}
+	
 	public int getEnergyCompanyID() {
 		return energyCompanyID;
 	}
 	
+	/**
+	 * If the yukon user belongs to a residential customer, returns
+	 * all the account IDs of this customer. Otherwise, returns null.
+	 */
 	public int[] getCustomerAccountIDs() {
-		return accountIDs;
+		if (customer != null) {
+			java.util.Vector acctIDs = customer.getAccountIDs();
+			int[] accountIDs = new int[ acctIDs.size() ];
+			for (int i = 0; i < acctIDs.size(); i++)
+				accountIDs[i] = ((Integer) acctIDs.get(i)).intValue();
+			
+			return accountIDs;
+		}
+		
+		return null;
 	}
 	
 	public Object getAttribute(Object name) {
@@ -76,30 +102,21 @@ public class StarsYukonUser {
 		return value;
 	}
 	
-	private void init() {
+	private void init() throws InstantiationException {
 		if (ServerUtils.isOperator(this)) {
-			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() ).getLiteID();
+			LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() );
+			if (energyCompany == null)
+				throw new InstantiationException( "Cannot find the energy company of this user" );
+			
+			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
 		else if (ServerUtils.isResidentialCustomer(this)) {
 			LiteContact liteContact = YukonUserFuncs.getLiteContact( getUserID() );
-			String sql = "SELECT map.EnergyCompanyID, acct.AccountID " +
-					"FROM CustomerAccount acct, ECToAccountMapping map, Customer cust " +
-					"WHERE cust.PrimaryContactID = " + liteContact.getContactID() +
-					" AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
-			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-					
-			try {
-				stmt.execute();
-				accountIDs = new int[ stmt.getRowCount() ];
-				for (int i = 0; i < stmt.getRowCount(); i++) {
-					energyCompanyID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-					accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			customer = ContactFuncs.getCustomer( liteContact.getContactID() );
+			if (customer == null)
+				throw new InstantiationException( "Cannot find customer information of this user" );
+			
+			energyCompanyID = customer.getEnergyCompanyID();
 		}
 	}
 }

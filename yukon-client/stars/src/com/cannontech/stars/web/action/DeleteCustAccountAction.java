@@ -160,7 +160,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			int userID = liteContact.getLoginID();
 			if (userID > com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID)
 				UpdateLoginAction.deleteLogin( userID, null );
-    		
+			
 			// Delete lite and stars objects
 			energyCompany.deleteCustAccountInformation( liteAcctInfo );
 			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
