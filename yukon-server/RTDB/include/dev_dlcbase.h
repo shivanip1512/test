@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/10/30 17:37:00 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,20 +18,14 @@
 #define __DEV_DLCBASE_H__
 
 
-#include <rw\cstring.h>
-#include <rw\thr\mutex.h>
-
 #include "dev_single.h"
-#include "tbl_2way.h"
-#include "tbl_scanrate.h"
 #include "tbl_route.h"
 #include "tbl_carrier.h"
 #include "dlldefs.h"
 #include "rte_base.h"
 #include "mgr_route.h"
-#include "prot_emetcon.h"
 #include "logger.h"
-#include "msg_cmd.h"
+#include "prot_emetcon.h"
 
 #include <set>
 #include <utility>
@@ -84,46 +78,53 @@ private:
 
 protected:
 
-   CtiTableDeviceCarrier      CarrierSettings;
-   CtiTableDeviceRoute        DeviceRoutes;
+    CtiTableDeviceCarrier      CarrierSettings;
+    CtiTableDeviceRoute        DeviceRoutes;
 
-   unsigned int getLPRetryRate( unsigned int interval );
+    enum
+    {
+        LPBlockEvacuationTime    = 300
+    };
 
-   enum
-   {
-       LPBlockEvacuationTime    = 300
-   };
+    unsigned int getLPRetryRate( unsigned int interval );
+
+    int executeOnDLCRoute( CtiRequestMsg              *pReq,
+                           CtiCommandParser           &parse,
+                           OUTMESS                   *&OutMessage,
+                           RWTPtrSlist< CtiMessage >  &vgList,
+                           RWTPtrSlist< CtiMessage >  &retList,
+                           RWTPtrSlist< OUTMESS >     &outList,
+                           bool                        wait );
 
 public:
 
-   typedef set< CtiDLCCommandStore > DLCCommandSet;
+    typedef set< CtiDLCCommandStore > DLCCommandSet;
 
-   typedef CtiDeviceSingle Inherited;
+    typedef CtiDeviceSingle Inherited;
 
-   CtiDeviceDLCBase();
-   CtiDeviceDLCBase(const CtiDeviceDLCBase& aRef);
-   virtual ~CtiDeviceDLCBase();
+    CtiDeviceDLCBase();
+    CtiDeviceDLCBase(const CtiDeviceDLCBase& aRef);
+    virtual ~CtiDeviceDLCBase();
 
-   CtiDeviceDLCBase& operator=(const CtiDeviceDLCBase& aRef);
+    CtiDeviceDLCBase& operator=(const CtiDeviceDLCBase& aRef);
 
-   CtiTableDeviceCarrier  getCarrierSettings() const;
-   CtiTableDeviceCarrier& getCarrierSettings();
-   CtiDeviceDLCBase& setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
+    CtiTableDeviceCarrier  getCarrierSettings() const;
+    CtiTableDeviceCarrier& getCarrierSettings();
+    CtiDeviceDLCBase& setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   // virtual void DecodeRoutesDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    // virtual void DecodeRoutesDatabaseReader(RWDBReader &rdr);
 
-   virtual LONG getAddress() const;
-   virtual LONG getRouteID() const;
+    virtual LONG getAddress() const;
+    virtual LONG getRouteID() const;
 
-   INT retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
-   INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
+    INT decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
-   virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
-   virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;
-
+    virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
+    virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;
 };
 
 #endif // #ifndef __DEV_DLCBASE_H__

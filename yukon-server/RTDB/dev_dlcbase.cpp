@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/07/17 22:22:47 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/10/30 17:37:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,12 +17,16 @@
 #pragma warning( disable : 4786)
 
 
+#include "dev_dlcbase.h"
+#include "dev_mct.h"  //  for ARM commands
 #include "cparms.h"
 #include "devicetypes.h"
-#include "dev_dlcbase.h"
+#include "msg_cmd.h"
 #include "pt_base.h"
 #include "dsm2.h"
 #include "utility.h"
+#include "porter.h"
+#include "numstr.h"
 
 unsigned int CtiDeviceDLCBase::_lpRetryMultiplier = 0;
 unsigned int CtiDeviceDLCBase::_lpRetryMinimum    = 0;
@@ -362,6 +366,148 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
 
     return ErrReturn;
 }
+
+
+int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
+                                         CtiCommandParser           &parse,
+                                         OUTMESS                   *&OutMessage,
+                                         RWTPtrSlist< CtiMessage >  &vgList,
+                                         RWTPtrSlist< CtiMessage >  &retList,
+                                         RWTPtrSlist< OUTMESS >     &outList,
+                                         bool                        result )
+{
+    int nRet = NoError;
+
+    CtiRouteSPtr Route;
+
+    RWCString resultString;
+    long      routeID;
+
+    CtiReturnMsg* pRet = 0;
+
+    for(int i = outList.entries() ; i > 0; i-- )
+    {
+        OUTMESS *pOut = outList.get();
+
+        if( pReq->RouteId() )
+        {
+            pOut->Request.RouteID = pReq->RouteId();
+        }
+        else
+        {
+            pOut->Request.RouteID = getRouteID();
+        }
+
+        EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
+
+        if( (Route = CtiDeviceBase::getRoute( pOut->Request.RouteID )) )
+        {
+            pOut->TargetID  = getID();
+
+            if( result )
+            {
+                pOut->EventCode = BWORD | WAIT | RESULT;
+            }
+            else
+            {
+                pOut->EventCode = BWORD | WAIT;
+            }
+
+            if( parse.isKeyValid("noqueue") )
+            {
+                pOut->EventCode |= DTRAN;
+                //  pOut->EventCode &= ~QUEUED;
+            }
+
+            pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the device
+            pOut->Buffer.BSt.DeviceType   = getType();
+            pOut->Buffer.BSt.SSpec        = 0;  // 2003-08-22 mskf - implement this at the dev_mct level if necessary - getSSpec();
+
+            /*
+             * OK, these are the items we are about to set out to perform..  Any additional signals will
+             * be added into the list upon completion of the Execute!
+             */
+            if(parse.getActionItems().entries())
+            {
+                for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
+                {
+                    RWCString actn = parse.getActionItems()[offset];
+                    RWCString desc = getDescription(parse);
+
+                    vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                }
+            }
+
+            if( pOut->Buffer.BSt.IO & Q_ARMC )
+            {
+                pOut->Buffer.BSt.IO &= ~Q_ARMC;
+
+                OUTMESS *armc = CTIDBG_new CtiOutMessage(*pOut);
+
+                armc->Sequence = CtiProtocolEmetcon::Command_ARMC;
+                armc->Buffer.BSt.Function = ARMC;
+            }
+
+            /*
+             *  Form up the reply here since the ExecuteRequest funciton will consume the
+             *  OutMessage.
+             */
+            pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, RWOrdered());
+            // Start the control request on its route(s)
+            if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
+            {
+                resultString = "ERROR " + CtiNumStr(nRet) + " performing command on route " + Route->getName().data() + "\n" + FormatError(nRet);
+                pRet->setResultString(resultString);
+                pRet->setStatus( nRet );
+            }
+            else
+            {
+                delete pRet;
+                pRet = 0;
+            }
+        }
+        else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!
+        {
+            // Tell the porter side to complete the assembly of the message.
+            pOut->Request.BuildIt = TRUE;
+            strncpy(pOut->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+
+            outList.insert( pOut );       // May porter have mercy.
+            pOut = 0;
+        }
+        else
+        {
+            nRet = BADROUTE;
+
+            resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
+
+            pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                           RWCString(pOut->Request.CommandStr),
+                                           resultString,
+                                           nRet,
+                                           pOut->Request.RouteID,
+                                           pOut->Request.MacroOffset,
+                                           pOut->Request.Attempt,
+                                           pOut->Request.TrxID,
+                                           pOut->Request.UserID,
+                                           pOut->Request.SOE,
+                                           RWOrdered());
+        }
+
+        if(pRet)
+        {
+            retList.insert( pRet );
+        }
+
+        if( pOut )
+        {
+            delete pOut;
+        }
+    }
+
+    return nRet;
+}
+
 
 
 bool CtiDeviceDLCBase::processAdditionalRoutes( INMESS *InMessage ) const
