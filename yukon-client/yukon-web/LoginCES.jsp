@@ -17,8 +17,7 @@
           <td width="66%">&nbsp;</td>
         </tr>
         <tr> 
-          <td colspan = "2" align = "center"><span class="TableCell"><b><font size="4">Consumer 
-            Energy Services!</font></b></span> </td>
+          <td colspan = "2" align = "center"><span class="TableCell"><b><img src="wwLogo.gif" width="302" height="22"></b></span></td>
         </tr>
       </table>
       
@@ -36,11 +35,11 @@
         <tr> 
           <td rowspan = "3" width="555" bgcolor="#FFFFFF" height="102" valign="top" ><br> 
             <div align="center"><b>SIGN IN</b><br>
-              Please enter your account number and password below.</div>
+              Please enter your user name and password below.</div>
             <form name="form1" method="post" action="/servlet/SOAPClient">
               <input type="hidden" name="action" value="UserLogin">
 			  <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/General.jsp">
-			  <input type="hidden" name="REFERRER" value="/LoginCES.jsp">
+			  <input type="hidden" name="REFERRER" value="/login.jsp">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td width="83" class = "Main"> <div align="right"> User Name</div></td>

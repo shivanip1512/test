@@ -2,14 +2,14 @@
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../demostyle.css" type="text/css">
+<link rel="stylesheet" href="demostyle.css" type="text/css">
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
 <br>
 <table width="450" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
-    <td colspan = "2" align = "center" height="51" valign = "bottom"><img src="PGELogo.gif"> 
+    <td colspan = "2" align = "center" height="51" valign = "bottom"><img src="CannonLogo.gif"> 
       <table width="400" border="0" height="43">
         <tr> 
           <td width="34%" align = "center"><span class="TableCell"><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#999999"><b><font face="Arial, Helvetica, sans-serif" color="#666666" size="4">Welcome 

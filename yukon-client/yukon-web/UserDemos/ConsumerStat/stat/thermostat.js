@@ -34,7 +34,7 @@ function showTimeSleep(){
 
 
 function showTime(s, txt) {
-  var curPos = parseInt(s.style.left);
+  var curPos = parseInt(s.style.left, 10);
   var hourStr = "0" + Math.floor(((curPos - 200)/3) * 10 / 60);
   hourStr = hourStr.substr(hourStr.length-2, 2);
   var minuteStr = "0" + Math.floor(((curPos - 200)/3)) * 10 % 60;
@@ -66,34 +66,9 @@ showTempIE(a,div);
 
 function showTempIE(a, div)
 { 
-  var curPos = parseInt(a.style.top);
+  var curPos = parseInt(a.style.top, 10);
   var temp = Math.floor((-curPos-35) / 100 * 43 + 45);
  div.innerHTML = temp + '&deg;';
-}
-
-var changed = false;
-
-function setChanged() {
-	changed = true;
-}
-
-function switchSettings(day, mode) {
-	if (!changed) return true;
-	
-	var form = document.form1;
-	form.action = "/servlet/UpdateThermostat";
-	form.elements('action').value = "SaveChanges";
-	form.day2.value=day;
-	form.mode2.value=mode;
-	form.submit();
-	return false;
-}
-
-function setDefault() {
-	var form = document.form1;
-	form.action = "/servlet/UpdateThermostat";
-	form.elements('action').value = "SetDefault";
-	form.submit();
 }
 
 
@@ -111,8 +86,8 @@ var lgMove = 18 * hour + 200;
 var smMove = parseInt(18 * (Math.floor(minute/10) * 10) / 60);
 var layer = document.getElementById(divId);
 layer.style.left = lgMove + smMove;
-
 }
+
 
 function timeChange(t,divId, nextTxtBox, prevTxtBox) {
 var pattern
@@ -145,19 +120,17 @@ prevMin = parseInt(prevTime[1], 10);
 
 
 if (time.length == 2) {
-	if (time[0]) {
-	hour = parseInt(time[0]);
-	alert(time[0]+"/"+hour);
-	}
+	if (time[0])
+	hour = parseInt(time[0], 10);
 	else 
 	hour = 0;
 	if (time[1])
-	minute = parseInt(time[1]);
+	minute = parseInt(time[1], 10);
 	else 
 	minute = 0;
 }
 else if (time.length == 1){
-	hour = parseInt(time[0]);
+	hour = parseInt(time[0], 10);
 	minute = 0;}
 else{
 	hour = 0;
