@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/05/23 22:12:09 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/06/10 21:06:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -753,8 +753,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             /* something went wrong so start by printing error */
-            GetErrorString (nRet, ErrStr);
-
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
@@ -1651,7 +1649,14 @@ BOOL CtiDeviceSingle::isScanWindowOpen(RWTime &aNow) const
             RWTime open ( RWTime(RWDate()).seconds()+_windowVector[x].getOpen());
             RWTime close (open.seconds()+_windowVector[x].getDuration());
 
-            if((aNow < open) || (aNow > close))
+            if(open == close)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
+                }
+            }
+            else if((aNow < open) || (aNow > close))
             {
                 status = FALSE;
             }
