@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   test
@@ -6,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:07:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/06/10 20:57:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,12 +31,15 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "exchange.h"
 #include "netports.h"
 #include "message.h"
+#include "mgr_point.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
 #include "msg_email.h"
+#include "msg_commerrorhistory.h"
+#include "msg_lmcontrolhistory.h"
 #include "connection.h"
 #include "counter.h"
 #include "pointtypes.h"
@@ -44,288 +48,315 @@ BOOL           bQuit = FALSE;
 
 BOOL MyCtrlHandler(DWORD fdwCtrlType)
 {
-   switch(fdwCtrlType)
-   {
+    switch(fdwCtrlType)
+    {
 
-   /* Handle the CTRL+C signal. */
+    /* Handle the CTRL+C signal. */
 
-   case CTRL_C_EVENT:
+    case CTRL_C_EVENT:
 
-   case CTRL_CLOSE_EVENT:
+    case CTRL_CLOSE_EVENT:
 
-   case CTRL_BREAK_EVENT:
+    case CTRL_BREAK_EVENT:
 
-   case CTRL_LOGOFF_EVENT:
+    case CTRL_LOGOFF_EVENT:
 
-   case CTRL_SHUTDOWN_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
 
-   default:
+    default:
 
-      bQuit = TRUE;
-      return TRUE;
+        bQuit = TRUE;
+        return TRUE;
 
-   }
+    }
 }
 
 void DoTheNasty(int argc, char **argv);
 
+static double GetPointValue(int pointtype)
+{
+    static bool laststat = false;
+    double value = 1.0;
+
+    switch(pointtype)
+    {
+    case StatusPointType:
+        {
+            laststat = !laststat;
+            value = (double)(laststat ? 1.0 : 0.0);
+            break;
+        }
+    case AnalogPointType:
+    case PulseAccumulatorPointType:
+    case DemandAccumulatorPointType:
+    case CalculatedPointType:
+    case StatusOutputPointType:
+    case AnalogOutputPointType:
+    case SystemPointType:
+        {
+            value = (double)rand() * 1000.0;
+            break;
+        }
+    }
+
+    return value;
+}
 
 void main(int argc, char **argv)
 {
-   INT point_type;
+    INT point_type;
 
+    CtiPointManager PointMgr;
 
-#if 0
+    dout.start();     // fire up the logger thread
+    dout.setOutputPath(gLogDirectory.data());
+    dout.setOutputFile(argv[0]);
+    dout.setToStdOut(true);
+    dout.setWriteInterval(0);
 
-
-   RWTime now;
-
-   now = now.seconds() - (now.seconds() % 3600);   // hour aligned now!
-
-   RWTime startdt;
-   RWTime stopdt;
-
-   int starthour = (now.hour() + 1) % 24;      // This is 24 hours ago.
-   int i;
-
-
-   for(i = 23 ; starthour != now.hour() ; starthour = (starthour + 1) % 24, i--)
-   {
-       startdt = (now.seconds() - (3600 * i));
-       stopdt = RWTime(startdt.seconds() + 3600);
-
-        {
-            cout << "Hour " << starthour << endl;
-            cout << "  Start " << startdt << endl;
-            cout << "  Stop  " << stopdt  << endl;
-        }
-   }
-
-   startdt = now;
-   stopdt = (RWTime(now.seconds() + 3600));
-
-   {
-       cout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-       cout << "  Start " << startdt << endl;
-       cout << "  Stop  " << stopdt  << endl;
-   }
-
-   // An ugly little test of the counter class.
-   CtiCounter cnt1, cnt2;
-
-   cnt1.inc(1);
-   cnt1.inc(1);
-   cnt1.inc(1);
-   cnt1.inc(1);
-   cnt1.inc(1);
-   cnt2 = cnt1;
-
-   cnt1.resetAll();
-
-   cout << " cnt2 = " << cnt2.get(1) << " cnt1 = " << cnt1.get(1) << endl;
-
-   return;
-#endif
-
-   if(argc < 5)
-   {
-      cout << "Arg 1:   vangogh server machine name" << endl;
-      cout << "Arg 2:   this app's registration name" << endl;
-      cout << "Arg 3:   # of loops to send data     " << endl;
-      cout << "Arg 4:   sleep duration between loops" << endl;
-
-      exit(-1);
-   }
-
-   if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
-   {
-      cerr << "Could not install control handler" << endl;
-      return;
-   }
-
-
-   if(argc == 5)
-   {
-      RWWinSockInfo info;
-
-      try
-      {
-         int Op, k;
-
-         unsigned    timeCnt = rwEpoch;
-         unsigned    pt = 1;
-         CtiMessage  *pMsg;
-
-         CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
-
-
-         CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
-
-         pM->setMessagePriority(15);
-
-         Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), FALSE));
-         // pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), FALSE));
-
-         CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NONE);
-/*
-         PtRegMsg->insert(1);
-         PtRegMsg->insert(2);
-         PtRegMsg->insert(3);
-         PtRegMsg->insert(4);
-         PtRegMsg->insert(5);
-         PtRegMsg->insert(6);
-         PtRegMsg->insert(7);
-         PtRegMsg->insert(8);
-*/
-
-         Connect.WriteConnQue( PtRegMsg );
-
-
-
-         Sleep(5000);
-
-#if 0
-         CtiEmailMsg *pEmail = CTIDBG_new CtiEmailMsg(1L, CtiEmailMsg::CICustomerEmailType);
-
-         pEmail->setUser("emailuser");
-         pEmail->setMessagePriority(15);
-         pEmail->setSubject("Test Subject");
-         pEmail->setText("This is an email test.");
-
-         Connect.WriteConnQue( pEmail->replicateMessage() );
-#endif
-
-         CtiPointDataMsg  *pData = NULL;
-         CtiMultiMsg   *pChg  = CTIDBG_new CtiMultiMsg();
-
-         for(k = 0; !bQuit && k < atoi(argv[3]); k++)
-         {
-            pt = k;
-
-            pData = CTIDBG_new CtiPointDataMsg((pt % 5) + 1, 1.0, NormalQuality,  InvalidPointType, __FILE__);
-            pData->setTime( timeCnt );
-            pData->setTags( TAG_POINT_MUST_ARCHIVE );
-
-            timeCnt += 50;
-
-            if(pData != NULL)
-            {
-               if(pChg != NULL)
-               {
-                  // Add a single point change to the message
-
-                  //pData->dump();
-                  pChg->getData().insert(pData);
-                  // pChg->getData().insert(pEmail->replicateMessage());
-
-
-                  if(pt && !(pt % 4))
-                  {
-                     cout << "Sent Point Change " << k << endl;
-
-                     Connect.WriteConnQue(pChg);
-                     pChg = NULL;
-                     pChg = CTIDBG_new CtiMultiMsg();
-                  }
-                  else
-                  {
-                     cout << "Inserted Point Change " << k << endl;
-                  }
-               }
-
-               while( NULL != (pMsg = Connect.ReadConnQue(0)))
-               {
-                  pMsg->dump();
-
-                  delete pMsg;
-               }
-
-               Sleep(atoi(argv[4]));
-            }
-         }
-         // delete pEmail;
-
-         if(pChg != NULL)
-         {
-            Connect.WriteConnQue(pChg);
-            pChg = NULL;
-         }
-
-         INT cnt;
-         while( (cnt = Connect.outQueueCount()) > 0 )
-         {
-            cout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
-            Sleep(1000);
-         }
-         cout << RWTime() << " **** OutQueue is cleared" << endl;
-
-         Sleep(30000);
-
-         Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
-      }
-      catch(RWxmsg &msg)
-      {
-         cout << "Tester Exception: ";
-         cout << msg.why() << endl;
-      }
-
-   }
-   else
+    if(argc < 5)
     {
-      cout << " This is interesting " << endl;
-      for(int i = 0; i < atoi(argv[3]); i++)
-      {
-         DoTheNasty(argc, argv);
-         Sleep(atoi(argv[4]));
-      }
-   }
+        cout << "Arg 1:   vangogh server machine name" << endl;
+        cout << "Arg 2:   this app's registration name" << endl;
+        cout << "Arg 3:   # of loops to send data     " << endl;
+        cout << "Arg 4:   sleep duration between loops" << endl;
+
+        exit(-1);
+    }
+
+    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
+    {
+        cerr << "Could not install control handler" << endl;
+        return;
+    }
+
+
+    if(argc == 5)
+    {
+        RWWinSockInfo info;
+
+        try
+        {
+            int Op, k;
+
+            unsigned    timeCnt = rwEpoch;
+            unsigned    pt = 1;
+            CtiMessage  *pMsg;
+
+
+            srand(1);   // This is replicable.
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Loading points...." << endl;
+            }
+            PointMgr.RefreshList();     // This should give me all the points in the box.
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " .... Done" << endl;
+            }
+
+            CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
+
+
+            CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+            pM->setMessagePriority(15);
+
+            Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), FALSE));
+            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NONE);
+
+            Connect.WriteConnQue( PtRegMsg );
 
 
 
-   exit(0);
+            CtiPointDataMsg  *pData = NULL;
+            CtiMultiMsg   *pChg  = CTIDBG_new CtiMultiMsg();
+            CtiCommErrorHistoryMsg *pCEHMsg = 0;
+            CtiLMControlHistoryMsg *pLMCMsg = 0;
+
+            CtiPointManager::CtiRTDBIterator itr(PointMgr.getMap());
+
+            for(k = 0; !bQuit && k < atoi(argv[3]); k++)
+            {
+                if( !itr() )
+                {
+                    itr.reset();    // We just want a sequential walk up the point id list!
+                    itr();
+                }
+
+                CtiPoint *pPoint = itr.value();
+
+                while(pPoint->getID() <= 0)
+                {
+                    if( !itr() )
+                    {
+                        itr.reset();    // We just want a sequential walk up the point id list!
+                        itr();
+                    }
+                    pPoint = itr.value();
+                }
+
+                pt = k;
+
+                Connect.WriteConnQue(CTIDBG_new CtiCommErrorHistoryMsg( pPoint->getDeviceID(), SYSTEM, 0, "ERROR TEST"));
+                Connect.WriteConnQue(CTIDBG_new CtiLMControlHistoryMsg( pPoint->getDeviceID(), 1, 0, RWTime(), -1, 100 ));
+                Connect.WriteConnQue(CTIDBG_new CtiPointDataMsg( pPoint->getID(), 1, NormalQuality,  pPoint->getType(), __FILE__));
+
+                pData = CTIDBG_new CtiPointDataMsg( pPoint->getID(), GetPointValue(pPoint->getType()), NormalQuality,  pPoint->getType(), __FILE__);
+
+                pData->setTime( timeCnt );
+                pData->setTags( TAG_POINT_MUST_ARCHIVE );
+
+                timeCnt += 5;
+
+                if(pData != NULL)
+                {
+                    if(pChg != NULL)
+                    {
+                        // Add a single point change to the message
+
+                        if(0)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            pData->dump();
+                        }
+                        pChg->getData().insert(pData);
+                        pChg->getData().insert( CTIDBG_new CtiSignalMsg() );
+
+                        // pChg->getData().insert(pEmail->replicateMessage());
+
+
+                        if(pt && !(pt % 250))
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Sent Point Change " << k << endl;
+                            }
+
+                            Connect.WriteConnQue(pChg);
+                            pChg = NULL;
+                            pChg = CTIDBG_new CtiMultiMsg();
+                        }
+                        else
+                        {
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Inserted Point Change " << k << endl;
+                            }
+                        }
+                    }
+
+                    while( NULL != (pMsg = Connect.ReadConnQue(0)))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            pMsg->dump();
+                        }
+
+                        delete pMsg;
+                    }
+
+                    Sleep(atoi(argv[4]));
+                }
+            }
+
+            if(pChg != NULL)
+            {
+                Connect.WriteConnQue(pChg);
+                pChg = NULL;
+            }
+
+            INT cnt;
+            while( (cnt = Connect.outQueueCount()) > 0 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                }
+                Sleep(1000);
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+            }
+
+            Sleep(5000);
+
+            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+        }
+        catch(RWxmsg &msg)
+        {
+            cout << "Tester Exception: ";
+            cout << msg.why() << endl;
+        }
+
+    }
+    else
+    {
+        cout << " This is interesting " << endl;
+        for(int i = 0; i < atoi(argv[3]); i++)
+        {
+            DoTheNasty(argc, argv);
+            Sleep(atoi(argv[4]));
+        }
+    }
+
+    // Make sure all the logs get output and done!
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
+
+
+    exit(0);
 
 }
 
 
 void DoTheNasty(int argc, char **argv)
 {
-   try
-   {
-      int Op, k;
+    try
+    {
+        int Op, k;
 
-      unsigned    timeCnt = rwEpoch;
-      unsigned    pt = 1;
-      CtiMessage  *pMsg;
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
 
-      CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
+        CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
 
-      CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
-      pM->setMessagePriority(15);
-      pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE));
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+        pM->setMessagePriority(15);
+        pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE));
 
-      CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
 
-      pM->getData().insert(PtRegMsg);
+        pM->getData().insert(PtRegMsg);
 
-      Connect.WriteConnQue( pM );
+        Connect.WriteConnQue( pM );
 
-      for(k = 0; k < atoi(argv[4]); k++ )
-      {
-         pMsg = Connect.ReadConnQue(1000);
+        for(k = 0; k < atoi(argv[4]); k++ )
+        {
+            pMsg = Connect.ReadConnQue(1000);
 
-         if( NULL != pMsg)
-         {
-            pMsg->dump();
-            delete pMsg;
-         }
-      }
+            if( NULL != pMsg)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+                delete pMsg;
+            }
+        }
 
-      Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
-   }
-   catch(RWxmsg &msg)
-   {
-      cout << "Tester Exception: ";
-      cout << msg.why() << endl;
-   }
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+    }
+    catch(RWxmsg &msg)
+    {
+        cout << "Tester Exception: ";
+        cout << msg.why() << endl;
+    }
 }
-
