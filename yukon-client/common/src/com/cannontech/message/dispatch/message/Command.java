@@ -35,6 +35,7 @@ public class Command extends com.cannontech.message.util.Message
 
 	// default clientRegistrationToken as of 1-16-2000( Will change when it will be used!! )
 	public static final int DEFAULT_CLIENT_REGISTRATION_TOKEN = -1;
+	public static final int ACK_ALL_TOKEN = -1;
 	
 	private int operation = 0;
 	private java.lang.String opString = "";
