@@ -367,7 +367,7 @@ public class StarsAdmin extends HttpServlet {
 				else {
 					notifEmail = new com.cannontech.database.db.contact.ContactNotification();
 					notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
-					notifEmail.setDisableFlag( "Y" );
+					notifEmail.setDisableFlag( "N" );
 					notifEmail.setNotification( email );
 					notifEmail.setOpCode( Transaction.INSERT );
 					
@@ -386,6 +386,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				contact = (com.cannontech.database.data.customer.Contact)
 						Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+				liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
 				StarsLiteFactory.setLiteContact( liteContact, contact );
 				energyCompany.addContact( liteContact, null );
 				
@@ -668,6 +669,12 @@ public class StarsAdmin extends HttpServlet {
 				com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
 						energyCompany.getEnergyCompanyID(), programID, conn );
 				
+				// Delete all control history of this program
+				if (liteProg.getGroupIDs() != null) {
+					for (int j = 0; j < liteProg.getGroupIDs().length; j++)
+						energyCompany.deleteStarsLMControlHistory( liteProg.getGroupIDs()[j] );
+				}
+				
 				// Unenroll the program from all customers currently enrolled in it
 				int[] accountIDs = com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAccountIDsWithProgram(
 						programID, energyCompany.getEnergyCompanyID() );
@@ -772,8 +779,10 @@ public class StarsAdmin extends HttpServlet {
 				
 				com.cannontech.database.db.stars.LMProgramWebPublishing.deleteAllLMProgramWebPublishing( appCatID, conn );
 				
+				LiteLMProgram[] programs = liteAppCat.getPublishedPrograms();
 				int[] programIDs = null;
-				if (liteAppCat.getPublishedPrograms() != null) {
+				
+				if (programs != null) {
 					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
 						int configID = liteAppCat.getPublishedPrograms()[j].getWebSettingsID();
 						com.cannontech.database.db.web.YukonWebConfiguration cfg =
@@ -786,13 +795,19 @@ public class StarsAdmin extends HttpServlet {
 						energyCompany.deleteStarsWebConfig( configID );
 					}
 					
-					programIDs = new int[ liteAppCat.getPublishedPrograms().length ];
-					for (int j = 0; j < liteAppCat.getPublishedPrograms().length; j++) {
-						programIDs[j] = liteAppCat.getPublishedPrograms()[j].getProgramID();
+					programIDs = new int[ programs.length ];
+					for (int j = 0; j < programs.length; j++) {
+						programIDs[j] = programs[j].getProgramID();
 						
 						// Delete all program events
 						com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
 								energyCompany.getEnergyCompanyID(), new Integer(programIDs[j]), conn );
+						
+						// Delete all program control history
+						if (programs[j].getGroupIDs() != null) {
+							for (int k = 0; i < programs[j].getGroupIDs().length; k++)
+								energyCompany.deleteStarsLMControlHistory( programs[j].getGroupIDs()[k] );
+						}
 					}
 					Arrays.sort( programIDs );
 				}
