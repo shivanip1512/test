@@ -22,6 +22,7 @@ yukon-client/macs/.cvsignore
 yukon-client/macs/bin
 yukon-client/palm/.cvsignore
 yukon-client/palm/bin
+yukon-client/report/bin
 yukon-client/servlet/.cvsignore
 yukon-client/servlet/bin
 yukon-client/tdc/.cvsignore
