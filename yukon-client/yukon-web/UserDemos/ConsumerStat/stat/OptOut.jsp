@@ -88,6 +88,14 @@ function confirmSubmit(form) { //v1.0
                 </tr>
               </table>
            
+              <p><table width="500" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="Main"><div align="center">If you would like to temporarily 
+                      opt out of all programs, select the time frame from the 
+                      <br>
+                      drop-down box below, then select Submit.</div></td>
+                </tr>
+              </table>
               <br>
               <table  border="0" cellspacing="0" cellpadding="0">
                 <tr align = "center"> 
