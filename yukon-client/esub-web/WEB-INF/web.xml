@@ -136,6 +136,11 @@
  	<servlet-name>svgGenerator</servlet-name>
  	<url-pattern>*.svg</url-pattern>
  </servlet-mapping>
+  
+ <servlet-mapping>
+        <servlet-name>invoker</servlet-name>
+        <url-pattern>/servlet/*</url-pattern>
+  </servlet-mapping>
 
  <!-- 
  commented out because runtime generation of these things

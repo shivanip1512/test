@@ -109,6 +109,11 @@
         <servlet-class>com.cannontech.stars.web.servlet.UpdateThermostat</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>invoker</servlet-name>
+        <url-pattern>/servlet/*</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
