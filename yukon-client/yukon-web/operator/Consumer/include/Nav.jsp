@@ -45,9 +45,10 @@
 	}
 	
 	// List of String[] (inventory no., link html, expand bullet image)
-	ArrayList switches = new ArrayList();
-	ArrayList thermostats = new ArrayList();
-	ArrayList meters = new ArrayList();
+	ArrayList switchLabels = new ArrayList();
+	ArrayList thermostatLabels = new ArrayList();
+	ArrayList meterLabels = new ArrayList();
+	StarsInventories thermostats = new StarsInventories();
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
@@ -270,13 +271,15 @@
 		
 		String[] linkFields = new String[] {String.valueOf(i), linkHtml, linkImgExp};
 		if (inv.getLMHardware() != null) {
-			if (inv.getLMHardware().getStarsThermostatSettings() != null)
-				thermostats.add( linkFields );
+			if (inv.getLMHardware().getStarsThermostatSettings() != null) {
+				thermostatLabels.add( linkFields );
+				thermostats.addStarsInventory( inv );
+			}
 			else
-				switches.add( linkFields );
+				switchLabels.add( linkFields );
 		}
 		else
-			meters.add( linkFields );
+			meterLabels.add( linkFields );
 	}
 	
 	if (inventories.getStarsInventoryCount() > 0) {
@@ -285,14 +288,14 @@
             <td width="10">&nbsp;</td>
             <td>
 <%
-		if (switches.size() > 0) {
+		if (switchLabels.size() > 0) {
 %>
 			  <span class="NavGroup">Switches</span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <%
-			for (int i = 0; i < switches.size(); i++) {
-				String[] linkFields = (String[]) switches.get(i);
-				String connImg = (i == switches.size() - 1)? connImgBtm : connImgMid;
+			for (int i = 0; i < switchLabels.size(); i++) {
+				String[] linkFields = (String[]) switchLabels.get(i);
+				String connImg = (i == switchLabels.size() - 1)? connImgBtm : connImgMid;
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'switchMenu', <%= linkFields[0] %>)"> 
                   <td width="12"><%= connImg %></td>
@@ -304,15 +307,34 @@
 %>
               </table>
 <%
-		}	// switches
-		if (thermostats.size() > 0) {
+		}	// switchLabels
+		if (thermostatLabels.size() > 0) {
 %>
               <span class="NavGroup">Thermostats</span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <%
-			for (int i = 0; i < thermostats.size(); i++) {
-				String[] linkFields = (String[]) thermostats.get(i);
-				String connImg = (i == thermostats.size() - 1)? connImgBtm : connImgMid;
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
+<%
+			String linkHtml = null;
+			String linkImgExp = null;
+			if (pageName.indexOf("AllTherm") >= 0) {
+				linkHtml = "<span class='Nav' style='cursor:default'>All</span>";
+				linkImgExp = bulletImg;
+			}
+			else {
+				linkHtml = "<span class='NavTextNoLink' style='cursor:default'>All</span>";
+				linkImgExp = bulletImgExp;
+			}
+%>
+                <tr onmouseover="hardwareMenuAppear(event, this, 'thermostatAllMenu', <%= inventories.getStarsInventoryCount() %>)"> 
+                  <td width="12"><%= connImgMid %></td>
+                  <td><%= linkHtml %></td>
+                  <td width="10" valign="bottom" style="padding-bottom:1"><%= linkImgExp %></td>
+                </tr>
+</cti:checkProperty>
+<%
+			for (int i = 0; i < thermostatLabels.size(); i++) {
+				String[] linkFields = (String[]) thermostatLabels.get(i);
+				String connImg = (i == thermostatLabels.size() - 1)? connImgBtm : connImgMid;
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'thermostatMenu', <%= linkFields[0] %>)"> 
                   <td width="12"><%= connImg %></td>
@@ -324,15 +346,15 @@
 %>
               </table>
 <%
-		}	// thermostats
-		if (meters.size() > 0) {
+		}	// thermostatLabels
+		if (meterLabels.size() > 0) {
 %>
               <span class="NavGroup">Meters</span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <%
-			for (int i = 0; i < meters.size(); i++) {
-				String[] linkFields = (String[]) meters.get(i);
-				String connImg = (i == meters.size() - 1)? connImgBtm : connImgMid;
+			for (int i = 0; i < meterLabels.size(); i++) {
+				String[] linkFields = (String[]) meterLabels.get(i);
+				String connImg = (i == meterLabels.size() - 1)? connImgBtm : connImgMid;
 %>
                 <tr onmouseover="hardwareMenuAppear(event, this, 'meterMenu', <%= linkFields[0] %>)"> 
                   <td width="12"><%= connImg %></td>
@@ -344,7 +366,7 @@
 %>
               </table>
 <%
-		}	// meters
+		}	// meterLabels
 %>
             </td>
           </tr>
@@ -431,16 +453,16 @@
 pageName = "<%= pageName %>";
 pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 <%
-	for (int i = 0; i < switches.size(); i++) {
-		int num = Integer.parseInt( ((String[]) switches.get(i))[0] );
+	for (int i = 0; i < switchLabels.size(); i++) {
+		int num = Integer.parseInt( ((String[]) switchLabels.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(2);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
 	}
-	for (int i = 0; i < thermostats.size(); i++) {
-		int num = Integer.parseInt( ((String[]) thermostats.get(i))[0] );
+	for (int i = 0; i < thermostatLabels.size(); i++) {
+		int num = Integer.parseInt( ((String[]) thermostatLabels.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(4);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
@@ -466,16 +488,55 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 <%
 		}
 	}
-	for (int i = 0; i < meters.size(); i++) {
-		int num = Integer.parseInt( ((String[]) meters.get(i))[0] );
+	for (int i = 0; i < meterLabels.size(); i++) {
+		int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
 %>
-	pageLinks[<%= num %>] = new Array(1);
+	pageLinks[<%= num %>] = new Array(3);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigMeter.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][2] = "CommandMeter.jsp?InvNo=<%= num %>";
 <%
 	}
 %>
+<%
+	int invCnt = inventories.getStarsInventoryCount();
+	StarsThermostatTypes allType = null;
+	
+	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+	if (selectedInvIDs != null && selectedInvIDs.length > 0) {
+		for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
+			StarsInventory tstat = thermostats.getStarsInventory(i);
+			if (tstat.getInventoryID() == selectedInvIDs[0]) {
+				allType = tstat.getLMHardware().getStarsThermostatSettings().getThermostatType();
+				break;
+			}
+		}
+	}
+%>
+	// Defines links for the thermostat "All" menu
+	pageLinks[<%= invCnt %>] = new Array(3);
+	pageLinks[<%= invCnt %>][0] = "AllTherm.jsp";
+<%
+	if (allType == null || allType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
+%>
+	pageLinks[<%= invCnt %>][1] = "ThermSchedule.jsp?AllTherm";
+	pageLinks[<%= invCnt %>][2] = "Thermostat.jsp?AllTherm";
+<%
+	}
+	else if (allType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
+%>
+	pageLinks[<%= invCnt %>][1] = "ThermSchedule1.jsp?AllTherm";
+	pageLinks[<%= invCnt %>][2] = "Thermostat.jsp?AllTherm";
+<%
+	}
+	else if (allType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+%>
+	pageLinks[<%= invCnt %>][1] = "ThermSchedule2.jsp?AllTherm";
+	pageLinks[<%= invCnt %>][2] = "Thermostat2.jsp?AllTherm";
+<%
+	}
+%>
+
 </script>
 
 <div id="switchMenu" class="bgMenu" style="width:75px" align="left">
@@ -538,6 +599,27 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   </div>
   <div id="meterMenuItemSelected" name="meterMenuItemSelected" style="width:75px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
   &nbsp;&#149;&nbsp;Command
+  </div>
+</div>
+
+<div id="thermostatAllMenu" class="bgMenu" style="width:100px" align="left">
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(0)">
+  &nbsp;&nbsp;&nbsp;Select Thermostats
+  </div>
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(0)">
+  &nbsp;&#149;&nbsp;Select Thermostats
+  </div>
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(1)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
+  </div>
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(1)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") %>
+  </div>
+  <div id="thermostatAllMenuItem" name="thermostatAllMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "showPage(2)">
+  &nbsp;&nbsp;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
+  </div>
+  <div id="thermostatAllMenuItemSelected" name="thermostatAllMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "showPage(2)">
+  &nbsp;&#149;&nbsp;<%= AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual") %>
   </div>
 </div>
 

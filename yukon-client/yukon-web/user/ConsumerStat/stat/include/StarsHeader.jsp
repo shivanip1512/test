@@ -1,25 +1,28 @@
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
-<%@ page import="java.util.*" %>
-<%@ page import="com.cannontech.stars.xml.serialize.*" %>
-<%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
-<%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
-<%@ page import="com.cannontech.stars.util.ServletUtils" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 
+<%@ page import="java.util.*" %>
 <%@ page import="javax.xml.soap.SOAPMessage" %>
-<%@ page import="com.cannontech.stars.web.action.*" %>
-<%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
-<%@ page import="com.cannontech.stars.util.ServerUtils" %>
-<%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
+
+<%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
+<%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.cicustomer.CommercialMeteringRole" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole" %>
-<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
-
-<%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
+<%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
+<%@ page import="com.cannontech.stars.util.ServerUtils" %>
+<%@ page import="com.cannontech.stars.util.ServletUtils" %>
+<%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
+<%@ page import="com.cannontech.stars.web.action.*" %>
+<%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
+<%@ page import="com.cannontech.stars.xml.serialize.*" %>
+<%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
+<%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+
 <cti:checklogin/>
+
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)

@@ -61,7 +61,7 @@
 <%
 			String linkHtml = null;
 			String linkImgExp = null;
-			if (pageName.equalsIgnoreCase("AllTherm.jsp") || pageName.indexOf("Item=-1") >= 0) {
+			if (pageName.indexOf("AllTherm") >= 0) {
 				linkHtml = "<span class='Nav' style='cursor:default'>All</span>";
 				linkImgExp = bulletImg;
 			}
@@ -281,9 +281,6 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
 		}
 	}
 %>
-	// Defines links for the thermostat "All" menu
-	pageLinks[<%= tstatCnt %>] = new Array(3);
-	pageLinks[<%= tstatCnt %>][0] = "AllTherm.jsp";
 <%
 	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	StarsThermostatTypes allType = null;
@@ -296,29 +293,27 @@ pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
 			}
 		}
 	}
-	
-	if (allType == null) {
 %>
-	pageLinks[<%= tstatCnt %>][1] = "AllTherm.jsp";
-	pageLinks[<%= tstatCnt %>][2] = "AllTherm.jsp";
+	// Defines links for the thermostat "All" menu
+	pageLinks[<%= tstatCnt %>] = new Array(3);
+	pageLinks[<%= tstatCnt %>][0] = "AllTherm.jsp";
 <%
-	}
-	else if (allType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
+	if (allType == null || allType.getType() == StarsThermostatTypes.EXPRESSSTAT_TYPE) {
 %>
-	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule2.jsp?Item=-1";
-	pageLinks[<%= tstatCnt %>][2] = "Thermostat2.jsp?Item=-1";
+	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule.jsp?AllTherm";
+	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?AllTherm";
 <%
 	}
 	else if (allType.getType() == StarsThermostatTypes.COMMERCIAL_TYPE) {
 %>
-	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule1.jsp?Item=-1";
-	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?Item=-1";
+	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule1.jsp?AllTherm";
+	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?AllTherm";
 <%
 	}
-	else {
+	else if (allType.getType() == StarsThermostatTypes.ENERGYPRO_TYPE) {
 %>
-	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule.jsp?Item=-1";
-	pageLinks[<%= tstatCnt %>][2] = "Thermostat.jsp?Item=-1";
+	pageLinks[<%= tstatCnt %>][1] = "ThermSchedule2.jsp?AllTherm";
+	pageLinks[<%= tstatCnt %>][2] = "Thermostat2.jsp?AllTherm";
 <%
 	}
 %>

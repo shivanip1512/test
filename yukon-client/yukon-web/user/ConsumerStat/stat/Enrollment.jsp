@@ -155,7 +155,7 @@ function confirmSubmit(form) {
                                   <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
                                   <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
                                   <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
-                                  <tr> 
+                                  <tr valign="top"> 
                                     <td width="5%"> 
                                       <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" <%= checkBoxDisabled %>
 									  onclick="changeCategory(this, <%= idx %>)" <% if (program != null) { %>checked<% } %>>
@@ -172,7 +172,7 @@ function confirmSubmit(form) {
 		if (category.getStarsEnrLMProgramCount() == 1) {
 			/* If only one program under this category, only show the description button */
 %>
-                                  <tr> 
+                                  <tr valign="top"> 
                                     <td width="9%">&nbsp;</td>
                                     <td class="TableCell" width="49%">&nbsp;</td>
                                     <td class="TableCell" width="22%">&nbsp;</td>
@@ -184,9 +184,6 @@ function confirmSubmit(form) {
 		} else {
 			/* If more than one program under this category, show the program list */
 %>
-                                  <tr> 
-                                    <td colspan="4" background="../../../Images/Icons/dot.gif" height="8"></td>
-                                  </tr>
                                   <%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
@@ -197,11 +194,14 @@ function confirmSubmit(form) {
 				/* Each row is a program in this category */
 %>
                                   <tr> 
+                                    <td colspan="4" background="../../../Images/Icons/dot.gif" height="8"></td>
+                                  </tr>
+                                  <tr valign="top"> 
                                     <td width="9%" align="right"> 
                                       <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" <%= radioBtnDisabled %>
 									  onclick="changeProgram(this, <%= idx %>)" <%= checked %>>
                                     </td>
-                                    <td class="TableCell" width="49%" nowrap><%= ServletUtils.getProgramDisplayNames(prog)[1] %> 
+                                    <td class="TableCell" width="49%"><%= ServletUtils.getProgramDisplayNames(prog)[1] %> 
                                     </td>
                                     <td class="TableCell" width="22%" align="right"> 
                                       <% if (!progIcons[0].equals("")) { %>
@@ -226,7 +226,7 @@ function confirmSubmit(form) {
                             </tr>
                           </table>
                         </td>
-                        <td width="10%" valign="middle" class="TableCell"> 
+                        <td width="10%" valign="top" class="TableCell"> 
                           <div align="center"><%= programStatus %></div>
                         </td>
                       </tr>
