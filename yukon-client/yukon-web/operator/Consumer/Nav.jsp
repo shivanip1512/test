@@ -43,24 +43,17 @@
 		linkList.add( new String[] {"Appliance.jsp?AppNo=" + i, linkText} );
 	}
 	
-	lastItemType = 0;
-	itemNo = 1;
+	// The following lists store the "locations" of each type of hardwares
+	ArrayList switches = new ArrayList();
+	ArrayList thermostats = new ArrayList();
+	ArrayList meters = new ArrayList();
+	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware hw = inventories.getStarsLMHardware(i);
-		String linkText = hw.getLMDeviceType().getContent();
-		
-		if (hw.getLMDeviceType().getEntryID() != lastItemType) {
-			lastItemType = hw.getLMDeviceType().getEntryID();
-			itemNo = 1;
-		}
-		else {
-			itemNo++;
-			linkText = linkText + " (" + Integer.toString(itemNo) + ")";
-		}
-		
-		linkList.add( new String[] {"Inventory.jsp?InvNo=" + i, linkText} );
+		linkList.add( new String[] {"Inventory.jsp?InvNo=" + i, hw.getDeviceLabel()} );
 		
 		if (hw.getStarsThermostatSettings() != null) {
+			thermostats.add( new Integer(i) );
 			if (hw.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
 				linkList.add( new String[] {"ThermSchedule.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
 				linkList.add( new String[] {"Thermostat.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
@@ -69,6 +62,9 @@
 				linkList.add( new String[] {"ThermSchedule2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")} );
 				linkList.add( new String[] {"Thermostat2.jsp?InvNo=" + i, AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")} );
 			}
+		}
+		else {	// Currently there is no "meter" type
+			switches.add( new Integer(i) );
 		}
 	}
 
@@ -86,6 +82,20 @@
 			links.put(linkPair[0], "<img src='" + bulletImg2 + "' width='12' height='12'><a href='" + linkPair[0] + "' class='Link2'><span class='NavText'>" + linkPair[1] + "</span></a>");
 	}
 %>
+
+<script language="JavaScript">
+function showHardwareGroup(groupName) {
+	document.getElementById("SwitchTitle").style.display = "";
+	document.getElementById("ThermostatTitle").style.display = "";
+	document.getElementById("MeterTitle").style.display = "";
+	document.getElementById("SwitchGroup").style.display = "none";
+	document.getElementById("ThermostatGroup").style.display = "none";
+	document.getElementById("MeterGroup").style.display = "none";
+	
+	document.getElementById(groupName + "Title").style.display = "none";
+	document.getElementById(groupName + "Group").style.display = "";
+}
+</script>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
@@ -181,44 +191,97 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Hardware</span><br>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>">
+        <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>"> 
+        <div id="SwitchTitle" class="NavGroup" onclick="showHardwareGroup('Switch')"><span class="Clickable">Switches</span></div>
+		<div id="SwitchGroup" style="display:none"> 
+          <span class="NavGroup_selected">Switches</span><br>
 <%
-	boolean showThermostat = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT);
-	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+	if (switches.size() == 0) {
 %>
-        <%= links.get("Inventory.jsp?InvNo=" + i) %><br>
+            <img src="<%= bulletImg2 %>" width="12" height="12"><span class="NavText" style="color:#FFFFFF">(No 
+            Hardware)</span><br>
 <%
-		StarsThermostatSettings settings = inventories.getStarsLMHardware(i).getStarsThermostatSettings();
-		if (settings != null && showThermostat) {
+	}
+	else {
+		for (int i = 0; i < switches.size(); i++) {
+			int num = ((Integer) switches.get(i)).intValue();
 %>
-	    <table width="90" border="0" cellspacing="0" cellpadding="0">
-          <tr> 
-            <td width="12">&nbsp;</td>
-            <td width="78">
-<%
-			if (settings.getStarsThermostatDynamicData() == null) {
-%>
-			  <%= links.get("ThermSchedule.jsp?InvNo=" + i) %><br>
-              <%= links.get("Thermostat.jsp?InvNo=" + i) %><br>
-<%
-			}
-			else {
-%>
-			  <%= links.get("ThermSchedule2.jsp?InvNo=" + i) %><br>
-              <%= links.get("Thermostat2.jsp?InvNo=" + i) %><br>
-<%
-			}
-%>
-			</td>
-          </tr>
-        </table>
+            <%= links.get("Inventory.jsp?InvNo=" + num) %><br>
 <%
 		}
 	}
 %>
+        </div>
+        <div id="ThermostatTitle" class="NavGroup" onclick="showHardwareGroup('Thermostat')"><span class="Clickable">Thermostats</span></div>
+		<div id="ThermostatGroup" style="display:none">
+          <span class="NavGroup_selected">Thermostats</span><br>
+<%
+	if (thermostats.size() == 0) {
+%>
+          <img src="<%= bulletImg2 %>" width="12" height="12"><span class="NavText" style="color:#FFFFFF">(No 
+          Hardware)</span><br>
+<%
+	}
+	else {
+		boolean showThermSettings = AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT);
+		for (int i = 0; i < thermostats.size(); i++) {
+			int num = ((Integer) thermostats.get(i)).intValue();
+%>
+          <%= links.get("Inventory.jsp?InvNo=" + num) %><br>
+<%
+			StarsThermostatSettings settings = inventories.getStarsLMHardware(num).getStarsThermostatSettings();
+			if (settings != null && showThermSettings) {
+%>
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr> 
+              <td width="12">&nbsp;</td>
+              <td width="78"> 
+<%
+			if (settings.getStarsThermostatDynamicData() == null) {
+%>
+                <%= links.get("ThermSchedule.jsp?InvNo=" + num) %><br>
+                <%= links.get("Thermostat.jsp?InvNo=" + num) %><br>
+<%
+			}
+			else {
+%>
+                <%= links.get("ThermSchedule2.jsp?InvNo=" + num) %><br>
+                <%= links.get("Thermostat2.jsp?InvNo=" + num) %><br>
+<%
+			}
+%>
+              </td>
+            </tr>
+          </table>
+<%
+			}
+		}
+	}
+%>
+        </div>
+        <div id="MeterTitle" class="NavGroup" onclick="showHardwareGroup('Meter')"><span class="Clickable">Meters</span></div>
+		<div id="MeterGroup" style="display:none"> 
+          <span class="NavGroup_selected">Meters</span><br>
+<%
+	if (meters.size() == 0) {
+%>
+          <img src="<%= bulletImg2 %>" width="12" height="12"><span class="NavText" style="color:#FFFFFF">(No 
+          Hardware)</span><br>
+<%
+	}
+	else {
+		for (int i = 0; i < meters.size(); i++) {
+			int num = ((Integer) meters.get(i)).intValue();
+%>
+          <%= links.get("Inventory.jsp?InvNo=" + num) %><br>
+<%
+		}
+	}
+%>
+        </div>
 </cti:checkProperty>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>">
-		<%= links.get("CreateHardware.jsp") %><br>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
+        <%= links.get("CreateHardware.jsp") %><br>
 </cti:checkProperty>
       </div>
     </td>
