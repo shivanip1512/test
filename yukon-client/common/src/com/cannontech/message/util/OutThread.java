@@ -19,7 +19,7 @@ class OutThread extends Thread {
  */
 public OutThread(ClientConnection conn, VirtualOutputStream ostrm, CollectableStreamer streamer, java.util.ArrayList out) {
 	super("OutThread");
-
+	setDaemon(true);
 	this.conn = conn;
 	
 	this.ostrm = ostrm;
@@ -48,6 +48,7 @@ public void run() {
 				if( (size = out.size()) > 0 ) {
 					
 					for(int i = 0; i < size; i++) {
+						System.out.println(">>" + out.get(i));
 						ostrm.saveObject( out.get(i), streamer );
 					}
 				

@@ -132,6 +132,7 @@ public void connect() throws java.io.IOException
 public void connectWithoutWait() throws java.io.IOException 
 {	
 	monitorThread = new Thread(this, "ConnectionMonitor");
+	monitorThread.setDaemon(true);
 	monitorThread.start();
 }
 /**

@@ -38,7 +38,7 @@ class InThread extends Thread {
  */
 public InThread(ClientConnection conn, VirtualInputStream istrm, CollectableStreamer streamer, java.util.ArrayList in) {
 	super("InThread");
-
+	setDaemon(true);
 	this.conn = conn;
 	
 	this.istrm = istrm;

@@ -30,6 +30,7 @@ public CacheDBChangeListener()
 	super();
 
 	listenerThread = new Thread(this, "CacheDBChangeListener");
+	listenerThread.setDaemon(true);
 	listenerThread.start();
 }
 /**
