@@ -21,6 +21,7 @@ import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.DirectPort;
@@ -431,100 +432,30 @@ public boolean processTransmitterFile()
 		device.assignAddress(pInt(address.substring(2,4)) );
 		
 		device.getDeviceIDLCRemote().setCcuAmpUseType(DeviceIDLCRemote.AMPUSE_ALTERNATING);
-		
-//		device.getSeries5RTU().setStartCode( pInt(line[4].trim()) );
-//		device.getSeries5RTU().setStopCode( pInt(line[5].trim()) );
-//		device.getSeries5RTU().setTransmitOffset( pInt(line[6].trim()) );
-
-		//CycleTime:#,Offset:#,TransmitTime:#,MaxTime:#
-//		device.getPAOExclusionVector().add(
-//			PAOExclusion.createExclusTiming(
-//				device.getPAObjectID(),
-//				new Integer(300),
-//				device.getSeries5RTU().getTransmitOffset(),
-//				new Integer(60) ) );
-
-//		String dis = line[7].trim();
-//		device.setDisableFlag( new Character(
-//				(dis.equalsIgnoreCase("N") ? 'Y' : 'N')) );
-//
-//		device.getSeries5RTU().setSaveHistory( line[8].trim().toUpperCase() );
-//
-//		device.getSeries5RTU().setPowerValueMultiplier( pDbl(line[9].trim()) );
-//		device.getSeries5RTU().setPowerValueOffset( pDbl(line[10].trim()) );
-//		
-//		//15
-//		device.getSeries5RTU().setPowerValueHighLimit( pInt(line[15].trim()) );
-//		device.getSeries5RTU().setPowerValueLowLimit( pInt(line[16].trim()) );
-//		
-//		device.getSeries5RTU().setRetries( pInt(line[19].trim()) );
-		
-		//create a route
-//		RouteBase route = null;
-//		route = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI );
-//
-//		route.setRouteID( new Integer(START_ROUTE_ID++) );
-//		route.setRouteName( device.getPAOName() + " Rt");
-//		route.setDeviceID( deviceID );
-//		route.setDefaultRoute("N");
 
 		if( device.getDeviceDirectCommSettings().getPortID().intValue() > PORTID_OFFSET )
 		{
 			multi.getDBPersistentVector().add( device );
-//			multi.getDBPersistentVector().add( route );
+
 			deviceIDsMap.put( device.getDevice().getDeviceID(), device.getDevice().getDeviceID() );
-//			routeIDsMap.put( route.getRouteID(), route.getRouteID() );
 			
+			//Create the Comm Status point
+			StatusPoint commStatus = (StatusPoint)PointFactory.createPoint( PointTypes.STATUS_POINT );
+			commStatus.getPoint().setPointName("COMM STATUS");
+			commStatus.getPoint().setPointOffset(new Integer(2000));
+			commStatus.getPoint().setPaoID(deviceID);
+			commStatus.setPointID(deviceID);
+			commStatus.getPoint().setArchiveInterval(new Integer(0));
+			commStatus.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+			commStatus.getPoint().setServiceFlag(new Character('N'));
+			commStatus.getPoint().setAlarmInhibit(new Character('N'));
+			commStatus.getPoint().setArchiveType("none");
+			commStatus.getPoint().setArchiveInterval(new Integer(0));
 			
-			//Create the PowerValue point
-//			AnalogPoint pvPoint = (AnalogPoint)PointFactory.createPoint( PointTypes.ANALOG_POINT );
-//
-//			pvPoint.setPointID( new Integer(START_PTID) );
-//			pvPoint.getPoint().setPaoID( deviceID );
-//			pvPoint.getPoint().setPointOffset( new Integer(1000) );
-//			pvPoint.getPoint().setPointName( "Power Value" );
-//
-//			pvPoint.getPointAnalog().setMultiplier( device.getSeries5RTU().getPowerValueMultiplier() );
-//			pvPoint.getPointAnalog().setDataOffset( device.getSeries5RTU().getPowerValueOffset() );
-//
-//			PointLimit myPointLimit = new PointLimit();
-//			myPointLimit.setPointID( pvPoint.getPoint().getPointID() );
-//			myPointLimit.setHighLimit( new Double(device.getSeries5RTU().getPowerValueHighLimit().doubleValue()) );
-//			myPointLimit.setLowLimit( new Double(device.getSeries5RTU().getPowerValueLowLimit().doubleValue()) );
-//			myPointLimit.setLimitDuration( new Integer(0) );
-//			myPointLimit.setLimitNumber( new Integer(1) );
-//
-//
-//			if( myPointLimit.getLowLimit().doubleValue() != 0.0
-//				 && myPointLimit.getHighLimit().doubleValue() != 0.0 )
-//			{
-//				Vector v = new Vector(1);
-//				v.add( myPointLimit );
-//				pvPoint.setPointLimitsVector(v);
-//			}
-//
-//			// set default settings for the point
-//			pvPoint.getPoint().setServiceFlag(new Character('N'));
-//			pvPoint.getPoint().setAlarmInhibit(new Character('N'));
-//			pvPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
-//			pvPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
-//			pvPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
-//			pvPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
-//			pvPoint.getPoint().setArchiveType("None");
-//			pvPoint.getPoint().setArchiveInterval( new Integer(0) );
-//			pvPoint.getPoint().setStateGroupID( new Integer(-1) );
-//			pvPoint.getPointUnit().setDecimalPlaces(new Integer(2));
-//			pvPoint.getPointAnalog().setDeadband(new Double(0.0));
-//			pvPoint.getPointAnalog().setTransducerType( new String("none") );
-//			pvPoint.getPointUnit().setUomID( new Integer(8) );
-//
-//			multi.getDBPersistentVector().add( pvPoint );		
-//			++START_PTID;
+			multi.getDBPersistentVector().add( commStatus );
 		}		
 	}
 
-
-	//boolean success = true;
 	boolean success = writeToSQLDatabase(multi);
 
 	if( success )
@@ -574,7 +505,22 @@ public boolean processRepeaterFile()
 		device.setPAOName(name);
 		// assign address of zero, manually entered later
 		device.assignAddress(new Integer(0));
+		
+		//Create the Comm Status point
+		StatusPoint commStatus = (StatusPoint)PointFactory.createPoint( PointTypes.STATUS_POINT );
+		commStatus.getPoint().setPointName("COMM STATUS");
+		commStatus.getPoint().setPointOffset(new Integer(2000));
+		commStatus.getPoint().setPaoID(deviceID);
+		commStatus.setPointID(deviceID);
+		commStatus.getPoint().setArchiveInterval(new Integer(0));
+		commStatus.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
+		commStatus.getPoint().setServiceFlag(new Character('N'));
+		commStatus.getPoint().setAlarmInhibit(new Character('N'));
+		commStatus.getPoint().setArchiveType("none");
+		commStatus.getPoint().setArchiveInterval(new Integer(0));
+		
 		multi.getDBPersistentVector().add( device );
+		multi.getDBPersistentVector().add( commStatus );
 	}
 	
 	boolean success = writeToSQLDatabase(multi);
