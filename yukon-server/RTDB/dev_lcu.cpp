@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/12 17:35:22 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/02/04 14:29:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -626,7 +626,7 @@ OUTMESS* CtiDeviceLCU::lcuControl(OUTMESS *&OutMessage)
     USHORT Count;
 
     /* Load up all the goodies */
-    EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 3 );
+    OverrideOutMessagePriority( OutMessage, MAXPRIORITY - 3 );
     OutMessage->TimeOut      = 3;
     OutMessage->InLength     = -1;
     OutMessage->EventCode    |= ENCODED | RESULT | RIPPLE;          // May contain RESULT based upon the incoming OutMessage
@@ -1622,7 +1622,7 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
                 if((MyOutMessage =  CTIDBG_new OUTMESS(*OutMessage) ) != NULL)
                 {
                     /* Load up all the goodies */
-                    EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
+                    OverrideOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
                     MyOutMessage->TimeOut = 2;
                     MyOutMessage->OutLength = MASTERLENGTH;
                     MyOutMessage->InLength = -1;
