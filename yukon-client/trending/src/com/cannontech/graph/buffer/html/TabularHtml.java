@@ -91,7 +91,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		if( model.getTrendSeries()[i].getType().equalsIgnoreCase("graph"))		
 		{
 			com.jrefinery.data.TimeSeriesDataPair[] dp = model.getTrendSeries()[i].getDataPairArray();
-			if( dp != null)
+//			if( dp != null)	//If this check is made, null values don't line up with corresponding point
 			{
 		 		long[] timeStamp = model.getTrendSeries()[i].getPeriodsArray();
 				double[] values = model.getTrendSeries()[i].getValuesArray();
@@ -109,7 +109,7 @@ public StringBuffer getHtml(StringBuffer buf)
 				 			tree.put(new Double(d.doubleValue()),objectValues);
 		 				}
 			 		}
-			if( objectValues != null)	//MAY NEED THIS AGAIN
+//			if( objectValues != null)	//MAY NEED THIS AGAIN
 					objectValues[validIndex] = new Double(values[j]);
 	 			}
 	 			validIndex++;

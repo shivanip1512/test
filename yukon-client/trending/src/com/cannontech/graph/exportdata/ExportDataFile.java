@@ -65,7 +65,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 			com.cannontech.graph.model.TrendSerie serie = trendModel.getTrendSeries()[k];
 			if( serie.getType().equalsIgnoreCase(csvExportType))
 			{
-				if( serie.getDataPairArray() != null)
+//				if( serie.getDataPairArray() != null)// With this check, null data is not represented with correct point
 				{
 			 		long[] timeStamp= serie.getPeriodsArray();
 			 		double[] values = serie.getValuesArray();
@@ -362,9 +362,9 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 					valueFormat.setMaximumFractionDigits(3);//serie.getDecimalPlaces());
 					valueFormat.setMinimumFractionDigits(3);//serie.getDecimalPlaces());
 
-					// label the export file columns with their devide + model name
-					exportArray[csvRowLength * (validIndex+2)] =
-						(trendModel.getTrendSeries()[z].getDeviceName() + " " + serie.getLabel());
+					// label the export file columns with their device + model name
+					exportArray[csvRowLength * (validIndex+2)]  = (serie.getLabel());
+//						(trendModel.getTrendSeries()[z].getDeviceName() + " " + serie.getLabel());
 						
 
 					for( int x = 1; x < ts_KeyArray.length + 1;x++ )	//go one extra for the header row?
