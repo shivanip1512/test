@@ -48,7 +48,10 @@ public class Drawing implements Serializable {
 	public synchronized void load(String file) {
 		clear();
 		
-		getLxGraph().read(file);
+		//JLoox isn't thread safe on loads
+		synchronized(getLxGraph().getClass()) {
+			getLxGraph().read(file);
+		}
 		fileName = file;
 
 		// Fix up each element so they know who their drawing is

@@ -50,10 +50,6 @@ public class SVGGenerator extends HttpServlet {
 		Writer w = resp.getWriter();
 		
 		try {
-
-			synchronized(getClass())
-			{
-			
 			Drawing d = new Drawing();
 			d.load(jlxPath);
 		 
@@ -78,7 +74,6 @@ public class SVGGenerator extends HttpServlet {
 				
 				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator(svgOptions);				
 				gen.generate(w, d);	
-				 }
 			}
 		}
 		catch(Exception e ) {
