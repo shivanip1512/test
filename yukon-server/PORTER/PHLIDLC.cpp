@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/04/02 16:30:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/04/29 20:09:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -579,7 +579,8 @@ IDLCSetDelaySets (CtiDevice *Dev)
 
     /* Defines for file handle */
     FILE *HFile = NULL;
-    USHORT MyPort, MyRemote;
+    INT   MyPort;
+    USHORT MyRemote;
 
     // 072302 CGP. Let's just make this happen by default.
     USHORT T_RTSOn      = 100;          // 600 CCU default
@@ -607,7 +608,7 @@ IDLCSetDelaySets (CtiDevice *Dev)
         /* Walk through the file looking for the appropriate port and remote */
         for(;;)
         {
-            if(fscanf (HFile,"%hd,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
+            if(fscanf (HFile,"%d,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
