@@ -3,7 +3,7 @@
 <%@ include file="../user_header.jsp" %>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 
-<%@ include file="../../trending_functions.jsp" %>
+<%@ include file="../../include/trending_functions.jsp" %>
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
@@ -66,7 +66,7 @@ MM_reloadPage(true);
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" >
           
-			<%@include file="../../trending_options.jsp"%>
+			<%@include file="../../include/trending_options.jsp"%>
 
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
               <tr> 
@@ -85,7 +85,7 @@ MM_reloadPage(true);
 					}
 					else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW)
 					{%>
-						<%@ include file="../../trending_tabular.jsp" %>					
+						<%@ include file="../../include/trending_tabular.jsp" %>					
 						<%
 					}
 					else // "graph" is default

@@ -1,7 +1,7 @@
 <html>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="metering_header.jsp" %>
-<%@ include file="../../trending_functions.jsp" %>
+<%@ include file="../../include/trending_functions.jsp" %>
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <title>Metering</title>
@@ -65,7 +65,7 @@
 			</table>
 
             <% String pageName = "Metering.jsp"; %> 
-			<%@include file="../../trending_options.jsp"%>
+			<%@include file="../../include/trending_options.jsp"%>
 
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
 			<tr> 
@@ -82,7 +82,7 @@
 				}
 				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
 				{%>
-					<%@ include file="../../trending_tabular.jsp" %>					
+					<%@ include file="../../include/trending_tabular.jsp" %>					
 					<%
 				}
 				else // "graph" is default

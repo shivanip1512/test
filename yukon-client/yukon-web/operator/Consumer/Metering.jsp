@@ -2,7 +2,7 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
-<%@ include file="../../trending_functions.jsp" %>
+<%@ include file="../../include/trending_functions.jsp" %>
 
 <%
     Class[] types = { Integer.class,String.class };    
@@ -70,7 +70,7 @@
 			<td width="1" bgcolor="#000000"></td>
 			<td width="657" valign="top" bgcolor="#FFFFFF">
 				<% String header = "METERING - INTERVAL DATA"; %>
-				<%@include file="../../trending_options.jsp"%>
+				<%@include file="../../include/trending_options.jsp"%>
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46">
 			<tr> 
 				<td><center> 
@@ -86,7 +86,7 @@
 				}
 				else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
 				{%>
-					<%@ include file="../../trending_tabular.jsp" %>					
+					<%@ include file="../../include/trending_tabular.jsp" %>					
 					<%
 				}				
 				else // "graph" is default

@@ -1,7 +1,7 @@
 <html>
 <% String pageName = "user_trending.jsp"; %> 
 <%@ include file="user_header.jsp" %>
-<%@ include file="../trending_functions.jsp" %>
+<%@ include file="../include/trending_functions.jsp" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <head>
 <title>Trending</title>
@@ -59,7 +59,7 @@
           <td width="1" bgcolor="#000000"></td>
           <td width="608" valign="top" bgcolor="#FFFFFF" > 
           
-			<%@include file="../trending_options.jsp"%>
+			<%@include file="../include/trending_options.jsp"%>
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46" class="Subtext">
               <tr>
                 <td>
@@ -77,7 +77,7 @@
                     }
                     else if( graphBean.getViewType() == TrendModelType.TABULAR_VIEW )
                     {%>
-                      <%@ include file="../trending_tabular.jsp" %>
+                      <%@ include file="../include/trending_tabular.jsp" %>
                       <%graphBean.updateCurrentPane();
                       out.println(graphBean.getHtmlString());
                     }
