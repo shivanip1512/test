@@ -474,6 +474,7 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("SaveThermostatSchedule")) {
 			clientAction = new SaveThermostatScheduleAction();
+			if (errorURL == null) errorURL = referer;
 		}
 		else if (action.equalsIgnoreCase("ApplyThermostatSchedule")) {
 			clientAction = new ApplyThermostatScheduleAction();
