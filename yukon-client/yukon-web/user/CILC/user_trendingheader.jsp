@@ -2,9 +2,9 @@
 
 // Grab their graphdefinitions
    Class[] types = { Integer.class,String.class };
-   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( session, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.CustomerID=" + user.getCustomerId() + " order by GraphCustomerList.CustomerOrder", types );
+   Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( session, "select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.CustomerID=" + liteYukonUser.getCustomerId() + " order by GraphCustomerList.CustomerOrder", types );
  %>                   
-<jsp:setProperty name="graphBean" property="startStr" param="start"/>
+<jsp:setProperty name="graphBean" property="start" param="start"/>
 <jsp:setProperty name="graphBean" property="period" param="period"/>
 <jsp:setProperty name="graphBean" property="gdefid" param="gdefid"/>
 <jsp:setProperty name="graphBean" property="viewType" param="view"/>
