@@ -6,6 +6,17 @@
 
 	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 	
+	if (ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+		if (request.getParameter("OmitTimeout") != null)
+			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
+		
+		if (user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
+			session.setAttribute(ServletUtils.ATT_REFERRER, request.getContextPath() + "/user/ConsumerStat/stat/Thermostat2.jsp?Item=" + itemNo);
+			response.sendRedirect( "Timeout.jsp" );
+			return;
+		}
+	}
+	
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
 	if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
@@ -117,8 +128,7 @@ var timeoutId = -1;
 function setChanged() {
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
-		timeoutId = -1;
-		document.getElementById("PromptMsg").innerText = "Settings changed. Refresh the page to view current settings.";
+		timeoutId = setTimeout("location.reload()", 300000);
 	}
 }
 
@@ -236,7 +246,7 @@ function submitIt() {
 
 function prepareSubmit() {
 <%	if (curSettings != null) { %>
-	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
+	document.getElementById("PromptMsg").style.display = "";
 <%	} %>
 }
 //-->
@@ -299,6 +309,8 @@ function prepareSubmit() {
               </table>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+			  <div id="PromptMsg" align="center" class="ConfirmMsg" style="display:none">Sending 
+			    thermostat settings to gateway, please wait...</div>
 			  
               <div align = "left">
                 <table width="632" border="0">
@@ -312,7 +324,6 @@ function prepareSubmit() {
                   </tr>
                 </table>
               </div>
-			  <div id="PromptMsg" align="center" class="ConfirmMsg">&nbsp;</div>
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 				<input type="hidden" name="action" value="UpdateThermostatOption">
 				<input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
@@ -322,9 +333,9 @@ function prepareSubmit() {
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">
             	<div align = "left">
-                  <table width="93%" border="0" background="../../../Images/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
+                  <table width="93%" border="0" cellspacing="0" cellpadding="0" height="246">
                     <tr> 
-                      <td width="73%" height="40" > 
+                      <td width="73%" height="40" background="../../../Images/ThermImages/Bkgd.gif" style="background-repeat:no-repeat"> 
                         <table width="91%" border="0" height="100">
                           <tr> 
                             <td width="38%" height="113">&nbsp;</td>
@@ -453,14 +464,21 @@ function prepareSubmit() {
                         <br>
                       </td>
                       <td width="27%" height="40" class="TableCell" valign="top"> 
+                        <%	if (!ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) { %>
+                        <p class="TitleHeader">Last Updated Time: <br>
+                          <%= histDateFormat.format(curSettings.getLastUpdatedTime()) %></p>
+                        <%	} else { %>
+                        <p class="ErrorMsg">Last Updated Time: 
+						  <%= (curSettings.getLastUpdatedTime() != null)? "<br>" + histDateFormat.format(curSettings.getLastUpdatedTime()) : "N/A" %></p>
+                        <%	} %>
                         <p><b>1)</b> Select the new temperature to maintain until 
                           the next program scheduled change. Check <b>HOLD</b> 
                           to maintain this setting across program changes. <br>
                           <b>2)</b> Adjust <b>MODE</b> and <b>FAN</b> settings. 
                           <br>
                           <b>3)</b> Click <b>SUBMIT</b>.</p>
-                        <p><b><i>or</i></b></p>
-                        <p>Click <b>RUN PROGRAM</b> to revert to your thermostat 
+                        <p><b><i>or</i></b><br>
+                          Click <b>RUN PROGRAM</b> to revert to your thermostat 
                           program. </p>
                         <p>&nbsp;</p>
                       </td>

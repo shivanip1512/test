@@ -3,14 +3,39 @@
 	int itemNo = Integer.parseInt(request.getParameter("Item"));
 	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
 	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
+	
+	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 
 	String dayStr = request.getParameter("day");
-	if (dayStr == null) dayStr = StarsThermoDaySettings.MONDAY.toString();
-	String modeStr = request.getParameter("mode");
-	if (modeStr == null) modeStr = StarsThermoModeSettings.COOL.toString();
+	StarsThermoDaySettings daySetting = null;
+	if (dayStr != null)
+		daySetting = StarsThermoDaySettings.valueOf(dayStr);
+	if (daySetting == null) {
+		daySetting = ServletUtils.getCurrentDay();
+		dayStr = daySetting.toString();
+	}
 	
-	StarsThermoDaySettings daySetting = StarsThermoDaySettings.valueOf(dayStr);
-	if (daySetting == null) daySetting = StarsThermoDaySettings.MONDAY;
+	String modeStr = request.getParameter("mode");
+	StarsThermoModeSettings modeSetting = null;
+	if (modeStr != null)
+		modeSetting = StarsThermoModeSettings.valueOf(modeStr);
+	if (modeStr == null) {
+		modeSetting = curSettings.getMode();
+		if (modeSetting == null)
+			modeSetting = StarsThermoModeSettings.COOL;
+		modeStr = modeSetting.toString();
+	}
+	
+	if (ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+		if (request.getParameter("OmitTimeout") != null)
+			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
+		
+		if (user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
+			session.setAttribute(ServletUtils.ATT_REFERRER, request.getContextPath() + "/user/ConsumerStat/stat/ThermSchedule2.jsp?Item=" + itemNo + "&day=" + dayStr + "&mode=" + modeStr);
+			response.sendRedirect( "Timeout.jsp" );
+			return;
+		}
+	}
 	
 	boolean isCooling = modeStr.equalsIgnoreCase( StarsThermoModeSettings.COOL.toString() );
 	String visibleC = isCooling ? "visible" : "hidden";
@@ -79,7 +104,6 @@
 		if (schedule == null) schedule = dftSchedule;
 	}
 	
-	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
 	char tempUnit = 'F';
 	if (curSettings != null) {
 		if (curSettings.getDisplayedTempUnit() != null)
@@ -139,8 +163,7 @@ function setChanged() {
 	changed = true;
 	if (timeoutId != -1) {
 		clearTimeout(timeoutId);
-		timeoutId = -1;
-		document.getElementById("PromptMsg").innerText = "Schedule changed. Refresh the page to view current schedule.";
+		timeoutId = setTimeout("location.reload()", 300000);
 	}
 }
 
@@ -151,7 +174,7 @@ function prepareSubmit(form) {
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
 	changed = false;
 <%	if (curSettings != null) { %>
-	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
+	document.getElementById("PromptMsg").style.display = "";
 <%	} %>
 }
 
@@ -310,6 +333,8 @@ MM_reloadPage(true);
               </table>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+			  <div id="PromptMsg" class="ConfirmMsg" style="display:none">Sending 
+			    thermostat settings to gateway, please wait...</div>
 			  
 			<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
@@ -322,6 +347,15 @@ MM_reloadPage(true);
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
 			  <input type="hidden" name="tempval4">
+              <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+<%	if (!ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) { %>
+                  <td align="right" class="TitleHeader">Last Updated Time: <%= histDateFormat.format(curSettings.getLastUpdatedTime()) %></td>
+<%	} else { %>
+                  <td align="right" class="ErrorMsg">Last Updated Time: <%= (curSettings.getLastUpdatedTime() != null)? histDateFormat.format(curSettings.getLastUpdatedTime()) : "N/A" %></td>
+<%	} %>
+                </tr>
+              </table>
               <table width="80%" border="1" cellspacing = "0" cellpadding = "2">
                 <tr> 
                     <td align = "center"  valign = "bottom" class = "Background"> 
@@ -406,7 +440,6 @@ MM_reloadPage(true);
                             here</a>.</i> </td>
                         </tr>
                       </table>
-					  <div id="PromptMsg" class="ConfirmMsg">&nbsp;</div>
                       <table width="175" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="68"> 
