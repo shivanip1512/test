@@ -119,14 +119,14 @@ id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h
 #UPDATE#
 connection.obj:	collectable.h connection.h dlldefs.h exchange.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h message.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h yukon.h msg_ptreg.h msg_reg.h queue.h logger.h \
-		thread.h
+		guard.h logger.h thread.h message.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h yukon.h msg_ptreg.h msg_reg.h \
+		queue.h
 dll_msg.obj:	dsm2.h mutex.h dlldefs.h guard.h yukon.h dllbase.h \
 		os2_2w32.h types.h cticalls.h connection.h exchange.h \
-		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_signal.h msg_ptreg.h msg_reg.h queue.h dll_msg.h \
-		utility.h
+		logger.h thread.h message.h collectable.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
+		queue.h dll_msg.h utility.h
 id_ctimsg.obj:	utility.h dlldefs.h dsm2.h mutex.h guard.h id_ctimsg.h \
 		id_vinfo.h
 message.obj:	message.h collectable.h dlldefs.h dllbase.h os2_2w32.h \

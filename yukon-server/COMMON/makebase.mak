@@ -60,6 +60,7 @@ queues.obj \
 resolvers.obj \
 rtdb.obj \
 sema.obj \
+statistics.obj \
 stdexcepthdlr.obj \
 sparkint.obj \
 thread.obj \

@@ -114,6 +114,17 @@ dll_prot.obj:	yukon.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dll_prot.h utility.h
 id_ctiprot.obj:	utility.h dlldefs.h dsm2.h mutex.h guard.h \
 		id_ctiprot.h id_vinfo.h
+ion_netlayers.obj:	ion_netlayers.h ion_rootclasses.h \
+		ion_valuebasictypes.h ctitypes.h guard.h dlldefs.h logger.h \
+		thread.h mutex.h
+ion_rootclasses.obj:	ion_rootclasses.h ion_valuebasictypes.h \
+		ctitypes.h guard.h dlldefs.h logger.h thread.h mutex.h
+ion_valuearraytypes.obj:	ion_valuearraytypes.h ion_valuebasictypes.h \
+		ion_rootclasses.h ctitypes.h ion_valuestructtypes.h
+ion_valuebasictypes.obj:	ion_valuebasictypes.h ion_rootclasses.h \
+		ctitypes.h ion_valuestructtypes.h ion_valuearraytypes.h
+ion_valuestructtypes.obj:	ion_valuestructtypes.h ion_valuearraytypes.h \
+		ion_valuebasictypes.h ion_rootclasses.h ctitypes.h
 prot_711.obj:	cticalls.h os2_2w32.h dlldefs.h types.h prot_711.h \
 		porter.h dsm2.h mutex.h guard.h dsm2err.h devicetypes.h \
 		queues.h logger.h thread.h dllbase.h

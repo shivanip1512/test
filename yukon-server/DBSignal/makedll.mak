@@ -115,8 +115,8 @@ dbsigsend.obj:	dllbase.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		utility.h yukon.h
 tbl_rawpthistory.obj:	tbl_rawpthistory.h dlldefs.h pointdefs.h \
 		utility.h dsm2.h mutex.h guard.h yukon.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dbaccess.h logger.h thread.h
+		types.h cticalls.h dbaccess.h sema.h logger.h thread.h
 tbl_signal.obj:	tbl_signal.h dbmemobject.h dlldefs.h pointdefs.h \
 		utility.h dsm2.h mutex.h guard.h yukon.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dbaccess.h logger.h thread.h
+		types.h cticalls.h dbaccess.h sema.h logger.h thread.h
 #ENDUPDATE#
