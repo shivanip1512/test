@@ -275,7 +275,7 @@ public class WorkOrder extends YukonReportBase
 		final PageHeader header = new PageHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 14));
-		header.setDisplayOnFirstPage(false);
+		header.setDisplayOnFirstPage(!isShowReportHeader());
 		header.setDisplayOnLastPage(false);
 
 		TextFieldElementFactory factory = new TextFieldElementFactory();
