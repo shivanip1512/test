@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/01/27 17:51:18 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/01/28 22:51:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -300,53 +300,33 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
             if(_vst[_last]->ELoad.ControlType)
             {
                 /* figure out what order of magnitude out control is */
-                if(_vst[_last]->ELoad.ControlTime < 3825L)
+                if(_vst[_last]->ELoad.ControlTime <= 3825L)
                 {
                     Flag = 0;
                     Divisor = 15L;
                     if(_vst[_last]->ELoad.ControlTime % 15L)
                         _vst[_last]->ELoad.ControlTime += 15L;
                 }
-                else if(_vst[_last]->ELoad.ControlTime == 3825L)
-                {
-                    Flag = 0;
-                    Divisor = 15L;
-                }
-                else if(_vst[_last]->ELoad.ControlTime < 15300L)
+                else if(_vst[_last]->ELoad.ControlTime <= 15300L)
                 {
                     Flag = 1;
                     Divisor = 60L;
                     if(_vst[_last]->ELoad.ControlTime % 60L)
                         _vst[_last]->ELoad.ControlTime += 60L;
                 }
-                else if(_vst[_last]->ELoad.ControlTime == 15300L)
-                {
-                    Flag = 1;
-                    Divisor = 60L;
-                }
-                else if(_vst[_last]->ELoad.ControlTime < 76500L)
+                else if(_vst[_last]->ELoad.ControlTime <= 76500L)
                 {
                     Flag = 2;
                     Divisor = 300L;
                     if(_vst[_last]->ELoad.ControlTime % 300L)
                         _vst[_last]->ELoad.ControlTime += 300L;
                 }
-                else if(_vst[_last]->ELoad.ControlTime == 76500L)
-                {
-                    Flag = 2;
-                    Divisor = 300L;
-                }
-                else if(_vst[_last]->ELoad.ControlTime < 229500L)
+                else if(_vst[_last]->ELoad.ControlTime <= 229500L)
                 {
                     Flag = 3;
                     Divisor = 900L;
                     if(_vst[_last]->ELoad.ControlTime % 900L)
                         _vst[_last]->ELoad.ControlTime += 900L;
-                }
-                else if(_vst[_last]->ELoad.ControlTime == 229500L)
-                {
-                    Flag = 3;
-                    Divisor = 900L;
                 }
                 else
                 {
@@ -806,7 +786,7 @@ INT    CtiProtocolVersacom::VersacomShedCommandEx(UINT controltime,   // = 0,
 {
     _vst[_last]->CommandType           = VECONTROL;
     _vst[_last]->ELoad.ControlType     = 1;           // Discrete (shed) control
-    _vst[_last]->ELoad.CycleType       = 0;           // Cycle (not Bump) command
+    _vst[_last]->ELoad.CycleType       = 0;
 
     if(_vst[_last]->RelayMask != 0 && relay == 0)
     {
@@ -1819,11 +1799,8 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         parse.Map()["control_interval"]  = CtiParseValue( parse.getiValue("shed") );
         parse.Map()["control_reduction"] = CtiParseValue( 100 );
 
-        if( useVersacomTypeFourControl  || getTransmitterType() == TYPE_TCU5000 )     // Positional relays only one thru three can go out type four (in one message).
+        if( useVersacomTypeFourControl  || getTransmitterType() == TYPE_TCU5000 || parse.getiValue("shed") == 1 )     // Positional relays only one thru three can go out type four (in one message).
         {
-            // 081203 CGP - Shed times which are not exact were failing... // (!(hasrand || hasdelay) && !(relay & 0xfffffff8))
-
-            // Control time is in the parsers iValue!
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
             primeAndAppend(aVst);  // Get a new one in the system
             VersacomShedCommand(parse.getiValue("shed"));
