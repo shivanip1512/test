@@ -1657,6 +1657,8 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-327, -84, 'MCT-410IL', 10, 'Y');
 alter table fdrtranslation drop constraint PK_FDRTrans;
 alter table FDRTRANSLATION add constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION);
 
+update YukonRoleProperty set KeyName='stars_preload_data', DefaultValue='false', Description='Controls whether the STARS application should preload data into the cache.' where RolePropertyID=-1013;
+
 
 
 

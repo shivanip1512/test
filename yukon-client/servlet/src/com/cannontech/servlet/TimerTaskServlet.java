@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.web.util.TimerTaskUtil;
 
 /**
@@ -32,7 +35,9 @@ public class TimerTaskServlet extends HttpServlet {
 		
 		TimerTaskUtil.restartAllTimerTasks();
 		
-		StarsDatabaseCache.getInstance().loadData();
+		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+		if (CtiUtilities.isTrue( preloadData ))
+			StarsDatabaseCache.getInstance().loadData();
 	}
 
 	/* (non-Javadoc)
@@ -41,9 +46,10 @@ public class TimerTaskServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException
 	{
-		if (req.getParameter("Restart") != null)
+		if (req.getParameter("Restart") != null) {
 			TimerTaskUtil.restartAllTimerTasks();
-		resp.getWriter().println("All timer tasks restarted");
+			resp.getWriter().println("All timer tasks restarted");
+		}
 	}
     
 }
