@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.104 $
-* DATE         :  $Date: 2004/05/19 14:57:58 $
+* REVISION     :  $Revision: 1.105 $
+* DATE         :  $Date: 2004/05/20 22:44:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,7 +148,6 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
 INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-INT verifyConnectedDevice(CtiPortSPtr Port, CtiDeviceSPtr &pDevice, LONG &oldid, LONG &portConnectedUID);
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
 BOOL findExclusionFreeOutMessage(void *data, void* d);
@@ -237,14 +236,14 @@ VOID PortThread(void *pid)
             if(Device)
             {
                 Device->getOutMessage(OutMessage);
-            }
 
-            /*
-             *  This block is trying to make us go back to normal processing through readQueue.
-             */
-            if(Device && !OutMessage)
-            {
-                Port->resetDeviceQueued(Device->getID());
+                /*
+                 *  This block is trying to make us go back to normal processing through readQueue.
+                 */
+                if(!Device->hasQueuedWork() && !OutMessage)
+                {
+                    Port->resetDeviceQueued(Device->getID());
+                }
             }
         }
 
@@ -738,9 +737,11 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 
     Port->setShouldDisconnect(FALSE);
 
+    ULONG oldConnUID = Port->getConnectedDeviceUID();
+
     status = Port->connectToDevice(Device, LastConnectedDevice, TraceFlag);
 
-    if(LastConnectedDevice > 0 && LastConnectedDevice != Device->getID())
+    if(oldConnUID > 0 && oldConnUID != Device->getUniqueIdentifier())
     {
         {
             CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
@@ -832,7 +833,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << RWTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue" << endl;
+            slog << RWTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << endl;
         }
     }
 
@@ -1543,46 +1544,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         CtiDeviceRTC *rtc = (CtiDeviceRTC *)Device.get();
 
-                        CtiOutMessage *rtcOutMessage = 0;
 
-                        INT codecount = 1;      // One is for The one in OutMessage.
-
-                        try
-                        {
-                            CtiProtocolSA3rdParty prot;
-
-                            prot.setSAData( OutMessage->Buffer.SASt );
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " " <<  rtc->getName() << ": " << prot.asString() << endl;
-                            }
-
-                            while( codecount <= 35 && rtc->getOutMessage(rtcOutMessage) )
-                            {
-                                codecount++;
-                                memcpy((char*)(&OutMessage->Buffer.OutMessage[OutMessage->OutLength]), (char*)rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->OutLength);
-                                OutMessage->OutLength += rtcOutMessage->OutLength;
-
-                                prot.setSAData( rtcOutMessage->Buffer.SASt );
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                    slog << RWTime() << " " <<  rtc->getName() << ": " << prot.asString() << endl;
-                                }
-
-                                delete rtcOutMessage;
-                                rtcOutMessage = 0;
-                            }
-
-                            prot.setTransmitterAddress(rtc->getAddress());
-                            prot.appendVariableLengthTimeSlot(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
-
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        rtc->prepareOutMessageForComms(OutMessage);
 
 
                         /* output the message to the remote */
@@ -3212,45 +3175,6 @@ bool deviceCanSurviveThisStatus(INT status)
     return survive;
 }
 
-
-
-INT verifyConnectedDevice(CtiPortSPtr Port, CtiDeviceSPtr &pDevice, LONG &oldid, LONG &portConnectedUID)
-{
-    INT status = NORMAL;
-
-    portConnectedUID = Port->getConnectedDeviceUID();
-
-    /* 050201 CGP Added this if... May cause issues, so pay attention */
-    /*
-     *  Is the port connected to a DIFFERENT device with the same UID?
-     */
-    if( Port->getConnectedDevice() != pDevice->getID() )
-    {
-        // We need to fix up the old device... because we are stealing some of his thunder here!
-        {
-            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-
-            CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(Port->getConnectedDevice());
-
-            if(pOldConnectedDevice)
-            {
-                oldid = pOldConnectedDevice->getID();
-                pOldConnectedDevice->setLogOnNeeded(TRUE);
-
-                if( pOldConnectedDevice->getUniqueIdentifier() != pDevice->getUniqueIdentifier() )
-                {
-                    // OK, this means we need to do a logon. (At least to TAP)
-                    oldid = 0;
-                    pDevice->setLogOnNeeded(TRUE);
-                }
-            }
-        }
-
-        Port->setConnectedDevice( pDevice->getID() ); // Let's switch allegiance.
-    }
-
-    return status;
-}
 
 
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage )
