@@ -1,10 +1,13 @@
 package com.cannontech.database.cache.functions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -81,6 +84,42 @@ public class AuthFuncs {
 	public static String getRoleValue(LiteYukonUser user, String roleName, String defaultValue) {
 		Pair p = checkRole(user,roleName);
 		return (p != null ? (String)p.second : defaultValue);
+	}
+	
+	/**
+	 * Returns a list of roles that are in the given category.
+	 * @param category
+	 * @return List
+	 */
+	public static List getRoles(String category) {
+		List retList = new ArrayList(100);
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) {
+			Iterator i = cache.getAllYukonRoles().iterator();
+			while(i.hasNext()) {
+				LiteYukonRole r = (LiteYukonRole) i.next();
+				if(r.getCategory().equals(category)) {
+					retList.add(r);
+				}
+			}
+		}		
+		return retList;
+	}
+	
+	public static LiteYukonRole getRole(int roleid) {		
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) {
+			Iterator i = cache.getAllYukonRoles().iterator();
+			while(i.hasNext()) {
+				LiteYukonRole r = (LiteYukonRole) i.next();
+				if(r.getRoleID() == roleid) {
+					return r;
+				}
+			}
+		}		
+		return null;
 	}
 	
 	/**
