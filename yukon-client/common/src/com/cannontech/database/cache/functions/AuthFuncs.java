@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.RadiusRole;
+import com.cannontech.user.UserUtils;
 
 /**
  * A collection of methods to handle authenticating, authorization, and the retrieval of role property values.
@@ -25,14 +26,19 @@ public class AuthFuncs {
 	/**
 	 * Attempts to locate user with the given username and password.
 	 * Returns null if there is no match or the user is not enabled.
+	 * Does not attempt Radius login if user is admin.
 	 * @param username
 	 * @param password
 	 * @return LiteYukonUser
 	 */
 	public static LiteYukonUser login(String username, String password) {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		String radiusAddr = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SERVER_ADDRESS);
-		if(radiusAddr != null && !radiusAddr.equalsIgnoreCase("(none)"))	//value is something other than '(none)'
+		String radiusAddr = null;
+		//If admin user, skip the radius login attempt (the radiusAddr is null when skipped).
+		if( !isAdminUser(username))
+			radiusAddr = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SERVER_ADDRESS);
+			
+		if(radiusAddr != null && !radiusAddr.equalsIgnoreCase(CtiUtilities.STRING_NONE))	//value is something other than '(none)'
 		{
 			CTILogger.info("Attempting a RADIUS login");
 			return RadiusLogin.login(username, password);
@@ -282,6 +288,17 @@ public class AuthFuncs {
 	 */
 	private AuthFuncs() {
 	}
-	
-	
+
+	/**
+	 * Return true if username_ is the admin user.
+	 * @param username_
+	 * @return
+	 */
+	public static boolean isAdminUser(String username_)
+	{
+		LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser(username_);
+		if ( liteUser != null && liteUser.getUserID() == UserUtils.USER_ADMIN_ID )
+			return true;
+		return false;
+	}
 }
