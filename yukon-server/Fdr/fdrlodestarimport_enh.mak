@@ -53,13 +53,13 @@ $(COMPILEBASE)\lib\cmdline.lib
 
 
 
-ALL:   fdrlodestarimport.dll
+ALL:   fdrlodestarimport_enh.dll
 
-fdrlodestarimport.dll: fdrlodestarimport.obj fdrlodestarimport_enh.obj fdrlodestarimport_std.obj fdrlodestarimport.mak
+fdrlodestarimport_enh.dll: fdrlodestarimport_enh.obj fdrlodestarimport_enh.mak
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) fdrlodestarimport.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) fdrlodestarimport_enh.obj $(INCLPATHS) $(RWLIBS) $(CTIFDRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -68,17 +68,17 @@ fdrlodestarimport.dll: fdrlodestarimport.obj fdrlodestarimport_enh.obj fdrlodest
 
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-                -if exist bin\fdrlodestarimport.dll copy bin\fdrlodestarimport.dll $(YUKONOUTPUT)
+                -if exist bin\fdrlodestarimport_enh.dll copy bin\fdrlodestarimport_enh.dll $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                -if exist bin\fdrlodestarimport.lib copy bin\fdrlodestarimport.lib $(COMPILEBASE)\lib
+                -if exist bin\fdrlodestarimport_enh.lib copy bin\fdrlodestarimport_enh.lib $(COMPILEBASE)\lib
 
 
 clean:
-                -del fdrlodestarimport.obj fdrlodestarimport.dll fdrlodestarimport.ilk fdrlodestarimport.pdb fdrlodestarimport.lib fdrlodestarimport.exp
+                -del fdrlodestarimport_enh.obj fdrlodestarimport_enh.dll fdrlodestarimport_enh.ilk fdrlodestarimport_enh.pdb fdrlodestarimport_enh.lib fdrlodestarimport_enh.exp
 
 
 deps:
-                scandeps -Output fdrlodestarimport.mak fdrlodestarimport.cpp
+                scandeps -Output fdrlodestarimport_enh.mak fdrlodestarimport_enh.cpp
 
 
 
@@ -86,6 +86,4 @@ deps:
                 @echo:
                 @echo Compiling: $< Output: ..\$@
                 @echo:
-                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<
-
-
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(INCLPATHS) -D_DLL_ENH_FDRLODESTARIMPORT -DWINDOWS -Fo$(OBJ)\ -c $<

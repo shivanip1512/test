@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2003/07/18 21:46:16 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/04/06 21:10:18 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.4  2004/04/06 21:10:18  jrichter
+      jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
+
       Revision 1.3  2003/07/18 21:46:16  jwolberg
       Fixes based on answers to questions asked of Xcel.
 
@@ -38,63 +41,77 @@
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
+#include "fdrlodestarinfo.h"
 
-class IM_EX_FDRLODESTARIMPORT CtiFDR_LodeStarImport : public CtiFDRTextFileBase
+class IM_EX_FDRBASE CtiFDR_LodeStarImportBase : public CtiFDRTextFileBase, CtiRTDB< CtiFDRPoint >
 {
     typedef CtiFDRTextFileBase Inherited;
 
 public:
     // constructors and destructors
-    CtiFDR_LodeStarImport(); 
-
-    virtual ~CtiFDR_LodeStarImport();
+    //CtiFDR_LodeStarImportBase(); 
+    CtiFDR_LodeStarImportBase(RWCString &aInterface);
+    
+    virtual ~CtiFDR_LodeStarImportBase();
     virtual BOOL    init( void );   
     virtual BOOL    run( void );
-    virtual BOOL    stop( void );
+    virtual BOOL    stop( void );  
+    
+    typedef CtiRTDBIterator CTIFdrLodeStarIterator;
+    
+    virtual vector<CtiFDR_LodeStarInfoTable> getFileInfoList() const = 0;
+    virtual vector< CtiFDR_LodeStarInfoTable > & getFileInfoList () = 0;
+        
+    virtual RWCString getCustomerIdentifier(void)=0;
+    virtual RWTime    getlodeStarStartTime(void)=0;
+    virtual RWTime    getlodeStarStopTime(void)=0;
+    virtual long       getlodeStarSecsPerInterval(void) = 0;
+    virtual long       getlodeStarPointId(void) = 0;
+    virtual void       reinitialize(void) = 0;
+    virtual bool decodeFirstHeaderRecord(RWCString& aLine) = 0;
+    virtual bool decodeSecondHeaderRecord(RWCString& aLine) = 0;
+    virtual bool decodeThirdHeaderRecord(RWCString& aLine) = 0;
+    virtual bool decodeFourthHeaderRecord(RWCString& aLine) = 0;
+    virtual bool decodeDataRecord(RWCString& aLine, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual const CHAR * getKeyInterval() = 0;
+    virtual const CHAR * getKeyFilename() = 0;
+    virtual const CHAR * getKeyDrivePath() = 0;
+    virtual const CHAR * getKeyDBReloadRate() = 0;
+    virtual const CHAR * getKeyQueueFlushRate() = 0;
+    virtual const CHAR * getKeyDeleteFile() = 0;
+    virtual const CHAR * getKeyRenameSave() = 0;
+    virtual int getSubtractValue() = 0;
+
 
     int readConfig( void );
 
+    const char * getIntervalKey();
     USHORT ForeignToYukonQuality (RWCString aQuality);
     RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
 
-    bool decodeFirstHeaderRecord(RWCString& aLine,RWCString& lsCustomerIdentifier,long& pointId,long& lsChannel,RWTime& lsStartTime,
-                                 RWTime& lsStopTime,RWCString& lsDSTFlag,RWCString& lsInvalidRecordFlag);
-    bool decodeSecondHeaderRecord(RWCString& aLine, double& lsMeterStartReading, double& lsMeterStopReading,
-                                  double& lsMeterMultiplier, double& lsMeterOffset, double& lsPulseMultiplier, double& lsPulseOffset,
-                                  long& lsSecondsPerInterval, long& lsUnitOfMeasure, long& lsBasicUnitCode, long& lsTimeZone,
-                                  double& lsPopulation, double& lsWeight);
-    bool decodeThirdHeaderRecord(RWCString& aLine, RWCString& lsDescriptor);
-    bool decodeFourthHeaderRecord(RWCString& aLine, RWTime& lsTimeStamp, RWCString& lsOrigin);
-    bool decodeDataRecord(RWCString& aLine, long pointId, double lsMeterMultiplier, double lsMeterOffset, double lsPulseMultiplier, double lsPulseOffset, CtiMultiMsg* multiDispatchMsg);
-
+    
     bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg,const RWTime& savedStartTime,const RWTime& savedStopTime,long lsSecondsPerInterval);
 
     bool shouldDeleteFileAfterImport() const;
-    CtiFDR_LodeStarImport &setDeleteFileAfterImport (bool aFlag);
+    CtiFDR_LodeStarImportBase &setDeleteFileAfterImport (bool aFlag);
 
     bool shouldRenameSaveFileAfterImport() const;
-    CtiFDR_LodeStarImport &setRenameSaveFileAfterImport (bool aFlag);
+    CtiFDR_LodeStarImportBase &setRenameSaveFileAfterImport (bool aFlag);
 
     bool validateAndDecodeLine( RWCString &input, CtiMessage **aRetMsg);
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
-    // ddefine these for each interface type
-    static const CHAR * KEY_INTERVAL;
-    static const CHAR * KEY_FILENAME;
-    static const CHAR * KEY_DRIVE_AND_PATH;
-    static const CHAR * KEY_DB_RELOAD_RATE;
-    static const CHAR * KEY_QUEUE_FLUSH_RATE;
-    static const CHAR * KEY_DELETE_FILE;
-    static const CHAR * KEY_RENAME_SAVE_FILE;
 
 private:
     RWThreadFunction    _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
     bool                _renameSaveFileAfterImportFlag;
+
 };
 
 
 
-#endif  //  #ifndef __FDR_STEC_H__
+#endif  //  #ifndef  __FDRLODESTARIMPORT_H__
+
 

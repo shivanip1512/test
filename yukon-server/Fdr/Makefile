@@ -17,7 +17,9 @@ all:
         @$(MAKE) -nologo -f fdrrccs.mak
         @$(MAKE) -nologo -f makeexe.mak
         @$(MAKE) -nologo -f fdrtelegyr.mak
-        @$(MAKE) -nologo -f fdrlodestarimport.mak
+        @$(MAKE) -nologo -f fdrlodestarimport_std.mak
+        @$(MAKE) -nologo -f fdrlodestarimport_enh.mak
+
 
 copy:
         @$(MAKE) -nologo -f makedll.mak $@
@@ -35,7 +37,8 @@ copy:
         @$(MAKE) -nologo -f fdrtristate.mak
         @$(MAKE) -nologo -f fdrtelegyr.mak
         @$(MAKE) -nologo -f makeexe.mak $@
-        @$(MAKE) -nologo -f fdrlodestarimport.mak
+        @$(MAKE) -nologo -f fdrlodestarimport_std.mak
+        @$(MAKE) -nologo -f fdrlodestarimport_enh.mak
 
 
 deps:
@@ -54,8 +57,8 @@ deps:
         @$(MAKE) -nologo -f fdrcygnet.mak $@
         @$(MAKE) -nologo -f makeexe.mak $@
         @$(MAKE) -nologo -f fdrtelegyr.mak $@
-        @$(MAKE) -nologo -f fdrlodestarimport.mak
-
+        @$(MAKE) -nologo -f fdrlodestarimport_std.mak
+        @$(MAKE) -nologo -f fdrlodestarimport_enh.mak
 
 clean:
         -del \

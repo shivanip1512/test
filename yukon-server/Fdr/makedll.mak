@@ -41,9 +41,11 @@ FDRINTERFACES=\
 
 FDRINTERFACEOBJS=\
 fdrdestination.obj  \
+fdrlodestarinfo.obj  \
 fdrpoint.obj \
 mgr_fdrpoint.obj \
 fdrinterface.obj \
+fdrlodestarimport.obj \
 fdrsocketlayer.obj \
 fdrsocketconnection.obj \
 fdrserverconnection.obj \

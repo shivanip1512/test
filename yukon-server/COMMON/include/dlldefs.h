@@ -409,10 +409,17 @@
 #else
    #define IM_EX_FDRTEXTEXPORT       __declspec(dllimport)
 #endif
-#ifdef _DLL_FDRLODESTARIMPORT
-   #define IM_EX_FDRLODESTARIMPORT       __declspec(dllexport)
+#ifdef _DLL_ENH_FDRLODESTARIMPORT
+   #define IM_EX_ENH_FDRLODESTARIMPORT       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )
-   #define IM_EX_FDRLODESTARIMPORT
+   #define IM_EX_ENH_FDRLODESTARIMPORT
+#else
+   #define IM_EX_ENH_FDRLODESTARIMPORT       __declspec(dllimport)
+#endif 
+#ifdef _DLL_STD_FDRLODESTARIMPORT
+   #define IM_EX_STD_FDRLODESTARIMPORT       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_STD_FDRLODESTARIMPORT
 #else
    #define IM_EX_FDRLODESTARIMPORT       __declspec(dllimport)
 #endif
