@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/12/16 17:00:40 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/01/31 17:08:09 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -636,9 +636,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                     else
                     {
                         //  make into a switch if any other commands need to perform commands after the Series V is done
-                        if( _command == Command_ScanAccumulator ||
-                            _command == Command_ScanIntegrity ||
-                            _command == Command_ScanException )
+                        if( _command == Command_ScanAccumulator )
                         {
                             _outbound.length = 1;
                             _outbound.body_header.message_type = Opcode_GetTransmitterPower;
@@ -713,147 +711,165 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
             if( tmp_crc == inbound_crc )
             {
                 //  also verify the inbound address
-
-                if( _inbound.body_header.message_type == Opcode_ClearAndReadStatus )
+                if( _inbound.dest_sat_id == 0x01 && _inbound.dest_node == 0x01 )
                 {
-                    _status.c = _inbound.data[0];
+                    if( _inbound.body_header.message_type == Opcode_ClearAndReadStatus )
+                    {
+                        _status.c = _inbound.data[0];
+                    }
+                    else
+                    {
+                        switch( _command )
+                        {
+                            case Command_SendQueuedCodes:
+                            {
+                                _verification_pending = true;
+
+                                if( _outbound.data[0] & 0xc0 )
+                                {
+                                    _untransmitted_codes = false;
+                                }
+
+                                //  well, theory goes that if we're here and the code queue is empty, we probably transmitted them
+                                //    (this should be FIX 'd to make the transactioncomplete stuff more robust, ick)
+                                if( _codes.empty() )
+                                {
+                                    _transactionComplete = true;
+                                }
+
+                                //  also, if we're out of time, stop loading codes
+                                if( _transmitting_until >= _completion_time )
+                                {
+                                    _transactionComplete = true;
+                                }
+
+                                break;
+                            }
+
+                            case Command_ReadQueuedCodes:
+                            case Command_ReadEchoedCodes:
+                            {
+                                int offset = 0;
+
+                                offset++;  //  move past the UPA status for the time being
+
+                                //  final block of codes, so we're done
+                                if( !(_inbound.data[offset++] & 0x80) )
+                                {
+                                    _transactionComplete = true;
+                                }
+
+                                while( offset < (_inbound.length - 1) )
+                                {
+                                    char buf[7];
+
+                                    memcpy(buf, _inbound.data + offset, 6);
+                                    buf[6] = 0;
+
+                                    if( _command == Command_ReadEchoedCodes )
+                                    {
+                                        CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
+
+                                        _verification_objects.push(report);
+
+                                        _verification_pending = false;
+                                    }
+                                    else
+                                    {
+                                        _retrieved_codes.push(atoi(buf));
+                                    }
+
+                                    offset += 6;
+
+                                    _num_codes_retrieved++;
+                                }
+
+                                //  shouldn't be possible
+                                if( _num_codes_retrieved > 0xff )
+                                {
+                                    _transactionComplete = true;
+
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case Command_ScanAccumulator:
+                            case Command_ScanIntegrity:
+                            case Command_ScanException:
+                            case Command_Control:
+                            case Command_AnalogSetpoint:
+                            {
+                                if( !_seriesv.isTransactionComplete() )
+                                {
+                                    memcpy(_seriesv_inbuffer, buf + LMIPacketHeaderLen + 1, _in_total - LMIPacketHeaderLen - 1);
+
+                                    seriesv_xfer.setInBuffer(_seriesv_inbuffer);
+                                    seriesv_xfer.setInCountActual(&seriesv_incount_actual);
+                                    seriesv_xfer.setInCountActual(_in_total - LMIPacketHeaderLen - 1);
+
+                                    //  tack on the Series V passthrough CRC
+                                    _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
+                                    _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 1] = (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8;
+
+                                    retval = _seriesv.decode(seriesv_xfer, status);
+
+                                    if( _command != Command_ScanAccumulator )
+                                    {
+                                        _transactionComplete = _seriesv.isTransactionComplete();
+                                    }
+                                }
+                                else
+                                {
+                                    if( _command == Command_ScanAccumulator )
+                                    {
+                                        _transmitter_power  = _inbound.data[0];
+                                        _transmitter_power |= _inbound.data[1] << 8;
+
+                                        _transmitter_power_time = RWTime::now().seconds();
+
+                                        _transactionComplete = true;
+                                    }
+                                    else
+                                    {
+                                        retval = !NORMAL;
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case Command_Loopback:
+                            //  all we have to do is verify that the message got to us okay - nothing more
+                            //    what will it take to return a message from a loopback?
+                            case Command_Timesync:
+                            default:
+                            {
+                                _transactionComplete = true;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    switch( _command )
+                    if( _inbound.preamble     == _outbound.preamble     &&
+                        _inbound.length       == _outbound.length       &&
+                        _inbound.dest_sat_id  == _outbound.dest_sat_id  &&
+                        _inbound.dest_node    == _outbound.dest_node    &&
+                        _inbound.src_sat_id   == _outbound.src_sat_id   &&
+                        _inbound.src_sat_node == _outbound.src_sat_node &&
+                        _inbound.body_header.message_type == _outbound.body_header.message_type &&
+                        _inbound.body_header.flush_codes  == _outbound.body_header.flush_codes )
                     {
-                        case Command_SendQueuedCodes:
-                        {
-                            _verification_pending = true;
-
-                            if( _outbound.data[0] & 0xc0 )
-                            {
-                                _untransmitted_codes = false;
-                            }
-
-                            //  well, theory goes that if we're here and the code queue is empty, we probably transmitted them
-                            //    (this should be FIX 'd to make the transactioncomplete stuff more robust, ick)
-                            if( _codes.empty() )
-                            {
-                                _transactionComplete = true;
-                            }
-
-                            //  also, if we're out of time, stop loading codes
-                            if( _transmitting_until >= _completion_time )
-                            {
-                                _transactionComplete = true;
-                            }
-
-                            break;
-                        }
-
-                        case Command_ReadQueuedCodes:
-                        case Command_ReadEchoedCodes:
-                        {
-                            int offset = 0;
-
-                            offset++;  //  move past the UPA status for the time being
-
-                            //  final block of codes, so we're done
-                            if( !(_inbound.data[offset++] & 0x80) )
-                            {
-                                _transactionComplete = true;
-                            }
-
-                            while( offset < (_inbound.length - 1) )
-                            {
-                                char buf[7];
-
-                                memcpy(buf, _inbound.data + offset, 6);
-                                buf[6] = 0;
-
-                                if( _command == Command_ReadEchoedCodes )
-                                {
-                                    CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
-
-                                    _verification_objects.push(report);
-
-                                    _verification_pending = false;
-                                }
-                                else
-                                {
-                                    _retrieved_codes.push(atoi(buf));
-                                }
-
-                                offset += 6;
-
-                                _num_codes_retrieved++;
-                            }
-
-                            //  shouldn't be possible
-                            if( _num_codes_retrieved > 0xff )
-                            {
-                                _transactionComplete = true;
-
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                            }
-
-                            break;
-                        }
-
-                        case Command_ScanAccumulator:
-                        case Command_ScanIntegrity:
-                        case Command_ScanException:
-                        case Command_Control:
-                        case Command_AnalogSetpoint:
-                        {
-                            if( !_seriesv.isTransactionComplete() )
-                            {
-                                memcpy(_seriesv_inbuffer, buf + LMIPacketHeaderLen + 1, _in_total - LMIPacketHeaderLen - 1);
-
-                                seriesv_xfer.setInBuffer(_seriesv_inbuffer);
-                                seriesv_xfer.setInCountActual(&seriesv_incount_actual);
-                                seriesv_xfer.setInCountActual(_in_total - LMIPacketHeaderLen - 1);
-
-                                //  tack on the Series V passthrough CRC
-                                _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
-                                _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 1] = (CtiProtocolSeriesV::PassthroughCRC & 0xff00) >> 8;
-
-                                retval = _seriesv.decode(seriesv_xfer, status);
-
-                                if( _command != Command_ScanAccumulator )
-                                {
-                                    _transactionComplete = _seriesv.isTransactionComplete();
-                                }
-                            }
-                            else
-                            {
-                                if( _command == Command_ScanAccumulator ||
-                                    _command == Command_ScanIntegrity ||
-                                    _command == Command_ScanException )
-                                {
-                                    _transmitter_power  = _inbound.data[0];
-                                    _transmitter_power |= _inbound.data[1] << 8;
-
-                                    _transmitter_power_time = RWTime::now().seconds();
-
-                                    _transactionComplete = true;
-                                }
-                                else
-                                {
-                                    retval = !NORMAL;
-                                }
-                            }
-
-                            break;
-                        }
-
-                        case Command_Loopback:
-                        //  all we have to do is verify that the message got to us okay - nothing more
-                        //    what will it take to return a message from a loopback?
-                        case Command_Timesync:
-                        default:
-                        {
-                            _transactionComplete = true;
-                        }
+                        retval = ErrPortEchoResponse;
+                    }
+                    else
+                    {
+                        retval = ADDRESSERROR;
                     }
                 }
             }
