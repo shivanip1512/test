@@ -447,7 +447,7 @@ public Object getValue(Object val)
 	objectsToAdd.getDBPersistentVector().add(device);
 
 	//Search for the correct sub-type and set the address
-	if (getAddressTextField().isVisible())
+	if( getAddressTextField().isVisible() )
 	{
 		if (val instanceof IDLCBase)
 			 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
@@ -455,6 +455,8 @@ public Object getValue(Object val)
 			 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(new Integer(getAddressTextField().getText()));
 		else if (val instanceof CapBank)
 			 ((CapBank) val).setLocation(getAddressTextField().getText());
+		else if (val instanceof Ion7700)
+			 ((Ion7700) val).assignAddress( new Integer(getAddressTextField().getText()) );
 		else //didn't find it
 			throw new Error("Unable to determine device type when attempting to set the address");
 	}
