@@ -218,6 +218,27 @@ alter table LMDirectNotifGrpList
       references NotificationGroup (NotificationGroupID);
 
 
+create table DeviceSeries5RTU  (
+   DeviceID             NUMBER                           not null,
+   TickTime             NUMBER                           not null,
+   TransmitOffset       NUMBER                           not null,
+   PowerValueHighLimit  NUMBER                           not null,
+   PowerValueLowLimit   NUMBER                           not null,
+   PowerValueMultiplier FLOAT                            not null,
+   PowerValueOffset     FLOAT                            not null,
+   StartCode            NUMBER                           not null,
+   StopCode             NUMBER                           not null
+);
+alter table DeviceSeries5RTU
+   add constraint PK_DEVICESERIES5RTU primary key (DeviceID);
+alter table DeviceSeries5RTU
+   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
+      references DEVICE2WAYFLAGS (DEVICEID);
+
+
+
+
+
 
 
 /******************************************************************************/

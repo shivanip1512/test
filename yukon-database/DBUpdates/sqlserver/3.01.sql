@@ -263,6 +263,32 @@ alter table LMDirectNotifGrpList
 go
 
 
+create table DeviceSeries5RTU (
+DeviceID             numeric              not null,
+TickTime             numeric              not null,
+TransmitOffset       numeric              not null,
+PowerValueHighLimit  numeric              not null,
+PowerValueLowLimit   numeric              not null,
+PowerValueMultiplier float                not null,
+PowerValueOffset     float                not null,
+StartCode            numeric              not null,
+StopCode             numeric              not null
+);
+go
+alter table DeviceSeries5RTU
+   add constraint PK_DEVICESERIES5RTU primary key  (DeviceID);
+go
+alter table DeviceSeries5RTU
+   add constraint FK_DvS5r_Dv2w foreign key (DeviceID)
+      references DEVICE2WAYFLAGS (DEVICEID);
+go
+
+
+
+
+
+
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
