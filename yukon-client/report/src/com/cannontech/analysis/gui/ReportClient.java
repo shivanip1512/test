@@ -9,6 +9,7 @@ package com.cannontech.analysis.gui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -61,10 +62,11 @@ import com.cannontech.message.util.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 
-public class ReportClient extends javax.swing.JPanel implements java.awt.event.ActionListener {
-	
+public class ReportClient extends javax.swing.JPanel implements java.awt.event.ActionListener
+{
+    public static final URL REPORT_GIF = ReportClient.class.getResource("/ReportIcon.gif");
 	private String HELP_FILE = CtiUtilities.getHelpDirPath() + "Yukon Reporting Help.chm";
-		
+
 	private javax.swing.JSplitPane ivjLeftRightSplitPane = null;
 	private static javax.swing.JFrame reportClientFrame = null;
 	private javax.swing.JMenuBar menuBar = null;
@@ -993,10 +995,14 @@ private javax.swing.JButton getGenerateButton() {
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 			javax.swing.JFrame mainFrame = new javax.swing.JFrame();
-			mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
+            mainFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(REPORT_GIF));
 			mainFrame.setTitle("Yukon Reporting");
         
-			SplashWindow splash = new SplashWindow( mainFrame, "ctismall.gif", "Loading " + System.getProperty("cti.app.name") + "...", new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+            SplashWindow splash = new SplashWindow(
+                    mainFrame,
+                    CtiUtilities.CTISMALL_GIF,
+                    "Loading " + System.getProperty("cti.app.name") + "...",
+                    new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
         
 //			ClientSession session = ClientSession.getInstance(); 
 //			if(!session.establishSession(mainFrame))
