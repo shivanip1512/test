@@ -44,11 +44,11 @@ public interface RoleTypes {
 	
 	//WebClient category
 	public static final int HOME_URL											= -100;
-	public static final int WEB_USER											= -101;
+	public static final int WEB_OPERATOR								= -101;
 	public static final int WEB_RESIDENTIAL_CUSTOMER 	= -102;
 	public static final int WEB_CICUSTOMER							= -103;
-	public static final int WEB_OPERATOR								= -104;
 	
+	//Consumer Info category
 	public static final int OPERATOR_CONSUMER_INFO					= -120;
 	public static final int OPERATOR_COMMERCIAL_METERING	= -121;
 	public static final int OPERATOR_LOADCONTROL						= -122;
