@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2004/10/22 15:08:17 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2004/10/25 16:19:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -493,19 +493,14 @@ bool CtiDeviceMCT::initCommandStore()
     cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
     _commandStore.insert( cs );
 
-    cs._cmd     = (CtiProtocolEmetcon::Control_ARMS);     // Just here to make this OK.
-    cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( 0, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = (CtiProtocolEmetcon::Control_ARML);
-    cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( 0, 0 );
-    _commandStore.insert( cs );
-
-    cs._cmd     = (CtiProtocolEmetcon::PutConfig_ARMC);
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_ARMC;
     cs._io      = IO_WRITE;
     cs._funcLen = make_pair( (int)MCT_Function_ARMC, 0);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_ARML;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_ARML, 0);
     _commandStore.insert( cs );
 
     //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
@@ -879,11 +874,10 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     switch( InMessage->Sequence )
     {
-        case CtiProtocolEmetcon::Control_ARMS:
-        case CtiProtocolEmetcon::Control_ARML:
         case CtiProtocolEmetcon::Control_Open:
         case CtiProtocolEmetcon::Control_Close:
         case CtiProtocolEmetcon::PutConfig_ARMC:
+        case CtiProtocolEmetcon::PutConfig_ARML:
         {
             break;
         }
@@ -2099,6 +2093,11 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     else if( parse.isKeyValid("armc") )
     {
         function = CtiProtocolEmetcon::PutConfig_ARMC;
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if( parse.isKeyValid("arml") )
+    {
+        function = CtiProtocolEmetcon::PutConfig_ARML;
         found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if( parse.isKeyValid("onoffpeak") )
