@@ -346,7 +346,7 @@ public class ECActivityLogReport extends YukonReportBase
 			factory.setName(entry.getKey().toString()+ " Group Element");
 			factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(150, offset));
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(ActivityModel.ACTION_COLUMN).getPositionX(), offset));
 			factory.setMinimumSize(new FloatDimension(348, 18));
 			factory.setText(entry.getKey().toString());
 			factory.setBold(new Boolean(false));
@@ -356,7 +356,7 @@ public class ECActivityLogReport extends YukonReportBase
 			factory.setName(entry.getValue().toString() +" Group Element");
 			factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(500, offset));
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(ActivityModel.ACTION_COUNT_COLUMN).getPositionX(), offset));
 			factory.setMinimumSize(new FloatDimension(25, 18));
 			factory.setText(entry.getValue().toString());
 			factory.setBold(new Boolean(false));
