@@ -76,18 +76,15 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeDeleted > 0) {
-			String snToStr = (snTo != null)? " to " + snTo : " and above";
-			if (status == STATUS_FINISHED)
-				return "The SN range " + snFrom + snToStr + " has been deleted successfully";
+			if (status == STATUS_FINISHED && numFailure == 0) {
+				String snToStr = (snTo != null)? " to " + snTo : " and above";
+				return "The serial numbers " + snFrom + snToStr + " have been deleted successfully.";
+			}
 			else
-				return numSuccess + " of " + numToBeDeleted + " hardwares deleted";
+				return numSuccess + " of " + numToBeDeleted + " hardwares have been deleted.";
 		}
-		else {
-			if (status == STATUS_FINISHED)
-				return "No hardware found in the given SN range";
-			else
-				return "Deleting hardwares from inventory...";
-		}
+		else
+			return "Deleting hardwares from inventory...";
 	}
 
 	/* (non-Javadoc)
@@ -162,7 +159,13 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 		}
 		else {
 			ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID, snFrom, snTo );
+			
 			numToBeDeleted = hwList.size();
+			if (numToBeDeleted == 0) {
+				status = STATUS_ERROR;
+				errorMsg = "There was no " + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText() + " found in the given range of serial numbers.";
+				return;
+			}
 			
 			for (int i = 0; i < hwList.size(); i++) {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);

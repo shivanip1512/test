@@ -85,7 +85,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			if (status == STATUS_FINISHED && numFailure == 0) {
 				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
 					Integer[] snRange = (Integer[]) invToConfig.get(0);
-					return "The SN range " + snRange[1] + " to " + snRange[2] + " has been configured successfully.";
+					return "The serial numbers " + snRange[1] + " to " + snRange[2] + " have been configured successfully.";
 				}
 				else
 					return numSuccess + " hardwares have been configured successfully.";
@@ -97,7 +97,7 @@ public class ConfigSNRangeTask implements TimeConsumingTask {
 			if (status == STATUS_FINISHED && numFailure == 0) {
 				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
 					Integer[] snRange = (Integer[]) invToConfig.get(0);
-					return "The SN range " + snRange[1] + " to " + snRange[2] + " has been saved to batch.";
+					return "The serial numbers " + snRange[1] + " to " + snRange[2] + " have been saved to batch.";
 				}
 				else
 					return numSuccess + " hardware configuration saved to batch.";

@@ -815,14 +815,6 @@ public class InventoryManager extends HttpServlet {
 	private void addSNRange(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
-		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		if (ECUtils.isMCT( categoryID )) {
-			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot add SN range for device type " + mctType);
-			return;
-		}
-		
 		int snFrom = 0, snTo = 0;
 		try {
 			snFrom = Integer.parseInt( req.getParameter("From") );
@@ -841,6 +833,7 @@ public class InventoryManager extends HttpServlet {
 			return;
 		}
 		
+		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		Integer voltageID = Integer.valueOf( req.getParameter("Voltage") );
 		Integer companyID = Integer.valueOf( req.getParameter("ServiceCompany") );
 		Integer routeID = Integer.valueOf( req.getParameter("Route") );
@@ -854,6 +847,11 @@ public class InventoryManager extends HttpServlet {
 				return;
 			}
 		}
+		
+		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+		redirect = referer = req.getContextPath() +
+				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
@@ -895,28 +893,11 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		if (ECUtils.isMCT( categoryID )) {
-			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot update SN range for device type " + mctType);
-			return;
-		}
 		
 		Integer newDevTypeID = (req.getParameter("NewDeviceType") != null)?
 				Integer.valueOf( req.getParameter("NewDeviceType") ) : null;
-		if (newDevTypeID != null) {
-			if (newDevTypeID.intValue() == devTypeID.intValue()) {
-				newDevTypeID = null;
-			}
-			else {
-				int newCatID = ECUtils.getInventoryCategoryID( newDevTypeID.intValue(), energyCompany );
-				if (ECUtils.isMCT( newCatID )) {
-					String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
-					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot change device type to " + mctType);
-					return;
-				}
-			}
-		}
+		if (newDevTypeID != null && newDevTypeID.intValue() == devTypeID.intValue())
+			newDevTypeID = null;
 		
 		String fromStr = req.getParameter("From");
 		String toStr = req.getParameter("To");
@@ -959,6 +940,11 @@ public class InventoryManager extends HttpServlet {
 		
 		if (newDevTypeID == null && recvDate == null && voltageID == null && companyID == null && routeID == null)
 			return;
+		
+		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+		redirect = referer = req.getContextPath() +
+				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
@@ -1023,11 +1009,10 @@ public class InventoryManager extends HttpServlet {
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
 		
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		if (ECUtils.isMCT(categoryID) && snFrom != null) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "If device type is MCT, the 'From' value must be '*' (delete all MCTs)");
-			return;
-		} 
+		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+		redirect = referer = req.getContextPath() +
+				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
@@ -1069,6 +1054,11 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		boolean configNow = req.getParameter("ConfigNow") != null;
+		
+		session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
+		session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
+		redirect = referer = req.getContextPath() +
+				(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		

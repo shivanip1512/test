@@ -91,18 +91,15 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
-			String snToStr = (snTo != null)? " to " + snTo : " and above";
-			if (status == STATUS_FINISHED)
-				return "The SN range " + snFrom + snToStr + " has been updated successfully";
+			if (status == STATUS_FINISHED && numFailure == 0) {
+				String snToStr = (snTo != null)? " to " + snTo : " and above";
+				return "The serial numbers " + snFrom + snToStr + " have been updated successfully.";
+			}
 			else
-				return numSuccess + " of " + numToBeUpdated + " hardwares updated";
+				return numSuccess + " of " + numToBeUpdated + " hardwares have been updated.";
 		}
-		else {
-			if (status == STATUS_FINISHED)
-				return "No hardware found in the given SN range";
-			else
-				return "Updating hardwares in inventory...";
-		}
+		else
+			return "Updating hardwares in inventory...";
 	}
 
 	/* (non-Javadoc)
@@ -134,7 +131,13 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
 		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeID, snFrom, snTo );
+		
 		numToBeUpdated = hwList.size();
+		if (numToBeUpdated == 0) {
+			status = STATUS_ERROR;
+			errorMsg = "There was no " + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText() + " found in the given range of serial numbers.";
+			return;
+		}
 		
 		for (int i = 0; i < hwList.size(); i++) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);

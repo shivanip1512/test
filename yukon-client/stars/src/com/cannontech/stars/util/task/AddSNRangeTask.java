@@ -89,10 +89,10 @@ public class AddSNRangeTask implements TimeConsumingTask {
 	 */
 	public String getProgressMsg() {
 		int numTotal = snTo - snFrom + 1;
-		if (status == STATUS_FINISHED)
-			return "The SN range " + snFrom + " to " + snTo + " has been added successfully";
+		if (status == STATUS_FINISHED && numFailure == 0)
+			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
 		else
-			return numSuccess + " of " + numTotal + " hardwares added";
+			return numSuccess + " of " + numTotal + " hardwares have been added.";
 	}
 
 	/* (non-Javadoc)
