@@ -672,7 +672,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	
 	for(int u = selectedRows.length - 1; u >= 0; u--)
 	{
-		LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(u);
+		LiteYukonPAObject thePAO = getTableModel().getProgramLitePAOAt(selectedRows[u]);
 				
 		allAvailable.addElement(thePAO);
 		getTableModel().removeRowValue(selectedRows[u]);
