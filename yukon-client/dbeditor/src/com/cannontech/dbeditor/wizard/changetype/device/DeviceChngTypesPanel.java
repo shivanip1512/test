@@ -68,7 +68,8 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 			PAOGroups.STRING_DR_87[0],
 			PAOGroups.STRING_FULCRUM[0],
 			PAOGroups.STRING_LANDISGYR_RS4[0],
-			PAOGroups.STRING_QUANTUM[0], 
+			PAOGroups.STRING_QUANTUM[0],
+			PAOGroups.STRING_TRANSDATA_MARKV[0], 
 			PAOGroups.STRING_VECTRON[0]  
       }, 
       { //RTUs

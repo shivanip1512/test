@@ -27,7 +27,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300,
 			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL,
-			PAOGroups.MCT410_KWH_ONLY
+			PAOGroups.MCT410_KWH_ONLY, PAOGroups.TRANSDATA_MARKV
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -35,7 +35,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210,
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.MCT213,
 			PAOGroups.DCT_501, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.ION_7330,
-			PAOGroups.ION_7700, PAOGroups.ION_8300, PAOGroups.MCT310IDL, PAOGroups.MCT410_KWH_ONLY
+			PAOGroups.ION_7700, PAOGroups.ION_8300, PAOGroups.MCT310IDL, PAOGroups.MCT410_KWH_ONLY,
+			PAOGroups.TRANSDATA_MARKV
 		},
       {   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510
@@ -52,7 +53,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.DCT_501,
          PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.MCT310CT, PAOGroups.MCT310IM,
          PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_DART,
-         PAOGroups.MCT310IDL, PAOGroups.MCT410_KWH_ONLY
+         PAOGroups.MCT310IDL, PAOGroups.MCT410_KWH_ONLY, PAOGroups.TRANSDATA_MARKV
 		},
 
 		{   //4 - TapTerminalPanel
@@ -74,7 +75,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L,
 			PAOGroups.DCT_501, PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.MCT310IDL,
-			PAOGroups.MCT410_KWH_ONLY			
+			PAOGroups.MCT410_KWH_ONLY, PAOGroups.TRANSDATA_MARKV
 		},
 		{   //7 - CapBank
 			PAOGroups.CAPBANK
@@ -98,7 +99,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300,
 			PAOGroups.MCTBROADCAST, PAOGroups.MCT310CT, PAOGroups.MCT310IM, PAOGroups.MCT310IDL,
-			PAOGroups.MCT410_KWH_ONLY
+			PAOGroups.MCT410_KWH_ONLY, PAOGroups.TRANSDATA_MARKV
 		}
 
 };

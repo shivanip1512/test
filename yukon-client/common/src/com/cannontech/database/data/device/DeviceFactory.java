@@ -92,6 +92,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.SIXNET:
 			returnDevice = new Sixnet();
 			break;
+		case PAOGroups.TRANSDATA_MARKV:
+			returnDevice = new TransdataMarkV();
+			break;
 
 				
 		//Carrier type devices

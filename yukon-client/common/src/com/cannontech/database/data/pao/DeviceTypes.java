@@ -75,6 +75,7 @@ public interface DeviceTypes extends TypeBase
 	public final static int LM_GROUP_MCT					  = DEVICE_OFFSET + 64;
 	
 	public final static int MCT410_KWH_ONLY 			= DEVICE_OFFSET + 65;
+	public final static int TRANSDATA_MARKV   		= DEVICE_OFFSET + 66;
 
 
 	//all the possible text representation of each device type.
@@ -89,6 +90,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_LCU_ER = {"LCU-EASTRIVER"};
 	public static final String[] STRING_ALPHA_POWERPLUS = {"ALPHA POWER PLUS", "ALPHA METER"};
 	public static final String[] STRING_ALPHA_A1 = {"ALPHA A1"};
+	public static final String[] STRING_TRANSDATA_MARKV = {"TRANSDATA MARK-V"};
 	public static final String[] STRING_FULCRUM = {"FULCRUM"}; //replaced Schlumberger
 	public static final String[] STRING_VECTRON = {"VECTRON"}; //replaced Schlumberger
 	public static final String[] STRING_QUANTUM = {"QUANTUM"}; //replaced Schlumberger

@@ -67,8 +67,9 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
                            PAOGroups.STRING_ION_8300[0],									
 									PAOGroups.STRING_LANDISGYR_RS4[0],
 									PAOGroups.STRING_QUANTUM[0],
-									PAOGroups.STRING_VECTRON[0],
-									PAOGroups.STRING_SIXNET[0]
+									PAOGroups.STRING_SIXNET[0],
+									PAOGroups.STRING_TRANSDATA_MARKV[0],
+									PAOGroups.STRING_VECTRON[0]
 
 								},								
 								{	//RTUs

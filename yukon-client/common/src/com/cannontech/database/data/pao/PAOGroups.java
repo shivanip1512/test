@@ -129,6 +129,8 @@ public final static int getDeviceType(String typeString)
 	  return LCU_ER;
    else if (isStringDevice(compareString, STRING_ALPHA_POWERPLUS))
 	  return ALPHA_PPLUS;
+	else if (isStringDevice(compareString, STRING_TRANSDATA_MARKV))
+	  return TRANSDATA_MARKV;	  
    else if (isStringDevice(compareString, STRING_ALPHA_A1))
 	  return ALPHA_A1;
    else if (isStringDevice(compareString, STRING_FULCRUM))
@@ -333,6 +335,8 @@ public final static String getPAOTypeString(int type)
 		  return STRING_MCT_213[0];
 	  case MCT318L:
 		  return STRING_MCT_318L[0];
+	  case TRANSDATA_MARKV:
+	  	  return STRING_TRANSDATA_MARKV[0];
 
 	  case MCT310IL:
 		  return STRING_MCT_310IL[0];

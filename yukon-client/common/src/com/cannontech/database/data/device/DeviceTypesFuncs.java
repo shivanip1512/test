@@ -503,6 +503,7 @@ public final static boolean isMeter(int deviceType)
 		case ION_7700:
 		case ION_7330:
 		case ION_8300:
+		case TRANSDATA_MARKV:
 			return true;
 	
 		default:

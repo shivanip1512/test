@@ -1816,7 +1816,8 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 
 
 		if( rBase instanceof Schlumberger 
-			 || intType == PAOGroups.ALPHA_PPLUS )
+			 || intType == PAOGroups.ALPHA_PPLUS
+			 || intType == PAOGroups.TRANSDATA_MARKV )
 		{
 			getSlaveAddressLabel().setVisible(true);
 			getSlaveAddressComboBox().setVisible(true);
