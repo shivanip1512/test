@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.1 $
-*    DATE         :  $Date: 2004/04/06 21:10:17 $
+*    REVISION     :  $Revision: 1.2 $
+*    DATE         :  $Date: 2004/04/08 20:03:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.2  2004/04/08 20:03:16  jrichter
+      jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
+
       Revision 1.1  2004/04/06 21:10:17  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -67,7 +70,6 @@ const CHAR * CtiFDR_EnhancedLodeStar::KEY_RENAME_SAVE_FILE = "FDR_ENH_LODESTARIM
 // Constructors, Destructor, and Operators
 CtiFDR_EnhancedLodeStar::CtiFDR_EnhancedLodeStar()
 : CtiFDR_LodeStarImportBase(RWCString("LODESTAR_ENH")),
-  //_fileInfoList(RWCString(),RWCString()),
   _lsCustomerIdentifier(RWCString()),
   _pointId(0),
   _lsChannel(0),
@@ -142,14 +144,7 @@ BOOL CtiFDR_EnhancedLodeStar::stop( void )
     Inherited::stop();
     return TRUE;
 }
-/*
 
-vector<CtiFDR_LodeStarInfoTable> CtiFDR_EnhancedLodeStar::getFileInfoList() const
-vector< CtiFDR_LodeStarInfoTable > & CtiFDR_EnhancedLodeStar::getFileInfoList ()
-CtiFDR_EnhancedLodeStar& CtiFDR_EnhancedLodeStar::setFileInfoList  (CtiFDR_EnhancedLodeStar &aList)
-CtiFDR_EnhancedLodeStar& CtiFDR_EnhancedLodeStar::setFileInfoList (vector< CtiFDR_LodeStarInfoTable > &aList)
-
-*/
 vector<CtiFDR_LodeStarInfoTable> CtiFDR_EnhancedLodeStar::getFileInfoList() const
 {
     return _fileInfoList;

@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/04/06 21:10:17 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/04/08 20:03:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.6  2004/04/08 20:03:16  jrichter
+      jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
+
       Revision 1.5  2004/04/06 21:10:17  jrichter
       jrichter1 Lodestar changes to handle standard format and files are read in based on point parameters.
 
@@ -458,14 +461,6 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                     }
                 }   // end for interator
                 
-                //sort (getFileInfoList().begin(), getFileInfoList().end());
-                //vector <CtiFDR_LodeStarInfoTable> new_end;
-                //CTIFdrLodeStarIterator  myLSIterator(getFileInfoList()->getMap());
-                //CtiFDR_LodeStarInfoTable::iterator new_end= unique (getFileInfoList().begin(), getFileInfoList().end());
-                //typename vector <CtiFDR_LodeStarInfoTable>::iterator new_end = unique (getFileInfoList().begin(), getFileInfoList().end());
-                //new_end = unique (getFileInfoList().begin(), getFileInfoList().end());
-                //getFileInfoList().erase(new_end, getFileInfoList().end());
-
                 // lock the receive list and remove the old one
                 CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
                 if (getReceiveFromList().getPointList() != NULL)
@@ -645,29 +640,25 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                  savedStopTime = getlodeStarStopTime();
                                  if (decodeFirstHeaderRecord(recordVector[lineCnt]))
                                  {    
-                                    // CtiFDRPoint fdrPoint1;
-                                     if (getlodeStarPointId() != 0) 
+                                     if( multiDispatchMsg->getCount() > 0 )
                                      {
-                                         if( multiDispatchMsg->getCount() > 0 )
+                                         secondsPerInterval = getlodeStarSecsPerInterval();
+                                         if( fillUpMissingTimeStamps(multiDispatchMsg,savedStartTime,savedStopTime,secondsPerInterval) )
                                          {
-                                             secondsPerInterval = getlodeStarSecsPerInterval();
-                                             if( fillUpMissingTimeStamps(multiDispatchMsg,savedStartTime,savedStopTime,secondsPerInterval) )
+                                             queueMessageToDispatch(multiDispatchMsg);
+                                             multiDispatchMsg = new CtiMultiMsg();
+                                         }
+                                         else
+                                         {
+                                             delete multiDispatchMsg;
+                                             multiDispatchMsg = new CtiMultiMsg();
                                              {
-                                                 queueMessageToDispatch(multiDispatchMsg);
-                                                 multiDispatchMsg = new CtiMultiMsg();
-                                             }
-                                             else
-                                             {
-                                                 delete multiDispatchMsg;
-                                                 multiDispatchMsg = new CtiMultiMsg();
-                                                 {
-                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                     dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
-                                                 }
+                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                 dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
                                              }
                                          }
-                                         reinitialize();
                                      }
+                                     reinitialize();
                                  }
                                  else if(decodeSecondHeaderRecord(recordVector[lineCnt]) ||
                                      decodeThirdHeaderRecord(recordVector[lineCnt]) ||
@@ -697,25 +688,22 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                              }
                              recordVector.erase(recordVector.begin(), recordVector.end());
 
-                             //CtiFDRPoint fdrPoint2;
-                             if (getlodeStarPointId() != 0) 
-                             {
-                                 if( multiDispatchMsg->getCount() > 0 )
-                                 {   
-                                     secondsPerInterval = getlodeStarSecsPerInterval();
-                                     if( fillUpMissingTimeStamps(multiDispatchMsg,savedStartTime,savedStopTime,secondsPerInterval) )
-                                     {
-                                         queueMessageToDispatch(multiDispatchMsg);
-                                     }
-                                     else
-                                     {
-                                         delete multiDispatchMsg;
-                                         {
-                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                             dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
-                                         }
-                                     } 
+                                                            
+                             if( multiDispatchMsg->getCount() > 0 )
+                             {   
+                                 secondsPerInterval = getlodeStarSecsPerInterval();
+                                 if( fillUpMissingTimeStamps(multiDispatchMsg,savedStartTime,savedStopTime,secondsPerInterval) )
+                                 {
+                                     queueMessageToDispatch(multiDispatchMsg);
                                  }
+                                 else
+                                 {
+                                     delete multiDispatchMsg;
+                                     {
+                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                         dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
+                                     }
+                                 } 
                              }
                          }
                          if( shouldRenameSaveFileAfterImport() )
