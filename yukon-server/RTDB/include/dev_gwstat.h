@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/10/23 14:32:20 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/12/17 15:28:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,6 +150,7 @@ public:
     void sendUnbindDevice(SOCKET msgsock);
     void sendRestartFilter(SOCKET msgsock);
     void sendQueryRuntime(SOCKET msgsock, UCHAR Reset);
+    void sendControlSetpoint(SOCKET msgsock, unsigned char flaghi, unsigned char flaglo, unsigned char minTemp, unsigned char maxTemp, unsigned short T_r, unsigned short T_a, unsigned short T_b, unsigned char delta_S_b,  unsigned short T_c, unsigned short T_d, unsigned char delta_S_d, unsigned short T_e, unsigned short T_f, unsigned char delta_S_f, unsigned char hold );
 
     CtiOutMessage*& getLastControlSent();
     bool CtiDeviceGatewayStat::generatePacketDataSchedule();
@@ -187,6 +188,8 @@ public:
     SHORT getCurrentCoolSchedule() const;
 
     static int estimateSetpointPriority();
+
+    static void BuildHeader(GWHEADER *pGWH, unsigned short  Type, unsigned short Length, unsigned myid);
 
 protected:
 

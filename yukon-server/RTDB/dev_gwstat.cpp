@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/10/23 14:32:20 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/12/17 15:28:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,6 @@ _deviceSN(sn)
     _utilSetpoint._ch_utime = YUKONEOT;
     _deviceBound._utime = YUKONEOT;
     _deviceUnbound._utime = YUKONEOT;
-
 }
 
 CtiDeviceGatewayStat::~CtiDeviceGatewayStat()
@@ -159,7 +158,7 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
 
     RWTime now;
 
-    USHORT Type = ntohs(GatewayRX.Type);
+    USHORT Type = ntohs(GatewayRX.Hdr.Type);
 
     int day = 0;
     int period = 0;
@@ -211,23 +210,6 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
 
             SHORT heat = ntohs(GatewayRX.U.Setpoints.HeatSetpoint);
             SHORT cool = ntohs(GatewayRX.U.Setpoints.CoolSetpoint);
-
-            if(cool >= 0x7f00)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            if(heat >= 0x7f00)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
 
             _setpoints._coolSetpoint = cool;
             _setpoints._heatSetpoint = heat;
@@ -364,7 +346,6 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
             //      1 = Leave period
             //      2 = Return period
             //      3 = Sleep period
-
 
             day = convertStatDayToCDay(GatewayRX.U.Schedule.Day);
             period = GatewayRX.U.Schedule.Period;
@@ -1712,9 +1693,8 @@ void CtiDeviceGatewayStat::sendGet(SOCKET msgsock, USHORT Type)
 {
     GET Get;
 
-    Get.Type = htons (Type);
-    Get.DeviceID = htonl(_deviceSN);
 
+    BuildHeader((GWHEADER*)&Get, Type, sizeof(GET), _deviceSN);
     send (msgsock, (char *)&Get, sizeof(GET), 0);
 }
 
@@ -1732,8 +1712,7 @@ bool CtiDeviceGatewayStat::sendSetDLC(SOCKET msgsock, UCHAR OffCycleDuration, UC
     }
 
     {
-        SetDLC.Type = htons (TYPE_SETDLC);
-        SetDLC.DeviceID = htonl(_deviceSN);
+        BuildHeader((GWHEADER*)&SetDLC, TYPE_SETDLC, sizeof(SETDLC), _deviceSN);
         SetDLC.OffCycleDuration = OffCycleDuration;
         SetDLC.CyclePeriod = CyclePeriod;
         SetDLC.DLCDuration = htons (DLCDuration);
@@ -1749,8 +1728,7 @@ void CtiDeviceGatewayStat::sendSetDLCOverride(SOCKET msgsock, UCHAR DLCOverride)
 {
     SETDLCOVERRIDE SetDLCOverride;
 
-    SetDLCOverride.Type = htons (TYPE_SETDLCOVERRIDE);
-    SetDLCOverride.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetDLCOverride, TYPE_SETDLCOVERRIDE, sizeof(SETDLCOVERRIDE), _deviceSN);
     SetDLCOverride.DLCOverride = DLCOverride;
 
     send (msgsock, (char *)&SetDLCOverride, sizeof (SETDLCOVERRIDE), 0);
@@ -1760,8 +1738,7 @@ void CtiDeviceGatewayStat::sendSetFanSwitch(SOCKET msgsock, UCHAR FanSwitch)
 {
     SETFANSWITCH SetFanSwitch;
 
-    SetFanSwitch.Type = htons (TYPE_SETFANSWITCH);
-    SetFanSwitch.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetFanSwitch, TYPE_SETFANSWITCH, sizeof(SETFANSWITCH), _deviceSN);
     SetFanSwitch.FanSwitch = FanSwitch;
 
     send (msgsock, (char *)&SetFanSwitch, sizeof (SETFANSWITCH), 0);
@@ -1772,8 +1749,7 @@ void CtiDeviceGatewayStat::sendSetFilterRestart(SOCKET msgsock, UCHAR Restart)
 {
     SETFILTERRESTART SetFilterRestart;
 
-    SetFilterRestart.Type = htons (TYPE_SETFILTERRESTART);
-    SetFilterRestart.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetFilterRestart, TYPE_SETFILTERRESTART, sizeof(SETFILTERRESTART), _deviceSN);
     SetFilterRestart.Restart = Restart;
 
     send (msgsock, (char *)&SetFilterRestart, sizeof (SETFILTERRESTART), 0);
@@ -1783,8 +1759,7 @@ void CtiDeviceGatewayStat::sendSetSchedule(SOCKET msgsock, UCHAR Day, UCHAR Peri
 {
     SETSCHEDULE SetSchedule;
 
-    SetSchedule.Type = htons (TYPE_SETSCHEDULE);
-    SetSchedule.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetSchedule, TYPE_SETSCHEDULE, sizeof(SETSCHEDULE), _deviceSN);
     SetSchedule.Day = Day;
     SetSchedule.Period = Period;
     SetSchedule.HeatSetpoint = htons (HeatSetpoint);
@@ -1800,8 +1775,7 @@ void CtiDeviceGatewayStat::sendSetpointLimits(SOCKET msgsock, SHORT UpperHeatLim
 {
     SETSETPOINTLIMITS SetSetpointLimits;
 
-    SetSetpointLimits.Type = htons (TYPE_SETSETPOINTLIMITS);
-    SetSetpointLimits.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetSetpointLimits, TYPE_SETSETPOINTLIMITS, sizeof(SETSETPOINTLIMITS), _deviceSN);
     SetSetpointLimits.UpperHeatLimit = htons (UpperHeatLimit);
     SetSetpointLimits.LowerCoolLimit = htons (LowerCoolLimit);
 
@@ -1812,8 +1786,7 @@ void CtiDeviceGatewayStat::sendSetSetpoints(SOCKET msgsock, USHORT HeatSetpoint,
 {
     SETSETPOINTS SetSetpoints;
 
-    SetSetpoints.Type = htons (TYPE_SETSETPOINTS);
-    SetSetpoints.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetSetpoints, TYPE_SETSETPOINTS, sizeof(SETSETPOINTS), _deviceSN);
     SetSetpoints.HeatSetpoint = htons (HeatSetpoint);
     SetSetpoints.CoolSetpoint = htons (CoolSetpoint);
     SetSetpoints.SetpointPriority = SetpointPriority;
@@ -1831,8 +1804,7 @@ void CtiDeviceGatewayStat::sendSetSystemSwitch(SOCKET msgsock, UCHAR SystemSwitc
 {
     SETSYSTEMSWITCH SetSystemSwitch;
 
-    SetSystemSwitch.Type = htons (TYPE_SETSYSTEMSWITCH);
-    SetSystemSwitch.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetSystemSwitch, TYPE_SETSYSTEMSWITCH, sizeof(SETSYSTEMSWITCH), _deviceSN);
     SetSystemSwitch.SystemSwitch = SystemSwitch;
 
     send (msgsock, (char *)&SetSystemSwitch, sizeof (SETSYSTEMSWITCH), 0);
@@ -1842,8 +1814,7 @@ void CtiDeviceGatewayStat::sendSetUtilSetpoints(SOCKET msgsock, SHORT UtilHeatSe
 {
     SETUTILSETPOINTS SetUtilSetpoints;
 
-    SetUtilSetpoints.Type = htons (TYPE_SETUTILSETPOINTS);
-    SetUtilSetpoints.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetUtilSetpoints, TYPE_SETUTILSETPOINTS, sizeof(SETUTILSETPOINTS), _deviceSN);
     SetUtilSetpoints.UtilHeatSetpoint = htons (UtilHeatSetpoint);
     SetUtilSetpoints.UtilCoolSetpoint = htons (UtilCoolSetpoint);
     SetUtilSetpoints.UtilDuration = htons (UtilDuration);
@@ -1859,8 +1830,7 @@ void CtiDeviceGatewayStat::sendSetUtilOverride(SOCKET msgsock, UCHAR Override)
 {
     SETUTILOVERRIDE SetUtilOverride;
 
-    SetUtilOverride.Type = htons (TYPE_SETUTILOVERRIDE);
-    SetUtilOverride.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&SetUtilOverride, TYPE_SETUTILOVERRIDE, sizeof(SETUTILOVERRIDE), _deviceSN);
     SetUtilOverride.Override = Override;
 
     send (msgsock, (char *)&SetUtilOverride, sizeof (SETUTILOVERRIDE), 0);
@@ -1869,10 +1839,7 @@ void CtiDeviceGatewayStat::sendSetUtilOverride(SOCKET msgsock, UCHAR Override)
 void CtiDeviceGatewayStat::sendUnbindDevice(SOCKET msgsock)
 {
     UNBINDDEVICE UnbindDevice;
-
-    UnbindDevice.Type = ntohs (TYPE_UNBINDDEVICE);
-    UnbindDevice.DeviceID = htonl(_deviceSN);
-
+    BuildHeader((GWHEADER*)&UnbindDevice, TYPE_UNBINDDEVICE, sizeof(UNBINDDEVICE), _deviceSN);
     send (msgsock, (char *)&UnbindDevice, sizeof (UNBINDDEVICE), 0);
 }
 
@@ -1880,8 +1847,7 @@ void CtiDeviceGatewayStat::sendRestartFilter(SOCKET msgsock)
 {
     RESTARTFILTER RestartFilter;
 
-    RestartFilter.Type = htons (TYPE_RESTARTFILTER);
-    RestartFilter.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&RestartFilter, TYPE_RESTARTFILTER, sizeof(RESTARTFILTER), _deviceSN);
 
     send (msgsock, (char *)&RestartFilter, sizeof (RESTARTFILTER), 0);
 }
@@ -1890,11 +1856,51 @@ void CtiDeviceGatewayStat::sendQueryRuntime(SOCKET msgsock, UCHAR Reset)
 {
     QUERYRUNTIME QueryRuntime;
 
-    QueryRuntime.Type = htons (TYPE_QUERYRUNTIME);
-    QueryRuntime.DeviceID = htonl(_deviceSN);
+    BuildHeader((GWHEADER*)&QueryRuntime, TYPE_QUERYRUNTIME, sizeof(QUERYRUNTIME), _deviceSN);
     QueryRuntime.Reset = Reset;
 
     send (msgsock, (char *)&QueryRuntime, sizeof (QUERYRUNTIME), 0);
+}
+
+
+void CtiDeviceGatewayStat::sendControlSetpoint(SOCKET msgsock,
+                                               unsigned char flaghi,
+                                               unsigned char flaglo,
+                                               unsigned char minTemp,
+                                               unsigned char maxTemp,
+                                               unsigned short T_r,
+                                               unsigned short T_a,
+                                               unsigned short T_b,
+                                               unsigned char delta_S_b,
+                                               unsigned short T_c,
+                                               unsigned short T_d,
+                                               unsigned char delta_S_d,
+                                               unsigned short T_e,
+                                               unsigned short T_f,
+                                               unsigned char delta_S_f,
+                                               unsigned char hold )
+{
+    SETCONTROLSETPOINT Control;
+
+    BuildHeader((GWHEADER*)&Control, TYPE_CONTROLSETPOINT, sizeof(SETCONTROLSETPOINT), _deviceSN);
+
+    Control.Control.flaghi = flaghi;
+    Control.Control.flaglo = flaglo;
+    Control.Control.minTemp = minTemp;
+    Control.Control.maxTemp = maxTemp;
+    Control.Control.T_r = htons(T_r);
+    Control.Control.T_a = htons(T_a);
+    Control.Control.T_b = htons(T_b);
+    Control.Control.delta_S_b = delta_S_b;
+    Control.Control.T_c = htons(T_c);
+    Control.Control.T_d = htons(T_d);
+    Control.Control.delta_S_d = delta_S_d;
+    Control.Control.T_e = htons(T_e);
+    Control.Control.T_f = htons(T_f);
+    Control.Control.delta_S_f = delta_S_f;
+    Control.Control.hold = hold;
+
+    send (msgsock, (char *)&Control, sizeof (SETCONTROLSETPOINT), 0);
 }
 
 int CtiDeviceGatewayStat::checkPendingOperations(  )
@@ -2500,7 +2506,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
 
                 operation = TYPE_SETDLC;
             }
-            else if(CMD_FLAG_CTL_RESTORE)
+            else if( parse.getFlags() & CMD_FLAG_CTL_RESTORE )
             {
                 RWTime now;
                 RWTime pageconfirmed( _DLC._ch_utime );
@@ -2524,7 +2530,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                     controlmatch = sendSetDLC( msgsock, (BYTE)0, (BYTE)0, (BYTE)0, FALSE );
                 }
             }
-            else if(CMD_FLAG_CTL_TERMINATE)
+            else if( parse.getFlags() & CMD_FLAG_CTL_TERMINATE )
             {
                 RWTime now;
                 RWTime pageconfirmed( _DLC._ch_utime );
@@ -2543,6 +2549,23 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                     // We are still under control as far as we know.  Try to randomize someday!
                     controlmatch = sendSetDLC( msgsock, (BYTE)0, (BYTE)0, (BYTE)0, FALSE );
                 }
+            }
+            else if( parse.getCommandStr().contains("coreytest") )
+            {
+                SHORT heatsp = convertToStatTemp( 60 );
+                SHORT coolsp = convertToStatTemp( 80 );;
+                USHORT minutes = 5;
+                UCHAR tier = 0;
+                UCHAR mode = 2;
+                UCHAR UserOverrideDisable = TRUE;
+                UCHAR AIRDisable = TRUE;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                sendSetUtilSetpoints( msgsock, heatsp, coolsp, minutes, tier, mode, UserOverrideDisable, AIRDisable );
             }
         }
         else if(parse.getCommand() == PutConfigRequest)
@@ -4410,3 +4433,11 @@ int CtiDeviceGatewayStat::estimateSetpointPriority()
 
     return sppriority;
 }
+
+void CtiDeviceGatewayStat::BuildHeader(GWHEADER *pGWH, unsigned short  Type, unsigned short Length, unsigned myid)
+{
+    pGWH->Type = htons(Type);
+    pGWH->Length = htons(Length);
+    pGWH->DeviceID =  htonl (myid);
+}
+

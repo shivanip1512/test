@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/09/12 02:34:55 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/17 15:28:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,8 @@ protected:
 
     enum
     {
-        GW_THREAD_TERMINATED = CtiThread::LAST
+        GW_THREAD_TERMINATED = CtiThread::LAST,
+        GW_CLEAN_ME
     };
 
     void run();
@@ -70,6 +71,8 @@ private:
     unsigned char   _program;
     unsigned char   _splinter;
 
+    unsigned long   _minutesWestOfGreenwich;
+
 public:
     CtiDeviceGateway(SOCKET msgsock = INVALID_SOCKET);
     CtiDeviceGateway(const CtiDeviceGateway& aRef);
@@ -86,17 +89,25 @@ public:
 
     int sendGet(USHORT Type, LONG dev = 0);
     int sendQueryRuntime(LONG dev, UCHAR Reset);
-    void sendtm_Clock (void);
-    void sendKeepAlive (void);
+    void sendtm_Clock (BYTE hour = -1, BYTE minute = -1);
+    int sendKeepAlive (void);
     void sendSetBindMode (UCHAR BindMode = TRUE);
     void sendSetPingMode (UCHAR PingMode = TRUE);
     void sendSetRSSIConfiguration (UCHAR AllMessages);
     void sendSetNetworkID (USHORT NetworkID);
+
+    void sendSetAddressing(ULONG DeviceId, USHORT Spid, USHORT Geo, USHORT Feeder, ULONG Zip, USHORT Uda, UCHAR Program, UCHAR Splinter, ULONG ServerIP);
+    void sendSetTimezone(ULONG minutesWestOfGreenwich, UCHAR doIt, USHORT DSTMinutesOffset);
+
+
     static int getMessageLength(GATEWAYRXSTRUCT *GatewayRX);
     static ULONG getDeviceID(GATEWAYRXSTRUCT *GatewayRX);
 
     const SNVECT_t& getThermostatSerialNumbers() const;
     void processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX);
     bool getCompletedOperation( CtiPendingStatOperation &op );
+    bool isConnected() const { return _msgsock != INVALID_SOCKET; }
+
+    bool shouldClean();
 };
 #endif // #ifndef __DEV_GATEWAY_H__

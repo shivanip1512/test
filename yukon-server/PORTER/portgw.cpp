@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/09/12 02:44:35 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/17 15:28:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,9 @@ void GWTimeSyncThread (void *Dummy)
                     for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
                     {
                         CtiDeviceGateway *pGW = (*itr).second;
+#if 0  // 10/23/03 CGP // until we solve the timezone issue
                         pGW->sendtm_Clock();
+#endif
                         pGW->sendQueryRuntime(0, FALSE);    // Get them all, reset none = FALSE
                     }
                 }
@@ -108,7 +110,6 @@ void GWTimeSyncThread (void *Dummy)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
-
         Sleep (1000);
     }
 }
@@ -131,11 +132,51 @@ void KeepAliveThread (void *Dummy)
                 {
                     GWMAP_t::iterator itr;
 
+                    try
+                    {
+                        for(itr = gwMap.begin(); itr != gwMap.end() ; itr++)
+                        {
+                            CtiDeviceGateway *pGW = (*itr).second;
+                            if(pGW->sendKeepAlive())
+                            {
+                                pGW->interrupt(CtiThread::SHUTDOWN);
+                                pGW->join();
+                            }
+
+                            // pGW->sendSetBindMode(TRUE);
+                        }
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** HANDLED EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    do
+                    {
+                        try
+                        {
                     for(itr = gwMap.begin(); itr != gwMap.end() ;itr++)
                     {
                         CtiDeviceGateway *pGW = (*itr).second;
-                        pGW->sendKeepAlive();
-                    }
+                                if(pGW->shouldClean())
+                                {
+                                    gwMap.erase(itr);
+                                    break;
+                                }
+                            }
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** HANDLED EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                    } while(itr != gwMap.end());
                 }
             }
             else
@@ -146,7 +187,7 @@ void KeepAliveThread (void *Dummy)
             }
         }
 
-        Sleep (1000);
+        Sleep (500);
     }
 }
 
@@ -240,36 +281,7 @@ void GWConnectionThread(VOID *Arg)
 
         address_request = 0;
 
-        while(!PorterQuit && pGW->getMACAddress().isNull())
         {
-            Sleep(5000);
-
-            if(!(++address_request % 1) && pGW->getMACAddress().isNull())
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Asking new gateway for addressing information again." << endl;
-                }
-                pGW->sendGet( TYPE_GETADDRESSING, 0 );  // send it again. every 15 secconds
-            }
-
-            if( address_request >= 3 )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " New gateway never provided addressing information." << endl;
-                }
-
-                delete pGW;
-                pGW = 0;
-                break;      // Give up.
-            }
-        }
-
-        if(pGW && !pGW->getMACAddress().isNull())
-        {
-            pGW->sendGet( TYPE_GETALL, 0 );  // send it again. every 15 secconds
-
             CtiLockGuard< CtiMutex > guard(gwmux, 15000);
 
             if(guard.isAcquired())
@@ -281,12 +293,13 @@ void GWConnectionThread(VOID *Arg)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Whoa!!!  Already in the list!!! " << endl;
+                        dout << " Already in the list! " << endl;
                     }
                 }
                 else
                 {
                     gwMap.insert( GWMAP_t::value_type(msgsock, pGW) );
+                    pGW = 0;
                 }
             }
             else
@@ -294,6 +307,12 @@ void GWConnectionThread(VOID *Arg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+        }
+
+        if(pGW)
+        {
+            delete pGW;
+            pGW = 0;
         }
     }
 
@@ -329,7 +348,7 @@ VOID PorterGWThread(void *pid)
 
     // Start a connection thread for each port in the list
     {
-        RWCString portstr = gConfigParms.getValueAsString("PORTER_GATEWAY_PORTS", "4990, 5000");
+        RWCString portstr = gConfigParms.getValueAsString("PORTER_GATEWAY_PORTS", "4990, 4995, 5000");
         RWCString tempstr;
         RWTokenizer porttok(portstr);
 
