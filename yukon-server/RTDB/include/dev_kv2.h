@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __DEV_KV2_H__
-#define __DEV_KV2_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_kv2
@@ -13,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/12/10 21:58:43 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/03/10 20:21:07 $
 *
-*    History: 
+*    History:
       $Log: dev_kv2.h,v $
+      Revision 1.8  2005/03/10 20:21:07  mfisher
+      changed getProtocol to getKV2Protocol so it wouldn't interfere with the new dev_single getProtocol
+
       Revision 1.7  2004/12/10 21:58:43  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -30,6 +29,10 @@
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
+#ifndef __DEV_KV2_H__
+#define __DEV_KV2_H__
+
 
 #include "dev_meter.h"
 #include "dlldefs.h"
@@ -68,7 +71,7 @@ public:
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
 
-   CtiProtocolANSI & getProtocol( void );
+   CtiProtocolANSI & getKV2Protocol( void );
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
    INT sendCommResult( INMESS *InMessage);
