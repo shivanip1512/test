@@ -180,6 +180,8 @@ clean:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\calc
         @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\interp
+        @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\mccmd
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\macs
@@ -236,6 +238,8 @@ deps:
         @%cd $(COMPILEBASE)\calc
         @title %cd%
         @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\interp
+        @title %cd%
         @%cd $(COMPILEBASE)\mccmd
         @title %cd%
         @$(MAKE) -nologo  $@
@@ -280,6 +284,8 @@ copy:
         @%cd $(COMPILEBASE)\calc
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\service
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\interp
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\mccmd
         @$(MAKE) -nologo  $@
