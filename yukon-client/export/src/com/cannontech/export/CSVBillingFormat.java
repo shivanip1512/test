@@ -7,21 +7,13 @@ package com.cannontech.export;
  */
 public class CSVBillingFormat extends ExportFormatBase
 {
-
 	private java.util.Vector billingVector = null;
-
 	private java.util.Hashtable customerHashtable = null;
 	private Double [] baselineValues = null;
 	private java.util.GregorianCalendar runDate = null;
-	private java.util.GregorianCalendar maxTimestamp = null;
-	private java.util.GregorianCalendar minTimestamp = null;
-
-	private Character delimiter = new Character('|');
-	private boolean showColumnHeadings = false;
 	private String filePrefix = "OfferBill";
 	private String fileExtension = ".csv";
 
-	private String energyFileName = "C:/yukon/client/config/EnergyNumbers.txt";
 	private java.text.SimpleDateFormat COMMAND_LINE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	private java.text.SimpleDateFormat FILENAME_FORMAT = new java.text.SimpleDateFormat("-MM-dd-yyyy");
 	
@@ -42,47 +34,19 @@ public String appendBatchFileParms(String batchString)
 {
 	batchString += "com.cannontech.export.ExportFormatBase ";
 
-	batchString += "FORMAT=" + ExportFormatTypes.formatTypeShortName[ExportFormatTypes.CSVBILLING_FORMAT]+ " ";
+	batchString += "FORMAT=" + ExportFormatTypes.CSVBILLING_FORMAT+" ";
 	
 	batchString += "FILE="+ getDirectory() + " " ;
 
-	batchString += "START=" + COMMAND_LINE_FORMAT.format(getMinTimestamp().getTime()) + " ";
+	batchString += "START=" + COMMAND_LINE_FORMAT.format(getExportProperties().getMinTimestamp().getTime()) + " ";
 	
-	batchString += "STOP=" + COMMAND_LINE_FORMAT.format(getMaxTimestamp().getTime()) + " ";
+	batchString += "STOP=" + COMMAND_LINE_FORMAT.format(getExportProperties().getMaxTimestamp().getTime()) + " ";
 	
-	batchString += "DELIMITER=\"" + getDelimiter() +"\" ";
+	batchString += "DELIMITER=\"" + getExportProperties().getDelimiter() +"\" ";
 	
 	return batchString;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/4/2002 11:22:20 AM)
- */
-public void computeDefaultQueryTimestamp()
-{
-	java.util.GregorianCalendar today = new java.util.GregorianCalendar();
-	today.set(java.util.GregorianCalendar.HOUR_OF_DAY, 0);
-	today.set(java.util.GregorianCalendar.MINUTE, 0);
-	today.set(java.util.GregorianCalendar.SECOND, 0);
 
-	setMaxTimestamp(today);
-
-	
-	java.util.GregorianCalendar yesterday = new java.util.GregorianCalendar();
-	yesterday.set(java.util.GregorianCalendar.HOUR_OF_DAY, 0);
-	yesterday.set(java.util.GregorianCalendar.MINUTE, 0);
-	yesterday.set(java.util.GregorianCalendar.SECOND, 0);
-
-	long minTimestamp = yesterday.getTime().getTime() - 86400000;
-	yesterday.setTime(new java.util.Date(minTimestamp));
-
-	setMinTimestamp(yesterday);
-
-}
-public Character getDelimiter()
-{
-	return delimiter;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/18/2002 4:13:26 PM)
@@ -92,26 +56,10 @@ public String getFileName()
 {
 	String name = getDirectory();
 	name += filePrefix;
-	name += FILENAME_FORMAT.format(getMaxTimestamp().getTime());
+	name += FILENAME_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
 	name += fileExtension;
 
 	return name;
-}
-public java.util.GregorianCalendar getMaxTimestamp()
-{
-	if( maxTimestamp == null)
-	{
-		computeDefaultQueryTimestamp();
-	}
-	return maxTimestamp;
-}
-public java.util.GregorianCalendar getMinTimestamp()
-{
-	if( minTimestamp == null)
-	{
-		computeDefaultQueryTimestamp();
-	}
-	return minTimestamp;
 }
 /**
  * Insert the method's description here.
@@ -146,7 +94,7 @@ public void parseCommandLineArgs(String[] args)
 				{
 					char tempChar = subString.charAt(j);
 					if (tempChar != '"')
-						setDelimiter(new Character(tempChar));
+						getExportProperties().setDelimiter(new Character(tempChar));
 				}
 			}
 			else if( argString.startsWith("START"))
@@ -172,7 +120,7 @@ public void parseCommandLineArgs(String[] args)
 				
 				cal.setTime(date);
 				
-				setMinTimestamp(cal);
+				getExportProperties().setMinTimestamp(cal);
 				gotStart = true;
 			}
 			else if( argString.startsWith("STOP"))
@@ -196,7 +144,7 @@ public void parseCommandLineArgs(String[] args)
 				}
 				cal.setTime(date);
 				
-				setMaxTimestamp(cal);
+				getExportProperties().setMaxTimestamp(cal);
 				gotStop = true;
 			}
 		}
@@ -206,10 +154,10 @@ public void parseCommandLineArgs(String[] args)
 			if( !gotStart)	//Have stop but not start
 			{
 				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				java.util.Date date = getMaxTimestamp().getTime();
-				date.setTime(getMaxTimestamp().getTime().getTime() - 86400000);
+				java.util.Date date = getExportProperties().getMaxTimestamp().getTime();
+				date.setTime(getExportProperties().getMaxTimestamp().getTime().getTime() - 86400000);
 				cal.setTime(date);
-				setMinTimestamp(cal);
+				getExportProperties().setMinTimestamp(cal);
 			}
 			//else I'm good to go...already have both.
 		}
@@ -218,15 +166,10 @@ public void parseCommandLineArgs(String[] args)
 			if( gotStart) //Have start but not stop
 			{
 				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				java.util.Date date = getMinTimestamp().getTime();
-				date.setTime(getMinTimestamp().getTime().getTime() + 86400000);
+				java.util.Date date = getExportProperties().getMinTimestamp().getTime();
+				date.setTime(getExportProperties().getMinTimestamp().getTime().getTime() + 86400000);
 				cal.setTime(date);
-				setMaxTimestamp(cal);
-			}
-			else
-			{
-				//we have neither and will use default settings = yesterday
-				computeDefaultQueryTimestamp();
+				getExportProperties().setMaxTimestamp(cal);
 			}
 		}
 	}
@@ -235,7 +178,6 @@ public void parseCommandLineArgs(String[] args)
 		com.cannontech.clientutils.CTILogger.info("Usage:  CSVBilling FILE=FileDirectory START=mmddyyyy STOP=mmddyyyy");
 		com.cannontech.clientutils.CTILogger.info("Ex.		CSVBilling FILE=c:/yukon/export/ START=02/28/2002 STOP=03/01/2002");
 		com.cannontech.clientutils.CTILogger.info("Parameters not specifed will be defaulted to c:/yukon/export and \"yesterday\" run date.");
-		computeDefaultQueryTimestamp();
 	}
 }
 /**
@@ -279,8 +221,8 @@ public void retrieveBaselineData(int baselinePointID)
 		else
 		{
 			stmt = conn.prepareStatement(sql.toString());
-			stmt.setTimestamp(1, new java.sql.Timestamp(getMinTimestamp().getTime().getTime()));
-			stmt.setTimestamp(2, new java.sql.Timestamp(getMaxTimestamp().getTime().getTime()));
+			stmt.setTimestamp(1, new java.sql.Timestamp(getExportProperties().getMinTimestamp().getTime().getTime()));
+			stmt.setTimestamp(2, new java.sql.Timestamp(getExportProperties().getMaxTimestamp().getTime().getTime()));
 			
 			rset = stmt.executeQuery();
 			while( rset.next())
@@ -367,8 +309,8 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 		else
 		{
 			stmt = conn.prepareStatement(sql.toString());
-			stmt.setTimestamp(1, new java.sql.Timestamp(getMinTimestamp().getTime().getTime()));
-			stmt.setTimestamp(2, new java.sql.Timestamp(getMaxTimestamp().getTime().getTime()));
+			stmt.setTimestamp(1, new java.sql.Timestamp(getExportProperties().getMinTimestamp().getTime().getTime()));
+			stmt.setTimestamp(2, new java.sql.Timestamp(getExportProperties().getMaxTimestamp().getTime().getTime()));
 
 			rset = stmt.executeQuery();
 			while( rset.next())
@@ -423,7 +365,7 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 					csvBillingRec.setSCL(amtCommit);
 					csvBillingRec.setADL(value);
 
-					csvBillingRec.setDelimiter(delimiter);
+					csvBillingRec.setDelimiter(getExportProperties().getDelimiter());
 					
 					String dataString = csvBillingRec.dataToString();
 					getRecordVector().add(dataString);
@@ -556,7 +498,7 @@ public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
 		
 	try
 	{
-		java.io.FileReader energyNumbersFileReader = new java.io.FileReader(energyFileName);
+		java.io.FileReader energyNumbersFileReader = new java.io.FileReader(getExportProperties().getEnergyFileName());
 		java.io.BufferedReader readBuffer = new java.io.BufferedReader(energyNumbersFileReader);
 
 		try
@@ -578,7 +520,7 @@ public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
 	{
 		//fnfe.printStackTrace();
 		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
-		com.cannontech.clientutils.CTILogger.info("Cannot find " + energyFileName + ", aborting.");
+		com.cannontech.clientutils.CTILogger.info("Cannot find " + getExportProperties().getEnergyFileName().toString() + ", aborting.");
 		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
 		return null;	//with null return, meternumbers will be used in place of accountnumbers
 	}
@@ -618,22 +560,22 @@ public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
  */
 public void retrieveExportData()
 {
-	if( showColumnHeadings )
+	if( getExportProperties().isShowColumnHeadings())
 	{
 		//Add a title record
 		getRecordVector().add("Yukon Curtailment Settlement for " +
-			getMinTimestamp().getTime() + " - " + 
-			getMaxTimestamp().getTime() + "\r\n");
+			getExportProperties().getMinTimestamp().getTime() + " - " + 
+			getExportProperties().getMaxTimestamp().getTime() + "\r\n");
 		
 		//Add a column headings record
 		getRecordVector().add(com.cannontech.export.record.CSVBillingRecord.getColumnHeadingsString());
 		
 	}
 
-	logEvent("...Retrieving data for Date > " + getMinTimestamp().getTime() +
-		" AND <= " + getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	com.cannontech.clientutils.CTILogger.info("...Retrieving data for Date > " + getMinTimestamp().getTime() +
-		" AND <= " + getMaxTimestamp().getTime());
+	logEvent("...Retrieving data for Date > " + getExportProperties().getMinTimestamp().getTime() +
+		" AND <= " + getExportProperties().getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
+	com.cannontech.clientutils.CTILogger.info("...Retrieving data for Date > " + getExportProperties().getMinTimestamp().getTime() +
+		" AND <= " + getExportProperties().getMaxTimestamp().getTime());
 		
 	//Get a hashtable of records of all curtailment customers
 	retrieveCustomerData();
@@ -652,75 +594,12 @@ public void retrieveExportData()
 	}
 
 	//Set timestamps for next day.
-	setMinTimestamp(getMaxTimestamp());
+	getExportProperties().setMinTimestamp(getExportProperties().getMaxTimestamp());
 	
 	java.util.GregorianCalendar newCal = new java.util.GregorianCalendar();	
-	newCal.setTime(new java.util.Date(getMaxTimestamp().getTime().getTime() + 86400000));
-	setMaxTimestamp(newCal);
-	com.cannontech.clientutils.CTILogger.info(" * Next TimePeriod: " + getMinTimestamp().getTime() + " - " + getMaxTimestamp().getTime());
+	newCal.setTime(new java.util.Date(getExportProperties().getMaxTimestamp().getTime().getTime() + 86400000));
+	getExportProperties().setMaxTimestamp(newCal);
+	com.cannontech.clientutils.CTILogger.info(" * Next TimePeriod: " + getExportProperties().getMinTimestamp().getTime() + " - " + getExportProperties().getMaxTimestamp().getTime());
 	//writeToFile();
-}
-public void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel)
-{
-	if( advOptsPanel != null)
-	{
-			Object date = advOptsPanel.getStartDateComboBox().getSelectedDate();
-			
-			if( date instanceof java.util.Date )
-			{
-				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				cal.setTime((java.util.Date) date);
-				setMinTimestamp(cal);
-			}
-			else if( date instanceof java.util.Calendar )
-			{
-				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				cal.setTime(((java.util.Calendar) date).getTime());
-				setMinTimestamp(cal);
-			}
-			
-			date = advOptsPanel.getStopDateComboBox().getSelectedDate();
-			
-			if( date instanceof java.util.Date )
-			{
-				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				cal.setTime((java.util.Date) date);
-				setMaxTimestamp(cal);
-			}
-			else if( date instanceof java.util.Calendar )
-			{
-				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				cal.setTime(((java.util.Calendar) date).getTime());
-				setMaxTimestamp(cal);
-			}
-
-			showColumnHeadings = advOptsPanel.getHeadingsCheckBox().isSelected();
-
-			//Even if the delimiter textBox is longer than 1 character, we only take the first character.
-			String delTemp = advOptsPanel.getDelimiterTextBox().getText().toString();
-			if( delTemp.length() > 0)
-				setDelimiter(new Character(delTemp.charAt(0)));
-				
-			String fileNameTemp = advOptsPanel.getFileDirectoryTextField().getText().toString();
-			energyFileName = fileNameTemp.trim();
-			
-			
-	}
-	else
-	{
-		computeDefaultQueryTimestamp();
-	}
-}
-private void setDelimiter(Character newDelimiter)
-{
-	delimiter = newDelimiter;
-}
-private void setMaxTimestamp(java.util.GregorianCalendar max)
-{
-	maxTimestamp = max;
-}
-private void setMinTimestamp(java.util.GregorianCalendar min)
-{
-	minTimestamp = min;
 }
 }

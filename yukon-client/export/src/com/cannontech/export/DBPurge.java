@@ -8,9 +8,6 @@ package com.cannontech.export;
 //import com.ms.service.*;
 public class DBPurge extends ExportFormatBase
 {
-	private int daysToRetain = -1;
-	
-	public boolean purgeData = true;
 	private String filePrefix = "lg";
 	private String fileExtension = ".cvt";
 
@@ -34,42 +31,18 @@ public String appendBatchFileParms(String batchString)
 {
 	batchString += "com.cannontech.export.ExportFormatBase ";
 
-	batchString += "FORMAT=" + ExportFormatTypes.formatTypeShortName[ExportFormatTypes.DBPURGE_FORMAT]+ " ";
+	batchString += "FORMAT=" + ExportFormatTypes.DBPURGE_FORMAT + " ";
 	
 	batchString += "FILE="+ getDirectory() + " " ;
 
-	batchString += "-d" + getDaysToRetain() + " ";
+	batchString += "-d" + getExportProperties().getDaysToRetain() + " ";
 
 	batchString += "-h" + getRunTimeHour().intValue() + " ";
 
-	if( !purgeData )
+	if( !getExportProperties().isPurgeData() )
 		batchString += "-NOPURGE ";
 
 	return batchString;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 3:22:52 PM)
- * @return int
- */
-public  int getDaysToRetain()
-{
-	if (daysToRetain < 0)
-	{		
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			daysToRetain = (new Integer(bundle.getString("dbpurge_days_to_retain"))).intValue();
-			logEvent("  (config.prop)  Days To Retain in database = " + daysToRetain, com.cannontech.common.util.LogWriter.INFO);
-		}
-		catch( Exception e)
-		{
-			daysToRetain = 90;
-			logEvent("  Days to retain was NOT found, DEFAULTED TO " + daysToRetain, com.cannontech.common.util.LogWriter.ERROR);
-			logEvent("  Add 'dbpurge_days_to_retain' to config.properties.", com.cannontech.common.util.LogWriter.INFO);
-		}
-	}
-	return daysToRetain;
 }
 /**
  * Insert the method's description here.
@@ -90,7 +63,7 @@ public String getFileName()
  * Creation date: (3/18/2002 2:25:37 PM)
  * @return java.util.Date
  */
-public java.util.GregorianCalendar getMaxDateToPurge() 
+private java.util.GregorianCalendar getMaxDateToPurge() 
 {
 	if( maxDateToPurge == null)
 		setMaxDateToPurge();
@@ -165,7 +138,7 @@ public void parseCommandLineArgs(String[] args)
 			
 			if( args[i].startsWith("-d") )//|| args[i].startsWith("-D")
 			{
-				setDaysToRetain( Integer.parseInt(argSubString) );
+				getExportProperties().setDaysToRetain( Integer.parseInt(argSubString) );
 				setMaxDateToPurge();
 			}
 			else if( argUpper.startsWith("FILE"))
@@ -185,11 +158,11 @@ public void parseCommandLineArgs(String[] args)
 			}
 			else if( args[i].startsWith("-h") || args[i].startsWith("-H"))
 			{
-				setRunTimeHour(new Integer( Integer.parseInt(argSubString)));
+				getExportProperties().setRunTimeHour(Integer.parseInt(argSubString));
 			}
 			else if( argUpper.startsWith("-NOPURGE"))
 			{
-				purgeData = false;
+				getExportProperties().setPurgeData(false);
 			}
 
 		}
@@ -334,7 +307,7 @@ public void retrieveExportData()
 			getRecordVector().add(dataString);
 		}
 
-		if( purgeData)
+		if(getExportProperties().isPurgeData())
 			purgeSystemLog();
 	}
 	catch (java.sql.SQLException e)
@@ -360,41 +333,17 @@ public void retrieveExportData()
 	logEvent("...SYSTEMLOG DATA COLLECTION: Took " + (System.currentTimeMillis() - timer) + 
 					" millis.", com.cannontech.common.util.LogWriter.INFO);
 }
-public void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel)
-{
-	if(advOptsPanel != null)
-	{
-		int days = new Integer(advOptsPanel.getDaysToRetainTextBox().getText()).intValue();
-		setDaysToRetain(days);
-
-		Integer hour = new Integer(advOptsPanel.getRunAtHourTextBox().getText());
-		setRunTimeHour(hour);
-
-		purgeData = advOptsPanel.getPurgeDataCheckBox().isSelected();
-	}
-}
-	
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 3:21:13 PM)
- * @param days int
- */
-public void setDaysToRetain(int days)
-{
-	daysToRetain = days;
-	logEvent("  -d#  Days To Retain in database set to " + daysToRetain, com.cannontech.common.util.LogWriter.INFO);
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/18/2002 11:29:13 AM)
  * @param daysToRetain int
  */
-public void setMaxDateToPurge()
+private void setMaxDateToPurge()
 {
 	int DAY = 86400;
 	int MILLI_CONVERT = 1000;
 	
-	long daysInMillis = (new Integer( DAY * getDaysToRetain())).longValue() * MILLI_CONVERT;
+	long daysInMillis = (new Integer( DAY * getExportProperties().getDaysToRetain())).longValue() * MILLI_CONVERT;
 	java.util.GregorianCalendar today = new java.util.GregorianCalendar();
 	today.set(java.util.GregorianCalendar.HOUR_OF_DAY, 0);
 	today.set(java.util.GregorianCalendar.MINUTE, 0);
@@ -404,15 +353,5 @@ public void setMaxDateToPurge()
 	today.setTime(new java.util.Date(newTime));
 
 	maxDateToPurge = today;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/18/2002 3:32:50 PM)
- * @param newHour java.lang.Integer
- */
-public void setRunTimeHour(Integer newRunTime)
-{
-	runTimeHour = newRunTime;
-	logEvent("  -h#  Run Time Hour set to " + runTimeHour, com.cannontech.common.util.LogWriter.INFO );
 }
 }
