@@ -1,7 +1,9 @@
 package com.cannontech.common.cache;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
@@ -13,27 +15,23 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.util.ClientConnection;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 
 /**
- * PointChangeCache provides the current value of all Yukon points.
+ * PointChangeCache provides the current dynamic info for all Yukon points.
  * 
  * A connection with dispatch is established using properties from
  * /config.properties
  * 
- * Relies on com.cannontech.database.PoolManager to obtain a 
- * connection to the database. (to get state info)
- * 
+ * Relies on the databasecache for point state info
+ *  
  * A singleton instance is made available via the getPointChangeCache 
  * method.
  * 
- * This class is thread hot.
- * 
  * Creation date: (7/17/02 12:52:09 PM)
  * @author: Aaron Lauinger
- * @see com.cannontech.message.dispatch.ClientConnection
  */
 
 public class PointChangeCache  implements java.util.Observer, MessageListener  {	
@@ -46,11 +44,12 @@ public class PointChangeCache  implements java.util.Observer, MessageListener  {
 	private Hashtable pointData = new Hashtable();
 	
 	// Stores current Signal messages by PointID
-	// ( key = Integer, value = com.cannontech.message.dispatch.message.Signal)
+	// Only signals with a category > 1 will be stored
+	// ( key = Integer, value = List<Signal>
 	private Hashtable signalData = new Hashtable();
 	
 	// Stores current tags by PointID
-	// (key = Integer, value = Long)	
+	// (key = Integer, value = Integer)	
 	private Hashtable tagData = new Hashtable();
 
 	//Date of the last point change received from dispatch
@@ -151,27 +150,28 @@ public synchronized void disconnect()
 public java.util.Date getLastChange() {
 	return lastChange;
 }
+
 /**
- * Insert the method's description here.
+ * Returns a List<Signal> for a given point.
+ * @param pointId
+ * @return
+ */
+public List getSignals(long pointId) {
+	List sigs = (List) signalData.get(new Long(pointId));
+	if(sigs == null) {
+		sigs = new ArrayList(0);
+	}
+	return sigs;
+}
+
+/**
+ * Return the text representation of this state that the given point and value
+ * TODO: This doesn't belong here
  * Creation date: (3/31/00 1:03:43 PM)
  * @return com.cannontech.servlet.PointData
  * @param pointId long
  */
-public com.cannontech.message.dispatch.message.Signal getSignal(long pointId) {
-	return (com.cannontech.message.dispatch.message.Signal) signalData.get( new Long(pointId) );
-}
-
-public String getState(long pointId, double value) {
-	return getState(pointId, value, CtiUtilities.getDatabaseAlias());
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/31/00 1:03:43 PM)
- * @return com.cannontech.servlet.PointData
- * @param pointId long
- */
-public String getState(long pointId, double value, String dbAlias) 	
+public String getState(long pointId, double value) 	
 {
 	com.cannontech.message.dispatch.message.PointData pData = (com.cannontech.message.dispatch.message.PointData) pointData.get( new Long(pointId) );
 
@@ -188,7 +188,7 @@ public String getState(long pointId, double value, String dbAlias)
 }
 
 /**
- * Insert the method's description here.
+ * Return the most recent PointData for a given point
  * Creation date: (3/31/00 1:03:43 PM)
  * @return com.cannontech.servlet.PointData
  * @param pointId long
@@ -202,9 +202,9 @@ public com.cannontech.message.dispatch.message.PointData getValue(long pointId) 
  * @param pointId
  * @return
  */
-public long getTags(long pointId) {
-	Long t = (Long) tagData.get(new Long(pointId));
-	return t == null ? 0 : t.longValue();
+public int getTags(long pointId) {
+	Integer t = (Integer) tagData.get(new Long(pointId));
+	return t == null ? 0 : t.intValue();
 }
 
 /**
@@ -212,49 +212,48 @@ public long getTags(long pointId) {
  * Creation date: (12/27/2000 5:06:48 PM)
  * @param msg com.cannontech.message.util.Message
  */
-private void handleMessage(com.cannontech.message.util.Message msg)
-{
-	if (msg instanceof com.cannontech.message.dispatch.message.Multi)
-	{
+private void handleMessage(com.cannontech.message.util.Message msg) {
+	if (msg instanceof com.cannontech.message.dispatch.message.Multi) {
 		java.util.Vector inMessages = ((com.cannontech.message.dispatch.message.Multi) msg).getVector();
 		java.util.Iterator iter = inMessages.iterator();
 		while( iter.hasNext() )		
 			handleMessage( (com.cannontech.message.util.Message) iter.next() );				
 	}
 	else
-	if (msg instanceof com.cannontech.message.dispatch.message.PointData)
-	{
+	if (msg instanceof com.cannontech.message.dispatch.message.PointData) {
 		PointData pd = (PointData) msg;
 		Long id = new Long(pd.getId());
-		Long tags = new Long(pd.getTags());		
 		pointData.put(id, pd);		
-		tagData.put(id, tags);
 		CTILogger.debug("Received point data for point id:  " + id);
 	}
 	else
-	if (msg instanceof com.cannontech.message.dispatch.message.Signal)
-	{		
+	if (msg instanceof com.cannontech.message.dispatch.message.Signal) {		
 		com.cannontech.message.dispatch.message.Signal signal =
 			(com.cannontech.message.dispatch.message.Signal) msg;
 
 		Long id = new Long( signal.getPointID() );
-		Long tags = new Long(signal.getTags());
+		Integer tags = new Integer(signal.getTags());
+				
+		CTILogger.debug("Received signal id:  " + signal.getPointID() + " tags:  " + signal.getTags() );
 		
-		CTILogger.debug("Received signal id:  " + id + " tags:  " + signal.getTags() );
-			
-		if( (signal.getTags() & com.cannontech.message.dispatch.message.Signal.MASK_ANY_ALARM) != 0 )
-		{						
-			signalData.put( id, signal );
-			CTILogger.debug("Storing signal");
+		int category = (int) signal.getCategoryID();
+		
+		List sigs = (List) signalData.get(id);
+		if(sigs == null) {
+			sigs = new ArrayList(4);
+			signalData.put(id, sigs);
 		}
-		else
-		{
-			signalData.remove( id );
-			CTILogger.debug("Removing signal");
-		
-		}		
-		tagData.put(id, tags);
-	}
+			
+		/*
+		 * Only store the signal if the top two bits indicate alarm activity
+		 */
+		sigs.remove(signal);
+		if((signal.getTags() & Signal.MASK_ANY_ALARM) != 0) {
+			sigs.add(signal);
+		}
+			
+		tagData.put(id, tags);		
+	}   
 	else
 	if(msg instanceof DBChangeMsg) {
 		//handle the Cache's DBChangeMessages
@@ -262,67 +261,11 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 				(com.cannontech.message.dispatch.message.DBChangeMsg)msg );
 		CTILogger.debug("Received DBChangeMsg from: " + msg.getSource());
 	}
-	else
-	{
+	else {
 		CTILogger.warn("received an unknown message of class:  " + msg.getClass() );
 	}
 	
 	lastChange = msg.getTimeStamp();
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/30/00 4:33:36 PM)
- * @param pData com.cannontech.message.dispatch.message.PointData
- */
-private void insertValue(com.cannontech.message.dispatch.message.PointData pData) 
-{
-	Long id = new Long(pData.getId());
-
-	pointData.put(id, pData );
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (1/3/2001 12:47:01 PM)
- * @return java.lang.String
- * @param pointid int
- * @param value double
- */
-private synchronized String retrieveState(int pointid, double value, String dbAlias) 
-{
-	String sql = "SELECT State.Text FROM Point,StateGroup,State WHERE State.StateGroupID=StateGroup.StateGroupID AND StateGroup.StateGroupID=Point.StateGroupID AND State.RawState=" + value + " AND " + "Point.PointID=" + pointid;
-	String state = "-";
-	
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sql);
-
-		if( rset.next() )
-		{
-			state = rset.getString(1);			
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		} catch( Exception e ) { }
-	}
-
-	return state;
 }
 
 public void messageReceived(MessageEvent e) {

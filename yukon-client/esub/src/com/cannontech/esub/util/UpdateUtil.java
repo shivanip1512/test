@@ -1,6 +1,7 @@
 package com.cannontech.esub.util;
 
 import java.text.DecimalFormat;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.cannontech.common.cache.PointChangeCache;
@@ -146,16 +147,28 @@ public class UpdateUtil {
 		}
 		
 		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {
-			LitePoint lp = PointFuncs.getLitePoint(pointID);
-			Signal sig = pcc.getSignal(pointID);	
-			
-			if( sig != null ) {		
-				text += sig.getDescription();			
+			LitePoint lp = PointFuncs.getLitePoint(pointID);			
+				
+			boolean foundOne = false;
+			Iterator sigIter = pcc.getSignals(pointID).iterator();			
+			while(sigIter.hasNext()) {
+				Signal sig = (Signal) sigIter.next();
+				if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
+					if(!foundOne) {
+						text += sig.getDescription();						
+					}
+					else {
+						text += ", " + sig.getDescription();
+					}
+					foundOne = true;
+				}
 			}
-			else {
+			
+			if(!foundOne) {
 				text += "NOT IN ALARM";
 			}
-				prev = true;
+			
+			prev = true;
 		}
 		
 		if( (displayAttrib & PointAttributes.STATE_TEXT) != 0 ) {

@@ -3,6 +3,7 @@ package com.cannontech.esub.web.servlet;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.cache.PointChangeCache;
+import com.cannontech.message.dispatch.message.Signal;
 
 /**
  * AlarmTextStyleServlet chooses between two svg styles given a list of point ids 
@@ -50,11 +52,18 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		int[] pointIDs = parseIDString(idStr);				
 		boolean inAlarm = false;
 		
+		done:
 		for(int i = 0; i < pointIDs.length; i++) {
-			if(pcc.getSignal(pointIDs[i]) != null) {
-				inAlarm = true;
-				break;				
+
+			Iterator sigIter = pcc.getSignals(pointIDs[i]).iterator();
+			while(sigIter.hasNext()) {
+				Signal sig = (Signal) sigIter.next();
+				if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
+					inAlarm = true;
+					break done;
+				}
 			}
+			
 		}
 		
 		/* write the correct svg style */

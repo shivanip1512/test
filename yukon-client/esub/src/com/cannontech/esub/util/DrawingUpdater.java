@@ -1,5 +1,6 @@
 package com.cannontech.esub.util;
 
+import java.util.Iterator;
 import java.util.TimerTask;
 
 import com.cannontech.common.cache.PointChangeCache;
@@ -15,6 +16,7 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.Signal;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxView;
 
@@ -115,9 +117,12 @@ drawing.getLxGraph().startUndoEdit("update");
 							LitePoint[] points = te.getPoints();
 							if(points != null) {
 								for(int j = 0; j < points.length; j++) {
-									if( pcc.getSignal(points[j].getPointID()) != null) {
-										inAlarm = true;
-										break;
+									Iterator sigIter = pcc.getSignals(points[j].getPointID()).iterator();
+									while(sigIter.hasNext()) {
+										Signal sig = (Signal) sigIter.next();
+										if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
+											inAlarm = true;
+										}
 									}
 								}
 							}

@@ -1,6 +1,7 @@
 package com.cannontech.esub.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -75,10 +76,13 @@ public class PointAlarmTableModel extends AbstractTableModel {
 			LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceID);
 	
 			for(int j = 0; j < points.length; j++) {
-				Signal s = cache.getSignal(points[j].getPointID());
-				if(s != null) {
-					addSignal(s);
-				}			
+				Iterator sigIter = cache.getSignals(points[j].getPointID()).iterator();
+				while(sigIter.hasNext()) {
+					Signal sig = (Signal) sigIter.next();
+					if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
+						addSignal(sig);
+					}
+				}
 			}
 		}
 	}	
