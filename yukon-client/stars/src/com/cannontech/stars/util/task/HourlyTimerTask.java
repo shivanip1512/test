@@ -7,6 +7,7 @@ import java.util.Date;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
@@ -61,7 +62,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 		Date now = new Date();
 		for (int i = 0; i < companies.size(); i++) {
     		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			if (company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
+			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			OptOutEventQueue queue = company.getOptOutEventQueue();
 			if (queue == null) {

@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
@@ -294,6 +295,10 @@ public class ECUtils {
 		}
 		
 		return descendants;
+	}
+	
+	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
+		return company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID;
 	}
 
 }

@@ -418,7 +418,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized void init() {
 		getAllSelectionLists();
 		
-		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+		if (!ECUtils.isDefaultEnergyCompany( this )) {
 			getAllApplianceCategories();
 			getAllServiceCompanies();
 			getAllInterviewQuestions();
@@ -510,8 +510,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public LiteYukonGroup[] getResidentialCustomerGroups() {
 		String[] custGroupIDs = getEnergyCompanySetting( EnergyCompanyRole.CUSTOMER_GROUP_IDS ).split(",");
 		ArrayList custGroupList = new ArrayList();
+		
 		for (int i = 0; i < custGroupIDs.length; i++) {
-			LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(custGroupIDs[i]) );
+			String groupID = custGroupIDs[i].trim();
+			if (groupID.equals("")) continue;
+			LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(groupID) );
 			if (liteGroup != null) custGroupList.add( liteGroup );
 		}
 		
@@ -523,8 +526,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public LiteYukonGroup[] getWebClientOperatorGroups() {
 		String[] operGroupIDs = getEnergyCompanySetting( EnergyCompanyRole.OPERATOR_GROUP_IDS ).split(",");
 		ArrayList operGroupList = new ArrayList();
+		
 		for (int i = 0; i < operGroupIDs.length; i++) {
-			LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(operGroupIDs[i]) );
+			String groupID = operGroupIDs[i].trim();
+			if (groupID.equals("")) continue;
+			LiteYukonGroup liteGroup = AuthFuncs.getGroup( Integer.parseInt(groupID) );
 			if (liteGroup != null) operGroupList.add( liteGroup );
 		}
 		
@@ -849,7 +855,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		if (useDefault) {
-			if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+			if (!ECUtils.isDefaultEnergyCompany( this )) {
 				YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName, false );
 				if (dftList != null) {
 					// If the list is user updatable, returns a copy of the default list; otherwise returns the default list itself
@@ -950,7 +956,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		// Search the default energy company if list entry is not found here
-		if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+		if (!ECUtils.isDefaultEnergyCompany( this ))
 			return SOAPServer.getDefaultEnergyCompany().getYukonListEntry( yukonDefID );
 		
 		return null;
@@ -1015,7 +1021,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			dftLMHardwares = new Hashtable();
 		
 		// For default energy company, the same settings is returned for any hardware types
-		if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+		if (ECUtils.isDefaultEnergyCompany( this ))
 			hwTypeDefID = 0;
 		
 		LiteStarsLMHardware dftLMHardware =
@@ -1053,7 +1059,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 			
 			if (dftLMHardware == null) {
-				if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) {
+				if (ECUtils.isDefaultEnergyCompany( this )) {
 					CTILogger.info("No default thermostat settings found for yukondefid = " + hwTypeDefID);
 					return null;
 				}
@@ -1138,7 +1144,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			if (dftThermSettings == null || dftThermSettings.getThermostatSeasons().size() == 0 || dftThermSettings.getThermostatManualEvents().size() == 0) {
 				LiteStarsLMHardware dftHw = null;
-				if (getLiteID() != SOAPServer.DEFAULT_ENERGY_COMPANY_ID)
+				if (!ECUtils.isDefaultEnergyCompany( this ))
 					dftHw = SOAPServer.getDefaultEnergyCompany().getDefaultLMHardware(0);
 				if (dftHw == null) {
 					CTILogger.info( "Default thermostat settings not found!!!" );
@@ -1192,7 +1198,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			YukonSelectionList list = getYukonSelectionList( listName, false );
 			
 			if (list == null) {
-				if (getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) return customerFAQs;
+				if (ECUtils.isDefaultEnergyCompany( this )) return customerFAQs;
 				
 				// Make a copy of the default the customer FAQs
 				YukonSelectionList dftList = SOAPServer.getDefaultEnergyCompany().getYukonSelectionList( listName, false );

@@ -229,7 +229,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
 			// If we are populating the default commercial thermostat tables
 			boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
-					&& (energyCompany.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID);
+					&& ECUtils.isDefaultEnergyCompany( energyCompany );
 			
 			ArrayList liteSeasons = energyCompany.getDefaultLMHardware(hwTypeDefID).getThermostatSettings().getThermostatSeasons();
 			LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];

@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
@@ -56,7 +57,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 		// Update from LMControlHistory
 		for (int i = 0; i < companies.size(); i++) {
     		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			if (company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
+			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			ArrayList ctrlHistList = company.getAllLMControlHistory();
 			for (int j = 0; j < ctrlHistList.size(); j++) {
@@ -70,7 +71,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 		long now = System.currentTimeMillis();
 		for (int i = 0; i < companies.size(); i++) {
     		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-			if (company.getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
+			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			ArrayList accountList = company.getAccountsWithGatewayEndDevice();
 			
