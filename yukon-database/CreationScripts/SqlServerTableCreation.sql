@@ -4179,6 +4179,8 @@ insert into yukonrole values(-200,'ESUBVIEW','Esub','true','(none)');
 insert into yukonrole values(-201,'ESUBEDIT','Esub','true','(none)');
 insert into yukonrole values(-202,'ESUBCONTROL','Esub','true','(none)');
 
+insert into yukonrole values(-300,'READMETER_MAIN_LOGO','Readmeter','DemoHeader.gif','(none)');
+
 insert into yukonrole values(-9000,'TRENDING_DISCLAIMER_TEXT','WebClient',' ','(none)');
 insert into yukonrole values(-9001,'ENERGYEXCHANGE_TEXT','WebClient','Energy Exchange','(none)');
 insert into yukonrole values(-9002,'ENERGYEXCHANGE_HEADING_TEXT','WebClient','Energy Exchange','(none)');
