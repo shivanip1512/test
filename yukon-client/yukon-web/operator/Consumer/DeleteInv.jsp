@@ -1,8 +1,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
@@ -71,9 +69,22 @@
 			  <%@ include file="include/InfoSearchBar.jsp" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="ConfirmDelete">
-                <p class="MainText">The hardware will be removed from the 
-                  account. What would you like to do with it?</p>
-                <table width="250" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                <p class="MainText"> 
+                  <%
+	if (liteInv instanceof LiteStarsLMHardware) {
+		String serialNo = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
+%>
+                  The hardware &quot;#<%= serialNo %>&quot; will be removed from 
+                  the account. 
+                  <%
+	} else {
+		String deviceName = PAOFuncs.getYukonPAOName(liteInv.getDeviceID());
+%>
+                  The device &quot;<%= deviceName %>&quot; will be removed from 
+                  the account. 
+                  <%	} %>
+                  What would you like to do with it?</p>
+				<table width="250" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                   <tr>
                     <td width="25">
                       <input type="radio" name="DeletePerm" value="false" checked>

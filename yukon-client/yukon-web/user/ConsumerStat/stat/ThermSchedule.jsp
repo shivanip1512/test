@@ -26,8 +26,8 @@
 	}
 	else {
 		// Setup for a single thermostat
-		StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
-		thermoSettings = thermostat.getStarsThermostatSettings();
+		StarsInventory thermostat = thermostats.getStarsInventory(itemNo);
+		thermoSettings = thermostat.getLMHardware().getStarsThermostatSettings();
 		invID = thermostat.getInventoryID();
 	}
 	

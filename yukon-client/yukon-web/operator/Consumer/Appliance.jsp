@@ -16,13 +16,13 @@
 		appNo = 0;
 		
 	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
-	StarsLMHardware hardware = null;
+	StarsInventory hardware = null;
 	StarsLMProgram program = null;
 	StarsApplianceCategory category = null;
 	int progNo = 0;
 	
-	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-		StarsLMHardware hw = inventories.getStarsLMHardware(i);
+	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+		StarsInventory hw = inventories.getStarsInventory(i);
 		if (hw.getInventoryID() == appliance.getInventoryID()) {
 			hardware = hw;
 			break;
@@ -848,8 +848,8 @@ function deleteAppliance(form) {
                 </tr>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="75" class="TableCell"><%= hardware.getCategory() %></td>
-                  <td width="75" class="TableCell"><%= hardware.getLMDeviceType().getContent() %></td>
-                  <td width="75" class="TableCell"><%= hardware.getManufactureSerialNumber() %></td>
+                  <td width="75" class="TableCell"><%= hardware.getLMHardware().getLMHardwareType().getContent() %></td>
+                  <td width="75" class="TableCell"><%= hardware.getLMHardware().getManufacturerSerialNumber() %></td>
                 </tr>
               </table>
 <%

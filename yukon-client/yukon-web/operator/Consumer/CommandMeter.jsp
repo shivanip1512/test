@@ -8,7 +8,7 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	StarsInventory starsMCT = inventories.getStarsInventory(invNo);
 	int deviceID = starsMCT.getDeviceID();
 
 	//get the liteYukonPao using the deviceID

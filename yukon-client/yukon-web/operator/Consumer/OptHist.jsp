@@ -1,12 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
-<%
-	StarsLMHardwareHistory hwHist = null;
-	if (inventories.getStarsLMHardwareCount() > 0) {
-		StarsLMHardware hw = inventories.getStarsLMHardware(0);
-		hwHist = hw.getStarsLMHardwareHistory();
-	}
-%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

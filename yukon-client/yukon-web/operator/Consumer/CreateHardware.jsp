@@ -22,15 +22,10 @@
 				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
 				StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
 				if (createHw != null) {
-					if (createHw.getDeviceID() > 0) {
-						// TODO: should check if the device is a MCT
-						inventory = StarsFactory.newStarsInventory(createHw, StarsMCT.class);
-						((StarsMCT)inventory).setDeviceName( PAOFuncs.getYukonPAOName(createHw.getDeviceID()) );
-					}
-					else {
-						inventory = StarsFactory.newStarsInventory(createHw, StarsLMHardware.class);
-						((StarsLMHardware)inventory).getLMDeviceType().setContent(
-								YukonListFuncs.getYukonListEntry(createHw.getLMDeviceType().getEntryID()).getEntryText());
+					inventory = (StarsInventory) StarsFactory.newStarsInv(createHw, StarsInventory.class);
+					if (createHw.getLMHardware() != null) {
+						inventory.getLMHardware().getLMHardwareType().setContent(
+								YukonListFuncs.getYukonListEntry(createHw.getLMHardware().getLMHardwareType().getEntryID()).getEntryText());
 					}
 				}
 			}
@@ -45,7 +40,28 @@
 			return;
 		}
 		
-		inventory = (StarsLMHardware) StarsFactory.newStarsInventory(StarsLMHardware.class);
+		inventory = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
+		LMHardware hw = new LMHardware();
+		hw.setLMHardwareType( (LMHardwareType)
+				StarsFactory.newEmptyStarsCustListEntry(LMHardwareType.class) );
+		hw.setManufacturerSerialNumber("");
+		inventory.setLMHardware(hw);
+	}
+	
+	String devTypeStr = "(none)";
+	String deviceName = "(none)";
+	String devNameLabel = "(none)";
+	
+	if (inventory.getLMHardware() != null) {
+		devTypeStr = inventory.getLMHardware().getLMHardwareType().getContent();
+		deviceName = inventory.getLMHardware().getManufacturerSerialNumber();
+		devNameLabel = "Serial #";
+	}
+	else {
+		com.cannontech.database.data.lite.LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
+		devTypeStr = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(litePao.getType());
+		deviceName = litePao.getPaoName();
+		devNameLabel = "Device Name";
 	}
 %>
 <html>
@@ -147,37 +163,18 @@ function changeSerialNo() {
                         <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
-<%
-	if (invCheckEarly || !(inventory instanceof StarsLMHardware)) {
-		String devTypeStr = null;
-		String deviceName = null;
-		String devNameLabel = null;
-		
-		if (inventory instanceof StarsLMHardware) {
-			devTypeStr = ((StarsLMHardware) inventory).getLMDeviceType().getContent();
-			deviceName = ((StarsLMHardware) inventory).getManufactureSerialNumber();
-			devNameLabel = "Serial #";
-%>
-							<input type="hidden" name="DeviceType" value="<%= ((StarsLMHardware) inventory).getLMDeviceType().getEntryID() %>">
+<%	if (invCheckEarly) { %>
+<%		if (inventory.getLMHardware() != null) { %>
+							<input type="hidden" name="DeviceType" value="<%= inventory.getLMHardware().getLMHardwareType().getEntryID() %>">
 							<input type="hidden" name="SerialNo" value="<%= deviceName %>">
-<%
-		}
-		else if (inventory instanceof StarsDevice) {
-			com.cannontech.database.data.lite.LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(inventory.getDeviceID());
-			devTypeStr = com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(litePao.getType());
-			deviceName = litePao.getPaoName();
-			devNameLabel = "Device Name";
-		}
-%>
+<%		} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
                                 </td>
                                 <td width="120" class="MainText"><%= devTypeStr %></td>
                                 <td width="80" rowspan="2">
-<%		if (invCheckEarly) { %>
                                   <input type="button" name="Change" value="Change" onclick="changeSerialNo()">
-<%		} %>
                                 </td>
                               </tr>
                               <tr> 
@@ -187,10 +184,7 @@ function changeSerialNo() {
                             </table>
 <%	} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-<%
-	if (!invCheckEarly && (inventory instanceof StarsLMHardware)) {
-		StarsLMHardware hardware = (StarsLMHardware) inventory;
-%> 
+<%	if (!invCheckEarly && inventory.getLMHardware() != null) { %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
@@ -201,7 +195,7 @@ function changeSerialNo() {
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == hardware.getLMDeviceType().getEntryID())? "selected" : "";
+		String selected = (entry.getEntryID() == inventory.getLMHardware().getLMHardwareType().getEntryID())? "selected" : "";
 %>
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%
@@ -214,7 +208,7 @@ function changeSerialNo() {
                                 <td width="100" class="TableCell" align="right">Serial 
                                   #: </td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= inventory.getLMHardware().getManufacturerSerialNumber() %>">
                                 </td>
                               </tr>
 <%	} %> 
@@ -327,7 +321,7 @@ function changeSerialNo() {
                         </tr>
                       </table>
 <%
-	if (inventory instanceof StarsLMHardware && appliances != null) {
+	if (inventory.getLMHardware() != null && appliances != null) {
 %>
                       <br>
                       <span class="Subtext">Select all programs controlled by this 

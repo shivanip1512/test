@@ -2,12 +2,12 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
+	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	
 	ArrayList appList = new ArrayList();
 	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 		StarsAppliance app = appliances.getStarsAppliance(i);
-		if (app.getInventoryID() == hardware.getInventoryID())
+		if (app.getInventoryID() == inventory.getInventoryID())
 			appList.add(app);
 	}
 	
@@ -90,7 +90,7 @@ function changeAppSelection(chkBox) {
 			  
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
                 <input type="hidden" name="action" value="UpdateLMHardwareConfig">
-                <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+                <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
                 <table width="350" border="1" cellspacing="0" cellpadding="3">

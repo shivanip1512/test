@@ -92,9 +92,10 @@
 		
 		thermostats = new StarsInventories();
 		StarsInventories inventories = accountInfo.getStarsInventories();
-		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-			if (inventories.getStarsLMHardware(i).getStarsThermostatSettings() != null)
-				thermostats.addStarsLMHardware( inventories.getStarsLMHardware(i) );
+		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+			StarsInventory inventory = inventories.getStarsInventory(i);
+			if (inventory.getLMHardware() != null && inventory.getLMHardware().getStarsThermostatSettings() != null)
+				thermostats.addStarsInventory( inventory );
 		}
 		
 		userLogin = accountInfo.getStarsUser();

@@ -1,8 +1,8 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
 	int itemNo = Integer.parseInt(request.getParameter("Item"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
-	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
+	StarsInventory thermostat = thermostats.getStarsInventory(itemNo);
+	StarsThermostatSettings thermoSettings = thermostat.getLMHardware().getStarsThermostatSettings();
 %>
 <html>
 <head>
@@ -13,7 +13,7 @@
 <script language="JavaScript">
 function goToSchedule() {
 <%
-	if (thermostat.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+	if (thermoSettings.getStarsThermostatDynamicData() == null) {
 %>
 	location.href = "ThermSchedule.jsp?Item=<%= itemNo %>";
 <%
@@ -27,7 +27,7 @@ function goToSchedule() {
 
 function goToManual() {
 <%
-	if (thermostat.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+	if (thermoSettings.getStarsThermostatDynamicData() == null) {
 %>
 	location.href = "Thermostat.jsp?Item=<%= itemNo %>";
 <%

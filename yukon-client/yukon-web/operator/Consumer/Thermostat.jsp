@@ -2,8 +2,8 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
-	StarsThermostatSettings thermoSettings = hardware.getStarsThermostatSettings();
+	StarsInventory inventory = inventories.getStarsInventory(invNo);
+	StarsThermostatSettings thermoSettings = inventory.getLMHardware().getStarsThermostatSettings();
 
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
@@ -215,7 +215,7 @@ if (text.length == 2) {
               </div>
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
-              <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+              <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
               <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat.jsp?InvNo=<%= invNo %>">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat.jsp?InvNo=<%= invNo %>">
 			  <input type="hidden" name="mode" value="">

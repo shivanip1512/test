@@ -1,7 +1,9 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	
@@ -9,25 +11,11 @@
 	LiteInventoryBase liteInv = liteEC.getInventoryBrief(invID, true);
 	StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, liteEC);
 	
-	StarsCustListEntry devTypeMCT = ServletUtils.getStarsCustListEntry(selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER);
-	
-	int devTypeID = 0;
-	String devTypeStr = null;
-	String devName = null;
-	String labelName = null;
-	
-	if (inventory instanceof StarsLMHardware) {
-		devTypeID = ((StarsLMHardware)inventory).getLMDeviceType().getEntryID();
-		devTypeStr = ((StarsLMHardware)inventory).getLMDeviceType().getContent();
-		devName = ((StarsLMHardware)inventory).getManufactureSerialNumber();
-		labelName = "Serial #";
-	}
-	else if (inventory instanceof StarsMCT) {
-		devTypeID = devTypeMCT.getEntryID();
-		devTypeStr = devTypeMCT.getContent();
-		devName = ((StarsMCT)inventory).getDeviceName();
-		labelName = "Device Name";
-	}
+	String devTypeStr = "(none)";
+	if (inventory.getLMHardware() != null)
+		devTypeStr = inventory.getLMHardware().getLMHardwareType().getContent();
+	else if (inventory.getDeviceID() > 0)
+		devTypeStr = PAOGroups.getPAOTypeString( PAOFuncs.getLiteYukonPAO(inventory.getDeviceID()).getType() );
 	
 	String src = request.getParameter("src");
 	String referer = "";
@@ -158,6 +146,7 @@ function validate(form) {
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="UpdateInventory">
                 <input type="hidden" name="InvID" value="<%= inventory.getInventoryID() %>">
+				<input type="hidden" name="DeviceID" value="<%= inventory.getDeviceID() %>">
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
@@ -172,17 +161,26 @@ function validate(form) {
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Type:</div>
                                 </td>
-								<input type="hidden" name="DeviceType" value="<%= devTypeID %>">
                                 <td width="210" class="MainText"><%= devTypeStr %></td>
                               </tr>
+<% if (inventory.getLMHardware() != null) { %>
+							  <input type="hidden" name="DeviceType" value="<%= inventory.getLMHardware().getLMHardwareType().getEntryID() %>">
                               <tr> 
                                 <td width="88" class="TableCell"> 
-                                  <div align="right"><%= labelName %>:</div>
+                                  <div align="right">Serial #:</div>
                                 </td>
                                 <td width="210">
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= devName %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= inventory.getLMHardware().getManufacturerSerialNumber() %>">
                                 </td>
                               </tr>
+<% } else { %>
+                              <tr> 
+                                <td width="88" class="TableCell"> 
+                                  <div align="right">Device Name:</div>
+                                </td>
+                                <td width="210" class="MainText"><%= PAOFuncs.getYukonPAOName(inventory.getDeviceID()) %></td>
+                              </tr>
+<% } %>
                               <tr> 
                                 <td width="88" class="TableCell"> 
                                   <div align="right">Label:</div>

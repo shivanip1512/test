@@ -239,9 +239,9 @@
 		}
 	}
 	
-	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-		StarsLMHardware hw = inventories.getStarsLMHardware(i);
-		String linkLabel = hw.getDeviceLabel();
+	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+		StarsInventory inv = inventories.getStarsInventory(i);
+		String linkLabel = inv.getDeviceLabel();
 		
 		String linkHtml = null;
 		String linkImgExp = null;
@@ -256,34 +256,17 @@
 		}
 		
 		String[] linkFields = new String[] {String.valueOf(i), linkHtml, linkImgExp};
-		if (hw.getStarsThermostatSettings() != null)
-			thermostats.add( linkFields );
+		if (inv.getLMHardware() != null) {
+			if (inv.getLMHardware().getStarsThermostatSettings() != null)
+				thermostats.add( linkFields );
+			else
+				switches.add( linkFields );
+		}
 		else
-			switches.add( linkFields );
+			meters.add( linkFields );
 	}
 	
-	for (int i = 0; i < inventories.getStarsMCTCount(); i++) {
-		StarsMCT mct = inventories.getStarsMCT(i);
-		String linkLabel = mct.getDeviceLabel();
-		
-		String linkHtml = null;
-		String linkImgExp = null;
-		
-		int invNo2 = i + inventories.getStarsLMHardwareCount();
-		if (invNo2 == selectedInvNo) {
-			linkHtml = "<span class='Nav' style='cursor:default'>" + linkLabel + "</span>";
-			linkImgExp = bulletImg;
-		}
-		else {
-			linkHtml = "<span class='NavTextNoLink' style='cursor:default'>" + linkLabel + "</span>";
-			linkImgExp = bulletImgExp;
-		}
-		
-		String[] linkFields = new String[] {String.valueOf(invNo2), linkHtml, linkImgExp};
-		meters.add( linkFields );
-	}
-	
-	if (inventories.getStarsLMHardwareCount() + inventories.getStarsMCTCount() > 0) {
+	if (inventories.getStarsInventoryCount() > 0) {
 %>
           <tr>
             <td width="10">&nbsp;</td>
@@ -433,7 +416,7 @@
 <script language="JavaScript">
 // Initialize variables defined in nav_menu.js
 pageName = "<%= pageName %>";
-pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
+pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 <%
 	for (int i = 0; i < switches.size(); i++) {
 		int num = Integer.parseInt( ((String[]) switches.get(i))[0] );
@@ -450,7 +433,7 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
-		StarsThermostatSettings settings = inventories.getStarsLMHardware(num).getStarsThermostatSettings();
+		StarsThermostatSettings settings = inventories.getStarsInventory(num).getLMHardware().getStarsThermostatSettings();
 		if (settings.getStarsThermostatDynamicData() == null) {
 %>
 	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=<%= num %>";

@@ -2,11 +2,7 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsInventory inventory = null;
-	if (invNo < inventories.getStarsLMHardwareCount())
-		inventory = inventories.getStarsLMHardware(invNo);
-	else
-		inventory = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	StarsInventory inventory = inventories.getStarsInventory(invNo);
 %>
 
 <html>

@@ -1,12 +1,11 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsInventory inventory = null;
-	if (invNo < inventories.getStarsLMHardwareCount())
-		inventory = inventories.getStarsLMHardware(invNo);
-	else
-		inventory = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+	StarsInventory inventory = inventories.getStarsInventory(invNo);
 	
 	boolean invChanged = request.getParameter("Changed") != null;
 	StarsInventory newInv = null;
@@ -21,22 +20,21 @@
 	}
 	
 	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
+
+	String devTypeStr = "(none)";
+	String deviceName = "(none)";
+	String devNameLabel = "(none)";
 	
-	StarsCustListEntry devTypeMCT = ServletUtils.getStarsCustListEntry(selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER);
-	
-	int devTypeID = 0;
-	String devTypeStr = null;
-	String devName = null;
-	
-	if (newInv instanceof StarsLMHardware) {
-		devTypeID = ((StarsLMHardware)newInv).getLMDeviceType().getEntryID();
-		devTypeStr = ((StarsLMHardware)newInv).getLMDeviceType().getContent();
-		devName = ((StarsLMHardware)newInv).getManufactureSerialNumber();
+	if (newInv.getLMHardware() != null) {
+		devTypeStr = newInv.getLMHardware().getLMHardwareType().getContent();
+		deviceName = newInv.getLMHardware().getManufacturerSerialNumber();
+		devNameLabel = "Serial #";
 	}
-	else if (newInv instanceof StarsMCT) {
-		devTypeID = devTypeMCT.getEntryID();
-		devTypeStr = devTypeMCT.getContent();
-		devName = ((StarsMCT)newInv).getDeviceName();
+	else if (newInv.getDeviceID() > 0) {
+		LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(newInv.getDeviceID());
+		devTypeStr = PAOGroups.getPAOTypeString(litePao.getType());
+		deviceName = litePao.getPaoName();
+		devNameLabel = "Device Name";
 	}
 	
 	StarsServiceCompany company = null;
@@ -72,12 +70,7 @@ function validate(form) {
 		return false;
 	}
 	
-	if (form.DeviceType.value != <%= devTypeID %>
-		|| form.DeviceID.value != <%= inventory.getDeviceID() %>
-<% if (inventory instanceof StarsLMHardware) { %>
-		|| form.SerialNo.value != "<%= ((StarsLMHardware)inventory).getManufactureSerialNumber() %>"
-<% } %>
-		)
+	if (form.InvID.value != form.OrigInvID.value)
 	{
 		form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
 	}
@@ -87,19 +80,10 @@ function validate(form) {
 function changeSerialNo() {
 	document.snForm.submit();
 }
-
-function changeDeviceType() {
-<% if (devTypeMCT != null) { %>
-	if (document.MForm.DeviceType.value == <%= devTypeMCT.getEntryID() %>)
-		document.getElementById("NameLabel").innerText = "Device Name";
-	else
-<% } %>
-		document.getElementById("NameLabel").innerText = "Serial #";
-}
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onload="changeDeviceType()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -164,9 +148,11 @@ function changeDeviceType() {
                       <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
-                            <% if (invCheckEarly) { %>
-                            <input type="hidden" name="DeviceType" value="<%= devTypeID %>">
-							<input type="hidden" name="SerialNo" value="<%= devName %>">
+<%	if (invCheckEarly) { %>
+<%		if (newInv.getLMHardware() != null) { %>
+                            <input type="hidden" name="DeviceType" value="<%= newInv.getLMHardware().getLMHardwareType().getEntryID() %>">
+							<input type="hidden" name="SerialNo" value="<%= deviceName %>">
+<%		} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                               <tr> 
                                 <td width="100" class="TableCell" align="right">Type: 
@@ -177,40 +163,39 @@ function changeDeviceType() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td width="100" class="TableCell" align="right"><span id="NameLabel">Serial #</span>: </td>
-                                <td width="120" class="MainText"><%= devName %></td>
+                                <td width="100" class="TableCell" align="right"><%= devNameLabel %>: </td>
+                                <td width="120" class="MainText"><%= deviceName %></td>
                               </tr>
                             </table>
-                            <% } %>
+<%	} %>
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                            <% if (!invCheckEarly) { %>
+<%	if (!invCheckEarly) { %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
                                 </td>
+                                <td width="200" class="MainText"><%= devTypeStr %></td>
+                              </tr>
+<%		if (newInv.getLMHardware() != null) { %>
+                              <input type="hidden" name="DeviceType" value="<%= newInv.getLMHardware().getLMHardwareType().getEntryID() %>">
+                              <tr> 
+                                <td width="100" class="TableCell" align="right">Serial 
+                                  #: </td>
                                 <td width="200"> 
-                                  <select name="DeviceType" onchange="changeDeviceType()">
-                                    <%
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == devTypeID)? "selected" : "";
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= newInv.getLMHardware().getManufacturerSerialNumber() %>">
+                                </td>
+                              </tr>
+<%		}
+		else {
 %>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                    <%
+                              <tr> 
+                                <td width="100" class="TableCell" align="right">Device 
+                                  Name: </td>
+                                <td width="200"><%= deviceName %></td>
+                              </tr>
+<%		}
 	}
 %>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="100" class="TableCell" align="right"><span id="NameLabel">Serial 
-                                  #: </span></td>
-                                <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= devName %>">
-                                </td>
-                              </tr>
-                            <% } %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>

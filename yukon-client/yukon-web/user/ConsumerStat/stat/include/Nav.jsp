@@ -50,7 +50,7 @@
 <!--This checkProperty is meant to be the checkMultiProperty when more options are available-->
 <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 <%
-	int tstatCnt = thermostats.getStarsLMHardwareCount();
+	int tstatCnt = thermostats.getStarsInventoryCount();
 	if (tstatCnt > 0) {
 %>
   <tr>
@@ -90,9 +90,9 @@
 			}
 		}
 		
-		for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
-			StarsLMHardware hw = thermostats.getStarsLMHardware(i);
-			String linkLabel = hw.getDeviceLabel();
+		for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
+			StarsInventory inv = thermostats.getStarsInventory(i);
+			String linkLabel = inv.getDeviceLabel();
 			
 			String linkHtml = null;
 			String linkImgExp = null;
@@ -249,26 +249,26 @@
 <script language="JavaScript">
 // Initialize variables defined in nav_menu.js
 pageName = "<%= pageName %>";
-pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
+pageLinks = new Array(<%= thermostats.getStarsInventoryCount() %>);
 <%
-	int tstatCnt = thermostats.getStarsLMHardwareCount();
+	int tstatCnt = thermostats.getStarsInventoryCount();
 	int[] selectedInvIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	boolean hasTwoWay = false;
 	
 	for (int i = 0; i < tstatCnt; i++) {
-		StarsLMHardware thermostat = thermostats.getStarsLMHardware(i);
+		StarsInventory tstat = thermostats.getStarsInventory(i);
 %>
 	pageLinks[<%= i %>] = new Array(3);
 	pageLinks[<%= i %>][0] = "NewLabel.jsp?Item=<%= i %>";
 <%
-		if (thermostat.getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
+		if (tstat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData() == null) {
 %>
 	pageLinks[<%= i %>][1] = "ThermSchedule.jsp?Item=<%= i %>";
 	pageLinks[<%= i %>][2] = "Thermostat.jsp?Item=<%= i %>";
 <%
 		}
 		else {
-			if (selectedInvIDs != null && Arrays.binarySearch(selectedInvIDs, thermostat.getInventoryID()) >= 0)
+			if (selectedInvIDs != null && Arrays.binarySearch(selectedInvIDs, tstat.getInventoryID()) >= 0)
 				hasTwoWay = true;
 %>
 	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %>";

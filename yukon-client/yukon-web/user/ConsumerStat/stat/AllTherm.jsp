@@ -147,15 +147,15 @@ function goToManual() {
 <%
 	int[] invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	
-	for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
-		StarsLMHardware thermostat = thermostats.getStarsLMHardware(i);
+	for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
+		StarsInventory thermostat = thermostats.getStarsInventory(i);
 		String checked = (invIDs != null && Arrays.binarySearch(invIDs, thermostat.getInventoryID()) >= 0)? "checked" : "";
 %>
                   <tr> 
                     <td width="32"> 
                       <div align="right"> 
                         <input type="checkbox" name="InvID" value="<%= thermostat.getInventoryID() %>" onclick="selectSingle(this.form)" <%= checked %>>
-                        <input type="hidden" name="IsTwoWay" value="<%= thermostat.getStarsThermostatSettings().getStarsThermostatDynamicData() != null %>">
+                        <input type="hidden" name="IsTwoWay" value="<%= thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData() != null %>">
                       </div>
                     </td>
                     <td width="256" class="TableCell"><%= thermostat.getDeviceLabel() %></td>

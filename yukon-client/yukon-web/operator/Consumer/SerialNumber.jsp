@@ -8,10 +8,8 @@
 	if (invNo == null) invNo = "";
 	session.setAttribute(InventoryManager.STARS_INVENTORY_NO, invNo);
 	
-	StarsCustListEntry devTypeMCT = ServletUtils.getStarsCustListEntry(selectionListTable, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER);
-	
 	int deviceType = 0;
-	String devName = "";
+	String serialNo = "";
 	
 	if (action != null) {
 		if (action.equalsIgnoreCase("New")) {
@@ -25,15 +23,9 @@
 			// Came from CreateHardware.jsp or Inventory.jsp
 			StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + invNo);
 			
-			if (inventory != null) {
-				if (inventory instanceof StarsLMHardware) {
-					deviceType = ((StarsLMHardware)inventory).getLMDeviceType().getEntryID();
-					devName = ((StarsLMHardware)inventory).getManufactureSerialNumber();
-				}
-				else if (inventory instanceof StarsMCT) {
-					deviceType = devTypeMCT.getEntryID();
-					devName = ((StarsMCT)inventory).getDeviceName();
-				}
+			if (inventory != null && inventory.getLMHardware() != null) {
+				deviceType = inventory.getLMHardware().getLMHardwareType().getEntryID();
+				serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 			}
 			
 			referer = request.getHeader("referer");
@@ -50,15 +42,9 @@
 		// From SelectInv.jsp when cancel button is clicked
 		StarsInventory inventory = (StarsInventory) session.getAttribute(InventoryManager.STARS_INVENTORY_TEMP + invNo);
 		
-		if (inventory != null) {
-			if (inventory instanceof StarsLMHardware) {
-				deviceType = ((StarsLMHardware)inventory).getLMDeviceType().getEntryID();
-				devName = ((StarsLMHardware)inventory).getManufactureSerialNumber();
-			}
-			else if (inventory instanceof StarsMCT) {
-				deviceType = devTypeMCT.getEntryID();
-				devName = ((StarsMCT)inventory).getDeviceName();
-			}
+		if (inventory != null && inventory.getLMHardware() != null) {
+			deviceType = inventory.getLMHardware().getLMHardwareType().getEntryID();
+			serialNo = inventory.getLMHardware().getManufacturerSerialNumber();
 		}
 	}
 	
@@ -93,18 +79,9 @@ function selectMeter(form) {
 	form.attributes["action"].value = "SelectMeter.jsp";
 	form.submit();
 }
-
-function changeDeviceType() {
-<% if (devTypeMCT != null) { %>
-	if (document.MForm.DeviceType.value == <%= devTypeMCT.getEntryID() %>)
-		document.getElementById("NameLabel").innerText = "Device Name";
-	else
-<% } %>
-		document.getElementById("NameLabel").innerText = "Serial #";
-}
 </script>
 </head>
-<body class="Background" leftmargin="0" topmargin="0" onload="changeDeviceType()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td> 
@@ -164,9 +141,9 @@ function changeDeviceType() {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= redirect %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<% if (devTypeMCT != null) { %>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_METER %>">
                 select a meter from the list of all MCTs (Select Meter),<br>
-<% } %>
+</cti:checkProperty>
                 or check the inventory for a specific device type and serial number 
                 (Check Inventory).<br>
                 <br>
@@ -184,7 +161,7 @@ function changeDeviceType() {
                       </table>
                     </td>
                   </tr>
-<% if (devTypeMCT != null) { %>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_METER %>">
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>
@@ -203,7 +180,7 @@ function changeDeviceType() {
                       </table>
                     </td>
                   </tr>
-<% } %>
+</cti:checkProperty>
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>
@@ -233,9 +210,9 @@ function changeDeviceType() {
                                 </td>
                               </tr>
                               <tr> 
-                                <td align="right" width="30%"><span id="NameLabel">Serial #</span>: </td>
+                                <td align="right" width="30%">Serial #: </td>
                                 <td width="70%"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= devName %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialNo %>">
                                 </td>
                               </tr>
                             </table>
