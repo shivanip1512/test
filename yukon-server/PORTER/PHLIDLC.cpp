@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/07/23 21:01:56 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/08/21 18:39:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -594,6 +594,28 @@ IDLCSetDelaySets (CtiDevice *Dev)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " DELAY.DAT should be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
         }
+
+        /* Walk through the file looking for the appropriate port and remote */
+        for(;;)
+        {
+            if(fscanf (HFile,"%hd,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
+            {
+                T_RTSOn      = 8;
+                T_CTSTo      = 168;
+                T_KeyOff     = 32;
+                T_IntraTo    = 248;
+                BA_Trig      = 170;
+
+                break;
+            }
+
+            if(MyPort == Dev->getPortID() && MyRemote == Dev->getAddress())
+            {
+                break;
+            }
+        }
+
+        fclose (HFile);
     }
     else if((HFile = fopen ("..\\CONFIG\\DELAY.DAT", "r")) != NULL)
     {
