@@ -101,14 +101,9 @@ public void setValue(Object o)
 		//data.addElement("Dev ID    : " + pointValue.getDeviceID());
 
 	
-		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
-		com.cannontech.clientutils.commonutils.ModifiedDate md = new com.cannontech.clientutils.commonutils.ModifiedDate( db.getDateApplied().getTime() );
-
 		String[] pools = com.cannontech.database.PoolManager.getInstance().getAllPoolsStrings();
 		for( int i = 0; i < pools.length; i++ )
 			data.addElement("("+i+")DB Pool   : " + pools[i] );
-
-		data.addElement("DB Version   : " + db.getVersion() + "  on  " + md.getDateString() );
 
       java.util.Enumeration enum = java.sql.DriverManager.getDrivers();      
       while( enum.hasMoreElements() )
@@ -122,8 +117,11 @@ public void setValue(Object o)
       data.addElement("JRE Version  : " + System.getProperty("java.version") );
       
          
-      //com.cannontech.database.PoolManager.getInstance().;
-		
+
+		/* ALWAYS leave this as the last thing */
+		com.cannontech.database.db.version.CTIDatabase db = com.cannontech.common.version.VersionTools.getDatabaseVersion();
+		com.cannontech.clientutils.commonutils.ModifiedDate md = new com.cannontech.clientutils.commonutils.ModifiedDate( db.getDateApplied().getTime() );		
+		data.addElement("DB Version   : " + db.getVersion() + "  on  " + md.getDateString() );
 	}
 	catch(Throwable t)  // Catch ALL things and just print them out
 	{
