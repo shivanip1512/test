@@ -40,6 +40,7 @@ public final class CtiUtilities
     public final static String gif = "gif";
     public final static String tiff = "tiff";
     public final static String tif = "tif";
+    public final static String png = "png";
     		
 	private static String temp;
 

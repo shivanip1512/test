@@ -13,10 +13,11 @@ public class ImageFilter extends FileFilter {
         String extension = CtiUtilities.getExtension(f);
 	if (extension != null) {
             if (extension.equals(CtiUtilities.tiff) ||
-                extension.equals(CtiUtilities.tif) ||
-                extension.equals(CtiUtilities.gif) ||
+                extension.equals(CtiUtilities.tif)  ||
+                extension.equals(CtiUtilities.gif)  ||
                 extension.equals(CtiUtilities.jpeg) ||
-                extension.equals(CtiUtilities.jpg)) {
+                extension.equals(CtiUtilities.jpg)  ||
+                extension.equals(CtiUtilities.png)) {
                     return true;
             } else {
                 return false;
