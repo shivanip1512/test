@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2004/01/08 23:16:17 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2004/01/16 22:41:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1453,7 +1453,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                        if( !error )
                        {
-                          CtiReturnMsg *retMsg = new CtiReturnMsg();
+                          CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
                           //send dispatch lp data directly
                           markv->processDispatchReturnMessage( retMsg );
@@ -1483,6 +1483,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        }
 
                        transdata.destroy();
+                       markv = NULL;
                        break;
                     }
 
