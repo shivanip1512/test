@@ -117,6 +117,7 @@ public abstract String getFileName();
  */
 public java.util.GregorianCalendar getNextRunTime()
 {
+	logEvent("  Get next runtime " + directory, com.cannontech.common.util.LogWriter.INFO);	
 	if( nextRunTime == null)
 	{
 		figureNextRunTime();
@@ -208,7 +209,7 @@ public void logEvent(String event, int severity)
 public static void main(String[] args)
 {
 	ExportFormatBase formatBase = null;
-	
+
 	for ( int i = 0; i < args.length; i++)
 	{
 		String argLowerCase = (String)args[i].toLowerCase();
@@ -225,7 +226,6 @@ public static void main(String[] args)
 			if( formatBase != null)
 				formatBase.setIsService	(false);
 		}
-			
 	}
 	if( formatType == null)
 	{
@@ -237,6 +237,7 @@ public static void main(String[] args)
 	{
 		formatBase = createFileFormat(formatType);
 		formatBase.parseCommandLineArgs(args);
+		
 	}
 
 	try
@@ -259,8 +260,8 @@ public static void main(String[] args)
 			formatBase.retrieveExportData();
 			formatBase.writeToFile();
 			formatBase.figureNextRunTime();
-			com.cannontech.message.dispatch.message.EmailMsg emailMsg = new com.cannontech.message.dispatch.message.EmailMsg();
-			emailMsg.setSender("snebben@cannontech.com");
+//			com.cannontech.message.dispatch.message.EmailMsg emailMsg = new com.cannontech.message.dispatch.message.EmailMsg();
+//			emailMsg.setSender("snebben@cannontech.com");
 		}
 		else
 		{
@@ -275,7 +276,7 @@ public static void main(String[] args)
 				com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
 				return;
 			}
-			
+
 		}
 	}while (formatBase.isService());
 

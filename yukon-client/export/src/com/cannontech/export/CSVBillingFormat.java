@@ -14,7 +14,9 @@ public class CSVBillingFormat extends ExportFormatBase
 	private java.util.GregorianCalendar runDate = null;
 	private java.util.GregorianCalendar maxTimestamp = null;
 	private java.util.GregorianCalendar minTimestamp = null;
-	
+
+	private Character delimiter = new Character('|');
+	private boolean showColumnHeadings = false;
 	private String filePrefix = "OfferBill";
 	private String fileExtension = ".csv";
 
@@ -38,6 +40,8 @@ public String appendBatchFileParms(String batchString)
 	batchString += "START=" + COMMAND_LINE_FORMAT.format(getMinTimestamp().getTime()) + " ";
 	
 	batchString += "STOP=" + COMMAND_LINE_FORMAT.format(getMaxTimestamp().getTime()) + " ";
+	
+	batchString += "DELIMITER=\"" + getDelimiter() +"\" ";
 	
 	return batchString;
 }
@@ -65,6 +69,10 @@ public void computeDefaultQueryTimestamp()
 
 	setMinTimestamp(yesterday);
 
+}
+public Character getDelimiter()
+{
+	return delimiter;
 }
 /**
  * Insert the method's description here.
@@ -120,6 +128,17 @@ public void parseCommandLineArgs(String[] args)
 				setDirectory(subString);
 				java.io.File file = new java.io.File( getDirectory() );
 				file.mkdirs();
+			}
+			else if( argString.startsWith("DELIMITER"))
+			{
+				int startIndex = argString.indexOf("=") + 1;
+				String subString = argString.substring(startIndex);
+				for (int j = 0; j < subString.length(); j++)
+				{
+					char tempChar = subString.charAt(j);
+					if (tempChar != '"')
+						setDelimiter(new Character(tempChar));
+				}
 			}
 			else if( argString.startsWith("START"))
 			{
@@ -231,6 +250,7 @@ public void retrieveBaselineData(int baselinePointID)
 	java.sql.PreparedStatement stmt = null;
 	java.sql.ResultSet rset = null;
 
+//	System.out.println("retrieveBaselineData: Min = " + getMinTimestamp().getTime() + " Max = " + getMaxTimestamp().getTime());
 	//Initialize baselineValues for 24 vals and value = 0;
 	baselineValues = new Double[24];
 	for( int i = 0; i < baselineValues.length; i++)
@@ -321,7 +341,7 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement stmt = null;
 	java.sql.ResultSet rset = null;
-
+//	System.out.println("retrieveBillingData: Min = " + getMinTimestamp().getTime() + " Max = " + getMaxTimestamp().getTime());
 	retrieveBaselineData(csvBillingCust.getBaselinePointId().intValue());
 
 
@@ -383,7 +403,8 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 					rowCount++;
 					com.cannontech.export.record.CSVBillingRecord csvBillingRec = new com.cannontech.export.record.CSVBillingRecord();
 					csvBillingRec.setCustomerName(csvBillingCust.getCustomerName());
-					csvBillingRec.setServicePt(csvBillingCust.getServicePt());
+					csvBillingRec.setEnergyDebtor(csvBillingCust.getEnergyDebtor());
+					csvBillingRec.setEnergyPremise(csvBillingCust.getEnergyPremise());
 					csvBillingRec.setCurtailOffer(offerID);
 					csvBillingRec.setMeterLocation(csvBillingCust.getMeterLocation());
 					csvBillingRec.setCurtailDate(offerDate);
@@ -393,6 +414,8 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 					csvBillingRec.setSCL(amtCommit);
 					csvBillingRec.setADL(value);
 
+					csvBillingRec.setDelimiter(delimiter);
+					
 					String dataString = csvBillingRec.dataToString();
 					getRecordVector().add(dataString);
 				}
@@ -435,14 +458,16 @@ public void retrieveCustomerData()
 	int rowCount = 0;
 		
 	StringBuffer sql = new StringBuffer	("SELECT PAO.PAONAME, PAO.PAOBJECTID");
-	sql.append(", CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER ");
+	sql.append(", CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER, CEN.ENERGYDEBTOR, CEN.ENERGYPREMISE ");
 	sql.append("FROM YUKONPAOBJECT PAO, ");
 	sql.append("CUSTOMERBASELINEPOINT CBP, ");
 	sql.append("CALCCOMPONENT CC, ");
 	sql.append("POINT PT, ");
-	sql.append("DEVICEMETERGROUP DMG ");
+	sql.append("DEVICEMETERGROUP DMG, ");
+	sql.append("CUSTOMERENERGYNUMBERS CEN ");
 
 	sql.append(" WHERE PAO.PAOBJECTID = CBP.CUSTOMERID");
+	sql.append(" AND CBP.CUSTOMERID = CEN.CUSTOMERID");
 	sql.append(" AND CBP.POINTID = CC.POINTID");
 	sql.append(" AND CC.POINTID = PT.POINTID");
 	sql.append(" AND PT.PAOBJECTID = DMG.DEVICEID");
@@ -468,16 +493,17 @@ public void retrieveCustomerData()
 			rset = stmt.executeQuery();
 			while( rset.next())
 			{
-				//SELECT PAO.PAONAME, PAO.PAOBJECTID, CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER 
+				//SELECT PAO.PAONAME, PAO.PAOBJECTID, CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER, CEN.ENERGYDEBTOR, CEN.ENERGYPREMISE  
 				String paoName = rset.getString(1);
 				Integer paoId = new Integer(rset.getInt(2));
 				Integer baselinePtId = new Integer(rset.getInt(3));
 				Integer curatailPtId = new Integer(rset.getInt(4));
 				String meterLoc = rset.getString(5);
-				String servicePt = "Service #";
+				String energyDebtor = rset.getString(6);
+				String energyPremise = rset.getString(7);
 
 				com.cannontech.export.record.CSVBillingCustomerRecord csvBillingCust = new com.cannontech.export.record.CSVBillingCustomerRecord(
-					paoName, meterLoc, servicePt, baselinePtId, curatailPtId);
+					paoName, meterLoc, energyDebtor, energyPremise, baselinePtId, curatailPtId);
 
 				customerHashtable.put(paoId, csvBillingCust);
 			}
@@ -513,19 +539,23 @@ public void retrieveCustomerData()
  */
 public void retrieveExportData()
 {
-	//Add a title record	
-	getRecordVector().add("Yukon Curtailment Settlement for " +
-		getMinTimestamp().getTime() + " - " + 
-		getMaxTimestamp().getTime() + "\r\n");
+	if( showColumnHeadings )
+	{
+		//Add a title record
+		getRecordVector().add("Yukon Curtailment Settlement for " +
+			getMinTimestamp().getTime() + " - " + 
+			getMaxTimestamp().getTime() + "\r\n");
+		
+		//Add a column headings record
+		getRecordVector().add(com.cannontech.export.record.CSVBillingRecord.getColumnHeadingsString());
+		
+	}
 
 	logEvent("...Retrieving data for Date > " + getMinTimestamp().getTime() +
 		" AND <= " + getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
 	com.cannontech.clientutils.CTILogger.info("...Retrieving data for Date > " + getMinTimestamp().getTime() +
 		" AND <= " + getMaxTimestamp().getTime());
 		
-	//Add a column headings record
-	getRecordVector().add(com.cannontech.export.record.CSVBillingRecord.getColumnHeadingsString());
-
 	//Get a hashtable of records of all curtailment customers
 	retrieveCustomerData();
 
@@ -542,13 +572,20 @@ public void retrieveExportData()
 		}
 	}
 
+	//Set timestamps for next day.
+	setMinTimestamp(getMaxTimestamp());
+	
+	java.util.GregorianCalendar newCal = new java.util.GregorianCalendar();	
+	newCal.setTime(new java.util.Date(getMaxTimestamp().getTime().getTime() + 86400000));
+	setMaxTimestamp(newCal);
+	com.cannontech.clientutils.CTILogger.info(" * Next TimePeriod: " + getMinTimestamp().getTime() + " - " + getMaxTimestamp().getTime());
 	//writeToFile();
 }
 public void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel)
 {
 	if( advOptsPanel != null)
 	{
-			Object date = advOptsPanel.getStartDatePopupField().getValueModel().getValue();
+			Object date = advOptsPanel.getStartDateComboBox().getSelectedDate();
 			
 			if( date instanceof java.util.Date )
 			{
@@ -563,7 +600,7 @@ public void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel)
 				setMinTimestamp(cal);
 			}
 			
-			date = advOptsPanel.getStopDatePopupField().getValueModel().getValue();
+			date = advOptsPanel.getStopDateComboBox().getSelectedDate();
 			
 			if( date instanceof java.util.Date )
 			{
@@ -577,13 +614,24 @@ public void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel)
 				cal.setTime(((java.util.Calendar) date).getTime());
 				setMaxTimestamp(cal);
 			}
+
+			showColumnHeadings = advOptsPanel.getHeadingsCheckBox().isSelected();
+
+			//Even if the delimiter textBox is longer than 1 character, we only take the first character.
+			String delTemp = advOptsPanel.getDelimiterTextBox().getText().toString();
+			if( delTemp.length() > 0)
+				setDelimiter(new Character(delTemp.charAt(0)));
+			
 	}
 	else
 	{
 		computeDefaultQueryTimestamp();
 	}
 }
-	
+private void setDelimiter(Character newDelimiter)
+{
+	delimiter = newDelimiter;
+}
 private void setMaxTimestamp(java.util.GregorianCalendar max)
 {
 	maxTimestamp = max;
