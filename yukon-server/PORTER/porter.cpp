@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2004/01/20 19:31:32 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2004/03/16 15:50:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1204,7 +1204,7 @@ INT RefreshPorterRTDB(void *ptr)
 {
     extern CtiPILServer     PIL;
     bool autoRole = false;                              // Set to true if routes might have changed and or we need to download based on time!
-    static RWTime lastAutoRole = RWTime() + 300;        // This time is used to trigger timed downloads of repeater roles.
+    static RWTime lastAutoRole(rwEpoch);        // This time is used to trigger timed downloads of repeater roles.
 
     INT   i;
     INT   status = NORMAL;
@@ -1270,7 +1270,7 @@ INT RefreshPorterRTDB(void *ptr)
                 autoRole = true;
             }
 
-            if(gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0) > 0 && RWTime().seconds() < lastAutoRole.seconds() + gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE") )
+            if(gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0) > 0 && RWTime().seconds() > lastAutoRole.seconds() + gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE") )
             {
                 autoRole = true;
                 {
