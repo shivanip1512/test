@@ -511,6 +511,7 @@ void  CtiCommandParser::doParseGetStatus(const RWCString &CmdStr)
     RWCRExpr   re_pfco("powerf");
     RWCRExpr   re_intern("inter");
     RWCRExpr   re_extern("extern");
+    RWCRExpr   re_eventlog("eventlog(s)?");
 
     RWCRExpr   re_offset("off(set)? *[0-9]+");
 
@@ -580,6 +581,10 @@ void  CtiCommandParser::doParseGetStatus(const RWCString &CmdStr)
             flag |= CMD_FLAG_UPDATE;
         }
 
+        if(!(token = CmdStr.match(re_eventlog)).isNull())
+        {
+            _cmd["eventlog"] = CtiParseValue(true);
+        }
     }
     else
     {
