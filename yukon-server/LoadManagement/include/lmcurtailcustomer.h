@@ -22,8 +22,9 @@
 
 #include "observe.h"
 #include "msg_pcrequest.h"
+#include "lmcicustomerbase.h"
                 
-class CtiLMCurtailCustomer : public RWCollectable
+class CtiLMCurtailCustomer : public CtiLMCICustomerBase
 {
 
 public:
@@ -36,16 +37,6 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
 
     virtual ~CtiLMCurtailCustomer();
     
-    LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
-    LONG getPAOType() const;
-    const RWCString& getPAODescription() const;
-    BOOL getDisableFlag() const;
-    LONG getCustomerOrder() const;
-    DOUBLE getCustFPL() const;
-    const RWCString& getCustTimeZone() const;
     BOOL getRequireAck() const;
     LONG getCurtailReferenceId() const;
     const RWCString& getAcknowledgeStatus() const;
@@ -55,23 +46,7 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     const RWCString& getNameOfAckPerson() const;
     const RWCString& getCurtailmentNotes() const;
     BOOL getAckLateFlag() const;
-    /*LONG getGroupControlState() const;
-    LONG getCurrentHoursDaily() const;
-    LONG getCurrentHoursMonthly() const;
-    LONG getCurrentHoursSeasonal() const;
-    LONG getCurrentHoursAnnually() const;
-    const RWDBDateTime& getLastControlSent() const;*/
 
-    CtiLMCurtailCustomer& setPAOId(LONG id);
-    CtiLMCurtailCustomer& setPAOCategory(const RWCString& category);
-    CtiLMCurtailCustomer& setPAOClass(const RWCString& pclass);
-    CtiLMCurtailCustomer& setPAOName(const RWCString& name);
-    CtiLMCurtailCustomer& setPAOType(LONG type);
-    CtiLMCurtailCustomer& setPAODescription(const RWCString& description);
-    CtiLMCurtailCustomer& setDisableFlag(BOOL disable);
-    CtiLMCurtailCustomer& setCustomerOrder(LONG order);
-    CtiLMCurtailCustomer& setCustFPL(DOUBLE fpl);
-    CtiLMCurtailCustomer& setCustTimeZone(const RWCString& timezone);
     CtiLMCurtailCustomer& setRequireAck(BOOL reqack);
     CtiLMCurtailCustomer& setCurtailReferenceId(LONG refid);
     CtiLMCurtailCustomer& setAcknowledgeStatus(const RWCString& ackstatus);
@@ -81,12 +56,6 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     CtiLMCurtailCustomer& setNameOfAckPerson(const RWCString& nameackperson);
     CtiLMCurtailCustomer& setCurtailmentNotes(const RWCString& curtailnotes);
     CtiLMCurtailCustomer& setAckLateFlag(BOOL acklate);
-    /*CtiLMCurtailCustomer& setGroupControlState(LONG controlstate);
-    CtiLMCurtailCustomer& setCurrentHoursDaily(LONG daily);
-    CtiLMCurtailCustomer& setCurrentHoursMonthly(LONG monthly);
-    CtiLMCurtailCustomer& setCurrentHoursSeasonal(LONG seasonal);
-    CtiLMCurtailCustomer& setCurrentHoursAnnually(LONG annually);
-    CtiLMCurtailCustomer& setLastControlSent(const RWDBDateTime& controlsent);*/
 
     CtiLMCurtailCustomer* replicate() const;
 
@@ -100,9 +69,6 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     void saveGuts(RWvostream& ) const;
 
     CtiLMCurtailCustomer& operator=(const CtiLMCurtailCustomer& right);
-
-    int operator==(const CtiLMCurtailCustomer& right) const;
-    int operator!=(const CtiLMCurtailCustomer& right) const;
 
     // Static Members
 
@@ -118,16 +84,6 @@ protected:
 
 private:
 
-    LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
-    LONG _paotype;
-    RWCString _paodescription;
-    BOOL _disableflag;
-    LONG _customerorder;
-    DOUBLE _custfpl;
-    RWCString _custtimezone;
     BOOL _requireack;
     LONG _curtailreferenceid;
     RWCString _acknowledgestatus;
@@ -137,12 +93,6 @@ private:
     RWCString _nameofackperson;
     RWCString _curtailmentnotes;
     BOOL _acklateflag;
-    /*LONG _groupcontrolstate;
-    LONG _currenthoursdaily;
-    LONG _currenthoursmonthly;
-    LONG _currenthoursseasonal;
-    LONG _currenthoursannually;
-    RWDBDateTime _lastcontrolsent;*/
 
     void updateLMCurtailCustomerActivityTable(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 };

@@ -21,8 +21,9 @@
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
-                
-class CtiLMEnergyExchangeCustomer : public RWCollectable
+#include "lmcicustomerbase.h"
+
+class CtiLMEnergyExchangeCustomer : public CtiLMCICustomerBase
 {
 
 public:
@@ -35,26 +36,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
 
     virtual ~CtiLMEnergyExchangeCustomer();
     
-    LONG getPAOId() const;
-    const RWCString& getPAOCategory() const;
-    const RWCString& getPAOClass() const;
-    const RWCString& getPAOName() const;
-    LONG getPAOType() const;
-    const RWCString& getPAODescription() const;
-    BOOL getDisableFlag() const;
-    LONG getCustomerOrder() const;
-    const RWCString& getCustTimeZone() const;
     RWOrdered& getLMEnergyExchangeCustomerReplies();
-
-    CtiLMEnergyExchangeCustomer& setPAOId(LONG id);
-    CtiLMEnergyExchangeCustomer& setPAOCategory(const RWCString& category);
-    CtiLMEnergyExchangeCustomer& setPAOClass(const RWCString& pclass);
-    CtiLMEnergyExchangeCustomer& setPAOName(const RWCString& name);
-    CtiLMEnergyExchangeCustomer& setPAOType(LONG type);
-    CtiLMEnergyExchangeCustomer& setPAODescription(const RWCString& description);
-    CtiLMEnergyExchangeCustomer& setDisableFlag(BOOL disable);
-    CtiLMEnergyExchangeCustomer& setCustomerOrder(LONG order);
-    CtiLMEnergyExchangeCustomer& setCustTimeZone(const RWCString& timezone);
 
     BOOL hasAcceptedOffer(LONG offerid) const;
     CtiLMEnergyExchangeCustomer* replicate() const;
@@ -65,8 +47,8 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
 
     CtiLMEnergyExchangeCustomer& operator=(const CtiLMEnergyExchangeCustomer& right);
 
-    int operator==(const CtiLMEnergyExchangeCustomer& right) const;
-    int operator!=(const CtiLMEnergyExchangeCustomer& right) const;
+    /*int operator==(const CtiLMEnergyExchangeCustomer& right) const;
+    int operator!=(const CtiLMEnergyExchangeCustomer& right) const;*/
 
     // Static Members
 
@@ -77,16 +59,6 @@ protected:
     void restore(RWDBReader& rdr);
 
 private:
-
-    LONG _paoid;
-    RWCString _paocategory;
-    RWCString _paoclass;
-    RWCString _paoname;
-    LONG _paotype;
-    RWCString _paodescription;
-    BOOL _disableflag;
-    LONG _customerorder;
-    RWCString _custtimezone;
 
     RWOrdered _lmenergyexchangecustomerreplies;
 };
