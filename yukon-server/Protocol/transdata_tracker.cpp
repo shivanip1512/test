@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2004/02/16 20:53:07 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2004/05/13 21:00:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -468,8 +468,9 @@ bool CtiTransdataTracker::billing( CtiXfer &xfer )
    switch( _lastState )
    {
    case doScroll:
-      {
-         setXfer( xfer, _datalink.buildMsg( _search_scrolls, _good_return ), 10, true, 0 );
+      {  
+//         setXfer( xfer, _datalink.buildMsg( _search_scrolls, _good_return ), 10, true, 0 );
+         setXfer( xfer, _datalink.buildMsg( _search_comms, _good_return ), 10, true, 0 );
       }
       break;
 
